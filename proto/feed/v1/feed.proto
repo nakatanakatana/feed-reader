@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+package feed.v1;
+
+option go_package = "github.com/nakatanakatana/feed-reader/gen/go/feed/v1;feedv1";
+
+service FeedService {
+  rpc GetFeed(GetFeedRequest) returns (GetFeedResponse);
+  rpc ListFeeds(ListFeedsRequest) returns (ListFeedsResponse);
+  rpc CreateFeed(CreateFeedRequest) returns (CreateFeedResponse);
+  rpc UpdateFeed(UpdateFeedRequest) returns (UpdateFeedResponse);
+  rpc DeleteFeed(DeleteFeedRequest) returns (DeleteFeedResponse);
+}
+
+message Feed {
+  string uuid = 1;
+  string url = 2;
+  optional string link = 3;
+  string title = 4;
+  optional string description = 5;
+  optional string language = 6;
+  optional string image_url = 7;
+  optional string copyright = 8;
+  optional string feed_type = 9;
+  optional string feed_version = 10;
+  optional string last_fetched_at = 11;
+  string created_at = 12;
+  string updated_at = 13;
+}
+
+message GetFeedRequest {
+  string uuid = 1;
+}
+
+message GetFeedResponse {
+  Feed feed = 1;
+}
+
+message ListFeedsRequest {}
+
+message ListFeedsResponse {
+  repeated Feed feeds = 1;
+}
+
+message CreateFeedRequest {
+  string url = 1;
+  string title = 2;
+  optional string link = 3;
+  optional string description = 4;
+  optional string language = 5;
+  optional string image_url = 6;
+  optional string copyright = 7;
+  optional string feed_type = 8;
+  optional string feed_version = 9;
+}
+
+message CreateFeedResponse {
+  Feed feed = 1;
+}
+
+message UpdateFeedRequest {
+  string uuid = 1;
+  string url = 2;
+  string title = 3;
+  optional string link = 4;
+  optional string description = 5;
+  optional string language = 6;
+  optional string image_url = 7;
+  optional string copyright = 8;
+  optional string feed_type = 9;
+  optional string feed_version = 10;
+  optional string last_fetched_at = 11;
+}
+
+message UpdateFeedResponse {
+  Feed feed = 1;
+}
+
+message DeleteFeedRequest {
+  string uuid = 1;
+}
+
+message DeleteFeedResponse {}
