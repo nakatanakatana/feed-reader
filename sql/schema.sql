@@ -1,4 +1,4 @@
-CREATE TABLE feeds (
+CREATE TABLE IF NOT EXISTS feeds (
   uuid            TEXT PRIMARY KEY,
   url             TEXT NOT NULL UNIQUE,
   link            TEXT,
@@ -13,4 +13,3 @@ CREATE TABLE feeds (
   created_at      TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at      TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
-
