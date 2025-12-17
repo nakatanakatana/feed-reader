@@ -35,7 +35,6 @@ RETURNING *;
 UPDATE
   feeds
 SET
-  url = ?,
   link = ?,
   title = ?,
   description = ?,

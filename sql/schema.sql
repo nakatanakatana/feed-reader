@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS feeds (
   uuid            TEXT PRIMARY KEY,
   url             TEXT NOT NULL UNIQUE,
   link            TEXT,
-  title           TEXT NOT NULL,
+  title           TEXT,
   description     TEXT,
   language        TEXT,
   image_url       TEXT,

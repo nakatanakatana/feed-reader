@@ -31,7 +31,7 @@ type CreateFeedParams struct {
 	Uuid        string  `json:"uuid"`
 	Url         string  `json:"url"`
 	Link        *string `json:"link"`
-	Title       string  `json:"title"`
+	Title       *string `json:"title"`
 	Description *string `json:"description"`
 	Language    *string `json:"language"`
 	ImageUrl    *string `json:"image_url"`
@@ -164,7 +164,6 @@ const updateFeed = `-- name: UpdateFeed :one
 UPDATE
   feeds
 SET
-  url = ?,
   link = ?,
   title = ?,
   description = ?,
@@ -181,9 +180,8 @@ RETURNING uuid, url, link, title, description, language, image_url, copyright, f
 `
 
 type UpdateFeedParams struct {
-	Url           string  `json:"url"`
 	Link          *string `json:"link"`
-	Title         string  `json:"title"`
+	Title         *string `json:"title"`
 	Description   *string `json:"description"`
 	Language      *string `json:"language"`
 	ImageUrl      *string `json:"image_url"`
@@ -196,7 +194,6 @@ type UpdateFeedParams struct {
 
 func (q *Queries) UpdateFeed(ctx context.Context, arg UpdateFeedParams) (Feed, error) {
 	row := q.db.QueryRowContext(ctx, updateFeed,
-		arg.Url,
 		arg.Link,
 		arg.Title,
 		arg.Description,

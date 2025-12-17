@@ -9,6 +9,8 @@ import (
 	"connectrpc.com/connect"
 	"github.com/google/uuid"
 	_ "github.com/mattn/go-sqlite3"
+	"google.golang.org/protobuf/proto"
+
 	feedv1 "github.com/nakatanakatana/feed-reader/gen/go/feed/v1"
 	"github.com/nakatanakatana/feed-reader/gen/go/feed/v1/feedv1connect"
 	"github.com/nakatanakatana/feed-reader/sql"
@@ -64,7 +66,7 @@ func TestFeedServer_CreateFeed(t *testing.T) {
 			args: args{
 				req: &feedv1.CreateFeedRequest{
 					Url:   "https://example.com/rss",
-					Title: "Test Feed",
+					Title: proto.String("Test Feed"),
 				},
 			},
 			wantErr: false,
@@ -74,7 +76,7 @@ func TestFeedServer_CreateFeed(t *testing.T) {
 			args: args{
 				req: &feedv1.CreateFeedRequest{
 					Url:   "https://example.com/err",
-					Title: "Error Feed",
+					Title: proto.String("Error Feed"),
 				},
 			},
 			uuidErr: errors.New("uuid error"),
@@ -106,8 +108,8 @@ func TestFeedServer_CreateFeed(t *testing.T) {
 			if res.Msg.Feed.Url != tt.args.req.Url {
 				t.Errorf("expected url %s, got %s", tt.args.req.Url, res.Msg.Feed.Url)
 			}
-			if res.Msg.Feed.Title != tt.args.req.Title {
-				t.Errorf("expected title %s, got %s", tt.args.req.Title, res.Msg.Feed.Title)
+			if res.Msg.Feed.Title != *tt.args.req.Title {
+				t.Errorf("expected title %s, got %s", *tt.args.req.Title, res.Msg.Feed.Title)
 			}
 		})
 	}
@@ -128,7 +130,7 @@ func TestFeedServer_GetFeed(t *testing.T) {
 			setup: func(t *testing.T, server feedv1connect.FeedServiceHandler) string {
 				res, err := server.CreateFeed(ctx, connect.NewRequest(&feedv1.CreateFeedRequest{
 					Url:   "https://example.com/get",
-					Title: "Get Feed",
+					Title: proto.String("Get Feed"),
 				}))
 				if err != nil {
 					t.Fatalf("setup failed: %v", err)
@@ -181,7 +183,7 @@ func TestFeedServer_ListFeeds(t *testing.T) {
 				for i := 0; i < 3; i++ {
 					_, err := server.CreateFeed(ctx, connect.NewRequest(&feedv1.CreateFeedRequest{
 						Url:   "https://example.com/list-" + string(rune('a'+i)),
-						Title: "Feed " + string(rune('a'+i)),
+						Title: proto.String("Feed " + string(rune('a'+i))),
 					}))
 					if err != nil {
 						t.Fatalf("setup failed: %v", err)
@@ -228,7 +230,7 @@ func TestFeedServer_UpdateFeed(t *testing.T) {
 			setup: func(t *testing.T, server feedv1connect.FeedServiceHandler) *feedv1.UpdateFeedRequest {
 				res, err := server.CreateFeed(ctx, connect.NewRequest(&feedv1.CreateFeedRequest{
 					Url:   "https://example.com/update",
-					Title: "Original",
+					Title: proto.String("Original"),
 				}))
 				if err != nil {
 					t.Fatalf("setup failed: %v", err)
@@ -236,8 +238,7 @@ func TestFeedServer_UpdateFeed(t *testing.T) {
 				feed := res.Msg.Feed
 				return &feedv1.UpdateFeedRequest{
 					Uuid:  feed.Uuid,
-					Url:   feed.Url,
-					Title: "Updated",
+					Title: proto.String("Updated"),
 				}
 			},
 			wantErr: false,
@@ -247,8 +248,7 @@ func TestFeedServer_UpdateFeed(t *testing.T) {
 			setup: func(t *testing.T, server feedv1connect.FeedServiceHandler) *feedv1.UpdateFeedRequest {
 				return &feedv1.UpdateFeedRequest{
 					Uuid:  "00000000-0000-0000-0000-000000000000",
-					Url:   "http://example.com",
-					Title: "Updated",
+					Title: proto.String("Updated"),
 				}
 			},
 			wantErr: true,
@@ -289,7 +289,7 @@ func TestFeedServer_DeleteFeed(t *testing.T) {
 			setup: func(t *testing.T, server feedv1connect.FeedServiceHandler) string {
 				res, err := server.CreateFeed(ctx, connect.NewRequest(&feedv1.CreateFeedRequest{
 					Url:   "https://example.com/delete",
-					Title: "Delete Me",
+					Title: proto.String("Delete Me"),
 				}))
 				if err != nil {
 					t.Fatalf("setup failed: %v", err)

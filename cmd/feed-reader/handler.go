@@ -63,6 +63,7 @@ func (s *FeedServer) CreateFeed(ctx context.Context, req *connect.Request[feedv1
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to generate UUID: %w", err))
 	}
 	id := newUUID.String()
+
 	feed, err := s.queries.CreateFeed(ctx, store.CreateFeedParams{
 		Uuid:        id,
 		Url:         req.Msg.Url,
@@ -86,7 +87,6 @@ func (s *FeedServer) CreateFeed(ctx context.Context, req *connect.Request[feedv1
 
 func (s *FeedServer) UpdateFeed(ctx context.Context, req *connect.Request[feedv1.UpdateFeedRequest]) (*connect.Response[feedv1.UpdateFeedResponse], error) {
 	feed, err := s.queries.UpdateFeed(ctx, store.UpdateFeedParams{
-		Url:           req.Msg.Url,
 		Link:          req.Msg.Link,
 		Title:         req.Msg.Title,
 		Description:   req.Msg.Description,
@@ -123,11 +123,16 @@ func toProtoFeed(f store.Feed) *feedv1.Feed {
 	// but proto also uses string for now based on previous decision.
 	// If we wanted Timestamp, we'd parse time.RFC3339 or similar here.
 
+	var title string
+	if f.Title != nil {
+		title = *f.Title
+	}
+
 	return &feedv1.Feed{
 		Uuid:          f.Uuid,
 		Url:           f.Url,
 		Link:          f.Link,
-		Title:         f.Title,
+		Title:         title,
 		Description:   f.Description,
 		Language:      f.Language,
 		ImageUrl:      f.ImageUrl,

@@ -332,7 +332,7 @@ func (x *ListFeedsResponse) GetFeeds() []*Feed {
 type CreateFeedRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Url           string                 `protobuf:"bytes,1,opt,name=url,proto3" json:"url,omitempty"`
-	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	Title         *string                `protobuf:"bytes,2,opt,name=title,proto3,oneof" json:"title,omitempty"`
 	Link          *string                `protobuf:"bytes,3,opt,name=link,proto3,oneof" json:"link,omitempty"`
 	Description   *string                `protobuf:"bytes,4,opt,name=description,proto3,oneof" json:"description,omitempty"`
 	Language      *string                `protobuf:"bytes,5,opt,name=language,proto3,oneof" json:"language,omitempty"`
@@ -382,8 +382,8 @@ func (x *CreateFeedRequest) GetUrl() string {
 }
 
 func (x *CreateFeedRequest) GetTitle() string {
-	if x != nil {
-		return x.Title
+	if x != nil && x.Title != nil {
+		return *x.Title
 	}
 	return ""
 }
@@ -484,8 +484,7 @@ func (x *CreateFeedResponse) GetFeed() *Feed {
 type UpdateFeedRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Uuid          string                 `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
-	Url           string                 `protobuf:"bytes,2,opt,name=url,proto3" json:"url,omitempty"`
-	Title         string                 `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
+	Title         *string                `protobuf:"bytes,3,opt,name=title,proto3,oneof" json:"title,omitempty"`
 	Link          *string                `protobuf:"bytes,4,opt,name=link,proto3,oneof" json:"link,omitempty"`
 	Description   *string                `protobuf:"bytes,5,opt,name=description,proto3,oneof" json:"description,omitempty"`
 	Language      *string                `protobuf:"bytes,6,opt,name=language,proto3,oneof" json:"language,omitempty"`
@@ -535,16 +534,9 @@ func (x *UpdateFeedRequest) GetUuid() string {
 	return ""
 }
 
-func (x *UpdateFeedRequest) GetUrl() string {
-	if x != nil {
-		return x.Url
-	}
-	return ""
-}
-
 func (x *UpdateFeedRequest) GetTitle() string {
-	if x != nil {
-		return x.Title
+	if x != nil && x.Title != nil {
+		return *x.Title
 	}
 	return ""
 }
@@ -768,17 +760,18 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"\x04feed\x18\x01 \x01(\v2\r.feed.v1.FeedR\x04feed\"\x12\n" +
 	"\x10ListFeedsRequest\"8\n" +
 	"\x11ListFeedsResponse\x12#\n" +
-	"\x05feeds\x18\x01 \x03(\v2\r.feed.v1.FeedR\x05feeds\"\x8c\x03\n" +
+	"\x05feeds\x18\x01 \x03(\v2\r.feed.v1.FeedR\x05feeds\"\x9b\x03\n" +
 	"\x11CreateFeedRequest\x12\x10\n" +
-	"\x03url\x18\x01 \x01(\tR\x03url\x12\x14\n" +
-	"\x05title\x18\x02 \x01(\tR\x05title\x12\x17\n" +
-	"\x04link\x18\x03 \x01(\tH\x00R\x04link\x88\x01\x01\x12%\n" +
-	"\vdescription\x18\x04 \x01(\tH\x01R\vdescription\x88\x01\x01\x12\x1f\n" +
-	"\blanguage\x18\x05 \x01(\tH\x02R\blanguage\x88\x01\x01\x12 \n" +
-	"\timage_url\x18\x06 \x01(\tH\x03R\bimageUrl\x88\x01\x01\x12!\n" +
-	"\tcopyright\x18\a \x01(\tH\x04R\tcopyright\x88\x01\x01\x12 \n" +
-	"\tfeed_type\x18\b \x01(\tH\x05R\bfeedType\x88\x01\x01\x12&\n" +
-	"\ffeed_version\x18\t \x01(\tH\x06R\vfeedVersion\x88\x01\x01B\a\n" +
+	"\x03url\x18\x01 \x01(\tR\x03url\x12\x19\n" +
+	"\x05title\x18\x02 \x01(\tH\x00R\x05title\x88\x01\x01\x12\x17\n" +
+	"\x04link\x18\x03 \x01(\tH\x01R\x04link\x88\x01\x01\x12%\n" +
+	"\vdescription\x18\x04 \x01(\tH\x02R\vdescription\x88\x01\x01\x12\x1f\n" +
+	"\blanguage\x18\x05 \x01(\tH\x03R\blanguage\x88\x01\x01\x12 \n" +
+	"\timage_url\x18\x06 \x01(\tH\x04R\bimageUrl\x88\x01\x01\x12!\n" +
+	"\tcopyright\x18\a \x01(\tH\x05R\tcopyright\x88\x01\x01\x12 \n" +
+	"\tfeed_type\x18\b \x01(\tH\x06R\bfeedType\x88\x01\x01\x12&\n" +
+	"\ffeed_version\x18\t \x01(\tH\aR\vfeedVersion\x88\x01\x01B\b\n" +
+	"\x06_titleB\a\n" +
 	"\x05_linkB\x0e\n" +
 	"\f_descriptionB\v\n" +
 	"\t_languageB\f\n" +
@@ -790,20 +783,20 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"_feed_typeB\x0f\n" +
 	"\r_feed_version\"7\n" +
 	"\x12CreateFeedResponse\x12!\n" +
-	"\x04feed\x18\x01 \x01(\v2\r.feed.v1.FeedR\x04feed\"\xe1\x03\n" +
+	"\x04feed\x18\x01 \x01(\v2\r.feed.v1.FeedR\x04feed\"\xde\x03\n" +
 	"\x11UpdateFeedRequest\x12\x12\n" +
-	"\x04uuid\x18\x01 \x01(\tR\x04uuid\x12\x10\n" +
-	"\x03url\x18\x02 \x01(\tR\x03url\x12\x14\n" +
-	"\x05title\x18\x03 \x01(\tR\x05title\x12\x17\n" +
-	"\x04link\x18\x04 \x01(\tH\x00R\x04link\x88\x01\x01\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tH\x01R\vdescription\x88\x01\x01\x12\x1f\n" +
-	"\blanguage\x18\x06 \x01(\tH\x02R\blanguage\x88\x01\x01\x12 \n" +
-	"\timage_url\x18\a \x01(\tH\x03R\bimageUrl\x88\x01\x01\x12!\n" +
-	"\tcopyright\x18\b \x01(\tH\x04R\tcopyright\x88\x01\x01\x12 \n" +
-	"\tfeed_type\x18\t \x01(\tH\x05R\bfeedType\x88\x01\x01\x12&\n" +
+	"\x04uuid\x18\x01 \x01(\tR\x04uuid\x12\x19\n" +
+	"\x05title\x18\x03 \x01(\tH\x00R\x05title\x88\x01\x01\x12\x17\n" +
+	"\x04link\x18\x04 \x01(\tH\x01R\x04link\x88\x01\x01\x12%\n" +
+	"\vdescription\x18\x05 \x01(\tH\x02R\vdescription\x88\x01\x01\x12\x1f\n" +
+	"\blanguage\x18\x06 \x01(\tH\x03R\blanguage\x88\x01\x01\x12 \n" +
+	"\timage_url\x18\a \x01(\tH\x04R\bimageUrl\x88\x01\x01\x12!\n" +
+	"\tcopyright\x18\b \x01(\tH\x05R\tcopyright\x88\x01\x01\x12 \n" +
+	"\tfeed_type\x18\t \x01(\tH\x06R\bfeedType\x88\x01\x01\x12&\n" +
 	"\ffeed_version\x18\n" +
-	" \x01(\tH\x06R\vfeedVersion\x88\x01\x01\x12+\n" +
-	"\x0flast_fetched_at\x18\v \x01(\tH\aR\rlastFetchedAt\x88\x01\x01B\a\n" +
+	" \x01(\tH\aR\vfeedVersion\x88\x01\x01\x12+\n" +
+	"\x0flast_fetched_at\x18\v \x01(\tH\bR\rlastFetchedAt\x88\x01\x01B\b\n" +
+	"\x06_titleB\a\n" +
 	"\x05_linkB\x0e\n" +
 	"\f_descriptionB\v\n" +
 	"\t_languageB\f\n" +

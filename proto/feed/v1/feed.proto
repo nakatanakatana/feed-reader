@@ -44,7 +44,7 @@ message ListFeedsResponse {
 
 message CreateFeedRequest {
   string url = 1;
-  string title = 2;
+  optional string title = 2;
   optional string link = 3;
   optional string description = 4;
   optional string language = 5;
@@ -60,8 +60,7 @@ message CreateFeedResponse {
 
 message UpdateFeedRequest {
   string uuid = 1;
-  string url = 2;
-  string title = 3;
+  optional string title = 3;
   optional string link = 4;
   optional string description = 5;
   optional string language = 6;

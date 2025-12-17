@@ -8,7 +8,7 @@ type Feed struct {
 	Uuid          string  `json:"uuid"`
 	Url           string  `json:"url"`
 	Link          *string `json:"link"`
-	Title         string  `json:"title"`
+	Title         *string `json:"title"`
 	Description   *string `json:"description"`
 	Language      *string `json:"language"`
 	ImageUrl      *string `json:"image_url"`
