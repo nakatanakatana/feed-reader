@@ -3,9 +3,11 @@ package main
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"testing"
 
 	"connectrpc.com/connect"
+	"github.com/google/uuid"
 	_ "github.com/mattn/go-sqlite3"
 	feedv1 "github.com/nakatanakatana/feed-reader/gen/go/feed/v1"
 	"github.com/nakatanakatana/feed-reader/gen/go/feed/v1/feedv1connect"
@@ -33,6 +35,17 @@ func setupTestDB(t *testing.T) *store.Queries {
 	return store.New(db)
 }
 
+type mockUUIDGenerator struct {
+	err error
+}
+
+func (m mockUUIDGenerator) NewRandom() (uuid.UUID, error) {
+	if m.err != nil {
+		return uuid.UUID{}, m.err
+	}
+	return uuid.NewRandom()
+}
+
 func TestFeedServer_CreateFeed(t *testing.T) {
 	ctx := context.Background()
 
@@ -42,7 +55,9 @@ func TestFeedServer_CreateFeed(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
+		uuidErr error
 		wantErr bool
+		errCode connect.Code
 	}{
 		{
 			name: "Success",
@@ -54,28 +69,45 @@ func TestFeedServer_CreateFeed(t *testing.T) {
 			},
 			wantErr: false,
 		},
+		{
+			name: "UUID Generation Error",
+			args: args{
+				req: &feedv1.CreateFeedRequest{
+					Url:   "https://example.com/err",
+					Title: "Error Feed",
+				},
+			},
+			uuidErr: errors.New("uuid error"),
+			wantErr: true,
+			errCode: connect.CodeInternal,
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			queries := setupTestDB(t)
-			server := NewFeedServer(queries)
+			server := NewFeedServer(queries, mockUUIDGenerator{err: tt.uuidErr})
 
 			res, err := server.CreateFeed(ctx, connect.NewRequest(tt.args.req))
 			if (err != nil) != tt.wantErr {
 				t.Errorf("CreateFeed() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !tt.wantErr {
-				if res.Msg.Feed.Uuid == "" {
-					t.Error("expected non-empty uuid")
+			if tt.wantErr {
+				if connect.CodeOf(err) != tt.errCode {
+					t.Errorf("CreateFeed() error code = %v, want %v", connect.CodeOf(err), tt.errCode)
 				}
-				if res.Msg.Feed.Url != tt.args.req.Url {
-					t.Errorf("expected url %s, got %s", tt.args.req.Url, res.Msg.Feed.Url)
-				}
-				if res.Msg.Feed.Title != tt.args.req.Title {
-					t.Errorf("expected title %s, got %s", tt.args.req.Title, res.Msg.Feed.Title)
-				}
+				return
+			}
+
+			if res.Msg.Feed.Uuid == "" {
+				t.Error("expected non-empty uuid")
+			}
+			if res.Msg.Feed.Url != tt.args.req.Url {
+				t.Errorf("expected url %s, got %s", tt.args.req.Url, res.Msg.Feed.Url)
+			}
+			if res.Msg.Feed.Title != tt.args.req.Title {
+				t.Errorf("expected title %s, got %s", tt.args.req.Title, res.Msg.Feed.Title)
 			}
 		})
 	}
@@ -85,11 +117,11 @@ func TestFeedServer_GetFeed(t *testing.T) {
 	ctx := context.Background()
 
 	tests := []struct {
-		name      string
-		setup     func(t *testing.T, server feedv1connect.FeedServiceHandler) string
-		uuid      string
-		wantErr   bool
-		errCode   connect.Code
+		name    string
+		setup   func(t *testing.T, server feedv1connect.FeedServiceHandler) string
+		uuid    string
+		wantErr bool
+		errCode connect.Code
 	}{
 		{
 			name: "Success",
@@ -118,7 +150,7 @@ func TestFeedServer_GetFeed(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			queries := setupTestDB(t)
-			server := NewFeedServer(queries)
+			server := NewFeedServer(queries, nil)
 			uuid := tt.setup(t, server)
 
 			_, err := server.GetFeed(ctx, connect.NewRequest(&feedv1.GetFeedRequest{Uuid: uuid}))
@@ -168,7 +200,7 @@ func TestFeedServer_ListFeeds(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			queries := setupTestDB(t)
-			server := NewFeedServer(queries)
+			server := NewFeedServer(queries, nil)
 			tt.setup(t, server)
 
 			res, err := server.ListFeeds(ctx, connect.NewRequest(&feedv1.ListFeedsRequest{}))
@@ -227,7 +259,7 @@ func TestFeedServer_UpdateFeed(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			queries := setupTestDB(t)
-			server := NewFeedServer(queries)
+			server := NewFeedServer(queries, nil)
 			req := tt.setup(t, server)
 
 			_, err := server.UpdateFeed(ctx, connect.NewRequest(req))
@@ -271,14 +303,14 @@ func TestFeedServer_DeleteFeed(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			queries := setupTestDB(t)
-			server := NewFeedServer(queries)
+			server := NewFeedServer(queries, nil)
 			uuid := tt.setup(t, server)
 
 			_, err := server.DeleteFeed(ctx, connect.NewRequest(&feedv1.DeleteFeedRequest{Uuid: uuid}))
 			if (err != nil) != tt.wantErr {
 				t.Errorf("DeleteFeed() error = %v, wantErr %v", err, tt.wantErr)
 			}
-			
+
 			// Verify deletion
 			if !tt.wantErr {
 				_, err := server.GetFeed(ctx, connect.NewRequest(&feedv1.GetFeedRequest{Uuid: uuid}))

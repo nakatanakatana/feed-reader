@@ -4,20 +4,27 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"connectrpc.com/connect"
-	"github.com/google/uuid"
 	feedv1 "github.com/nakatanakatana/feed-reader/gen/go/feed/v1"
 	"github.com/nakatanakatana/feed-reader/gen/go/feed/v1/feedv1connect"
 	"github.com/nakatanakatana/feed-reader/store"
 )
 
 type FeedServer struct {
-	queries *store.Queries
+	queries       *store.Queries
+	uuidGenerator UUIDGenerator
 }
 
-func NewFeedServer(queries *store.Queries) feedv1connect.FeedServiceHandler {
-	return &FeedServer{queries: queries}
+func NewFeedServer(queries *store.Queries, uuidGen UUIDGenerator) feedv1connect.FeedServiceHandler {
+	if uuidGen == nil {
+		uuidGen = realUUIDGenerator{}
+	}
+	return &FeedServer{
+		queries:       queries,
+		uuidGenerator: uuidGen,
+	}
 }
 
 func (s *FeedServer) GetFeed(ctx context.Context, req *connect.Request[feedv1.GetFeedRequest]) (*connect.Response[feedv1.GetFeedResponse], error) {
@@ -51,7 +58,11 @@ func (s *FeedServer) ListFeeds(ctx context.Context, req *connect.Request[feedv1.
 }
 
 func (s *FeedServer) CreateFeed(ctx context.Context, req *connect.Request[feedv1.CreateFeedRequest]) (*connect.Response[feedv1.CreateFeedResponse], error) {
-	id := uuid.New().String()
+	newUUID, err := s.uuidGenerator.NewRandom()
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to generate UUID: %w", err))
+	}
+	id := newUUID.String()
 	feed, err := s.queries.CreateFeed(ctx, store.CreateFeedParams{
 		Uuid:        id,
 		Url:         req.Msg.Url,
