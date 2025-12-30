@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "prepare": "panda codegen",
     "dev": "vite --port 3000",
     "build": "vite build && tsc --noEmit",
     "serve": "vite preview",
@@ -20,6 +21,7 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@pandacss/dev": "^1.7.2",
     "solid-devtools": "^0.34.3",
     "typescript": "^5.9.2",
     "vite": "^7.1.10",
