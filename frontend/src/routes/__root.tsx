@@ -1,5 +1,7 @@
 import { Link, Outlet, createRootRoute } from '@tanstack/solid-router';
 import { TanStackRouterDevtools } from '@tanstack/solid-router-devtools';
+import { css } from '../../styled-system/css'
+import { flex } from '../../styled-system/patterns'
 
 export const Route = createRootRoute({
   component: RootComponent,
@@ -14,13 +16,26 @@ export const Route = createRootRoute({
 });
 
 function RootComponent() {
+  const headerStyle = css({
+    padding: '2px',
+    display: 'flex',
+    alignItems: 'center',
+    borderBottomWidth: '1px',
+    gap: '10px',
+    fontSize: 'lg',
+  })
+
+  const selectedRouteStyle = css({
+    fontWeight: 'bold',
+  })
+
   return (
     <>
-      <div class="p-2 flex gap-2 text-lg border-b">
+      <div class={headerStyle}>
         <Link
           to="/"
           activeProps={{
-            class: 'font-bold',
+            class: selectedRouteStyle,
           }}
           activeOptions={{ exact: true }}
         >
@@ -29,28 +44,11 @@ function RootComponent() {
         <Link
           to="/posts"
           activeProps={{
-            class: 'font-bold',
+            class: selectedRouteStyle,
           }}
         >
           Posts
         </Link>{' '}
-        <Link
-          to="/layout-a"
-          activeProps={{
-            class: 'font-bold',
-          }}
-        >
-          Layout
-        </Link>{' '}
-        <Link
-          // @ts-expect-error
-          to="/this-route-does-not-exist"
-          activeProps={{
-            class: 'font-bold',
-          }}
-        >
-          This Route Does Not Exist
-        </Link>
       </div>
       <hr />
       <Outlet />
