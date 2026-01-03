@@ -1,7 +1,7 @@
 # Track Plan: Feed Management Frontend
 
 ## Phase 1: Setup and API Integration
-- [ ] Task: Generate Connect RPC clients for the frontend using `buf`.
+- [x] Task: Generate Connect RPC clients for the frontend using `buf`. c004c3f
 - [ ] Task: Set up TanStack Query clients and providers in the SolidJS app.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Setup and API Integration' (Protocol in workflow.md)
 
