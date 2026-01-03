@@ -5,6 +5,7 @@
   "scripts": {
     "prepare": "panda codegen",
     "dev": "vite --port 3000",
+    "dev:mock": "VITE_USE_MOCKS=true vite --port 3000",
     "build": "vite build && tsc --noEmit",
     "serve": "vite preview",
     "start": "vite",
