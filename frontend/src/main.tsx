@@ -3,6 +3,7 @@ import 'solid-devtools';
 import { RouterProvider, createRouter } from '@tanstack/solid-router';
 import { routeTree } from './routeTree.gen';
 import './styles.css';
+import { initMocks } from './mocks/init';
 
 // Set up a Router instance
 const router = createRouter({
@@ -22,5 +23,7 @@ declare module '@tanstack/solid-router' {
 const rootElement = document.getElementById('app')!;
 
 if (!rootElement.innerHTML) {
-  render(() => <RouterProvider router={router} />, rootElement);
+  initMocks().then(() => {
+    render(() => <RouterProvider router={router} />, rootElement);
+  });
 }
