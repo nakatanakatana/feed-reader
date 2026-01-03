@@ -7,13 +7,13 @@
 - [x] Task: Create a simple "smoke test" to verify that Vitest can successfully launch Chromium and run a basic DOM test.
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Environment Setup' (Protocol in workflow.md)
 
-## Phase 2: Test Migration
+## Phase 2: Test Migration [checkpoint: b003adf]
 - [x] Task: Update `frontend/vitest-setup.ts` if any `jsdom`-specific globals or mocks need to be adjusted for a real browser environment. [checkpoint: 0e2da2e]
 - [x] Task: Migrate and verify `frontend/src/components/AddFeedForm.test.tsx`. [checkpoint: 0e2da2e]
 - [x] Task: Migrate and verify `frontend/src/components/FeedList.test.tsx`. [checkpoint: 0e2da2e]
 - [x] Task: Migrate and verify `frontend/src/lib/query.test.ts`. [checkpoint: 0e2da2e]
 - [x] Task: Migrate and verify `frontend/src/lib/transport-context.test.tsx`. [checkpoint: 0e2da2e]
-- [~] Task: Conductor - User Manual Verification 'Phase 2: Test Migration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Test Migration' (Protocol in workflow.md)
 
 ## Phase 3: Finalization
 - [ ] Task: Audit `frontend/package.json` scripts to ensure `npm test` runs correctly in headless mode.
