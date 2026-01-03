@@ -14,5 +14,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-## [~] Track: Introduce MSW for Frontend API Mocking
+## [x] Track: Introduce MSW for Frontend API Mocking
 *Link: [./conductor/tracks/frontend_msw_20260103/](./conductor/tracks/frontend_msw_20260103/)*
