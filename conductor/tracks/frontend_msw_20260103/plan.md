@@ -14,9 +14,9 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: FeedService Mock Implementation' (Protocol in workflow.md)
 
 ## Phase 3: Vitest Integration
-- [ ] Task: Update `frontend/src/vitest-setup.ts` to start/stop the MSW server during test execution.
-- [ ] Task: Create a test case that verifies API interception by MSW in the Vitest environment.
-- [ ] Task: (Optional) Refactor one existing test to use MSW instead of manual transport mocks to verify integration.
+- [x] Task: Update `frontend/src/vitest-setup.ts` to start/stop the MSW server during test execution. [f2cd631]
+- [x] Task: Create a test case that verifies API interception by MSW in the Vitest environment. [a6ed656]
+- [x] Task: (Optional) Refactor one existing test to use MSW instead of manual transport mocks to verify integration. [12bb06c]
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Vitest Integration' (Protocol in workflow.md)
 
 ## Phase 4: Finalization
