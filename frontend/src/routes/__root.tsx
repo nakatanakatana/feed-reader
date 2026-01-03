@@ -54,6 +54,14 @@ function RootComponent() {
             >
               Posts
             </Link>{' '}
+            <Link
+              to="/feeds"
+              activeProps={{
+                class: selectedRouteStyle,
+              }}
+            >
+              Feeds
+            </Link>{' '}
           </div>
           <hr />
           <Outlet />

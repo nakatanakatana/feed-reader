@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "types": ["vitest/globals", "@testing-library/jest-dom"],
     // General
     "jsx": "preserve",
     "jsxImportSource": "solid-js",
