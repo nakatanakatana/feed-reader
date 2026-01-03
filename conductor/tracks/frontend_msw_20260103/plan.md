@@ -21,6 +21,6 @@
 
 ## Phase 4: Finalization
 - [x] Task: Add `dev:mock` script to `package.json`. [681a32b]
-- [ ] Task: Audit codebase for any remaining hardcoded mock data that can be replaced by MSW.
-- [ ] Task: Ensure all existing frontend tests pass with the new MSW integration.
+- [x] Task: Audit codebase for any remaining hardcoded mock data that can be replaced by MSW. [eabcd55]
+- [x] Task: Ensure all existing frontend tests pass with the new MSW integration. [f1a314c]
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: Finalization' (Protocol in workflow.md)
