@@ -4,7 +4,7 @@
 - [x] Task: Install `msw` as a dev dependency. [91bdf5e]
 - [x] Task: Initialize MSW by running `npx msw init public/ --save`. [ba53b8a]
 - [x] Task: Create basic directory structure for MSW handlers and configuration (e.g., `frontend/src/mocks/`). [1c6e7fb]
-- [ ] Task: Implement a "mock initialization" utility that conditionally starts the MSW worker based on `VITE_USE_MOCKS`.
+- [x] Task: Implement a "mock initialization" utility that conditionally starts the MSW worker based on `VITE_USE_MOCKS`. [50d2239]
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Dependency and Basic Configuration' (Protocol in workflow.md)
 
 ## Phase 2: FeedService Mock Implementation
