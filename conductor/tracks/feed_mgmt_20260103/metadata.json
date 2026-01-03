@@ -1,8 +1,0 @@
-{
-  "track_id": "feed_mgmt_20260103",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-01-03T12:00:00Z",
-  "updated_at": "2026-01-03T12:00:00Z",
-  "description": "Implement the frontend Feed Management interface to allow users to list, add, and delete feeds using the existing backend API."
-}
