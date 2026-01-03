@@ -1,8 +1,8 @@
 import { worker } from './browser'
-import { config } from '../config'
+import { Config } from '../config'
 
-export async function initMocks() {
-  if (config.useMocks) {
+export async function initMocks(cfg: Config) {
+  if (cfg.useMocks) {
     await worker.start({
       onUnhandledRequest: 'bypass',
     })
