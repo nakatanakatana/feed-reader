@@ -1,5 +1,8 @@
 import { Link, Outlet, createRootRoute } from '@tanstack/solid-router';
 import { TanStackRouterDevtools } from '@tanstack/solid-router-devtools';
+import { QueryClientProvider } from '@tanstack/solid-query';
+import { TransportProvider } from '../lib/transport-context';
+import { queryClient, transport } from '../lib/query';
 import { css } from '../../styled-system/css'
 import { flex } from '../../styled-system/patterns'
 
@@ -30,30 +33,34 @@ function RootComponent() {
   })
 
   return (
-    <>
-      <div class={headerStyle}>
-        <Link
-          to="/"
-          activeProps={{
-            class: selectedRouteStyle,
-          }}
-          activeOptions={{ exact: true }}
-        >
-          Home
-        </Link>{' '}
-        <Link
-          to="/posts"
-          activeProps={{
-            class: selectedRouteStyle,
-          }}
-        >
-          Posts
-        </Link>{' '}
-      </div>
-      <hr />
-      <Outlet />
-      {/* Start rendering router matches */}
-      <TanStackRouterDevtools position="bottom-right" />
-    </>
+    <TransportProvider transport={transport}>
+      <QueryClientProvider client={queryClient}>
+        <>
+          <div class={headerStyle}>
+            <Link
+              to="/"
+              activeProps={{
+                class: selectedRouteStyle,
+              }}
+              activeOptions={{ exact: true }}
+            >
+              Home
+            </Link>{' '}
+            <Link
+              to="/posts"
+              activeProps={{
+                class: selectedRouteStyle,
+              }}
+            >
+              Posts
+            </Link>{' '}
+          </div>
+          <hr />
+          <Outlet />
+          {/* Start rendering router matches */}
+          <TanStackRouterDevtools position="bottom-right" />
+        </>
+      </QueryClientProvider>
+    </TransportProvider>
   );
 }

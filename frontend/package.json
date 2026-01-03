@@ -29,9 +29,13 @@
     "@bufbuild/protoc-gen-es": "^1.10.1",
     "@connectrpc/protoc-gen-connect-es": "^1.7.0",
     "@pandacss/dev": "^1.7.2",
+    "@solidjs/testing-library": "^0.8.10",
+    "@testing-library/jest-dom": "^6.9.1",
+    "jsdom": "^27.4.0",
     "solid-devtools": "^0.34.3",
     "typescript": "^5.9.2",
     "vite": "^7.1.10",
-    "vite-plugin-solid": "^2.11.9"
+    "vite-plugin-solid": "^2.11.9",
+    "vitest": "^4.0.16"
   }
 }
