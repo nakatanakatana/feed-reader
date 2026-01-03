@@ -1,18 +1,21 @@
-import { render, screen, fireEvent, waitFor, cleanup } from '@solidjs/testing-library';
+import { render } from 'solid-js/web';
 import { AddFeedForm } from './AddFeedForm';
 import { describe, it, expect, vi, afterEach } from 'vitest';
+import { page } from 'vitest/browser';
 import { createRouterTransport, ConnectError, Code } from '@connectrpc/connect';
 import { FeedService } from '../gen/feed/v1/feed_connect';
 import { TransportProvider } from '../lib/transport-context';
 import { QueryClient, QueryClientProvider } from '@tanstack/solid-query';
 
-afterEach(() => {
-  cleanup();
-});
-
 describe('AddFeedForm', () => {
+  let dispose: () => void;
+
+  afterEach(() => {
+    if (dispose) dispose();
+    document.body.innerHTML = '';
+  });
+
   it('creates a new feed', async () => {
-    // ...
     const createFeedMock = vi.fn().mockResolvedValue({ feed: { uuid: '1', url: 'http://example.com' } });
     const mockTransport = createRouterTransport(({ service }) => {
       service(FeedService, {
@@ -27,21 +30,23 @@ describe('AddFeedForm', () => {
        },
     });
 
-    render(() => (
+    dispose = render(() => (
       <TransportProvider transport={mockTransport}>
         <QueryClientProvider client={queryClient}>
           <AddFeedForm />
         </QueryClientProvider>
       </TransportProvider>
-    ));
+    ), document.body);
 
-    const input = screen.getByPlaceholderText('Feed URL');
-    fireEvent.input(input, { target: { value: 'http://example.com' } });
+    const input = page.getByPlaceholder('Feed URL');
+    await input.fill('http://example.com');
     
-    const button = screen.getByText('Add Feed');
-    fireEvent.click(button);
+    const button = page.getByText('Add Feed');
+    await button.click();
 
-    await waitFor(() => expect(createFeedMock).toHaveBeenCalledWith(expect.objectContaining({ url: 'http://example.com' }), expect.anything()));
+    // Use expect.poll to wait for the mock to be called
+    await expect.poll(() => createFeedMock.mock.calls.length).toBeGreaterThan(0);
+    expect(createFeedMock).toHaveBeenCalledWith(expect.objectContaining({ url: 'http://example.com' }), expect.anything());
   });
 
   it('displays an error message when createFeed fails', async () => {
@@ -59,20 +64,20 @@ describe('AddFeedForm', () => {
        },
     });
 
-    render(() => (
+    dispose = render(() => (
       <TransportProvider transport={mockTransport}>
         <QueryClientProvider client={queryClient}>
           <AddFeedForm />
         </QueryClientProvider>
       </TransportProvider>
-    ));
+    ), document.body);
 
-    const input = screen.getByPlaceholderText('Feed URL');
-    fireEvent.input(input, { target: { value: 'invalid-url' } });
+    const input = page.getByPlaceholder('Feed URL');
+    await input.fill('invalid-url');
     
-    const button = screen.getByText('Add Feed');
-    fireEvent.click(button);
+    const button = page.getByText('Add Feed');
+    await button.click();
 
-    await waitFor(() => expect(screen.getByText(/Error: .*Invalid feed URL.*/)).toBeInTheDocument());
+    await expect.element(page.getByText(/Error: .*Invalid feed URL.*/)).toBeInTheDocument();
   });
 });
