@@ -31,6 +31,7 @@
     "@connectrpc/protoc-gen-connect-es": "^1.7.0",
     "@pandacss/dev": "^1.7.2",
     "@vitest/browser-playwright": "^4.0.16",
+    "msw": "^2.12.7",
     "solid-devtools": "^0.34.3",
     "typescript": "^5.9.2",
     "vite": "^7.1.10",
