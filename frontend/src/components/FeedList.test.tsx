@@ -2,10 +2,11 @@ import { render } from 'solid-js/web';
 import { FeedList } from './FeedList';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { page } from 'vitest/browser';
-import { createRouterTransport, ConnectError, Code } from '@connectrpc/connect';
-import { FeedService } from '../gen/feed/v1/feed_connect';
+import { createConnectTransport } from '@connectrpc/connect-web';
 import { TransportProvider } from '../lib/transport-context';
 import { QueryClient, QueryClientProvider } from '@tanstack/solid-query';
+import { http, HttpResponse } from 'msw';
+import { worker } from '../mocks/browser';
 
 describe('FeedList', () => {
   let dispose: () => void;
@@ -15,19 +16,21 @@ describe('FeedList', () => {
     document.body.innerHTML = '';
   });
 
+  const transport = createConnectTransport({
+    baseUrl: 'http://localhost:3000',
+  });
+
   it('displays a list of feeds', async () => {
-    const mockTransport = createRouterTransport(({ service }) => {
-      service(FeedService, {
-        listFeeds: async () => {
-          return {
-            feeds: [
-              { uuid: '1', title: 'Feed 1', url: 'http://example.com/1' },
-              { uuid: '2', title: 'Feed 2', url: 'http://example.com/2' },
-            ],
-          };
-        },
-      });
-    });
+    worker.use(
+      http.post('*/feed.v1.FeedService/ListFeeds', () => {
+        return HttpResponse.json({
+          feeds: [
+            { uuid: '1', title: 'Feed 1', url: 'http://example.com/1' },
+            { uuid: '2', title: 'Feed 2', url: 'http://example.com/2' },
+          ],
+        });
+      })
+    );
 
     const queryClient = new QueryClient({
        defaultOptions: {
@@ -36,7 +39,7 @@ describe('FeedList', () => {
     });
 
     dispose = render(() => (
-      <TransportProvider transport={mockTransport}>
+      <TransportProvider transport={transport}>
         <QueryClientProvider client={queryClient}>
           <FeedList />
         </QueryClientProvider>
@@ -48,19 +51,21 @@ describe('FeedList', () => {
   });
 
   it('deletes a feed', async () => {
-    const deleteFeedMock = vi.fn().mockResolvedValue({});
-    const mockTransport = createRouterTransport(({ service }) => {
-      service(FeedService, {
-        listFeeds: async () => {
-          return {
-            feeds: [
-              { uuid: '1', title: 'Feed 1', url: 'http://example.com/1' },
-            ],
-          };
-        },
-        deleteFeed: deleteFeedMock,
-      });
-    });
+    const deleteFeedMock = vi.fn();
+    worker.use(
+      http.post('*/feed.v1.FeedService/ListFeeds', () => {
+        return HttpResponse.json({
+          feeds: [
+            { uuid: '1', title: 'Feed 1', url: 'http://example.com/1' },
+          ],
+        });
+      }),
+      http.post('*/feed.v1.FeedService/DeleteFeed', async ({ request }) => {
+        const body = await request.json() as any;
+        deleteFeedMock(body);
+        return HttpResponse.json({});
+      })
+    );
 
     const queryClient = new QueryClient({
        defaultOptions: {
@@ -70,7 +75,7 @@ describe('FeedList', () => {
     });
 
     dispose = render(() => (
-      <TransportProvider transport={mockTransport}>
+      <TransportProvider transport={transport}>
         <QueryClientProvider client={queryClient}>
           <FeedList />
         </QueryClientProvider>
@@ -83,17 +88,21 @@ describe('FeedList', () => {
     await deleteButton.click();
 
     await expect.poll(() => deleteFeedMock.mock.calls.length).toBeGreaterThan(0);
-    expect(deleteFeedMock).toHaveBeenCalledWith(expect.objectContaining({ uuid: '1' }), expect.anything());
+    expect(deleteFeedMock).toHaveBeenCalledWith(expect.objectContaining({ uuid: '1' }));
   });
 
   it('displays an error message when listFeeds fails', async () => {
-    const mockTransport = createRouterTransport(({ service }) => {
-      service(FeedService, {
-        listFeeds: async () => {
-          throw new ConnectError('Failed to fetch feeds', Code.Internal);
-        },
-      });
-    });
+    worker.use(
+      http.post('*/feed.v1.FeedService/ListFeeds', () => {
+        return new HttpResponse(
+          JSON.stringify({ message: 'Failed to fetch feeds', code: 13 }), 
+          { 
+            status: 500,
+            headers: { 'Content-Type': 'application/json' }
+          }
+        );
+      })
+    );
 
     const queryClient = new QueryClient({
        defaultOptions: {
@@ -102,7 +111,7 @@ describe('FeedList', () => {
     });
 
     dispose = render(() => (
-      <TransportProvider transport={mockTransport}>
+      <TransportProvider transport={transport}>
         <QueryClientProvider client={queryClient}>
           <FeedList />
         </QueryClientProvider>
@@ -113,18 +122,22 @@ describe('FeedList', () => {
   });
 
   it('displays an error message when deleteFeed fails', async () => {
-    const mockTransport = createRouterTransport(({ service }) => {
-      service(FeedService, {
-        listFeeds: async () => {
-          return {
-            feeds: [{ uuid: '1', title: 'Feed 1', url: 'http://example.com/1' }],
-          };
-        },
-        deleteFeed: async () => {
-          throw new ConnectError('Failed to delete feed', Code.PermissionDenied);
-        },
-      });
-    });
+    worker.use(
+      http.post('*/feed.v1.FeedService/ListFeeds', () => {
+        return HttpResponse.json({
+          feeds: [{ uuid: '1', title: 'Feed 1', url: 'http://example.com/1' }],
+        });
+      }),
+      http.post('*/feed.v1.FeedService/DeleteFeed', () => {
+        return new HttpResponse(
+          JSON.stringify({ message: 'Failed to delete feed', code: 7 }), 
+          { 
+            status: 403, // PermissionDenied -> 403
+            headers: { 'Content-Type': 'application/json' }
+          }
+        );
+      })
+    );
 
     const queryClient = new QueryClient({
        defaultOptions: {
@@ -134,7 +147,7 @@ describe('FeedList', () => {
     });
 
     dispose = render(() => (
-      <TransportProvider transport={mockTransport}>
+      <TransportProvider transport={transport}>
         <QueryClientProvider client={queryClient}>
           <FeedList />
         </QueryClientProvider>
