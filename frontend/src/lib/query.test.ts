@@ -1,12 +1,12 @@
-import { describe, it, expect } from 'vitest';
-import * as queryLib from './query';
+import { describe, expect, it } from "vitest";
+import * as queryLib from "./query";
 
-describe('Query Setup', () => {
-  it('should export a configured queryClient', () => {
-    expect(queryLib.queryClient).toBeDefined();
-  });
+describe("Query Setup", () => {
+	it("should export a configured queryClient", () => {
+		expect(queryLib.queryClient).toBeDefined();
+	});
 
-  it('should export a configured transport', () => {
-    expect(queryLib.transport).toBeDefined();
-  });
+	it("should export a configured transport", () => {
+		expect(queryLib.transport).toBeDefined();
+	});
 });

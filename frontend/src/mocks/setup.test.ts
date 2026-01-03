@@ -1,14 +1,14 @@
-import { describe, it, expect } from 'vitest'
-import { worker } from './browser'
-import { handlers } from './handlers'
+import { describe, expect, it } from "vitest";
+import { worker } from "./browser";
+import { handlers } from "./handlers";
 
-describe('MSW Setup', () => {
-  it('should export a worker', () => {
-    expect(worker).toBeDefined()
-  })
+describe("MSW Setup", () => {
+	it("should export a worker", () => {
+		expect(worker).toBeDefined();
+	});
 
-  it('should export handlers', () => {
-    expect(handlers).toBeDefined()
-    expect(Array.isArray(handlers)).toBe(true)
-  })
-})
+	it("should export handlers", () => {
+		expect(handlers).toBeDefined();
+		expect(Array.isArray(handlers)).toBe(true);
+	});
+});
