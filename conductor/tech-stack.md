@@ -20,6 +20,7 @@ The frontend is a modern Single Page Application (SPA) designed for speed and re
 -   **Language:** TypeScript (Type safety)
 -   **Styling:** Panda CSS (CSS-in-JS with build-time generation)
 -   **Communication:** Connect RPC Web (Communication with the backend)
+-   **Testing:** Vitest (Test runner), @solidjs/testing-library (UI testing)
 
 ## 3. Infrastructure & Deployment
 -   **Architecture:** Self-contained full-stack application.
