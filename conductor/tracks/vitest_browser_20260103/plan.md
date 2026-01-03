@@ -15,8 +15,8 @@
 - [x] Task: Migrate and verify `frontend/src/lib/transport-context.test.tsx`. [checkpoint: 0e2da2e]
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Test Migration' (Protocol in workflow.md)
 
-## Phase 3: Finalization
-- [ ] Task: Audit `frontend/package.json` scripts to ensure `npm test` runs correctly in headless mode.
-- [ ] Task: Remove any remaining `jsdom` references or workarounds in the codebase.
-- [ ] Task: Run full test suite and verify all tests pass in Chromium.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Finalization' (Protocol in workflow.md)
+## Phase 3: Finalization [checkpoint: a499d53]
+- [x] Task: Audit `frontend/package.json` scripts to ensure `npm test` runs correctly in headless mode. [checkpoint: 0ebe48b]
+- [x] Task: Remove any remaining `jsdom` references or workarounds in the codebase. [checkpoint: 0ebe48b]
+- [x] Task: Run full test suite and verify all tests pass in Chromium. [checkpoint: 0ebe48b]
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Finalization' (Protocol in workflow.md) [checkpoint: a499d53]
