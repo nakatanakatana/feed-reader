@@ -7,7 +7,8 @@
     "dev": "vite --port 3000",
     "build": "vite build && tsc --noEmit",
     "serve": "vite preview",
-    "start": "vite"
+    "start": "vite",
+    "test": "vitest run"
   },
   "dependencies": {
     "@bufbuild/protobuf": "^1.10.1",
