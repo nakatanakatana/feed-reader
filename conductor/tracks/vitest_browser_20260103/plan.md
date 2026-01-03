@@ -20,3 +20,12 @@
 - [x] Task: Remove any remaining `jsdom` references or workarounds in the codebase. [checkpoint: 0ebe48b]
 - [x] Task: Run full test suite and verify all tests pass in Chromium. [checkpoint: 0ebe48b]
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Finalization' (Protocol in workflow.md) [checkpoint: a499d53]
+
+## Phase 4: Remove @solidjs/testing-library [checkpoint: c0ba9d0]
+- [x] Task: Refactor `frontend/src/components/AddFeedForm.test.tsx` to use `solid-js/web` render and `@vitest/browser` page API. [checkpoint: b6a2cda]
+- [x] Task: Refactor `frontend/src/components/FeedList.test.tsx` to use `solid-js/web` render and `@vitest/browser` page API. [checkpoint: b6a2cda]
+- [x] Task: Refactor `frontend/src/components/FeedList.test.tsx` to use `solid-js/web` render and `@vitest/browser` page API. [checkpoint: b6a2cda]
+- [x] Task: Refactor `frontend/src/lib/transport-context.test.tsx` to remove `@solidjs/testing-library` usage. [checkpoint: b6a2cda]
+- [x] Task: Uninstall `@solidjs/testing-library`. [checkpoint: b6a2cda]
+- [x] Task: Verify all tests pass. [checkpoint: b6a2cda]
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Remove @solidjs/testing-library' (Protocol in workflow.md) [checkpoint: c0ba9d0]
