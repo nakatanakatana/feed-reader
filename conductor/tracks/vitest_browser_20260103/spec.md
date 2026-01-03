@@ -23,6 +23,8 @@ Currently, the frontend tests use `jsdom` to simulate the DOM environment. While
 - [ ] `npm test` (or equivalent command) runs the browser-based tests.
 
 ## Out of Scope
-- Migrating to a different testing library (e.g., switching from `@solidjs/testing-library` to something else, unless necessary for browser mode compatibility).
 - Adding new feature tests beyond migrating existing ones.
 - Cross-browser testing beyond Chromium (unless issues are found that necessitate it).
+
+## Updates (2026-01-03)
+- **Scope Change**: Removing `@solidjs/testing-library` and migrating to native Vitest Browser Mode APIs (`page`, `userEvent`) and `solid-js/web`'s `render`.
