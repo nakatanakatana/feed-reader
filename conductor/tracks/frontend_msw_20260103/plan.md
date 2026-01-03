@@ -8,9 +8,9 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Dependency and Basic Configuration' (Protocol in workflow.md)
 
 ## Phase 2: FeedService Mock Implementation
-- [ ] Task: Create `FeedService` mock handlers (`listFeeds`, `createFeed`, `deleteFeed`) using MSW's `http` and Connect RPC compatible logic.
-- [ ] Task: Integrate `FeedService` handlers into the primary MSW worker configuration.
-- [ ] Task: Verify that local development server logs MSW activation when `VITE_USE_MOCKS=true`.
+- [x] Task: Create `FeedService` mock handlers (`listFeeds`, `createFeed`, `deleteFeed`) using MSW's `http` and Connect RPC compatible logic. [2694e5e]
+- [x] Task: Integrate `FeedService` handlers into the primary MSW worker configuration. [c623dbc]
+- [x] Task: Verify that local development server logs MSW activation when `VITE_USE_MOCKS=true`. [c623dbc]
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: FeedService Mock Implementation' (Protocol in workflow.md)
 
 ## Phase 3: Vitest Integration
