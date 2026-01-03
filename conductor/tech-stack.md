@@ -22,6 +22,7 @@ The frontend is a modern Single Page Application (SPA) designed for speed and re
 -   **Communication:** Connect RPC Web (Communication with the backend)
 -   **Testing:** Vitest (Test runner with Browser Mode enabled), Playwright (Browser provider), solid-js/web (for rendering in tests)
 -   **API Mocking:** MSW (Mock Service Worker) for standalone development and testing.
+-   **Linting & Formatting:** BiomeJS (Fast all-in-one toolchain)
 
 ## 3. Infrastructure & Deployment
 -   **Architecture:** Self-contained full-stack application.
