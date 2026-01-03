@@ -37,5 +37,10 @@
     "vite": "^7.1.10",
     "vite-plugin-solid": "^2.11.9",
     "vitest": "^4.0.16"
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
   }
 }
