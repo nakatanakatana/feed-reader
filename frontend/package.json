@@ -10,8 +10,13 @@
     "start": "vite"
   },
   "dependencies": {
+    "@bufbuild/protobuf": "^1.10.1",
+    "@connectrpc/connect": "^1.7.0",
+    "@connectrpc/connect-web": "^1.7.0",
     "@tailwindcss/postcss": "^4.1.13",
     "@tanstack/router-plugin": "^1.131.35",
+    "@tanstack/solid-query": "^5.90.19",
+    "@tanstack/solid-query-devtools": "^5.91.2",
     "@tanstack/solid-router": "^1.131.35",
     "@tanstack/solid-router-devtools": "^1.131.35",
     "postcss": "^8.5.6",
@@ -21,6 +26,8 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@bufbuild/protoc-gen-es": "^1.10.1",
+    "@connectrpc/protoc-gen-connect-es": "^1.7.0",
     "@pandacss/dev": "^1.7.2",
     "solid-devtools": "^0.34.3",
     "typescript": "^5.9.2",
