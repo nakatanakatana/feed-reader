@@ -13,11 +13,11 @@
 - [x] Task: Verify that local development server logs MSW activation when `VITE_USE_MOCKS=true`. [c623dbc]
 - [x] Task: Conductor - User Manual Verification 'Phase 2: FeedService Mock Implementation' (Protocol in workflow.md)
 
-## Phase 3: Vitest Integration
+## Phase 3: Vitest Integration [checkpoint: 4ffd13f]
 - [x] Task: Update `frontend/src/vitest-setup.ts` to start/stop the MSW server during test execution. [f2cd631]
 - [x] Task: Create a test case that verifies API interception by MSW in the Vitest environment. [a6ed656]
 - [x] Task: (Optional) Refactor one existing test to use MSW instead of manual transport mocks to verify integration. [12bb06c]
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Vitest Integration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Vitest Integration' (Protocol in workflow.md)
 
 ## Phase 4: Finalization
 - [x] Task: Add `dev:mock` script to `package.json`. [681a32b]
