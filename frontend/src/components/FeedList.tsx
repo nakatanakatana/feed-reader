@@ -35,6 +35,9 @@ export function FeedList() {
       <Show when={query.isError}>
         <p>Error: {query.error?.message}</p>
       </Show>
+      <Show when={deleteMutation.isError}>
+        <p>Delete Error: {deleteMutation.error?.message}</p>
+      </Show>
       <ul>
         <For each={query.data}>
           {(feed) => (
