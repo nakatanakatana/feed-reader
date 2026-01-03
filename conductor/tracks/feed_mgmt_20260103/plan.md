@@ -7,7 +7,7 @@
 
 ## Phase 2: UI Implementation
 - [x] Task: Create a new route `/feeds` using TanStack Router. 61ba990
-- [ ] Task: Implement a `FeedList` component to display feeds fetched from the backend.
+- [x] Task: Implement a `FeedList` component to display feeds fetched from the backend. d785790
 - [ ] Task: Implement an `AddFeedForm` component to create new feeds.
 - [ ] Task: Add delete functionality to the feed list items.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: UI Implementation' (Protocol in workflow.md)
