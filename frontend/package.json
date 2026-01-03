@@ -8,7 +8,8 @@
     "build": "vite build && tsc --noEmit",
     "serve": "vite preview",
     "start": "vite",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:browser": "vitest --config=vitest.browser.config.ts"
   },
   "dependencies": {
     "@bufbuild/protobuf": "^1.10.1",
@@ -32,6 +33,7 @@
     "@pandacss/dev": "^1.7.2",
     "@solidjs/testing-library": "^0.8.10",
     "@testing-library/jest-dom": "^6.9.1",
+    "@vitest/browser-playwright": "^4.0.16",
     "jsdom": "^27.4.0",
     "solid-devtools": "^0.34.3",
     "typescript": "^5.9.2",
