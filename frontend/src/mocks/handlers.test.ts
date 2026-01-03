@@ -1,19 +1,6 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest'
-import { worker } from './browser'
+import { describe, it, expect } from 'vitest'
 
 describe('FeedService Mock Handlers', () => {
-  beforeAll(async () => {
-    // Start the worker in the browser environment
-    await worker.start({
-      onUnhandledRequest: 'bypass'
-    })
-  })
-
-  afterAll(() => {
-    // Stop the worker
-    worker.stop()
-  })
-
   it('should mock ListFeeds', async () => {
     const response = await fetch('/feed.v1.FeedService/ListFeeds', {
       method: 'POST',

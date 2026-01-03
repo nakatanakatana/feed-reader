@@ -1,36 +1,41 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-
-// We will implement initMocks in src/mocks/init.ts
 import { initMocks } from './init'
 import { worker } from './browser'
+import { config } from '../config'
 
-vi.mock('./browser', () => ({
-  worker: {
-    start: vi.fn().mockResolvedValue(undefined)
+// モックの定義
+vi.mock('./browser', () => {
+  return {
+    worker: {
+      start: vi.fn(() => Promise.resolve()),
+      stop: vi.fn(() => Promise.resolve()),
+    }
   }
-}))
+})
+
+vi.mock('../config', () => {
+  return {
+    config: {
+      useMocks: false
+    }
+  }
+})
 
 describe('initMocks', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    // Reset import.meta.env.VITE_USE_MOCKS if possible, 
-    // but vitest's import.meta.env is tricky.
-    // We'll rely on the implementation using a helper or just test the logic.
   })
 
-  it('should start the worker when VITE_USE_MOCKS is "true"', async () => {
-    (import.meta.env as any).VITE_USE_MOCKS = 'true'
+  it('should start the worker when config.useMocks is true', async () => {
+    // @ts-ignore
+    config.useMocks = true
     await initMocks()
     expect(worker.start).toHaveBeenCalled()
   })
 
-  it('should not start the worker when VITE_USE_MOCKS is not "true"', async () => {
-    (import.meta.env as any).VITE_USE_MOCKS = 'false'
-    await initMocks()
-    expect(worker.start).not.toHaveBeenCalled()
-    
-    vi.clearAllMocks();
-    (import.meta.env as any).VITE_USE_MOCKS = undefined
+  it('should not start the worker when config.useMocks is false', async () => {
+    // @ts-ignore
+    config.useMocks = false
     await initMocks()
     expect(worker.start).not.toHaveBeenCalled()
   })
