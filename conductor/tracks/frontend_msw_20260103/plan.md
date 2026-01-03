@@ -19,8 +19,8 @@
 - [x] Task: (Optional) Refactor one existing test to use MSW instead of manual transport mocks to verify integration. [12bb06c]
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Vitest Integration' (Protocol in workflow.md)
 
-## Phase 4: Finalization
+## Phase 4: Finalization [checkpoint: 42404d9]
 - [x] Task: Add `dev:mock` script to `package.json`. [681a32b]
 - [x] Task: Audit codebase for any remaining hardcoded mock data that can be replaced by MSW. [eabcd55]
 - [x] Task: Ensure all existing frontend tests pass with the new MSW integration. [f1a314c]
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Finalization' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Finalization' (Protocol in workflow.md)
