@@ -7,6 +7,9 @@ import { page } from "vitest/browser";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
 import { FeedList } from "./FeedList";
+import { mockConnectWeb } from "../mocks/connect";
+import { FeedService } from "../gen/feed/v1/feed_connect";
+import { DeleteFeedResponse, ListFeedsResponse } from "../gen/feed/v1/feed_pb";
 
 describe("FeedList", () => {
   let dispose: () => void;
@@ -22,13 +25,16 @@ describe("FeedList", () => {
 
   it("displays a list of feeds", async () => {
     worker.use(
-      http.post("*/feed.v1.FeedService/ListFeeds", () => {
-        return HttpResponse.json({
-          feeds: [
-            { uuid: "1", title: "Feed 1", url: "http://example.com/1" },
-            { uuid: "2", title: "Feed 2", url: "http://example.com/2" },
-          ],
-        });
+      mockConnectWeb(FeedService)({
+        method: "listFeeds",
+        handler: () => {
+          return new ListFeedsResponse({
+            feeds: [
+              { uuid: "1", title: "Feed 1", url: "http://example.com/1" },
+              { uuid: "2", title: "Feed 2", url: "http://example.com/2" },
+            ],
+          });
+        },
       }),
     );
 
@@ -56,15 +62,22 @@ describe("FeedList", () => {
   it("deletes a feed", async () => {
     const deleteFeedMock = vi.fn();
     worker.use(
-      http.post("*/feed.v1.FeedService/ListFeeds", () => {
-        return HttpResponse.json({
-          feeds: [{ uuid: "1", title: "Feed 1", url: "http://example.com/1" }],
-        });
+      mockConnectWeb(FeedService)({
+        method: "listFeeds",
+        handler: () => {
+          return new ListFeedsResponse({
+            feeds: [
+              { uuid: "1", title: "Feed 1", url: "http://example.com/1" },
+            ],
+          });
+        },
       }),
-      http.post("*/feed.v1.FeedService/DeleteFeed", async ({ request }) => {
-        const body = (await request.json()) as any;
-        deleteFeedMock(body);
-        return HttpResponse.json({});
+      mockConnectWeb(FeedService)({
+        method: "deleteFeed",
+        handler: (req) => {
+          deleteFeedMock(req);
+          return new DeleteFeedResponse({});
+        },
       }),
     );
 

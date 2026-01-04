@@ -7,6 +7,9 @@ import { page } from "vitest/browser";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
 import { AddFeedForm } from "./AddFeedForm";
+import { mockConnectWeb } from "../mocks/connect";
+import { FeedService } from "../gen/feed/v1/feed_connect";
+import { CreateFeedResponse } from "../gen/feed/v1/feed_pb";
 
 describe("AddFeedForm", () => {
   let dispose: () => void;
@@ -24,18 +27,19 @@ describe("AddFeedForm", () => {
     const createFeedMock = vi.fn();
 
     worker.use(
-      http.post("*/feed.v1.FeedService/CreateFeed", async ({ request }) => {
-        const body = (await request.json()) as any;
-        createFeedMock(body);
-        return HttpResponse.json({
-          feed: {
+      mockConnectWeb(FeedService)({
+        method: "createFeed",
+        handler: (req) => {
+          const newFeed = {
             uuid: "1",
-            url: body.url,
+            url: req.url,
             title: "Mocked Feed",
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
-          },
-        });
+          };
+          createFeedMock(req);
+          return new CreateFeedResponse({ feed: newFeed });
+        },
       }),
     );
 
