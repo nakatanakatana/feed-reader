@@ -12,7 +12,7 @@ export const mockConnectWeb =
   }): HttpHandler => {
     return http.all(
       "*/" + service.typeName + "/" + service["methods"][props.method]?.name,
-      async ({ request, params }) => {
+      async ({ request }) => {
         // biome-ignore lint/suspicious/noExplicitAny: ignore
         const resp = props.handler((await request.json()) as any);
         return HttpResponse.json(resp);
