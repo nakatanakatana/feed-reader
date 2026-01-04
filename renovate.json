@@ -10,12 +10,8 @@
   "platformAutomerge": true,
   "packageRules": [
     {
-      "matchManagers": [
-        "gomod"
-      ],
-      "postUpdateOptions": [
-        "gomodTidy"
-      ]
+      "matchManagers": ["gomod"],
+      "postUpdateOptions": ["gomodTidy"]
     }
   ],
   "pinDigests": false
