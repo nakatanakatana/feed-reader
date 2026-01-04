@@ -3,70 +3,70 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { MethodKind } from "@bufbuild/protobuf";
 import {
-	CreateFeedRequest,
-	CreateFeedResponse,
-	DeleteFeedRequest,
-	DeleteFeedResponse,
-	GetFeedRequest,
-	GetFeedResponse,
-	ListFeedsRequest,
-	ListFeedsResponse,
-	UpdateFeedRequest,
-	UpdateFeedResponse,
+  CreateFeedRequest,
+  CreateFeedResponse,
+  DeleteFeedRequest,
+  DeleteFeedResponse,
+  GetFeedRequest,
+  GetFeedResponse,
+  ListFeedsRequest,
+  ListFeedsResponse,
+  UpdateFeedRequest,
+  UpdateFeedResponse,
 } from "./feed_pb.js";
+import { MethodKind } from "@bufbuild/protobuf";
 
 /**
  * @generated from service feed.v1.FeedService
  */
 export const FeedService = {
-	typeName: "feed.v1.FeedService",
-	methods: {
-		/**
-		 * @generated from rpc feed.v1.FeedService.GetFeed
-		 */
-		getFeed: {
-			name: "GetFeed",
-			I: GetFeedRequest,
-			O: GetFeedResponse,
-			kind: MethodKind.Unary,
-		},
-		/**
-		 * @generated from rpc feed.v1.FeedService.ListFeeds
-		 */
-		listFeeds: {
-			name: "ListFeeds",
-			I: ListFeedsRequest,
-			O: ListFeedsResponse,
-			kind: MethodKind.Unary,
-		},
-		/**
-		 * @generated from rpc feed.v1.FeedService.CreateFeed
-		 */
-		createFeed: {
-			name: "CreateFeed",
-			I: CreateFeedRequest,
-			O: CreateFeedResponse,
-			kind: MethodKind.Unary,
-		},
-		/**
-		 * @generated from rpc feed.v1.FeedService.UpdateFeed
-		 */
-		updateFeed: {
-			name: "UpdateFeed",
-			I: UpdateFeedRequest,
-			O: UpdateFeedResponse,
-			kind: MethodKind.Unary,
-		},
-		/**
-		 * @generated from rpc feed.v1.FeedService.DeleteFeed
-		 */
-		deleteFeed: {
-			name: "DeleteFeed",
-			I: DeleteFeedRequest,
-			O: DeleteFeedResponse,
-			kind: MethodKind.Unary,
-		},
-	},
+  typeName: "feed.v1.FeedService",
+  methods: {
+    /**
+     * @generated from rpc feed.v1.FeedService.GetFeed
+     */
+    getFeed: {
+      name: "GetFeed",
+      I: GetFeedRequest,
+      O: GetFeedResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc feed.v1.FeedService.ListFeeds
+     */
+    listFeeds: {
+      name: "ListFeeds",
+      I: ListFeedsRequest,
+      O: ListFeedsResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc feed.v1.FeedService.CreateFeed
+     */
+    createFeed: {
+      name: "CreateFeed",
+      I: CreateFeedRequest,
+      O: CreateFeedResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc feed.v1.FeedService.UpdateFeed
+     */
+    updateFeed: {
+      name: "UpdateFeed",
+      I: UpdateFeedRequest,
+      O: UpdateFeedResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc feed.v1.FeedService.DeleteFeed
+     */
+    deleteFeed: {
+      name: "DeleteFeed",
+      I: DeleteFeedRequest,
+      O: DeleteFeedResponse,
+      kind: MethodKind.Unary,
+    },
+  },
 } as const;

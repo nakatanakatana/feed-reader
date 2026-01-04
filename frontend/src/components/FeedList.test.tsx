@@ -9,174 +9,174 @@ import { worker } from "../mocks/browser";
 import { FeedList } from "./FeedList";
 
 describe("FeedList", () => {
-	let dispose: () => void;
+  let dispose: () => void;
 
-	afterEach(() => {
-		if (dispose) dispose();
-		document.body.innerHTML = "";
-	});
+  afterEach(() => {
+    if (dispose) dispose();
+    document.body.innerHTML = "";
+  });
 
-	const transport = createConnectTransport({
-		baseUrl: "http://localhost:3000",
-	});
+  const transport = createConnectTransport({
+    baseUrl: "http://localhost:3000",
+  });
 
-	it("displays a list of feeds", async () => {
-		worker.use(
-			http.post("*/feed.v1.FeedService/ListFeeds", () => {
-				return HttpResponse.json({
-					feeds: [
-						{ uuid: "1", title: "Feed 1", url: "http://example.com/1" },
-						{ uuid: "2", title: "Feed 2", url: "http://example.com/2" },
-					],
-				});
-			}),
-		);
+  it("displays a list of feeds", async () => {
+    worker.use(
+      http.post("*/feed.v1.FeedService/ListFeeds", () => {
+        return HttpResponse.json({
+          feeds: [
+            { uuid: "1", title: "Feed 1", url: "http://example.com/1" },
+            { uuid: "2", title: "Feed 2", url: "http://example.com/2" },
+          ],
+        });
+      }),
+    );
 
-		const queryClient = new QueryClient({
-			defaultOptions: {
-				queries: { retry: false },
-			},
-		});
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { retry: false },
+      },
+    });
 
-		dispose = render(
-			() => (
-				<TransportProvider transport={transport}>
-					<QueryClientProvider client={queryClient}>
-						<FeedList />
-					</QueryClientProvider>
-				</TransportProvider>
-			),
-			document.body,
-		);
+    dispose = render(
+      () => (
+        <TransportProvider transport={transport}>
+          <QueryClientProvider client={queryClient}>
+            <FeedList />
+          </QueryClientProvider>
+        </TransportProvider>
+      ),
+      document.body,
+    );
 
-		await expect.element(page.getByText("Feed 1")).toBeInTheDocument();
-		await expect.element(page.getByText("Feed 2")).toBeInTheDocument();
-	});
+    await expect.element(page.getByText("Feed 1")).toBeInTheDocument();
+    await expect.element(page.getByText("Feed 2")).toBeInTheDocument();
+  });
 
-	it("deletes a feed", async () => {
-		const deleteFeedMock = vi.fn();
-		worker.use(
-			http.post("*/feed.v1.FeedService/ListFeeds", () => {
-				return HttpResponse.json({
-					feeds: [{ uuid: "1", title: "Feed 1", url: "http://example.com/1" }],
-				});
-			}),
-			http.post("*/feed.v1.FeedService/DeleteFeed", async ({ request }) => {
-				const body = (await request.json()) as any;
-				deleteFeedMock(body);
-				return HttpResponse.json({});
-			}),
-		);
+  it("deletes a feed", async () => {
+    const deleteFeedMock = vi.fn();
+    worker.use(
+      http.post("*/feed.v1.FeedService/ListFeeds", () => {
+        return HttpResponse.json({
+          feeds: [{ uuid: "1", title: "Feed 1", url: "http://example.com/1" }],
+        });
+      }),
+      http.post("*/feed.v1.FeedService/DeleteFeed", async ({ request }) => {
+        const body = (await request.json()) as any;
+        deleteFeedMock(body);
+        return HttpResponse.json({});
+      }),
+    );
 
-		const queryClient = new QueryClient({
-			defaultOptions: {
-				queries: { retry: false },
-				mutations: { retry: false },
-			},
-		});
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { retry: false },
+        mutations: { retry: false },
+      },
+    });
 
-		dispose = render(
-			() => (
-				<TransportProvider transport={transport}>
-					<QueryClientProvider client={queryClient}>
-						<FeedList />
-					</QueryClientProvider>
-				</TransportProvider>
-			),
-			document.body,
-		);
+    dispose = render(
+      () => (
+        <TransportProvider transport={transport}>
+          <QueryClientProvider client={queryClient}>
+            <FeedList />
+          </QueryClientProvider>
+        </TransportProvider>
+      ),
+      document.body,
+    );
 
-		await expect.element(page.getByText("Feed 1")).toBeInTheDocument();
+    await expect.element(page.getByText("Feed 1")).toBeInTheDocument();
 
-		const deleteButton = page.getByText("Delete");
-		await deleteButton.click();
+    const deleteButton = page.getByText("Delete");
+    await deleteButton.click();
 
-		await expect
-			.poll(() => deleteFeedMock.mock.calls.length)
-			.toBeGreaterThan(0);
-		expect(deleteFeedMock).toHaveBeenCalledWith(
-			expect.objectContaining({ uuid: "1" }),
-		);
-	});
+    await expect
+      .poll(() => deleteFeedMock.mock.calls.length)
+      .toBeGreaterThan(0);
+    expect(deleteFeedMock).toHaveBeenCalledWith(
+      expect.objectContaining({ uuid: "1" }),
+    );
+  });
 
-	it("displays an error message when listFeeds fails", async () => {
-		worker.use(
-			http.post("*/feed.v1.FeedService/ListFeeds", () => {
-				return new HttpResponse(
-					JSON.stringify({ message: "Failed to fetch feeds", code: 13 }),
-					{
-						status: 500,
-						headers: { "Content-Type": "application/json" },
-					},
-				);
-			}),
-		);
+  it("displays an error message when listFeeds fails", async () => {
+    worker.use(
+      http.post("*/feed.v1.FeedService/ListFeeds", () => {
+        return new HttpResponse(
+          JSON.stringify({ message: "Failed to fetch feeds", code: 13 }),
+          {
+            status: 500,
+            headers: { "Content-Type": "application/json" },
+          },
+        );
+      }),
+    );
 
-		const queryClient = new QueryClient({
-			defaultOptions: {
-				queries: { retry: false },
-			},
-		});
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { retry: false },
+      },
+    });
 
-		dispose = render(
-			() => (
-				<TransportProvider transport={transport}>
-					<QueryClientProvider client={queryClient}>
-						<FeedList />
-					</QueryClientProvider>
-				</TransportProvider>
-			),
-			document.body,
-		);
+    dispose = render(
+      () => (
+        <TransportProvider transport={transport}>
+          <QueryClientProvider client={queryClient}>
+            <FeedList />
+          </QueryClientProvider>
+        </TransportProvider>
+      ),
+      document.body,
+    );
 
-		await expect
-			.element(page.getByText(/Error: .*Failed to fetch feeds.*/))
-			.toBeInTheDocument();
-	});
+    await expect
+      .element(page.getByText(/Error: .*Failed to fetch feeds.*/))
+      .toBeInTheDocument();
+  });
 
-	it("displays an error message when deleteFeed fails", async () => {
-		worker.use(
-			http.post("*/feed.v1.FeedService/ListFeeds", () => {
-				return HttpResponse.json({
-					feeds: [{ uuid: "1", title: "Feed 1", url: "http://example.com/1" }],
-				});
-			}),
-			http.post("*/feed.v1.FeedService/DeleteFeed", () => {
-				return new HttpResponse(
-					JSON.stringify({ message: "Failed to delete feed", code: 7 }),
-					{
-						status: 403, // PermissionDenied -> 403
-						headers: { "Content-Type": "application/json" },
-					},
-				);
-			}),
-		);
+  it("displays an error message when deleteFeed fails", async () => {
+    worker.use(
+      http.post("*/feed.v1.FeedService/ListFeeds", () => {
+        return HttpResponse.json({
+          feeds: [{ uuid: "1", title: "Feed 1", url: "http://example.com/1" }],
+        });
+      }),
+      http.post("*/feed.v1.FeedService/DeleteFeed", () => {
+        return new HttpResponse(
+          JSON.stringify({ message: "Failed to delete feed", code: 7 }),
+          {
+            status: 403, // PermissionDenied -> 403
+            headers: { "Content-Type": "application/json" },
+          },
+        );
+      }),
+    );
 
-		const queryClient = new QueryClient({
-			defaultOptions: {
-				queries: { retry: false },
-				mutations: { retry: false },
-			},
-		});
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { retry: false },
+        mutations: { retry: false },
+      },
+    });
 
-		dispose = render(
-			() => (
-				<TransportProvider transport={transport}>
-					<QueryClientProvider client={queryClient}>
-						<FeedList />
-					</QueryClientProvider>
-				</TransportProvider>
-			),
-			document.body,
-		);
+    dispose = render(
+      () => (
+        <TransportProvider transport={transport}>
+          <QueryClientProvider client={queryClient}>
+            <FeedList />
+          </QueryClientProvider>
+        </TransportProvider>
+      ),
+      document.body,
+    );
 
-		await expect.element(page.getByText("Feed 1")).toBeInTheDocument();
+    await expect.element(page.getByText("Feed 1")).toBeInTheDocument();
 
-		const deleteButton = page.getByText("Delete");
-		await deleteButton.click();
+    const deleteButton = page.getByText("Delete");
+    await deleteButton.click();
 
-		await expect
-			.element(page.getByText(/Delete Error: .*Failed to delete feed.*/))
-			.toBeInTheDocument();
-	});
+    await expect
+      .element(page.getByText(/Delete Error: .*Failed to delete feed.*/))
+      .toBeInTheDocument();
+  });
 });

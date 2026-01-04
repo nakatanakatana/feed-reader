@@ -4,29 +4,29 @@ import { transport } from "./query";
 import { TransportProvider, useTransport } from "./transport-context";
 
 describe("TransportContext", () => {
-	let dispose: () => void;
+  let dispose: () => void;
 
-	afterEach(() => {
-		if (dispose) dispose();
-		document.body.innerHTML = "";
-	});
+  afterEach(() => {
+    if (dispose) dispose();
+    document.body.innerHTML = "";
+  });
 
-	it("provides the transport", () => {
-		let capturedTransport: any;
-		const TestComponent = () => {
-			capturedTransport = useTransport();
-			return <div>Test</div>;
-		};
+  it("provides the transport", () => {
+    let capturedTransport: any;
+    const TestComponent = () => {
+      capturedTransport = useTransport();
+      return <div>Test</div>;
+    };
 
-		dispose = render(
-			() => (
-				<TransportProvider transport={transport}>
-					<TestComponent />
-				</TransportProvider>
-			),
-			document.body,
-		);
+    dispose = render(
+      () => (
+        <TransportProvider transport={transport}>
+          <TestComponent />
+        </TransportProvider>
+      ),
+      document.body,
+    );
 
-		expect(capturedTransport).toBe(transport);
-	});
+    expect(capturedTransport).toBe(transport);
+  });
 });
