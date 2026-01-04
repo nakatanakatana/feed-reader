@@ -2,6 +2,7 @@ import { render } from "solid-js/web";
 import { afterEach, describe, expect, it } from "vitest";
 import { transport } from "./query";
 import { TransportProvider, useTransport } from "./transport-context";
+import type { Transport } from "@connectrpc/connect";
 
 describe("TransportContext", () => {
   let dispose: () => void;
@@ -12,7 +13,7 @@ describe("TransportContext", () => {
   });
 
   it("provides the transport", () => {
-    let capturedTransport: any;
+    let capturedTransport!: Transport;
     const TestComponent = () => {
       capturedTransport = useTransport();
       return <div>Test</div>;

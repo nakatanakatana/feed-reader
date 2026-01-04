@@ -1,5 +1,5 @@
-import { createPromiseClient } from "@connectrpc/connect";
-import { createMutation, useQueryClient } from "@tanstack/solid-query";
+import { createClient } from "@connectrpc/connect";
+import { useMutation, useQueryClient } from "@tanstack/solid-query";
 import { createSignal } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
@@ -8,11 +8,11 @@ import { useTransport } from "../lib/transport-context";
 
 export function AddFeedForm() {
   const transport = useTransport();
-  const client = createPromiseClient(FeedService, transport);
+  const client = createClient(FeedService, transport);
   const queryClient = useQueryClient();
   const [url, setUrl] = createSignal("");
 
-  const mutation = createMutation(() => ({
+  const mutation = useMutation(() => ({
     mutationFn: async (url: string) => {
       const response = await client.createFeed({ url });
       return response.feed;

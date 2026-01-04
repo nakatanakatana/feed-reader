@@ -11,7 +11,7 @@ export const mockConnectWeb =
     ) => T["methods"][U]["O"] extends MessageType<infer O> ? O : never;
   }): HttpHandler => {
     return http.all(
-      "*/" + service.typeName + "/" + service["methods"][props.method]?.name,
+      `*/${service.typeName}/${service.methods[props.method]?.name}`,
       async ({ request }) => {
         // biome-ignore lint/suspicious/noExplicitAny: ignore
         const resp = props.handler((await request.json()) as any);

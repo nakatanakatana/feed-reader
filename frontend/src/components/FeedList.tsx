@@ -1,9 +1,5 @@
-import { createPromiseClient } from "@connectrpc/connect";
-import {
-  createMutation,
-  createQuery,
-  useQueryClient,
-} from "@tanstack/solid-query";
+import { createClient } from "@connectrpc/connect";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/solid-query";
 import { For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
@@ -12,10 +8,10 @@ import { useTransport } from "../lib/transport-context";
 
 export function FeedList() {
   const transport = useTransport();
-  const client = createPromiseClient(FeedService, transport);
+  const client = createClient(FeedService, transport);
   const queryClient = useQueryClient();
 
-  const query = createQuery(() => ({
+  const query = useQuery(() => ({
     queryKey: ["feeds"],
     queryFn: async () => {
       const response = await client.listFeeds({});
@@ -23,7 +19,7 @@ export function FeedList() {
     },
   }));
 
-  const deleteMutation = createMutation(() => ({
+  const deleteMutation = useMutation(() => ({
     mutationFn: async (uuid: string) => {
       await client.deleteFeed({ uuid });
     },

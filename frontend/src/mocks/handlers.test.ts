@@ -1,18 +1,17 @@
+import { createClient } from "@connectrpc/connect";
 import { describe, expect, it } from "vitest";
+import { FeedService } from "../gen/feed/v1/feed_connect";
+import { transport } from "../lib/query";
 
 describe("FeedService Mock Handlers", () => {
   it("should mock ListFeeds", async () => {
-    const response = await fetch("/feed.v1.FeedService/ListFeeds", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({}),
-    });
+    const client = createClient(FeedService, transport);
+    const response = await client.listFeeds({});
 
-    expect(response.status).toBe(200);
-    const data = await response.json();
+    const data = response.toJson();
     expect(data).toHaveProperty("feeds");
-    expect(Array.isArray(data.feeds)).toBe(true);
-    expect(data.feeds.length).toBeGreaterThan(0);
+    expect(Array.isArray(response.feeds)).toBe(true);
+    expect(response.feeds.length).toBeGreaterThan(0);
   });
 
   it("should mock CreateFeed", async () => {
@@ -20,49 +19,32 @@ describe("FeedService Mock Handlers", () => {
       url: "https://example.com/feed.xml",
       title: "Example Feed",
     };
-    const response = await fetch("/feed.v1.FeedService/CreateFeed", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(feedData),
-    });
 
-    expect(response.status).toBe(200);
-    const data = await response.json();
+    const client = createClient(FeedService, transport);
+    const response = await client.createFeed(feedData);
+
+    const data = response.toJson();
     expect(data).toHaveProperty("feed");
-    expect(data.feed.url).toBe(feedData.url);
-    expect(data.feed.title).toBe(feedData.title);
-    expect(data.feed.uuid).toBeDefined();
+    expect(response.feed?.url).toBe(feedData.url);
+    expect(response.feed?.title).toBe(feedData.title);
+    expect(response.feed?.uuid).toBeDefined();
   });
 
   it("should mock DeleteFeed", async () => {
     // Get current feeds first
-    const listResponse = await fetch("/feed.v1.FeedService/ListFeeds", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({}),
-    });
-    const listData = await listResponse.json();
-    const uuidToDelete = listData.feeds[0].uuid;
+    const client = createClient(FeedService, transport);
+    const listResponse = await client.listFeeds({});
+    const uuidToDelete = listResponse.feeds[0].uuid;
 
-    const response = await fetch("/feed.v1.FeedService/DeleteFeed", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ uuid: uuidToDelete }),
-    });
+    const response = await client.deleteFeed({ uuid: uuidToDelete });
 
-    expect(response.status).toBe(200);
-    const data = await response.json();
+    const data = response.toJson();
     expect(data).toEqual({});
 
     // Verify it's deleted
-    const listResponseAfter = await fetch("/feed.v1.FeedService/ListFeeds", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({}),
-    });
-    const listDataAfter = await listResponseAfter.json();
+    const listResponseAfter = await client.listFeeds({});
     expect(
-      listDataAfter.feeds.find((f: any) => f.uuid === uuidToDelete),
+      listResponseAfter.feeds.find((f) => f.uuid === uuidToDelete),
     ).toBeUndefined();
   });
 });
