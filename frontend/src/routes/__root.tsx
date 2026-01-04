@@ -45,14 +45,6 @@ function RootComponent() {
             Home
           </Link>{" "}
           <Link
-            to="/posts"
-            activeProps={{
-              class: selectedRouteStyle,
-            }}
-          >
-            Posts
-          </Link>{" "}
-          <Link
             to="/feeds"
             activeProps={{
               class: selectedRouteStyle,

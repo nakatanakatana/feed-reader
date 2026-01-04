@@ -9,21 +9,13 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as PostsRouteImport } from './routes/posts'
 import { Route as FeedsRouteImport } from './routes/feeds'
 import { Route as LayoutRouteImport } from './routes/_layout'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as PostsIndexRouteImport } from './routes/posts.index'
-import { Route as PostsPostIdRouteImport } from './routes/posts.$postId'
 import { Route as LayoutLayout2RouteImport } from './routes/_layout/_layout-2'
 import { Route as LayoutLayout2LayoutBRouteImport } from './routes/_layout/_layout-2/layout-b'
 import { Route as LayoutLayout2LayoutARouteImport } from './routes/_layout/_layout-2/layout-a'
 
-const PostsRoute = PostsRouteImport.update({
-  id: '/posts',
-  path: '/posts',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const FeedsRoute = FeedsRouteImport.update({
   id: '/feeds',
   path: '/feeds',
@@ -37,16 +29,6 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
-} as any)
-const PostsIndexRoute = PostsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => PostsRoute,
-} as any)
-const PostsPostIdRoute = PostsPostIdRouteImport.update({
-  id: '/$postId',
-  path: '/$postId',
-  getParentRoute: () => PostsRoute,
 } as any)
 const LayoutLayout2Route = LayoutLayout2RouteImport.update({
   id: '/_layout-2',
@@ -66,17 +48,12 @@ const LayoutLayout2LayoutARoute = LayoutLayout2LayoutARouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/feeds': typeof FeedsRoute
-  '/posts': typeof PostsRouteWithChildren
-  '/posts/$postId': typeof PostsPostIdRoute
-  '/posts/': typeof PostsIndexRoute
   '/layout-a': typeof LayoutLayout2LayoutARoute
   '/layout-b': typeof LayoutLayout2LayoutBRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/feeds': typeof FeedsRoute
-  '/posts/$postId': typeof PostsPostIdRoute
-  '/posts': typeof PostsIndexRoute
   '/layout-a': typeof LayoutLayout2LayoutARoute
   '/layout-b': typeof LayoutLayout2LayoutBRoute
 }
@@ -85,34 +62,21 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_layout': typeof LayoutRouteWithChildren
   '/feeds': typeof FeedsRoute
-  '/posts': typeof PostsRouteWithChildren
   '/_layout/_layout-2': typeof LayoutLayout2RouteWithChildren
-  '/posts/$postId': typeof PostsPostIdRoute
-  '/posts/': typeof PostsIndexRoute
   '/_layout/_layout-2/layout-a': typeof LayoutLayout2LayoutARoute
   '/_layout/_layout-2/layout-b': typeof LayoutLayout2LayoutBRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/feeds'
-    | '/posts'
-    | '/posts/$postId'
-    | '/posts/'
-    | '/layout-a'
-    | '/layout-b'
+  fullPaths: '/' | '/feeds' | '/layout-a' | '/layout-b'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/feeds' | '/posts/$postId' | '/posts' | '/layout-a' | '/layout-b'
+  to: '/' | '/feeds' | '/layout-a' | '/layout-b'
   id:
     | '__root__'
     | '/'
     | '/_layout'
     | '/feeds'
-    | '/posts'
     | '/_layout/_layout-2'
-    | '/posts/$postId'
-    | '/posts/'
     | '/_layout/_layout-2/layout-a'
     | '/_layout/_layout-2/layout-b'
   fileRoutesById: FileRoutesById
@@ -121,18 +85,10 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LayoutRoute: typeof LayoutRouteWithChildren
   FeedsRoute: typeof FeedsRoute
-  PostsRoute: typeof PostsRouteWithChildren
 }
 
 declare module '@tanstack/solid-router' {
   interface FileRoutesByPath {
-    '/posts': {
-      id: '/posts'
-      path: '/posts'
-      fullPath: '/posts'
-      preLoaderRoute: typeof PostsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/feeds': {
       id: '/feeds'
       path: '/feeds'
@@ -153,20 +109,6 @@ declare module '@tanstack/solid-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/posts/': {
-      id: '/posts/'
-      path: '/'
-      fullPath: '/posts/'
-      preLoaderRoute: typeof PostsIndexRouteImport
-      parentRoute: typeof PostsRoute
-    }
-    '/posts/$postId': {
-      id: '/posts/$postId'
-      path: '/$postId'
-      fullPath: '/posts/$postId'
-      preLoaderRoute: typeof PostsPostIdRouteImport
-      parentRoute: typeof PostsRoute
     }
     '/_layout/_layout-2': {
       id: '/_layout/_layout-2'
@@ -217,23 +159,10 @@ const LayoutRouteChildren: LayoutRouteChildren = {
 const LayoutRouteWithChildren =
   LayoutRoute._addFileChildren(LayoutRouteChildren)
 
-interface PostsRouteChildren {
-  PostsPostIdRoute: typeof PostsPostIdRoute
-  PostsIndexRoute: typeof PostsIndexRoute
-}
-
-const PostsRouteChildren: PostsRouteChildren = {
-  PostsPostIdRoute: PostsPostIdRoute,
-  PostsIndexRoute: PostsIndexRoute,
-}
-
-const PostsRouteWithChildren = PostsRoute._addFileChildren(PostsRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LayoutRoute: LayoutRouteWithChildren,
   FeedsRoute: FeedsRoute,
-  PostsRoute: PostsRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
