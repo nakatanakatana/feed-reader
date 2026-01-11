@@ -7,6 +7,7 @@ import solid from "vite-plugin-solid";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  root: "frontend",
   plugins: [devtools(), tanstackRouter({ target: "solid" }), solid()],
   build: {
     outDir: "dist/frontend",

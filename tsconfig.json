@@ -20,5 +20,5 @@
     "skipLibCheck": true,
     "strict": true
   },
-  "include": ["src"]
+  "include": ["frontend/src"]
 }
