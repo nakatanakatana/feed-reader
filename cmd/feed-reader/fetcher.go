@@ -2,7 +2,10 @@ package main
 
 import (
 	"context"
+	"net/http"
+	"time"
 
+	"github.com/hashicorp/go-retryablehttp"
 	"github.com/mmcdole/gofeed"
 )
 
@@ -13,16 +16,25 @@ type FeedFetcher interface {
 
 // GofeedFetcher is the implementation of FeedFetcher using the gofeed library.
 type GofeedFetcher struct {
-	// We might add retryablehttp client here later
+	client *http.Client
 }
 
 // NewGofeedFetcher creates a new GofeedFetcher.
 func NewGofeedFetcher() *GofeedFetcher {
-	return &GofeedFetcher{}
+	retryClient := retryablehttp.NewClient()
+	retryClient.RetryMax = 3
+	retryClient.RetryWaitMin = 1 * time.Second
+	retryClient.RetryWaitMax = 5 * time.Second
+	retryClient.Logger = nil // Disable verbose logging by default
+
+	return &GofeedFetcher{
+		client: retryClient.StandardClient(),
+	}
 }
 
 // Fetch fetches the feed from the given URL.
 func (f *GofeedFetcher) Fetch(ctx context.Context, url string) (*gofeed.Feed, error) {
-	// Implementation will come in Green phase
-	return nil, nil
+	fp := gofeed.NewParser()
+	fp.Client = f.client
+	return fp.ParseURLWithContext(url, ctx)
 }
