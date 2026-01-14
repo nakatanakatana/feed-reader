@@ -26,10 +26,10 @@
 - [x] Task: Update CreateFeed Handler Tests (Red Phase) 09a3a62
     - [x] Modify `cmd/feed-reader/handler_test.go` to expect metadata in the saved feed
     - [x] Ensure tests fail because metadata is not being fetched yet
-- [ ] Task: Integrate Fetcher into `CreateFeed` Handler (Green Phase)
-    - [ ] Update `handler.go` to use the fetcher before saving to DB
-    - [ ] Map `gofeed` fields to DB columns
-    - [ ] Update SQL query if necessary (checking `sqlc` usage)
+- [x] Task: Integrate Fetcher into CreateFeed Handler (Green Phase) 3aadcf2
+    - [x] Update `handler.go` to use the fetcher before saving to DB
+    - [x] Map `gofeed` fields to DB columns
+    - [x] Update SQL query if necessary (checking `sqlc` usage)
 - [ ] Task: Refactor and Verify Coverage
     - [ ] Refactor handler logic
     - [ ] Verify overall coverage
