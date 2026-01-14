@@ -30,9 +30,9 @@
     - [x] Update `handler.go` to use the fetcher before saving to DB
     - [x] Map `gofeed` fields to DB columns
     - [x] Update SQL query if necessary (checking `sqlc` usage)
-- [ ] Task: Refactor and Verify Coverage
-    - [ ] Refactor handler logic
-    - [ ] Verify overall coverage
+- [x] Task: Refactor and Verify Coverage ffe21e0
+    - [x] Refactor handler logic
+    - [x] Verify overall coverage
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Update CreateFeed Handler' (Protocol in workflow.md)
 
 ## Phase 4: Final Integration & Cleanup
