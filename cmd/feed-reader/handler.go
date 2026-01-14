@@ -15,15 +15,17 @@ import (
 type FeedServer struct {
 	queries       *store.Queries
 	uuidGenerator UUIDGenerator
+	fetcher       FeedFetcher
 }
 
-func NewFeedServer(queries *store.Queries, uuidGen UUIDGenerator) feedv1connect.FeedServiceHandler {
+func NewFeedServer(queries *store.Queries, uuidGen UUIDGenerator, fetcher FeedFetcher) feedv1connect.FeedServiceHandler {
 	if uuidGen == nil {
 		uuidGen = realUUIDGenerator{}
 	}
 	return &FeedServer{
 		queries:       queries,
 		uuidGenerator: uuidGen,
+		fetcher:       fetcher,
 	}
 }
 

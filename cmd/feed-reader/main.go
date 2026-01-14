@@ -49,7 +49,8 @@ func main() {
 	}
 
 	queries := store.New(db)
-	feedServer := NewFeedServer(queries, nil)
+	fetcher := NewGofeedFetcher()
+	feedServer := NewFeedServer(queries, nil, fetcher)
 	path, handler := feedv1connect.NewFeedServiceHandler(feedServer)
 
 	mux := http.NewServeMux()

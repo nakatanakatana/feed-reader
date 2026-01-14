@@ -11,7 +11,8 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"google.golang.org/protobuf/proto"
 
-	feedv1 "github.com/nakatanakatana/feed-reader/gen/go/feed/v1"
+	"github.com/mmcdole/gofeed"
+	"github.com/nakatanakatana/feed-reader/gen/go/feed/v1"
 	"github.com/nakatanakatana/feed-reader/gen/go/feed/v1/feedv1connect"
 	"github.com/nakatanakatana/feed-reader/sql"
 	"github.com/nakatanakatana/feed-reader/store"
@@ -48,6 +49,21 @@ func (m mockUUIDGenerator) NewRandom() (uuid.UUID, error) {
 	return uuid.NewRandom()
 }
 
+type mockFetcher struct {
+	feed *gofeed.Feed
+	err  error
+}
+
+func (m *mockFetcher) Fetch(ctx context.Context, url string) (*gofeed.Feed, error) {
+	if m.err != nil {
+		return nil, m.err
+	}
+	if m.feed == nil {
+		return &gofeed.Feed{}, nil
+	}
+	return m.feed, nil
+}
+
 func TestFeedServer_CreateFeed(t *testing.T) {
 	ctx := context.Background()
 
@@ -55,11 +71,14 @@ func TestFeedServer_CreateFeed(t *testing.T) {
 		req *feedv1.CreateFeedRequest
 	}
 	tests := []struct {
-		name    string
-		args    args
-		uuidErr error
-		wantErr bool
-		errCode connect.Code
+		name      string
+		args      args
+		uuidErr   error
+		mockFeed  *gofeed.Feed
+		fetchErr  error
+		wantErr   bool
+		errCode   connect.Code
+		wantTitle string
 	}{
 		{
 			name: "Success",
@@ -69,7 +88,9 @@ func TestFeedServer_CreateFeed(t *testing.T) {
 					Title: proto.String("Test Feed"),
 				},
 			},
-			wantErr: false,
+			mockFeed:  &gofeed.Feed{Title: "Fetched Title"},
+			wantTitle: "Fetched Title",
+			wantErr:   false,
 		},
 		{
 			name: "UUID Generation Error",
@@ -79,16 +100,29 @@ func TestFeedServer_CreateFeed(t *testing.T) {
 					Title: proto.String("Error Feed"),
 				},
 			},
-			uuidErr: errors.New("uuid error"),
-			wantErr: true,
-			errCode: connect.CodeInternal,
+			mockFeed: &gofeed.Feed{Title: "Fetched Title"},
+			uuidErr:  errors.New("uuid error"),
+			wantErr:  true,
+			errCode:  connect.CodeInternal,
+		},
+		{
+			name: "Fetch Error",
+			args: args{
+				req: &feedv1.CreateFeedRequest{
+					Url: "https://example.com/fail",
+				},
+			},
+			fetchErr: errors.New("fetch failed"),
+			wantErr:  true,
+			errCode:  connect.CodeInternal,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			queries := setupTestDB(t)
-			server := NewFeedServer(queries, mockUUIDGenerator{err: tt.uuidErr})
+			fetcher := &mockFetcher{feed: tt.mockFeed, err: tt.fetchErr}
+			server := NewFeedServer(queries, mockUUIDGenerator{err: tt.uuidErr}, fetcher)
 
 			res, err := server.CreateFeed(ctx, connect.NewRequest(tt.args.req))
 			if (err != nil) != tt.wantErr {
@@ -108,8 +142,10 @@ func TestFeedServer_CreateFeed(t *testing.T) {
 			if res.Msg.Feed.Url != tt.args.req.Url {
 				t.Errorf("expected url %s, got %s", tt.args.req.Url, res.Msg.Feed.Url)
 			}
-			if res.Msg.Feed.Title != *tt.args.req.Title {
-				t.Errorf("expected title %s, got %s", *tt.args.req.Title, res.Msg.Feed.Title)
+			if tt.wantTitle != "" {
+				if res.Msg.Feed.Title != tt.wantTitle {
+					t.Errorf("expected title %s, got %s", tt.wantTitle, res.Msg.Feed.Title)
+				}
 			}
 		})
 	}
@@ -152,7 +188,7 @@ func TestFeedServer_GetFeed(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			queries := setupTestDB(t)
-			server := NewFeedServer(queries, nil)
+			server := NewFeedServer(queries, nil, &mockFetcher{})
 			uuid := tt.setup(t, server)
 
 			_, err := server.GetFeed(ctx, connect.NewRequest(&feedv1.GetFeedRequest{Uuid: uuid}))
@@ -202,7 +238,7 @@ func TestFeedServer_ListFeeds(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			queries := setupTestDB(t)
-			server := NewFeedServer(queries, nil)
+			server := NewFeedServer(queries, nil, &mockFetcher{})
 			tt.setup(t, server)
 
 			res, err := server.ListFeeds(ctx, connect.NewRequest(&feedv1.ListFeedsRequest{}))
@@ -259,7 +295,7 @@ func TestFeedServer_UpdateFeed(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			queries := setupTestDB(t)
-			server := NewFeedServer(queries, nil)
+			server := NewFeedServer(queries, nil, &mockFetcher{})
 			req := tt.setup(t, server)
 
 			_, err := server.UpdateFeed(ctx, connect.NewRequest(req))
@@ -303,7 +339,7 @@ func TestFeedServer_DeleteFeed(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			queries := setupTestDB(t)
-			server := NewFeedServer(queries, nil)
+			server := NewFeedServer(queries, nil, &mockFetcher{})
 			uuid := tt.setup(t, server)
 
 			_, err := server.DeleteFeed(ctx, connect.NewRequest(&feedv1.DeleteFeedRequest{Uuid: uuid}))
