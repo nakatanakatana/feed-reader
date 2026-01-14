@@ -23,9 +23,9 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Feed Fetching Service Implementation' (Protocol in workflow.md)
 
 ## Phase 3: Update CreateFeed Handler
-- [ ] Task: Update `CreateFeed` Handler Tests (Red Phase)
-    - [ ] Modify `cmd/feed-reader/handler_test.go` to expect metadata in the saved feed
-    - [ ] Ensure tests fail because metadata is not being fetched yet
+- [x] Task: Update CreateFeed Handler Tests (Red Phase) 09a3a62
+    - [x] Modify `cmd/feed-reader/handler_test.go` to expect metadata in the saved feed
+    - [x] Ensure tests fail because metadata is not being fetched yet
 - [ ] Task: Integrate Fetcher into `CreateFeed` Handler (Green Phase)
     - [ ] Update `handler.go` to use the fetcher before saving to DB
     - [ ] Map `gofeed` fields to DB columns
