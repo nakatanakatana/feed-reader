@@ -8,8 +8,8 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Environment & Dependency Setup' (Protocol in workflow.md)
 
 ## Phase 2: Feed Fetching Service Implementation
-- [ ] Task: Define Feed Fetching Interface and Data Structures
-    - [ ] Create an internal service or package for feed fetching if necessary
+- [x] Task: Define Feed Fetching Interface and Data Structures f14773a
+    - [x] Create an internal service or package for feed fetching if necessary
 - [ ] Task: Write Tests for Feed Fetcher (Red Phase)
     - [ ] Create `cmd/feed-reader/fetcher_test.go`
     - [ ] Mock HTTP responses for various feed types (RSS, Atom, Invalid)
