@@ -10,10 +10,10 @@
 ## Phase 2: Feed Fetching Service Implementation
 - [x] Task: Define Feed Fetching Interface and Data Structures f14773a
     - [x] Create an internal service or package for feed fetching if necessary
-- [ ] Task: Write Tests for Feed Fetcher (Red Phase)
-    - [ ] Create `cmd/feed-reader/fetcher_test.go`
-    - [ ] Mock HTTP responses for various feed types (RSS, Atom, Invalid)
-    - [ ] Test success cases and error cases (timeout, invalid XML)
+- [x] Task: Write Tests for Feed Fetcher (Red Phase) 1ed5056
+    - [x] Create `cmd/feed-reader/fetcher_test.go`
+    - [x] Mock HTTP responses for various feed types (RSS, Atom, Invalid)
+    - [x] Test success cases and error cases (timeout, invalid XML)
 - [ ] Task: Implement Feed Fetcher (Green Phase)
     - [ ] Implement the fetching logic using `gofeed` and `retryablehttp`
     - [ ] Ensure all tests pass
