@@ -9,6 +9,8 @@ The backend is responsible for feed management, article fetching, and providing 
 -   **API Framework:** Connect RPC (Protobuf over HTTP/2)
 -   **Database:** SQLite (Relational storage)
 -   **Query Tooling:** `sqlc` (Type-safe SQL generation)
+-   **Feed Parsing:** `gofeed` (Robust RSS/Atom parsing)
+-   **HTTP Client:** `hashicorp/go-retryablehttp` (Resilient network requests)
 -   **Protocol Management:** `buf` (Protobuf management and generation)
 -   **CLI Manager:** `aqua` (Declarative tool management)
 
