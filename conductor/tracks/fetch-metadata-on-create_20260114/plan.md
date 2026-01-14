@@ -14,9 +14,9 @@
     - [x] Create `cmd/feed-reader/fetcher_test.go`
     - [x] Mock HTTP responses for various feed types (RSS, Atom, Invalid)
     - [x] Test success cases and error cases (timeout, invalid XML)
-- [ ] Task: Implement Feed Fetcher (Green Phase)
-    - [ ] Implement the fetching logic using `gofeed` and `retryablehttp`
-    - [ ] Ensure all tests pass
+- [x] Task: Implement Feed Fetcher (Green Phase) f4efb73
+    - [x] Implement the fetching logic using `gofeed` and `retryablehttp`
+    - [x] Ensure all tests pass
 - [ ] Task: Refactor and Verify Coverage
     - [ ] Refactor fetcher code for better readability
     - [ ] Verify coverage is > 80%
