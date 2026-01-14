@@ -60,23 +60,42 @@ func (s *FeedServer) ListFeeds(ctx context.Context, req *connect.Request[feedv1.
 }
 
 func (s *FeedServer) CreateFeed(ctx context.Context, req *connect.Request[feedv1.CreateFeedRequest]) (*connect.Response[feedv1.CreateFeedResponse], error) {
+	fetchedFeed, err := s.fetcher.Fetch(ctx, req.Msg.Url)
+	if err != nil {
+		// Spec says: Return appropriate error message.
+		// We could map specific errors (timeout vs invalid) to codes, but Internal is safe for now.
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to fetch feed: %w", err))
+	}
+
 	newUUID, err := s.uuidGenerator.NewRandom()
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to generate UUID: %w", err))
 	}
 	id := newUUID.String()
 
+	strPtr := func(s string) *string {
+		if s == "" {
+			return nil
+		}
+		return &s
+	}
+
+	var imageUrl *string
+	if fetchedFeed.Image != nil {
+		imageUrl = strPtr(fetchedFeed.Image.URL)
+	}
+
 	feed, err := s.queries.CreateFeed(ctx, store.CreateFeedParams{
 		Uuid:        id,
 		Url:         req.Msg.Url,
-		Title:       req.Msg.Title,
-		Description: req.Msg.Description,
-		Link:        req.Msg.Link,
-		Language:    req.Msg.Language,
-		ImageUrl:    req.Msg.ImageUrl,
-		Copyright:   req.Msg.Copyright,
-		FeedType:    req.Msg.FeedType,
-		FeedVersion: req.Msg.FeedVersion,
+		Title:       strPtr(fetchedFeed.Title),
+		Description: strPtr(fetchedFeed.Description),
+		Link:        strPtr(fetchedFeed.Link),
+		Language:    strPtr(fetchedFeed.Language),
+		ImageUrl:    imageUrl,
+		Copyright:   strPtr(fetchedFeed.Copyright),
+		FeedType:    strPtr(fetchedFeed.FeedType),
+		FeedVersion: strPtr(fetchedFeed.FeedVersion),
 	})
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
