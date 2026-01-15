@@ -63,7 +63,7 @@ func TestStore_SaveFetchedItem(t *testing.T) {
 		require.NoError(t, err)
 
 		// Verify Item exists
-		// We can't query by URL easily without adding a GetItemByUrl query, 
+		// We can't query by URL easily without adding a GetItemByUrl query,
 		// but we can ListItems (if available) or just assume if no error it's fine.
 		// Wait, we should verify data.
 		// Since we don't have GetItemByURL, let's just inspect the DB directly or use generated queries?
@@ -71,55 +71,55 @@ func TestStore_SaveFetchedItem(t *testing.T) {
 		// But s.Queries doesn't expose GetItemByURL? Let's check query.sql.go.
 	})
 
-    // Let's verify side effects manually via raw SQL for now if helper not available
-    var itemID string
-    err = s.DB.QueryRowContext(ctx, "SELECT id FROM items WHERE url = ?", itemURL).Scan(&itemID)
-    require.NoError(t, err)
-    require.NotEmpty(t, itemID)
+	// Let's verify side effects manually via raw SQL for now if helper not available
+	var itemID string
+	err = s.DB.QueryRowContext(ctx, "SELECT id FROM items WHERE url = ?", itemURL).Scan(&itemID)
+	require.NoError(t, err)
+	require.NotEmpty(t, itemID)
 
-    // Verify FeedItem link
-    var linkCount int
-    err = s.DB.QueryRowContext(ctx, "SELECT count(*) FROM feed_items WHERE feed_id = ? AND item_id = ?", feedID, itemID).Scan(&linkCount)
-    require.NoError(t, err)
-    assert.Equal(t, 1, linkCount)
+	// Verify FeedItem link
+	var linkCount int
+	err = s.DB.QueryRowContext(ctx, "SELECT count(*) FROM feed_items WHERE feed_id = ? AND item_id = ?", feedID, itemID).Scan(&linkCount)
+	require.NoError(t, err)
+	assert.Equal(t, 1, linkCount)
 
-    // Verify ItemRead
-    var readCount int
-    err = s.DB.QueryRowContext(ctx, "SELECT count(*) FROM item_reads WHERE item_id = ? AND is_read = 0", itemID).Scan(&readCount)
-    require.NoError(t, err)
-    assert.Equal(t, 1, readCount)
+	// Verify ItemRead
+	var readCount int
+	err = s.DB.QueryRowContext(ctx, "SELECT count(*) FROM item_reads WHERE item_id = ? AND is_read = 0", itemID).Scan(&readCount)
+	require.NoError(t, err)
+	assert.Equal(t, 1, readCount)
 
 	// 4. Second Save (Duplicate URL - Should update title, keep ID, ignore link/read duplication)
 	t.Run("Second Save (Idempotent)", func(t *testing.T) {
-        newTitle := "Article 1 Updated"
-        params.Title = &newTitle
-        
+		newTitle := "Article 1 Updated"
+		params.Title = &newTitle
+
 		err := s.SaveFetchedItem(ctx, params)
 		require.NoError(t, err)
 
-        // Verify ID is same
-        var newItemID string
-        err = s.DB.QueryRowContext(ctx, "SELECT id, title FROM items WHERE url = ?", itemURL).Scan(&newItemID, &newTitle)
-        require.NoError(t, err)
-        assert.Equal(t, itemID, newItemID)
-        assert.Equal(t, "Article 1 Updated", newTitle)
+		// Verify ID is same
+		var newItemID string
+		err = s.DB.QueryRowContext(ctx, "SELECT id, title FROM items WHERE url = ?", itemURL).Scan(&newItemID, &newTitle)
+		require.NoError(t, err)
+		assert.Equal(t, itemID, newItemID)
+		assert.Equal(t, "Article 1 Updated", newTitle)
 
-        // Verify Link count still 1
-        err = s.DB.QueryRowContext(ctx, "SELECT count(*) FROM feed_items WHERE feed_id = ? AND item_id = ?", feedID, itemID).Scan(&linkCount)
-        require.NoError(t, err)
-        assert.Equal(t, 1, linkCount)
+		// Verify Link count still 1
+		err = s.DB.QueryRowContext(ctx, "SELECT count(*) FROM feed_items WHERE feed_id = ? AND item_id = ?", feedID, itemID).Scan(&linkCount)
+		require.NoError(t, err)
+		assert.Equal(t, 1, linkCount)
 	})
 
 	t.Run("Error on Closed DB", func(t *testing.T) {
 		// Create a separate store with a closed DB to avoid affecting other tests if we were reusing
 		// But here we can just close the main DB since it's the last test or we can create a new one.
 		// Use a new one to be clean.
-		
+
 		db, err := sql.Open("sqlite3", ":memory:")
 		require.NoError(t, err)
 		storeClosed := store.NewStore(db)
 		_ = db.Close()
-		
+
 		err = storeClosed.SaveFetchedItem(ctx, params)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to begin transaction")

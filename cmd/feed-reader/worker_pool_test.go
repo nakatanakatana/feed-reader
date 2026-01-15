@@ -13,8 +13,7 @@ import (
 func TestWorkerPool_Concurrency(t *testing.T) {
 	maxWorkers := 3
 	wp := NewWorkerPool(maxWorkers)
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 
 	wp.Start(ctx)
 
@@ -26,14 +25,14 @@ func TestWorkerPool_Concurrency(t *testing.T) {
 
 	wg.Add(totalTasks)
 
-	for i := 0; i < totalTasks; i++ {
+	for range totalTasks {
 		wp.AddTask(func(ctx context.Context) error {
 			defer wg.Done()
-			
+
 			current := atomic.AddInt32(&activeWorkers, 1)
-			
+
 			// Update max active workers if current is higher
-			// This is a simple check, theoretically there's a race here but strictly for 
+			// This is a simple check, theoretically there's a race here but strictly for
 			// checking if we exceeded the limit significantly it works.
 			// A better way is using a lock for the max check.
 			for {
@@ -47,7 +46,7 @@ func TestWorkerPool_Concurrency(t *testing.T) {
 			}
 
 			time.Sleep(10 * time.Millisecond) // Simulate work
-			
+
 			atomic.AddInt32(&activeWorkers, -1)
 			atomic.AddInt32(&completedTasks, 1)
 			return nil

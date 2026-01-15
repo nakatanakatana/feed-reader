@@ -75,20 +75,20 @@ func TestQueries_CreateItem(t *testing.T) {
 		// Wait, the INSERT statement tries to insert a NEW ID.
 		// SQLite ON CONFLICT UPDATE does NOT update the Primary Key unless specified.
 		// So the ID should remain "item-2".
-		
+
 		// Let's verify the ID is still the original one by querying
 		// But CreateItem returns the row. Let's see what it returns.
 		// It returns the updated row.
-		
+
 		// ACTUALLY, checking the query:
 		// INSERT INTO items (id, ...) VALUES (?, ...)
 		// ON CONFLICT(url) DO UPDATE SET title = excluded.title ...
 		// It does NOT update ID.
-		
+
 		// NOTE: In SQLite, if we insert with a different ID but same URL, and it conflicts on URL,
 		// the row is updated. The ID remains the OLD ID.
 		// The RETURNING clause should return the row as it exists after the update.
-		
+
 		assert.Equal(t, "item-2", item.ID)
 	})
 }
