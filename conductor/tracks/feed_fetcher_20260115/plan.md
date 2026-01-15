@@ -7,10 +7,10 @@
     - [x] Linking items to feeds in `feed_items`.
     - [x] Initializing/Managing `item_reads`.
 - [x] Task: Generate Go code using `sqlc` (`sqlc generate`). 4b193ee
-- [ ] Task: Conductor - User Manual Verification 'Database Schema & Store Generation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Database Schema & Store Generation' (Protocol in workflow.md) [checkpoint: 1b96485]
 
 ## Phase 2: Storage Layer Logic (TDD)
-- [ ] Task: Implement atomic storage logic for saving fetched items.
+- [~] Task: Implement atomic storage logic for saving fetched items.
     - [ ] Sub-task: Write tests in `store/` to verify URL deduplication and multi-table association.
     - [ ] Sub-task: Implement the logic in `store` package to pass the tests.
     - [ ] Sub-task: Verify >80% coverage for new store logic.
