@@ -54,3 +54,39 @@ DELETE FROM
   feeds
 WHERE
   uuid = ?;
+
+-- name: CreateItem :one
+INSERT INTO items (
+  id,
+  url,
+  title,
+  description,
+  published_at,
+  guid
+) VALUES (
+  ?, ?, ?, ?, ?, ?
+)
+ON CONFLICT(url) DO UPDATE SET
+  title = excluded.title,
+  description = excluded.description,
+  published_at = excluded.published_at,
+  guid = excluded.guid,
+  updated_at = CURRENT_TIMESTAMP
+RETURNING *;
+
+-- name: CreateFeedItem :exec
+INSERT INTO feed_items (
+  feed_id,
+  item_id
+) VALUES (
+  ?, ?
+)
+ON CONFLICT(feed_id, item_id) DO NOTHING;
+
+-- name: CreateItemRead :exec
+INSERT INTO item_reads (
+  item_id
+) VALUES (
+  ?
+)
+ON CONFLICT(item_id) DO NOTHING;
