@@ -20,9 +20,9 @@
 - [x] Task: Implement the background worker pool. cf41e18
     - [x] Sub-task: Write tests for the worker pool (concurrency limit, error handling).
     - [x] Sub-task: Implement the worker pool logic to pass the tests.
-- [ ] Task: Implement the periodic scheduler (Ticker).
-    - [ ] Sub-task: Write tests for the scheduler (ensuring it triggers at intervals).
-    - [ ] Sub-task: Implement the scheduler in `cmd/feed-reader/fetcher.go`.
+- [x] Task: Implement the periodic scheduler (Ticker). 10f4d4f
+    - [x] Sub-task: Write tests for the scheduler (ensuring it triggers at intervals).
+    - [x] Sub-task: Implement the scheduler in `cmd/feed-reader/fetcher.go`.
 - [ ] Task: Conductor - User Manual Verification 'Background Fetcher & Worker Pool' (Protocol in workflow.md)
 
 ## Phase 4: Main Integration & E2E Verification
