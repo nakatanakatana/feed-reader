@@ -36,7 +36,9 @@ func (s *Store) SaveFetchedItem(ctx context.Context, params SaveFetchedItemParam
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() {
+		_ = tx.Rollback()
+	}()
 
 	qtx := s.WithTx(tx)
 

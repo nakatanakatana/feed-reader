@@ -21,7 +21,7 @@ func setupDB(t *testing.T) *store.Queries {
 	require.NoError(t, err)
 
 	t.Cleanup(func() {
-		db.Close()
+		_ = db.Close()
 	})
 
 	return store.New(db)

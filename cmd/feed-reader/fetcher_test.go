@@ -52,7 +52,7 @@ func TestGofeedFetcher_Fetch(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", tt.contentType)
-				fmt.Fprint(w, tt.feedContent)
+				_, _ = fmt.Fprint(w, tt.feedContent)
 			}))
 			defer server.Close()
 

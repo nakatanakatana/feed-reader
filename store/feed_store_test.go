@@ -22,7 +22,7 @@ func setupStore(t *testing.T) *store.Store {
 	require.NoError(t, err)
 
 	t.Cleanup(func() {
-		db.Close()
+		_ = db.Close()
 	})
 
 	return store.NewStore(db)
@@ -118,7 +118,7 @@ func TestStore_SaveFetchedItem(t *testing.T) {
 		db, err := sql.Open("sqlite3", ":memory:")
 		require.NoError(t, err)
 		storeClosed := store.NewStore(db)
-		db.Close()
+		_ = db.Close()
 		
 		err = storeClosed.SaveFetchedItem(ctx, params)
 		require.Error(t, err)
