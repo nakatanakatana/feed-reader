@@ -25,7 +25,7 @@
     - [x] Sub-task: Implement the scheduler in `cmd/feed-reader/fetcher.go`.
 - [x] Task: Conductor - User Manual Verification 'Background Fetcher & Worker Pool' (Protocol in workflow.md)
 
-## Phase 4: Main Integration & E2E Verification
+## Phase 4: Main Integration & E2E Verification [checkpoint: 5e075ed]
 - [x] Task: Wire up the background fetcher in `cmd/feed-reader/main.go`. e2e3b16
 - [x] Task: Add logging and observability for the fetcher process. e2e3b16
 - [x] Task: Final E2E manual verification of periodic fetching and database storage.
