@@ -6,6 +6,9 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/caarlos0/env/v11"
 	_ "github.com/mattn/go-sqlite3"
@@ -17,12 +20,17 @@ import (
 )
 
 type config struct {
-	Port   string `env:"PORT" envDefault:"8080"`
-	DBPath string `env:"DB_PATH" envDefault:"feed-reader.db"`
+	Port          string        `env:"PORT" envDefault:"8080"`
+	DBPath        string        `env:"DB_PATH" envDefault:"feed-reader.db"`
+	FetchInterval time.Duration `env:"FETCH_INTERVAL" envDefault:"30m"`
+	MaxWorkers    int           `env:"MAX_WORKERS" envDefault:"10"`
 }
 
 func main() {
-	ctx := context.Background()
+	// Root context for the whole application
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
 	var cfg config
@@ -48,22 +56,55 @@ func main() {
 		os.Exit(1)
 	}
 
-	queries := store.New(db)
+	// 1. Initialize Storage
+	s := store.NewStore(db)
+
+	// 2. Initialize Worker Pool
+	pool := NewWorkerPool(cfg.MaxWorkers)
+	pool.Start(ctx)
+
+	// 3. Initialize Fetcher components
 	fetcher := NewGofeedFetcher()
-	feedServer := NewFeedServer(queries, nil, fetcher)
+	fetchService := NewFetcherService(s, fetcher, pool, logger)
+
+	// 4. Initialize Scheduler
+	scheduler := NewScheduler(cfg.FetchInterval, fetchService.FetchAllFeeds)
+	go scheduler.Start(ctx)
+
+	// 5. Initialize API Server
+	feedServer := NewFeedServer(s.Queries, nil, fetcher)
 	path, handler := feedv1connect.NewFeedServiceHandler(feedServer)
 
 	mux := http.NewServeMux()
 	mux.Handle(path, handler)
 
-	logger.InfoContext(ctx, "server starting", "port", cfg.Port)
 	server := &http.Server{
 		Addr:    ":" + cfg.Port,
 		Handler: h2c.NewHandler(mux, &http2.Server{}),
 	}
 
-	if err := server.ListenAndServe(); err != nil {
-		logger.ErrorContext(ctx, "server failed", "error", err)
-		os.Exit(1)
+	// Run server in a goroutine
+	go func() {
+		logger.InfoContext(ctx, "server starting", "port", cfg.Port)
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			logger.ErrorContext(ctx, "server failed", "error", err)
+			os.Exit(1)
+		}
+	}()
+
+	// Wait for interruption signal
+	<-ctx.Done()
+	logger.InfoContext(ctx, "shutting down gracefully...")
+
+	// Shutdown HTTP server
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := server.Shutdown(shutdownCtx); err != nil {
+		logger.ErrorContext(ctx, "server forced to shutdown", "error", err)
 	}
+
+	// Wait for worker pool to finish current tasks
+	pool.Wait()
+
+	logger.InfoContext(ctx, "shutdown complete")
 }

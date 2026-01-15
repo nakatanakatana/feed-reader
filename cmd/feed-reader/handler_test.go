@@ -216,7 +216,7 @@ func TestFeedServer_ListFeeds(t *testing.T) {
 		{
 			name: "List 3 feeds",
 			setup: func(t *testing.T, server feedv1connect.FeedServiceHandler) {
-				for i := 0; i < 3; i++ {
+				for i := range 3 {
 					_, err := server.CreateFeed(ctx, connect.NewRequest(&feedv1.CreateFeedRequest{
 						Url:   "https://example.com/list-" + string(rune('a'+i)),
 						Title: proto.String("Feed " + string(rune('a'+i))),
