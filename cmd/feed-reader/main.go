@@ -22,8 +22,8 @@ import (
 type config struct {
 	Port          string        `env:"PORT" envDefault:"8080"`
 	DBPath        string        `env:"DB_PATH" envDefault:"feed-reader.db"`
-	FetchInterval time.Duration `env:"FETCH_INTERVAL" envDefault:"10m"`
-	MaxWorkers    int           `env:"MAX_WORKERS" envDefault:"5"`
+	FetchInterval time.Duration `env:"FETCH_INTERVAL" envDefault:"30m"`
+	MaxWorkers    int           `env:"MAX_WORKERS" envDefault:"10"`
 }
 
 func main() {
