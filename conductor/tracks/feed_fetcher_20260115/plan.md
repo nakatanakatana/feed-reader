@@ -10,10 +10,10 @@
 - [x] Task: Conductor - User Manual Verification 'Database Schema & Store Generation' (Protocol in workflow.md) [checkpoint: 1b96485]
 
 ## Phase 2: Storage Layer Logic (TDD)
-- [~] Task: Implement atomic storage logic for saving fetched items.
-    - [ ] Sub-task: Write tests in `store/` to verify URL deduplication and multi-table association.
-    - [ ] Sub-task: Implement the logic in `store` package to pass the tests.
-    - [ ] Sub-task: Verify >80% coverage for new store logic.
+- [x] Task: Implement atomic storage logic for saving fetched items. 201e098
+    - [x] Sub-task: Write tests in `store/` to verify URL deduplication and multi-table association.
+    - [x] Sub-task: Implement the logic in `store` package to pass the tests.
+    - [x] Sub-task: Verify >80% coverage for new store logic.
 - [ ] Task: Conductor - User Manual Verification 'Storage Layer Logic' (Protocol in workflow.md)
 
 ## Phase 3: Background Fetcher & Worker Pool (TDD)
