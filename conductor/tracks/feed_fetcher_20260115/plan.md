@@ -9,12 +9,12 @@
 - [x] Task: Generate Go code using `sqlc` (`sqlc generate`). 4b193ee
 - [x] Task: Conductor - User Manual Verification 'Database Schema & Store Generation' (Protocol in workflow.md) [checkpoint: 1b96485]
 
-## Phase 2: Storage Layer Logic (TDD)
+## Phase 2: Storage Layer Logic (TDD) [checkpoint: 4044043]
 - [x] Task: Implement atomic storage logic for saving fetched items. 201e098
     - [x] Sub-task: Write tests in `store/` to verify URL deduplication and multi-table association.
     - [x] Sub-task: Implement the logic in `store` package to pass the tests.
     - [x] Sub-task: Verify >80% coverage for new store logic.
-- [ ] Task: Conductor - User Manual Verification 'Storage Layer Logic' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Storage Layer Logic' (Protocol in workflow.md)
 
 ## Phase 3: Background Fetcher & Worker Pool (TDD)
 - [ ] Task: Implement the background worker pool.
