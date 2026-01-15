@@ -28,5 +28,5 @@
 ## Phase 4: Main Integration & E2E Verification
 - [x] Task: Wire up the background fetcher in `cmd/feed-reader/main.go`. e2e3b16
 - [x] Task: Add logging and observability for the fetcher process. e2e3b16
-- [ ] Task: Final E2E manual verification of periodic fetching and database storage.
-- [ ] Task: Conductor - User Manual Verification 'Main Integration & E2E Verification' (Protocol in workflow.md)
+- [x] Task: Final E2E manual verification of periodic fetching and database storage.
+- [x] Task: Conductor - User Manual Verification 'Main Integration & E2E Verification' (Protocol in workflow.md)
