@@ -2,11 +2,11 @@
 
 ## Phase 1: Database Schema & Store Generation
 - [x] Task: Create migration SQL for `items`, `feed_items`, and `item_reads` tables in `sql/schema.sql`. cc2cbbb
-- [~] Task: Define `sqlc` queries in `sql/query.sql` for:
-    - [ ] Inserting/Upserting `items` (deduplication by URL).
-    - [ ] Linking items to feeds in `feed_items`.
-    - [ ] Initializing/Managing `item_reads`.
-- [ ] Task: Generate Go code using `sqlc` (`sqlc generate`).
+- [x] Task: Define `sqlc` queries in `sql/query.sql` for:
+    - [x] Inserting/Upserting `items` (deduplication by URL).
+    - [x] Linking items to feeds in `feed_items`.
+    - [x] Initializing/Managing `item_reads`.
+- [x] Task: Generate Go code using `sqlc` (`sqlc generate`). 4b193ee
 - [ ] Task: Conductor - User Manual Verification 'Database Schema & Store Generation' (Protocol in workflow.md)
 
 ## Phase 2: Storage Layer Logic (TDD)
