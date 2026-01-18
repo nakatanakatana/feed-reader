@@ -89,15 +89,16 @@ export function ItemCard(props: ItemCardProps) {
           />
         </Show>
         <div class={stack({ gap: "1", flex: "1" })}>
-          					<p
-          						class={css({
-          							fontSize: "sm",
-          							color: "gray.600",
-          							lineClamp: 3,
-          						})}
-          					>
-          						{props.item.description || props.item.content}
-          					</p>          <div class={flex({ gap: "2", fontSize: "xs", color: "gray.400" })}>
+          <p
+            class={css({
+              fontSize: "sm",
+              color: "gray.600",
+              lineClamp: 3,
+            })}
+          >
+            {props.item.description || props.item.content}
+          </p>{" "}
+          <div class={flex({ gap: "2", fontSize: "xs", color: "gray.400" })}>
             <Show when={props.item.author}>
               {(author) => (
                 <>
