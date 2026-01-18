@@ -15,11 +15,11 @@
 - [x] Task: Conductor - User Manual Verification 'API Contract & Database Schema' (Protocol in workflow.md) 63bb619
 
 ## Phase 2: Backend Implementation
-- [ ] Task: Implement Read Status Management
-    - [ ] Create test `cmd/feed-reader/handler_item_read_test.go` for `MarkItemRead` (Red).
-    - [ ] Implement `MarkItemRead` logic in `cmd/feed-reader/handler.go` (Green).
-    - [ ] Refactor and verify tests.
-- [ ] Task: Implement Get Item Detail
+- [x] Task: Implement Read Status Management cc701b2
+    - [x] Create test `cmd/feed-reader/handler_item_read_test.go` for `MarkItemRead` (Red).
+    - [x] Implement `MarkItemRead` logic in `cmd/feed-reader/handler.go` (Green).
+    - [x] Refactor and verify tests.
+- [~] Task: Implement Get Item Detail
     - [ ] Create test `cmd/feed-reader/handler_item_get_test.go` for `GetItem` (Red).
     - [ ] Implement `GetItem` logic (Green).
     - [ ] Refactor and verify tests.
