@@ -21,6 +21,7 @@ type FeedServer struct {
 
 type ItemFetcher interface {
 	FetchAndSave(ctx context.Context, f store.Feed) error
+	FetchFeedsByIDs(ctx context.Context, uuids []string) error
 }
 
 func NewFeedServer(queries *store.Queries, uuidGen UUIDGenerator, fetcher FeedFetcher, itemFetcher ItemFetcher) feedv1connect.FeedServiceHandler {
@@ -151,7 +152,15 @@ func (s *FeedServer) DeleteFeed(ctx context.Context, req *connect.Request[feedv1
 }
 
 func (s *FeedServer) RefreshFeeds(ctx context.Context, req *connect.Request[feedv1.RefreshFeedsRequest]) (*connect.Response[feedv1.RefreshFeedsResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("not implemented"))
+	if len(req.Msg.Uuids) == 0 {
+		return connect.NewResponse(&feedv1.RefreshFeedsResponse{}), nil
+	}
+
+	if err := s.itemFetcher.FetchFeedsByIDs(ctx, req.Msg.Uuids); err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	return connect.NewResponse(&feedv1.RefreshFeedsResponse{}), nil
 }
 
 func toProtoFeed(f store.Feed) *feedv1.Feed {
