@@ -2,8 +2,8 @@
 coverage:
   if: true
   paths:
-    - coverage.out
-    - frontend/coverage/lcov.info
+    - octocov-frontend/lcov.info
+    - octocov-backend/coverage.out
 codeToTestRatio:
   code:
     - '**/*.go'
