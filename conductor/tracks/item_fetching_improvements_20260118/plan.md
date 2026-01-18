@@ -5,7 +5,7 @@
     - [ ] Add `RefreshFeeds(RefreshFeedsRequest) returns (RefreshFeedsResponse)` to `FeedService` in `proto/feed/v1/feed.proto`.
     - [ ] Define `RefreshFeedsRequest` with `repeated string uuids = 1`.
     - [ ] Run `buf generate` to update Go and TypeScript code.
-- [ ] Task: Implement Immediate Fetching in `CreateFeed`
+- [x] Task: Implement Immediate Fetching in `CreateFeed` 8905ebc
     - [ ] Modify `CreateFeed` in `cmd/feed-reader/handler.go` to call `fetcherService.FetchAndSave` asynchronously or synchronously after storage.
 - [ ] Task: Conductor - User Manual Verification 'API Contract & Immediate Fetching' (Protocol in workflow.md)
 
