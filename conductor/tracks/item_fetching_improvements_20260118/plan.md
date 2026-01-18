@@ -1,6 +1,6 @@
 # Implementation Plan - Item Fetching Improvements
 
-## Phase 1: API Contract & Immediate Fetching
+## Phase 1: API Contract & Immediate Fetching [checkpoint: 8d7a11d]
 - [x] Task: Update Protobuf Definition for `RefreshFeeds` 65e7060
     - [ ] Add `RefreshFeeds(RefreshFeedsRequest) returns (RefreshFeedsResponse)` to `FeedService` in `proto/feed/v1/feed.proto`.
     - [ ] Define `RefreshFeedsRequest` with `repeated string uuids = 1`.
