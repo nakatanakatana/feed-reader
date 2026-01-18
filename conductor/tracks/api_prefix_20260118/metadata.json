@@ -1,0 +1,8 @@
+{
+  "track_id": "api_prefix_20260118",
+  "type": "chore",
+  "status": "new",
+  "created_at": "2026-01-18T12:00:00Z",
+  "updated_at": "2026-01-18T12:00:00Z",
+  "description": "Move backend API endpoints under /api to facilitate future bundled distribution."
+}
