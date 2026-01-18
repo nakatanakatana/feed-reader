@@ -6,7 +6,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Update' (Protocol in workflow.md)
 
 ## Phase 2: Frontend & Tooling Update
-- [ ] Task: Update Frontend Transport
+- [x] Task: Update Frontend Transport 98a69b4
     - [ ] Update `frontend/src/lib/query.ts` to set `baseUrl` to `/api`.
     - [ ] Verify frontend tests pass.
 - [ ] Task: Update Vite Configuration
