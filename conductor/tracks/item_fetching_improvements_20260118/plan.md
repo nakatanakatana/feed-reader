@@ -20,11 +20,11 @@
     - [ ] Ensure this method bypasses the interval check.
 - [ ] Task: Conductor - User Manual Verification 'Core Logic Improvements' (Protocol in workflow.md)
 
-## Phase 3: Refresh API Implementation & Integration
+## Phase 3: Refresh API Implementation & Integration [checkpoint: 00683e6]
 - [x] Task: Implement `RefreshFeeds` RPC Handler d85de13
     - [ ] Add `RefreshFeeds` implementation to `FeedServer` in `cmd/feed-reader/handler.go`.
     - [ ] Wire it up to `fetcherService.FetchFeedsByIDs`.
-- [ ] Task: Final Verification
+- [x] Task: Final Verification 00683e6
     - [ ] Write unit tests for the interval check logic in `FetcherService`.
     - [ ] Verify jitter behavior via logs.
     - [ ] Perform manual verification of `RefreshFeeds` via `curl`.
