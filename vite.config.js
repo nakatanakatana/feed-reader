@@ -14,7 +14,7 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      "/feed.v1.FeedService": {
+      "/api": {
         target: "http://localhost:8080",
         changeOrigin: true,
       },
