@@ -693,9 +693,9 @@ export class ListGlobalItemsRequest extends Message<ListGlobalItemsRequest> {
   pageToken = "";
 
   /**
-   * @generated from field: bool is_read = 3;
+   * @generated from field: bool unread_only = 3;
    */
-  isRead = false;
+  unreadOnly = false;
 
   constructor(data?: PartialMessage<ListGlobalItemsRequest>) {
     super();
@@ -707,7 +707,7 @@ export class ListGlobalItemsRequest extends Message<ListGlobalItemsRequest> {
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "page_size", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
     { no: 2, name: "page_token", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 3, name: "is_read", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+    { no: 3, name: "unread_only", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListGlobalItemsRequest {
@@ -790,9 +790,9 @@ export class ListFeedItemsRequest extends Message<ListFeedItemsRequest> {
   pageToken = "";
 
   /**
-   * @generated from field: bool is_read = 4;
+   * @generated from field: bool unread_only = 4;
    */
-  isRead = false;
+  unreadOnly = false;
 
   constructor(data?: PartialMessage<ListFeedItemsRequest>) {
     super();
@@ -805,7 +805,7 @@ export class ListFeedItemsRequest extends Message<ListFeedItemsRequest> {
     { no: 1, name: "feed_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 2, name: "page_size", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
     { no: 3, name: "page_token", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 4, name: "is_read", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+    { no: 4, name: "unread_only", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListFeedItemsRequest {

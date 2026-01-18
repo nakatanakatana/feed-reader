@@ -19,19 +19,19 @@
     - [x] Create test `cmd/feed-reader/handler_item_read_test.go` for `MarkItemRead` (Red).
     - [x] Implement `MarkItemRead` logic in `cmd/feed-reader/handler.go` (Green).
     - [x] Refactor and verify tests.
-- [~] Task: Implement Get Item Detail
-    - [ ] Create test `cmd/feed-reader/handler_item_get_test.go` for `GetItem` (Red).
-    - [ ] Implement `GetItem` logic (Green).
-    - [ ] Refactor and verify tests.
-- [ ] Task: Implement Feed Specific Item List
-    - [ ] Create test `cmd/feed-reader/handler_item_list_feed_test.go` for `ListFeedItems` with pagination (Red).
-    - [ ] Implement `ListFeedItems` logic using cursor pagination (Green).
-    - [ ] Refactor and verify tests.
-- [ ] Task: Implement Global Timeline
-    - [ ] Create test `cmd/feed-reader/handler_item_list_global_test.go` for `ListGlobalItems` (Red).
-    - [ ] Implement `ListGlobalItems` logic (Green).
-    - [ ] Refactor and verify tests.
-- [ ] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md)
+- [x] Task: Implement Get Item Detail 0bf06e0
+    - [x] Create test `cmd/feed-reader/handler_item_get_test.go` for `GetItem` (Red).
+    - [x] Implement `GetItem` logic (Green).
+    - [x] Refactor and verify tests.
+- [x] Task: Implement Feed Specific Item List 0bf06e0
+    - [x] Create test `cmd/feed-reader/handler_item_list_feed_test.go` for `ListFeedItems` with pagination (Red).
+    - [x] Implement `ListFeedItems` logic using cursor pagination (Green).
+    - [x] Refactor and verify tests.
+- [x] Task: Implement Global Timeline 0bf06e0
+    - [x] Create test `cmd/feed-reader/handler_item_list_global_test.go` for `ListGlobalItems` (Red).
+    - [x] Implement `ListGlobalItems` logic (Green).
+    - [x] Refactor and verify tests.
+- [~] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md)
 
 ## Phase 3: Frontend Implementation
 - [ ] Task: Setup Frontend Data Layer
