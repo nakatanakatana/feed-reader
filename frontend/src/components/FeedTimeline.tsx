@@ -15,14 +15,7 @@ interface FeedTimelineProps {
 export function FeedTimeline(props: FeedTimelineProps) {
   const [unreadOnly, setUnreadOnly] = createSignal(false);
 
-  const query = useItems({
-    get feedId() {
-      return props.feedId;
-    },
-    get unreadOnly() {
-      return unreadOnly();
-    },
-  });
+  const query = useItems(() => props.feedId, unreadOnly);
   const markRead = useMarkItemRead();
 
   const handleItemClick = (item: Item) => {

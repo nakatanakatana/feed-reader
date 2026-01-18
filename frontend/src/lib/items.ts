@@ -8,25 +8,31 @@ import {
 import { FeedService } from "../gen/feed/v1/feed_connect";
 import { useTransport } from "./transport-context";
 
-export function useItems(options: { feedId?: string; unreadOnly?: boolean }) {
+export function useItems(
+  feedId: () => string | undefined,
+  unreadOnly: () => boolean,
+) {
   const transport = useTransport();
   const client = createClient(FeedService, transport);
 
   return createInfiniteQuery(() => ({
-    queryKey: ["items", options.feedId, options.unreadOnly],
+    queryKey: ["items", feedId(), unreadOnly()],
     queryFn: async ({ pageParam }) => {
-      if (options.feedId) {
+      const currentFeedId = feedId();
+      const currentUnreadOnly = unreadOnly();
+
+      if (currentFeedId) {
         return await client.listFeedItems({
-          feedId: options.feedId,
+          feedId: currentFeedId,
           pageSize: 20,
           pageToken: pageParam as string,
-          unreadOnly: options.unreadOnly,
+          unreadOnly: currentUnreadOnly,
         });
       }
       return await client.listGlobalItems({
         pageSize: 20,
         pageToken: pageParam as string,
-        unreadOnly: options.unreadOnly,
+        unreadOnly: currentUnreadOnly,
       });
     },
     initialPageParam: "",
