@@ -14,7 +14,7 @@
     - [x] Run `sqlc generate` to update Go database code.
 - [x] Task: Conductor - User Manual Verification 'API Contract & Database Schema' (Protocol in workflow.md) 63bb619
 
-## Phase 2: Backend Implementation
+## Phase 2: Backend Implementation [checkpoint: 6b2123c]
 - [x] Task: Implement Read Status Management cc701b2
     - [x] Create test `cmd/feed-reader/handler_item_read_test.go` for `MarkItemRead` (Red).
     - [x] Implement `MarkItemRead` logic in `cmd/feed-reader/handler.go` (Green).
@@ -31,7 +31,7 @@
     - [x] Create test `cmd/feed-reader/handler_item_list_global_test.go` for `ListGlobalItems` (Red).
     - [x] Implement `ListGlobalItems` logic (Green).
     - [x] Refactor and verify tests.
-- [~] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md) 6b2123c
 
 ## Phase 3: Frontend Implementation
 - [ ] Task: Setup Frontend Data Layer
