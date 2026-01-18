@@ -9,7 +9,7 @@
     - [ ] Modify `CreateFeed` in `cmd/feed-reader/handler.go` to call `fetcherService.FetchAndSave` asynchronously or synchronously after storage.
 - [ ] Task: Conductor - User Manual Verification 'API Contract & Immediate Fetching' (Protocol in workflow.md)
 
-## Phase 2: Core Logic Improvements (Interval & Jitter)
+## Phase 2: Core Logic Improvements (Interval & Jitter) [checkpoint: f946a64]
 - [x] Task: Implement Jitter in `Scheduler` ec0c8c7
     - [ ] Modify `Scheduler` in `cmd/feed-reader/scheduler.go` to accept a jitter configuration or implement a simple random delay for each tick.
 - [x] Task: Implement Interval Check in `FetcherService` b9c36e8
