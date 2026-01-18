@@ -15,7 +15,7 @@
 - [x] Task: Implement Interval Check in `FetcherService` b9c36e8
     - [ ] Add `fetch_interval` to `FetcherService` configuration.
     - [ ] Update `FetchAllFeeds` in `cmd/feed-reader/fetcher_service.go` to filter feeds based on `last_fetched_at` + `fetch_interval`.
-- [ ] Task: Update `FetcherService` to support Refresh by IDs
+- [x] Task: Update `FetcherService` to support Refresh by IDs 8e6af45
     - [ ] Add `FetchFeedsByIDs(ctx context.Context, uuids []string)` to `FetcherService`.
     - [ ] Ensure this method bypasses the interval check.
 - [ ] Task: Conductor - User Manual Verification 'Core Logic Improvements' (Protocol in workflow.md)
