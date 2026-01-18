@@ -39,14 +39,14 @@ func (s *FetcherService) FetchAllFeeds(ctx context.Context) error {
 	for _, feed := range feeds {
 		f := feed // capture loop variable
 		s.pool.AddTask(func(ctx context.Context) error {
-			return s.fetchAndSave(ctx, f)
+			return s.FetchAndSave(ctx, f)
 		})
 	}
 
 	return nil
 }
 
-func (s *FetcherService) fetchAndSave(ctx context.Context, f store.Feed) error {
+func (s *FetcherService) FetchAndSave(ctx context.Context, f store.Feed) error {
 	s.logger.DebugContext(ctx, "fetching feed", "url", f.Url, "uuid", f.Uuid)
 
 	parsedFeed, err := s.fetcher.Fetch(ctx, f.Url)
