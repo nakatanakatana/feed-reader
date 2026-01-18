@@ -9,10 +9,12 @@
     "build": "vite build && tsc --noEmit",
     "lint": "biome lint .",
     "format": "biome format . --write",
+    "format:check": "biome format .",
     "check": "biome check --write .",
     "serve": "vite preview",
     "start": "vite",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@bufbuild/protobuf": "^1.10.1",
@@ -32,6 +34,7 @@
     "@connectrpc/protoc-gen-connect-es": "^1.7.0",
     "@pandacss/dev": "^1.7.2",
     "@vitest/browser-playwright": "^4.0.16",
+    "@vitest/coverage-v8": "^4.0.16",
     "msw": "^2.12.7",
     "playwright": "^1.57.0",
     "solid-devtools": "^0.34.3",

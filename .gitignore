@@ -32,4 +32,6 @@ Thumbs.db
 ## Panda
 styled-system
 styled-system-studio
+
 coverage.out
+frontend/coverage/
