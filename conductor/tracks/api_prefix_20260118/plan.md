@@ -9,7 +9,7 @@
 - [x] Task: Update Frontend Transport 98a69b4
     - [ ] Update `frontend/src/lib/query.ts` to set `baseUrl` to `/api`.
     - [ ] Verify frontend tests pass.
-- [ ] Task: Update Vite Configuration
+- [x] Task: Update Vite Configuration f26de3f
     - [ ] Update `vite.config.js` to proxy `/api` requests to the backend `http://localhost:8080`.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Frontend & Tooling Update' (Protocol in workflow.md)
 
