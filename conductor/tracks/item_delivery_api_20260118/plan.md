@@ -1,6 +1,6 @@
 # Implementation Plan - Item Delivery API
 
-## Phase 1: API Contract & Database Schema
+## Phase 1: API Contract & Database Schema [checkpoint: 63bb619]
 - [x] Task: Define Protocol Buffer Messages and Services f419a42
     - [x] Update `proto/feed/v1/feed.proto` to include `Item` message definition.
     - [x] Add `ListGlobalItems`, `ListFeedItems`, `GetItem`, `MarkItemRead` RPC definitions to `FeedService`.
@@ -12,7 +12,7 @@
     - [x] Add `GetItem` query.
     - [x] Add `CreateItemRead` / `UpdateItemRead` queries to manage read status.
     - [x] Run `sqlc generate` to update Go database code.
-- [~] Task: Conductor - User Manual Verification 'API Contract & Database Schema' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'API Contract & Database Schema' (Protocol in workflow.md) 63bb619
 
 ## Phase 2: Backend Implementation
 - [ ] Task: Implement Read Status Management
