@@ -3,18 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import {
-  CreateFeedRequest,
-  CreateFeedResponse,
-  DeleteFeedRequest,
-  DeleteFeedResponse,
-  GetFeedRequest,
-  GetFeedResponse,
-  ListFeedsRequest,
-  ListFeedsResponse,
-  UpdateFeedRequest,
-  UpdateFeedResponse,
-} from "./feed_pb.js";
+import { CreateFeedRequest, CreateFeedResponse, DeleteFeedRequest, DeleteFeedResponse, GetFeedRequest, GetFeedResponse, ListFeedsRequest, ListFeedsResponse, RefreshFeedsRequest, RefreshFeedsResponse, UpdateFeedRequest, UpdateFeedResponse } from "./feed_pb.js";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**
@@ -68,5 +57,15 @@ export const FeedService = {
       O: DeleteFeedResponse,
       kind: MethodKind.Unary,
     },
-  },
+    /**
+     * @generated from rpc feed.v1.FeedService.RefreshFeeds
+     */
+    refreshFeeds: {
+      name: "RefreshFeeds",
+      I: RefreshFeedsRequest,
+      O: RefreshFeedsResponse,
+      kind: MethodKind.Unary,
+    },
+  }
 } as const;
+

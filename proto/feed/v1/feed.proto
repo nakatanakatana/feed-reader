@@ -10,6 +10,7 @@ service FeedService {
   rpc CreateFeed(CreateFeedRequest) returns (CreateFeedResponse);
   rpc UpdateFeed(UpdateFeedRequest) returns (UpdateFeedResponse);
   rpc DeleteFeed(DeleteFeedRequest) returns (DeleteFeedResponse);
+  rpc RefreshFeeds(RefreshFeedsRequest) returns (RefreshFeedsResponse);
 }
 
 message Feed {
@@ -80,3 +81,9 @@ message DeleteFeedRequest {
 }
 
 message DeleteFeedResponse {}
+
+message RefreshFeedsRequest {
+  repeated string uuids = 1;
+}
+
+message RefreshFeedsResponse {}
