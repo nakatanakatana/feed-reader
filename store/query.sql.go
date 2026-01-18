@@ -291,6 +291,26 @@ func (q *Queries) ListItemsByFeed(ctx context.Context, feedID string) ([]Item, e
 	return items, nil
 }
 
+const markFeedFetched = `-- name: MarkFeedFetched :exec
+UPDATE
+  feeds
+SET
+  last_fetched_at = ?,
+  updated_at = CURRENT_TIMESTAMP
+WHERE
+  uuid = ?
+`
+
+type MarkFeedFetchedParams struct {
+	LastFetchedAt *string `json:"last_fetched_at"`
+	Uuid          string  `json:"uuid"`
+}
+
+func (q *Queries) MarkFeedFetched(ctx context.Context, arg MarkFeedFetchedParams) error {
+	_, err := q.db.ExecContext(ctx, markFeedFetched, arg.LastFetchedAt, arg.Uuid)
+	return err
+}
+
 const updateFeed = `-- name: UpdateFeed :one
 UPDATE
   feeds

@@ -102,3 +102,12 @@ INSERT INTO item_reads (
   ?
 )
 ON CONFLICT(item_id) DO NOTHING;
+
+-- name: MarkFeedFetched :exec
+UPDATE
+  feeds
+SET
+  last_fetched_at = ?,
+  updated_at = CURRENT_TIMESTAMP
+WHERE
+  uuid = ?;

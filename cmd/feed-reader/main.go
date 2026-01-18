@@ -65,7 +65,7 @@ func main() {
 
 	// 3. Initialize Fetcher components
 	fetcher := NewGofeedFetcher()
-	fetchService := NewFetcherService(s, fetcher, pool, logger)
+	fetchService := NewFetcherService(s, fetcher, pool, logger, cfg.FetchInterval)
 
 	// 4. Initialize Scheduler
 	// Add random jitter up to 10% of interval

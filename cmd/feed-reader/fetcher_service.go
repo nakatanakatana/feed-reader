@@ -10,19 +10,21 @@ import (
 
 // FetcherService coordinates the background fetching process.
 type FetcherService struct {
-	store   *store.Store
-	fetcher FeedFetcher
-	pool    *WorkerPool
-	logger  *slog.Logger
+	store         *store.Store
+	fetcher       FeedFetcher
+	pool          *WorkerPool
+	logger        *slog.Logger
+	fetchInterval time.Duration
 }
 
 // NewFetcherService creates a new FetcherService.
-func NewFetcherService(s *store.Store, f FeedFetcher, p *WorkerPool, l *slog.Logger) *FetcherService {
+func NewFetcherService(s *store.Store, f FeedFetcher, p *WorkerPool, l *slog.Logger, fetchInterval time.Duration) *FetcherService {
 	return &FetcherService{
-		store:   s,
-		fetcher: f,
-		pool:    p,
-		logger:  l,
+		store:         s,
+		fetcher:       f,
+		pool:          p,
+		logger:        l,
+		fetchInterval: fetchInterval,
 	}
 }
 
@@ -37,6 +39,10 @@ func (s *FetcherService) FetchAllFeeds(ctx context.Context) error {
 	}
 
 	for _, feed := range feeds {
+		if !s.shouldFetch(feed) {
+			continue
+		}
+
 		f := feed // capture loop variable
 		s.pool.AddTask(func(ctx context.Context) error {
 			return s.FetchAndSave(ctx, f)
@@ -44,6 +50,20 @@ func (s *FetcherService) FetchAllFeeds(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+func (s *FetcherService) shouldFetch(f store.Feed) bool {
+	if f.LastFetchedAt == nil {
+		return true
+	}
+
+	lastFetched, err := time.Parse(time.RFC3339, *f.LastFetchedAt)
+	if err != nil {
+		s.logger.Warn("failed to parse last_fetched_at", "uuid", f.Uuid, "error", err)
+		return true // Fetch if date is invalid
+	}
+
+	return time.Since(lastFetched) >= s.fetchInterval
 }
 
 func (s *FetcherService) FetchAndSave(ctx context.Context, f store.Feed) error {
@@ -73,6 +93,16 @@ func (s *FetcherService) FetchAndSave(ctx context.Context, f store.Feed) error {
 			// Continue with next item
 			continue
 		}
+	}
+
+	// Update last_fetched_at
+	now := time.Now().Format(time.RFC3339)
+	if err := s.store.MarkFeedFetched(ctx, store.MarkFeedFetchedParams{
+		LastFetchedAt: &now,
+		Uuid:          f.Uuid,
+	}); err != nil {
+		s.logger.ErrorContext(ctx, "failed to update last_fetched_at", "uuid", f.Uuid, "error", err)
+		// Not a critical error, so we don't return it
 	}
 
 	s.logger.InfoContext(ctx, "successfully fetched and updated feed", "url", f.Url, "items", len(parsedFeed.Items))
