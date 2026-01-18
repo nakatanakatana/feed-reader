@@ -37,7 +37,7 @@ func TestRouting(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Failed to make request: %v", err)
 		}
-		defer resp.Body.Close()
+		defer func() { _ = resp.Body.Close() }()
 
 		// Should fail (404 NotFound) on root path after update
 		if resp.StatusCode != http.StatusNotFound {
@@ -53,7 +53,7 @@ func TestRouting(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Failed to make request: %v", err)
 		}
-		defer resp.Body.Close()
+		defer func() { _ = resp.Body.Close() }()
 
 		// Should succeed (200 OK) on /api path
 		if resp.StatusCode != http.StatusOK {
