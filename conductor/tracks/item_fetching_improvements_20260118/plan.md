@@ -10,7 +10,7 @@
 - [ ] Task: Conductor - User Manual Verification 'API Contract & Immediate Fetching' (Protocol in workflow.md)
 
 ## Phase 2: Core Logic Improvements (Interval & Jitter)
-- [ ] Task: Implement Jitter in `Scheduler`
+- [x] Task: Implement Jitter in `Scheduler` ec0c8c7
     - [ ] Modify `Scheduler` in `cmd/feed-reader/scheduler.go` to accept a jitter configuration or implement a simple random delay for each tick.
 - [ ] Task: Implement Interval Check in `FetcherService`
     - [ ] Add `fetch_interval` to `FetcherService` configuration.
