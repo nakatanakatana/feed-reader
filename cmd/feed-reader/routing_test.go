@@ -23,7 +23,7 @@ func TestRouting(t *testing.T) {
 
 	// Setup the mux (simulating main.go)
 	mux := http.NewServeMux()
-	mux.Handle(path, handler)
+	mux.Handle("/api"+path, http.StripPrefix("/api", handler))
 
 	// Create a test server
 	ts := httptest.NewServer(mux)
@@ -39,14 +39,14 @@ func TestRouting(t *testing.T) {
 		}
 		defer resp.Body.Close()
 
-		// Should succeed (200 OK) on root path currently
-		if resp.StatusCode != http.StatusOK {
-			t.Errorf("Expected status OK on root path %s, got %v", url, resp.Status)
+		// Should fail (404 NotFound) on root path after update
+		if resp.StatusCode != http.StatusNotFound {
+			t.Errorf("Expected status NotFound on root path %s, got %v", url, resp.Status)
 		}
 	})
 
-	t.Run("API prefix routing (negative test)", func(t *testing.T) {
-		// Should NOT work on /api yet
+	t.Run("API prefix routing", func(t *testing.T) {
+		// Should work on /api after update
 		url := ts.URL + "/api" + feedv1connect.FeedServiceListFeedsProcedure
 		
 		resp, err := http.Post(url, "application/json", strings.NewReader("{}"))
@@ -55,9 +55,9 @@ func TestRouting(t *testing.T) {
 		}
 		defer resp.Body.Close()
 
-		// Should fail (404 NotFound) on /api path currently
-		if resp.StatusCode != http.StatusNotFound {
-			t.Errorf("Expected status NotFound on /api path %s, got %v", url, resp.Status)
+		// Should succeed (200 OK) on /api path
+		if resp.StatusCode != http.StatusOK {
+			t.Errorf("Expected status OK on /api path %s, got %v", url, resp.Status)
 		}
 	})
 }

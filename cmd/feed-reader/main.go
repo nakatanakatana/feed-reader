@@ -78,7 +78,7 @@ func main() {
 	path, handler := feedv1connect.NewFeedServiceHandler(feedServer)
 
 	mux := http.NewServeMux()
-	mux.Handle(path, handler)
+	mux.Handle("/api"+path, http.StripPrefix("/api", handler))
 
 	server := &http.Server{
 		Addr:    ":" + cfg.Port,
