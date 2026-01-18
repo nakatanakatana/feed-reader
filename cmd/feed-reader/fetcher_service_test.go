@@ -131,3 +131,36 @@ func TestFetcherService_FetchAllFeeds_Interval(t *testing.T) {
 		t.Error("New feed should have been fetched")
 	}
 }
+
+func TestFetcherService_FetchFeedsByIDs(t *testing.T) {
+	ctx := context.Background()
+	queries, db := setupTestDB(t)
+	s := store.NewStore(db)
+
+	fetcher := &mockFetcher{feed: &gofeed.Feed{Title: "Forced"}}
+	pool := NewWorkerPool(1)
+	pool.Start(ctx)
+
+	logger := slog.New(slog.NewJSONHandler(&bytes.Buffer{}, nil))
+	interval := 30 * time.Minute
+	service := NewFetcherService(s, fetcher, pool, logger, interval)
+
+	// Create a feed that was fetched recently (so normally wouldn't be fetched)
+	recentTime := time.Now().Add(-1 * time.Minute).Format(time.RFC3339)
+	feed, _ := queries.CreateFeed(ctx, store.CreateFeedParams{Uuid: "forced", Url: "http://forced"})
+	_ = queries.MarkFeedFetched(ctx, store.MarkFeedFetchedParams{Uuid: feed.Uuid, LastFetchedAt: &recentTime})
+
+	// Force refresh
+	err := service.FetchFeedsByIDs(ctx, []string{feed.Uuid})
+	if err != nil {
+		t.Fatalf("FetchFeedsByIDs failed: %v", err)
+	}
+
+	pool.Wait()
+
+	// Verify it was fetched (last_fetched_at updated to NOW)
+	updatedFeed, _ := queries.GetFeed(ctx, feed.Uuid)
+	if *updatedFeed.LastFetchedAt == recentTime {
+		t.Error("Feed should have been force refreshed")
+	}
+}

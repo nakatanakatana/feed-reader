@@ -14,6 +14,14 @@ FROM
 ORDER BY
   created_at DESC;
 
+-- name: ListFeedsByUUIDs :many
+SELECT
+  *
+FROM
+  feeds
+WHERE
+  uuid IN (sqlc.slice('uuids'));
+
 -- name: CreateFeed :one
 INSERT INTO feeds (
   uuid,

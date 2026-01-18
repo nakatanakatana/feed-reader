@@ -7,6 +7,7 @@ package store
 
 import (
 	"context"
+	"strings"
 )
 
 const createFeed = `-- name: CreateFeed :one
@@ -211,6 +212,62 @@ ORDER BY
 
 func (q *Queries) ListFeeds(ctx context.Context) ([]Feed, error) {
 	rows, err := q.db.QueryContext(ctx, listFeeds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Feed
+	for rows.Next() {
+		var i Feed
+		if err := rows.Scan(
+			&i.Uuid,
+			&i.Url,
+			&i.Link,
+			&i.Title,
+			&i.Description,
+			&i.Language,
+			&i.ImageUrl,
+			&i.Copyright,
+			&i.FeedType,
+			&i.FeedVersion,
+			&i.LastFetchedAt,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listFeedsByUUIDs = `-- name: ListFeedsByUUIDs :many
+SELECT
+  uuid, url, link, title, description, language, image_url, copyright, feed_type, feed_version, last_fetched_at, created_at, updated_at
+FROM
+  feeds
+WHERE
+  uuid IN (/*SLICE:uuids*/?)
+`
+
+func (q *Queries) ListFeedsByUUIDs(ctx context.Context, uuids []string) ([]Feed, error) {
+	query := listFeedsByUUIDs
+	var queryParams []interface{}
+	if len(uuids) > 0 {
+		for _, v := range uuids {
+			queryParams = append(queryParams, v)
+		}
+		query = strings.Replace(query, "/*SLICE:uuids*/?", strings.Repeat(",?", len(uuids))[1:], 1)
+	} else {
+		query = strings.Replace(query, "/*SLICE:uuids*/?", "NULL", 1)
+	}
+	rows, err := q.db.QueryContext(ctx, query, queryParams...)
 	if err != nil {
 		return nil, err
 	}

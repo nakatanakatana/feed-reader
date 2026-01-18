@@ -52,6 +52,26 @@ func (s *FetcherService) FetchAllFeeds(ctx context.Context) error {
 	return nil
 }
 
+// FetchFeedsByIDs initiates the fetching process for specified feeds, bypassing the interval check.
+func (s *FetcherService) FetchFeedsByIDs(ctx context.Context, uuids []string) error {
+	s.logger.InfoContext(ctx, "starting forced fetch for feeds", "count", len(uuids))
+
+	feeds, err := s.store.ListFeedsByUUIDs(ctx, uuids)
+	if err != nil {
+		s.logger.ErrorContext(ctx, "failed to list feeds by uuids", "error", err)
+		return err
+	}
+
+	for _, feed := range feeds {
+		f := feed // capture loop variable
+		s.pool.AddTask(func(ctx context.Context) error {
+			return s.FetchAndSave(ctx, f)
+		})
+	}
+
+	return nil
+}
+
 func (s *FetcherService) shouldFetch(f store.Feed) bool {
 	if f.LastFetchedAt == nil {
 		return true
