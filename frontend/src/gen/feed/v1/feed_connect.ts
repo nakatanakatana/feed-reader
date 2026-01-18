@@ -3,18 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import {
-  CreateFeedRequest,
-  CreateFeedResponse,
-  DeleteFeedRequest,
-  DeleteFeedResponse,
-  GetFeedRequest,
-  GetFeedResponse,
-  ListFeedsRequest,
-  ListFeedsResponse,
-  UpdateFeedRequest,
-  UpdateFeedResponse,
-} from "./feed_pb.js";
+import { CreateFeedRequest, CreateFeedResponse, DeleteFeedRequest, DeleteFeedResponse, GetFeedRequest, GetFeedResponse, GetItemRequest, GetItemResponse, ListFeedItemsRequest, ListFeedItemsResponse, ListFeedsRequest, ListFeedsResponse, ListGlobalItemsRequest, ListGlobalItemsResponse, MarkItemReadRequest, MarkItemReadResponse, UpdateFeedRequest, UpdateFeedResponse } from "./feed_pb.js";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**
@@ -68,5 +57,42 @@ export const FeedService = {
       O: DeleteFeedResponse,
       kind: MethodKind.Unary,
     },
-  },
+    /**
+     * @generated from rpc feed.v1.FeedService.ListGlobalItems
+     */
+    listGlobalItems: {
+      name: "ListGlobalItems",
+      I: ListGlobalItemsRequest,
+      O: ListGlobalItemsResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc feed.v1.FeedService.ListFeedItems
+     */
+    listFeedItems: {
+      name: "ListFeedItems",
+      I: ListFeedItemsRequest,
+      O: ListFeedItemsResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc feed.v1.FeedService.GetItem
+     */
+    getItem: {
+      name: "GetItem",
+      I: GetItemRequest,
+      O: GetItemResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc feed.v1.FeedService.MarkItemRead
+     */
+    markItemRead: {
+      name: "MarkItemRead",
+      I: MarkItemReadRequest,
+      O: MarkItemReadResponse,
+      kind: MethodKind.Unary,
+    },
+  }
 } as const;
+

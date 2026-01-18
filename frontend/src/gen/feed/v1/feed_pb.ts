@@ -3,14 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import type {
-  BinaryReadOptions,
-  FieldList,
-  JsonReadOptions,
-  JsonValue,
-  PartialMessage,
-  PlainMessage,
-} from "@bufbuild/protobuf";
+import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialMessage, PlainMessage } from "@bufbuild/protobuf";
 import { Message, proto3 } from "@bufbuild/protobuf";
 
 /**
@@ -92,103 +85,136 @@ export class Feed extends Message<Feed> {
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "uuid", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 2, name: "url", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    {
-      no: 3,
-      name: "link",
-      kind: "scalar",
-      T: 9 /* ScalarType.STRING */,
-      opt: true,
-    },
+    { no: 3, name: "link", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
     { no: 4, name: "title", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    {
-      no: 5,
-      name: "description",
-      kind: "scalar",
-      T: 9 /* ScalarType.STRING */,
-      opt: true,
-    },
-    {
-      no: 6,
-      name: "language",
-      kind: "scalar",
-      T: 9 /* ScalarType.STRING */,
-      opt: true,
-    },
-    {
-      no: 7,
-      name: "image_url",
-      kind: "scalar",
-      T: 9 /* ScalarType.STRING */,
-      opt: true,
-    },
-    {
-      no: 8,
-      name: "copyright",
-      kind: "scalar",
-      T: 9 /* ScalarType.STRING */,
-      opt: true,
-    },
-    {
-      no: 9,
-      name: "feed_type",
-      kind: "scalar",
-      T: 9 /* ScalarType.STRING */,
-      opt: true,
-    },
-    {
-      no: 10,
-      name: "feed_version",
-      kind: "scalar",
-      T: 9 /* ScalarType.STRING */,
-      opt: true,
-    },
-    {
-      no: 11,
-      name: "last_fetched_at",
-      kind: "scalar",
-      T: 9 /* ScalarType.STRING */,
-      opt: true,
-    },
-    {
-      no: 12,
-      name: "created_at",
-      kind: "scalar",
-      T: 9 /* ScalarType.STRING */,
-    },
-    {
-      no: 13,
-      name: "updated_at",
-      kind: "scalar",
-      T: 9 /* ScalarType.STRING */,
-    },
+    { no: 5, name: "description", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+    { no: 6, name: "language", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+    { no: 7, name: "image_url", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+    { no: 8, name: "copyright", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+    { no: 9, name: "feed_type", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+    { no: 10, name: "feed_version", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+    { no: 11, name: "last_fetched_at", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+    { no: 12, name: "created_at", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 13, name: "updated_at", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ]);
 
-  static fromBinary(
-    bytes: Uint8Array,
-    options?: Partial<BinaryReadOptions>,
-  ): Feed {
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Feed {
     return new Feed().fromBinary(bytes, options);
   }
 
-  static fromJson(
-    jsonValue: JsonValue,
-    options?: Partial<JsonReadOptions>,
-  ): Feed {
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): Feed {
     return new Feed().fromJson(jsonValue, options);
   }
 
-  static fromJsonString(
-    jsonString: string,
-    options?: Partial<JsonReadOptions>,
-  ): Feed {
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): Feed {
     return new Feed().fromJsonString(jsonString, options);
   }
 
-  static equals(
-    a: Feed | PlainMessage<Feed> | undefined,
-    b: Feed | PlainMessage<Feed> | undefined,
-  ): boolean {
+  static equals(a: Feed | PlainMessage<Feed> | undefined, b: Feed | PlainMessage<Feed> | undefined): boolean {
     return proto3.util.equals(Feed, a, b);
+  }
+}
+
+/**
+ * @generated from message feed.v1.Item
+ */
+export class Item extends Message<Item> {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id = "";
+
+  /**
+   * @generated from field: string feed_id = 2;
+   */
+  feedId = "";
+
+  /**
+   * @generated from field: string title = 3;
+   */
+  title = "";
+
+  /**
+   * @generated from field: string url = 4;
+   */
+  url = "";
+
+  /**
+   * @generated from field: string content = 5;
+   */
+  content = "";
+
+  /**
+   * @generated from field: string author = 6;
+   */
+  author = "";
+
+  /**
+   * @generated from field: string published_at = 7;
+   */
+  publishedAt = "";
+
+  /**
+   * @generated from field: string image_url = 8;
+   */
+  imageUrl = "";
+
+  /**
+   * @generated from field: repeated string enclosures = 9;
+   */
+  enclosures: string[] = [];
+
+  /**
+   * @generated from field: bool is_read = 10;
+   */
+  isRead = false;
+
+  /**
+   * @generated from field: string created_at = 11;
+   */
+  createdAt = "";
+
+  /**
+   * @generated from field: string updated_at = 12;
+   */
+  updatedAt = "";
+
+  constructor(data?: PartialMessage<Item>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "feed.v1.Item";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "feed_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: "title", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 4, name: "url", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 5, name: "content", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 6, name: "author", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 7, name: "published_at", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 8, name: "image_url", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 9, name: "enclosures", kind: "scalar", T: 9 /* ScalarType.STRING */, repeated: true },
+    { no: 10, name: "is_read", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+    { no: 11, name: "created_at", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 12, name: "updated_at", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Item {
+    return new Item().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): Item {
+    return new Item().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): Item {
+    return new Item().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: Item | PlainMessage<Item> | undefined, b: Item | PlainMessage<Item> | undefined): boolean {
+    return proto3.util.equals(Item, a, b);
   }
 }
 
@@ -212,31 +238,19 @@ export class GetFeedRequest extends Message<GetFeedRequest> {
     { no: 1, name: "uuid", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ]);
 
-  static fromBinary(
-    bytes: Uint8Array,
-    options?: Partial<BinaryReadOptions>,
-  ): GetFeedRequest {
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetFeedRequest {
     return new GetFeedRequest().fromBinary(bytes, options);
   }
 
-  static fromJson(
-    jsonValue: JsonValue,
-    options?: Partial<JsonReadOptions>,
-  ): GetFeedRequest {
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GetFeedRequest {
     return new GetFeedRequest().fromJson(jsonValue, options);
   }
 
-  static fromJsonString(
-    jsonString: string,
-    options?: Partial<JsonReadOptions>,
-  ): GetFeedRequest {
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GetFeedRequest {
     return new GetFeedRequest().fromJsonString(jsonString, options);
   }
 
-  static equals(
-    a: GetFeedRequest | PlainMessage<GetFeedRequest> | undefined,
-    b: GetFeedRequest | PlainMessage<GetFeedRequest> | undefined,
-  ): boolean {
+  static equals(a: GetFeedRequest | PlainMessage<GetFeedRequest> | undefined, b: GetFeedRequest | PlainMessage<GetFeedRequest> | undefined): boolean {
     return proto3.util.equals(GetFeedRequest, a, b);
   }
 }
@@ -261,31 +275,19 @@ export class GetFeedResponse extends Message<GetFeedResponse> {
     { no: 1, name: "feed", kind: "message", T: Feed },
   ]);
 
-  static fromBinary(
-    bytes: Uint8Array,
-    options?: Partial<BinaryReadOptions>,
-  ): GetFeedResponse {
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetFeedResponse {
     return new GetFeedResponse().fromBinary(bytes, options);
   }
 
-  static fromJson(
-    jsonValue: JsonValue,
-    options?: Partial<JsonReadOptions>,
-  ): GetFeedResponse {
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GetFeedResponse {
     return new GetFeedResponse().fromJson(jsonValue, options);
   }
 
-  static fromJsonString(
-    jsonString: string,
-    options?: Partial<JsonReadOptions>,
-  ): GetFeedResponse {
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GetFeedResponse {
     return new GetFeedResponse().fromJsonString(jsonString, options);
   }
 
-  static equals(
-    a: GetFeedResponse | PlainMessage<GetFeedResponse> | undefined,
-    b: GetFeedResponse | PlainMessage<GetFeedResponse> | undefined,
-  ): boolean {
+  static equals(a: GetFeedResponse | PlainMessage<GetFeedResponse> | undefined, b: GetFeedResponse | PlainMessage<GetFeedResponse> | undefined): boolean {
     return proto3.util.equals(GetFeedResponse, a, b);
   }
 }
@@ -301,33 +303,22 @@ export class ListFeedsRequest extends Message<ListFeedsRequest> {
 
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "feed.v1.ListFeedsRequest";
-  static readonly fields: FieldList = proto3.util.newFieldList(() => []);
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+  ]);
 
-  static fromBinary(
-    bytes: Uint8Array,
-    options?: Partial<BinaryReadOptions>,
-  ): ListFeedsRequest {
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListFeedsRequest {
     return new ListFeedsRequest().fromBinary(bytes, options);
   }
 
-  static fromJson(
-    jsonValue: JsonValue,
-    options?: Partial<JsonReadOptions>,
-  ): ListFeedsRequest {
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ListFeedsRequest {
     return new ListFeedsRequest().fromJson(jsonValue, options);
   }
 
-  static fromJsonString(
-    jsonString: string,
-    options?: Partial<JsonReadOptions>,
-  ): ListFeedsRequest {
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ListFeedsRequest {
     return new ListFeedsRequest().fromJsonString(jsonString, options);
   }
 
-  static equals(
-    a: ListFeedsRequest | PlainMessage<ListFeedsRequest> | undefined,
-    b: ListFeedsRequest | PlainMessage<ListFeedsRequest> | undefined,
-  ): boolean {
+  static equals(a: ListFeedsRequest | PlainMessage<ListFeedsRequest> | undefined, b: ListFeedsRequest | PlainMessage<ListFeedsRequest> | undefined): boolean {
     return proto3.util.equals(ListFeedsRequest, a, b);
   }
 }
@@ -352,31 +343,19 @@ export class ListFeedsResponse extends Message<ListFeedsResponse> {
     { no: 1, name: "feeds", kind: "message", T: Feed, repeated: true },
   ]);
 
-  static fromBinary(
-    bytes: Uint8Array,
-    options?: Partial<BinaryReadOptions>,
-  ): ListFeedsResponse {
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListFeedsResponse {
     return new ListFeedsResponse().fromBinary(bytes, options);
   }
 
-  static fromJson(
-    jsonValue: JsonValue,
-    options?: Partial<JsonReadOptions>,
-  ): ListFeedsResponse {
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ListFeedsResponse {
     return new ListFeedsResponse().fromJson(jsonValue, options);
   }
 
-  static fromJsonString(
-    jsonString: string,
-    options?: Partial<JsonReadOptions>,
-  ): ListFeedsResponse {
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ListFeedsResponse {
     return new ListFeedsResponse().fromJsonString(jsonString, options);
   }
 
-  static equals(
-    a: ListFeedsResponse | PlainMessage<ListFeedsResponse> | undefined,
-    b: ListFeedsResponse | PlainMessage<ListFeedsResponse> | undefined,
-  ): boolean {
+  static equals(a: ListFeedsResponse | PlainMessage<ListFeedsResponse> | undefined, b: ListFeedsResponse | PlainMessage<ListFeedsResponse> | undefined): boolean {
     return proto3.util.equals(ListFeedsResponse, a, b);
   }
 }
@@ -439,89 +418,29 @@ export class CreateFeedRequest extends Message<CreateFeedRequest> {
   static readonly typeName = "feed.v1.CreateFeedRequest";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "url", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    {
-      no: 2,
-      name: "title",
-      kind: "scalar",
-      T: 9 /* ScalarType.STRING */,
-      opt: true,
-    },
-    {
-      no: 3,
-      name: "link",
-      kind: "scalar",
-      T: 9 /* ScalarType.STRING */,
-      opt: true,
-    },
-    {
-      no: 4,
-      name: "description",
-      kind: "scalar",
-      T: 9 /* ScalarType.STRING */,
-      opt: true,
-    },
-    {
-      no: 5,
-      name: "language",
-      kind: "scalar",
-      T: 9 /* ScalarType.STRING */,
-      opt: true,
-    },
-    {
-      no: 6,
-      name: "image_url",
-      kind: "scalar",
-      T: 9 /* ScalarType.STRING */,
-      opt: true,
-    },
-    {
-      no: 7,
-      name: "copyright",
-      kind: "scalar",
-      T: 9 /* ScalarType.STRING */,
-      opt: true,
-    },
-    {
-      no: 8,
-      name: "feed_type",
-      kind: "scalar",
-      T: 9 /* ScalarType.STRING */,
-      opt: true,
-    },
-    {
-      no: 9,
-      name: "feed_version",
-      kind: "scalar",
-      T: 9 /* ScalarType.STRING */,
-      opt: true,
-    },
+    { no: 2, name: "title", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+    { no: 3, name: "link", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+    { no: 4, name: "description", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+    { no: 5, name: "language", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+    { no: 6, name: "image_url", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+    { no: 7, name: "copyright", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+    { no: 8, name: "feed_type", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+    { no: 9, name: "feed_version", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
   ]);
 
-  static fromBinary(
-    bytes: Uint8Array,
-    options?: Partial<BinaryReadOptions>,
-  ): CreateFeedRequest {
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CreateFeedRequest {
     return new CreateFeedRequest().fromBinary(bytes, options);
   }
 
-  static fromJson(
-    jsonValue: JsonValue,
-    options?: Partial<JsonReadOptions>,
-  ): CreateFeedRequest {
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): CreateFeedRequest {
     return new CreateFeedRequest().fromJson(jsonValue, options);
   }
 
-  static fromJsonString(
-    jsonString: string,
-    options?: Partial<JsonReadOptions>,
-  ): CreateFeedRequest {
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): CreateFeedRequest {
     return new CreateFeedRequest().fromJsonString(jsonString, options);
   }
 
-  static equals(
-    a: CreateFeedRequest | PlainMessage<CreateFeedRequest> | undefined,
-    b: CreateFeedRequest | PlainMessage<CreateFeedRequest> | undefined,
-  ): boolean {
+  static equals(a: CreateFeedRequest | PlainMessage<CreateFeedRequest> | undefined, b: CreateFeedRequest | PlainMessage<CreateFeedRequest> | undefined): boolean {
     return proto3.util.equals(CreateFeedRequest, a, b);
   }
 }
@@ -546,31 +465,19 @@ export class CreateFeedResponse extends Message<CreateFeedResponse> {
     { no: 1, name: "feed", kind: "message", T: Feed },
   ]);
 
-  static fromBinary(
-    bytes: Uint8Array,
-    options?: Partial<BinaryReadOptions>,
-  ): CreateFeedResponse {
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CreateFeedResponse {
     return new CreateFeedResponse().fromBinary(bytes, options);
   }
 
-  static fromJson(
-    jsonValue: JsonValue,
-    options?: Partial<JsonReadOptions>,
-  ): CreateFeedResponse {
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): CreateFeedResponse {
     return new CreateFeedResponse().fromJson(jsonValue, options);
   }
 
-  static fromJsonString(
-    jsonString: string,
-    options?: Partial<JsonReadOptions>,
-  ): CreateFeedResponse {
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): CreateFeedResponse {
     return new CreateFeedResponse().fromJsonString(jsonString, options);
   }
 
-  static equals(
-    a: CreateFeedResponse | PlainMessage<CreateFeedResponse> | undefined,
-    b: CreateFeedResponse | PlainMessage<CreateFeedResponse> | undefined,
-  ): boolean {
+  static equals(a: CreateFeedResponse | PlainMessage<CreateFeedResponse> | undefined, b: CreateFeedResponse | PlainMessage<CreateFeedResponse> | undefined): boolean {
     return proto3.util.equals(CreateFeedResponse, a, b);
   }
 }
@@ -638,96 +545,30 @@ export class UpdateFeedRequest extends Message<UpdateFeedRequest> {
   static readonly typeName = "feed.v1.UpdateFeedRequest";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "uuid", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    {
-      no: 3,
-      name: "title",
-      kind: "scalar",
-      T: 9 /* ScalarType.STRING */,
-      opt: true,
-    },
-    {
-      no: 4,
-      name: "link",
-      kind: "scalar",
-      T: 9 /* ScalarType.STRING */,
-      opt: true,
-    },
-    {
-      no: 5,
-      name: "description",
-      kind: "scalar",
-      T: 9 /* ScalarType.STRING */,
-      opt: true,
-    },
-    {
-      no: 6,
-      name: "language",
-      kind: "scalar",
-      T: 9 /* ScalarType.STRING */,
-      opt: true,
-    },
-    {
-      no: 7,
-      name: "image_url",
-      kind: "scalar",
-      T: 9 /* ScalarType.STRING */,
-      opt: true,
-    },
-    {
-      no: 8,
-      name: "copyright",
-      kind: "scalar",
-      T: 9 /* ScalarType.STRING */,
-      opt: true,
-    },
-    {
-      no: 9,
-      name: "feed_type",
-      kind: "scalar",
-      T: 9 /* ScalarType.STRING */,
-      opt: true,
-    },
-    {
-      no: 10,
-      name: "feed_version",
-      kind: "scalar",
-      T: 9 /* ScalarType.STRING */,
-      opt: true,
-    },
-    {
-      no: 11,
-      name: "last_fetched_at",
-      kind: "scalar",
-      T: 9 /* ScalarType.STRING */,
-      opt: true,
-    },
+    { no: 3, name: "title", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+    { no: 4, name: "link", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+    { no: 5, name: "description", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+    { no: 6, name: "language", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+    { no: 7, name: "image_url", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+    { no: 8, name: "copyright", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+    { no: 9, name: "feed_type", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+    { no: 10, name: "feed_version", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+    { no: 11, name: "last_fetched_at", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
   ]);
 
-  static fromBinary(
-    bytes: Uint8Array,
-    options?: Partial<BinaryReadOptions>,
-  ): UpdateFeedRequest {
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): UpdateFeedRequest {
     return new UpdateFeedRequest().fromBinary(bytes, options);
   }
 
-  static fromJson(
-    jsonValue: JsonValue,
-    options?: Partial<JsonReadOptions>,
-  ): UpdateFeedRequest {
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): UpdateFeedRequest {
     return new UpdateFeedRequest().fromJson(jsonValue, options);
   }
 
-  static fromJsonString(
-    jsonString: string,
-    options?: Partial<JsonReadOptions>,
-  ): UpdateFeedRequest {
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): UpdateFeedRequest {
     return new UpdateFeedRequest().fromJsonString(jsonString, options);
   }
 
-  static equals(
-    a: UpdateFeedRequest | PlainMessage<UpdateFeedRequest> | undefined,
-    b: UpdateFeedRequest | PlainMessage<UpdateFeedRequest> | undefined,
-  ): boolean {
+  static equals(a: UpdateFeedRequest | PlainMessage<UpdateFeedRequest> | undefined, b: UpdateFeedRequest | PlainMessage<UpdateFeedRequest> | undefined): boolean {
     return proto3.util.equals(UpdateFeedRequest, a, b);
   }
 }
@@ -752,31 +593,19 @@ export class UpdateFeedResponse extends Message<UpdateFeedResponse> {
     { no: 1, name: "feed", kind: "message", T: Feed },
   ]);
 
-  static fromBinary(
-    bytes: Uint8Array,
-    options?: Partial<BinaryReadOptions>,
-  ): UpdateFeedResponse {
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): UpdateFeedResponse {
     return new UpdateFeedResponse().fromBinary(bytes, options);
   }
 
-  static fromJson(
-    jsonValue: JsonValue,
-    options?: Partial<JsonReadOptions>,
-  ): UpdateFeedResponse {
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): UpdateFeedResponse {
     return new UpdateFeedResponse().fromJson(jsonValue, options);
   }
 
-  static fromJsonString(
-    jsonString: string,
-    options?: Partial<JsonReadOptions>,
-  ): UpdateFeedResponse {
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): UpdateFeedResponse {
     return new UpdateFeedResponse().fromJsonString(jsonString, options);
   }
 
-  static equals(
-    a: UpdateFeedResponse | PlainMessage<UpdateFeedResponse> | undefined,
-    b: UpdateFeedResponse | PlainMessage<UpdateFeedResponse> | undefined,
-  ): boolean {
+  static equals(a: UpdateFeedResponse | PlainMessage<UpdateFeedResponse> | undefined, b: UpdateFeedResponse | PlainMessage<UpdateFeedResponse> | undefined): boolean {
     return proto3.util.equals(UpdateFeedResponse, a, b);
   }
 }
@@ -801,31 +630,19 @@ export class DeleteFeedRequest extends Message<DeleteFeedRequest> {
     { no: 1, name: "uuid", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ]);
 
-  static fromBinary(
-    bytes: Uint8Array,
-    options?: Partial<BinaryReadOptions>,
-  ): DeleteFeedRequest {
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): DeleteFeedRequest {
     return new DeleteFeedRequest().fromBinary(bytes, options);
   }
 
-  static fromJson(
-    jsonValue: JsonValue,
-    options?: Partial<JsonReadOptions>,
-  ): DeleteFeedRequest {
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): DeleteFeedRequest {
     return new DeleteFeedRequest().fromJson(jsonValue, options);
   }
 
-  static fromJsonString(
-    jsonString: string,
-    options?: Partial<JsonReadOptions>,
-  ): DeleteFeedRequest {
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): DeleteFeedRequest {
     return new DeleteFeedRequest().fromJsonString(jsonString, options);
   }
 
-  static equals(
-    a: DeleteFeedRequest | PlainMessage<DeleteFeedRequest> | undefined,
-    b: DeleteFeedRequest | PlainMessage<DeleteFeedRequest> | undefined,
-  ): boolean {
+  static equals(a: DeleteFeedRequest | PlainMessage<DeleteFeedRequest> | undefined, b: DeleteFeedRequest | PlainMessage<DeleteFeedRequest> | undefined): boolean {
     return proto3.util.equals(DeleteFeedRequest, a, b);
   }
 }
@@ -841,33 +658,355 @@ export class DeleteFeedResponse extends Message<DeleteFeedResponse> {
 
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "feed.v1.DeleteFeedResponse";
-  static readonly fields: FieldList = proto3.util.newFieldList(() => []);
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+  ]);
 
-  static fromBinary(
-    bytes: Uint8Array,
-    options?: Partial<BinaryReadOptions>,
-  ): DeleteFeedResponse {
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): DeleteFeedResponse {
     return new DeleteFeedResponse().fromBinary(bytes, options);
   }
 
-  static fromJson(
-    jsonValue: JsonValue,
-    options?: Partial<JsonReadOptions>,
-  ): DeleteFeedResponse {
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): DeleteFeedResponse {
     return new DeleteFeedResponse().fromJson(jsonValue, options);
   }
 
-  static fromJsonString(
-    jsonString: string,
-    options?: Partial<JsonReadOptions>,
-  ): DeleteFeedResponse {
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): DeleteFeedResponse {
     return new DeleteFeedResponse().fromJsonString(jsonString, options);
   }
 
-  static equals(
-    a: DeleteFeedResponse | PlainMessage<DeleteFeedResponse> | undefined,
-    b: DeleteFeedResponse | PlainMessage<DeleteFeedResponse> | undefined,
-  ): boolean {
+  static equals(a: DeleteFeedResponse | PlainMessage<DeleteFeedResponse> | undefined, b: DeleteFeedResponse | PlainMessage<DeleteFeedResponse> | undefined): boolean {
     return proto3.util.equals(DeleteFeedResponse, a, b);
   }
 }
+
+/**
+ * @generated from message feed.v1.ListGlobalItemsRequest
+ */
+export class ListGlobalItemsRequest extends Message<ListGlobalItemsRequest> {
+  /**
+   * @generated from field: int32 page_size = 1;
+   */
+  pageSize = 0;
+
+  /**
+   * @generated from field: string page_token = 2;
+   */
+  pageToken = "";
+
+  /**
+   * @generated from field: bool is_read = 3;
+   */
+  isRead = false;
+
+  constructor(data?: PartialMessage<ListGlobalItemsRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "feed.v1.ListGlobalItemsRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "page_size", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+    { no: 2, name: "page_token", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: "is_read", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListGlobalItemsRequest {
+    return new ListGlobalItemsRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ListGlobalItemsRequest {
+    return new ListGlobalItemsRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ListGlobalItemsRequest {
+    return new ListGlobalItemsRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: ListGlobalItemsRequest | PlainMessage<ListGlobalItemsRequest> | undefined, b: ListGlobalItemsRequest | PlainMessage<ListGlobalItemsRequest> | undefined): boolean {
+    return proto3.util.equals(ListGlobalItemsRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message feed.v1.ListGlobalItemsResponse
+ */
+export class ListGlobalItemsResponse extends Message<ListGlobalItemsResponse> {
+  /**
+   * @generated from field: repeated feed.v1.Item items = 1;
+   */
+  items: Item[] = [];
+
+  /**
+   * @generated from field: string next_page_token = 2;
+   */
+  nextPageToken = "";
+
+  constructor(data?: PartialMessage<ListGlobalItemsResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "feed.v1.ListGlobalItemsResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "items", kind: "message", T: Item, repeated: true },
+    { no: 2, name: "next_page_token", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListGlobalItemsResponse {
+    return new ListGlobalItemsResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ListGlobalItemsResponse {
+    return new ListGlobalItemsResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ListGlobalItemsResponse {
+    return new ListGlobalItemsResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: ListGlobalItemsResponse | PlainMessage<ListGlobalItemsResponse> | undefined, b: ListGlobalItemsResponse | PlainMessage<ListGlobalItemsResponse> | undefined): boolean {
+    return proto3.util.equals(ListGlobalItemsResponse, a, b);
+  }
+}
+
+/**
+ * @generated from message feed.v1.ListFeedItemsRequest
+ */
+export class ListFeedItemsRequest extends Message<ListFeedItemsRequest> {
+  /**
+   * @generated from field: string feed_id = 1;
+   */
+  feedId = "";
+
+  /**
+   * @generated from field: int32 page_size = 2;
+   */
+  pageSize = 0;
+
+  /**
+   * @generated from field: string page_token = 3;
+   */
+  pageToken = "";
+
+  /**
+   * @generated from field: bool is_read = 4;
+   */
+  isRead = false;
+
+  constructor(data?: PartialMessage<ListFeedItemsRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "feed.v1.ListFeedItemsRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "feed_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "page_size", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+    { no: 3, name: "page_token", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 4, name: "is_read", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListFeedItemsRequest {
+    return new ListFeedItemsRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ListFeedItemsRequest {
+    return new ListFeedItemsRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ListFeedItemsRequest {
+    return new ListFeedItemsRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: ListFeedItemsRequest | PlainMessage<ListFeedItemsRequest> | undefined, b: ListFeedItemsRequest | PlainMessage<ListFeedItemsRequest> | undefined): boolean {
+    return proto3.util.equals(ListFeedItemsRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message feed.v1.ListFeedItemsResponse
+ */
+export class ListFeedItemsResponse extends Message<ListFeedItemsResponse> {
+  /**
+   * @generated from field: repeated feed.v1.Item items = 1;
+   */
+  items: Item[] = [];
+
+  /**
+   * @generated from field: string next_page_token = 2;
+   */
+  nextPageToken = "";
+
+  constructor(data?: PartialMessage<ListFeedItemsResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "feed.v1.ListFeedItemsResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "items", kind: "message", T: Item, repeated: true },
+    { no: 2, name: "next_page_token", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListFeedItemsResponse {
+    return new ListFeedItemsResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ListFeedItemsResponse {
+    return new ListFeedItemsResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ListFeedItemsResponse {
+    return new ListFeedItemsResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: ListFeedItemsResponse | PlainMessage<ListFeedItemsResponse> | undefined, b: ListFeedItemsResponse | PlainMessage<ListFeedItemsResponse> | undefined): boolean {
+    return proto3.util.equals(ListFeedItemsResponse, a, b);
+  }
+}
+
+/**
+ * @generated from message feed.v1.GetItemRequest
+ */
+export class GetItemRequest extends Message<GetItemRequest> {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id = "";
+
+  constructor(data?: PartialMessage<GetItemRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "feed.v1.GetItemRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetItemRequest {
+    return new GetItemRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GetItemRequest {
+    return new GetItemRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GetItemRequest {
+    return new GetItemRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GetItemRequest | PlainMessage<GetItemRequest> | undefined, b: GetItemRequest | PlainMessage<GetItemRequest> | undefined): boolean {
+    return proto3.util.equals(GetItemRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message feed.v1.GetItemResponse
+ */
+export class GetItemResponse extends Message<GetItemResponse> {
+  /**
+   * @generated from field: feed.v1.Item item = 1;
+   */
+  item?: Item;
+
+  constructor(data?: PartialMessage<GetItemResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "feed.v1.GetItemResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "item", kind: "message", T: Item },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetItemResponse {
+    return new GetItemResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): GetItemResponse {
+    return new GetItemResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GetItemResponse {
+    return new GetItemResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: GetItemResponse | PlainMessage<GetItemResponse> | undefined, b: GetItemResponse | PlainMessage<GetItemResponse> | undefined): boolean {
+    return proto3.util.equals(GetItemResponse, a, b);
+  }
+}
+
+/**
+ * @generated from message feed.v1.MarkItemReadRequest
+ */
+export class MarkItemReadRequest extends Message<MarkItemReadRequest> {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id = "";
+
+  constructor(data?: PartialMessage<MarkItemReadRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "feed.v1.MarkItemReadRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): MarkItemReadRequest {
+    return new MarkItemReadRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): MarkItemReadRequest {
+    return new MarkItemReadRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): MarkItemReadRequest {
+    return new MarkItemReadRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: MarkItemReadRequest | PlainMessage<MarkItemReadRequest> | undefined, b: MarkItemReadRequest | PlainMessage<MarkItemReadRequest> | undefined): boolean {
+    return proto3.util.equals(MarkItemReadRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message feed.v1.MarkItemReadResponse
+ */
+export class MarkItemReadResponse extends Message<MarkItemReadResponse> {
+  constructor(data?: PartialMessage<MarkItemReadResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "feed.v1.MarkItemReadResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): MarkItemReadResponse {
+    return new MarkItemReadResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): MarkItemReadResponse {
+    return new MarkItemReadResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): MarkItemReadResponse {
+    return new MarkItemReadResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: MarkItemReadResponse | PlainMessage<MarkItemReadResponse> | undefined, b: MarkItemReadResponse | PlainMessage<MarkItemReadResponse> | undefined): boolean {
+    return proto3.util.equals(MarkItemReadResponse, a, b);
+  }
+}
+

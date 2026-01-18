@@ -161,6 +161,138 @@ func (x *Feed) GetUpdatedAt() string {
 	return ""
 }
 
+type Item struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	FeedId        string                 `protobuf:"bytes,2,opt,name=feed_id,json=feedId,proto3" json:"feed_id,omitempty"`
+	Title         string                 `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
+	Url           string                 `protobuf:"bytes,4,opt,name=url,proto3" json:"url,omitempty"`
+	Content       string                 `protobuf:"bytes,5,opt,name=content,proto3" json:"content,omitempty"`
+	Author        string                 `protobuf:"bytes,6,opt,name=author,proto3" json:"author,omitempty"`
+	PublishedAt   string                 `protobuf:"bytes,7,opt,name=published_at,json=publishedAt,proto3" json:"published_at,omitempty"`
+	ImageUrl      string                 `protobuf:"bytes,8,opt,name=image_url,json=imageUrl,proto3" json:"image_url,omitempty"`
+	Enclosures    []string               `protobuf:"bytes,9,rep,name=enclosures,proto3" json:"enclosures,omitempty"`
+	IsRead        bool                   `protobuf:"varint,10,opt,name=is_read,json=isRead,proto3" json:"is_read,omitempty"`
+	CreatedAt     string                 `protobuf:"bytes,11,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt     string                 `protobuf:"bytes,12,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Item) Reset() {
+	*x = Item{}
+	mi := &file_feed_v1_feed_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Item) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Item) ProtoMessage() {}
+
+func (x *Item) ProtoReflect() protoreflect.Message {
+	mi := &file_feed_v1_feed_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Item.ProtoReflect.Descriptor instead.
+func (*Item) Descriptor() ([]byte, []int) {
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *Item) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *Item) GetFeedId() string {
+	if x != nil {
+		return x.FeedId
+	}
+	return ""
+}
+
+func (x *Item) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *Item) GetUrl() string {
+	if x != nil {
+		return x.Url
+	}
+	return ""
+}
+
+func (x *Item) GetContent() string {
+	if x != nil {
+		return x.Content
+	}
+	return ""
+}
+
+func (x *Item) GetAuthor() string {
+	if x != nil {
+		return x.Author
+	}
+	return ""
+}
+
+func (x *Item) GetPublishedAt() string {
+	if x != nil {
+		return x.PublishedAt
+	}
+	return ""
+}
+
+func (x *Item) GetImageUrl() string {
+	if x != nil {
+		return x.ImageUrl
+	}
+	return ""
+}
+
+func (x *Item) GetEnclosures() []string {
+	if x != nil {
+		return x.Enclosures
+	}
+	return nil
+}
+
+func (x *Item) GetIsRead() bool {
+	if x != nil {
+		return x.IsRead
+	}
+	return false
+}
+
+func (x *Item) GetCreatedAt() string {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return ""
+}
+
+func (x *Item) GetUpdatedAt() string {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return ""
+}
+
 type GetFeedRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Uuid          string                 `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
@@ -170,7 +302,7 @@ type GetFeedRequest struct {
 
 func (x *GetFeedRequest) Reset() {
 	*x = GetFeedRequest{}
-	mi := &file_feed_v1_feed_proto_msgTypes[1]
+	mi := &file_feed_v1_feed_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -182,7 +314,7 @@ func (x *GetFeedRequest) String() string {
 func (*GetFeedRequest) ProtoMessage() {}
 
 func (x *GetFeedRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_feed_v1_feed_proto_msgTypes[1]
+	mi := &file_feed_v1_feed_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -195,7 +327,7 @@ func (x *GetFeedRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetFeedRequest.ProtoReflect.Descriptor instead.
 func (*GetFeedRequest) Descriptor() ([]byte, []int) {
-	return file_feed_v1_feed_proto_rawDescGZIP(), []int{1}
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *GetFeedRequest) GetUuid() string {
@@ -214,7 +346,7 @@ type GetFeedResponse struct {
 
 func (x *GetFeedResponse) Reset() {
 	*x = GetFeedResponse{}
-	mi := &file_feed_v1_feed_proto_msgTypes[2]
+	mi := &file_feed_v1_feed_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -226,7 +358,7 @@ func (x *GetFeedResponse) String() string {
 func (*GetFeedResponse) ProtoMessage() {}
 
 func (x *GetFeedResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_feed_v1_feed_proto_msgTypes[2]
+	mi := &file_feed_v1_feed_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -239,7 +371,7 @@ func (x *GetFeedResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetFeedResponse.ProtoReflect.Descriptor instead.
 func (*GetFeedResponse) Descriptor() ([]byte, []int) {
-	return file_feed_v1_feed_proto_rawDescGZIP(), []int{2}
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *GetFeedResponse) GetFeed() *Feed {
@@ -257,7 +389,7 @@ type ListFeedsRequest struct {
 
 func (x *ListFeedsRequest) Reset() {
 	*x = ListFeedsRequest{}
-	mi := &file_feed_v1_feed_proto_msgTypes[3]
+	mi := &file_feed_v1_feed_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -269,7 +401,7 @@ func (x *ListFeedsRequest) String() string {
 func (*ListFeedsRequest) ProtoMessage() {}
 
 func (x *ListFeedsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_feed_v1_feed_proto_msgTypes[3]
+	mi := &file_feed_v1_feed_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -282,7 +414,7 @@ func (x *ListFeedsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListFeedsRequest.ProtoReflect.Descriptor instead.
 func (*ListFeedsRequest) Descriptor() ([]byte, []int) {
-	return file_feed_v1_feed_proto_rawDescGZIP(), []int{3}
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{4}
 }
 
 type ListFeedsResponse struct {
@@ -294,7 +426,7 @@ type ListFeedsResponse struct {
 
 func (x *ListFeedsResponse) Reset() {
 	*x = ListFeedsResponse{}
-	mi := &file_feed_v1_feed_proto_msgTypes[4]
+	mi := &file_feed_v1_feed_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -306,7 +438,7 @@ func (x *ListFeedsResponse) String() string {
 func (*ListFeedsResponse) ProtoMessage() {}
 
 func (x *ListFeedsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_feed_v1_feed_proto_msgTypes[4]
+	mi := &file_feed_v1_feed_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -319,7 +451,7 @@ func (x *ListFeedsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListFeedsResponse.ProtoReflect.Descriptor instead.
 func (*ListFeedsResponse) Descriptor() ([]byte, []int) {
-	return file_feed_v1_feed_proto_rawDescGZIP(), []int{4}
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *ListFeedsResponse) GetFeeds() []*Feed {
@@ -346,7 +478,7 @@ type CreateFeedRequest struct {
 
 func (x *CreateFeedRequest) Reset() {
 	*x = CreateFeedRequest{}
-	mi := &file_feed_v1_feed_proto_msgTypes[5]
+	mi := &file_feed_v1_feed_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -358,7 +490,7 @@ func (x *CreateFeedRequest) String() string {
 func (*CreateFeedRequest) ProtoMessage() {}
 
 func (x *CreateFeedRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_feed_v1_feed_proto_msgTypes[5]
+	mi := &file_feed_v1_feed_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -371,7 +503,7 @@ func (x *CreateFeedRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateFeedRequest.ProtoReflect.Descriptor instead.
 func (*CreateFeedRequest) Descriptor() ([]byte, []int) {
-	return file_feed_v1_feed_proto_rawDescGZIP(), []int{5}
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *CreateFeedRequest) GetUrl() string {
@@ -446,7 +578,7 @@ type CreateFeedResponse struct {
 
 func (x *CreateFeedResponse) Reset() {
 	*x = CreateFeedResponse{}
-	mi := &file_feed_v1_feed_proto_msgTypes[6]
+	mi := &file_feed_v1_feed_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -458,7 +590,7 @@ func (x *CreateFeedResponse) String() string {
 func (*CreateFeedResponse) ProtoMessage() {}
 
 func (x *CreateFeedResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_feed_v1_feed_proto_msgTypes[6]
+	mi := &file_feed_v1_feed_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -471,7 +603,7 @@ func (x *CreateFeedResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateFeedResponse.ProtoReflect.Descriptor instead.
 func (*CreateFeedResponse) Descriptor() ([]byte, []int) {
-	return file_feed_v1_feed_proto_rawDescGZIP(), []int{6}
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *CreateFeedResponse) GetFeed() *Feed {
@@ -499,7 +631,7 @@ type UpdateFeedRequest struct {
 
 func (x *UpdateFeedRequest) Reset() {
 	*x = UpdateFeedRequest{}
-	mi := &file_feed_v1_feed_proto_msgTypes[7]
+	mi := &file_feed_v1_feed_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -511,7 +643,7 @@ func (x *UpdateFeedRequest) String() string {
 func (*UpdateFeedRequest) ProtoMessage() {}
 
 func (x *UpdateFeedRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_feed_v1_feed_proto_msgTypes[7]
+	mi := &file_feed_v1_feed_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -524,7 +656,7 @@ func (x *UpdateFeedRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateFeedRequest.ProtoReflect.Descriptor instead.
 func (*UpdateFeedRequest) Descriptor() ([]byte, []int) {
-	return file_feed_v1_feed_proto_rawDescGZIP(), []int{7}
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *UpdateFeedRequest) GetUuid() string {
@@ -606,7 +738,7 @@ type UpdateFeedResponse struct {
 
 func (x *UpdateFeedResponse) Reset() {
 	*x = UpdateFeedResponse{}
-	mi := &file_feed_v1_feed_proto_msgTypes[8]
+	mi := &file_feed_v1_feed_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -618,7 +750,7 @@ func (x *UpdateFeedResponse) String() string {
 func (*UpdateFeedResponse) ProtoMessage() {}
 
 func (x *UpdateFeedResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_feed_v1_feed_proto_msgTypes[8]
+	mi := &file_feed_v1_feed_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -631,7 +763,7 @@ func (x *UpdateFeedResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateFeedResponse.ProtoReflect.Descriptor instead.
 func (*UpdateFeedResponse) Descriptor() ([]byte, []int) {
-	return file_feed_v1_feed_proto_rawDescGZIP(), []int{8}
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *UpdateFeedResponse) GetFeed() *Feed {
@@ -650,7 +782,7 @@ type DeleteFeedRequest struct {
 
 func (x *DeleteFeedRequest) Reset() {
 	*x = DeleteFeedRequest{}
-	mi := &file_feed_v1_feed_proto_msgTypes[9]
+	mi := &file_feed_v1_feed_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -662,7 +794,7 @@ func (x *DeleteFeedRequest) String() string {
 func (*DeleteFeedRequest) ProtoMessage() {}
 
 func (x *DeleteFeedRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_feed_v1_feed_proto_msgTypes[9]
+	mi := &file_feed_v1_feed_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -675,7 +807,7 @@ func (x *DeleteFeedRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteFeedRequest.ProtoReflect.Descriptor instead.
 func (*DeleteFeedRequest) Descriptor() ([]byte, []int) {
-	return file_feed_v1_feed_proto_rawDescGZIP(), []int{9}
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *DeleteFeedRequest) GetUuid() string {
@@ -693,7 +825,7 @@ type DeleteFeedResponse struct {
 
 func (x *DeleteFeedResponse) Reset() {
 	*x = DeleteFeedResponse{}
-	mi := &file_feed_v1_feed_proto_msgTypes[10]
+	mi := &file_feed_v1_feed_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -705,7 +837,7 @@ func (x *DeleteFeedResponse) String() string {
 func (*DeleteFeedResponse) ProtoMessage() {}
 
 func (x *DeleteFeedResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_feed_v1_feed_proto_msgTypes[10]
+	mi := &file_feed_v1_feed_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -718,7 +850,407 @@ func (x *DeleteFeedResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteFeedResponse.ProtoReflect.Descriptor instead.
 func (*DeleteFeedResponse) Descriptor() ([]byte, []int) {
-	return file_feed_v1_feed_proto_rawDescGZIP(), []int{10}
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{11}
+}
+
+type ListGlobalItemsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	PageSize      int32                  `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	PageToken     string                 `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	IsRead        bool                   `protobuf:"varint,3,opt,name=is_read,json=isRead,proto3" json:"is_read,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListGlobalItemsRequest) Reset() {
+	*x = ListGlobalItemsRequest{}
+	mi := &file_feed_v1_feed_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListGlobalItemsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListGlobalItemsRequest) ProtoMessage() {}
+
+func (x *ListGlobalItemsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_feed_v1_feed_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListGlobalItemsRequest.ProtoReflect.Descriptor instead.
+func (*ListGlobalItemsRequest) Descriptor() ([]byte, []int) {
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *ListGlobalItemsRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *ListGlobalItemsRequest) GetPageToken() string {
+	if x != nil {
+		return x.PageToken
+	}
+	return ""
+}
+
+func (x *ListGlobalItemsRequest) GetIsRead() bool {
+	if x != nil {
+		return x.IsRead
+	}
+	return false
+}
+
+type ListGlobalItemsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Items         []*Item                `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
+	NextPageToken string                 `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListGlobalItemsResponse) Reset() {
+	*x = ListGlobalItemsResponse{}
+	mi := &file_feed_v1_feed_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListGlobalItemsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListGlobalItemsResponse) ProtoMessage() {}
+
+func (x *ListGlobalItemsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_feed_v1_feed_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListGlobalItemsResponse.ProtoReflect.Descriptor instead.
+func (*ListGlobalItemsResponse) Descriptor() ([]byte, []int) {
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *ListGlobalItemsResponse) GetItems() []*Item {
+	if x != nil {
+		return x.Items
+	}
+	return nil
+}
+
+func (x *ListGlobalItemsResponse) GetNextPageToken() string {
+	if x != nil {
+		return x.NextPageToken
+	}
+	return ""
+}
+
+type ListFeedItemsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	FeedId        string                 `protobuf:"bytes,1,opt,name=feed_id,json=feedId,proto3" json:"feed_id,omitempty"`
+	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	PageToken     string                 `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	IsRead        bool                   `protobuf:"varint,4,opt,name=is_read,json=isRead,proto3" json:"is_read,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListFeedItemsRequest) Reset() {
+	*x = ListFeedItemsRequest{}
+	mi := &file_feed_v1_feed_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListFeedItemsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListFeedItemsRequest) ProtoMessage() {}
+
+func (x *ListFeedItemsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_feed_v1_feed_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListFeedItemsRequest.ProtoReflect.Descriptor instead.
+func (*ListFeedItemsRequest) Descriptor() ([]byte, []int) {
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *ListFeedItemsRequest) GetFeedId() string {
+	if x != nil {
+		return x.FeedId
+	}
+	return ""
+}
+
+func (x *ListFeedItemsRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *ListFeedItemsRequest) GetPageToken() string {
+	if x != nil {
+		return x.PageToken
+	}
+	return ""
+}
+
+func (x *ListFeedItemsRequest) GetIsRead() bool {
+	if x != nil {
+		return x.IsRead
+	}
+	return false
+}
+
+type ListFeedItemsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Items         []*Item                `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
+	NextPageToken string                 `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListFeedItemsResponse) Reset() {
+	*x = ListFeedItemsResponse{}
+	mi := &file_feed_v1_feed_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListFeedItemsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListFeedItemsResponse) ProtoMessage() {}
+
+func (x *ListFeedItemsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_feed_v1_feed_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListFeedItemsResponse.ProtoReflect.Descriptor instead.
+func (*ListFeedItemsResponse) Descriptor() ([]byte, []int) {
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *ListFeedItemsResponse) GetItems() []*Item {
+	if x != nil {
+		return x.Items
+	}
+	return nil
+}
+
+func (x *ListFeedItemsResponse) GetNextPageToken() string {
+	if x != nil {
+		return x.NextPageToken
+	}
+	return ""
+}
+
+type GetItemRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetItemRequest) Reset() {
+	*x = GetItemRequest{}
+	mi := &file_feed_v1_feed_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetItemRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetItemRequest) ProtoMessage() {}
+
+func (x *GetItemRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_feed_v1_feed_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetItemRequest.ProtoReflect.Descriptor instead.
+func (*GetItemRequest) Descriptor() ([]byte, []int) {
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *GetItemRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type GetItemResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Item          *Item                  `protobuf:"bytes,1,opt,name=item,proto3" json:"item,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetItemResponse) Reset() {
+	*x = GetItemResponse{}
+	mi := &file_feed_v1_feed_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetItemResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetItemResponse) ProtoMessage() {}
+
+func (x *GetItemResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_feed_v1_feed_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetItemResponse.ProtoReflect.Descriptor instead.
+func (*GetItemResponse) Descriptor() ([]byte, []int) {
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *GetItemResponse) GetItem() *Item {
+	if x != nil {
+		return x.Item
+	}
+	return nil
+}
+
+type MarkItemReadRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MarkItemReadRequest) Reset() {
+	*x = MarkItemReadRequest{}
+	mi := &file_feed_v1_feed_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MarkItemReadRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MarkItemReadRequest) ProtoMessage() {}
+
+func (x *MarkItemReadRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_feed_v1_feed_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MarkItemReadRequest.ProtoReflect.Descriptor instead.
+func (*MarkItemReadRequest) Descriptor() ([]byte, []int) {
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *MarkItemReadRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type MarkItemReadResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MarkItemReadResponse) Reset() {
+	*x = MarkItemReadResponse{}
+	mi := &file_feed_v1_feed_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MarkItemReadResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MarkItemReadResponse) ProtoMessage() {}
+
+func (x *MarkItemReadResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_feed_v1_feed_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MarkItemReadResponse.ProtoReflect.Descriptor instead.
+func (*MarkItemReadResponse) Descriptor() ([]byte, []int) {
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{19}
 }
 
 var File_feed_v1_feed_proto protoreflect.FileDescriptor
@@ -753,7 +1285,25 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"\n" +
 	"_feed_typeB\x0f\n" +
 	"\r_feed_versionB\x12\n" +
-	"\x10_last_fetched_at\"$\n" +
+	"\x10_last_fetched_at\"\xc0\x02\n" +
+	"\x04Item\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
+	"\afeed_id\x18\x02 \x01(\tR\x06feedId\x12\x14\n" +
+	"\x05title\x18\x03 \x01(\tR\x05title\x12\x10\n" +
+	"\x03url\x18\x04 \x01(\tR\x03url\x12\x18\n" +
+	"\acontent\x18\x05 \x01(\tR\acontent\x12\x16\n" +
+	"\x06author\x18\x06 \x01(\tR\x06author\x12!\n" +
+	"\fpublished_at\x18\a \x01(\tR\vpublishedAt\x12\x1b\n" +
+	"\timage_url\x18\b \x01(\tR\bimageUrl\x12\x1e\n" +
+	"\n" +
+	"enclosures\x18\t \x03(\tR\n" +
+	"enclosures\x12\x17\n" +
+	"\ais_read\x18\n" +
+	" \x01(\bR\x06isRead\x12\x1d\n" +
+	"\n" +
+	"created_at\x18\v \x01(\tR\tcreatedAt\x12\x1d\n" +
+	"\n" +
+	"updated_at\x18\f \x01(\tR\tupdatedAt\"$\n" +
 	"\x0eGetFeedRequest\x12\x12\n" +
 	"\x04uuid\x18\x01 \x01(\tR\x04uuid\"4\n" +
 	"\x0fGetFeedResponse\x12!\n" +
@@ -812,7 +1362,31 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"\x04feed\x18\x01 \x01(\v2\r.feed.v1.FeedR\x04feed\"'\n" +
 	"\x11DeleteFeedRequest\x12\x12\n" +
 	"\x04uuid\x18\x01 \x01(\tR\x04uuid\"\x14\n" +
-	"\x12DeleteFeedResponse2\xe4\x02\n" +
+	"\x12DeleteFeedResponse\"m\n" +
+	"\x16ListGlobalItemsRequest\x12\x1b\n" +
+	"\tpage_size\x18\x01 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"\n" +
+	"page_token\x18\x02 \x01(\tR\tpageToken\x12\x17\n" +
+	"\ais_read\x18\x03 \x01(\bR\x06isRead\"f\n" +
+	"\x17ListGlobalItemsResponse\x12#\n" +
+	"\x05items\x18\x01 \x03(\v2\r.feed.v1.ItemR\x05items\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x84\x01\n" +
+	"\x14ListFeedItemsRequest\x12\x17\n" +
+	"\afeed_id\x18\x01 \x01(\tR\x06feedId\x12\x1b\n" +
+	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"\n" +
+	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x17\n" +
+	"\ais_read\x18\x04 \x01(\bR\x06isRead\"d\n" +
+	"\x15ListFeedItemsResponse\x12#\n" +
+	"\x05items\x18\x01 \x03(\v2\r.feed.v1.ItemR\x05items\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\" \n" +
+	"\x0eGetItemRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"4\n" +
+	"\x0fGetItemResponse\x12!\n" +
+	"\x04item\x18\x01 \x01(\v2\r.feed.v1.ItemR\x04item\"%\n" +
+	"\x13MarkItemReadRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\x16\n" +
+	"\x14MarkItemReadResponse2\x95\x05\n" +
 	"\vFeedService\x12<\n" +
 	"\aGetFeed\x12\x17.feed.v1.GetFeedRequest\x1a\x18.feed.v1.GetFeedResponse\x12B\n" +
 	"\tListFeeds\x12\x19.feed.v1.ListFeedsRequest\x1a\x1a.feed.v1.ListFeedsResponse\x12E\n" +
@@ -821,7 +1395,11 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"\n" +
 	"UpdateFeed\x12\x1a.feed.v1.UpdateFeedRequest\x1a\x1b.feed.v1.UpdateFeedResponse\x12E\n" +
 	"\n" +
-	"DeleteFeed\x12\x1a.feed.v1.DeleteFeedRequest\x1a\x1b.feed.v1.DeleteFeedResponseB=Z;github.com/nakatanakatana/feed-reader/gen/go/feed/v1;feedv1b\x06proto3"
+	"DeleteFeed\x12\x1a.feed.v1.DeleteFeedRequest\x1a\x1b.feed.v1.DeleteFeedResponse\x12T\n" +
+	"\x0fListGlobalItems\x12\x1f.feed.v1.ListGlobalItemsRequest\x1a .feed.v1.ListGlobalItemsResponse\x12N\n" +
+	"\rListFeedItems\x12\x1d.feed.v1.ListFeedItemsRequest\x1a\x1e.feed.v1.ListFeedItemsResponse\x12<\n" +
+	"\aGetItem\x12\x17.feed.v1.GetItemRequest\x1a\x18.feed.v1.GetItemResponse\x12K\n" +
+	"\fMarkItemRead\x12\x1c.feed.v1.MarkItemReadRequest\x1a\x1d.feed.v1.MarkItemReadResponseB=Z;github.com/nakatanakatana/feed-reader/gen/go/feed/v1;feedv1b\x06proto3"
 
 var (
 	file_feed_v1_feed_proto_rawDescOnce sync.Once
@@ -835,40 +1413,60 @@ func file_feed_v1_feed_proto_rawDescGZIP() []byte {
 	return file_feed_v1_feed_proto_rawDescData
 }
 
-var file_feed_v1_feed_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_feed_v1_feed_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
 var file_feed_v1_feed_proto_goTypes = []any{
-	(*Feed)(nil),               // 0: feed.v1.Feed
-	(*GetFeedRequest)(nil),     // 1: feed.v1.GetFeedRequest
-	(*GetFeedResponse)(nil),    // 2: feed.v1.GetFeedResponse
-	(*ListFeedsRequest)(nil),   // 3: feed.v1.ListFeedsRequest
-	(*ListFeedsResponse)(nil),  // 4: feed.v1.ListFeedsResponse
-	(*CreateFeedRequest)(nil),  // 5: feed.v1.CreateFeedRequest
-	(*CreateFeedResponse)(nil), // 6: feed.v1.CreateFeedResponse
-	(*UpdateFeedRequest)(nil),  // 7: feed.v1.UpdateFeedRequest
-	(*UpdateFeedResponse)(nil), // 8: feed.v1.UpdateFeedResponse
-	(*DeleteFeedRequest)(nil),  // 9: feed.v1.DeleteFeedRequest
-	(*DeleteFeedResponse)(nil), // 10: feed.v1.DeleteFeedResponse
+	(*Feed)(nil),                    // 0: feed.v1.Feed
+	(*Item)(nil),                    // 1: feed.v1.Item
+	(*GetFeedRequest)(nil),          // 2: feed.v1.GetFeedRequest
+	(*GetFeedResponse)(nil),         // 3: feed.v1.GetFeedResponse
+	(*ListFeedsRequest)(nil),        // 4: feed.v1.ListFeedsRequest
+	(*ListFeedsResponse)(nil),       // 5: feed.v1.ListFeedsResponse
+	(*CreateFeedRequest)(nil),       // 6: feed.v1.CreateFeedRequest
+	(*CreateFeedResponse)(nil),      // 7: feed.v1.CreateFeedResponse
+	(*UpdateFeedRequest)(nil),       // 8: feed.v1.UpdateFeedRequest
+	(*UpdateFeedResponse)(nil),      // 9: feed.v1.UpdateFeedResponse
+	(*DeleteFeedRequest)(nil),       // 10: feed.v1.DeleteFeedRequest
+	(*DeleteFeedResponse)(nil),      // 11: feed.v1.DeleteFeedResponse
+	(*ListGlobalItemsRequest)(nil),  // 12: feed.v1.ListGlobalItemsRequest
+	(*ListGlobalItemsResponse)(nil), // 13: feed.v1.ListGlobalItemsResponse
+	(*ListFeedItemsRequest)(nil),    // 14: feed.v1.ListFeedItemsRequest
+	(*ListFeedItemsResponse)(nil),   // 15: feed.v1.ListFeedItemsResponse
+	(*GetItemRequest)(nil),          // 16: feed.v1.GetItemRequest
+	(*GetItemResponse)(nil),         // 17: feed.v1.GetItemResponse
+	(*MarkItemReadRequest)(nil),     // 18: feed.v1.MarkItemReadRequest
+	(*MarkItemReadResponse)(nil),    // 19: feed.v1.MarkItemReadResponse
 }
 var file_feed_v1_feed_proto_depIdxs = []int32{
 	0,  // 0: feed.v1.GetFeedResponse.feed:type_name -> feed.v1.Feed
 	0,  // 1: feed.v1.ListFeedsResponse.feeds:type_name -> feed.v1.Feed
 	0,  // 2: feed.v1.CreateFeedResponse.feed:type_name -> feed.v1.Feed
 	0,  // 3: feed.v1.UpdateFeedResponse.feed:type_name -> feed.v1.Feed
-	1,  // 4: feed.v1.FeedService.GetFeed:input_type -> feed.v1.GetFeedRequest
-	3,  // 5: feed.v1.FeedService.ListFeeds:input_type -> feed.v1.ListFeedsRequest
-	5,  // 6: feed.v1.FeedService.CreateFeed:input_type -> feed.v1.CreateFeedRequest
-	7,  // 7: feed.v1.FeedService.UpdateFeed:input_type -> feed.v1.UpdateFeedRequest
-	9,  // 8: feed.v1.FeedService.DeleteFeed:input_type -> feed.v1.DeleteFeedRequest
-	2,  // 9: feed.v1.FeedService.GetFeed:output_type -> feed.v1.GetFeedResponse
-	4,  // 10: feed.v1.FeedService.ListFeeds:output_type -> feed.v1.ListFeedsResponse
-	6,  // 11: feed.v1.FeedService.CreateFeed:output_type -> feed.v1.CreateFeedResponse
-	8,  // 12: feed.v1.FeedService.UpdateFeed:output_type -> feed.v1.UpdateFeedResponse
-	10, // 13: feed.v1.FeedService.DeleteFeed:output_type -> feed.v1.DeleteFeedResponse
-	9,  // [9:14] is the sub-list for method output_type
-	4,  // [4:9] is the sub-list for method input_type
-	4,  // [4:4] is the sub-list for extension type_name
-	4,  // [4:4] is the sub-list for extension extendee
-	0,  // [0:4] is the sub-list for field type_name
+	1,  // 4: feed.v1.ListGlobalItemsResponse.items:type_name -> feed.v1.Item
+	1,  // 5: feed.v1.ListFeedItemsResponse.items:type_name -> feed.v1.Item
+	1,  // 6: feed.v1.GetItemResponse.item:type_name -> feed.v1.Item
+	2,  // 7: feed.v1.FeedService.GetFeed:input_type -> feed.v1.GetFeedRequest
+	4,  // 8: feed.v1.FeedService.ListFeeds:input_type -> feed.v1.ListFeedsRequest
+	6,  // 9: feed.v1.FeedService.CreateFeed:input_type -> feed.v1.CreateFeedRequest
+	8,  // 10: feed.v1.FeedService.UpdateFeed:input_type -> feed.v1.UpdateFeedRequest
+	10, // 11: feed.v1.FeedService.DeleteFeed:input_type -> feed.v1.DeleteFeedRequest
+	12, // 12: feed.v1.FeedService.ListGlobalItems:input_type -> feed.v1.ListGlobalItemsRequest
+	14, // 13: feed.v1.FeedService.ListFeedItems:input_type -> feed.v1.ListFeedItemsRequest
+	16, // 14: feed.v1.FeedService.GetItem:input_type -> feed.v1.GetItemRequest
+	18, // 15: feed.v1.FeedService.MarkItemRead:input_type -> feed.v1.MarkItemReadRequest
+	3,  // 16: feed.v1.FeedService.GetFeed:output_type -> feed.v1.GetFeedResponse
+	5,  // 17: feed.v1.FeedService.ListFeeds:output_type -> feed.v1.ListFeedsResponse
+	7,  // 18: feed.v1.FeedService.CreateFeed:output_type -> feed.v1.CreateFeedResponse
+	9,  // 19: feed.v1.FeedService.UpdateFeed:output_type -> feed.v1.UpdateFeedResponse
+	11, // 20: feed.v1.FeedService.DeleteFeed:output_type -> feed.v1.DeleteFeedResponse
+	13, // 21: feed.v1.FeedService.ListGlobalItems:output_type -> feed.v1.ListGlobalItemsResponse
+	15, // 22: feed.v1.FeedService.ListFeedItems:output_type -> feed.v1.ListFeedItemsResponse
+	17, // 23: feed.v1.FeedService.GetItem:output_type -> feed.v1.GetItemResponse
+	19, // 24: feed.v1.FeedService.MarkItemRead:output_type -> feed.v1.MarkItemReadResponse
+	16, // [16:25] is the sub-list for method output_type
+	7,  // [7:16] is the sub-list for method input_type
+	7,  // [7:7] is the sub-list for extension type_name
+	7,  // [7:7] is the sub-list for extension extendee
+	0,  // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_feed_v1_feed_proto_init() }
@@ -877,15 +1475,15 @@ func file_feed_v1_feed_proto_init() {
 		return
 	}
 	file_feed_v1_feed_proto_msgTypes[0].OneofWrappers = []any{}
-	file_feed_v1_feed_proto_msgTypes[5].OneofWrappers = []any{}
-	file_feed_v1_feed_proto_msgTypes[7].OneofWrappers = []any{}
+	file_feed_v1_feed_proto_msgTypes[6].OneofWrappers = []any{}
+	file_feed_v1_feed_proto_msgTypes[8].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_feed_v1_feed_proto_rawDesc), len(file_feed_v1_feed_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   11,
+			NumMessages:   20,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
