@@ -10,7 +10,7 @@
     "includes": [
       "**",
       "!**/conductor/*",
-      "!**/gen/*.ts",
+      "!**/gen/**/*.ts",
       "!**/*.gen.ts",
       "!!**/dist",
       "!**/public/mockServiceWorker.js"
