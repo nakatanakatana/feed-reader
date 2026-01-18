@@ -1,0 +1,94 @@
+name: backend CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/cache@v5
+        with:
+          path: ~/.local/share/aquaproj-aqua
+          key: v2-aqua-installer-${{runner.os}}-${{runner.arch}}-${{hashFiles('aqua.yaml', 'aqua-checksums.json')}}
+          restore-keys: |
+            v2-aqua-installer-${{runner.os}}-${{runner.arch}}-
+      - uses: aquaproj/aqua-installer@v4.0.4
+        with:
+          aqua_version: v2.56.4
+
+  version:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/cache@v5
+        with:
+          path: ~/.local/share/aquaproj-aqua
+          key: v2-aqua-installer-${{runner.os}}-${{runner.arch}}-${{hashFiles('aqua.yaml', 'aqua-checksums.json')}}
+          restore-keys: |
+            v2-aqua-installer-${{runner.os}}-${{runner.arch}}-
+      - uses: aquaproj/aqua-installer@v4.0.4
+        with:
+          aqua_version: v2.56.4
+      - run: which go
+      - run: go version
+
+  lint:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/cache@v5
+        with:
+          path: ~/.local/share/aquaproj-aqua
+          key: v2-aqua-installer-${{runner.os}}-${{runner.arch}}-${{hashFiles('aqua.yaml', 'aqua-checksums.json')}}
+          restore-keys: |
+            v2-aqua-installer-${{runner.os}}-${{runner.arch}}-
+      - uses: aquaproj/aqua-installer@v4.0.4
+        with:
+          aqua_version: v2.56.4
+      - run: golangci-lint run
+
+  build:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/cache@v5
+        with:
+          path: ~/.local/share/aquaproj-aqua
+          key: v2-aqua-installer-${{runner.os}}-${{runner.arch}}-${{hashFiles('aqua.yaml', 'aqua-checksums.json')}}
+          restore-keys: |
+            v2-aqua-installer-${{runner.os}}-${{runner.arch}}-
+      - uses: aquaproj/aqua-installer@v4.0.4
+        with:
+          aqua_version: v2.56.4
+      - run: go build -o dist/ ./cmd/...
+
+  test:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/cache@v5
+        with:
+          path: ~/.local/share/aquaproj-aqua
+          key: v2-aqua-installer-${{runner.os}}-${{runner.arch}}-${{hashFiles('aqua.yaml', 'aqua-checksums.json')}}
+          restore-keys: |
+            v2-aqua-installer-${{runner.os}}-${{runner.arch}}-
+      - uses: aquaproj/aqua-installer@v4.0.4
+        with:
+          aqua_version: v2.56.4
+      # NOTE: workground https://github.com/golang/go/issues/75031
+      - id: parse-go-version
+        run: echo "GO_VERSION=$(cat aqua.yaml | grep "golang/go" | cut -f2 -d'@')" >> $GITHUB_OUTPUT
+      - run: go env -w GOTOOLCHAIN="${GO_VERSION}+auto"
+        env:
+          GO_VERSION: ${{ steps.parse-go-version.outputs.GO_VERSION }}
+      - run: go test ./... -v -coverprofile=coverage.out -covermode=atomic
+      - uses: k1LoW/octocov-action@v1
