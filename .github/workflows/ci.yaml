@@ -1,5 +1,8 @@
 name: CI
 
+permissions:
+  contents: read
+
 on:
   pull_request:
   push:
@@ -94,6 +97,7 @@ jobs:
           node-version: "24"
 
   frontend-lint-format:
+    needs: frontend-setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -107,6 +111,7 @@ jobs:
       - run: npm run format:check
 
   frontend-test:
+    needs: frontend-setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -125,14 +130,14 @@ jobs:
           if-no-files-found: error
 
   coverage-aggregation:
+    needs:
+      - backend-test
+      - frontend-test
     runs-on: ubuntu-latest
     permissions:
       actions: read
       contents: read
       pull-requests: write
-    needs:
-      - backend-test
-      - frontend-test
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v5
