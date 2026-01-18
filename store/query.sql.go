@@ -200,6 +200,153 @@ func (q *Queries) GetFeed(ctx context.Context, uuid string) (Feed, error) {
 	return i, err
 }
 
+const getItem = `-- name: GetItem :one
+SELECT
+  i.id,
+  i.url,
+  i.title,
+  i.description,
+  i.published_at,
+  i.guid,
+  i.created_at,
+  i.updated_at,
+  fi.feed_id,
+  COALESCE(ir.is_read, 0) AS is_read
+FROM
+  items i
+  JOIN feed_items fi ON i.id = fi.item_id
+  LEFT JOIN item_reads ir ON i.id = ir.item_id
+WHERE
+  i.id = ?
+`
+
+type GetItemRow struct {
+	ID          string  `json:"id"`
+	Url         string  `json:"url"`
+	Title       *string `json:"title"`
+	Description *string `json:"description"`
+	PublishedAt *string `json:"published_at"`
+	Guid        *string `json:"guid"`
+	CreatedAt   string  `json:"created_at"`
+	UpdatedAt   string  `json:"updated_at"`
+	FeedID      string  `json:"feed_id"`
+	IsRead      int64   `json:"is_read"`
+}
+
+func (q *Queries) GetItem(ctx context.Context, id string) (GetItemRow, error) {
+	row := q.db.QueryRowContext(ctx, getItem, id)
+	var i GetItemRow
+	err := row.Scan(
+		&i.ID,
+		&i.Url,
+		&i.Title,
+		&i.Description,
+		&i.PublishedAt,
+		&i.Guid,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.FeedID,
+		&i.IsRead,
+	)
+	return i, err
+}
+
+const listFeedItems = `-- name: ListFeedItems :many
+SELECT
+  i.id,
+  i.url,
+  i.title,
+  i.description,
+  i.published_at,
+  i.guid,
+  i.created_at,
+  i.updated_at,
+  fi.feed_id,
+  COALESCE(ir.is_read, 0) AS is_read
+FROM
+  items i
+  JOIN feed_items fi ON i.id = fi.item_id
+  LEFT JOIN item_reads ir ON i.id = ir.item_id
+WHERE
+  fi.feed_id = ?1
+  AND (
+    ?2 IS NULL
+    OR i.published_at < ?2
+    OR (
+      i.published_at = ?2
+      AND i.id < ?3
+    )
+  )
+  AND (
+    ?4 = 0
+    OR COALESCE(ir.is_read, 0) = 0
+  )
+ORDER BY
+  i.published_at DESC, i.id DESC
+LIMIT ?5
+`
+
+type ListFeedItemsParams struct {
+	FeedID            string      `json:"feed_id"`
+	CursorPublishedAt interface{} `json:"cursor_published_at"`
+	CursorID          *string     `json:"cursor_id"`
+	FilterUnread      interface{} `json:"filter_unread"`
+	Limit             int64       `json:"limit"`
+}
+
+type ListFeedItemsRow struct {
+	ID          string  `json:"id"`
+	Url         string  `json:"url"`
+	Title       *string `json:"title"`
+	Description *string `json:"description"`
+	PublishedAt *string `json:"published_at"`
+	Guid        *string `json:"guid"`
+	CreatedAt   string  `json:"created_at"`
+	UpdatedAt   string  `json:"updated_at"`
+	FeedID      string  `json:"feed_id"`
+	IsRead      int64   `json:"is_read"`
+}
+
+func (q *Queries) ListFeedItems(ctx context.Context, arg ListFeedItemsParams) ([]ListFeedItemsRow, error) {
+	rows, err := q.db.QueryContext(ctx, listFeedItems,
+		arg.FeedID,
+		arg.CursorPublishedAt,
+		arg.CursorID,
+		arg.FilterUnread,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListFeedItemsRow
+	for rows.Next() {
+		var i ListFeedItemsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Url,
+			&i.Title,
+			&i.Description,
+			&i.PublishedAt,
+			&i.Guid,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.FeedID,
+			&i.IsRead,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listFeeds = `-- name: ListFeeds :many
 SELECT
   uuid, url, link, title, description, language, image_url, copyright, feed_type, feed_version, last_fetched_at, created_at, updated_at
@@ -244,6 +391,128 @@ func (q *Queries) ListFeeds(ctx context.Context) ([]Feed, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const listGlobalItems = `-- name: ListGlobalItems :many
+SELECT
+  i.id,
+  i.url,
+  i.title,
+  i.description,
+  i.published_at,
+  i.guid,
+  i.created_at,
+  i.updated_at,
+  fi.feed_id,
+  COALESCE(ir.is_read, 0) AS is_read
+FROM
+  items i
+  JOIN feed_items fi ON i.id = fi.item_id
+  LEFT JOIN item_reads ir ON i.id = ir.item_id
+WHERE
+  (
+    ?1 IS NULL
+    OR i.published_at < ?1
+    OR (
+      i.published_at = ?1
+      AND i.id < ?2
+    )
+  )
+  AND (
+    ?3 = 0
+    OR COALESCE(ir.is_read, 0) = 0
+  )
+ORDER BY
+  i.published_at DESC, i.id DESC
+LIMIT ?4
+`
+
+type ListGlobalItemsParams struct {
+	CursorPublishedAt interface{} `json:"cursor_published_at"`
+	CursorID          *string     `json:"cursor_id"`
+	FilterUnread      interface{} `json:"filter_unread"`
+	Limit             int64       `json:"limit"`
+}
+
+type ListGlobalItemsRow struct {
+	ID          string  `json:"id"`
+	Url         string  `json:"url"`
+	Title       *string `json:"title"`
+	Description *string `json:"description"`
+	PublishedAt *string `json:"published_at"`
+	Guid        *string `json:"guid"`
+	CreatedAt   string  `json:"created_at"`
+	UpdatedAt   string  `json:"updated_at"`
+	FeedID      string  `json:"feed_id"`
+	IsRead      int64   `json:"is_read"`
+}
+
+func (q *Queries) ListGlobalItems(ctx context.Context, arg ListGlobalItemsParams) ([]ListGlobalItemsRow, error) {
+	rows, err := q.db.QueryContext(ctx, listGlobalItems,
+		arg.CursorPublishedAt,
+		arg.CursorID,
+		arg.FilterUnread,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListGlobalItemsRow
+	for rows.Next() {
+		var i ListGlobalItemsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Url,
+			&i.Title,
+			&i.Description,
+			&i.PublishedAt,
+			&i.Guid,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.FeedID,
+			&i.IsRead,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const markItemRead = `-- name: MarkItemRead :one
+INSERT INTO item_reads (
+  item_id,
+  is_read,
+  read_at,
+  updated_at
+) VALUES (
+  ?, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+)
+ON CONFLICT(item_id) DO UPDATE SET
+  is_read = 1,
+  read_at = CURRENT_TIMESTAMP,
+  updated_at = CURRENT_TIMESTAMP
+RETURNING item_id, is_read, read_at, created_at, updated_at
+`
+
+func (q *Queries) MarkItemRead(ctx context.Context, itemID string) (ItemRead, error) {
+	row := q.db.QueryRowContext(ctx, markItemRead, itemID)
+	var i ItemRead
+	err := row.Scan(
+		&i.ItemID,
+		&i.IsRead,
+		&i.ReadAt,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const updateFeed = `-- name: UpdateFeed :one
