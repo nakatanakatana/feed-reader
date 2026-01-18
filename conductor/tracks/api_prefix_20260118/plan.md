@@ -5,13 +5,10 @@
 - [x] Task: Update Backend Routing ca5ee3b
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Update' (Protocol in workflow.md)
 
-## Phase 2: Frontend & Tooling Update
+## Phase 2: Frontend & Tooling Update [checkpoint: 8a4d4f9]
 - [x] Task: Update Frontend Transport 98a69b4
-    - [ ] Update `frontend/src/lib/query.ts` to set `baseUrl` to `/api`.
-    - [ ] Verify frontend tests pass.
 - [x] Task: Update Vite Configuration f26de3f
-    - [ ] Update `vite.config.js` to proxy `/api` requests to the backend `http://localhost:8080`.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Frontend & Tooling Update' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Frontend & Tooling Update' (Protocol in workflow.md)
 
 ## Phase 3: Verification
 - [ ] Task: Manual Verification
