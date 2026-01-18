@@ -72,6 +72,92 @@ func (q *Queries) CreateFeed(ctx context.Context, arg CreateFeedParams) (Feed, e
 	return i, err
 }
 
+const createFeedItem = `-- name: CreateFeedItem :exec
+INSERT INTO feed_items (
+  feed_id,
+  item_id
+) VALUES (
+  ?, ?
+)
+ON CONFLICT(feed_id, item_id) DO NOTHING
+`
+
+type CreateFeedItemParams struct {
+	FeedID string `json:"feed_id"`
+	ItemID string `json:"item_id"`
+}
+
+func (q *Queries) CreateFeedItem(ctx context.Context, arg CreateFeedItemParams) error {
+	_, err := q.db.ExecContext(ctx, createFeedItem, arg.FeedID, arg.ItemID)
+	return err
+}
+
+const createItem = `-- name: CreateItem :one
+INSERT INTO items (
+  id,
+  url,
+  title,
+  description,
+  published_at,
+  guid
+) VALUES (
+  ?, ?, ?, ?, ?, ?
+)
+ON CONFLICT(url) DO UPDATE SET
+  title = excluded.title,
+  description = excluded.description,
+  published_at = excluded.published_at,
+  guid = excluded.guid,
+  updated_at = CURRENT_TIMESTAMP
+RETURNING id, url, title, description, published_at, guid, created_at, updated_at
+`
+
+type CreateItemParams struct {
+	ID          string  `json:"id"`
+	Url         string  `json:"url"`
+	Title       *string `json:"title"`
+	Description *string `json:"description"`
+	PublishedAt *string `json:"published_at"`
+	Guid        *string `json:"guid"`
+}
+
+func (q *Queries) CreateItem(ctx context.Context, arg CreateItemParams) (Item, error) {
+	row := q.db.QueryRowContext(ctx, createItem,
+		arg.ID,
+		arg.Url,
+		arg.Title,
+		arg.Description,
+		arg.PublishedAt,
+		arg.Guid,
+	)
+	var i Item
+	err := row.Scan(
+		&i.ID,
+		&i.Url,
+		&i.Title,
+		&i.Description,
+		&i.PublishedAt,
+		&i.Guid,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const createItemRead = `-- name: CreateItemRead :exec
+INSERT INTO item_reads (
+  item_id
+) VALUES (
+  ?
+)
+ON CONFLICT(item_id) DO NOTHING
+`
+
+func (q *Queries) CreateItemRead(ctx context.Context, itemID string) error {
+	_, err := q.db.ExecContext(ctx, createItemRead, itemID)
+	return err
+}
+
 const deleteFeed = `-- name: DeleteFeed :exec
 DELETE FROM
   feeds

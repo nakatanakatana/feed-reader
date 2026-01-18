@@ -19,3 +19,29 @@ type Feed struct {
 	CreatedAt     string  `json:"created_at"`
 	UpdatedAt     string  `json:"updated_at"`
 }
+
+type FeedItem struct {
+	FeedID    string `json:"feed_id"`
+	ItemID    string `json:"item_id"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
+}
+
+type Item struct {
+	ID          string  `json:"id"`
+	Url         string  `json:"url"`
+	Title       *string `json:"title"`
+	Description *string `json:"description"`
+	PublishedAt *string `json:"published_at"`
+	Guid        *string `json:"guid"`
+	CreatedAt   string  `json:"created_at"`
+	UpdatedAt   string  `json:"updated_at"`
+}
+
+type ItemRead struct {
+	ItemID    string  `json:"item_id"`
+	IsRead    int64   `json:"is_read"`
+	ReadAt    *string `json:"read_at"`
+	CreatedAt string  `json:"created_at"`
+	UpdatedAt string  `json:"updated_at"`
+}
