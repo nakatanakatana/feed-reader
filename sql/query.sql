@@ -113,17 +113,17 @@ SELECT
   i.id,
   i.url,
   i.title,
-  i.content,
+  -- i.content, -- Exclude content for list view
   i.description,
   i.author,
   i.published_at,
   i.image_url,
-  i.guid,
+  -- i.guid, -- Exclude guid for list view if not needed
   i.created_at,
   i.updated_at,
   fi.feed_id,
-  COALESCE(ir.is_read, 0) AS is_read,
-  CAST(COALESCE((SELECT GROUP_CONCAT(url) FROM item_enclosures WHERE item_id = i.id), '') AS TEXT) AS enclosures
+  COALESCE(ir.is_read, 0) AS is_read
+  -- Exclude enclosures for list view
 FROM
   items i
   JOIN feed_items fi ON i.id = fi.item_id
@@ -150,17 +150,17 @@ SELECT
   i.id,
   i.url,
   i.title,
-  i.content,
+  -- i.content, -- Exclude content
   i.description,
   i.author,
   i.published_at,
   i.image_url,
-  i.guid,
+  -- i.guid, -- Exclude guid
   i.created_at,
   i.updated_at,
   fi.feed_id,
-  COALESCE(ir.is_read, 0) AS is_read,
-  CAST(COALESCE((SELECT GROUP_CONCAT(url) FROM item_enclosures WHERE item_id = i.id), '') AS TEXT) AS enclosures
+  COALESCE(ir.is_read, 0) AS is_read
+  -- Exclude enclosures
 FROM
   items i
   JOIN feed_items fi ON i.id = fi.item_id

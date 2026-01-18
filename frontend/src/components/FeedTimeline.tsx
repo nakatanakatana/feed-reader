@@ -94,11 +94,11 @@ export function FeedTimeline(props: FeedTimelineProps) {
           {query.isFetchingNextPage ? "Loading more..." : "Load More"}
         </button>
       </Show>
-      <Show when={selectedItem()}>
-        {(item) => (
-          <ItemDetail item={item()} onClose={() => setSelectedItem(null)} />
-        )}
-      </Show>{" "}
+      			<Show when={selectedItem()}>
+      				{(item) => (
+      					<ItemDetail itemId={item().id} onClose={() => setSelectedItem(null)} />
+      				)}
+      			</Show>{" "}
     </div>
   );
 }

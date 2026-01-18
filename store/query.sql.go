@@ -312,17 +312,17 @@ SELECT
   i.id,
   i.url,
   i.title,
-  i.content,
+  -- i.content, -- Exclude content
   i.description,
   i.author,
   i.published_at,
   i.image_url,
-  i.guid,
+  -- i.guid, -- Exclude guid
   i.created_at,
   i.updated_at,
   fi.feed_id,
-  COALESCE(ir.is_read, 0) AS is_read,
-  CAST(COALESCE((SELECT GROUP_CONCAT(url) FROM item_enclosures WHERE item_id = i.id), '') AS TEXT) AS enclosures
+  COALESCE(ir.is_read, 0) AS is_read
+  -- Exclude enclosures
 FROM
   items i
   JOIN feed_items fi ON i.id = fi.item_id
@@ -358,17 +358,14 @@ type ListFeedItemsRow struct {
 	ID          string  `json:"id"`
 	Url         string  `json:"url"`
 	Title       *string `json:"title"`
-	Content     *string `json:"content"`
 	Description *string `json:"description"`
 	Author      *string `json:"author"`
 	PublishedAt *string `json:"published_at"`
 	ImageUrl    *string `json:"image_url"`
-	Guid        *string `json:"guid"`
 	CreatedAt   string  `json:"created_at"`
 	UpdatedAt   string  `json:"updated_at"`
 	FeedID      string  `json:"feed_id"`
 	IsRead      int64   `json:"is_read"`
-	Enclosures  string  `json:"enclosures"`
 }
 
 func (q *Queries) ListFeedItems(ctx context.Context, arg ListFeedItemsParams) ([]ListFeedItemsRow, error) {
@@ -390,17 +387,14 @@ func (q *Queries) ListFeedItems(ctx context.Context, arg ListFeedItemsParams) ([
 			&i.ID,
 			&i.Url,
 			&i.Title,
-			&i.Content,
 			&i.Description,
 			&i.Author,
 			&i.PublishedAt,
 			&i.ImageUrl,
-			&i.Guid,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.FeedID,
 			&i.IsRead,
-			&i.Enclosures,
 		); err != nil {
 			return nil, err
 		}
@@ -466,17 +460,17 @@ SELECT
   i.id,
   i.url,
   i.title,
-  i.content,
+  -- i.content, -- Exclude content for list view
   i.description,
   i.author,
   i.published_at,
   i.image_url,
-  i.guid,
+  -- i.guid, -- Exclude guid for list view if not needed
   i.created_at,
   i.updated_at,
   fi.feed_id,
-  COALESCE(ir.is_read, 0) AS is_read,
-  CAST(COALESCE((SELECT GROUP_CONCAT(url) FROM item_enclosures WHERE item_id = i.id), '') AS TEXT) AS enclosures
+  COALESCE(ir.is_read, 0) AS is_read
+  -- Exclude enclosures for list view
 FROM
   items i
   JOIN feed_items fi ON i.id = fi.item_id
@@ -510,17 +504,14 @@ type ListGlobalItemsRow struct {
 	ID          string  `json:"id"`
 	Url         string  `json:"url"`
 	Title       *string `json:"title"`
-	Content     *string `json:"content"`
 	Description *string `json:"description"`
 	Author      *string `json:"author"`
 	PublishedAt *string `json:"published_at"`
 	ImageUrl    *string `json:"image_url"`
-	Guid        *string `json:"guid"`
 	CreatedAt   string  `json:"created_at"`
 	UpdatedAt   string  `json:"updated_at"`
 	FeedID      string  `json:"feed_id"`
 	IsRead      int64   `json:"is_read"`
-	Enclosures  string  `json:"enclosures"`
 }
 
 func (q *Queries) ListGlobalItems(ctx context.Context, arg ListGlobalItemsParams) ([]ListGlobalItemsRow, error) {
@@ -541,17 +532,14 @@ func (q *Queries) ListGlobalItems(ctx context.Context, arg ListGlobalItemsParams
 			&i.ID,
 			&i.Url,
 			&i.Title,
-			&i.Content,
 			&i.Description,
 			&i.Author,
 			&i.PublishedAt,
 			&i.ImageUrl,
-			&i.Guid,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.FeedID,
 			&i.IsRead,
-			&i.Enclosures,
 		); err != nil {
 			return nil, err
 		}

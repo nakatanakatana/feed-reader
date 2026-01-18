@@ -298,6 +298,7 @@ func toProtoItemFromGetRow(row store.GetItemRow) *feedv1.Item {
 		Title:       derefString(row.Title),
 		Url:         row.Url,
 		Content:     derefString(row.Content),
+		Description: derefString(row.Description),
 		Author:      derefString(row.Author),
 		PublishedAt: derefString(row.PublishedAt),
 		ImageUrl:    derefString(row.ImageUrl),
@@ -309,46 +310,38 @@ func toProtoItemFromGetRow(row store.GetItemRow) *feedv1.Item {
 }
 
 func toProtoItemFromGlobalRow(row store.ListGlobalItemsRow) *feedv1.Item {
-	var enclosures []string
-	if row.Enclosures != "" {
-		enclosures = strings.Split(row.Enclosures, ",")
-	}
-
 	return &feedv1.Item{
 		Id:          row.ID,
 		FeedId:      row.FeedID,
 		Title:       derefString(row.Title),
 		Url:         row.Url,
-		Content:     derefString(row.Content),
+		// Content is excluded
+		Description: derefString(row.Description),
 		Author:      derefString(row.Author),
 		PublishedAt: derefString(row.PublishedAt),
 		ImageUrl:    derefString(row.ImageUrl),
-		Enclosures:  enclosures,
-		IsRead:      row.IsRead != 0,
-		CreatedAt:   row.CreatedAt,
-		UpdatedAt:   row.UpdatedAt,
+		// Enclosures is excluded
+		IsRead:    row.IsRead != 0,
+		CreatedAt: row.CreatedAt,
+		UpdatedAt: row.UpdatedAt,
 	}
 }
 
 func toProtoItemFromFeedRow(row store.ListFeedItemsRow) *feedv1.Item {
-	var enclosures []string
-	if row.Enclosures != "" {
-		enclosures = strings.Split(row.Enclosures, ",")
-	}
-
 	return &feedv1.Item{
 		Id:          row.ID,
 		FeedId:      row.FeedID,
 		Title:       derefString(row.Title),
 		Url:         row.Url,
-		Content:     derefString(row.Content),
+		// Content is excluded
+		Description: derefString(row.Description),
 		Author:      derefString(row.Author),
 		PublishedAt: derefString(row.PublishedAt),
 		ImageUrl:    derefString(row.ImageUrl),
-		Enclosures:  enclosures,
-		IsRead:      row.IsRead != 0,
-		CreatedAt:   row.CreatedAt,
-		UpdatedAt:   row.UpdatedAt,
+		// Enclosures is excluded
+		IsRead:    row.IsRead != 0,
+		CreatedAt: row.CreatedAt,
+		UpdatedAt: row.UpdatedAt,
 	}
 }
 
