@@ -35,5 +35,9 @@ export default defineConfig({
     },
     setupFiles: ["./src/vitest-setup.ts"],
     globals: true,
+    coverage: {
+      provider: "v8",
+      reporter: ["lcov"],
+    },
   },
 });
