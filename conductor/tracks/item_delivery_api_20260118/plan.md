@@ -34,15 +34,15 @@
 - [x] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md) 6b2123c
 
 ## Phase 3: Frontend Implementation
-- [ ] Task: Setup Frontend Data Layer
-    - [ ] Verify generated TypeScript client availability in `frontend/src/gen`.
-    - [ ] Add new query hooks in `frontend/src/lib/query.ts` for items (using `createInfiniteQuery` for pagination).
-- [ ] Task: Implement UI Components
-    - [ ] Create `frontend/src/components/ItemCard.tsx` to display individual item summary and image.
-    - [ ] Create `frontend/src/components/ItemDetail.tsx` (or Modal) for full content view.
-    - [ ] Create `frontend/src/components/FeedTimeline.tsx` for the global list.
-- [ ] Task: Integrate Features
-    - [ ] Update `frontend/src/routes/feeds.tsx` to show items when a feed is selected.
-    - [ ] Create new route/view `frontend/src/routes/timeline.tsx` (or index) for Global Timeline.
-    - [ ] Wire up "Mark as Read" button/action in the UI.
-- [ ] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md)
+- [x] Task: Setup Frontend Data Layer 73e3b29
+    - [x] Verify generated TypeScript client availability in `frontend/src/gen`.
+    - [x] Add new query hooks in `frontend/src/lib/items.ts` for items (using `createInfiniteQuery` for pagination).
+- [x] Task: Implement UI Components 73e3b29
+    - [x] Create `frontend/src/components/ItemCard.tsx` to display individual item summary and image.
+    - [x] Create `frontend/src/components/ItemDetail.tsx` (or Modal) for full content view.
+    - [x] Create `frontend/src/components/FeedTimeline.tsx` for the global list.
+- [x] Task: Integrate Features 73e3b29
+    - [x] Update `frontend/src/routes/feeds.tsx` to show items when a feed is selected.
+    - [x] Create new route/view `frontend/src/routes/timeline.tsx` (or index) for Global Timeline.
+    - [x] Wire up "Mark as Read" button/action in the UI.
+- [~] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md)

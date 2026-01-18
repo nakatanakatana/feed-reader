@@ -10,8 +10,8 @@ interface ItemDetailProps {
 
 export function ItemDetail(props: ItemDetailProps) {
   return (
-    // biome-ignore lint/a11y/noStaticElementInteractions: Backdrop
     // biome-ignore lint/a11y/useKeyWithClickEvents: Backdrop
+    // biome-ignore lint/a11y/noStaticElementInteractions: Backdrop
     <div
       class={css({
         position: "fixed",
@@ -25,8 +25,6 @@ export function ItemDetail(props: ItemDetailProps) {
       })}
       onClick={props.onClose}
     >
-      {/* biome-ignore lint/a11y/noStaticElementInteractions: Modal content */}
-      {/* biome-ignore lint/a11y/useKeyWithClickEvents: Modal content click handler is for stopping propagation only */}
       <div
         role="document"
         class={stack({
@@ -40,6 +38,7 @@ export function ItemDetail(props: ItemDetailProps) {
           gap: "6",
         })}
         onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => e.stopPropagation()}
       >
         <div class={stack({ gap: "2" })}>
           <button

@@ -3,8 +3,27 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { CreateFeedRequest, CreateFeedResponse, DeleteFeedRequest, DeleteFeedResponse, GetFeedRequest, GetFeedResponse, GetItemRequest, GetItemResponse, ListFeedItemsRequest, ListFeedItemsResponse, ListFeedsRequest, ListFeedsResponse, ListGlobalItemsRequest, ListGlobalItemsResponse, MarkItemReadRequest, MarkItemReadResponse, UpdateFeedRequest, UpdateFeedResponse } from "./feed_pb.js";
 import { MethodKind } from "@bufbuild/protobuf";
+import {
+  CreateFeedRequest,
+  CreateFeedResponse,
+  DeleteFeedRequest,
+  DeleteFeedResponse,
+  GetFeedRequest,
+  GetFeedResponse,
+  GetItemRequest,
+  GetItemResponse,
+  ListFeedItemsRequest,
+  ListFeedItemsResponse,
+  ListFeedsRequest,
+  ListFeedsResponse,
+  ListGlobalItemsRequest,
+  ListGlobalItemsResponse,
+  MarkItemReadRequest,
+  MarkItemReadResponse,
+  UpdateFeedRequest,
+  UpdateFeedResponse,
+} from "./feed_pb.js";
 
 /**
  * @generated from service feed.v1.FeedService
@@ -93,6 +112,5 @@ export const FeedService = {
       O: MarkItemReadResponse,
       kind: MethodKind.Unary,
     },
-  }
+  },
 } as const;
-

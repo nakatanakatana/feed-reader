@@ -10,10 +10,20 @@ interface ItemCardProps {
 }
 
 export function ItemCard(props: ItemCardProps) {
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      props.onClick(props.item);
+    }
+  };
+
   return (
-    <button
-      type="button"
+    // biome-ignore lint/a11y/useSemanticElements: Nested buttons
+    <div
+      role="button"
+      tabIndex={0}
       onClick={() => props.onClick(props.item)}
+      onKeyDown={handleKeyDown}
       class={stack({
         width: "full",
         textAlign: "left",
@@ -79,18 +89,23 @@ export function ItemCard(props: ItemCardProps) {
           />
         </Show>
         <div class={stack({ gap: "1", flex: "1" })}>
-          					<p
-          						class={css({
-          							fontSize: "sm",
-          							color: "gray.600",
-          							lineClamp: 3,
-          						})}
-          					>            {props.item.description}
+          <p
+            class={css({
+              fontSize: "sm",
+              color: "gray.600",
+              lineClamp: 3,
+            })}
+          >
+            {props.item.description}
           </p>
           <div class={flex({ gap: "2", fontSize: "xs", color: "gray.400" })}>
             <Show when={props.item.author}>
-              <span>{props.item.author}</span>
-              <span>•</span>
+              {(author) => (
+                <>
+                  <span>{author()}</span>
+                  <span>•</span>
+                </>
+              )}
             </Show>
             <span>
               {props.item.publishedAt
@@ -100,6 +115,6 @@ export function ItemCard(props: ItemCardProps) {
           </div>
         </div>
       </div>
-    </button>
+    </div>
   );
 }

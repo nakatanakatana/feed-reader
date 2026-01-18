@@ -168,6 +168,7 @@ type Item struct {
 	Title         string                 `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
 	Url           string                 `protobuf:"bytes,4,opt,name=url,proto3" json:"url,omitempty"`
 	Content       string                 `protobuf:"bytes,5,opt,name=content,proto3" json:"content,omitempty"`
+	Description   string                 `protobuf:"bytes,13,opt,name=description,proto3" json:"description,omitempty"`
 	Author        string                 `protobuf:"bytes,6,opt,name=author,proto3" json:"author,omitempty"`
 	PublishedAt   string                 `protobuf:"bytes,7,opt,name=published_at,json=publishedAt,proto3" json:"published_at,omitempty"`
 	ImageUrl      string                 `protobuf:"bytes,8,opt,name=image_url,json=imageUrl,proto3" json:"image_url,omitempty"`
@@ -240,6 +241,13 @@ func (x *Item) GetUrl() string {
 func (x *Item) GetContent() string {
 	if x != nil {
 		return x.Content
+	}
+	return ""
+}
+
+func (x *Item) GetDescription() string {
+	if x != nil {
+		return x.Description
 	}
 	return ""
 }
@@ -1285,13 +1293,14 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"\n" +
 	"_feed_typeB\x0f\n" +
 	"\r_feed_versionB\x12\n" +
-	"\x10_last_fetched_at\"\xc0\x02\n" +
+	"\x10_last_fetched_at\"\xe2\x02\n" +
 	"\x04Item\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
 	"\afeed_id\x18\x02 \x01(\tR\x06feedId\x12\x14\n" +
 	"\x05title\x18\x03 \x01(\tR\x05title\x12\x10\n" +
 	"\x03url\x18\x04 \x01(\tR\x03url\x12\x18\n" +
-	"\acontent\x18\x05 \x01(\tR\acontent\x12\x16\n" +
+	"\acontent\x18\x05 \x01(\tR\acontent\x12 \n" +
+	"\vdescription\x18\r \x01(\tR\vdescription\x12\x16\n" +
 	"\x06author\x18\x06 \x01(\tR\x06author\x12!\n" +
 	"\fpublished_at\x18\a \x01(\tR\vpublishedAt\x12\x1b\n" +
 	"\timage_url\x18\b \x01(\tR\bimageUrl\x12\x1e\n" +

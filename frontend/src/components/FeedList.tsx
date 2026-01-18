@@ -56,31 +56,38 @@ export function FeedList(props: FeedListProps) {
               class={flex({
                 justifyContent: "space-between",
                 alignItems: "center",
-                padding: "3",
                 border: "1px solid",
                 borderColor:
                   props.selectedUuid === feed.uuid ? "blue.300" : "gray.100",
                 borderRadius: "md",
-                backgroundColor:
-                  props.selectedUuid === feed.uuid ? "blue.50" : "white",
-                cursor: "pointer",
-                _hover: {
-                  backgroundColor:
-                    props.selectedUuid === feed.uuid ? "blue.50" : "gray.50",
-                },
+                overflow: "hidden",
               })}
-              onClick={() => props.onSelect?.(feed.uuid)}
-              onKeyDown={() => {}}
             >
-              {" "}
-              <div class={stack({ gap: "0" })}>
-                <span class={css({ fontWeight: "medium" })}>
-                  {feed.title || "Untitled Feed"}
-                </span>
-                <span class={css({ fontSize: "xs", color: "gray.500" })}>
-                  {feed.url}
-                </span>
-              </div>
+              <button
+                type="button"
+                class={css({
+                  flex: "1",
+                  textAlign: "left",
+                  padding: "3",
+                  cursor: "pointer",
+                  backgroundColor:
+                    props.selectedUuid === feed.uuid ? "blue.50" : "white",
+                  _hover: {
+                    backgroundColor:
+                      props.selectedUuid === feed.uuid ? "blue.50" : "gray.50",
+                  },
+                })}
+                onClick={() => props.onSelect?.(feed.uuid)}
+              >
+                <div class={stack({ gap: "0" })}>
+                  <span class={css({ fontWeight: "medium" })}>
+                    {feed.title || "Untitled Feed"}
+                  </span>
+                  <span class={css({ fontSize: "xs", color: "gray.500" })}>
+                    {feed.url}
+                  </span>
+                </div>
+              </button>
               <button
                 type="button"
                 onClick={(e) => {
@@ -90,9 +97,7 @@ export function FeedList(props: FeedListProps) {
                 disabled={deleteMutation.isPending}
                 class={css({
                   color: "red.500",
-                  padding: "1",
-                  paddingInline: "2",
-                  borderRadius: "md",
+                  padding: "3",
                   fontSize: "sm",
                   cursor: "pointer",
                   _hover: {
