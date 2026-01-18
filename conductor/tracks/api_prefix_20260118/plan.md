@@ -15,4 +15,4 @@
     - [ ] Start backend and frontend servers.
     - [ ] Verify API calls in browser network tab show `/api` prefix.
     - [ ] Verify application functionality (List, Add, Delete feeds).
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Verification' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Phase 3: Verification' (Protocol in workflow.md)
