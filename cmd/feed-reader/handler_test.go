@@ -25,6 +25,10 @@ func setupTestDB(t *testing.T) *store.Queries {
 		t.Fatalf("failed to open db: %v", err)
 	}
 
+	if _, err := db.Exec("PRAGMA foreign_keys = ON;"); err != nil {
+		t.Fatalf("failed to enable foreign keys: %v", err)
+	}
+
 	if _, err := db.Exec(schema.Schema); err != nil {
 		t.Fatalf("failed to apply schema: %v", err)
 	}

@@ -62,8 +62,6 @@ func (s *FeedServer) ListFeeds(ctx context.Context, req *connect.Request[feedv1.
 func (s *FeedServer) CreateFeed(ctx context.Context, req *connect.Request[feedv1.CreateFeedRequest]) (*connect.Response[feedv1.CreateFeedResponse], error) {
 	fetchedFeed, err := s.fetcher.Fetch(ctx, req.Msg.Url)
 	if err != nil {
-		// Spec says: Return appropriate error message.
-		// We could map specific errors (timeout vs invalid) to codes, but Internal is safe for now.
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to fetch feed: %w", err))
 	}
 
@@ -139,11 +137,36 @@ func (s *FeedServer) DeleteFeed(ctx context.Context, req *connect.Request[feedv1
 	return connect.NewResponse(&feedv1.DeleteFeedResponse{}), nil
 }
 
-func toProtoFeed(f store.Feed) *feedv1.Feed {
-	// sqlite store uses strings for timestamps, need to confirm format if parsing required,
-	// but proto also uses string for now based on previous decision.
-	// If we wanted Timestamp, we'd parse time.RFC3339 or similar here.
+func (s *FeedServer) ListGlobalItems(ctx context.Context, req *connect.Request[feedv1.ListGlobalItemsRequest]) (*connect.Response[feedv1.ListGlobalItemsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("not implemented"))
+}
 
+func (s *FeedServer) ListFeedItems(ctx context.Context, req *connect.Request[feedv1.ListFeedItemsRequest]) (*connect.Response[feedv1.ListFeedItemsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("not implemented"))
+}
+
+func (s *FeedServer) GetItem(ctx context.Context, req *connect.Request[feedv1.GetItemRequest]) (*connect.Response[feedv1.GetItemResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("not implemented"))
+}
+
+func (s *FeedServer) MarkItemRead(ctx context.Context, req *connect.Request[feedv1.MarkItemReadRequest]) (*connect.Response[feedv1.MarkItemReadResponse], error) {
+	// Check if item exists (and is linked to a feed)
+	if _, err := s.queries.GetItem(ctx, req.Msg.Id); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("item not found: %w", err))
+		}
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	_, err := s.queries.MarkItemRead(ctx, req.Msg.Id)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	return connect.NewResponse(&feedv1.MarkItemReadResponse{}), nil
+}
+
+func toProtoFeed(f store.Feed) *feedv1.Feed {
 	var title string
 	if f.Title != nil {
 		title = *f.Title
@@ -161,7 +184,7 @@ func toProtoFeed(f store.Feed) *feedv1.Feed {
 		FeedType:      f.FeedType,
 		FeedVersion:   f.FeedVersion,
 		LastFetchedAt: f.LastFetchedAt,
-		CreatedAt:     f.CreatedAt, // Assuming string format matches
-		UpdatedAt:     f.UpdatedAt, // Assuming string format matches
+		CreatedAt:     f.CreatedAt,
+		UpdatedAt:     f.UpdatedAt,
 	}
 }
