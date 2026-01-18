@@ -10,9 +10,6 @@
 - [x] Task: Update Vite Configuration f26de3f
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Frontend & Tooling Update' (Protocol in workflow.md)
 
-## Phase 3: Verification
+## Phase 3: Verification [checkpoint: 2920a34]
 - [x] Task: Manual Verification 70d29a6
-    - [ ] Start backend and frontend servers.
-    - [ ] Verify API calls in browser network tab show `/api` prefix.
-    - [ ] Verify application functionality (List, Add, Delete feeds).
-- [~] Task: Conductor - User Manual Verification 'Phase 3: Verification' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Verification' (Protocol in workflow.md)
