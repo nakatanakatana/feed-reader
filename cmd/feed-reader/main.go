@@ -65,14 +65,16 @@ func main() {
 
 	// 3. Initialize Fetcher components
 	fetcher := NewGofeedFetcher()
-	fetchService := NewFetcherService(s, fetcher, pool, logger)
+	fetchService := NewFetcherService(s, fetcher, pool, logger, cfg.FetchInterval)
 
 	// 4. Initialize Scheduler
-	scheduler := NewScheduler(cfg.FetchInterval, fetchService.FetchAllFeeds)
+	// Add random jitter up to 10% of interval
+	jitter := time.Duration(float64(cfg.FetchInterval) * 0.1)
+	scheduler := NewScheduler(cfg.FetchInterval, jitter, fetchService.FetchAllFeeds)
 	go scheduler.Start(ctx)
 
 	// 5. Initialize API Server
-	feedServer := NewFeedServer(s.Queries, nil, fetcher)
+	feedServer := NewFeedServer(s.Queries, nil, fetcher, fetchService)
 	path, handler := feedv1connect.NewFeedServiceHandler(feedServer)
 
 	mux := http.NewServeMux()

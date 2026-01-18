@@ -16,9 +16,15 @@ type FeedServer struct {
 	queries       *store.Queries
 	uuidGenerator UUIDGenerator
 	fetcher       FeedFetcher
+	itemFetcher   ItemFetcher
 }
 
-func NewFeedServer(queries *store.Queries, uuidGen UUIDGenerator, fetcher FeedFetcher) feedv1connect.FeedServiceHandler {
+type ItemFetcher interface {
+	FetchAndSave(ctx context.Context, f store.Feed) error
+	FetchFeedsByIDs(ctx context.Context, uuids []string) error
+}
+
+func NewFeedServer(queries *store.Queries, uuidGen UUIDGenerator, fetcher FeedFetcher, itemFetcher ItemFetcher) feedv1connect.FeedServiceHandler {
 	if uuidGen == nil {
 		uuidGen = realUUIDGenerator{}
 	}
@@ -26,6 +32,7 @@ func NewFeedServer(queries *store.Queries, uuidGen UUIDGenerator, fetcher FeedFe
 		queries:       queries,
 		uuidGenerator: uuidGen,
 		fetcher:       fetcher,
+		itemFetcher:   itemFetcher,
 	}
 }
 
@@ -101,6 +108,11 @@ func (s *FeedServer) CreateFeed(ctx context.Context, req *connect.Request[feedv1
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
+	// Trigger immediate fetch of items
+	// We ignore the error here as the feed is successfully created.
+	// We use the same context so if the user cancels, the fetch aborts (which is reasonable).
+	_ = s.itemFetcher.FetchAndSave(ctx, feed)
+
 	return connect.NewResponse(&feedv1.CreateFeedResponse{
 		Feed: toProtoFeed(feed),
 	}), nil
@@ -137,6 +149,18 @@ func (s *FeedServer) DeleteFeed(ctx context.Context, req *connect.Request[feedv1
 	}
 
 	return connect.NewResponse(&feedv1.DeleteFeedResponse{}), nil
+}
+
+func (s *FeedServer) RefreshFeeds(ctx context.Context, req *connect.Request[feedv1.RefreshFeedsRequest]) (*connect.Response[feedv1.RefreshFeedsResponse], error) {
+	if len(req.Msg.Uuids) == 0 {
+		return connect.NewResponse(&feedv1.RefreshFeedsResponse{}), nil
+	}
+
+	if err := s.itemFetcher.FetchFeedsByIDs(ctx, req.Msg.Uuids); err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	return connect.NewResponse(&feedv1.RefreshFeedsResponse{}), nil
 }
 
 func toProtoFeed(f store.Feed) *feedv1.Feed {

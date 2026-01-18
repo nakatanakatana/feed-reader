@@ -18,7 +18,7 @@ import (
 	"github.com/nakatanakatana/feed-reader/store"
 )
 
-func setupTestDB(t *testing.T) *store.Queries {
+func setupTestDB(t *testing.T) (*store.Queries, *sql.DB) {
 	t.Helper()
 	db, err := sql.Open("sqlite3", ":memory:")
 	if err != nil {
@@ -35,7 +35,7 @@ func setupTestDB(t *testing.T) *store.Queries {
 		}
 	})
 
-	return store.New(db)
+	return store.New(db), db
 }
 
 type mockUUIDGenerator struct {
@@ -64,6 +64,23 @@ func (m *mockFetcher) Fetch(ctx context.Context, url string) (*gofeed.Feed, erro
 	return m.feed, nil
 }
 
+type mockItemFetcher struct {
+	called bool
+	err    error
+	uuids  []string
+}
+
+func (m *mockItemFetcher) FetchAndSave(ctx context.Context, f store.Feed) error {
+	m.called = true
+	return m.err
+}
+
+func (m *mockItemFetcher) FetchFeedsByIDs(ctx context.Context, uuids []string) error {
+	m.called = true
+	m.uuids = uuids
+	return m.err
+}
+
 func TestFeedServer_CreateFeed(t *testing.T) {
 	ctx := context.Background()
 
@@ -79,6 +96,7 @@ func TestFeedServer_CreateFeed(t *testing.T) {
 		wantErr   bool
 		errCode   connect.Code
 		wantTitle string
+		wantFetch bool
 	}{
 		{
 			name: "Success",
@@ -91,6 +109,7 @@ func TestFeedServer_CreateFeed(t *testing.T) {
 			mockFeed:  &gofeed.Feed{Title: "Fetched Title"},
 			wantTitle: "Fetched Title",
 			wantErr:   false,
+			wantFetch: true,
 		},
 		{
 			name: "UUID Generation Error",
@@ -120,9 +139,10 @@ func TestFeedServer_CreateFeed(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			queries := setupTestDB(t)
+			queries, _ := setupTestDB(t)
 			fetcher := &mockFetcher{feed: tt.mockFeed, err: tt.fetchErr}
-			server := NewFeedServer(queries, mockUUIDGenerator{err: tt.uuidErr}, fetcher)
+			itemFetcher := &mockItemFetcher{}
+			server := NewFeedServer(queries, mockUUIDGenerator{err: tt.uuidErr}, fetcher, itemFetcher)
 
 			res, err := server.CreateFeed(ctx, connect.NewRequest(tt.args.req))
 			if (err != nil) != tt.wantErr {
@@ -146,6 +166,10 @@ func TestFeedServer_CreateFeed(t *testing.T) {
 				if res.Msg.Feed.Title != tt.wantTitle {
 					t.Errorf("expected title %s, got %s", tt.wantTitle, res.Msg.Feed.Title)
 				}
+			}
+
+			if tt.wantFetch && !itemFetcher.called {
+				t.Error("expected FetchAndSave to be called")
 			}
 		})
 	}
@@ -187,8 +211,8 @@ func TestFeedServer_GetFeed(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			queries := setupTestDB(t)
-			server := NewFeedServer(queries, nil, &mockFetcher{})
+			queries, _ := setupTestDB(t)
+			server := NewFeedServer(queries, nil, &mockFetcher{}, &mockItemFetcher{})
 			uuid := tt.setup(t, server)
 
 			_, err := server.GetFeed(ctx, connect.NewRequest(&feedv1.GetFeedRequest{Uuid: uuid}))
@@ -237,8 +261,8 @@ func TestFeedServer_ListFeeds(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			queries := setupTestDB(t)
-			server := NewFeedServer(queries, nil, &mockFetcher{})
+			queries, _ := setupTestDB(t)
+			server := NewFeedServer(queries, nil, &mockFetcher{}, &mockItemFetcher{})
 			tt.setup(t, server)
 
 			res, err := server.ListFeeds(ctx, connect.NewRequest(&feedv1.ListFeedsRequest{}))
@@ -294,8 +318,8 @@ func TestFeedServer_UpdateFeed(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			queries := setupTestDB(t)
-			server := NewFeedServer(queries, nil, &mockFetcher{})
+			queries, _ := setupTestDB(t)
+			server := NewFeedServer(queries, nil, &mockFetcher{}, &mockItemFetcher{})
 			req := tt.setup(t, server)
 
 			_, err := server.UpdateFeed(ctx, connect.NewRequest(req))
@@ -338,8 +362,8 @@ func TestFeedServer_DeleteFeed(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			queries := setupTestDB(t)
-			server := NewFeedServer(queries, nil, &mockFetcher{})
+			queries, _ := setupTestDB(t)
+			server := NewFeedServer(queries, nil, &mockFetcher{}, &mockItemFetcher{})
 			uuid := tt.setup(t, server)
 
 			_, err := server.DeleteFeed(ctx, connect.NewRequest(&feedv1.DeleteFeedRequest{Uuid: uuid}))
@@ -351,9 +375,70 @@ func TestFeedServer_DeleteFeed(t *testing.T) {
 			if !tt.wantErr {
 				_, err := server.GetFeed(ctx, connect.NewRequest(&feedv1.GetFeedRequest{Uuid: uuid}))
 				if connect.CodeOf(err) != connect.CodeNotFound {
-					t.Errorf("GetFeed() after DeleteFeed() code = %v, want CodeNotFound", connect.CodeOf(err))
-				}
-			}
-		})
-	}
-}
+					                    t.Errorf("GetFeed() after DeleteFeed() code = %v, want CodeNotFound", connect.CodeOf(err))
+					                }
+					            }
+					        })
+					    }
+					}
+					
+					func TestFeedServer_RefreshFeeds(t *testing.T) {
+						ctx := context.Background()
+					
+						tests := []struct {
+							name      string
+							uuids     []string
+							fetchErr  error
+							wantErr   bool
+							errCode   connect.Code
+							wantFetch bool
+						}{
+							{
+								name:      "Success",
+								uuids:     []string{"uuid-1", "uuid-2"},
+								wantErr:   false,
+								wantFetch: true,
+							},
+							{
+								name:      "Empty UUIDs",
+								uuids:     []string{},
+								wantErr:   false,
+								wantFetch: false,
+							},
+							{
+								name:      "Fetch Error",
+								uuids:     []string{"uuid-1"},
+								fetchErr:  errors.New("fetch error"),
+								wantErr:   true,
+								errCode:   connect.CodeInternal,
+								wantFetch: true,
+							},
+						}
+					
+						for _, tt := range tests {
+							t.Run(tt.name, func(t *testing.T) {
+								queries, _ := setupTestDB(t)
+								itemFetcher := &mockItemFetcher{err: tt.fetchErr}
+								server := NewFeedServer(queries, nil, &mockFetcher{}, itemFetcher)
+					
+								_, err := server.RefreshFeeds(ctx, connect.NewRequest(&feedv1.RefreshFeedsRequest{Uuids: tt.uuids}))
+								if (err != nil) != tt.wantErr {
+									t.Errorf("RefreshFeeds() error = %v, wantErr %v", err, tt.wantErr)
+									return
+								}
+								if tt.wantErr {
+									if connect.CodeOf(err) != tt.errCode {
+										t.Errorf("RefreshFeeds() error code = %v, want %v", connect.CodeOf(err), tt.errCode)
+									}
+									return
+								}
+					
+								if tt.wantFetch && !itemFetcher.called {
+									t.Error("expected FetchFeedsByIDs to be called")
+								}
+								if tt.wantFetch && len(itemFetcher.uuids) != len(tt.uuids) {
+									t.Errorf("expected %d uuids, got %d", len(tt.uuids), len(itemFetcher.uuids))
+								}
+							})
+						}
+					}

@@ -14,6 +14,14 @@ FROM
 ORDER BY
   created_at DESC;
 
+-- name: ListFeedsByUUIDs :many
+SELECT
+  *
+FROM
+  feeds
+WHERE
+  uuid IN (sqlc.slice('uuids'));
+
 -- name: CreateFeed :one
 INSERT INTO feeds (
   uuid,
@@ -55,6 +63,18 @@ DELETE FROM
 WHERE
   uuid = ?;
 
+-- name: ListItemsByFeed :many
+SELECT
+  i.*
+FROM
+  items i
+JOIN
+  feed_items fi ON i.id = fi.item_id
+WHERE
+  fi.feed_id = ?
+ORDER BY
+  i.published_at DESC;
+
 -- name: CreateItem :one
 INSERT INTO items (
   id,
@@ -90,3 +110,12 @@ INSERT INTO item_reads (
   ?
 )
 ON CONFLICT(item_id) DO NOTHING;
+
+-- name: MarkFeedFetched :exec
+UPDATE
+  feeds
+SET
+  last_fetched_at = ?,
+  updated_at = CURRENT_TIMESTAMP
+WHERE
+  uuid = ?;

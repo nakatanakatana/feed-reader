@@ -7,6 +7,7 @@ package store
 
 import (
 	"context"
+	"strings"
 )
 
 const createFeed = `-- name: CreateFeed :one
@@ -244,6 +245,127 @@ func (q *Queries) ListFeeds(ctx context.Context) ([]Feed, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const listFeedsByUUIDs = `-- name: ListFeedsByUUIDs :many
+SELECT
+  uuid, url, link, title, description, language, image_url, copyright, feed_type, feed_version, last_fetched_at, created_at, updated_at
+FROM
+  feeds
+WHERE
+  uuid IN (/*SLICE:uuids*/?)
+`
+
+func (q *Queries) ListFeedsByUUIDs(ctx context.Context, uuids []string) ([]Feed, error) {
+	query := listFeedsByUUIDs
+	var queryParams []interface{}
+	if len(uuids) > 0 {
+		for _, v := range uuids {
+			queryParams = append(queryParams, v)
+		}
+		query = strings.Replace(query, "/*SLICE:uuids*/?", strings.Repeat(",?", len(uuids))[1:], 1)
+	} else {
+		query = strings.Replace(query, "/*SLICE:uuids*/?", "NULL", 1)
+	}
+	rows, err := q.db.QueryContext(ctx, query, queryParams...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Feed
+	for rows.Next() {
+		var i Feed
+		if err := rows.Scan(
+			&i.Uuid,
+			&i.Url,
+			&i.Link,
+			&i.Title,
+			&i.Description,
+			&i.Language,
+			&i.ImageUrl,
+			&i.Copyright,
+			&i.FeedType,
+			&i.FeedVersion,
+			&i.LastFetchedAt,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listItemsByFeed = `-- name: ListItemsByFeed :many
+SELECT
+  i.id, i.url, i.title, i.description, i.published_at, i.guid, i.created_at, i.updated_at
+FROM
+  items i
+JOIN
+  feed_items fi ON i.id = fi.item_id
+WHERE
+  fi.feed_id = ?
+ORDER BY
+  i.published_at DESC
+`
+
+func (q *Queries) ListItemsByFeed(ctx context.Context, feedID string) ([]Item, error) {
+	rows, err := q.db.QueryContext(ctx, listItemsByFeed, feedID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Item
+	for rows.Next() {
+		var i Item
+		if err := rows.Scan(
+			&i.ID,
+			&i.Url,
+			&i.Title,
+			&i.Description,
+			&i.PublishedAt,
+			&i.Guid,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const markFeedFetched = `-- name: MarkFeedFetched :exec
+UPDATE
+  feeds
+SET
+  last_fetched_at = ?,
+  updated_at = CURRENT_TIMESTAMP
+WHERE
+  uuid = ?
+`
+
+type MarkFeedFetchedParams struct {
+	LastFetchedAt *string `json:"last_fetched_at"`
+	Uuid          string  `json:"uuid"`
+}
+
+func (q *Queries) MarkFeedFetched(ctx context.Context, arg MarkFeedFetchedParams) error {
+	_, err := q.db.ExecContext(ctx, markFeedFetched, arg.LastFetchedAt, arg.Uuid)
+	return err
 }
 
 const updateFeed = `-- name: UpdateFeed :one
