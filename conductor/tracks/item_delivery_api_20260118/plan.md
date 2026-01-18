@@ -33,7 +33,7 @@
     - [x] Refactor and verify tests.
 - [x] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md) 6b2123c
 
-## Phase 3: Frontend Implementation
+## Phase 3: Frontend Implementation [checkpoint: 83a2515]
 - [x] Task: Setup Frontend Data Layer 73e3b29
     - [x] Verify generated TypeScript client availability in `frontend/src/gen`.
     - [x] Add new query hooks in `frontend/src/lib/items.ts` for items (using `createInfiniteQuery` for pagination).
@@ -45,4 +45,4 @@
     - [x] Update `frontend/src/routes/feeds.tsx` to show items when a feed is selected.
     - [x] Create new route/view `frontend/src/routes/timeline.tsx` (or index) for Global Timeline.
     - [x] Wire up "Mark as Read" button/action in the UI.
-- [~] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md) 83a2515
