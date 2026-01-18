@@ -21,7 +21,7 @@
 - [ ] Task: Conductor - User Manual Verification 'Core Logic Improvements' (Protocol in workflow.md)
 
 ## Phase 3: Refresh API Implementation & Integration
-- [ ] Task: Implement `RefreshFeeds` RPC Handler
+- [x] Task: Implement `RefreshFeeds` RPC Handler d85de13
     - [ ] Add `RefreshFeeds` implementation to `FeedServer` in `cmd/feed-reader/handler.go`.
     - [ ] Wire it up to `fetcherService.FetchFeedsByIDs`.
 - [ ] Task: Final Verification
