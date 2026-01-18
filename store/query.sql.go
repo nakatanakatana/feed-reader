@@ -97,27 +97,36 @@ INSERT INTO items (
   id,
   url,
   title,
+  content,
   description,
+  author,
   published_at,
+  image_url,
   guid
 ) VALUES (
-  ?, ?, ?, ?, ?, ?
+  ?, ?, ?, ?, ?, ?, ?, ?, ?
 )
 ON CONFLICT(url) DO UPDATE SET
   title = excluded.title,
+  content = excluded.content,
   description = excluded.description,
+  author = excluded.author,
   published_at = excluded.published_at,
+  image_url = excluded.image_url,
   guid = excluded.guid,
   updated_at = CURRENT_TIMESTAMP
-RETURNING id, url, title, description, published_at, guid, created_at, updated_at
+RETURNING id, url, title, content, description, author, published_at, image_url, guid, created_at, updated_at
 `
 
 type CreateItemParams struct {
 	ID          string  `json:"id"`
 	Url         string  `json:"url"`
 	Title       *string `json:"title"`
+	Content     *string `json:"content"`
 	Description *string `json:"description"`
+	Author      *string `json:"author"`
 	PublishedAt *string `json:"published_at"`
+	ImageUrl    *string `json:"image_url"`
 	Guid        *string `json:"guid"`
 }
 
@@ -126,8 +135,11 @@ func (q *Queries) CreateItem(ctx context.Context, arg CreateItemParams) (Item, e
 		arg.ID,
 		arg.Url,
 		arg.Title,
+		arg.Content,
 		arg.Description,
+		arg.Author,
 		arg.PublishedAt,
+		arg.ImageUrl,
 		arg.Guid,
 	)
 	var i Item
@@ -135,13 +147,45 @@ func (q *Queries) CreateItem(ctx context.Context, arg CreateItemParams) (Item, e
 		&i.ID,
 		&i.Url,
 		&i.Title,
+		&i.Content,
 		&i.Description,
+		&i.Author,
 		&i.PublishedAt,
+		&i.ImageUrl,
 		&i.Guid,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const createItemEnclosure = `-- name: CreateItemEnclosure :exec
+INSERT INTO item_enclosures (
+  item_id,
+  url,
+  type,
+  length
+) VALUES (
+  ?, ?, ?, ?
+)
+ON CONFLICT(item_id, url) DO NOTHING
+`
+
+type CreateItemEnclosureParams struct {
+	ItemID string  `json:"item_id"`
+	Url    string  `json:"url"`
+	Type   *string `json:"type"`
+	Length *string `json:"length"`
+}
+
+func (q *Queries) CreateItemEnclosure(ctx context.Context, arg CreateItemEnclosureParams) error {
+	_, err := q.db.ExecContext(ctx, createItemEnclosure,
+		arg.ItemID,
+		arg.Url,
+		arg.Type,
+		arg.Length,
+	)
+	return err
 }
 
 const createItemRead = `-- name: CreateItemRead :exec
@@ -205,13 +249,17 @@ SELECT
   i.id,
   i.url,
   i.title,
+  i.content,
   i.description,
+  i.author,
   i.published_at,
+  i.image_url,
   i.guid,
   i.created_at,
   i.updated_at,
   fi.feed_id,
-  COALESCE(ir.is_read, 0) AS is_read
+  COALESCE(ir.is_read, 0) AS is_read,
+  CAST(COALESCE((SELECT GROUP_CONCAT(url) FROM item_enclosures WHERE item_id = i.id), '') AS TEXT) AS enclosures
 FROM
   items i
   JOIN feed_items fi ON i.id = fi.item_id
@@ -224,13 +272,17 @@ type GetItemRow struct {
 	ID          string  `json:"id"`
 	Url         string  `json:"url"`
 	Title       *string `json:"title"`
+	Content     *string `json:"content"`
 	Description *string `json:"description"`
+	Author      *string `json:"author"`
 	PublishedAt *string `json:"published_at"`
+	ImageUrl    *string `json:"image_url"`
 	Guid        *string `json:"guid"`
 	CreatedAt   string  `json:"created_at"`
 	UpdatedAt   string  `json:"updated_at"`
 	FeedID      string  `json:"feed_id"`
 	IsRead      int64   `json:"is_read"`
+	Enclosures  string  `json:"enclosures"`
 }
 
 func (q *Queries) GetItem(ctx context.Context, id string) (GetItemRow, error) {
@@ -240,13 +292,17 @@ func (q *Queries) GetItem(ctx context.Context, id string) (GetItemRow, error) {
 		&i.ID,
 		&i.Url,
 		&i.Title,
+		&i.Content,
 		&i.Description,
+		&i.Author,
 		&i.PublishedAt,
+		&i.ImageUrl,
 		&i.Guid,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.FeedID,
 		&i.IsRead,
+		&i.Enclosures,
 	)
 	return i, err
 }
@@ -256,13 +312,17 @@ SELECT
   i.id,
   i.url,
   i.title,
+  i.content,
   i.description,
+  i.author,
   i.published_at,
+  i.image_url,
   i.guid,
   i.created_at,
   i.updated_at,
   fi.feed_id,
-  COALESCE(ir.is_read, 0) AS is_read
+  COALESCE(ir.is_read, 0) AS is_read,
+  CAST(COALESCE((SELECT GROUP_CONCAT(url) FROM item_enclosures WHERE item_id = i.id), '') AS TEXT) AS enclosures
 FROM
   items i
   JOIN feed_items fi ON i.id = fi.item_id
@@ -298,13 +358,17 @@ type ListFeedItemsRow struct {
 	ID          string  `json:"id"`
 	Url         string  `json:"url"`
 	Title       *string `json:"title"`
+	Content     *string `json:"content"`
 	Description *string `json:"description"`
+	Author      *string `json:"author"`
 	PublishedAt *string `json:"published_at"`
+	ImageUrl    *string `json:"image_url"`
 	Guid        *string `json:"guid"`
 	CreatedAt   string  `json:"created_at"`
 	UpdatedAt   string  `json:"updated_at"`
 	FeedID      string  `json:"feed_id"`
 	IsRead      int64   `json:"is_read"`
+	Enclosures  string  `json:"enclosures"`
 }
 
 func (q *Queries) ListFeedItems(ctx context.Context, arg ListFeedItemsParams) ([]ListFeedItemsRow, error) {
@@ -326,13 +390,17 @@ func (q *Queries) ListFeedItems(ctx context.Context, arg ListFeedItemsParams) ([
 			&i.ID,
 			&i.Url,
 			&i.Title,
+			&i.Content,
 			&i.Description,
+			&i.Author,
 			&i.PublishedAt,
+			&i.ImageUrl,
 			&i.Guid,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.FeedID,
 			&i.IsRead,
+			&i.Enclosures,
 		); err != nil {
 			return nil, err
 		}
@@ -398,13 +466,17 @@ SELECT
   i.id,
   i.url,
   i.title,
+  i.content,
   i.description,
+  i.author,
   i.published_at,
+  i.image_url,
   i.guid,
   i.created_at,
   i.updated_at,
   fi.feed_id,
-  COALESCE(ir.is_read, 0) AS is_read
+  COALESCE(ir.is_read, 0) AS is_read,
+  CAST(COALESCE((SELECT GROUP_CONCAT(url) FROM item_enclosures WHERE item_id = i.id), '') AS TEXT) AS enclosures
 FROM
   items i
   JOIN feed_items fi ON i.id = fi.item_id
@@ -438,13 +510,17 @@ type ListGlobalItemsRow struct {
 	ID          string  `json:"id"`
 	Url         string  `json:"url"`
 	Title       *string `json:"title"`
+	Content     *string `json:"content"`
 	Description *string `json:"description"`
+	Author      *string `json:"author"`
 	PublishedAt *string `json:"published_at"`
+	ImageUrl    *string `json:"image_url"`
 	Guid        *string `json:"guid"`
 	CreatedAt   string  `json:"created_at"`
 	UpdatedAt   string  `json:"updated_at"`
 	FeedID      string  `json:"feed_id"`
 	IsRead      int64   `json:"is_read"`
+	Enclosures  string  `json:"enclosures"`
 }
 
 func (q *Queries) ListGlobalItems(ctx context.Context, arg ListGlobalItemsParams) ([]ListGlobalItemsRow, error) {
@@ -465,13 +541,17 @@ func (q *Queries) ListGlobalItems(ctx context.Context, arg ListGlobalItemsParams
 			&i.ID,
 			&i.Url,
 			&i.Title,
+			&i.Content,
 			&i.Description,
+			&i.Author,
 			&i.PublishedAt,
+			&i.ImageUrl,
 			&i.Guid,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.FeedID,
 			&i.IsRead,
+			&i.Enclosures,
 		); err != nil {
 			return nil, err
 		}

@@ -60,16 +60,22 @@ INSERT INTO items (
   id,
   url,
   title,
+  content,
   description,
+  author,
   published_at,
+  image_url,
   guid
 ) VALUES (
-  ?, ?, ?, ?, ?, ?
+  ?, ?, ?, ?, ?, ?, ?, ?, ?
 )
 ON CONFLICT(url) DO UPDATE SET
   title = excluded.title,
+  content = excluded.content,
   description = excluded.description,
+  author = excluded.author,
   published_at = excluded.published_at,
+  image_url = excluded.image_url,
   guid = excluded.guid,
   updated_at = CURRENT_TIMESTAMP
 RETURNING *;
@@ -91,18 +97,33 @@ INSERT INTO item_reads (
 )
 ON CONFLICT(item_id) DO NOTHING;
 
+-- name: CreateItemEnclosure :exec
+INSERT INTO item_enclosures (
+  item_id,
+  url,
+  type,
+  length
+) VALUES (
+  ?, ?, ?, ?
+)
+ON CONFLICT(item_id, url) DO NOTHING;
+
 -- name: ListGlobalItems :many
 SELECT
   i.id,
   i.url,
   i.title,
+  i.content,
   i.description,
+  i.author,
   i.published_at,
+  i.image_url,
   i.guid,
   i.created_at,
   i.updated_at,
   fi.feed_id,
-  COALESCE(ir.is_read, 0) AS is_read
+  COALESCE(ir.is_read, 0) AS is_read,
+  CAST(COALESCE((SELECT GROUP_CONCAT(url) FROM item_enclosures WHERE item_id = i.id), '') AS TEXT) AS enclosures
 FROM
   items i
   JOIN feed_items fi ON i.id = fi.item_id
@@ -129,13 +150,17 @@ SELECT
   i.id,
   i.url,
   i.title,
+  i.content,
   i.description,
+  i.author,
   i.published_at,
+  i.image_url,
   i.guid,
   i.created_at,
   i.updated_at,
   fi.feed_id,
-  COALESCE(ir.is_read, 0) AS is_read
+  COALESCE(ir.is_read, 0) AS is_read,
+  CAST(COALESCE((SELECT GROUP_CONCAT(url) FROM item_enclosures WHERE item_id = i.id), '') AS TEXT) AS enclosures
 FROM
   items i
   JOIN feed_items fi ON i.id = fi.item_id
@@ -163,13 +188,17 @@ SELECT
   i.id,
   i.url,
   i.title,
+  i.content,
   i.description,
+  i.author,
   i.published_at,
+  i.image_url,
   i.guid,
   i.created_at,
   i.updated_at,
   fi.feed_id,
-  COALESCE(ir.is_read, 0) AS is_read
+  COALESCE(ir.is_read, 0) AS is_read,
+  CAST(COALESCE((SELECT GROUP_CONCAT(url) FROM item_enclosures WHERE item_id = i.id), '') AS TEXT) AS enclosures
 FROM
   items i
   JOIN feed_items fi ON i.id = fi.item_id

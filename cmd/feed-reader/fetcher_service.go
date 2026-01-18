@@ -60,12 +60,27 @@ func (s *FetcherService) fetchAndSave(ctx context.Context, f store.Feed) error {
 			FeedID:      f.Uuid,
 			Url:         item.Link,
 			Title:       &item.Title,
+			Content:     &item.Content,
 			Description: &item.Description,
 			Guid:        &item.GUID,
+		}
+		if item.Author != nil {
+			params.Author = &item.Author.Name
+		}
+		if item.Image != nil {
+			params.ImageUrl = &item.Image.URL
 		}
 		if item.PublishedParsed != nil {
 			pubAt := item.PublishedParsed.Format(time.RFC3339)
 			params.PublishedAt = &pubAt
+		}
+
+		for _, enc := range item.Enclosures {
+			params.Enclosures = append(params.Enclosures, store.EnclosureParams{
+				Url:    enc.URL,
+				Type:   &enc.Type,
+				Length: &enc.Length,
+			})
 		}
 
 		if err := s.store.SaveFetchedItem(ctx, params); err != nil {

@@ -18,8 +18,11 @@ CREATE TABLE IF NOT EXISTS items (
   id           TEXT PRIMARY KEY,
   url          TEXT NOT NULL UNIQUE,
   title        TEXT,
+  content      TEXT,
   description  TEXT,
+  author       TEXT,
   published_at TEXT,
+  image_url    TEXT,
   guid         TEXT,
   created_at   TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at   TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -42,5 +45,16 @@ CREATE TABLE IF NOT EXISTS item_reads (
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (item_id),
+  FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS item_enclosures (
+  item_id    TEXT NOT NULL,
+  url        TEXT NOT NULL,
+  type       TEXT,
+  length     TEXT,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (item_id, url),
   FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE CASCADE
 );

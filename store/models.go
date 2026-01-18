@@ -31,11 +31,23 @@ type Item struct {
 	ID          string  `json:"id"`
 	Url         string  `json:"url"`
 	Title       *string `json:"title"`
+	Content     *string `json:"content"`
 	Description *string `json:"description"`
+	Author      *string `json:"author"`
 	PublishedAt *string `json:"published_at"`
+	ImageUrl    *string `json:"image_url"`
 	Guid        *string `json:"guid"`
 	CreatedAt   string  `json:"created_at"`
 	UpdatedAt   string  `json:"updated_at"`
+}
+
+type ItemEnclosure struct {
+	ItemID    string  `json:"item_id"`
+	Url       string  `json:"url"`
+	Type      *string `json:"type"`
+	Length    *string `json:"length"`
+	CreatedAt string  `json:"created_at"`
+	UpdatedAt string  `json:"updated_at"`
 }
 
 type ItemRead struct {

@@ -857,7 +857,7 @@ type ListGlobalItemsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	PageSize      int32                  `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	PageToken     string                 `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
-	IsRead        bool                   `protobuf:"varint,3,opt,name=is_read,json=isRead,proto3" json:"is_read,omitempty"`
+	UnreadOnly    bool                   `protobuf:"varint,3,opt,name=unread_only,json=unreadOnly,proto3" json:"unread_only,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -906,9 +906,9 @@ func (x *ListGlobalItemsRequest) GetPageToken() string {
 	return ""
 }
 
-func (x *ListGlobalItemsRequest) GetIsRead() bool {
+func (x *ListGlobalItemsRequest) GetUnreadOnly() bool {
 	if x != nil {
-		return x.IsRead
+		return x.UnreadOnly
 	}
 	return false
 }
@@ -970,7 +970,7 @@ type ListFeedItemsRequest struct {
 	FeedId        string                 `protobuf:"bytes,1,opt,name=feed_id,json=feedId,proto3" json:"feed_id,omitempty"`
 	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	PageToken     string                 `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
-	IsRead        bool                   `protobuf:"varint,4,opt,name=is_read,json=isRead,proto3" json:"is_read,omitempty"`
+	UnreadOnly    bool                   `protobuf:"varint,4,opt,name=unread_only,json=unreadOnly,proto3" json:"unread_only,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1026,9 +1026,9 @@ func (x *ListFeedItemsRequest) GetPageToken() string {
 	return ""
 }
 
-func (x *ListFeedItemsRequest) GetIsRead() bool {
+func (x *ListFeedItemsRequest) GetUnreadOnly() bool {
 	if x != nil {
-		return x.IsRead
+		return x.UnreadOnly
 	}
 	return false
 }
@@ -1362,21 +1362,23 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"\x04feed\x18\x01 \x01(\v2\r.feed.v1.FeedR\x04feed\"'\n" +
 	"\x11DeleteFeedRequest\x12\x12\n" +
 	"\x04uuid\x18\x01 \x01(\tR\x04uuid\"\x14\n" +
-	"\x12DeleteFeedResponse\"m\n" +
+	"\x12DeleteFeedResponse\"u\n" +
 	"\x16ListGlobalItemsRequest\x12\x1b\n" +
 	"\tpage_size\x18\x01 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x02 \x01(\tR\tpageToken\x12\x17\n" +
-	"\ais_read\x18\x03 \x01(\bR\x06isRead\"f\n" +
+	"page_token\x18\x02 \x01(\tR\tpageToken\x12\x1f\n" +
+	"\vunread_only\x18\x03 \x01(\bR\n" +
+	"unreadOnly\"f\n" +
 	"\x17ListGlobalItemsResponse\x12#\n" +
 	"\x05items\x18\x01 \x03(\v2\r.feed.v1.ItemR\x05items\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x84\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8c\x01\n" +
 	"\x14ListFeedItemsRequest\x12\x17\n" +
 	"\afeed_id\x18\x01 \x01(\tR\x06feedId\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x17\n" +
-	"\ais_read\x18\x04 \x01(\bR\x06isRead\"d\n" +
+	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x1f\n" +
+	"\vunread_only\x18\x04 \x01(\bR\n" +
+	"unreadOnly\"d\n" +
 	"\x15ListFeedItemsResponse\x12#\n" +
 	"\x05items\x18\x01 \x03(\v2\r.feed.v1.ItemR\x05items\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\" \n" +

@@ -20,13 +20,23 @@ func NewStore(db *sql.DB) *Store {
 	}
 }
 
+type EnclosureParams struct {
+	Url    string
+	Type   *string
+	Length *string
+}
+
 type SaveFetchedItemParams struct {
 	FeedID      string
 	Url         string
 	Title       *string
+	Content     *string
 	Description *string
+	Author      *string
 	PublishedAt *string
+	ImageUrl    *string
 	Guid        *string
+	Enclosures  []EnclosureParams
 }
 
 // SaveFetchedItem saves an item, links it to the feed, and initializes read status.
@@ -48,8 +58,11 @@ func (s *Store) SaveFetchedItem(ctx context.Context, params SaveFetchedItemParam
 		ID:          newID,
 		Url:         params.Url,
 		Title:       params.Title,
+		Content:     params.Content,
 		Description: params.Description,
+		Author:      params.Author,
 		PublishedAt: params.PublishedAt,
+		ImageUrl:    params.ImageUrl,
 		Guid:        params.Guid,
 	})
 	if err != nil {
@@ -69,6 +82,19 @@ func (s *Store) SaveFetchedItem(ctx context.Context, params SaveFetchedItemParam
 	err = qtx.CreateItemRead(ctx, item.ID)
 	if err != nil {
 		return fmt.Errorf("failed to initialize read status: %w", err)
+	}
+
+	// 4. Save Enclosures
+	for _, enc := range params.Enclosures {
+		err = qtx.CreateItemEnclosure(ctx, CreateItemEnclosureParams{
+			ItemID: item.ID,
+			Url:    enc.Url,
+			Type:   enc.Type,
+			Length: enc.Length,
+		})
+		if err != nil {
+			return fmt.Errorf("failed to save enclosure: %w", err)
+		}
 	}
 
 	return tx.Commit()
