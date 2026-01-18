@@ -58,22 +58,11 @@ export function ItemDetail(props: ItemDetailProps) {
             {props.item.title}
           </h2>
           <div class={css({ fontSize: "sm", color: "gray.500" })}>
-            <a
-              href={props.item.url}
-              target="_blank"
-              rel="noreferrer"
-              class={css({
-                color: "blue.600",
-                _hover: { textDecoration: "underline" },
-              })}
-            >
-              Original Article
-            </a>
             <Show when={props.item.author}>
-              {(author) => <span> • {author()}</span>}
+              {(author) => <span>{author()}</span>}
             </Show>
             <Show when={props.item.publishedAt}>
-              {(date) => <span> • {new Date(date()).toLocaleString()}</span>}
+              {(date) => <span>{new Date(date()).toLocaleString()}</span>}
             </Show>
           </div>
         </div>
