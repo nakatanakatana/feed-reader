@@ -55,6 +55,18 @@ DELETE FROM
 WHERE
   uuid = ?;
 
+-- name: ListItemsByFeed :many
+SELECT
+  i.*
+FROM
+  items i
+JOIN
+  feed_items fi ON i.id = fi.item_id
+WHERE
+  fi.feed_id = ?
+ORDER BY
+  i.published_at DESC;
+
 -- name: CreateItem :one
 INSERT INTO items (
   id,

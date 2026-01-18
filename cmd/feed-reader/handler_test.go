@@ -18,7 +18,7 @@ import (
 	"github.com/nakatanakatana/feed-reader/store"
 )
 
-func setupTestDB(t *testing.T) *store.Queries {
+func setupTestDB(t *testing.T) (*store.Queries, *sql.DB) {
 	t.Helper()
 	db, err := sql.Open("sqlite3", ":memory:")
 	if err != nil {
@@ -35,7 +35,7 @@ func setupTestDB(t *testing.T) *store.Queries {
 		}
 	})
 
-	return store.New(db)
+	return store.New(db), db
 }
 
 type mockUUIDGenerator struct {
@@ -132,7 +132,7 @@ func TestFeedServer_CreateFeed(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			queries := setupTestDB(t)
+			queries, _ := setupTestDB(t)
 			fetcher := &mockFetcher{feed: tt.mockFeed, err: tt.fetchErr}
 			itemFetcher := &mockItemFetcher{}
 			server := NewFeedServer(queries, mockUUIDGenerator{err: tt.uuidErr}, fetcher, itemFetcher)
@@ -204,7 +204,7 @@ func TestFeedServer_GetFeed(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			queries := setupTestDB(t)
+			queries, _ := setupTestDB(t)
 			server := NewFeedServer(queries, nil, &mockFetcher{}, &mockItemFetcher{})
 			uuid := tt.setup(t, server)
 
@@ -254,7 +254,7 @@ func TestFeedServer_ListFeeds(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			queries := setupTestDB(t)
+			queries, _ := setupTestDB(t)
 			server := NewFeedServer(queries, nil, &mockFetcher{}, &mockItemFetcher{})
 			tt.setup(t, server)
 
@@ -311,7 +311,7 @@ func TestFeedServer_UpdateFeed(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			queries := setupTestDB(t)
+			queries, _ := setupTestDB(t)
 			server := NewFeedServer(queries, nil, &mockFetcher{}, &mockItemFetcher{})
 			req := tt.setup(t, server)
 
@@ -355,7 +355,7 @@ func TestFeedServer_DeleteFeed(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			queries := setupTestDB(t)
+			queries, _ := setupTestDB(t)
 			server := NewFeedServer(queries, nil, &mockFetcher{}, &mockItemFetcher{})
 			uuid := tt.setup(t, server)
 

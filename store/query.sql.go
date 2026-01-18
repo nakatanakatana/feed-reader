@@ -246,6 +246,51 @@ func (q *Queries) ListFeeds(ctx context.Context) ([]Feed, error) {
 	return items, nil
 }
 
+const listItemsByFeed = `-- name: ListItemsByFeed :many
+SELECT
+  i.id, i.url, i.title, i.description, i.published_at, i.guid, i.created_at, i.updated_at
+FROM
+  items i
+JOIN
+  feed_items fi ON i.id = fi.item_id
+WHERE
+  fi.feed_id = ?
+ORDER BY
+  i.published_at DESC
+`
+
+func (q *Queries) ListItemsByFeed(ctx context.Context, feedID string) ([]Item, error) {
+	rows, err := q.db.QueryContext(ctx, listItemsByFeed, feedID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Item
+	for rows.Next() {
+		var i Item
+		if err := rows.Scan(
+			&i.ID,
+			&i.Url,
+			&i.Title,
+			&i.Description,
+			&i.PublishedAt,
+			&i.Guid,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateFeed = `-- name: UpdateFeed :one
 UPDATE
   feeds
