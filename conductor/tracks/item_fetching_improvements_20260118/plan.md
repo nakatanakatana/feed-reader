@@ -12,7 +12,7 @@
 ## Phase 2: Core Logic Improvements (Interval & Jitter)
 - [x] Task: Implement Jitter in `Scheduler` ec0c8c7
     - [ ] Modify `Scheduler` in `cmd/feed-reader/scheduler.go` to accept a jitter configuration or implement a simple random delay for each tick.
-- [ ] Task: Implement Interval Check in `FetcherService`
+- [x] Task: Implement Interval Check in `FetcherService` b9c36e8
     - [ ] Add `fetch_interval` to `FetcherService` configuration.
     - [ ] Update `FetchAllFeeds` in `cmd/feed-reader/fetcher_service.go` to filter feeds based on `last_fetched_at` + `fetch_interval`.
 - [ ] Task: Update `FetcherService` to support Refresh by IDs
