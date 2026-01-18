@@ -1,18 +1,19 @@
-import { createSignal, For, Show } from "solid-js";
+import { For, Show, createSignal } from "solid-js";
 import { css } from "../../styled-system/css";
 import { stack } from "../../styled-system/patterns";
-import type { Item } from "../gen/feed/v1/feed_pb";
+import { Item } from "../gen/feed/v1/feed_pb";
 import { useItems, useMarkItemRead } from "../lib/items";
 import { ItemCard } from "./ItemCard";
 import { ItemDetail } from "./ItemDetail";
 
 interface FeedTimelineProps {
   feedId?: string;
+  selectedItemId?: string;
+  onSelectItem: (itemId: string | undefined) => void;
 }
 
 export function FeedTimeline(props: FeedTimelineProps) {
   const [unreadOnly, setUnreadOnly] = createSignal(false);
-  const [selectedItem, setSelectedItem] = createSignal<Item | null>(null);
 
   const query = useItems({
     get feedId() {
@@ -25,10 +26,10 @@ export function FeedTimeline(props: FeedTimelineProps) {
   const markRead = useMarkItemRead();
 
   const handleItemClick = (item: Item) => {
-    setSelectedItem(item);
     if (!item.isRead) {
       markRead.mutate(item.id);
     }
+    props.onSelectItem(item.id);
   };
 
   return (
@@ -60,12 +61,15 @@ export function FeedTimeline(props: FeedTimelineProps) {
           Unread Only
         </label>
       </div>
+
       <Show when={query.isLoading}>
         <p>Loading items...</p>
       </Show>
+
       <Show when={query.isError}>
         <p class={css({ color: "red.500" })}>Error: {query.error?.message}</p>
       </Show>
+
       <div class={stack({ gap: "4" })}>
         <For each={query.data?.pages.flatMap((page) => page.items)}>
           {(item) => (
@@ -77,6 +81,7 @@ export function FeedTimeline(props: FeedTimelineProps) {
           )}
         </For>
       </div>
+
       <Show when={query.hasNextPage}>
         <button
           type="button"
@@ -94,11 +99,13 @@ export function FeedTimeline(props: FeedTimelineProps) {
           {query.isFetchingNextPage ? "Loading more..." : "Load More"}
         </button>
       </Show>
-      			<Show when={selectedItem()}>
-      				{(item) => (
-      					<ItemDetail itemId={item().id} onClose={() => setSelectedItem(null)} />
-      				)}
-      			</Show>{" "}
+
+      <Show when={props.selectedItemId}>
+        <ItemDetail
+          itemId={props.selectedItemId!}
+          onClose={() => props.onSelectItem(undefined)}
+        />
+      </Show>
     </div>
   );
 }

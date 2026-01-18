@@ -7,141 +7,143 @@ import { FeedService } from "../gen/feed/v1/feed_connect";
 import { useTransport } from "../lib/transport-context";
 
 interface FeedListProps {
-	onSelect?: (uuid: string | undefined) => void;
-	selectedUuid?: string;
+  onSelect?: (uuid: string | undefined) => void;
+  selectedUuid?: string;
 }
 
 export function FeedList(props: FeedListProps) {
-	const transport = useTransport();
-	const client = createClient(FeedService, transport);
-	const queryClient = useQueryClient();
+  const transport = useTransport();
+  const client = createClient(FeedService, transport);
+  const queryClient = useQueryClient();
 
-	const query = useQuery(() => ({
-		queryKey: ["feeds"],
-		queryFn: async () => {
-			const response = await client.listFeeds({});
-			return response.feeds;
-		},
-	}));
+  const query = useQuery(() => ({
+    queryKey: ["feeds"],
+    queryFn: async () => {
+      const response = await client.listFeeds({});
+      return response.feeds;
+    },
+  }));
 
-	const deleteMutation = useMutation(() => ({
-		mutationFn: async (uuid: string) => {
-			await client.deleteFeed({ uuid });
-		},
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["feeds"] });
-		},
-	}));
+  const deleteMutation = useMutation(() => ({
+    mutationFn: async (uuid: string) => {
+      await client.deleteFeed({ uuid });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["feeds"] });
+    },
+  }));
 
-	return (
-		<div class={stack({ gap: "4" })}>
-			<h2 class={css({ fontSize: "xl", fontWeight: "semibold" })}>Your Feeds</h2>
-			<Show when={query.isLoading}>
-				<p>Loading...</p>
-			</Show>
-			<Show when={query.isError}>
-				<p class={css({ color: "red.500" })}>Error: {query.error?.message}</p>
-			</Show>
-			<Show when={deleteMutation.isError}>
-				<p class={css({ color: "red.500" })}>
-					Delete Error: {deleteMutation.error?.message}
-				</p>
-			</Show>
-			<ul class={stack({ gap: "2" })}>
-				{/* All Feeds Option */}
-				<li
-					class={flex({
-						alignItems: "center",
-						padding: "3",
-						border: "1px solid",
-						borderColor:
-							props.selectedUuid === undefined ? "blue.300" : "gray.100",
-						borderRadius: "md",
-						backgroundColor:
-							props.selectedUuid === undefined ? "blue.50" : "white",
-						cursor: "pointer",
-						_hover: {
-							backgroundColor:
-								props.selectedUuid === undefined ? "blue.50" : "gray.50",
-						},
-					})}
-					onClick={() => props.onSelect?.(undefined)}
-					onKeyDown={(e) => {
-						if (e.key === "Enter" || e.key === " ") {
-							e.preventDefault();
-							props.onSelect?.(undefined);
-						}
-					}}
-					// biome-ignore lint/a11y/useSemanticElements: used as button
-					role="button"
-					tabIndex={0}
-				>
-					<span class={css({ fontWeight: "medium" })}>All Feeds</span>
-				</li>
+  return (
+    <div class={stack({ gap: "4" })}>
+      <h2 class={css({ fontSize: "xl", fontWeight: "semibold" })}>
+        Your Feeds
+      </h2>
+      <Show when={query.isLoading}>
+        <p>Loading...</p>
+      </Show>
+      <Show when={query.isError}>
+        <p class={css({ color: "red.500" })}>Error: {query.error?.message}</p>
+      </Show>
+      <Show when={deleteMutation.isError}>
+        <p class={css({ color: "red.500" })}>
+          Delete Error: {deleteMutation.error?.message}
+        </p>
+      </Show>
+      <ul class={stack({ gap: "2" })}>
+        {/* All Feeds Option */}
+        <li
+          class={flex({
+            alignItems: "center",
+            padding: "3",
+            border: "1px solid",
+            borderColor:
+              props.selectedUuid === undefined ? "blue.300" : "gray.100",
+            borderRadius: "md",
+            backgroundColor:
+              props.selectedUuid === undefined ? "blue.50" : "white",
+            cursor: "pointer",
+            _hover: {
+              backgroundColor:
+                props.selectedUuid === undefined ? "blue.50" : "gray.50",
+            },
+          })}
+          onClick={() => props.onSelect?.(undefined)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              props.onSelect?.(undefined);
+            }
+          }}
+          // biome-ignore lint/a11y/useSemanticElements: used as button
+          role="button"
+          tabIndex={0}
+        >
+          <span class={css({ fontWeight: "medium" })}>All Feeds</span>
+        </li>
 
-				<For each={query.data}>
-					{(feed) => (
-						<li
-							class={flex({
-								justifyContent: "space-between",
-								alignItems: "center",
-								border: "1px solid",
-								borderColor:
-									props.selectedUuid === feed.uuid ? "blue.300" : "gray.100",
-								borderRadius: "md",
-								overflow: "hidden",
-							})}
-						>
-							<button
-								type="button"
-								class={css({
-									flex: "1",
-									textAlign: "left",
-									padding: "3",
-									cursor: "pointer",
-									backgroundColor:
-										props.selectedUuid === feed.uuid ? "blue.50" : "white",
-									_hover: {
-										backgroundColor:
-											props.selectedUuid === feed.uuid ? "blue.50" : "gray.50",
-									},
-								})}
-								onClick={() => props.onSelect?.(feed.uuid)}
-							>
-								<div class={stack({ gap: "0" })}>
-									<span class={css({ fontWeight: "medium" })}>
-										{feed.title || "Untitled Feed"}
-									</span>
-									<span class={css({ fontSize: "xs", color: "gray.500" })}>
-										{feed.url}
-									</span>
-								</div>
-							</button>
-							<button
-								type="button"
-								onClick={(e) => {
-									e.stopPropagation();
-									deleteMutation.mutate(feed.uuid);
-								}}
-								disabled={deleteMutation.isPending}
-								class={css({
-									color: "red.500",
-									padding: "3",
-									fontSize: "sm",
-									cursor: "pointer",
-									_hover: {
-										backgroundColor: "red.50",
-										textDecoration: "underline",
-									},
-									_disabled: { color: "gray.400", cursor: "not-allowed" },
-								})}
-							>
-								Delete
-							</button>
-						</li>
-					)}
-				</For>
-			</ul>
-		</div>
-	);
+        <For each={query.data}>
+          {(feed) => (
+            <li
+              class={flex({
+                justifyContent: "space-between",
+                alignItems: "center",
+                border: "1px solid",
+                borderColor:
+                  props.selectedUuid === feed.uuid ? "blue.300" : "gray.100",
+                borderRadius: "md",
+                overflow: "hidden",
+              })}
+            >
+              <button
+                type="button"
+                class={css({
+                  flex: "1",
+                  textAlign: "left",
+                  padding: "3",
+                  cursor: "pointer",
+                  backgroundColor:
+                    props.selectedUuid === feed.uuid ? "blue.50" : "white",
+                  _hover: {
+                    backgroundColor:
+                      props.selectedUuid === feed.uuid ? "blue.50" : "gray.50",
+                  },
+                })}
+                onClick={() => props.onSelect?.(feed.uuid)}
+              >
+                <div class={stack({ gap: "0" })}>
+                  <span class={css({ fontWeight: "medium" })}>
+                    {feed.title || "Untitled Feed"}
+                  </span>
+                  <span class={css({ fontSize: "xs", color: "gray.500" })}>
+                    {feed.url}
+                  </span>
+                </div>
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  deleteMutation.mutate(feed.uuid);
+                }}
+                disabled={deleteMutation.isPending}
+                class={css({
+                  color: "red.500",
+                  padding: "3",
+                  fontSize: "sm",
+                  cursor: "pointer",
+                  _hover: {
+                    backgroundColor: "red.50",
+                    textDecoration: "underline",
+                  },
+                  _disabled: { color: "gray.400", cursor: "not-allowed" },
+                })}
+              >
+                Delete
+              </button>
+            </li>
+          )}
+        </For>
+      </ul>
+    </div>
+  );
 }
