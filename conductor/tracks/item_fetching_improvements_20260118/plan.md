@@ -1,7 +1,7 @@
 # Implementation Plan - Item Fetching Improvements
 
 ## Phase 1: API Contract & Immediate Fetching
-- [~] Task: Update Protobuf Definition for `RefreshFeeds`
+- [x] Task: Update Protobuf Definition for `RefreshFeeds` 65e7060
     - [ ] Add `RefreshFeeds(RefreshFeedsRequest) returns (RefreshFeedsResponse)` to `FeedService` in `proto/feed/v1/feed.proto`.
     - [ ] Define `RefreshFeedsRequest` with `repeated string uuids = 1`.
     - [ ] Run `buf generate` to update Go and TypeScript code.
