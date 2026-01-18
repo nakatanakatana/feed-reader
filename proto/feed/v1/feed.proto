@@ -39,6 +39,7 @@ message Item {
   string title = 3;
   string url = 4;
   string content = 5;
+  string description = 13;
   string author = 6;
   string published_at = 7;
   string image_url = 8;

@@ -6,7 +6,12 @@ import { flex, stack } from "../../styled-system/patterns";
 import { FeedService } from "../gen/feed/v1/feed_connect";
 import { useTransport } from "../lib/transport-context";
 
-export function FeedList() {
+interface FeedListProps {
+  onSelect?: (uuid: string) => void;
+  selectedUuid?: string;
+}
+
+export function FeedList(props: FeedListProps) {
   const transport = useTransport();
   const client = createClient(FeedService, transport);
   const queryClient = useQueryClient();
@@ -53,11 +58,21 @@ export function FeedList() {
                 alignItems: "center",
                 padding: "3",
                 border: "1px solid",
-                borderColor: "gray.100",
+                borderColor:
+                  props.selectedUuid === feed.uuid ? "blue.300" : "gray.100",
                 borderRadius: "md",
-                _hover: { backgroundColor: "gray.50" },
+                backgroundColor:
+                  props.selectedUuid === feed.uuid ? "blue.50" : "white",
+                cursor: "pointer",
+                _hover: {
+                  backgroundColor:
+                    props.selectedUuid === feed.uuid ? "blue.50" : "gray.50",
+                },
               })}
+              onClick={() => props.onSelect?.(feed.uuid)}
+              onKeyDown={() => {}}
             >
+              {" "}
               <div class={stack({ gap: "0" })}>
                 <span class={css({ fontWeight: "medium" })}>
                   {feed.title || "Untitled Feed"}
@@ -68,7 +83,10 @@ export function FeedList() {
               </div>
               <button
                 type="button"
-                onClick={() => deleteMutation.mutate(feed.uuid)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  deleteMutation.mutate(feed.uuid);
+                }}
                 disabled={deleteMutation.isPending}
                 class={css({
                   color: "red.500",

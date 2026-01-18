@@ -4,12 +4,12 @@ import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { TransportProvider } from "../lib/transport-context";
-import { worker } from "../mocks/browser";
-import { FeedList } from "./FeedList";
-import { mockConnectWeb } from "../mocks/connect";
 import { FeedService } from "../gen/feed/v1/feed_connect";
 import { DeleteFeedResponse, ListFeedsResponse } from "../gen/feed/v1/feed_pb";
+import { TransportProvider } from "../lib/transport-context";
+import { worker } from "../mocks/browser";
+import { mockConnectWeb } from "../mocks/connect";
+import { FeedList } from "./FeedList";
 
 describe("FeedList", () => {
   let dispose: () => void;

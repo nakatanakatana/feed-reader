@@ -145,6 +145,11 @@ export class Item extends Message<Item> {
   content = "";
 
   /**
+   * @generated from field: string description = 13;
+   */
+  description = "";
+
+  /**
    * @generated from field: string author = 6;
    */
   author = "";
@@ -192,6 +197,7 @@ export class Item extends Message<Item> {
     { no: 3, name: "title", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 4, name: "url", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 5, name: "content", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 13, name: "description", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 6, name: "author", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 7, name: "published_at", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 8, name: "image_url", kind: "scalar", T: 9 /* ScalarType.STRING */ },

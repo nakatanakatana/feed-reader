@@ -3,8 +3,8 @@ import "solid-devtools";
 import { createRouter, RouterProvider } from "@tanstack/solid-router";
 import { routeTree } from "./routeTree.gen";
 import "./styles.css";
-import { initMocks } from "./mocks/init";
 import { config } from "./config";
+import { initMocks } from "./mocks/init";
 
 // Set up a Router instance
 const router = createRouter({

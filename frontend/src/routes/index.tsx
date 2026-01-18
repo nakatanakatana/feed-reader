@@ -1,4 +1,7 @@
 import { createFileRoute } from "@tanstack/solid-router";
+import { css } from "../../styled-system/css";
+import { stack } from "../../styled-system/patterns";
+import { FeedTimeline } from "../components/FeedTimeline";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -6,8 +9,11 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   return (
-    <div class="p-2">
-      <h3>Welcome Home!</h3>
+    <div class={stack({ padding: "4", gap: "6" })}>
+      <h1 class={css({ fontSize: "3xl", fontWeight: "bold" })}>
+        Global Timeline
+      </h1>
+      <FeedTimeline />
     </div>
   );
 }
