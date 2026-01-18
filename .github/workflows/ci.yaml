@@ -1,4 +1,4 @@
-name: backend CI
+name: CI
 
 on:
   pull_request:
@@ -7,7 +7,7 @@ on:
       - main
 
 jobs:
-  setup:
+  backend-setup:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -21,29 +21,12 @@ jobs:
         with:
           aqua_version: v2.56.4
 
-  version:
-    needs: setup
+  backend-lint:
+    needs: backend-setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/cache@v5
-        with:
-          path: ~/.local/share/aquaproj-aqua
-          key: v2-aqua-installer-${{runner.os}}-${{runner.arch}}-${{hashFiles('aqua.yaml', 'aqua-checksums.json')}}
-          restore-keys: |
-            v2-aqua-installer-${{runner.os}}-${{runner.arch}}-
-      - uses: aquaproj/aqua-installer@v4.0.4
-        with:
-          aqua_version: v2.56.4
-      - run: which go
-      - run: go version
-
-  lint:
-    needs: setup
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/cache@v5
+      - uses: actions/cache/restore@v5
         with:
           path: ~/.local/share/aquaproj-aqua
           key: v2-aqua-installer-${{runner.os}}-${{runner.arch}}-${{hashFiles('aqua.yaml', 'aqua-checksums.json')}}
@@ -54,12 +37,12 @@ jobs:
           aqua_version: v2.56.4
       - run: golangci-lint run
 
-  build:
-    needs: setup
+  backend-build:
+    needs: backend-setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/cache@v5
+      - uses: actions/cache/restore@v5
         with:
           path: ~/.local/share/aquaproj-aqua
           key: v2-aqua-installer-${{runner.os}}-${{runner.arch}}-${{hashFiles('aqua.yaml', 'aqua-checksums.json')}}
@@ -70,12 +53,12 @@ jobs:
           aqua_version: v2.56.4
       - run: go build -o dist/ ./cmd/...
 
-  test:
-    needs: setup
+  backend-test:
+    needs: backend-setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/cache@v5
+      - uses: actions/cache/restore@v5
         with:
           path: ~/.local/share/aquaproj-aqua
           key: v2-aqua-installer-${{runner.os}}-${{runner.arch}}-${{hashFiles('aqua.yaml', 'aqua-checksums.json')}}
@@ -85,11 +68,74 @@ jobs:
         with:
           aqua_version: v2.56.4
       # NOTE: workground https://github.com/golang/go/issues/75031
-      # NOTE: workground https://github.com/golang/go/issues/75031
       - id: parse-go-version
         run: echo "GO_VERSION=$(cat aqua.yaml | grep "golang/go" | cut -f2 -d'@')" >> $GITHUB_OUTPUT
       - run: go env -w GOTOOLCHAIN="${GO_VERSION}+auto"
         env:
           GO_VERSION: ${{ steps.parse-go-version.outputs.GO_VERSION }}
       - run: go test ./... -v -coverprofile=coverage.out -covermode=atomic
+      - uses: actions/upload-artifact@v4
+        with:
+          path: coverage.out
+          name: octocov-backend
+          if-no-files-found: error
+
+  frontend-setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/cache@v5
+        with:
+          path: ~/.npm
+          key: npm-${{runner.os}}-${{runner.arch}}-${{hashFiles('package-lock.json')}}
+          restore-keys: npm-${{runner.os}}-${{runner.arch}}-
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+  frontend-lint-format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/cache/restore@v5
+        with:
+          path: ~/.npm
+          key: npm-${{runner.os}}-${{runner.arch}}-${{hashFiles('package-lock.json')}}
+          restore-keys: npm-${{runner.os}}-${{runner.arch}}-
+      - run: npm ci  --prefer-offline
+      - run: npm run lint
+      - run: npm run format:check
+
+  frontend-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/cache/restore@v5
+        with:
+          path: ~/.npm
+          key: npm-${{runner.os}}-${{runner.arch}}-${{hashFiles('package-lock.json')}}
+          restore-keys: npm-${{runner.os}}-${{runner.arch}}-
+      - run: npm ci  --prefer-offline
+      - run: npx playwright install
+      - run: npm run test:coverage
+      - uses: actions/upload-artifact@v4
+        with:
+          path: frontend/coverage/lcov.info
+          name: octocov-frontend
+          if-no-files-found: error
+
+  coverage-aggregation:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      pull-requests: write
+    needs:
+      - backend-test
+      - frontend-test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v5
+        with:
+          pattern: octocov-*
       - uses: k1LoW/octocov-action@v1
