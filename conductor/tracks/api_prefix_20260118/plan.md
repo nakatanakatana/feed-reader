@@ -1,12 +1,9 @@
 # Implementation Plan - Move API endpoints under /api
 
-## Phase 1: Backend Update
+## Phase 1: Backend Update [checkpoint: 1168c57]
 - [x] Task: Create a reproduction test case to verify current routing behavior 5c3e8a9
-    - [ ] Create `cmd/feed-reader/routing_test.go` to test that handlers respond on root paths currently.
 - [x] Task: Update Backend Routing ca5ee3b
-    - [ ] Modify `cmd/feed-reader/main.go` to wrap the existing handler with `http.StripPrefix("/api", handler)` and mount it at `/api/`.
-    - [ ] Update `cmd/feed-reader/routing_test.go` to verify that handlers now respond on `/api` prefixed paths and return 404 on root paths.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend Update' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Update' (Protocol in workflow.md)
 
 ## Phase 2: Frontend & Tooling Update
 - [ ] Task: Update Frontend Transport
