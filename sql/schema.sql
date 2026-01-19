@@ -44,3 +44,13 @@ CREATE TABLE IF NOT EXISTS item_reads (
   PRIMARY KEY (item_id),
   FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS item_saves (
+  item_id    TEXT NOT NULL,
+  is_saved   INTEGER NOT NULL DEFAULT 0, -- 0: false, 1: true
+  saved_at   TEXT,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (item_id),
+  FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE CASCADE
+);
