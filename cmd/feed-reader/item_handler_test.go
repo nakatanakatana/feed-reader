@@ -1,0 +1,88 @@
+package main
+
+import (
+	"context"
+	"testing"
+	"time"
+
+	"connectrpc.com/connect"
+	"github.com/google/uuid"
+	"github.com/nakatanakatana/feed-reader/gen/go/item/v1"
+	"github.com/nakatanakatana/feed-reader/store"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
+)
+
+func TestItemServer(t *testing.T) {
+	ctx := context.Background()
+	queries, db := setupTestDB(t)
+	s := store.NewStore(db)
+	server := &ItemServer{store: s}
+
+	// Setup Feed
+	feedID := uuid.NewString()
+	_, err := queries.CreateFeed(ctx, store.CreateFeedParams{
+		Uuid: feedID,
+		Url:  "http://example.com/feed",
+	})
+	require.NoError(t, err)
+
+	// Create test items
+	now := time.Now()
+	t1 := now.Add(-2 * time.Hour).Format(time.RFC3339)
+	t2 := now.Add(-1 * time.Hour).Format(time.RFC3339)
+
+	err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
+		FeedID:      feedID,
+		Url:         "http://example.com/item1",
+		Title:       proto.String("Item 1"),
+		PublishedAt: &t1,
+	})
+	require.NoError(t, err)
+	
+	var item1ID string
+	err = db.QueryRowContext(ctx, "SELECT id FROM items WHERE url = ?", "http://example.com/item1").Scan(&item1ID)
+	require.NoError(t, err)
+
+	err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
+		FeedID:      feedID,
+		Url:         "http://example.com/item2",
+		Title:       proto.String("Item 2"),
+		PublishedAt: &t2,
+	})
+	require.NoError(t, err)
+
+	var item2ID string
+	err = db.QueryRowContext(ctx, "SELECT id FROM items WHERE url = ?", "http://example.com/item2").Scan(&item2ID)
+	require.NoError(t, err)
+
+	t.Run("GetItem", func(t *testing.T) {
+		res, err := server.GetItem(ctx, connect.NewRequest(&itemv1.GetItemRequest{Id: item1ID}))
+		require.NoError(t, err)
+		assert.Equal(t, item1ID, res.Msg.Item.Id)
+		assert.Equal(t, "Item 1", res.Msg.Item.Title)
+	})
+
+	t.Run("ListItems", func(t *testing.T) {
+		res, err := server.ListItems(ctx, connect.NewRequest(&itemv1.ListItemsRequest{
+			Limit: 10,
+		}))
+		require.NoError(t, err)
+		assert.Len(t, res.Msg.Items, 2)
+		assert.Equal(t, item2ID, res.Msg.Items[0].Id) // Desc by default
+		assert.Equal(t, int32(2), res.Msg.TotalCount)
+	})
+
+	t.Run("UpdateItemStatus", func(t *testing.T) {
+		_, err := server.UpdateItemStatus(ctx, connect.NewRequest(&itemv1.UpdateItemStatusRequest{
+			Ids:    []string{item1ID},
+			IsRead: proto.Bool(true),
+		}))
+		require.NoError(t, err)
+
+		got, err := server.GetItem(ctx, connect.NewRequest(&itemv1.GetItemRequest{Id: item1ID}))
+		require.NoError(t, err)
+		assert.True(t, got.Msg.Item.IsRead)
+	})
+}
