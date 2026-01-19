@@ -12,15 +12,15 @@ Define the Connect RPC service for item management and generate the Go source co
 ## Phase 2: Database Schema & Store Layer
 Update the database schema to support article statuses and implement the store layer.
 
-- [ ] Task: Create a new SQL migration or update `sql/schema.sql` to add `item_saves` table
-    - [ ] Add `item_saves` table (item_id, is_saved, saved_at, etc.)
-- [ ] Task: Update `sql/query.sql` with queries for `items`
-    - [ ] Query for `GetItem` (joining status tables)
-    - [ ] Query for `ListItems` with filters (feed_id, is_read, is_saved) and sorting
-    - [ ] Queries for updating `item_reads` and `item_saves`
-- [ ] Task: Implement TDD for `store` layer
-    - [ ] Write tests for item-related store methods in `store/item_store_test.go`
-    - [ ] Implement methods in `store/item_store.go` (or update existing store)
+- [x] Task: Create a new SQL migration or update `sql/schema.sql` to add `item_saves` table ba3a70c
+    - [x] Add `item_saves` table (item_id, is_saved, saved_at, etc.)
+- [x] Task: Update `sql/query.sql` with queries for `items` 34f5e24
+    - [x] Query for `GetItem` (joining status tables)
+    - [x] Query for `ListItems` with filters (feed_id, is_read, is_saved) and sorting
+    - [x] Queries for updating `item_reads` and `item_saves`
+- [x] Task: Implement TDD for `store` layer 4ed8eef
+    - [x] Write tests for item-related store methods in `store/item_store_test.go`
+    - [x] Implement methods in `store/item_store.go` (or update existing store)
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Database Schema & Store Layer' (Protocol in workflow.md)
 
 ## Phase 3: Backend Service Implementation
