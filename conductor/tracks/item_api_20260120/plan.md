@@ -26,9 +26,9 @@ Update the database schema to support article statuses and implement the store l
 ## Phase 3: Backend Service Implementation
 Implement the Connect RPC handlers and integrate them into the application.
 
-- [ ] Task: Implement TDD for `ItemService` handlers
-    - [ ] Write tests for `GetItem`, `ListItems`, and `UpdateItemStatus` in `cmd/feed-reader/item_handler_test.go`
-    - [ ] Implement handlers in `cmd/feed-reader/item_handler.go`
-- [ ] Task: Register `ItemService` in the application router
-    - [ ] Update `cmd/feed-reader/main.go` or routing logic to include the new service
+- [x] Task: Implement TDD for `ItemService` handlers 98010b6
+    - [x] Write tests for `GetItem`, `ListItems`, and `UpdateItemStatus` in `cmd/feed-reader/item_handler_test.go`
+    - [x] Implement handlers in `cmd/feed-reader/item_handler.go`
+- [x] Task: Register `ItemService` in the application router 862c0b4
+    - [x] Update `cmd/feed-reader/main.go` or routing logic to include the new service
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Backend Service Implementation' (Protocol in workflow.md)
