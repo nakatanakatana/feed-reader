@@ -31,4 +31,4 @@ Implement the Connect RPC handlers and integrate them into the application.
     - [x] Implement handlers in `cmd/feed-reader/item_handler.go`
 - [x] Task: Register `ItemService` in the application router 862c0b4
     - [x] Update `cmd/feed-reader/main.go` or routing logic to include the new service
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Backend Service Implementation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Backend Service Implementation' (Protocol in workflow.md) [checkpoint: ba157ec]
