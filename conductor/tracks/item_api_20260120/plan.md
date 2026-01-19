@@ -7,7 +7,7 @@ Define the Connect RPC service for item management and generate the Go source co
     - [x] Define `Item` message matching the spec
     - [x] Define `GetItem`, `ListItems`, and `UpdateItemStatus` RPCs
 - [x] Task: Generate Go code from Protobuf using `buf generate` 02d19c9
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: API Definition & Code Generation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: API Definition & Code Generation' (Protocol in workflow.md) [checkpoint: 2899e45]
 
 ## Phase 2: Database Schema & Store Layer
 Update the database schema to support article statuses and implement the store layer.
