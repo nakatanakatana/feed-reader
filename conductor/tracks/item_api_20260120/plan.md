@@ -21,7 +21,7 @@ Update the database schema to support article statuses and implement the store l
 - [x] Task: Implement TDD for `store` layer 4ed8eef
     - [x] Write tests for item-related store methods in `store/item_store_test.go`
     - [x] Implement methods in `store/item_store.go` (or update existing store)
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Database Schema & Store Layer' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Database Schema & Store Layer' (Protocol in workflow.md) [checkpoint: 00e8645]
 
 ## Phase 3: Backend Service Implementation
 Implement the Connect RPC handlers and integrate them into the application.
