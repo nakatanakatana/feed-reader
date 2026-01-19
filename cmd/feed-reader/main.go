@@ -13,6 +13,7 @@ import (
 	"github.com/caarlos0/env/v11"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/nakatanakatana/feed-reader/gen/go/feed/v1/feedv1connect"
+	"github.com/nakatanakatana/feed-reader/gen/go/item/v1/itemv1connect"
 	"github.com/nakatanakatana/feed-reader/sql"
 	"github.com/nakatanakatana/feed-reader/store"
 	"golang.org/x/net/http2"
@@ -75,10 +76,14 @@ func main() {
 
 	// 5. Initialize API Server
 	feedServer := NewFeedServer(s.Queries, nil, fetcher, fetchService)
-	path, handler := feedv1connect.NewFeedServiceHandler(feedServer)
+	feedPath, feedHandler := feedv1connect.NewFeedServiceHandler(feedServer)
+
+	itemServer := NewItemServer(s)
+	itemPath, itemHandler := itemv1connect.NewItemServiceHandler(itemServer)
 
 	mux := http.NewServeMux()
-	mux.Handle("/api"+path, http.StripPrefix("/api", handler))
+	mux.Handle("/api"+feedPath, http.StripPrefix("/api", feedHandler))
+	mux.Handle("/api"+itemPath, http.StripPrefix("/api", itemHandler))
 
 	server := &http.Server{
 		Addr:    ":" + cfg.Port,
