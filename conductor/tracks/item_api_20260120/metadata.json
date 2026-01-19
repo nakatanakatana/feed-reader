@@ -1,0 +1,8 @@
+{
+  "track_id": "item_api_20260120",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-01-20T00:00:00Z",
+  "updated_at": "2026-01-20T00:00:00Z",
+  "description": "記事(item)を管理するAPIをitem/v1として作成してください"
+}
