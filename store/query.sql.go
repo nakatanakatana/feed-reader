@@ -401,20 +401,20 @@ LEFT JOIN
 LEFT JOIN
   item_saves isv ON i.id = isv.item_id
 WHERE
-  (?3 IS NULL OR fi.feed_id = ?3) AND
-  (?4 IS NULL OR COALESCE(ir.is_read, 0) = ?4) AND
-  (?5 IS NULL OR COALESCE(isv.is_saved, 0) = ?5)
+  (?1 IS NULL OR fi.feed_id = ?1) AND
+  (?2 IS NULL OR COALESCE(ir.is_read, 0) = ?2) AND
+  (?3 IS NULL OR COALESCE(isv.is_saved, 0) = ?3)
 ORDER BY
   i.published_at DESC
-LIMIT ? OFFSET ?
+LIMIT ?5 OFFSET ?4
 `
 
 type ListItemsParams struct {
 	FeedID  interface{} `json:"feed_id"`
 	IsRead  interface{} `json:"is_read"`
 	IsSaved interface{} `json:"is_saved"`
-	Limit   int64       `json:"limit"`
 	Offset  int64       `json:"offset"`
+	Limit   int64       `json:"limit"`
 }
 
 type ListItemsRow struct {
@@ -433,8 +433,8 @@ func (q *Queries) ListItems(ctx context.Context, arg ListItemsParams) ([]ListIte
 		arg.FeedID,
 		arg.IsRead,
 		arg.IsSaved,
-		arg.Limit,
 		arg.Offset,
+		arg.Limit,
 	)
 	if err != nil {
 		return nil, err
@@ -485,20 +485,20 @@ LEFT JOIN
 LEFT JOIN
   item_saves isv ON i.id = isv.item_id
 WHERE
-  (?3 IS NULL OR fi.feed_id = ?3) AND
-  (?4 IS NULL OR COALESCE(ir.is_read, 0) = ?4) AND
-  (?5 IS NULL OR COALESCE(isv.is_saved, 0) = ?5)
+  (?1 IS NULL OR fi.feed_id = ?1) AND
+  (?2 IS NULL OR COALESCE(ir.is_read, 0) = ?2) AND
+  (?3 IS NULL OR COALESCE(isv.is_saved, 0) = ?3)
 ORDER BY
   i.published_at ASC
-LIMIT ? OFFSET ?
+LIMIT ?5 OFFSET ?4
 `
 
 type ListItemsAscParams struct {
 	FeedID  interface{} `json:"feed_id"`
 	IsRead  interface{} `json:"is_read"`
 	IsSaved interface{} `json:"is_saved"`
-	Limit   int64       `json:"limit"`
 	Offset  int64       `json:"offset"`
+	Limit   int64       `json:"limit"`
 }
 
 type ListItemsAscRow struct {
@@ -517,8 +517,8 @@ func (q *Queries) ListItemsAsc(ctx context.Context, arg ListItemsAscParams) ([]L
 		arg.FeedID,
 		arg.IsRead,
 		arg.IsSaved,
-		arg.Limit,
 		arg.Offset,
+		arg.Limit,
 	)
 	if err != nil {
 		return nil, err
