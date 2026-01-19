@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package item.v1;
+
+option go_package = "github.com/nakatanakatana/feed-reader/gen/go/item/v1;itemv1";
+
+service ItemService {
+  rpc GetItem(GetItemRequest) returns (GetItemResponse);
+  rpc ListItems(ListItemsRequest) returns (ListItemsResponse);
+  rpc UpdateItemStatus(UpdateItemStatusRequest) returns (UpdateItemStatusResponse);
+}
+
+message Item {
+  string id = 1;
+  string url = 2;
+  string title = 3;
+  string description = 4;
+  string published_at = 5;
+  string feed_id = 6;
+  bool is_read = 7;
+  bool is_saved = 8;
+}
+
+message GetItemRequest {
+  string id = 1;
+}
+
+message GetItemResponse {
+  Item item = 1;
+}
+
+message ListItemsRequest {
+  optional string feed_id = 1;
+  optional bool is_read = 2;
+  optional bool is_saved = 3;
+
+  enum SortOrder {
+    SORT_ORDER_UNSPECIFIED = 0;
+    SORT_ORDER_DESC = 1;
+    SORT_ORDER_ASC = 2;
+  }
+  SortOrder sort_order = 4;
+
+  int32 limit = 5;
+  int32 offset = 6;
+}
+
+message ListItemsResponse {
+  repeated Item items = 1;
+  int32 total_count = 2;
+}
+
+message UpdateItemStatusRequest {
+  repeated string ids = 1;
+  optional bool is_read = 2;
+  optional bool is_saved = 3;
+}
+
+message UpdateItemStatusResponse {}
