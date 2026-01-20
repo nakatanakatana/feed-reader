@@ -1,22 +1,50 @@
 .PHONY: setup gen dev frontend test lint build
 
-setup:
-	aqua install -l && npm install
+setup-aqua:
+	aqua install -l
 
-gen:
-	buf generate && sqlc generate
+setup-npm:
+	npm ci
 
-dev:
+setup: setup-aqua setup-npm
+
+gen-buf:
+	buf generate
+
+gen-sqlc:
+	sqlc generate
+
+gen: gen-buf gen-sqlc
+
+dev-backend:
 	go run ./cmd/feed-reader
 
-frontend:
+dev-frontend:
 	npm run dev
 
-test:
+dev-frontend-mock:
+	npm run dev:mock
+
+dev: dev-backend dev-frontend
+
+test-backend:
 	go test ./...
 
-lint:
+test-frontend:
+	npm run test
+
+test: test-backend test-frontend
+
+lint-backend:
 	golangci-lint run
 
-build:
+lint-frontend:
+	npm run lint
+
+build-backend:
 	go build -o dist/ ./cmd/...
+
+build-frontend:
+	npm run build
+
+build: build-backend build-frontend
