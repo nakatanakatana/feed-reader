@@ -35,3 +35,4 @@ styled-system-studio
 
 coverage.out
 frontend/coverage/
+.agentfs/

@@ -10,6 +10,36 @@ import (
 	"strings"
 )
 
+const countItems = `-- name: CountItems :one
+SELECT
+  COUNT(*)
+FROM
+  items i
+JOIN
+  feed_items fi ON i.id = fi.item_id
+LEFT JOIN
+  item_reads ir ON i.id = ir.item_id
+LEFT JOIN
+  item_saves isv ON i.id = isv.item_id
+WHERE
+  (?1 IS NULL OR fi.feed_id = ?1) AND
+  (?2 IS NULL OR COALESCE(ir.is_read, 0) = ?2) AND
+  (?3 IS NULL OR COALESCE(isv.is_saved, 0) = ?3)
+`
+
+type CountItemsParams struct {
+	FeedID  interface{} `json:"feed_id"`
+	IsRead  interface{} `json:"is_read"`
+	IsSaved interface{} `json:"is_saved"`
+}
+
+func (q *Queries) CountItems(ctx context.Context, arg CountItemsParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countItems, arg.FeedID, arg.IsRead, arg.IsSaved)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createFeed = `-- name: CreateFeed :one
 INSERT INTO feeds (
   uuid,
@@ -201,6 +231,55 @@ func (q *Queries) GetFeed(ctx context.Context, uuid string) (Feed, error) {
 	return i, err
 }
 
+const getItem = `-- name: GetItem :one
+SELECT
+  i.id,
+  i.url,
+  i.title,
+  i.description,
+  i.published_at,
+  fi.feed_id,
+  CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read,
+  CAST(COALESCE(isv.is_saved, 0) AS INTEGER) AS is_saved
+FROM
+  items i
+JOIN
+  feed_items fi ON i.id = fi.item_id
+LEFT JOIN
+  item_reads ir ON i.id = ir.item_id
+LEFT JOIN
+  item_saves isv ON i.id = isv.item_id
+WHERE
+  i.id = ?
+`
+
+type GetItemRow struct {
+	ID          string  `json:"id"`
+	Url         string  `json:"url"`
+	Title       *string `json:"title"`
+	Description *string `json:"description"`
+	PublishedAt *string `json:"published_at"`
+	FeedID      string  `json:"feed_id"`
+	IsRead      int64   `json:"is_read"`
+	IsSaved     int64   `json:"is_saved"`
+}
+
+func (q *Queries) GetItem(ctx context.Context, id string) (GetItemRow, error) {
+	row := q.db.QueryRowContext(ctx, getItem, id)
+	var i GetItemRow
+	err := row.Scan(
+		&i.ID,
+		&i.Url,
+		&i.Title,
+		&i.Description,
+		&i.PublishedAt,
+		&i.FeedID,
+		&i.IsRead,
+		&i.IsSaved,
+	)
+	return i, err
+}
+
 const listFeeds = `-- name: ListFeeds :many
 SELECT
   uuid, url, link, title, description, language, image_url, copyright, feed_type, feed_version, last_fetched_at, created_at, updated_at
@@ -303,6 +382,174 @@ func (q *Queries) ListFeedsByUUIDs(ctx context.Context, uuids []string) ([]Feed,
 	return items, nil
 }
 
+const listItems = `-- name: ListItems :many
+SELECT
+  i.id,
+  i.url,
+  i.title,
+  i.description,
+  i.published_at,
+  fi.feed_id,
+  CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read,
+  CAST(COALESCE(isv.is_saved, 0) AS INTEGER) AS is_saved
+FROM
+  items i
+JOIN
+  feed_items fi ON i.id = fi.item_id
+LEFT JOIN
+  item_reads ir ON i.id = ir.item_id
+LEFT JOIN
+  item_saves isv ON i.id = isv.item_id
+WHERE
+  (?1 IS NULL OR fi.feed_id = ?1) AND
+  (?2 IS NULL OR COALESCE(ir.is_read, 0) = ?2) AND
+  (?3 IS NULL OR COALESCE(isv.is_saved, 0) = ?3)
+ORDER BY
+  i.published_at DESC
+LIMIT ?5 OFFSET ?4
+`
+
+type ListItemsParams struct {
+	FeedID  interface{} `json:"feed_id"`
+	IsRead  interface{} `json:"is_read"`
+	IsSaved interface{} `json:"is_saved"`
+	Offset  int64       `json:"offset"`
+	Limit   int64       `json:"limit"`
+}
+
+type ListItemsRow struct {
+	ID          string  `json:"id"`
+	Url         string  `json:"url"`
+	Title       *string `json:"title"`
+	Description *string `json:"description"`
+	PublishedAt *string `json:"published_at"`
+	FeedID      string  `json:"feed_id"`
+	IsRead      int64   `json:"is_read"`
+	IsSaved     int64   `json:"is_saved"`
+}
+
+func (q *Queries) ListItems(ctx context.Context, arg ListItemsParams) ([]ListItemsRow, error) {
+	rows, err := q.db.QueryContext(ctx, listItems,
+		arg.FeedID,
+		arg.IsRead,
+		arg.IsSaved,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListItemsRow
+	for rows.Next() {
+		var i ListItemsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Url,
+			&i.Title,
+			&i.Description,
+			&i.PublishedAt,
+			&i.FeedID,
+			&i.IsRead,
+			&i.IsSaved,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listItemsAsc = `-- name: ListItemsAsc :many
+SELECT
+  i.id,
+  i.url,
+  i.title,
+  i.description,
+  i.published_at,
+  fi.feed_id,
+  CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read,
+  CAST(COALESCE(isv.is_saved, 0) AS INTEGER) AS is_saved
+FROM
+  items i
+JOIN
+  feed_items fi ON i.id = fi.item_id
+LEFT JOIN
+  item_reads ir ON i.id = ir.item_id
+LEFT JOIN
+  item_saves isv ON i.id = isv.item_id
+WHERE
+  (?1 IS NULL OR fi.feed_id = ?1) AND
+  (?2 IS NULL OR COALESCE(ir.is_read, 0) = ?2) AND
+  (?3 IS NULL OR COALESCE(isv.is_saved, 0) = ?3)
+ORDER BY
+  i.published_at ASC
+LIMIT ?5 OFFSET ?4
+`
+
+type ListItemsAscParams struct {
+	FeedID  interface{} `json:"feed_id"`
+	IsRead  interface{} `json:"is_read"`
+	IsSaved interface{} `json:"is_saved"`
+	Offset  int64       `json:"offset"`
+	Limit   int64       `json:"limit"`
+}
+
+type ListItemsAscRow struct {
+	ID          string  `json:"id"`
+	Url         string  `json:"url"`
+	Title       *string `json:"title"`
+	Description *string `json:"description"`
+	PublishedAt *string `json:"published_at"`
+	FeedID      string  `json:"feed_id"`
+	IsRead      int64   `json:"is_read"`
+	IsSaved     int64   `json:"is_saved"`
+}
+
+func (q *Queries) ListItemsAsc(ctx context.Context, arg ListItemsAscParams) ([]ListItemsAscRow, error) {
+	rows, err := q.db.QueryContext(ctx, listItemsAsc,
+		arg.FeedID,
+		arg.IsRead,
+		arg.IsSaved,
+		arg.Offset,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListItemsAscRow
+	for rows.Next() {
+		var i ListItemsAscRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Url,
+			&i.Title,
+			&i.Description,
+			&i.PublishedAt,
+			&i.FeedID,
+			&i.IsRead,
+			&i.IsSaved,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listItemsByFeed = `-- name: ListItemsByFeed :many
 SELECT
   i.id, i.url, i.title, i.description, i.published_at, i.guid, i.created_at, i.updated_at
@@ -366,6 +613,74 @@ type MarkFeedFetchedParams struct {
 func (q *Queries) MarkFeedFetched(ctx context.Context, arg MarkFeedFetchedParams) error {
 	_, err := q.db.ExecContext(ctx, markFeedFetched, arg.LastFetchedAt, arg.Uuid)
 	return err
+}
+
+const setItemRead = `-- name: SetItemRead :one
+INSERT INTO item_reads (
+  item_id,
+  is_read,
+  read_at
+) VALUES (
+  ?, ?, ?
+)
+ON CONFLICT(item_id) DO UPDATE SET
+  is_read = excluded.is_read,
+  read_at = excluded.read_at,
+  updated_at = CURRENT_TIMESTAMP
+RETURNING item_id, is_read, read_at, created_at, updated_at
+`
+
+type SetItemReadParams struct {
+	ItemID string  `json:"item_id"`
+	IsRead int64   `json:"is_read"`
+	ReadAt *string `json:"read_at"`
+}
+
+func (q *Queries) SetItemRead(ctx context.Context, arg SetItemReadParams) (ItemRead, error) {
+	row := q.db.QueryRowContext(ctx, setItemRead, arg.ItemID, arg.IsRead, arg.ReadAt)
+	var i ItemRead
+	err := row.Scan(
+		&i.ItemID,
+		&i.IsRead,
+		&i.ReadAt,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const setItemSaved = `-- name: SetItemSaved :one
+INSERT INTO item_saves (
+  item_id,
+  is_saved,
+  saved_at
+) VALUES (
+  ?, ?, ?
+)
+ON CONFLICT(item_id) DO UPDATE SET
+  is_saved = excluded.is_saved,
+  saved_at = excluded.saved_at,
+  updated_at = CURRENT_TIMESTAMP
+RETURNING item_id, is_saved, saved_at, created_at, updated_at
+`
+
+type SetItemSavedParams struct {
+	ItemID  string  `json:"item_id"`
+	IsSaved int64   `json:"is_saved"`
+	SavedAt *string `json:"saved_at"`
+}
+
+func (q *Queries) SetItemSaved(ctx context.Context, arg SetItemSavedParams) (ItemSafe, error) {
+	row := q.db.QueryRowContext(ctx, setItemSaved, arg.ItemID, arg.IsSaved, arg.SavedAt)
+	var i ItemSafe
+	err := row.Scan(
+		&i.ItemID,
+		&i.IsSaved,
+		&i.SavedAt,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const updateFeed = `-- name: UpdateFeed :one

@@ -20,6 +20,8 @@ The primary target audience is individuals and organizations seeking control ove
 
 - **Feed Management:** Add, organize, and manage RSS/Atom feeds via the UI.
 
+- **Article Management:** Retrieve articles with flexible filtering and sorting. Track article status including read/unread and saved/unsaved (bookmarks).
+
 - **Background Fetching:** Periodically fetches and updates feeds in the background with adaptive scheduling and jitter to ensure content is always fresh without overloading servers.
 
 - **Deduplication & Storage:** Efficiently stores articles with URL-based deduplication and normalized data structures.
