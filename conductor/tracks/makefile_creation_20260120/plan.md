@@ -2,7 +2,7 @@
 
 This plan outlines the steps to create a centralized `Makefile` for the project, providing a consistent interface for common development tasks.
 
-## Phase 1: Foundation and Implementation
+## Phase 1: Foundation and Implementation [checkpoint: da47a24]
 
 ### Task: Setup and Makefile Creation
 - [x] Task: Create the root `Makefile` with the specified targets. [d6b962c]
