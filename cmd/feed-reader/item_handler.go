@@ -117,7 +117,7 @@ func (s *ItemServer) UpdateItemStatus(ctx context.Context, req *connect.Request[
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
-	defer tx.Rollback()
+	defer func() { _ = tx.Rollback() }()
 
 	qtx := s.store.WithTx(tx)
 
@@ -162,29 +162,11 @@ func (s *ItemServer) UpdateItemStatus(ctx context.Context, req *connect.Request[
 }
 
 func GetItemRowFromListItemsRow(row store.ListItemsRow) store.GetItemRow {
-	return store.GetItemRow{
-		ID:          row.ID,
-		Url:         row.Url,
-		Title:       row.Title,
-		Description: row.Description,
-		PublishedAt: row.PublishedAt,
-		FeedID:      row.FeedID,
-		IsRead:      row.IsRead,
-		IsSaved:     row.IsSaved,
-	}
+	return store.GetItemRow(row)
 }
 
 func GetItemRowFromListItemsAscRow(row store.ListItemsAscRow) store.GetItemRow {
-	return store.GetItemRow{
-		ID:          row.ID,
-		Url:         row.Url,
-		Title:       row.Title,
-		Description: row.Description,
-		PublishedAt: row.PublishedAt,
-		FeedID:      row.FeedID,
-		IsRead:      row.IsRead,
-		IsSaved:     row.IsSaved,
-	}
+	return store.GetItemRow(row)
 }
 
 func toProtoItem(row store.GetItemRow) *itemv1.Item {
