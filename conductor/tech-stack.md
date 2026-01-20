@@ -13,6 +13,7 @@ The backend is responsible for feed management, article fetching, and providing 
 -   **HTTP Client:** `hashicorp/go-retryablehttp` (Resilient network requests)
 -   **Protocol Management:** `buf` (Protobuf management and generation)
 -   **CLI Manager:** `aqua` (Declarative tool management)
+-   **Task Runner:** `GNU Make` (Unified command interface)
 
 ## 2. Frontend
 The frontend is a modern Single Page Application (SPA) designed for speed and responsiveness.
