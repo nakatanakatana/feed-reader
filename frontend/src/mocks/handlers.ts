@@ -7,6 +7,7 @@ import {
   DeleteFeedResponse,
 } from "../gen/feed/v1/feed_pb";
 import {
+  Item,
   ListItemsResponse,
   UpdateItemStatusResponse,
 } from "../gen/item/v1/item_pb";
@@ -65,8 +66,24 @@ export const handlers = [
 
   mockConnectWeb(ItemService)({
     method: "listItems",
-    handler: () => {
-      return new ListItemsResponse({ items: [] });
+    handler: (req) => {
+      const offset = req.offset ?? 0;
+      const limit = req.limit ?? 20;
+
+      if (offset >= 40) {
+        return new ListItemsResponse({ items: [] });
+      }
+      const items = Array.from({ length: limit }, (_, i) => {
+        const id = (offset + i + 1).toString();
+        return new Item({
+          id,
+          title: `Item ${id}`,
+          url: `https://example.com/item/${id}`,
+          publishedAt: new Date().toISOString(),
+          isRead: false,
+        });
+      });
+      return new ListItemsResponse({ items });
     },
   }),
 
