@@ -1,4 +1,5 @@
 import { createClient } from "@connectrpc/connect";
+import { Link } from "@tanstack/solid-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/solid-query";
 import { For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
@@ -59,9 +60,16 @@ export function FeedList() {
               })}
             >
               <div class={stack({ gap: "0" })}>
-                <span class={css({ fontWeight: "medium" })}>
+                <Link
+                  to="/feeds/$feedId"
+                  params={{ feedId: feed.uuid }}
+                  class={css({
+                    fontWeight: "medium",
+                    _hover: { textDecoration: "underline", color: "blue.600" },
+                  })}
+                >
                   {feed.title || "Untitled Feed"}
-                </span>
+                </Link>
                 <span class={css({ fontSize: "xs", color: "gray.500" })}>
                   {feed.url}
                 </span>
