@@ -16,7 +16,7 @@ Create the UI components for displaying items in a list view.
 - [x] Task: Create ItemRow component for the list view, displaying title, metadata, and read status toggle. dbaf85a
 - [x] Task: Implement "Mark as Read/Unread" toggle logic in `ItemRow`. c3f261e
 - [x] Task: Implement "Open URL" functionality in `ItemRow`. c3f261e
-- [ ] Task: Create `ItemList` component that renders a list of `ItemRow`s and the "Load More" button.
+- [x] Task: Create `ItemList` component that renders a list of `ItemRow`s and the "Load More" button. 92d25db
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Item List Components' (Protocol in workflow.md)
 
 ## Phase 3: Routing & Views
