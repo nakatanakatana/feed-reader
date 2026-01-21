@@ -23,8 +23,8 @@ Create the UI components for displaying items in a list view.
 Integrate the item list into the application's routing.
 
 - [x] Task: Update the "All Items" view (e.g., `feeds.tsx` or a new index route) to use `ItemList`. 0f1679d
-- [ ] Task: Update the "Feed Specific" view to pass the `feed_id` from the URL to `ItemList`.
-- [ ] Task: Ensure navigation between different feeds updates the item list correctly.
+- [x] Task: Update the "Feed Specific" view to pass the `feed_id` from the URL to `ItemList`. b4a821c
+- [x] Task: Ensure navigation between different feeds updates the item list correctly. b4a821c
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Routing & Views' (Protocol in workflow.md)
 
 ## Phase 4: Refinement & Mobile Optimization
