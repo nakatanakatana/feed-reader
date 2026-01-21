@@ -70,13 +70,16 @@ export function ItemRow(props: ItemRowProps) {
         disabled={updateStatus.isPending}
         class={css({
           fontSize: "xs",
-          padding: "1",
-          paddingInline: "2",
+          padding: "2",
+          paddingInline: "3",
           borderRadius: "md",
           cursor: "pointer",
           border: "1px solid",
           borderColor: "gray.200",
           backgroundColor: "white",
+          minWidth: "100px",
+          display: "flex",
+          justifyContent: "center",
           _hover: { backgroundColor: "gray.50" },
           _disabled: { opacity: 0.5, cursor: "not-allowed" },
         })}
