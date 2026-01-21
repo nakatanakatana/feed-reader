@@ -13,7 +13,7 @@ Setup the necessary queries and basic state management for items.
 ## Phase 2: Item List Components
 Create the UI components for displaying items in a list view.
 
-- [ ] Task: Create `ItemRow` component for the list view, displaying title, metadata, and read status toggle.
+- [x] Task: Create ItemRow component for the list view, displaying title, metadata, and read status toggle. dbaf85a
 - [ ] Task: Implement "Mark as Read/Unread" toggle logic in `ItemRow`.
 - [ ] Task: Implement "Open URL" functionality in `ItemRow`.
 - [ ] Task: Create `ItemList` component that renders a list of `ItemRow`s and the "Load More" button.

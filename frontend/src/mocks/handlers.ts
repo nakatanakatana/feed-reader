@@ -1,10 +1,15 @@
 import { mockConnectWeb } from "./connect";
 import { FeedService } from "../gen/feed/v1/feed_connect";
+import { ItemService } from "../gen/item/v1/item_connect";
 import {
   ListFeedsResponse,
   CreateFeedResponse,
   DeleteFeedResponse,
 } from "../gen/feed/v1/feed_pb";
+import {
+  ListItemsResponse,
+  UpdateItemStatusResponse,
+} from "../gen/item/v1/item_pb";
 
 const feeds = [
   {
@@ -55,6 +60,20 @@ export const handlers = [
         feeds.splice(index, 1);
       }
       return new DeleteFeedResponse({});
+    },
+  }),
+
+  mockConnectWeb(ItemService)({
+    method: "listItems",
+    handler: () => {
+      return new ListItemsResponse({ items: [] });
+    },
+  }),
+
+  mockConnectWeb(ItemService)({
+    method: "updateItemStatus",
+    handler: () => {
+      return new UpdateItemStatusResponse({});
     },
   }),
 ];
