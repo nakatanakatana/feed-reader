@@ -6,7 +6,7 @@ import {
   RouterProvider,
 } from "@tanstack/solid-router";
 import { HttpResponse, http } from "msw";
-import { render } from "solid-js/web";
+import { type JSX, render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { FeedService } from "../gen/feed/v1/feed_connect";
@@ -28,7 +28,7 @@ describe("FeedList", () => {
     baseUrl: "http://localhost:3000",
   });
 
-  const _renderWithProviders = (_ui: () => any) => {
+  const _renderWithProviders = (_ui: () => JSX.Element) => {
     const queryClient = new QueryClient({
       defaultOptions: {
         queries: { retry: false },

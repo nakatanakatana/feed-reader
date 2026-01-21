@@ -12,7 +12,7 @@ import { useTransport } from "./transport-context";
 
 export const itemKeys = {
   all: ["items"] as const,
-  list: (filters: Record<string, any>) =>
+  list: (filters: Record<string, unknown>) =>
     [...itemKeys.all, "list", filters] as const,
 };
 

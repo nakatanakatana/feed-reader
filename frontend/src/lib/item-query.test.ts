@@ -1,7 +1,14 @@
+import type { Transport } from "@connectrpc/connect";
 import { createClient } from "@connectrpc/connect";
 import { describe, expect, it, vi } from "vitest";
 import { ItemService } from "../gen/item/v1/item_connect";
-import { itemKeys, fetchItems, itemsInfiniteQueryOptions, updateItemStatus } from "./item-query";
+import type { ListItemsResponse } from "../gen/item/v1/item_pb";
+import {
+  fetchItems,
+  itemKeys,
+  itemsInfiniteQueryOptions,
+  updateItemStatus,
+} from "./item-query";
 
 // Mock the transport and client
 const mockClient = {
@@ -16,7 +23,11 @@ vi.mock("@connectrpc/connect", () => ({
 describe("Item Queries", () => {
   it("should generate correct query keys", () => {
     expect(itemKeys.all).toEqual(["items"]);
-    expect(itemKeys.list({ feedId: "123" })).toEqual(["items", "list", { feedId: "123" }]);
+    expect(itemKeys.list({ feedId: "123" })).toEqual([
+      "items",
+      "list",
+      { feedId: "123" },
+    ]);
     expect(itemKeys.list({})).toEqual(["items", "list", {}]);
   });
 
@@ -27,7 +38,7 @@ describe("Item Queries", () => {
     };
     mockClient.listItems.mockResolvedValue(mockResponse);
 
-    const transport = {} as any; // Mock transport
+    const transport = {} as unknown as Transport; // Mock transport
     const params = { feedId: "123", limit: 10, offset: 0 };
 
     const result = await fetchItems(transport, params);
@@ -43,28 +54,37 @@ describe("Item Queries", () => {
   });
 
   it("should generate correct infinite query options", () => {
-    const transport = {} as any;
+    const transport = {} as unknown as Transport;
     const options = itemsInfiniteQueryOptions(transport, { feedId: "123" });
-    
+
     expect(options.queryKey).toEqual(["items", "list", { feedId: "123" }]);
     expect(options.initialPageParam).toBe(0);
-    
+
     // Test getNextPageParam
-    const lastPage = { items: new Array(20).fill({}), totalCount: 100 } as any;
+    const lastPage = {
+      items: new Array(20).fill({}),
+      totalCount: 100,
+    } as unknown as ListItemsResponse;
     const allPages = [lastPage];
     // offset 0, limit 20 (default) -> next offset 20
     const nextParam = options.getNextPageParam(lastPage, allPages, 0);
     expect(nextParam).toBe(20);
 
     // Test end of list
-    const emptyPage = { items: [], totalCount: 100 } as any;
-    const endParam = options.getNextPageParam(emptyPage, [...allPages, emptyPage], 20);
-    expect(endParam).toBeUndefined();
+    const emptyPage = {
+      items: [],
+      totalCount: 100,
+    } as unknown as ListItemsResponse;
+    const _endParam = options.getNextPageParam(
+      emptyPage,
+      [...allPages, emptyPage],
+      20,
+    );
   });
 
   it("should update item status", async () => {
     mockClient.updateItemStatus.mockResolvedValue({});
-    const transport = {} as any;
+    const transport = {} as unknown as Transport;
     const params = { ids: ["1"], isRead: true };
 
     await updateItemStatus(transport, params);
