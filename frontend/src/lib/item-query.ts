@@ -1,6 +1,6 @@
 import { createClient } from "@connectrpc/connect";
 import type { Transport } from "@connectrpc/connect";
-import { createInfiniteQuery, infiniteQueryOptions } from "@tanstack/solid-query";
+import { createInfiniteQuery, createMutation, infiniteQueryOptions, useQueryClient } from "@tanstack/solid-query";
 import { ItemService } from "../gen/item/v1/item_connect";
 import { ListItemsRequest_SortOrder } from "../gen/item/v1/item_pb";
 import { useTransport } from "./transport-context";
@@ -54,4 +54,31 @@ export const itemsInfiniteQueryOptions = (transport: Transport, params: Omit<Fet
 export const useItems = (params: Omit<FetchItemsParams, "limit" | "offset">) => {
   const transport = useTransport();
   return createInfiniteQuery(() => itemsInfiniteQueryOptions(transport, params));
+};
+
+export interface UpdateItemStatusParams {
+  ids: string[];
+  isRead?: boolean;
+  isSaved?: boolean;
+}
+
+export const updateItemStatus = async (transport: Transport, params: UpdateItemStatusParams) => {
+  const client = createClient(ItemService, transport);
+  return await client.updateItemStatus({
+    ids: params.ids,
+    isRead: params.isRead,
+    isSaved: params.isSaved,
+  });
+};
+
+export const useUpdateItemStatus = () => {
+  const transport = useTransport();
+  const queryClient = useQueryClient();
+
+  return createMutation(() => ({
+    mutationFn: (params: UpdateItemStatusParams) => updateItemStatus(transport, params),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: itemKeys.all });
+    },
+  }));
 };
