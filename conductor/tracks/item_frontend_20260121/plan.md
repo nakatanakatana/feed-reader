@@ -10,7 +10,7 @@ Setup the necessary queries and basic state management for items.
 - [x] Task: Implement useUpdateItemStatus mutation hook using ItemService.UpdateItemStatus. 1066deb
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Foundation & Data Access' (Protocol in workflow.md)
 
-## Phase 2: Item List Components
+## Phase 2: Item List Components [checkpoint: 0f1679d]
 Create the UI components for displaying items in a list view.
 
 - [x] Task: Create ItemRow component for the list view, displaying title, metadata, and read status toggle. dbaf85a
