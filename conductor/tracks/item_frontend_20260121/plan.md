@@ -2,7 +2,7 @@
 
 Implement the frontend components and logic for listing items, filtering by feed, and managing item status according to the `spec.md`.
 
-## Phase 1: Foundation & Data Access
+## Phase 1: Foundation & Data Access [checkpoint: 32f2efc]
 Setup the necessary queries and basic state management for items.
 
 - [x] Task: Define Item query keys and basic fetching logic using TanStack Query and ItemService.ListItems. 1eb0934
