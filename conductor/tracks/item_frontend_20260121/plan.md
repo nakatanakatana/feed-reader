@@ -7,7 +7,7 @@ Setup the necessary queries and basic state management for items.
 
 - [x] Task: Define Item query keys and basic fetching logic using TanStack Query and ItemService.ListItems. 1eb0934
 - [x] Task: Implement useItems hook to handle fetching, pagination (load more), and filtering by feed_id. aae7160
-- [ ] Task: Implement `useUpdateItemStatus` mutation hook using `ItemService.UpdateItemStatus`.
+- [x] Task: Implement useUpdateItemStatus mutation hook using ItemService.UpdateItemStatus. 1066deb
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Foundation & Data Access' (Protocol in workflow.md)
 
 ## Phase 2: Item List Components
