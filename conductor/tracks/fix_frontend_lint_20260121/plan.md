@@ -7,15 +7,15 @@
     - [x] Run `npm test` in the `frontend/` directory.
 
 ## Phase 2: Automated Fixes
-- [ ] Task: Apply Biome automated fixes.
-    - [ ] Run `npx @biomejs/biome check --write .` (or equivalent) in the root directory.
-- [ ] Task: Verify the impact of automated fixes.
-    - [ ] Run `npm run lint` again to see remaining errors.
-    - [ ] Run `npm test` to ensure no regressions were introduced.
+- [x] Task: Apply Biome automated fixes. abc1c0d
+    - [x] Run `npx @biomejs/biome check --write .` (or equivalent) in the root directory.
+- [x] Task: Verify the impact of automated fixes.
+    - [x] Run `npm run lint` again to see remaining errors.
+    - [x] Run `npm test` to ensure no regressions were introduced.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Automated Fixes' (Protocol in workflow.md)
 
 ## Phase 3: Manual Fixes
-- [ ] Task: Resolve remaining lint errors manually.
+- [~] Task: Resolve remaining lint errors manually.
     - [ ] Iteratively fix errors reported by the linter that couldn't be autofixed.
     - [ ] Focus on one file or one type of error at a time.
 - [ ] Task: Final Verification.
