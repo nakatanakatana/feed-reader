@@ -1,7 +1,9 @@
 import { createClient } from "@connectrpc/connect";
 import type { Transport } from "@connectrpc/connect";
+import { createInfiniteQuery, infiniteQueryOptions } from "@tanstack/solid-query";
 import { ItemService } from "../gen/item/v1/item_connect";
 import { ListItemsRequest_SortOrder } from "../gen/item/v1/item_pb";
+import { useTransport } from "./transport-context";
 
 export const itemKeys = {
   all: ["items"] as const,
@@ -27,4 +29,29 @@ export const fetchItems = async (transport: Transport, params: FetchItemsParams)
     offset: params.offset,
     sortOrder: params.sortOrder ?? ListItemsRequest_SortOrder.UNSPECIFIED,
   });
+};
+
+export const itemsInfiniteQueryOptions = (transport: Transport, params: Omit<FetchItemsParams, "limit" | "offset">) => {
+  return infiniteQueryOptions({
+    queryKey: itemKeys.list(params),
+    queryFn: async ({ pageParam }) => {
+      return fetchItems(transport, {
+        ...params,
+        limit: 20,
+        offset: pageParam as number,
+      });
+    },
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages, lastPageParam) => {
+      if (lastPage.items.length === 0) {
+        return undefined;
+      }
+      return (lastPageParam as number) + 20;
+    },
+  });
+};
+
+export const useItems = (params: Omit<FetchItemsParams, "limit" | "offset">) => {
+  const transport = useTransport();
+  return createInfiniteQuery(() => itemsInfiniteQueryOptions(transport, params));
 };
