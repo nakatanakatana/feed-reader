@@ -1,5 +1,6 @@
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
+import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
 import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -10,6 +11,7 @@ import { FeedList } from "./FeedList";
 import { mockConnectWeb } from "../mocks/connect";
 import { FeedService } from "../gen/feed/v1/feed_connect";
 import { DeleteFeedResponse, ListFeedsResponse } from "../gen/feed/v1/feed_pb";
+import { routeTree } from "../routeTree.gen";
 
 describe("FeedList", () => {
   let dispose: () => void;
@@ -22,6 +24,35 @@ describe("FeedList", () => {
   const transport = createConnectTransport({
     baseUrl: "http://localhost:3000",
   });
+
+  const renderWithProviders = (ui: () => any) => {
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { retry: false },
+        mutations: { retry: false },
+      },
+    });
+
+    const history = createMemoryHistory({
+      initialEntries: ["/feeds"],
+    });
+
+    const router = createRouter({
+      routeTree,
+      history,
+    });
+
+    return render(
+      () => (
+        <TransportProvider transport={transport}>
+          <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} />
+          </QueryClientProvider>
+        </TransportProvider>
+      ),
+      document.body,
+    );
+  };
 
   it("displays a list of feeds", async () => {
     worker.use(
@@ -38,17 +69,23 @@ describe("FeedList", () => {
       }),
     );
 
+    // Instead of rendering component directly, we need to let router render it via /feeds route
+    // But for unit test simplicity, we might just want to wrap it in RouterProvider even if it's not the intended route.
+    // TanStack Router might complain if we render the component directly outside of a route match.
+    // Let's try wrapping it.
     const queryClient = new QueryClient({
       defaultOptions: {
         queries: { retry: false },
       },
     });
+    const history = createMemoryHistory({ initialEntries: ["/feeds"] });
+    const router = createRouter({ routeTree, history });
 
     dispose = render(
       () => (
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>
-            <FeedList />
+            <RouterProvider router={router} />
           </QueryClientProvider>
         </TransportProvider>
       ),
@@ -57,6 +94,9 @@ describe("FeedList", () => {
 
     await expect.element(page.getByText("Feed 1")).toBeInTheDocument();
     await expect.element(page.getByText("Feed 2")).toBeInTheDocument();
+
+    const link1 = page.getByRole("link", { name: "Feed 1" });
+    expect(link1).toHaveAttribute("href", "/feeds/1");
   });
 
   it("deletes a feed", async () => {
@@ -87,12 +127,14 @@ describe("FeedList", () => {
         mutations: { retry: false },
       },
     });
+    const history = createMemoryHistory({ initialEntries: ["/feeds"] });
+    const router = createRouter({ routeTree, history });
 
     dispose = render(
       () => (
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>
-            <FeedList />
+            <RouterProvider router={router} />
           </QueryClientProvider>
         </TransportProvider>
       ),
@@ -130,12 +172,14 @@ describe("FeedList", () => {
         queries: { retry: false },
       },
     });
+    const history = createMemoryHistory({ initialEntries: ["/feeds"] });
+    const router = createRouter({ routeTree, history });
 
     dispose = render(
       () => (
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>
-            <FeedList />
+            <RouterProvider router={router} />
           </QueryClientProvider>
         </TransportProvider>
       ),
@@ -171,12 +215,14 @@ describe("FeedList", () => {
         mutations: { retry: false },
       },
     });
+    const history = createMemoryHistory({ initialEntries: ["/feeds"] });
+    const router = createRouter({ routeTree, history });
 
     dispose = render(
       () => (
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>
-            <FeedList />
+            <RouterProvider router={router} />
           </QueryClientProvider>
         </TransportProvider>
       ),
