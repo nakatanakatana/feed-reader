@@ -1,11 +1,12 @@
 import { createClient } from "@connectrpc/connect";
 import { describe, expect, it, vi } from "vitest";
 import { ItemService } from "../gen/item/v1/item_connect";
-import { itemKeys, fetchItems } from "./item-query";
+import { itemKeys, fetchItems, itemsInfiniteQueryOptions, updateItemStatus } from "./item-query";
 
 // Mock the transport and client
 const mockClient = {
   listItems: vi.fn(),
+  updateItemStatus: vi.fn(),
 };
 
 vi.mock("@connectrpc/connect", () => ({
@@ -39,5 +40,38 @@ describe("Item Queries", () => {
       sortOrder: 0, // UNSPECIFIED
     });
     expect(result).toEqual(mockResponse);
+  });
+
+  it("should generate correct infinite query options", () => {
+    const transport = {} as any;
+    const options = itemsInfiniteQueryOptions(transport, { feedId: "123" });
+    
+    expect(options.queryKey).toEqual(["items", "list", { feedId: "123" }]);
+    expect(options.initialPageParam).toBe(0);
+    
+    // Test getNextPageParam
+    const lastPage = { items: new Array(20).fill({}), totalCount: 100 } as any;
+    const allPages = [lastPage];
+    // offset 0, limit 20 (default) -> next offset 20
+    const nextParam = options.getNextPageParam(lastPage, allPages, 0);
+    expect(nextParam).toBe(20);
+
+    // Test end of list
+    const emptyPage = { items: [], totalCount: 100 } as any;
+    const endParam = options.getNextPageParam(emptyPage, [...allPages, emptyPage], 20);
+    expect(endParam).toBeUndefined();
+  });
+
+  it("should update item status", async () => {
+    mockClient.updateItemStatus.mockResolvedValue({});
+    const transport = {} as any;
+    const params = { ids: ["1"], isRead: true };
+
+    await updateItemStatus(transport, params);
+
+    expect(mockClient.updateItemStatus).toHaveBeenCalledWith({
+      ids: ["1"],
+      isRead: true,
+    });
   });
 });
