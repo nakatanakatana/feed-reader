@@ -1,25 +1,20 @@
-import { createClient } from "@connectrpc/connect";
-import { useMutation, useQueryClient } from "@tanstack/solid-query";
+import { createMutation } from "@tanstack/solid-query";
 import { createSignal } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
-import { FeedService } from "../gen/feed/v1/feed_connect";
-import { useTransport } from "../lib/transport-context";
+import { db } from "../lib/query";
+import { Feed } from "../gen/feed/v1/feed_pb";
 
 export function AddFeedForm() {
-  const transport = useTransport();
-  const client = createClient(FeedService, transport);
-  const queryClient = useQueryClient();
   const [url, setUrl] = createSignal("");
 
-  const mutation = useMutation(() => ({
+  const mutation = createMutation(() => ({
     mutationFn: async (url: string) => {
-      const response = await client.createFeed({ url });
-      return response.feed;
+      const tx = db.feeds.insert(new Feed({ url }));
+      await tx.isPersisted.promise;
     },
     onSuccess: () => {
       setUrl("");
-      queryClient.invalidateQueries({ queryKey: ["feeds"] });
     },
   }));
 
@@ -64,6 +59,18 @@ export function AddFeedForm() {
             _disabled: { backgroundColor: "gray.400", cursor: "not-allowed" },
           })}
         >
+          {mutation.isPending ? "Adding..." : "Add Feed"}
+        </button>
+      </div>
+      {mutation.isError && (
+        <p class={css({ color: "red.500", fontSize: "sm", width: "full" })}>
+          Error: {mutation.error?.message}
+        </p>
+      )}
+    </form>
+  );
+}
+    >
           {mutation.isPending ? "Adding..." : "Add Feed"}
         </button>
       </div>

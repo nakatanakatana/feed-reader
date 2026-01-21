@@ -1,30 +1,22 @@
 import { createClient } from "@connectrpc/connect";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/solid-query";
+import { createMutation } from "@tanstack/solid-query";
 import { For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { FeedService } from "../gen/feed/v1/feed_connect";
 import { useTransport } from "../lib/transport-context";
+import { db, useFeeds } from "../lib/query";
 
 export function FeedList() {
   const transport = useTransport();
   const client = createClient(FeedService, transport);
-  const queryClient = useQueryClient();
 
-  const query = useQuery(() => ({
-    queryKey: ["feeds"],
-    queryFn: async () => {
-      const response = await client.listFeeds({});
-      return response.feeds;
-    },
-  }));
+  const query = useFeeds();
 
-  const deleteMutation = useMutation(() => ({
+  const deleteMutation = createMutation(() => ({
     mutationFn: async (uuid: string) => {
-      await client.deleteFeed({ uuid });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["feeds"] });
+      const tx = db.feeds.delete(uuid);
+      await tx.isPersisted.promise;
     },
   }));
 

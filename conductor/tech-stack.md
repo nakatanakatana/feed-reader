@@ -19,7 +19,7 @@ The backend is responsible for feed management, article fetching, and providing 
 The frontend is a modern Single Page Application (SPA) designed for speed and responsiveness.
 
 -   **Framework:** SolidJS (Fine-grained reactivity)
--   **State & Data Management:** TanStack Query (Efficient server-state management)
+-   **State & Data Management:** TanStack Query (Efficient server-state management) and TanStack DB (Reactive client-side database)
 -   **Language:** TypeScript (Type safety)
 -   **Styling:** Panda CSS (CSS-in-JS with build-time generation)
 -   **Communication:** Connect RPC Web (Communication with the backend)

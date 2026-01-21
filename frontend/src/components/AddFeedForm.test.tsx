@@ -1,5 +1,4 @@
-import { createConnectTransport } from "@connectrpc/connect-web";
-import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
+import { QueryClientProvider } from "@tanstack/solid-query";
 import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -10,6 +9,7 @@ import { AddFeedForm } from "./AddFeedForm";
 import { mockConnectWeb } from "../mocks/connect";
 import { FeedService } from "../gen/feed/v1/feed_connect";
 import { CreateFeedResponse } from "../gen/feed/v1/feed_pb";
+import { queryClient, transport } from "../lib/query";
 
 describe("AddFeedForm", () => {
   let dispose: () => void;
@@ -17,10 +17,7 @@ describe("AddFeedForm", () => {
   afterEach(() => {
     if (dispose) dispose();
     document.body.innerHTML = "";
-  });
-
-  const transport = createConnectTransport({
-    baseUrl: "http://localhost:3000",
+    queryClient.clear();
   });
 
   it("creates a new feed", async () => {
@@ -42,13 +39,6 @@ describe("AddFeedForm", () => {
         },
       }),
     );
-
-    const queryClient = new QueryClient({
-      defaultOptions: {
-        queries: { retry: false },
-        mutations: { retry: false },
-      },
-    });
 
     dispose = render(
       () => (
@@ -88,18 +78,29 @@ describe("AddFeedForm", () => {
       }),
     );
 
-    const queryClient = new QueryClient({
-      defaultOptions: {
-        mutations: { retry: false },
-      },
-    });
-
     dispose = render(
       () => (
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>
             <AddFeedForm />
           </QueryClientProvider>
+        </TransportProvider>
+      ),
+      document.body,
+    );
+
+    const input = page.getByPlaceholder("Feed URL");
+    await input.fill("invalid-url");
+
+    const button = page.getByText("Add Feed");
+    await button.click();
+
+    await expect
+      .element(page.getByText(/Error: .*Invalid feed URL.*/))
+      .toBeInTheDocument();
+  });
+});
+yClientProvider>
         </TransportProvider>
       ),
       document.body,

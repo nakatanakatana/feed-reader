@@ -1,5 +1,4 @@
-import { createConnectTransport } from "@connectrpc/connect-web";
-import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
+import { QueryClientProvider } from "@tanstack/solid-query";
 import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -10,6 +9,7 @@ import { FeedList } from "./FeedList";
 import { mockConnectWeb } from "../mocks/connect";
 import { FeedService } from "../gen/feed/v1/feed_connect";
 import { DeleteFeedResponse, ListFeedsResponse } from "../gen/feed/v1/feed_pb";
+import { queryClient, transport } from "../lib/query";
 
 describe("FeedList", () => {
   let dispose: () => void;
@@ -17,10 +17,7 @@ describe("FeedList", () => {
   afterEach(() => {
     if (dispose) dispose();
     document.body.innerHTML = "";
-  });
-
-  const transport = createConnectTransport({
-    baseUrl: "http://localhost:3000",
+    queryClient.clear();
   });
 
   it("displays a list of feeds", async () => {
@@ -37,12 +34,6 @@ describe("FeedList", () => {
         },
       }),
     );
-
-    const queryClient = new QueryClient({
-      defaultOptions: {
-        queries: { retry: false },
-      },
-    });
 
     dispose = render(
       () => (
@@ -81,13 +72,6 @@ describe("FeedList", () => {
       }),
     );
 
-    const queryClient = new QueryClient({
-      defaultOptions: {
-        queries: { retry: false },
-        mutations: { retry: false },
-      },
-    });
-
     dispose = render(
       () => (
         <TransportProvider transport={transport}>
@@ -125,12 +109,6 @@ describe("FeedList", () => {
       }),
     );
 
-    const queryClient = new QueryClient({
-      defaultOptions: {
-        queries: { retry: false },
-      },
-    });
-
     dispose = render(
       () => (
         <TransportProvider transport={transport}>
@@ -165,9 +143,28 @@ describe("FeedList", () => {
       }),
     );
 
-    const queryClient = new QueryClient({
-      defaultOptions: {
-        queries: { retry: false },
+    dispose = render(
+      () => (
+        <TransportProvider transport={transport}>
+          <QueryClientProvider client={queryClient}>
+            <FeedList />
+          </QueryClientProvider>
+        </TransportProvider>
+      ),
+      document.body,
+    );
+
+    await expect.element(page.getByText("Feed 1")).toBeInTheDocument();
+
+    const deleteButton = page.getByText("Delete");
+    await deleteButton.click();
+
+    await expect
+      .element(page.getByText(/Delete Error: .*Failed to delete feed.*/))
+      .toBeInTheDocument();
+  });
+});
+       queries: { retry: false },
         mutations: { retry: false },
       },
     });
