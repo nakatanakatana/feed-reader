@@ -1,11 +1,11 @@
+import { createConnectTransport } from "@connectrpc/connect-web";
 import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { page } from "vitest/browser";
+import { Item } from "../gen/item/v1/item_pb";
 import { TransportProvider } from "../lib/transport-context";
 import { ItemRow } from "./ItemRow";
-import { Item } from "../gen/item/v1/item_pb";
-import { createConnectTransport } from "@connectrpc/connect-web";
 
 describe("ItemRow", () => {
   let dispose: () => void;
@@ -52,7 +52,7 @@ describe("ItemRow", () => {
 
   it("renders read status correctly", () => {
     const readItem = new Item({ ...mockItem, isRead: true });
-    
+
     dispose = render(
       () => (
         <TransportProvider transport={transport}>

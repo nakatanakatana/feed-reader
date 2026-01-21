@@ -1,8 +1,8 @@
+import { Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
-import { Item } from "../gen/item/v1/item_pb";
+import type { Item } from "../gen/item/v1/item_pb";
 import { useUpdateItemStatus } from "../lib/item-query";
-import { Show } from "solid-js";
 
 interface ItemRowProps {
   item: Item;
