@@ -19,7 +19,7 @@ Create the UI components for displaying items in a list view.
 - [x] Task: Create `ItemList` component that renders a list of `ItemRow`s and the "Load More" button. 92d25db
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Item List Components' (Protocol in workflow.md)
 
-## Phase 3: Routing & Views
+## Phase 3: Routing & Views [checkpoint: c1cde31]
 Integrate the item list into the application's routing.
 
 - [x] Task: Update the "All Items" view (e.g., `feeds.tsx` or a new index route) to use `ItemList`. 0f1679d
