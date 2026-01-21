@@ -268,7 +268,11 @@ A task is complete when:
 2. Unit tests written and passing
 3. Code coverage meets project requirements
 4. Documentation complete (if applicable)
-5. Code passes all configured linting and static analysis checks
+5. Code passes all configured verification steps (format, lint, test, build):
+    - `go fmt ./...`
+    - `golangci-lint run`
+    - `go test ./...`
+    - `go build -o dist/ ./cmd/...`
 6. Works beautifully on mobile (if applicable)
 7. Implementation notes added to `plan.md`
 8. Changes committed with proper message
