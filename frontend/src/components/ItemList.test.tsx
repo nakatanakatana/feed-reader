@@ -37,8 +37,12 @@ describe("ItemList", () => {
     );
 
     // Should show loading initially or eventually show items
-    await expect.element(page.getByText("Item 1", { exact: true })).toBeInTheDocument();
-    await expect.element(page.getByText("Item 20", { exact: true })).toBeInTheDocument();
+    await expect
+      .element(page.getByText("Item 1", { exact: true }))
+      .toBeInTheDocument();
+    await expect
+      .element(page.getByText("Item 20", { exact: true }))
+      .toBeInTheDocument();
   });
 
   it("loads more items when button is clicked", async () => {
@@ -53,12 +57,18 @@ describe("ItemList", () => {
       document.body,
     );
 
-    await expect.element(page.getByText("Item 1", { exact: true })).toBeInTheDocument();
-    
+    await expect
+      .element(page.getByText("Item 1", { exact: true }))
+      .toBeInTheDocument();
+
     const loadMoreButton = page.getByRole("button", { name: /Load More/i });
     await loadMoreButton.click();
 
-    await expect.element(page.getByText("Item 21", { exact: true })).toBeInTheDocument();
-    await expect.element(page.getByText("Item 40", { exact: true })).toBeInTheDocument();
+    await expect
+      .element(page.getByText("Item 21", { exact: true }))
+      .toBeInTheDocument();
+    await expect
+      .element(page.getByText("Item 40", { exact: true }))
+      .toBeInTheDocument();
   });
 });

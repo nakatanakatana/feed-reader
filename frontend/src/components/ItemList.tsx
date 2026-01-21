@@ -40,19 +40,29 @@ export function ItemList(props: ItemListProps) {
       </Show>
 
       <Show when={itemsQuery.isLoading}>
-        <div class={css({ textAlign: "center", padding: "8", color: "gray.500" })}>
+        <div
+          class={css({ textAlign: "center", padding: "8", color: "gray.500" })}
+        >
           Loading items...
         </div>
       </Show>
 
       <Show when={itemsQuery.isError}>
-        <div class={css({ textAlign: "center", padding: "8", color: "red.500" })}>
+        <div
+          class={css({ textAlign: "center", padding: "8", color: "red.500" })}
+        >
           Error loading items. Please try again.
         </div>
       </Show>
-      
-      <Show when={!itemsQuery.isLoading && itemsQuery.data?.pages[0].items.length === 0}>
-        <div class={css({ textAlign: "center", padding: "8", color: "gray.500" })}>
+
+      <Show
+        when={
+          !itemsQuery.isLoading && itemsQuery.data?.pages[0].items.length === 0
+        }
+      >
+        <div
+          class={css({ textAlign: "center", padding: "8", color: "gray.500" })}
+        >
           No items found.
         </div>
       </Show>
