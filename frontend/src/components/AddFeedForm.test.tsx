@@ -45,8 +45,8 @@ describe("AddFeedForm", () => {
 
     const queryClient = new QueryClient({
       defaultOptions: {
-        queries: { retry: false },
-        mutations: { retry: false },
+        queries: { retry: 0 },
+        mutations: { retry: 0 },
       },
     });
 
@@ -90,7 +90,8 @@ describe("AddFeedForm", () => {
 
     const queryClient = new QueryClient({
       defaultOptions: {
-        mutations: { retry: false },
+        queries: { retry: 0 },
+        mutations: { retry: 0 },
       },
     });
 

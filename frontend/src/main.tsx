@@ -1,10 +1,13 @@
 import { render } from "solid-js/web";
 import "solid-devtools";
 import { createRouter, RouterProvider } from "@tanstack/solid-router";
+import { QueryClientProvider } from "@tanstack/solid-query";
 import { routeTree } from "./routeTree.gen";
 import "./styles.css";
 import { initMocks } from "./mocks/init";
 import { config } from "./config";
+import { queryClient, transport } from "./lib/query";
+import { TransportProvider } from "./lib/transport-context";
 
 // Set up a Router instance
 const router = createRouter({
@@ -25,6 +28,15 @@ const rootElement = document.getElementById("app");
 
 if (rootElement && !rootElement.innerHTML) {
   initMocks(config).then(() => {
-    render(() => <RouterProvider router={router} />, rootElement);
+    render(
+      () => (
+        <TransportProvider transport={transport}>
+          <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} />
+          </QueryClientProvider>
+        </TransportProvider>
+      ),
+      rootElement,
+    );
   });
 }

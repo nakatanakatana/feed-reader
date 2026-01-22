@@ -32,8 +32,8 @@ describe("FeedList", () => {
   const _renderWithProviders = (_ui: () => JSX.Element) => {
     const queryClient = new QueryClient({
       defaultOptions: {
-        queries: { retry: false },
-        mutations: { retry: false },
+        queries: { retry: 0 },
+        mutations: { retry: 0 },
       },
     });
 
@@ -79,7 +79,8 @@ describe("FeedList", () => {
     // Let's try wrapping it.
     const queryClient = new QueryClient({
       defaultOptions: {
-        queries: { retry: false },
+        queries: { retry: 0 },
+        mutations: { retry: 0 },
       },
     });
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
@@ -127,8 +128,8 @@ describe("FeedList", () => {
 
     const queryClient = new QueryClient({
       defaultOptions: {
-        queries: { retry: false },
-        mutations: { retry: false },
+        queries: { retry: 0 },
+        mutations: { retry: 0 },
       },
     });
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
@@ -173,7 +174,8 @@ describe("FeedList", () => {
 
     const queryClient = new QueryClient({
       defaultOptions: {
-        queries: { retry: false },
+        queries: { retry: 0 },
+        mutations: { retry: 0 },
       },
     });
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
@@ -215,8 +217,8 @@ describe("FeedList", () => {
 
     const queryClient = new QueryClient({
       defaultOptions: {
-        queries: { retry: false },
-        mutations: { retry: false },
+        queries: { retry: 0 },
+        mutations: { retry: 0 },
       },
     });
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });

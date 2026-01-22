@@ -20,7 +20,8 @@ describe("ItemList", () => {
 
   const queryClient = new QueryClient({
     defaultOptions: {
-      queries: { retry: false },
+      queries: { retry: 0 },
+      mutations: { retry: 0 },
     },
   });
 
