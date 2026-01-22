@@ -8,12 +8,12 @@ export const Route = createFileRoute("/feeds/$feedId")({
 });
 
 function FeedItemsComponent() {
-  const { feedId } = Route.useParams();
+  const params = Route.useParams();
 
   return (
     <div class={stack({ padding: "4", gap: "4" })}>
       <h2 class={css({ fontSize: "xl", fontWeight: "bold" })}>Feed Items</h2>
-      <ItemList feedId={feedId} />
+      <ItemList feedId={params().feedId} />
     </div>
   );
 }

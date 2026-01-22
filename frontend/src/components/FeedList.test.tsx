@@ -6,7 +6,8 @@ import {
   RouterProvider,
 } from "@tanstack/solid-router";
 import { HttpResponse, http } from "msw";
-import { type JSX, render } from "solid-js/web";
+import { type JSX } from "solid-js";
+import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { FeedService } from "../gen/feed/v1/feed_connect";

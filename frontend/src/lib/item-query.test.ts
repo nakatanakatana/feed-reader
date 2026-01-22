@@ -66,8 +66,14 @@ describe("Item Queries", () => {
       totalCount: 100,
     } as unknown as ListItemsResponse;
     const allPages = [lastPage];
+    const allPageParams = [0];
     // offset 0, limit 20 (default) -> next offset 20
-    const nextParam = options.getNextPageParam(lastPage, allPages, 0);
+    const nextParam = options.getNextPageParam(
+      lastPage,
+      allPages,
+      0,
+      allPageParams,
+    );
     expect(nextParam).toBe(20);
 
     // Test end of list
@@ -79,6 +85,7 @@ describe("Item Queries", () => {
       emptyPage,
       [...allPages, emptyPage],
       20,
+      [...allPageParams, 20],
     );
   });
 
