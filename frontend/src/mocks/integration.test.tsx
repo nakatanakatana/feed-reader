@@ -1,10 +1,15 @@
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
+import {
+  createMemoryHistory,
+  createRouter,
+  RouterProvider,
+} from "@tanstack/solid-router";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it } from "vitest";
 import { page } from "vitest/browser";
-import { FeedList } from "../components/FeedList";
 import { TransportProvider } from "../lib/transport-context";
+import { routeTree } from "../routeTree.gen";
 
 describe("MSW Integration", () => {
   let dispose: () => void;
@@ -26,11 +31,14 @@ describe("MSW Integration", () => {
       },
     });
 
+    const history = createMemoryHistory({ initialEntries: ["/feeds"] });
+    const router = createRouter({ routeTree, history });
+
     dispose = render(
       () => (
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>
-            <FeedList />
+            <RouterProvider router={router} />
           </QueryClientProvider>
         </TransportProvider>
       ),
