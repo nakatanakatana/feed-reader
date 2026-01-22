@@ -1,8 +1,0 @@
-{
-  "track_id": "frontend_test_opt_20260123",
-  "type": "chore",
-  "status": "new",
-  "created_at": "2026-01-23T00:00:00Z",
-  "updated_at": "2026-01-23T00:00:00Z",
-  "description": "frontendのテストの一部が長時間実行時間がかかるので原因の調査と高速化をしてください"
-}
