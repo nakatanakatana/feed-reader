@@ -32,10 +32,18 @@ export interface Item {
   isSaved: boolean;
 }
 
-const feedClient = createClient(FeedService, transport);
-const itemClient = createClient(ItemService, transport);
+// ... (imports)
+
+// ... (feedClient creation)
+
+export const addFeed = async (url: string) => {
+  const response = await feedClient.createFeed({ url });
+  queryClient.invalidateQueries({ queryKey: ["feeds"] });
+  return response.feed;
+};
 
 export const feeds = createCollection(
+// ...
   queryCollectionOptions({
     id: "feeds",
     queryClient,
