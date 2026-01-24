@@ -2,7 +2,6 @@ import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { ItemList } from "./ItemList";
-import * as db from "../lib/db";
 
 // Mock the db module
 vi.mock("../lib/db", () => ({

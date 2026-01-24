@@ -3,7 +3,6 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { FeedList } from "./FeedList";
 import * as db from "../lib/db";
-import { createSignal } from "solid-js";
 
 // Mock the db module
 vi.mock("../lib/db", () => ({
