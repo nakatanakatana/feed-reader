@@ -6,7 +6,7 @@ This plan covers the end-to-end implementation of the Item Detail Modal, includi
 Extend the data model to include the `author` field and update the backend to support it.
 
 - [x] Task: Update `proto/item/v1/item.proto` to add `author` field to `Item` message 26c8638
-- [~] Task: Run `buf generate` to update generated code
+- [x] Task: Run `buf generate` to update generated code 55a9188
 - [ ] Task: Update database schema in `sql/schema.sql` to add `author` column to `items` table
 - [ ] Task: Update `sql/query.sql` to include `author` in select and insert queries
 - [ ] Task: Run `sqlc generate` to update Go database code
