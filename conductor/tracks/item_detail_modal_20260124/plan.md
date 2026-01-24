@@ -10,9 +10,9 @@ Extend the data model to include the `author` field and update the backend to su
 - [x] Task: Update database schema in `sql/schema.sql` to add `author` column to `items` table 385a2a7
 - [x] Task: Update `sql/query.sql` to include `author` in select and insert queries 8b6da25
 - [x] Task: Run `sqlc generate` to update Go database code 682f7b6
-- [ ] Task: Update `store/item_store.go` and related Go code to handle the new `author` field
+- [x] Task: Update `store/item_store.go` and related Go code to handle the new `author` field 4bdca38
 - [ ] Task: Update `cmd/feed-reader/item_handler.go` to map the `author` field in the API response
-- [ ] Task: Write and run tests for `ItemStore` to verify `author` field persistence
+- [x] Task: Write and run tests for `ItemStore` to verify `author` field persistence 4bdca38
 - [ ] Task: Write and run tests for `ItemService` to verify `author` field in API response
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend & Protocol Extension' (Protocol in workflow.md)
 
