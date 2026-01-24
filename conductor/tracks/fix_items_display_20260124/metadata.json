@@ -1,0 +1,8 @@
+{
+  "track_id": "fix_items_display_20260124",
+  "type": "bug",
+  "status": "new",
+  "created_at": "2026-01-24T12:00:00Z",
+  "updated_at": "2026-01-24T12:00:00Z",
+  "description": "frontendでItemsが表示されていないので修正してください"
+}
