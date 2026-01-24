@@ -7,7 +7,6 @@ import {
   RouterProvider,
 } from "@tanstack/solid-router";
 import { routeTree } from "../routeTree.gen";
-import { FeedList } from "./FeedList";
 import * as db from "../lib/db";
 import { useLiveQuery } from "@tanstack/solid-db";
 
@@ -71,12 +70,7 @@ describe("FeedList", () => {
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
     const router = createRouter({ routeTree, history });
 
-    dispose = render(
-      () => (
-        <RouterProvider router={router} />
-      ),
-      document.body,
-    );
+    dispose = render(() => <RouterProvider router={router} />, document.body);
 
     await expect.element(page.getByText("Feed 1")).toBeInTheDocument();
     await expect.element(page.getByText("Feed 2")).toBeInTheDocument();
@@ -93,12 +87,7 @@ describe("FeedList", () => {
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
     const router = createRouter({ routeTree, history });
 
-    dispose = render(
-      () => (
-        <RouterProvider router={router} />
-      ),
-      document.body,
-    );
+    dispose = render(() => <RouterProvider router={router} />, document.body);
 
     await expect.element(page.getByText("Feed 1")).toBeInTheDocument();
 
