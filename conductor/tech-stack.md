@@ -13,6 +13,7 @@ The backend is responsible for feed management, article fetching, and providing 
 -   **HTTP Client:** `hashicorp/go-retryablehttp` (Resilient network requests)
 -   **Protocol Management:** `buf` (Protobuf management and generation)
 -   **CLI Manager:** `aqua` (Declarative tool management)
+-   **Property-Based Testing:** `rapid` (For automated edge-case discovery)
 -   **Task Runner:** `GNU Make` (Unified command interface)
 
 ## 2. Frontend
@@ -26,6 +27,7 @@ The frontend is a modern Single Page Application (SPA) designed for speed and re
 -   **Communication:** Connect RPC Web (Communication with the backend)
 -   **Testing:** Vitest (Test runner with Browser Mode enabled), Playwright (Browser provider), solid-js/web (for rendering in tests)
 -   **API Mocking:** MSW (Mock Service Worker) for standalone development and testing.
+-   **Property-Based Testing:** `fast-check` (For robust logic validation)
 -   **Linting & Formatting:** BiomeJS (Fast all-in-one toolchain)
 
 ## 3. Infrastructure & Deployment
