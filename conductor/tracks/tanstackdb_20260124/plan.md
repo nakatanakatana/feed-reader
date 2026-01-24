@@ -23,7 +23,7 @@ This plan outlines the steps to refactor the frontend state management for Feeds
     - [ ] Update delete logic to use the collection's write/sync methods.
 - [x] **Task 2: Refactor `AddFeedForm` Component** (45c4e66)
     - [ ] Update form submission to use the `feeds` collection for adding new feeds.
-- [ ] **Task 3: Refactor `feeds.$feedId.tsx` (Feed Detail)**
+- [x] **Task 3: Refactor `feeds.$feedId.tsx` (Feed Detail)** (b5de9a7)
     - [ ] Update the single feed retrieval logic to use the local DB if possible or the collection query.
 - [ ] **Task 4: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)**
 
