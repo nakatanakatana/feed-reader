@@ -7,8 +7,9 @@ import { feeds } from "../lib/db";
 
 export function FeedList() {
   const { data: feedList } = useLiveQuery((q) =>
-    q.from({ feed: feeds }).select(({ feed }) => feed),
+    q.from({ feed: feeds }),
   );
+
   const [deleteError, setDeleteError] = createSignal<Error | null>(null);
 
   const handleDelete = async (uuid: string) => {

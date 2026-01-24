@@ -1,8 +1,11 @@
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
+import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
+import { routeTree } from "../routeTree.gen";
 import { FeedList } from "./FeedList";
 import * as db from "../lib/db";
+import { useLiveQuery } from "@tanstack/solid-db";
 
 // Mock the db module
 vi.mock("../lib/db", () => ({
@@ -10,14 +13,30 @@ vi.mock("../lib/db", () => ({
     delete: vi.fn(),
     isReady: vi.fn().mockReturnValue(true),
   },
+  items: {
+    isReady: vi.fn().mockReturnValue(true),
+  },
+  addFeed: vi.fn(),
+  updateItemStatus: vi.fn(),
 }));
 
 // Mock useLiveQuery
-vi.mock("@tanstack/solid-db", () => ({
-  useLiveQuery: vi.fn(),
-}));
+vi.mock("@tanstack/solid-db", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@tanstack/solid-db")>();
+  return {
+    ...actual,
+    useLiveQuery: vi.fn(),
+  };
+});
 
-import { useLiveQuery } from "@tanstack/solid-db";
+// Mock Link from solid-router to avoid Context issues
+vi.mock("@tanstack/solid-router", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@tanstack/solid-router")>();
+  return {
+    ...actual,
+    Link: (props: any) => <a href={props.to} {...props}>{props.children}</a>,
+  };
+});
 
 describe("FeedList", () => {
   let dispose: () => void;
@@ -38,13 +57,6 @@ describe("FeedList", () => {
     vi.mocked(useLiveQuery).mockReturnValue({
       data: mockFeeds,
     } as unknown as ReturnType<typeof useLiveQuery>);
-
-    // Mock router Link? Or wrap in Router.
-    // Since Link is used, we need Router.
-    const { createMemoryHistory, createRouter, RouterProvider } = await import(
-      "@tanstack/solid-router"
-    );
-    const { routeTree } = await import("../routeTree.gen");
 
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
     const router = createRouter({ routeTree, history });
@@ -70,10 +82,6 @@ describe("FeedList", () => {
       data: mockFeeds,
     } as unknown as ReturnType<typeof useLiveQuery>);
 
-    const { createMemoryHistory, createRouter, RouterProvider } = await import(
-      "@tanstack/solid-router"
-    );
-    const { routeTree } = await import("../routeTree.gen");
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
     const router = createRouter({ routeTree, history });
 
