@@ -18,7 +18,7 @@ This plan outlines the steps to refactor the frontend state management for Feeds
 
 ## Phase 2: Refactoring Feed Management
 
-- [ ] **Task 1: Refactor `FeedList` Component**
+- [x] **Task 1: Refactor `FeedList` Component** (d837d86)
     - [ ] Replace `useQuery` with the `feeds` collection query.
     - [ ] Update delete logic to use the collection's write/sync methods.
 - [ ] **Task 2: Refactor `AddFeedForm` Component**
