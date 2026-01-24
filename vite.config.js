@@ -9,9 +9,7 @@ import solid from "vite-plugin-solid";
 export default defineConfig({
   root: "frontend",
   plugins: [devtools(), tanstackRouter({ target: "solid" }), solid()],
-  build: {
-    outDir: "dist/frontend",
-  },
+  cacheDir: "../node_modules/.vite",
   server: {
     proxy: {
       "/api": {
