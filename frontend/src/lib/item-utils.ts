@@ -22,22 +22,28 @@ export interface ItemFilters {
   sortOrder?: SortOrder;
 }
 
-export const filterAndSortItems = (items: Item[], filters: ItemFilters): Item[] => {
+export const filterAndSortItems = (
+  items: Item[],
+  filters: ItemFilters,
+): Item[] => {
   let result = [...items];
 
   if (filters.feedId) {
-    result = result.filter(item => item.feedId === filters.feedId);
+    result = result.filter((item) => item.feedId === filters.feedId);
   }
   if (filters.isRead !== undefined) {
-    result = result.filter(item => item.isRead === filters.isRead);
+    result = result.filter((item) => item.isRead === filters.isRead);
   }
   if (filters.isSaved !== undefined) {
-    result = result.filter(item => item.isSaved === filters.isSaved);
+    result = result.filter((item) => item.isSaved === filters.isSaved);
   }
 
   if (filters.sortOrder === SortOrder.ASC) {
     result.sort((a, b) => a.publishedAt.localeCompare(b.publishedAt));
-  } else if (filters.sortOrder === SortOrder.DESC || filters.sortOrder === SortOrder.UNSPECIFIED) {
+  } else if (
+    filters.sortOrder === SortOrder.DESC ||
+    filters.sortOrder === SortOrder.UNSPECIFIED
+  ) {
     // Default to DESC
     result.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
   }
