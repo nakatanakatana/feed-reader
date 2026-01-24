@@ -6,6 +6,10 @@ import { useItem, useUpdateItemStatus } from "../lib/item-query";
 interface ItemDetailModalProps {
   itemId: string | undefined;
   onClose: () => void;
+  prevItemId?: string;
+  nextItemId?: string;
+  onPrev?: () => void;
+  onNext?: () => void;
 }
 
 export function ItemDetailModal(props: ItemDetailModalProps) {
@@ -31,6 +35,10 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   const handleKeyDown = (e: KeyboardEvent) => {
     if (e.key === "Escape") {
       props.onClose();
+    } else if (e.key === "ArrowLeft" || e.key === "j" || e.key === "J") {
+      if (props.onPrev && props.prevItemId) props.onPrev();
+    } else if (e.key === "ArrowRight" || e.key === "k" || e.key === "K") {
+      if (props.onNext && props.nextItemId) props.onNext();
     }
   };
 
@@ -170,6 +178,8 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             <div class={flex({ gap: "2" })}>
               <button
                 type="button"
+                onClick={props.onPrev}
+                disabled={!props.prevItemId}
                 class={css({
                   padding: "2",
                   paddingInline: "4",
@@ -182,12 +192,13 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                   _hover: { backgroundColor: "gray.100" },
                   _disabled: { opacity: 0.5, cursor: "not-allowed" },
                 })}
-                disabled={true} // Placeholder for Phase 3
               >
                 ← Previous
               </button>
               <button
                 type="button"
+                onClick={props.onNext}
+                disabled={!props.nextItemId}
                 class={css({
                   padding: "2",
                   paddingInline: "4",
@@ -200,7 +211,6 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                   _hover: { backgroundColor: "gray.100" },
                   _disabled: { opacity: 0.5, cursor: "not-allowed" },
                 })}
-                disabled={true} // Placeholder for Phase 3
               >
                 Next →
               </button>
