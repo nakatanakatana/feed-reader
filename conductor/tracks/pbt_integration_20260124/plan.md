@@ -22,9 +22,9 @@ Focus on setting up the TypeScript PBT environment and applying it to core front
 - [x] Task: Install `fast-check` and verify setup (84f2555)
     - [x] Run `npm install -D fast-check` in the frontend directory
     - [x] Create a dummy PBT test to ensure it runs with `vitest`
-- [ ] Task: Implement PBT for Item Filtering & Sorting (`frontend/src/lib/item-query.ts`)
-    - [ ] Write failing PBT tests in `frontend/src/lib/item-query.test.ts`
-    - [ ] Verify invariants: sorted order and correct filtering for any generated input
+- [x] Task: Implement PBT for Item Filtering & Sorting (`frontend/src/lib/item-query.ts`) (1c00f78)
+    - [x] Write failing PBT tests in `frontend/src/lib/item-query.test.ts`
+    - [x] Verify invariants: sorted order and correct filtering for any generated input
 - [ ] Task: Implement PBT for URL/String Utilities (if applicable)
     - [ ] Identify or create utility functions for string normalization
     - [ ] Write PBT tests to ensure resilience against malformed inputs
