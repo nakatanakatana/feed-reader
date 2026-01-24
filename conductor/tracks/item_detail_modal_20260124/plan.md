@@ -19,12 +19,12 @@ Extend the data model to include the `author` field and update the backend to su
 ## Phase 2: Frontend Infrastructure & Basic Modal
 Prepare the frontend to handle the new field and create the basic modal structure.
 
-- [ ] Task: Run `npm run gen` (or equivalent) to regenerate Connect RPC web clients from updated proto
-- [ ] Task: Create `frontend/src/components/ItemDetailModal.tsx` with basic layout (Title, Date, Author, Body)
-- [ ] Task: Implement HTML rendering for the article body in the modal
-- [ ] Task: Add "Open in new tab" link to the original article
-- [ ] Task: Implement Read/Unread toggle logic in the modal using TanStack Query mutations
-- [ ] Task: Write unit tests for `ItemDetailModal` (rendering and status toggle)
+- [x] Task: Run `npm run gen` (or equivalent) to regenerate Connect RPC web clients from updated proto 55a9188
+- [x] Task: Create `frontend/src/components/ItemDetailModal.tsx` with basic layout (Title, Date, Author, Body) 1d39e76
+- [x] Task: Implement HTML rendering for the article body in the modal 1d39e76
+- [x] Task: Add "Open in new tab" link to the original article 1d39e76
+- [x] Task: Implement Read/Unread toggle logic in the modal using TanStack Query mutations 1d39e76
+- [x] Task: Write unit tests for `ItemDetailModal` (rendering and status toggle) 1d39e76
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Frontend Infrastructure & Basic Modal' (Protocol in workflow.md)
 
 ## Phase 3: Navigation & List Integration
