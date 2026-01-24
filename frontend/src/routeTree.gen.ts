@@ -10,17 +10,12 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as FeedsRouteImport } from './routes/feeds'
-import { Route as LayoutRouteImport } from './routes/_layout'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as FeedsFeedIdRouteImport } from './routes/feeds.$feedId'
 
 const FeedsRoute = FeedsRouteImport.update({
   id: '/feeds',
   path: '/feeds',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LayoutRoute = LayoutRouteImport.update({
-  id: '/_layout',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -47,7 +42,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/_layout': typeof LayoutRoute
   '/feeds': typeof FeedsRouteWithChildren
   '/feeds/$feedId': typeof FeedsFeedIdRoute
 }
@@ -56,12 +50,11 @@ export interface FileRouteTypes {
   fullPaths: '/' | '/feeds' | '/feeds/$feedId'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/feeds' | '/feeds/$feedId'
-  id: '__root__' | '/' | '/_layout' | '/feeds' | '/feeds/$feedId'
+  id: '__root__' | '/' | '/feeds' | '/feeds/$feedId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  LayoutRoute: typeof LayoutRoute
   FeedsRoute: typeof FeedsRouteWithChildren
 }
 
@@ -72,13 +65,6 @@ declare module '@tanstack/solid-router' {
       path: '/feeds'
       fullPath: '/feeds'
       preLoaderRoute: typeof FeedsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_layout': {
-      id: '/_layout'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof LayoutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -110,7 +96,6 @@ const FeedsRouteWithChildren = FeedsRoute._addFileChildren(FeedsRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  LayoutRoute: LayoutRoute,
   FeedsRoute: FeedsRouteWithChildren,
 }
 export const routeTree = rootRouteImport

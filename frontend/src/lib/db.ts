@@ -82,7 +82,16 @@ export const items = createCollection(
     queryKey: ["items"],
     queryFn: async () => {
       const response = await itemClient.listItems({});
-      return response.items;
+      return response.items.map((item) => ({
+        id: item.id,
+        url: item.url,
+        title: item.title,
+        description: item.description,
+        publishedAt: item.publishedAt,
+        feedId: item.feedId,
+        isRead: item.isRead,
+        isSaved: item.isSaved,
+      }));
     },
     getKey: (item: Item) => item.id,
   }),
