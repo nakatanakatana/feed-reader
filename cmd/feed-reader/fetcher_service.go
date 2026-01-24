@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"time"
 
+	"github.com/mmcdole/gofeed"
 	"github.com/nakatanakatana/feed-reader/store"
 )
 
@@ -96,17 +97,7 @@ func (s *FetcherService) FetchAndSave(ctx context.Context, f store.Feed) error {
 	}
 
 	for _, item := range parsedFeed.Items {
-		params := store.SaveFetchedItemParams{
-			FeedID:      f.Uuid,
-			Url:         item.Link,
-			Title:       &item.Title,
-			Description: &item.Description,
-			Guid:        &item.GUID,
-		}
-		if item.PublishedParsed != nil {
-			pubAt := item.PublishedParsed.Format(time.RFC3339)
-			params.PublishedAt = &pubAt
-		}
+		params := s.normalizeItem(f.Uuid, item)
 
 		if err := s.store.SaveFetchedItem(ctx, params); err != nil {
 			s.logger.ErrorContext(ctx, "failed to save item", "url", item.Link, "error", err)
@@ -127,4 +118,19 @@ func (s *FetcherService) FetchAndSave(ctx context.Context, f store.Feed) error {
 
 	s.logger.InfoContext(ctx, "successfully fetched and updated feed", "url", f.Url, "items", len(parsedFeed.Items))
 	return nil
+}
+
+func (s *FetcherService) normalizeItem(feedID string, item *gofeed.Item) store.SaveFetchedItemParams {
+	params := store.SaveFetchedItemParams{
+		FeedID:      feedID,
+		Url:         item.Link,
+		Title:       &item.Title,
+		Description: &item.Description,
+		Guid:        &item.GUID,
+	}
+	if item.PublishedParsed != nil {
+		pubAt := item.PublishedParsed.Format(time.RFC3339)
+		params.PublishedAt = &pubAt
+	}
+	return params
 }
