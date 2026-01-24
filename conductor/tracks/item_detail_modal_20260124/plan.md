@@ -30,11 +30,11 @@ Prepare the frontend to handle the new field and create the basic modal structur
 ## Phase 3: Navigation & List Integration
 Implement the navigation logic between items and integrate the modal into the list view.
 
-- [ ] Task: Implement navigation logic to find "Previous" and "Next" item IDs based on the current list state
-- [ ] Task: Add "Previous" and "Next" buttons to `ItemDetailModal` and hook up navigation
-- [ ] Task: Integrate `ItemDetailModal` into `frontend/src/components/ItemList.tsx`
-- [ ] Task: Update `ItemRow` to trigger the modal on click
-- [ ] Task: Add keyboard shortcuts (Esc to close, J/K or Arrows for navigation)
-- [ ] Task: Write integration tests for item navigation within the modal
-- [ ] Task: Verify responsive design for the modal on mobile viewport
+- [x] Task: Implement navigation logic to find "Previous" and "Next" item IDs based on the current list state 77a96eb
+- [x] Task: Add "Previous" and "Next" buttons to `ItemDetailModal` and hook up navigation 77a96eb
+- [x] Task: Integrate `ItemDetailModal` into `frontend/src/components/ItemList.tsx` 77a96eb
+- [x] Task: Update `ItemRow` to trigger the modal on click 77a96eb
+- [x] Task: Add keyboard shortcuts (Esc to close, J/K or Arrows for navigation) 77a96eb
+- [x] Task: Write integration tests for item navigation within the modal 77a96eb
+- [x] Task: Verify responsive design for the modal on mobile viewport 77a96eb
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Navigation & List Integration' (Protocol in workflow.md)
