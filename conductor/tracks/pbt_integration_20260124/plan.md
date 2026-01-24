@@ -33,7 +33,7 @@ Focus on setting up the TypeScript PBT environment and applying it to core front
 ## Phase 3: Final Integration & Coverage
 Ensure all PBT cases are integrated into the CI and meet quality standards.
 
-- [ ] Task: Verify overall test coverage and CI integration
+- [~] Task: Verify overall test coverage and CI integration
     - [ ] Run `go test -cover` and ensure backend coverage >80%
     - [ ] Run frontend coverage report and ensure coverage >80%
 - [ ] Task: Document PBT usage in the project (optional/brief)

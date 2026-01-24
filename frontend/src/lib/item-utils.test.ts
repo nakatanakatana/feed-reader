@@ -8,7 +8,7 @@ describe('item-utils PBT', () => {
     url: fc.webUrl(),
     title: fc.string(),
     description: fc.string(),
-    publishedAt: fc.date({ min: new Date('2000-01-01'), max: new Date('2100-01-01') }).map(d => d.toISOString()),
+    publishedAt: fc.date({ min: new Date(2000, 0, 1), max: new Date(2100, 0, 1) }).map(d => d.toISOString()),
     feedId: fc.uuid(),
     isRead: fc.boolean(),
     isSaved: fc.boolean(),

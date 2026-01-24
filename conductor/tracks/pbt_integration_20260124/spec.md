@@ -12,7 +12,7 @@ The goal of this track is to integrate Property-Based Testing (PBT) into both th
 ## Functional Requirements
 
 ### 1. Library Installation
-- **Backend (Go):** Install `github.com/flyingmutant/rapid`.
+- **Backend (Go):** Install `pgregory.net/rapid`.
 - **Frontend (TypeScript):** Install `fast-check` as a development dependency.
 
 ### 2. Implementation Targets (Recommended)
