@@ -4,5 +4,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Migrating Feed and Item State to TanStack DB**
+- [x] **Track: Migrating Feed and Item State to TanStack DB**
 *Link: [./tracks/tanstackdb_20260124/](./tracks/tanstackdb_20260124/)*
