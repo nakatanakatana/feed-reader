@@ -3,6 +3,7 @@ import { createClient } from "@connectrpc/connect";
 import {
   createInfiniteQuery,
   createMutation,
+  createQuery,
   infiniteQueryOptions,
   useQueryClient,
 } from "@tanstack/solid-query";
@@ -14,6 +15,7 @@ export const itemKeys = {
   all: ["items"] as const,
   list: (filters: Record<string, unknown>) =>
     [...itemKeys.all, "list", filters] as const,
+  detail: (id: string) => [...itemKeys.all, "detail", id] as const,
 };
 
 export interface FetchItemsParams {
@@ -38,6 +40,12 @@ export const fetchItems = async (
     offset: params.offset,
     sortOrder: params.sortOrder ?? ListItemsRequest_SortOrder.UNSPECIFIED,
   });
+};
+
+export const fetchItem = async (transport: Transport, id: string) => {
+  const client = createClient(ItemService, transport);
+  const response = await client.getItem({ id });
+  return response.item;
 };
 
 export const itemsInfiniteQueryOptions = (
@@ -70,6 +78,15 @@ export const useItems = (
   return createInfiniteQuery(() =>
     itemsInfiniteQueryOptions(transport, params),
   );
+};
+
+export const useItem = (id: () => string | undefined) => {
+  const transport = useTransport();
+  return createQuery(() => ({
+    queryKey: itemKeys.detail(id() ?? ""),
+    queryFn: () => fetchItem(transport, id()!),
+    enabled: !!id(),
+  }));
 };
 
 export interface UpdateItemStatusParams {
