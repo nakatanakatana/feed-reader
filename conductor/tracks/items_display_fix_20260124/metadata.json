@@ -1,8 +1,0 @@
-{
-  "track_id": "items_display_fix_20260124",
-  "type": "bug",
-  "status": "new",
-  "created_at": "2026-01-24T12:00:00Z",
-  "updated_at": "2026-01-24T12:00:00Z",
-  "description": "itemsが画面上表示されていないので原因の調査と修正をしてください"
-}
