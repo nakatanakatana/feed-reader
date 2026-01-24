@@ -130,17 +130,19 @@ INSERT INTO items (
   title,
   description,
   published_at,
+  author,
   guid
 ) VALUES (
-  ?, ?, ?, ?, ?, ?
+  ?, ?, ?, ?, ?, ?, ?
 )
 ON CONFLICT(url) DO UPDATE SET
   title = excluded.title,
   description = excluded.description,
   published_at = excluded.published_at,
+  author = excluded.author,
   guid = excluded.guid,
   updated_at = CURRENT_TIMESTAMP
-RETURNING id, url, title, description, published_at, guid, created_at, updated_at
+RETURNING id, url, title, description, published_at, author, guid, created_at, updated_at
 `
 
 type CreateItemParams struct {
@@ -149,6 +151,7 @@ type CreateItemParams struct {
 	Title       *string `json:"title"`
 	Description *string `json:"description"`
 	PublishedAt *string `json:"published_at"`
+	Author      *string `json:"author"`
 	Guid        *string `json:"guid"`
 }
 
@@ -159,6 +162,7 @@ func (q *Queries) CreateItem(ctx context.Context, arg CreateItemParams) (Item, e
 		arg.Title,
 		arg.Description,
 		arg.PublishedAt,
+		arg.Author,
 		arg.Guid,
 	)
 	var i Item
@@ -168,6 +172,7 @@ func (q *Queries) CreateItem(ctx context.Context, arg CreateItemParams) (Item, e
 		&i.Title,
 		&i.Description,
 		&i.PublishedAt,
+		&i.Author,
 		&i.Guid,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -238,6 +243,7 @@ SELECT
   i.title,
   i.description,
   i.published_at,
+  i.author,
   fi.feed_id,
   CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read,
   CAST(COALESCE(isv.is_saved, 0) AS INTEGER) AS is_saved
@@ -259,6 +265,7 @@ type GetItemRow struct {
 	Title       *string `json:"title"`
 	Description *string `json:"description"`
 	PublishedAt *string `json:"published_at"`
+	Author      *string `json:"author"`
 	FeedID      string  `json:"feed_id"`
 	IsRead      int64   `json:"is_read"`
 	IsSaved     int64   `json:"is_saved"`
@@ -273,6 +280,7 @@ func (q *Queries) GetItem(ctx context.Context, id string) (GetItemRow, error) {
 		&i.Title,
 		&i.Description,
 		&i.PublishedAt,
+		&i.Author,
 		&i.FeedID,
 		&i.IsRead,
 		&i.IsSaved,
@@ -389,6 +397,7 @@ SELECT
   i.title,
   i.description,
   i.published_at,
+  i.author,
   fi.feed_id,
   CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read,
   CAST(COALESCE(isv.is_saved, 0) AS INTEGER) AS is_saved
@@ -423,6 +432,7 @@ type ListItemsRow struct {
 	Title       *string `json:"title"`
 	Description *string `json:"description"`
 	PublishedAt *string `json:"published_at"`
+	Author      *string `json:"author"`
 	FeedID      string  `json:"feed_id"`
 	IsRead      int64   `json:"is_read"`
 	IsSaved     int64   `json:"is_saved"`
@@ -449,6 +459,7 @@ func (q *Queries) ListItems(ctx context.Context, arg ListItemsParams) ([]ListIte
 			&i.Title,
 			&i.Description,
 			&i.PublishedAt,
+			&i.Author,
 			&i.FeedID,
 			&i.IsRead,
 			&i.IsSaved,
@@ -473,6 +484,7 @@ SELECT
   i.title,
   i.description,
   i.published_at,
+  i.author,
   fi.feed_id,
   CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read,
   CAST(COALESCE(isv.is_saved, 0) AS INTEGER) AS is_saved
@@ -507,6 +519,7 @@ type ListItemsAscRow struct {
 	Title       *string `json:"title"`
 	Description *string `json:"description"`
 	PublishedAt *string `json:"published_at"`
+	Author      *string `json:"author"`
 	FeedID      string  `json:"feed_id"`
 	IsRead      int64   `json:"is_read"`
 	IsSaved     int64   `json:"is_saved"`
@@ -533,6 +546,7 @@ func (q *Queries) ListItemsAsc(ctx context.Context, arg ListItemsAscParams) ([]L
 			&i.Title,
 			&i.Description,
 			&i.PublishedAt,
+			&i.Author,
 			&i.FeedID,
 			&i.IsRead,
 			&i.IsSaved,
@@ -552,7 +566,7 @@ func (q *Queries) ListItemsAsc(ctx context.Context, arg ListItemsAscParams) ([]L
 
 const listItemsByFeed = `-- name: ListItemsByFeed :many
 SELECT
-  i.id, i.url, i.title, i.description, i.published_at, i.guid, i.created_at, i.updated_at
+  i.id, i.url, i.title, i.description, i.published_at, i.author, i.guid, i.created_at, i.updated_at
 FROM
   items i
 JOIN
@@ -578,6 +592,7 @@ func (q *Queries) ListItemsByFeed(ctx context.Context, feedID string) ([]Item, e
 			&i.Title,
 			&i.Description,
 			&i.PublishedAt,
+			&i.Author,
 			&i.Guid,
 			&i.CreatedAt,
 			&i.UpdatedAt,
