@@ -2,7 +2,7 @@
 
 This plan outlines the steps to introduce Property-Based Testing to both backend and frontend, including library installation, analysis, and implementation of test cases for critical logic.
 
-## Phase 1: Backend Infrastructure & Initial PBT
+## Phase 1: Backend Infrastructure & Initial PBT [checkpoint: 1ea7427]
 Focus on setting up the Go PBT environment and applying it to core backend logic.
 
 - [x] Task: Install `pgregory.net/rapid` and verify setup (b17e7c7)
