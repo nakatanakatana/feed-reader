@@ -6,11 +6,11 @@ This plan outlines the steps to refactor the frontend state management for Feeds
 
 - [x] **Task 1: Install Dependencies** (5dccf9f)
     - [ ] Install `@tanstack/db` and ensure `@tanstack/solid-query` is up to date.
-- [ ] **Task 2: Initialize TanStack DB**
+- [x] **Task 2: Initialize TanStack DB** (e9aa7b3)
     - [ ] Create `frontend/src/lib/db.ts`.
     - [ ] Define the `Feed` and `Item` schemas.
     - [ ] Initialize the TanStack DB instance.
-- [ ] **Task 3: Define Collections with `queryCollection`**
+- [x] **Task 3: Define Collections with `queryCollection`** (e9aa7b3)
     - [ ] Define the `feeds` collection in `db.ts` using `queryCollection`.
     - [ ] Define the `items` collection in `db.ts` using `queryCollection`.
     - [ ] Implement the `queryFn` for both collections using the existing Connect-RPC services.
