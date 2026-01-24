@@ -4,7 +4,7 @@ This plan outlines the steps to refactor the frontend state management for Feeds
 
 ## Phase 1: Foundation and Centralized DB Setup
 
-- [ ] **Task 1: Install Dependencies**
+- [x] **Task 1: Install Dependencies** (5dccf9f)
     - [ ] Install `@tanstack/db` and ensure `@tanstack/solid-query` is up to date.
 - [ ] **Task 2: Initialize TanStack DB**
     - [ ] Create `frontend/src/lib/db.ts`.
