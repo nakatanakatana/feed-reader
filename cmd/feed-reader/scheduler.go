@@ -28,12 +28,7 @@ func (s *Scheduler) Start(ctx context.Context) {
 	_ = s.task(ctx)
 
 	for {
-		delay := s.interval
-		if s.maxJitter > 0 {
-			jitter := time.Duration(rand.Int63n(int64(s.maxJitter)))
-			delay += jitter
-		}
-
+		delay := s.nextDelay()
 		timer := time.NewTimer(delay)
 
 		select {
@@ -44,4 +39,13 @@ func (s *Scheduler) Start(ctx context.Context) {
 			_ = s.task(ctx)
 		}
 	}
+}
+
+func (s *Scheduler) nextDelay() time.Duration {
+	delay := s.interval
+	if s.maxJitter > 0 {
+		jitter := time.Duration(rand.Int63n(int64(s.maxJitter)))
+		delay += jitter
+	}
+	return delay
 }
