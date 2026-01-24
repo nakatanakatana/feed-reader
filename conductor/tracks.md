@@ -4,5 +4,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Item Detail Modal**
+- [x] **Track: Item Detail Modal**
 *Link: [./tracks/item_detail_modal_20260124/](./tracks/item_detail_modal_20260124/)*
