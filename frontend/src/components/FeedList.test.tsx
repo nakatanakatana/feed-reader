@@ -1,7 +1,11 @@
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
+import {
+  createMemoryHistory,
+  createRouter,
+  RouterProvider,
+} from "@tanstack/solid-router";
 import { routeTree } from "../routeTree.gen";
 import { FeedList } from "./FeedList";
 import * as db from "../lib/db";
@@ -31,10 +35,16 @@ vi.mock("@tanstack/solid-db", async (importOriginal) => {
 
 // Mock Link from solid-router to avoid Context issues
 vi.mock("@tanstack/solid-router", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@tanstack/solid-router")>();
+  const actual =
+    await importOriginal<typeof import("@tanstack/solid-router")>();
   return {
     ...actual,
-    Link: (props: any) => <a href={props.to} {...props}>{props.children}</a>,
+    // biome-ignore lint/suspicious/noExplicitAny: Mocking external library component
+    Link: (props: any) => (
+      <a href={props.to} {...props}>
+        {props.children}
+      </a>
+    ),
   };
 });
 

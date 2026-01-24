@@ -6,9 +6,7 @@ import { flex, stack } from "../../styled-system/patterns";
 import { feeds } from "../lib/db";
 
 export function FeedList() {
-  const { data: feedList } = useLiveQuery((q) =>
-    q.from({ feed: feeds }),
-  );
+  const { data: feedList } = useLiveQuery((q) => q.from({ feed: feeds }));
 
   const [deleteError, setDeleteError] = createSignal<Error | null>(null);
 
