@@ -34,17 +34,18 @@ describe("FeedList", () => {
       { uuid: "1", title: "Feed 1", url: "http://example.com/1" },
       { uuid: "2", title: "Feed 2", url: "http://example.com/2" },
     ];
-    
-    // useLiveQuery returns { data: ... } in our component usage
+
     vi.mocked(useLiveQuery).mockReturnValue({
       data: mockFeeds,
-    } as any);
+    } as unknown as ReturnType<typeof useLiveQuery>);
 
     // Mock router Link? Or wrap in Router.
     // Since Link is used, we need Router.
-    const { createMemoryHistory, createRouter, RouterProvider } = await import("@tanstack/solid-router");
+    const { createMemoryHistory, createRouter, RouterProvider } = await import(
+      "@tanstack/solid-router"
+    );
     const { routeTree } = await import("../routeTree.gen");
-    
+
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
     const router = createRouter({ routeTree, history });
 
@@ -54,7 +55,7 @@ describe("FeedList", () => {
           <FeedList />
         </RouterProvider>
       ),
-      document.body
+      document.body,
     );
 
     await expect.element(page.getByText("Feed 1")).toBeInTheDocument();
@@ -67,9 +68,11 @@ describe("FeedList", () => {
     ];
     vi.mocked(useLiveQuery).mockReturnValue({
       data: mockFeeds,
-    } as any);
+    } as unknown as ReturnType<typeof useLiveQuery>);
 
-    const { createMemoryHistory, createRouter, RouterProvider } = await import("@tanstack/solid-router");
+    const { createMemoryHistory, createRouter, RouterProvider } = await import(
+      "@tanstack/solid-router"
+    );
     const { routeTree } = await import("../routeTree.gen");
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
     const router = createRouter({ routeTree, history });
@@ -80,7 +83,7 @@ describe("FeedList", () => {
           <FeedList />
         </RouterProvider>
       ),
-      document.body
+      document.body,
     );
 
     await expect.element(page.getByText("Feed 1")).toBeInTheDocument();

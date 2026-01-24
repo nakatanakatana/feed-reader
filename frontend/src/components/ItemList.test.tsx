@@ -31,12 +31,17 @@ describe("ItemList", () => {
   it("renders a list of items", async () => {
     const mockItems = [
       { id: "1", title: "Item 1", url: "http://example.com/1", isRead: false },
-      { id: "20", title: "Item 20", url: "http://example.com/20", isRead: true },
+      {
+        id: "20",
+        title: "Item 20",
+        url: "http://example.com/20",
+        isRead: true,
+      },
     ];
 
     vi.mocked(useLiveQuery).mockReturnValue({
       data: mockItems,
-    } as any);
+    } as unknown as ReturnType<typeof useLiveQuery>);
 
     dispose = render(() => <ItemList />, document.body);
 
