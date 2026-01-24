@@ -22,12 +22,21 @@ The primary target audience is individuals and organizations seeking control ove
 
 - **Article Management:** Retrieve articles with flexible filtering and sorting. Track article status including read/unread and saved/unsaved (bookmarks).
 
+
+
+- **Content Reading:** Clean, distraction-free modal interface for reading full article content. Supports rich HTML rendering, author information, and quick navigation between items.
+
+
+
 - **Background Fetching:** Periodically fetches and updates feeds in the background with adaptive scheduling and jitter to ensure content is always fresh without overloading servers.
+
+
 
 - **Deduplication & Storage:** Efficiently stores articles with URL-based deduplication and normalized data structures.
 
-- **Content Reading:** Clean, distraction-free interface for reading articles.
--   **Standard Compliance:** Supports standard RSS and Atom feed formats.
+
+
+- **Standard Compliance:** Supports standard RSS and Atom feed formats.
 -   **Responsive Design:** Accessible on desktop and mobile devices.
 -   **Instant Content:** Automatically triggers an initial fetch when a new feed is added, ensuring immediate content availability.
 

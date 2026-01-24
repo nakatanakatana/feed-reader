@@ -27,6 +27,7 @@ export interface Item {
   title: string;
   description: string;
   publishedAt: string;
+  author: string;
   feedId: string;
   isRead: boolean;
   isSaved: boolean;
@@ -88,6 +89,7 @@ export const items = createCollection(
         title: item.title,
         description: item.description,
         publishedAt: item.publishedAt,
+        author: item.author,
         feedId: item.feedId,
         isRead: item.isRead,
         isSaved: item.isSaved,

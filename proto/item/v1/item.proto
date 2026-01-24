@@ -19,6 +19,7 @@ message Item {
   string feed_id = 6;
   bool is_read = 7;
   bool is_saved = 8;
+  string author = 9;
 }
 
 message GetItemRequest {

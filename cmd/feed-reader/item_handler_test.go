@@ -32,15 +32,17 @@ func TestItemServer(t *testing.T) {
 	now := time.Now()
 	t1 := now.Add(-2 * time.Hour).Format(time.RFC3339)
 	t2 := now.Add(-1 * time.Hour).Format(time.RFC3339)
+	author := "Test Author"
 
 	err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
 		FeedID:      feedID,
 		Url:         "http://example.com/item1",
 		Title:       proto.String("Item 1"),
 		PublishedAt: &t1,
+		Author:      &author,
 	})
 	require.NoError(t, err)
-	
+
 	var item1ID string
 	err = db.QueryRowContext(ctx, "SELECT id FROM items WHERE url = ?", "http://example.com/item1").Scan(&item1ID)
 	require.NoError(t, err)
@@ -62,6 +64,7 @@ func TestItemServer(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, item1ID, res.Msg.Item.Id)
 		assert.Equal(t, "Item 1", res.Msg.Item.Title)
+		assert.Equal(t, author, res.Msg.Item.Author)
 	})
 
 	t.Run("ListItems", func(t *testing.T) {

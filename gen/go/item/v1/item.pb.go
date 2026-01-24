@@ -80,6 +80,7 @@ type Item struct {
 	FeedId        string                 `protobuf:"bytes,6,opt,name=feed_id,json=feedId,proto3" json:"feed_id,omitempty"`
 	IsRead        bool                   `protobuf:"varint,7,opt,name=is_read,json=isRead,proto3" json:"is_read,omitempty"`
 	IsSaved       bool                   `protobuf:"varint,8,opt,name=is_saved,json=isSaved,proto3" json:"is_saved,omitempty"`
+	Author        string                 `protobuf:"bytes,9,opt,name=author,proto3" json:"author,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -168,6 +169,13 @@ func (x *Item) GetIsSaved() bool {
 		return x.IsSaved
 	}
 	return false
+}
+
+func (x *Item) GetAuthor() string {
+	if x != nil {
+		return x.Author
+	}
+	return ""
 }
 
 type GetItemRequest struct {
@@ -494,7 +502,7 @@ var File_item_v1_item_proto protoreflect.FileDescriptor
 
 const file_item_v1_item_proto_rawDesc = "" +
 	"\n" +
-	"\x12item/v1/item.proto\x12\aitem.v1\"\xd0\x01\n" +
+	"\x12item/v1/item.proto\x12\aitem.v1\"\xe8\x01\n" +
 	"\x04Item\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x10\n" +
 	"\x03url\x18\x02 \x01(\tR\x03url\x12\x14\n" +
@@ -503,7 +511,8 @@ const file_item_v1_item_proto_rawDesc = "" +
 	"\fpublished_at\x18\x05 \x01(\tR\vpublishedAt\x12\x17\n" +
 	"\afeed_id\x18\x06 \x01(\tR\x06feedId\x12\x17\n" +
 	"\ais_read\x18\a \x01(\bR\x06isRead\x12\x19\n" +
-	"\bis_saved\x18\b \x01(\bR\aisSaved\" \n" +
+	"\bis_saved\x18\b \x01(\bR\aisSaved\x12\x16\n" +
+	"\x06author\x18\t \x01(\tR\x06author\" \n" +
 	"\x0eGetItemRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"4\n" +
 	"\x0fGetItemResponse\x12!\n" +

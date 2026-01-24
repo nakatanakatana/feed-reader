@@ -6,12 +6,14 @@ import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
 import { TransportProvider } from "../lib/transport-context";
 import { createConnectTransport } from "@connectrpc/connect-web";
 
-// Mock useItems
+// Mock hooks
 vi.mock("../lib/item-query", () => ({
   useItems: vi.fn(),
+  useItem: vi.fn(),
+  useUpdateItemStatus: vi.fn(),
 }));
 
-import { useItems } from "../lib/item-query";
+import { useItems, useItem, useUpdateItemStatus } from "../lib/item-query";
 
 describe("ItemList", () => {
   let dispose: () => void;
@@ -24,15 +26,9 @@ describe("ItemList", () => {
     vi.clearAllMocks();
   });
 
-  it("renders a list of items", async () => {
+  it("renders a list of items and opens modal on click", async () => {
     const mockItems = [
       { id: "1", title: "Item 1", url: "http://example.com/1", isRead: false },
-      {
-        id: "20",
-        title: "Item 20",
-        url: "http://example.com/20",
-        isRead: true,
-      },
     ];
 
     vi.mocked(useItems).mockReturnValue({
@@ -45,6 +41,16 @@ describe("ItemList", () => {
       isFetchingNextPage: false,
     } as unknown as ReturnType<typeof useItems>);
 
+    vi.mocked(useItem).mockReturnValue({
+      data: mockItems[0],
+      isLoading: false,
+    } as unknown as ReturnType<typeof useItem>);
+
+    vi.mocked(useUpdateItemStatus).mockReturnValue({
+      mutate: vi.fn(),
+      isPending: false,
+    } as unknown as ReturnType<typeof useUpdateItemStatus>);
+
     dispose = render(
       () => (
         <TransportProvider transport={transport}>
@@ -56,11 +62,15 @@ describe("ItemList", () => {
       document.body,
     );
 
+    const item = page.getByText("Item 1");
+    await expect.element(item).toBeInTheDocument();
+
+    await item.click();
+
+    // Check if modal content is visible (ItemDetailModal uses a dialog role now)
+    await expect.element(page.getByRole("dialog")).toBeInTheDocument();
     await expect
-      .element(page.getByText("Item 1", { exact: true }))
-      .toBeInTheDocument();
-    await expect
-      .element(page.getByText("Item 20", { exact: true }))
+      .element(page.getByText("Open original article ↗"))
       .toBeInTheDocument();
   });
 });

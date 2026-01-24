@@ -14,10 +14,10 @@ func TestRouting(t *testing.T) {
 	queries, _ := setupTestDB(t)
 	fetcher := &mockFetcher{}
 	itemFetcher := &mockItemFetcher{}
-	
+
 	// Create the server
 	server := NewFeedServer(queries, mockUUIDGenerator{}, fetcher, itemFetcher)
-	
+
 	// Create the handler
 	path, handler := feedv1connect.NewFeedServiceHandler(server)
 
@@ -32,7 +32,7 @@ func TestRouting(t *testing.T) {
 	t.Run("Root path routing", func(t *testing.T) {
 		// ListFeeds is "/feed.v1.FeedService/ListFeeds"
 		url := ts.URL + feedv1connect.FeedServiceListFeedsProcedure
-		
+
 		resp, err := http.Post(url, "application/json", strings.NewReader("{}"))
 		if err != nil {
 			t.Fatalf("Failed to make request: %v", err)
@@ -48,7 +48,7 @@ func TestRouting(t *testing.T) {
 	t.Run("API prefix routing", func(t *testing.T) {
 		// Should work on /api after update
 		url := ts.URL + "/api" + feedv1connect.FeedServiceListFeedsProcedure
-		
+
 		resp, err := http.Post(url, "application/json", strings.NewReader("{}"))
 		if err != nil {
 			t.Fatalf("Failed to make request: %v", err)

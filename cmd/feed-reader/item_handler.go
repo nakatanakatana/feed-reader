@@ -182,6 +182,10 @@ func toProtoItem(row store.GetItemRow) *itemv1.Item {
 	if row.PublishedAt != nil {
 		pubAt = *row.PublishedAt
 	}
+	var author string
+	if row.Author != nil {
+		author = *row.Author
+	}
 
 	return &itemv1.Item{
 		Id:          row.ID,
@@ -189,6 +193,7 @@ func toProtoItem(row store.GetItemRow) *itemv1.Item {
 		Title:       title,
 		Description: desc,
 		PublishedAt: pubAt,
+		Author:      author,
 		FeedId:      row.FeedID,
 		IsRead:      row.IsRead == 1,
 		IsSaved:     row.IsSaved == 1,
