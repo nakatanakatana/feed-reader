@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/solid-router";
+import { createFileRoute, Outlet } from "@tanstack/solid-router";
 import { css } from "../../styled-system/css";
 import { stack } from "../../styled-system/patterns";
 import { AddFeedForm } from "../components/AddFeedForm";
@@ -17,6 +17,7 @@ function FeedsComponent() {
       <AddFeedForm />
       <hr class={css({ borderColor: "gray.200" })} />
       <FeedList />
+      <Outlet />
     </div>
   );
 }

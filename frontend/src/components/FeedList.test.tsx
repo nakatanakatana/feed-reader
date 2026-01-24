@@ -73,9 +73,7 @@ describe("FeedList", () => {
 
     dispose = render(
       () => (
-        <RouterProvider router={router}>
-          <FeedList />
-        </RouterProvider>
+        <RouterProvider router={router} />
       ),
       document.body,
     );
@@ -97,9 +95,7 @@ describe("FeedList", () => {
 
     dispose = render(
       () => (
-        <RouterProvider router={router}>
-          <FeedList />
-        </RouterProvider>
+        <RouterProvider router={router} />
       ),
       document.body,
     );
