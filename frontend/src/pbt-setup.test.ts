@@ -1,4 +1,4 @@
-import { describe, it, } from "vitest";
+import { describe, it } from "vitest";
 import * as fc from "fast-check";
 
 describe("PBT Self-check", () => {

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import * as fc from "fast-check";
-import { filterAndSortItems, SortOrder, } from "./item-utils";
+import { filterAndSortItems, SortOrder } from "./item-utils";
 
 describe("item-utils PBT", () => {
   const itemArbitrary = fc.record({
