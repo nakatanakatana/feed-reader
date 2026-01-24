@@ -9,7 +9,11 @@ describe("item-utils PBT", () => {
     title: fc.string(),
     description: fc.string(),
     publishedAt: fc
-      .date({ min: new Date(2000, 0, 1), max: new Date(2100, 0, 1) })
+      .date({
+        min: new Date(2000, 0, 1),
+        max: new Date(2100, 0, 1),
+        noInvalidDate: true,
+      })
       .map((d) => d.toISOString()),
     feedId: fc.uuid(),
     isRead: fc.boolean(),
