@@ -24,7 +24,7 @@ export function ItemList(props: ItemListProps) {
     <div class={stack({ gap: "4", width: "full" })}>
       <ul class={stack({ gap: "2", padding: "0", listStyleType: "none" })}>
         <For each={itemList}>
-          {(item) => <ItemRow item={item} />}
+          {(item) => <ItemRow item={item as any} />}
         </For>
       </ul>
 

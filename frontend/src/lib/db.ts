@@ -35,7 +35,11 @@ export interface Item {
 const feedClient = createClient(FeedService, transport);
 const itemClient = createClient(ItemService, transport);
 
-// ... (addFeed implementation)
+export const addFeed = async (url: string) => {
+  const response = await feedClient.createFeed({ url });
+  queryClient.invalidateQueries({ queryKey: ["feeds"] });
+  return response.feed;
+};
 
 export const updateItemStatus = async (params: {
   ids: string[];
@@ -47,9 +51,6 @@ export const updateItemStatus = async (params: {
 };
 
 export const feeds = createCollection(
-// ...
-
-// ...
   queryCollectionOptions({
     id: "feeds",
     queryClient,
@@ -70,8 +71,8 @@ export const feeds = createCollection(
           await feedClient.deleteFeed({ uuid: mutation.key as string });
         }
       }
-    }
-  })
+    },
+  }),
 );
 
 export const items = createCollection(
@@ -84,7 +85,7 @@ export const items = createCollection(
       return response.items;
     },
     getKey: (item: Item) => item.id,
-  })
+  }),
 );
 
 // We still export a "db" object if we want to follow the spec's "Initialize the TanStack DB instance"
