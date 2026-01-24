@@ -35,11 +35,11 @@ This plan outlines the steps to refactor the frontend state management for Feeds
     - [ ] If any item interactions (e.g., mark as read) exist, refactor them to use the `items` collection.
 - [ ] **Task 3: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)**
 
-## Phase 4: Verification and Cleanup
+## Phase 4: Verification and Cleanup [checkpoint: b69f5c6]
 
-- [~] **Task 1: Run Frontend Tests**
+- [x] **Task 1: Run Frontend Tests** (b69f5c6)
     - [ ] Execute `npm test` and ensure all tests pass.
     - [ ] Update any tests that rely on mocked TanStack Query calls if they break.
-- [~] **Task 2: Final Integration Check**
+- [x] **Task 2: Final Integration Check** (b69f5c6)
     - [ ] Verify manual end-to-end flow: Add feed -> List feeds -> View items -> Delete feed.
-- [ ] **Task 3: Conductor - User Manual Verification 'Phase 4' (Protocol in workflow.md)**
+- [x] **Task 3: Conductor - User Manual Verification 'Phase 4' (Protocol in workflow.md)** (b69f5c6)
