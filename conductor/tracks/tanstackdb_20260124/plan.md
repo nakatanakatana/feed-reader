@@ -37,9 +37,9 @@ This plan outlines the steps to refactor the frontend state management for Feeds
 
 ## Phase 4: Verification and Cleanup
 
-- [ ] **Task 1: Run Frontend Tests**
+- [~] **Task 1: Run Frontend Tests**
     - [ ] Execute `npm test` and ensure all tests pass.
     - [ ] Update any tests that rely on mocked TanStack Query calls if they break.
-- [ ] **Task 2: Final Integration Check**
+- [~] **Task 2: Final Integration Check**
     - [ ] Verify manual end-to-end flow: Add feed -> List feeds -> View items -> Delete feed.
 - [ ] **Task 3: Conductor - User Manual Verification 'Phase 4' (Protocol in workflow.md)**
