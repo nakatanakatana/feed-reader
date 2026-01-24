@@ -42,7 +42,7 @@ func TestItemServer(t *testing.T) {
 		Author:      &author,
 	})
 	require.NoError(t, err)
-	
+
 	var item1ID string
 	err = db.QueryRowContext(ctx, "SELECT id FROM items WHERE url = ?", "http://example.com/item1").Scan(&item1ID)
 	require.NoError(t, err)
