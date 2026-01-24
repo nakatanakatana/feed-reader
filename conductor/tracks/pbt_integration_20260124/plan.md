@@ -19,9 +19,9 @@ Focus on setting up the Go PBT environment and applying it to core backend logic
 ## Phase 2: Frontend Infrastructure & Initial PBT
 Focus on setting up the TypeScript PBT environment and applying it to core frontend logic.
 
-- [ ] Task: Install `fast-check` and verify setup
-    - [ ] Run `npm install -D fast-check` in the frontend directory
-    - [ ] Create a dummy PBT test to ensure it runs with `vitest`
+- [x] Task: Install `fast-check` and verify setup (84f2555)
+    - [x] Run `npm install -D fast-check` in the frontend directory
+    - [x] Create a dummy PBT test to ensure it runs with `vitest`
 - [ ] Task: Implement PBT for Item Filtering & Sorting (`frontend/src/lib/item-query.ts`)
     - [ ] Write failing PBT tests in `frontend/src/lib/item-query.test.ts`
     - [ ] Verify invariants: sorted order and correct filtering for any generated input
