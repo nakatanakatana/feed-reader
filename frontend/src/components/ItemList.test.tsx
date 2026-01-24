@@ -1,10 +1,10 @@
+import { createConnectTransport } from "@connectrpc/connect-web";
 import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it } from "vitest";
 import { page } from "vitest/browser";
 import { TransportProvider } from "../lib/transport-context";
 import { ItemList } from "./ItemList";
-import { createConnectTransport } from "@connectrpc/connect-web";
 
 describe("ItemList", () => {
   let dispose: () => void;

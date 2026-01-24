@@ -58,12 +58,16 @@ describe("Item Queries", () => {
     const options = itemsInfiniteQueryOptions(transport, { feedId: "123" });
 
     // The new implementation explicitly constructs the key params
-    expect(options.queryKey).toEqual(["items", "list", { 
-      feedId: "123",
-      isRead: undefined,
-      isSaved: undefined,
-      sortOrder: undefined 
-    }]);
+    expect(options.queryKey).toEqual([
+      "items",
+      "list",
+      {
+        feedId: "123",
+        isRead: undefined,
+        isSaved: undefined,
+        sortOrder: undefined,
+      },
+    ]);
     expect(options.initialPageParam).toBe(0);
 
     // Test getNextPageParam

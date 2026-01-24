@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/solid-router";
-import { ItemList } from "../components/ItemList";
 import { css } from "../../styled-system/css";
 import { stack } from "../../styled-system/patterns";
+import { ItemList } from "../components/ItemList";
 
 export const Route = createFileRoute("/feeds/$feedId")({
   component: FeedItemsComponent,
