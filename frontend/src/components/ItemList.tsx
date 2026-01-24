@@ -9,12 +9,12 @@ interface ItemListProps {
 }
 
 export function ItemList(props: ItemListProps) {
-  const itemsQuery = useItems({ feedId: props.feedId });
+  const itemsQuery = useItems(() => ({ feedId: props.feedId }));
 
   return (
     <div class={stack({ gap: "4", width: "full" })}>
       <ul class={stack({ gap: "2", padding: "0", listStyleType: "none" })}>
-        <For each={itemsQuery.data?.pages.flatMap((page) => page.items)}>
+        <For each={itemsQuery.data?.pages?.flatMap((page) => page.items) ?? []}>
           {(item) => <ItemRow item={item} />}
         </For>
       </ul>
@@ -57,7 +57,8 @@ export function ItemList(props: ItemListProps) {
 
       <Show
         when={
-          !itemsQuery.isLoading && itemsQuery.data?.pages[0].items.length === 0
+          !itemsQuery.isLoading &&
+          itemsQuery.data?.pages?.[0]?.items?.length === 0
         }
       >
         <div

@@ -44,8 +44,16 @@ export const itemsInfiniteQueryOptions = (
   transport: Transport,
   params: Omit<FetchItemsParams, "limit" | "offset">,
 ) => {
+  // Ensure we pass a clean object to the query key
+  const queryKeyParams = {
+    feedId: params.feedId,
+    isRead: params.isRead,
+    isSaved: params.isSaved,
+    sortOrder: params.sortOrder,
+  };
+
   return infiniteQueryOptions({
-    queryKey: itemKeys.list(params),
+    queryKey: itemKeys.list(queryKeyParams),
     queryFn: async ({ pageParam }) => {
       return fetchItems(transport, {
         ...params,
@@ -64,11 +72,11 @@ export const itemsInfiniteQueryOptions = (
 };
 
 export const useItems = (
-  params: Omit<FetchItemsParams, "limit" | "offset">,
+  params: () => Omit<FetchItemsParams, "limit" | "offset">,
 ) => {
   const transport = useTransport();
   return createInfiniteQuery(() =>
-    itemsInfiniteQueryOptions(transport, params),
+    itemsInfiniteQueryOptions(transport, params()),
   );
 };
 
