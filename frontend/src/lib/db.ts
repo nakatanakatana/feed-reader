@@ -32,9 +32,8 @@ export interface Item {
   isSaved: boolean;
 }
 
-// ... (imports)
-
-// ... (feedClient creation)
+const feedClient = createClient(FeedService, transport);
+const itemClient = createClient(ItemService, transport);
 
 export const addFeed = async (url: string) => {
   const response = await feedClient.createFeed({ url });

@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { AddFeedForm } from "./AddFeedForm";
 import * as db from "../lib/db";
+import { Feed } from "../gen/feed/v1/feed_pb";
 
 // Mock the db module
 vi.mock("../lib/db", () => ({
@@ -19,11 +20,11 @@ describe("AddFeedForm", () => {
   });
 
   it("creates a new feed", async () => {
-    (db.addFeed as any).mockResolvedValue({
+    vi.mocked(db.addFeed).mockResolvedValue(new Feed({
       uuid: "1",
       url: "http://example.com",
       title: "Mocked Feed",
-    });
+    }));
 
     dispose = render(() => <AddFeedForm />, document.body);
 
@@ -34,13 +35,13 @@ describe("AddFeedForm", () => {
     await button.click();
 
     await expect
-      .poll(() => (db.addFeed as any).mock.calls.length)
+      .poll(() => vi.mocked(db.addFeed).mock.calls.length)
       .toBeGreaterThan(0);
     expect(db.addFeed).toHaveBeenCalledWith("http://example.com");
   });
 
   it("displays an error message when createFeed fails", async () => {
-    (db.addFeed as any).mockRejectedValue(new Error("Invalid feed URL"));
+    vi.mocked(db.addFeed).mockRejectedValue(new Error("Invalid feed URL"));
 
     dispose = render(() => <AddFeedForm />, document.body);
 

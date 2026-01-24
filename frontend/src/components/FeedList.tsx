@@ -4,11 +4,10 @@ import { For, Show, createSignal } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { feeds } from "../lib/db";
-import { useTransport } from "../lib/transport-context";
 
 export function FeedList() {
-  const { data: feedList, isLoading, error } = useLiveQuery(() => 
-    feeds.find()
+  const { data: feedList } = useLiveQuery((q) => 
+    q.from({ feed: feeds }).select(({ feed }) => feed)
   );
   const [deleteError, setDeleteError] = createSignal<Error | null>(null);
 
@@ -20,17 +19,17 @@ export function FeedList() {
       setDeleteError(e instanceof Error ? e : new Error("Failed to delete feed"));
     }
   };
+  
+  // Loading state approximation
+  const isLoading = () => !feeds.isReady();
 
   return (
     <div class={stack({ gap: "4" })}>
       <h2 class={css({ fontSize: "xl", fontWeight: "semibold" })}>
         Your Feeds
       </h2>
-      <Show when={isLoading}>
+      <Show when={isLoading()}>
         <p>Loading...</p>
-      </Show>
-      <Show when={error}>
-        <p class={css({ color: "red.500" })}>Error: {error instanceof Error ? error.message : "Unknown error"}</p>
       </Show>
       <Show when={deleteError()}>
         <p class={css({ color: "red.500" })}>
