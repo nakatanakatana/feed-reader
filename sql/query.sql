@@ -82,14 +82,16 @@ INSERT INTO items (
   title,
   description,
   published_at,
+  author,
   guid
 ) VALUES (
-  ?, ?, ?, ?, ?, ?
+  ?, ?, ?, ?, ?, ?, ?
 )
 ON CONFLICT(url) DO UPDATE SET
   title = excluded.title,
   description = excluded.description,
   published_at = excluded.published_at,
+  author = excluded.author,
   guid = excluded.guid,
   updated_at = CURRENT_TIMESTAMP
 RETURNING *;
@@ -127,6 +129,7 @@ SELECT
   i.title,
   i.description,
   i.published_at,
+  i.author,
   fi.feed_id,
   CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read,
   CAST(COALESCE(isv.is_saved, 0) AS INTEGER) AS is_saved
@@ -148,6 +151,7 @@ SELECT
   i.title,
   i.description,
   i.published_at,
+  i.author,
   fi.feed_id,
   CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read,
   CAST(COALESCE(isv.is_saved, 0) AS INTEGER) AS is_saved
@@ -174,6 +178,7 @@ SELECT
   i.title,
   i.description,
   i.published_at,
+  i.author,
   fi.feed_id,
   CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read,
   CAST(COALESCE(isv.is_saved, 0) AS INTEGER) AS is_saved

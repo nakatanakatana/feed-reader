@@ -39,7 +39,7 @@ describe("ItemRow", () => {
       () => (
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>
-            <ItemRow item={mockItem} />
+            <ItemRow item={mockItem} onClick={() => {}} />
           </QueryClientProvider>
         </TransportProvider>
       ),
@@ -57,7 +57,7 @@ describe("ItemRow", () => {
       () => (
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>
-            <ItemRow item={readItem} />
+            <ItemRow item={readItem} onClick={() => {}} />
           </QueryClientProvider>
         </TransportProvider>
       ),
@@ -73,7 +73,7 @@ describe("ItemRow", () => {
       () => (
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>
-            <ItemRow item={mockItem} />
+            <ItemRow item={mockItem} onClick={() => {}} />
           </QueryClientProvider>
         </TransportProvider>
       ),
@@ -82,28 +82,38 @@ describe("ItemRow", () => {
 
     const toggleButton = page.getByRole("button", { name: /Mark as Read/i });
     await toggleButton.click();
-
-    // In a real TDD we'd verify the mock was called.
-    // Since we use MSW, we can't easily check if a function was called unless we use a spy in the handler.
-    // For now, let's just ensure it doesn't crash and the button text would change if state updated.
-    // But since this is a unit test and doesn't have the full query loop, it might not re-render.
   });
 
-  it("has correct link attributes for 'Open URL'", () => {
+  it("calls onClick when clicked", async () => {
+    const onClick = vi.fn();
     dispose = render(
       () => (
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>
-            <ItemRow item={mockItem} />
+            <ItemRow item={mockItem} onClick={onClick} />
           </QueryClientProvider>
         </TransportProvider>
       ),
       document.body,
     );
 
-    const link = page.getByRole("link", { name: "Test Article Title" });
-    expect(link).toHaveAttribute("href", "https://example.com/article");
-    expect(link).toHaveAttribute("target", "_blank");
-    expect(link).toHaveAttribute("rel", "noopener noreferrer");
+    const listItem = page.getByRole("button", { name: /Test Article Title/ });
+    await listItem.click();
+    expect(onClick).toHaveBeenCalledWith(mockItem);
+  });
+
+  it("has title text", () => {
+    dispose = render(
+      () => (
+        <TransportProvider transport={transport}>
+          <QueryClientProvider client={queryClient}>
+            <ItemRow item={mockItem} onClick={() => {}} />
+          </QueryClientProvider>
+        </TransportProvider>
+      ),
+      document.body,
+    );
+
+    expect(page.getByText("Test Article Title")).toBeInTheDocument();
   });
 });

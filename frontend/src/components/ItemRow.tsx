@@ -6,6 +6,7 @@ import { updateItemStatus } from "../lib/db";
 
 interface ItemRowProps {
   item: Item;
+  onClick: (item: Item) => void;
 }
 
 export function ItemRow(props: ItemRowProps) {
@@ -26,23 +27,45 @@ export function ItemRow(props: ItemRowProps) {
     }
   };
 
+  const handleClick = (e: MouseEvent) => {
+    e.preventDefault();
+    props.onClick(props.item);
+  };
+
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      props.onClick(props.item);
+    }
+  };
+
   return (
-    <li
+    <div
       class={flex({
         justifyContent: "space-between",
         alignItems: "center",
-        padding: "3",
         border: "1px solid",
         borderColor: "gray.100",
         borderRadius: "md",
+        cursor: "pointer",
+        width: "full",
+        overflow: "hidden",
         _hover: { backgroundColor: "gray.50" },
       })}
     >
-      <div class={stack({ gap: "1", flex: 1 })}>
-        <a
-          href={props.item.url}
-          target="_blank"
-          rel="noopener noreferrer"
+      <button
+        type="button"
+        onClick={handleClick}
+        onKeyDown={handleKeyDown}
+        class={stack({
+          gap: "1",
+          flex: 1,
+          padding: "3",
+          textAlign: "left",
+          cursor: "pointer",
+        })}
+      >
+        <div
           class={css({
             fontWeight: "medium",
             color: props.item.isRead ? "gray.500" : "blue.600",
@@ -51,7 +74,7 @@ export function ItemRow(props: ItemRowProps) {
           })}
         >
           {props.item.title || "Untitled Article"}
-        </a>
+        </div>
         <div class={flex({ gap: "2", alignItems: "center" })}>
           <span class={css({ fontSize: "xs", color: "gray.500" })}>
             {props.item.publishedAt}
@@ -70,29 +93,31 @@ export function ItemRow(props: ItemRowProps) {
             </span>
           </Show>
         </div>
-      </div>
-      <button
-        type="button"
-        onClick={handleToggleRead}
-        disabled={isPending()}
-        class={css({
-          fontSize: "xs",
-          padding: "2",
-          paddingInline: "3",
-          borderRadius: "md",
-          cursor: "pointer",
-          border: "1px solid",
-          borderColor: "gray.200",
-          backgroundColor: "white",
-          minWidth: "100px",
-          display: "flex",
-          justifyContent: "center",
-          _hover: { backgroundColor: "gray.50" },
-          _disabled: { opacity: 0.5, cursor: "not-allowed" },
-        })}
-      >
-        {props.item.isRead ? "Mark as Unread" : "Mark as Read"}
       </button>
-    </li>
+      <div class={css({ padding: "3" })}>
+        <button
+          type="button"
+          onClick={handleToggleRead}
+          disabled={isPending()}
+          class={css({
+            fontSize: "xs",
+            padding: "2",
+            paddingInline: "3",
+            borderRadius: "md",
+            cursor: "pointer",
+            border: "1px solid",
+            borderColor: "gray.200",
+            backgroundColor: "white",
+            minWidth: "100px",
+            display: "flex",
+            justifyContent: "center",
+            _hover: { backgroundColor: "gray.50" },
+            _disabled: { opacity: 0.5, cursor: "not-allowed" },
+          })}
+        >
+          {props.item.isRead ? "Mark as Unread" : "Mark as Read"}
+        </button>
+      </div>
+    </div>
   );
 }

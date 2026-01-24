@@ -26,6 +26,7 @@ type SaveFetchedItemParams struct {
 	Title       *string
 	Description *string
 	PublishedAt *string
+	Author      *string
 	Guid        *string
 }
 
@@ -50,6 +51,7 @@ func (s *Store) SaveFetchedItem(ctx context.Context, params SaveFetchedItemParam
 		Title:       params.Title,
 		Description: params.Description,
 		PublishedAt: params.PublishedAt,
+		Author:      params.Author,
 		Guid:        params.Guid,
 	})
 	if err != nil {

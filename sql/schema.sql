@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS items (
   title        TEXT,
   description  TEXT,
   published_at TEXT,
+  author       TEXT,
   guid         TEXT,
   created_at   TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at   TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
