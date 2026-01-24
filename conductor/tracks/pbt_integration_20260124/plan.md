@@ -16,7 +16,7 @@ Focus on setting up the Go PBT environment and applying it to core backend logic
     - [x] Ensure the implementation handles diverse (generated) inputs correctly
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend Infrastructure & Initial PBT' (Protocol in workflow.md)
 
-## Phase 2: Frontend Infrastructure & Initial PBT
+## Phase 2: Frontend Infrastructure & Initial PBT [checkpoint: 39cf215]
 Focus on setting up the TypeScript PBT environment and applying it to core frontend logic.
 
 - [x] Task: Install `fast-check` and verify setup (84f2555)
