@@ -1,8 +1,0 @@
-{
-  "track_id": "tanstackdb_20260124",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-01-24T00:00:00Z",
-  "updated_at": "2026-01-24T00:00:00Z",
-  "description": "frontendのFeedのステートの管理を既存のTanstack Queryと連携させる形で@tanstack/dbを使うように変更してください"
-}
