@@ -30,7 +30,7 @@ Focus on setting up the TypeScript PBT environment and applying it to core front
     - [x] Write PBT tests to ensure resilience against malformed inputs
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Frontend Infrastructure & Initial PBT' (Protocol in workflow.md)
 
-## Phase 3: Final Integration & Coverage
+## Phase 3: Final Integration & Coverage [checkpoint: f31a4fa]
 Ensure all PBT cases are integrated into the CI and meet quality standards.
 
 - [x] Task: Verify overall test coverage and CI integration (4b8f866)
