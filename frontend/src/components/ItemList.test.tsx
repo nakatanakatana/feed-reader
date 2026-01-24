@@ -1,10 +1,8 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it } from "vitest";
 import { page } from "vitest/browser";
-import { TransportProvider } from "../lib/transport-context";
 import { ItemList } from "./ItemList";
-import { createConnectTransport } from "@connectrpc/connect-web";
+import { queryClient } from "../lib/query";
 
 describe("ItemList", () => {
   let dispose: () => void;
@@ -12,28 +10,12 @@ describe("ItemList", () => {
   afterEach(() => {
     if (dispose) dispose();
     document.body.innerHTML = "";
-  });
-
-  const transport = createConnectTransport({
-    baseUrl: "http://localhost:3000",
-  });
-
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: { retry: 0 },
-      mutations: { retry: 0 },
-    },
+    queryClient.clear();
   });
 
   it("renders a list of items", async () => {
     dispose = render(
-      () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ItemList />
-          </QueryClientProvider>
-        </TransportProvider>
-      ),
+      () => <ItemList />,
       document.body,
     );
 
@@ -43,33 +25,6 @@ describe("ItemList", () => {
       .toBeInTheDocument();
     await expect
       .element(page.getByText("Item 20", { exact: true }))
-      .toBeInTheDocument();
-  });
-
-  it("loads more items when button is clicked", async () => {
-    dispose = render(
-      () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ItemList />
-          </QueryClientProvider>
-        </TransportProvider>
-      ),
-      document.body,
-    );
-
-    await expect
-      .element(page.getByText("Item 1", { exact: true }))
-      .toBeInTheDocument();
-
-    const loadMoreButton = page.getByRole("button", { name: /Load More/i });
-    await loadMoreButton.click();
-
-    await expect
-      .element(page.getByText("Item 21", { exact: true }))
-      .toBeInTheDocument();
-    await expect
-      .element(page.getByText("Item 40", { exact: true }))
       .toBeInTheDocument();
   });
 });

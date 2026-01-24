@@ -29,7 +29,7 @@ This plan outlines the steps to refactor the frontend state management for Feeds
 
 ## Phase 3: Refactoring Item Management
 
-- [ ] **Task 1: Refactor `ItemList` Component**
+- [~] **Task 1: Refactor `ItemList` Component**
     - [ ] Replace `useQuery` with the `items` collection query, filtered by `feedId`.
 - [ ] **Task 2: Refactor Item Interactions**
     - [ ] If any item interactions (e.g., mark as read) exist, refactor them to use the `items` collection.

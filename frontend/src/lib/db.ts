@@ -35,13 +35,20 @@ export interface Item {
 const feedClient = createClient(FeedService, transport);
 const itemClient = createClient(ItemService, transport);
 
-export const addFeed = async (url: string) => {
-  const response = await feedClient.createFeed({ url });
-  queryClient.invalidateQueries({ queryKey: ["feeds"] });
-  return response.feed;
+// ... (addFeed implementation)
+
+export const updateItemStatus = async (params: {
+  ids: string[];
+  isRead?: boolean;
+  isSaved?: boolean;
+}) => {
+  await itemClient.updateItemStatus(params);
+  queryClient.invalidateQueries({ queryKey: ["items"] });
 };
 
 export const feeds = createCollection(
+// ...
+
 // ...
   queryCollectionOptions({
     id: "feeds",
