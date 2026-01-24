@@ -27,7 +27,7 @@ This plan outlines the steps to refactor the frontend state management for Feeds
     - [ ] Update the single feed retrieval logic to use the local DB if possible or the collection query.
 - [ ] **Task 4: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)**
 
-## Phase 3: Refactoring Item Management
+## Phase 3: Refactoring Item Management [checkpoint: 25d2ace]
 
 - [x] **Task 1: Refactor `ItemList` Component** (605c686)
     - [ ] Replace `useQuery` with the `items` collection query, filtered by `feedId`.
