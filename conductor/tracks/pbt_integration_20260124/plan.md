@@ -5,9 +5,9 @@ This plan outlines the steps to introduce Property-Based Testing to both backend
 ## Phase 1: Backend Infrastructure & Initial PBT
 Focus on setting up the Go PBT environment and applying it to core backend logic.
 
-- [ ] Task: Install `github.com/flyingmutant/rapid` and verify setup
-    - [ ] Run `go get github.com/flyingmutant/rapid`
-    - [ ] Create a dummy PBT test to ensure it runs with `go test ./...`
+- [x] Task: Install `pgregory.net/rapid` and verify setup (b17e7c7)
+    - [x] Run `go get pgregory.net/rapid`
+    - [x] Create a dummy PBT test to ensure it runs with `go test ./...`
 - [ ] Task: Implement PBT for Scheduling Logic (`cmd/feed-reader/scheduler.go`)
     - [ ] Write failing PBT tests in `cmd/feed-reader/scheduler_test.go` to verify jitter and boundary calculations
     - [ ] Ensure the implementation passes the property checks
