@@ -2,7 +2,7 @@
 
 This plan outlines the steps to refactor the frontend state management for Feeds and Feed Items to use `@tanstack/db` integrated with TanStack Query.
 
-## Phase 1: Foundation and Centralized DB Setup
+## Phase 1: Foundation and Centralized DB Setup [checkpoint: a6a5365]
 
 - [x] **Task 1: Install Dependencies** (5dccf9f)
     - [ ] Install `@tanstack/db` and ensure `@tanstack/solid-query` is up to date.
