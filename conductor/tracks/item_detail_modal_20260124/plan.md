@@ -2,7 +2,7 @@
 
 This plan covers the end-to-end implementation of the Item Detail Modal, including schema extensions for the author field and frontend navigation logic.
 
-## Phase 1: Backend & Protocol Extension
+## Phase 1: Backend & Protocol Extension [checkpoint: 4537276]
 Extend the data model to include the `author` field and update the backend to support it.
 
 - [x] Task: Update `proto/item/v1/item.proto` to add `author` field to `Item` message 26c8638
@@ -12,10 +12,9 @@ Extend the data model to include the `author` field and update the backend to su
 - [x] Task: Run `sqlc generate` to update Go database code 682f7b6
 - [x] Task: Update `store/item_store.go` and related Go code to handle the new `author` field 4bdca38
 - [x] Task: Update `cmd/feed-reader/item_handler.go` to map the `author` field in the API response ba8a8c3
-- [x] Task: Write and run tests for `ItemService` to verify `author` field in API response ba8a8c3
 - [x] Task: Write and run tests for `ItemStore` to verify `author` field persistence 4bdca38
-- [ ] Task: Write and run tests for `ItemService` to verify `author` field in API response
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend & Protocol Extension' (Protocol in workflow.md)
+- [x] Task: Write and run tests for `ItemService` to verify `author` field in API response ba8a8c3
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Backend & Protocol Extension' (Protocol in workflow.md) 4537276
 
 ## Phase 2: Frontend Infrastructure & Basic Modal
 Prepare the frontend to handle the new field and create the basic modal structure.
