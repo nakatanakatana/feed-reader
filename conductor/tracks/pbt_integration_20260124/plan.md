@@ -8,9 +8,9 @@ Focus on setting up the Go PBT environment and applying it to core backend logic
 - [x] Task: Install `pgregory.net/rapid` and verify setup (b17e7c7)
     - [x] Run `go get pgregory.net/rapid`
     - [x] Create a dummy PBT test to ensure it runs with `go test ./...`
-- [ ] Task: Implement PBT for Scheduling Logic (`cmd/feed-reader/scheduler.go`)
-    - [ ] Write failing PBT tests in `cmd/feed-reader/scheduler_test.go` to verify jitter and boundary calculations
-    - [ ] Ensure the implementation passes the property checks
+- [x] Task: Implement PBT for Scheduling Logic (`cmd/feed-reader/scheduler.go`) (fd64cb6)
+    - [x] Write failing PBT tests in `cmd/feed-reader/scheduler_test.go` to verify jitter and boundary calculations
+    - [x] Ensure the implementation passes the property checks
 - [ ] Task: Implement PBT for Feed Normalization (`cmd/feed-reader/fetcher.go`)
     - [ ] Write failing PBT tests in `cmd/feed-reader/fetcher_test.go` to verify `gofeed.Item` to `store.CreateItemParams` mapping
     - [ ] Ensure the implementation handles diverse (generated) inputs correctly
