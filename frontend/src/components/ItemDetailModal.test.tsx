@@ -22,7 +22,9 @@ vi.mock("../lib/item-query", () => ({
         isRead: false,
       };
     },
-    get isLoading() { return false; }
+    get isLoading() {
+      return false;
+    },
   }),
   useUpdateItemStatus: () => ({
     mutate: vi.fn(),
@@ -32,7 +34,9 @@ vi.mock("../lib/item-query", () => ({
 
 describe("ItemDetailModal", () => {
   const queryClient = new QueryClient();
-  const transport = createConnectTransport({ baseUrl: "http://localhost:8080" });
+  const transport = createConnectTransport({
+    baseUrl: "http://localhost:8080",
+  });
   let dispose: () => void;
 
   afterEach(() => {
@@ -50,37 +54,48 @@ describe("ItemDetailModal", () => {
   );
 
   it("renders item content when itemId is provided", async () => {
-    dispose = render(() => (
-      <Wrapper>
-        <ItemDetailModal itemId="test-id" onClose={() => {}} />
-      </Wrapper>
-    ), document.body);
-    
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal itemId="test-id" onClose={() => {}} />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
     await expect.element(page.getByText("Test Item")).toBeInTheDocument();
     await expect.element(page.getByText("By Test Author")).toBeInTheDocument();
     await expect.element(page.getByText("Test Content")).toBeInTheDocument();
-    await expect.element(page.getByText("Open original article ↗")).toBeInTheDocument();
+    await expect
+      .element(page.getByText("Open original article ↗"))
+      .toBeInTheDocument();
   });
 
   it("calls onClose when close button is clicked", async () => {
     const onClose = vi.fn();
-    dispose = render(() => (
-      <Wrapper>
-        <ItemDetailModal itemId="test-id" onClose={onClose} />
-      </Wrapper>
-    ), document.body);
-    
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal itemId="test-id" onClose={onClose} />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
     const closeButton = page.getByText("✕");
     await closeButton.click();
     expect(onClose).toHaveBeenCalled();
   });
 
   it("does not render when itemId is undefined", async () => {
-    dispose = render(() => (
-      <Wrapper>
-        <ItemDetailModal itemId={undefined} onClose={() => {}} />
-      </Wrapper>
-    ), document.body);
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal itemId={undefined} onClose={() => {}} />
+        </Wrapper>
+      ),
+      document.body,
+    );
     const modalContent = document.body.innerHTML;
     expect(modalContent).toBe("");
   });

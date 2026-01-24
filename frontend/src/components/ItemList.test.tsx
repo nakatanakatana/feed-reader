@@ -64,11 +64,13 @@ describe("ItemList", () => {
 
     const item = page.getByText("Item 1");
     await expect.element(item).toBeInTheDocument();
-    
+
     await item.click();
-    
+
     // Check if modal content is visible (ItemDetailModal uses a dialog role now)
     await expect.element(page.getByRole("dialog")).toBeInTheDocument();
-    await expect.element(page.getByText("Open original article ↗")).toBeInTheDocument();
+    await expect
+      .element(page.getByText("Open original article ↗"))
+      .toBeInTheDocument();
   });
 });

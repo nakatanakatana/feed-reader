@@ -10,7 +10,9 @@ interface ItemListProps {
 }
 
 export function ItemList(props: ItemListProps) {
-  const [selectedItemId, setSelectedItemId] = createSignal<string | undefined>();
+  const [selectedItemId, setSelectedItemId] = createSignal<
+    string | undefined
+  >();
   const itemsQuery = useItems({ feedId: props.feedId });
 
   const allItems = () =>
@@ -18,19 +20,21 @@ export function ItemList(props: ItemListProps) {
 
   const isLoading = () => itemsQuery.isLoading;
 
-  const currentIndex = () => allItems().findIndex((i) => i.id === selectedItemId());
-  const prevItem = () => currentIndex() > 0 ? allItems()[currentIndex() - 1] : undefined;
-  const nextItem = () => currentIndex() >= 0 && currentIndex() < allItems().length - 1 ? allItems()[currentIndex() + 1] : undefined;
+  const currentIndex = () =>
+    allItems().findIndex((i) => i.id === selectedItemId());
+  const prevItem = () =>
+    currentIndex() > 0 ? allItems()[currentIndex() - 1] : undefined;
+  const nextItem = () =>
+    currentIndex() >= 0 && currentIndex() < allItems().length - 1
+      ? allItems()[currentIndex() + 1]
+      : undefined;
 
   return (
     <div class={stack({ gap: "4", width: "full" })}>
       <div class={stack({ gap: "2", padding: "0" })}>
         <For each={allItems()}>
           {(item) => (
-            <ItemRow
-              item={item}
-              onClick={(i) => setSelectedItemId(i.id)}
-            />
+            <ItemRow item={item} onClick={(i) => setSelectedItemId(i.id)} />
           )}
         </For>
       </div>

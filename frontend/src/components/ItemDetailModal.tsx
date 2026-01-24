@@ -86,7 +86,14 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
               borderColor: "gray.100",
             })}
           >
-            <h2 class={css({ fontSize: "lg", fontWeight: "bold", truncate: true, flex: 1 })}>
+            <h2
+              class={css({
+                fontSize: "lg",
+                fontWeight: "bold",
+                truncate: true,
+                flex: 1,
+              })}
+            >
               {itemQuery.data?.title || "Loading..."}
             </h2>
             <button
@@ -122,7 +129,14 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             <Show when={itemQuery.data}>
               {(item) => (
                 <>
-                  <div class={flex({ gap: "4", fontSize: "sm", color: "gray.500", flexWrap: "wrap" })}>
+                  <div
+                    class={flex({
+                      gap: "4",
+                      fontSize: "sm",
+                      color: "gray.500",
+                      flexWrap: "wrap",
+                    })}
+                  >
                     <span>{item().publishedAt}</span>
                     <Show when={item().author}>
                       <span>By {item().author}</span>
@@ -224,7 +238,9 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                 padding: "2",
                 paddingInline: "4",
                 borderRadius: "md",
-                backgroundColor: itemQuery.data?.isRead ? "gray.200" : "blue.50",
+                backgroundColor: itemQuery.data?.isRead
+                  ? "gray.200"
+                  : "blue.50",
                 color: itemQuery.data?.isRead ? "gray.700" : "blue.700",
                 cursor: "pointer",
                 fontSize: "sm",
