@@ -25,9 +25,9 @@ Focus on setting up the TypeScript PBT environment and applying it to core front
 - [x] Task: Implement PBT for Item Filtering & Sorting (`frontend/src/lib/item-query.ts`) (1c00f78)
     - [x] Write failing PBT tests in `frontend/src/lib/item-query.test.ts`
     - [x] Verify invariants: sorted order and correct filtering for any generated input
-- [ ] Task: Implement PBT for URL/String Utilities (if applicable)
-    - [ ] Identify or create utility functions for string normalization
-    - [ ] Write PBT tests to ensure resilience against malformed inputs
+- [x] Task: Implement PBT for URL/String Utilities (if applicable) (5b86ada)
+    - [x] Identify or create utility functions for string normalization
+    - [x] Write PBT tests to ensure resilience against malformed inputs
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Frontend Infrastructure & Initial PBT' (Protocol in workflow.md)
 
 ## Phase 3: Final Integration & Coverage
