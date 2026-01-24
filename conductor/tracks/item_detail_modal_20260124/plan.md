@@ -27,7 +27,7 @@ Prepare the frontend to handle the new field and create the basic modal structur
 - [x] Task: Write unit tests for `ItemDetailModal` (rendering and status toggle) 1d39e76
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Frontend Infrastructure & Basic Modal' (Protocol in workflow.md) d637dc3
 
-## Phase 3: Navigation & List Integration
+## Phase 3: Navigation & List Integration [checkpoint: 2759728]
 Implement the navigation logic between items and integrate the modal into the list view.
 
 - [x] Task: Implement navigation logic to find "Previous" and "Next" item IDs based on the current list state 77a96eb
@@ -37,4 +37,4 @@ Implement the navigation logic between items and integrate the modal into the li
 - [x] Task: Add keyboard shortcuts (Esc to close, J/K or Arrows for navigation) 77a96eb
 - [x] Task: Write integration tests for item navigation within the modal 77a96eb
 - [x] Task: Verify responsive design for the modal on mobile viewport 77a96eb
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Navigation & List Integration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Navigation & List Integration' (Protocol in workflow.md) 2759728
