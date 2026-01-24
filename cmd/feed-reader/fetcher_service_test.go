@@ -9,7 +9,45 @@ import (
 
 	"github.com/mmcdole/gofeed"
 	"github.com/nakatanakatana/feed-reader/store"
+	"github.com/stretchr/testify/assert"
+	"pgregory.net/rapid"
 )
+
+func TestFetcherService_normalizeItem_PBT(t *testing.T) {
+	s := &FetcherService{}
+
+	rapid.Check(t, func(t *rapid.T) {
+		feedID := rapid.String().Draw(t, "feedID")
+		item := &gofeed.Item{
+			Title:       rapid.String().Draw(t, "title"),
+			Link:        rapid.String().Draw(t, "link"),
+			Description: rapid.String().Draw(t, "description"),
+			GUID:        rapid.String().Draw(t, "guid"),
+		}
+
+		hasPubDate := rapid.Bool().Draw(t, "hasPubDate")
+		if hasPubDate {
+			pubDate := time.Unix(rapid.Int64Range(0, 2e9).Draw(t, "pubDate"), 0)
+			item.PublishedParsed = &pubDate
+		}
+
+		params := s.normalizeItem(feedID, item)
+
+		assert.Equal(t, feedID, params.FeedID)
+		assert.Equal(t, item.Link, params.Url)
+		assert.Equal(t, item.Title, *params.Title)
+		assert.Equal(t, item.Description, *params.Description)
+		assert.Equal(t, item.GUID, *params.Guid)
+
+		if hasPubDate {
+			assert.NotNil(t, params.PublishedAt)
+			assert.Equal(t, item.PublishedParsed.Format(time.RFC3339), *params.PublishedAt)
+		} else {
+			assert.Nil(t, params.PublishedAt)
+		}
+	})
+}
+
 
 func TestFetcherService_FetchAndSave(t *testing.T) {
 	ctx := context.Background()

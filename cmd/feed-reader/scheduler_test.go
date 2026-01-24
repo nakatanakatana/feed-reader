@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"pgregory.net/rapid"
 )
 
 // Mock task for testing scheduler
@@ -60,4 +61,24 @@ func TestScheduler_Start_WithJitter(t *testing.T) {
 	elapsed := time.Since(start)
 	// Just ensuring it didn't block forever or panic
 	assert.Greater(t, elapsed, 10*time.Millisecond)
+}
+
+func TestScheduler_nextDelay_PBT(t *testing.T) {
+	rapid.Check(t, func(t *rapid.T) {
+		interval := time.Duration(rapid.Int64Range(1, int64(24*time.Hour)).Draw(t, "interval"))
+		maxJitter := time.Duration(rapid.Int64Range(0, int64(time.Hour)).Draw(t, "maxJitter"))
+
+		s := NewScheduler(interval, maxJitter, nil)
+		
+		for i := 0; i < 100; i++ {
+			delay := s.nextDelay()
+			
+			assert.GreaterOrEqual(t, int64(delay), int64(interval), "Delay should be at least the interval")
+			if maxJitter > 0 {
+				assert.Less(t, int64(delay), int64(interval+maxJitter), "Delay should be less than interval + maxJitter")
+			} else {
+				assert.Equal(t, interval, delay, "Delay should equal interval when maxJitter is 0")
+			}
+		}
+	})
 }
