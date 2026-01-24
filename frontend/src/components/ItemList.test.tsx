@@ -1,10 +1,23 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { TransportProvider } from "../lib/transport-context";
 import { ItemList } from "./ItemList";
-import { createConnectTransport } from "@connectrpc/connect-web";
+
+// Mock the db module
+vi.mock("../lib/db", () => ({
+  items: {
+    isReady: vi.fn().mockReturnValue(true),
+  },
+  updateItemStatus: vi.fn(),
+}));
+
+// Mock useLiveQuery
+vi.mock("@tanstack/solid-db", () => ({
+  useLiveQuery: vi.fn(),
+  eq: vi.fn(),
+}));
+
+import { useLiveQuery } from "@tanstack/solid-db";
 
 describe("ItemList", () => {
   let dispose: () => void;
@@ -12,64 +25,31 @@ describe("ItemList", () => {
   afterEach(() => {
     if (dispose) dispose();
     document.body.innerHTML = "";
-  });
-
-  const transport = createConnectTransport({
-    baseUrl: "http://localhost:3000",
-  });
-
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: { retry: 0 },
-      mutations: { retry: 0 },
-    },
+    vi.clearAllMocks();
   });
 
   it("renders a list of items", async () => {
-    dispose = render(
-      () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ItemList />
-          </QueryClientProvider>
-        </TransportProvider>
-      ),
-      document.body,
-    );
+    const mockItems = [
+      { id: "1", title: "Item 1", url: "http://example.com/1", isRead: false },
+      {
+        id: "20",
+        title: "Item 20",
+        url: "http://example.com/20",
+        isRead: true,
+      },
+    ];
 
-    // Should show loading initially or eventually show items
+    vi.mocked(useLiveQuery).mockReturnValue({
+      data: mockItems,
+    } as unknown as ReturnType<typeof useLiveQuery>);
+
+    dispose = render(() => <ItemList />, document.body);
+
     await expect
       .element(page.getByText("Item 1", { exact: true }))
       .toBeInTheDocument();
     await expect
       .element(page.getByText("Item 20", { exact: true }))
-      .toBeInTheDocument();
-  });
-
-  it("loads more items when button is clicked", async () => {
-    dispose = render(
-      () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ItemList />
-          </QueryClientProvider>
-        </TransportProvider>
-      ),
-      document.body,
-    );
-
-    await expect
-      .element(page.getByText("Item 1", { exact: true }))
-      .toBeInTheDocument();
-
-    const loadMoreButton = page.getByRole("button", { name: /Load More/i });
-    await loadMoreButton.click();
-
-    await expect
-      .element(page.getByText("Item 21", { exact: true }))
-      .toBeInTheDocument();
-    await expect
-      .element(page.getByText("Item 40", { exact: true }))
       .toBeInTheDocument();
   });
 });

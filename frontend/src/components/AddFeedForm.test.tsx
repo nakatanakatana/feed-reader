@@ -1,15 +1,14 @@
-import { createConnectTransport } from "@connectrpc/connect-web";
-import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
-import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { TransportProvider } from "../lib/transport-context";
-import { worker } from "../mocks/browser";
 import { AddFeedForm } from "./AddFeedForm";
-import { mockConnectWeb } from "../mocks/connect";
-import { FeedService } from "../gen/feed/v1/feed_connect";
-import { CreateFeedResponse } from "../gen/feed/v1/feed_pb";
+import * as db from "../lib/db";
+import { Feed } from "../gen/feed/v1/feed_pb";
+
+// Mock the db module
+vi.mock("../lib/db", () => ({
+  addFeed: vi.fn(),
+}));
 
 describe("AddFeedForm", () => {
   let dispose: () => void;
@@ -17,49 +16,19 @@ describe("AddFeedForm", () => {
   afterEach(() => {
     if (dispose) dispose();
     document.body.innerHTML = "";
-  });
-
-  const transport = createConnectTransport({
-    baseUrl: "http://localhost:3000",
+    vi.clearAllMocks();
   });
 
   it("creates a new feed", async () => {
-    const createFeedMock = vi.fn();
-
-    worker.use(
-      mockConnectWeb(FeedService)({
-        method: "createFeed",
-        handler: (req) => {
-          const newFeed = {
-            uuid: "1",
-            url: req.url,
-            title: "Mocked Feed",
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          };
-          createFeedMock(req);
-          return new CreateFeedResponse({ feed: newFeed });
-        },
+    vi.mocked(db.addFeed).mockResolvedValue(
+      new Feed({
+        uuid: "1",
+        url: "http://example.com",
+        title: "Mocked Feed",
       }),
     );
 
-    const queryClient = new QueryClient({
-      defaultOptions: {
-        queries: { retry: 0 },
-        mutations: { retry: 0 },
-      },
-    });
-
-    dispose = render(
-      () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <AddFeedForm />
-          </QueryClientProvider>
-        </TransportProvider>
-      ),
-      document.body,
-    );
+    dispose = render(() => <AddFeedForm />, document.body);
 
     const input = page.getByPlaceholder("Feed URL");
     await input.fill("http://example.com");
@@ -68,43 +37,15 @@ describe("AddFeedForm", () => {
     await button.click();
 
     await expect
-      .poll(() => createFeedMock.mock.calls.length)
+      .poll(() => vi.mocked(db.addFeed).mock.calls.length)
       .toBeGreaterThan(0);
-    expect(createFeedMock).toHaveBeenCalledWith(
-      expect.objectContaining({ url: "http://example.com" }),
-    );
+    expect(db.addFeed).toHaveBeenCalledWith("http://example.com");
   });
 
   it("displays an error message when createFeed fails", async () => {
-    worker.use(
-      http.post("*/feed.v1.FeedService/CreateFeed", () => {
-        return new HttpResponse(
-          JSON.stringify({ message: "Invalid feed URL", code: 3 }),
-          {
-            status: 400, // InvalidArgument -> 400
-            headers: { "Content-Type": "application/json" },
-          },
-        );
-      }),
-    );
+    vi.mocked(db.addFeed).mockRejectedValue(new Error("Invalid feed URL"));
 
-    const queryClient = new QueryClient({
-      defaultOptions: {
-        queries: { retry: 0 },
-        mutations: { retry: 0 },
-      },
-    });
-
-    dispose = render(
-      () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <AddFeedForm />
-          </QueryClientProvider>
-        </TransportProvider>
-      ),
-      document.body,
-    );
+    dispose = render(() => <AddFeedForm />, document.body);
 
     const input = page.getByPlaceholder("Feed URL");
     await input.fill("invalid-url");

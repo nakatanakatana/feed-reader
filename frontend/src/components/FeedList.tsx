@@ -1,52 +1,44 @@
-import { createClient } from "@connectrpc/connect";
+import { useLiveQuery } from "@tanstack/solid-db";
 import { Link } from "@tanstack/solid-router";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/solid-query";
-import { For, Show } from "solid-js";
+import { For, Show, createSignal } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
-import { FeedService } from "../gen/feed/v1/feed_connect";
-import { useTransport } from "../lib/transport-context";
+import { feeds } from "../lib/db";
 
 export function FeedList() {
-  const transport = useTransport();
-  const client = createClient(FeedService, transport);
-  const queryClient = useQueryClient();
+  const { data: feedList } = useLiveQuery((q) => q.from({ feed: feeds }));
 
-  const query = useQuery(() => ({
-    queryKey: ["feeds"],
-    queryFn: async () => {
-      const response = await client.listFeeds({});
-      return response.feeds;
-    },
-  }));
+  const [deleteError, setDeleteError] = createSignal<Error | null>(null);
 
-  const deleteMutation = useMutation(() => ({
-    mutationFn: async (uuid: string) => {
-      await client.deleteFeed({ uuid });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["feeds"] });
-    },
-  }));
+  const handleDelete = async (uuid: string) => {
+    setDeleteError(null);
+    try {
+      await feeds.delete(uuid);
+    } catch (e) {
+      setDeleteError(
+        e instanceof Error ? e : new Error("Failed to delete feed"),
+      );
+    }
+  };
+
+  // Loading state approximation
+  const isLoading = () => !feeds.isReady();
 
   return (
     <div class={stack({ gap: "4" })}>
       <h2 class={css({ fontSize: "xl", fontWeight: "semibold" })}>
         Your Feeds
       </h2>
-      <Show when={query.isLoading}>
+      <Show when={isLoading()}>
         <p>Loading...</p>
       </Show>
-      <Show when={query.isError}>
-        <p class={css({ color: "red.500" })}>Error: {query.error?.message}</p>
-      </Show>
-      <Show when={deleteMutation.isError}>
+      <Show when={deleteError()}>
         <p class={css({ color: "red.500" })}>
-          Delete Error: {deleteMutation.error?.message}
+          Delete Error: {deleteError()?.message}
         </p>
       </Show>
       <ul class={stack({ gap: "2" })}>
-        <For each={query.data}>
+        <For each={feedList}>
           {(feed) => (
             <li
               class={flex({
@@ -76,8 +68,7 @@ export function FeedList() {
               </div>
               <button
                 type="button"
-                onClick={() => deleteMutation.mutate(feed.uuid)}
-                disabled={deleteMutation.isPending}
+                onClick={() => handleDelete(feed.uuid)}
                 class={css({
                   color: "red.500",
                   padding: "1",

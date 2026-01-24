@@ -1,22 +1,29 @@
-import { Show } from "solid-js";
+import { Show, createSignal } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
-import type { Item } from "../gen/item/v1/item_pb";
-import { useUpdateItemStatus } from "../lib/item-query";
+import type { Item } from "../lib/db";
+import { updateItemStatus } from "../lib/db";
 
 interface ItemRowProps {
   item: Item;
 }
 
 export function ItemRow(props: ItemRowProps) {
-  const updateStatus = useUpdateItemStatus();
+  const [isPending, setIsPending] = createSignal(false);
 
-  const handleToggleRead = (e: MouseEvent) => {
+  const handleToggleRead = async (e: MouseEvent) => {
     e.stopPropagation();
-    updateStatus.mutate({
-      ids: [props.item.id],
-      isRead: !props.item.isRead,
-    });
+    setIsPending(true);
+    try {
+      await updateItemStatus({
+        ids: [props.item.id],
+        isRead: !props.item.isRead,
+      });
+    } catch (e) {
+      console.error("Failed to update item status", e);
+    } finally {
+      setIsPending(false);
+    }
   };
 
   return (
@@ -67,7 +74,7 @@ export function ItemRow(props: ItemRowProps) {
       <button
         type="button"
         onClick={handleToggleRead}
-        disabled={updateStatus.isPending}
+        disabled={isPending()}
         class={css({
           fontSize: "xs",
           padding: "2",

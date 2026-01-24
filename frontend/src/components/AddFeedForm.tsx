@@ -1,31 +1,26 @@
-import { createClient } from "@connectrpc/connect";
-import { useMutation, useQueryClient } from "@tanstack/solid-query";
 import { createSignal } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
-import { FeedService } from "../gen/feed/v1/feed_connect";
-import { useTransport } from "../lib/transport-context";
+import { addFeed } from "../lib/db";
 
 export function AddFeedForm() {
-  const transport = useTransport();
-  const client = createClient(FeedService, transport);
-  const queryClient = useQueryClient();
   const [url, setUrl] = createSignal("");
+  const [isPending, setIsPending] = createSignal(false);
+  const [error, setError] = createSignal<Error | null>(null);
 
-  const mutation = useMutation(() => ({
-    mutationFn: async (url: string) => {
-      const response = await client.createFeed({ url });
-      return response.feed;
-    },
-    onSuccess: () => {
-      setUrl("");
-      queryClient.invalidateQueries({ queryKey: ["feeds"] });
-    },
-  }));
-
-  const handleSubmit = (e: Event) => {
+  const handleSubmit = async (e: Event) => {
     e.preventDefault();
-    mutation.mutate(url());
+    setIsPending(true);
+    setError(null);
+
+    try {
+      await addFeed(url());
+      setUrl("");
+    } catch (e) {
+      setError(e instanceof Error ? e : new Error("Unknown error"));
+    } finally {
+      setIsPending(false);
+    }
   };
 
   return (
@@ -39,7 +34,7 @@ export function AddFeedForm() {
           placeholder="Feed URL"
           value={url()}
           onInput={(e) => setUrl(e.currentTarget.value)}
-          disabled={mutation.isPending}
+          disabled={isPending()}
           class={css({
             border: "1px solid",
             borderColor: "gray.300",
@@ -51,7 +46,7 @@ export function AddFeedForm() {
         />
         <button
           type="submit"
-          disabled={mutation.isPending}
+          disabled={isPending()}
           class={css({
             backgroundColor: "blue.600",
             color: "white",
@@ -64,12 +59,12 @@ export function AddFeedForm() {
             _disabled: { backgroundColor: "gray.400", cursor: "not-allowed" },
           })}
         >
-          {mutation.isPending ? "Adding..." : "Add Feed"}
+          {isPending() ? "Adding..." : "Add Feed"}
         </button>
       </div>
-      {mutation.isError && (
+      {error() && (
         <p class={css({ color: "red.500", fontSize: "sm", width: "full" })}>
-          Error: {mutation.error?.message}
+          Error: {error()?.message}
         </p>
       )}
     </form>

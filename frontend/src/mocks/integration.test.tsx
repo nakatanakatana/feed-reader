@@ -1,5 +1,5 @@
 import { createConnectTransport } from "@connectrpc/connect-web";
-import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
+import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
   createRouter,
@@ -8,6 +8,7 @@ import {
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it } from "vitest";
 import { page } from "vitest/browser";
+import { queryClient } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
 
@@ -23,12 +24,6 @@ describe("MSW Integration", () => {
     // 実際のネットワークを使うトランスポートを作成（MSWがこれをインターセプトする）
     const transport = createConnectTransport({
       baseUrl: "http://localhost:3000",
-    });
-
-    const queryClient = new QueryClient({
-      defaultOptions: {
-        queries: { retry: false },
-      },
     });
 
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
