@@ -4,5 +4,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Introduce Property-Based Testing (PBT) to both backend (Go) and frontend (TypeScript)**
+- [x] **Track: Introduce Property-Based Testing (PBT) to both backend (Go) and frontend (TypeScript)**
 *Link: [./tracks/pbt_integration_20260124/](./tracks/pbt_integration_20260124/)*
