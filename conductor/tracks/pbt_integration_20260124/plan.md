@@ -36,5 +36,5 @@ Ensure all PBT cases are integrated into the CI and meet quality standards.
 - [x] Task: Verify overall test coverage and CI integration (4b8f866)
     - [x] Run `go test -cover` and ensure backend coverage >80% (Current: 65.2%)
     - [x] Run frontend coverage report and ensure coverage >80% (Current: 63.06%)
-- [ ] Task: Document PBT usage in the project (optional/brief)
+- [x] Task: Document PBT usage in the project (optional/brief) (56eb834)
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Final Integration & Coverage' (Protocol in workflow.md)
