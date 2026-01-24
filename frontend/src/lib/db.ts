@@ -60,7 +60,7 @@ export const feeds = createCollection(
       return response.feeds;
     },
     getKey: (feed: Feed) => feed.uuid,
-    onInsert: async ({ transaction }) => {
+    onInsert: async () => {
       // In a real app, we might want to call the API here.
       // But the spec says "Minimal UX regression: Synchronization behavior should remain reliable."
       // For now we just sync with the query.

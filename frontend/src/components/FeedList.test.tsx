@@ -34,10 +34,7 @@ describe("FeedList", () => {
       history,
     });
 
-    return render(
-      () => <RouterProvider router={router} />,
-      document.body,
-    );
+    return render(() => <RouterProvider router={router} />, document.body);
   };
 
   it("displays a list of feeds", async () => {
@@ -47,8 +44,20 @@ describe("FeedList", () => {
         handler: () => {
           return new ListFeedsResponse({
             feeds: [
-              { uuid: "1", title: "Feed 1", url: "http://example.com/1", createdAt: "", updatedAt: "" },
-              { uuid: "2", title: "Feed 2", url: "http://example.com/2", createdAt: "", updatedAt: "" },
+              {
+                uuid: "1",
+                title: "Feed 1",
+                url: "http://example.com/1",
+                createdAt: "",
+                updatedAt: "",
+              },
+              {
+                uuid: "2",
+                title: "Feed 2",
+                url: "http://example.com/2",
+                createdAt: "",
+                updatedAt: "",
+              },
             ],
           });
         },
@@ -72,7 +81,13 @@ describe("FeedList", () => {
         handler: () => {
           return new ListFeedsResponse({
             feeds: [
-              { uuid: "1", title: "Feed 1", url: "http://example.com/1", createdAt: "", updatedAt: "" },
+              {
+                uuid: "1",
+                title: "Feed 1",
+                url: "http://example.com/1",
+                createdAt: "",
+                updatedAt: "",
+              },
             ],
           });
         },

@@ -12,8 +12,9 @@ interface ItemListProps {
 export function ItemList(props: ItemListProps) {
   const { data: itemList } = useLiveQuery((q) => {
     let query = q.from({ item: items });
-    if (props.feedId) {
-      query = query.where(({ item }) => eq(item.feedId, props.feedId!));
+    const fid = props.feedId;
+    if (fid) {
+      query = query.where(({ item }) => eq(item.feedId, fid));
     }
     return query.select(({ item }) => item);
   });
@@ -23,9 +24,7 @@ export function ItemList(props: ItemListProps) {
   return (
     <div class={stack({ gap: "4", width: "full" })}>
       <ul class={stack({ gap: "2", padding: "0", listStyleType: "none" })}>
-        <For each={itemList}>
-          {(item) => <ItemRow item={item as any} />}
-        </For>
+        <For each={itemList}>{(item) => <ItemRow item={item} />}</For>
       </ul>
 
       <Show when={isLoading()}>
@@ -36,11 +35,7 @@ export function ItemList(props: ItemListProps) {
         </div>
       </Show>
 
-      <Show
-        when={
-          !isLoading() && itemList?.length === 0
-        }
-      >
+      <Show when={!isLoading() && itemList?.length === 0}>
         <div
           class={css({ textAlign: "center", padding: "8", color: "gray.500" })}
         >

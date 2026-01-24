@@ -11,16 +11,17 @@ export const Route = createFileRoute("/feeds/$feedId")({
 
 function FeedItemsComponent() {
   const params = Route.useParams();
-  
+
   // Use useLiveQuery with query builder
-  const { data: feedsList } = useLiveQuery((q) => 
-    q.from({ feed: feeds })
-     .where(({ feed }) => eq(feed.uuid, params().feedId))
-     .select(({ feed }) => feed)
+  const { data: feedsList } = useLiveQuery((q) =>
+    q
+      .from({ feed: feeds })
+      .where(({ feed }) => eq(feed.uuid, params().feedId))
+      .select(({ feed }) => feed),
   );
-  
+
   const feedTitle = () => feedsList?.[0]?.title || "Feed Items";
-  
+
   return (
     <div class={stack({ padding: "4", gap: "4" })}>
       <h2 class={css({ fontSize: "xl", fontWeight: "bold" })}>{feedTitle()}</h2>

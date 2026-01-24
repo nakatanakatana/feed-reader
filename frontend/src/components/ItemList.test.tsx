@@ -14,10 +14,7 @@ describe("ItemList", () => {
   });
 
   it("renders a list of items", async () => {
-    dispose = render(
-      () => <ItemList />,
-      document.body,
-    );
+    dispose = render(() => <ItemList />, document.body);
 
     // Should show loading initially or eventually show items
     await expect

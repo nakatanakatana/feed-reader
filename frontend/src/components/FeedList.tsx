@@ -6,8 +6,8 @@ import { flex, stack } from "../../styled-system/patterns";
 import { feeds } from "../lib/db";
 
 export function FeedList() {
-  const { data: feedList } = useLiveQuery((q) => 
-    q.from({ feed: feeds }).select(({ feed }) => feed)
+  const { data: feedList } = useLiveQuery((q) =>
+    q.from({ feed: feeds }).select(({ feed }) => feed),
   );
   const [deleteError, setDeleteError] = createSignal<Error | null>(null);
 
@@ -16,10 +16,12 @@ export function FeedList() {
     try {
       await feeds.delete(uuid);
     } catch (e) {
-      setDeleteError(e instanceof Error ? e : new Error("Failed to delete feed"));
+      setDeleteError(
+        e instanceof Error ? e : new Error("Failed to delete feed"),
+      );
     }
   };
-  
+
   // Loading state approximation
   const isLoading = () => !feeds.isReady();
 
