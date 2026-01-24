@@ -50,6 +50,11 @@ export class Item extends Message<Item> {
    */
   isSaved = false;
 
+  /**
+   * @generated from field: string author = 9;
+   */
+  author = "";
+
   constructor(data?: PartialMessage<Item>) {
     super();
     proto3.util.initPartial(data, this);
@@ -66,6 +71,7 @@ export class Item extends Message<Item> {
     { no: 6, name: "feed_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 7, name: "is_read", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
     { no: 8, name: "is_saved", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+    { no: 9, name: "author", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Item {
