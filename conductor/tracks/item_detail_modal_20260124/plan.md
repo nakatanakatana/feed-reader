@@ -16,7 +16,7 @@ Extend the data model to include the `author` field and update the backend to su
 - [x] Task: Write and run tests for `ItemService` to verify `author` field in API response ba8a8c3
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Backend & Protocol Extension' (Protocol in workflow.md) 4537276
 
-## Phase 2: Frontend Infrastructure & Basic Modal
+## Phase 2: Frontend Infrastructure & Basic Modal [checkpoint: d637dc3]
 Prepare the frontend to handle the new field and create the basic modal structure.
 
 - [x] Task: Run `npm run gen` (or equivalent) to regenerate Connect RPC web clients from updated proto 55a9188
@@ -25,7 +25,7 @@ Prepare the frontend to handle the new field and create the basic modal structur
 - [x] Task: Add "Open in new tab" link to the original article 1d39e76
 - [x] Task: Implement Read/Unread toggle logic in the modal using TanStack Query mutations 1d39e76
 - [x] Task: Write unit tests for `ItemDetailModal` (rendering and status toggle) 1d39e76
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Frontend Infrastructure & Basic Modal' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Frontend Infrastructure & Basic Modal' (Protocol in workflow.md) d637dc3
 
 ## Phase 3: Navigation & List Integration
 Implement the navigation logic between items and integrate the modal into the list view.
