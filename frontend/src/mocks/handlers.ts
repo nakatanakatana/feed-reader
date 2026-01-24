@@ -10,6 +10,7 @@ import {
   Item,
   ListItemsResponse,
   UpdateItemStatusResponse,
+  GetItemResponse,
 } from "../gen/item/v1/item_pb";
 
 const feeds = [
@@ -91,6 +92,23 @@ export const handlers = [
     method: "updateItemStatus",
     handler: () => {
       return new UpdateItemStatusResponse({});
+    },
+  }),
+
+  mockConnectWeb(ItemService)({
+    method: "getItem",
+    handler: (req) => {
+      return new GetItemResponse({
+        item: new Item({
+          id: req.id,
+          title: `Detail for Item ${req.id}`,
+          description: `<p>This is the full content for item ${req.id}. It includes <strong>HTML</strong> formatting.</p>`,
+          publishedAt: new Date().toISOString(),
+          author: "Mock Author",
+          url: "https://example.com/mock-item",
+          isRead: false,
+        }),
+      });
     },
   }),
 ];

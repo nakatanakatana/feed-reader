@@ -28,10 +28,18 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     }
   };
 
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.key === "Escape") {
+      props.onClose();
+    }
+  };
+
   return (
     <Show when={props.itemId}>
+      {/* biome-ignore lint/a11y/noStaticElementInteractions: Backdrop click to close */}
       <div
         onClick={handleBackdropClick}
+        onKeyDown={handleKeyDown}
         class={center({
           position: "fixed",
           top: 0,
@@ -44,6 +52,10 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
         })}
       >
         <div
+          role="dialog"
+          aria-modal="true"
+          onClick={(e) => e.stopPropagation()}
+          onKeyDown={() => {}}
           class={stack({
             backgroundColor: "white",
             width: "full",
@@ -53,6 +65,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             boxShadow: "xl",
             overflow: "hidden",
             position: "relative",
+            textAlign: "left",
           })}
         >
           {/* Header */}
@@ -69,7 +82,9 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
               {itemQuery.data?.title || "Loading..."}
             </h2>
             <button
+              type="button"
               onClick={props.onClose}
+              aria-label="Close modal"
               class={css({
                 padding: "2",
                 cursor: "pointer",
@@ -112,7 +127,6 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                       "& a": { color: "blue.600", textDecoration: "underline" },
                       "& p": { marginBottom: "4" },
                     })}
-                    // biome-ignore lint/security/noDangerouslySetInnerHtml: Trusted content from feed
                     innerHTML={item().description}
                   />
 
@@ -155,6 +169,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
           >
             <div class={flex({ gap: "2" })}>
               <button
+                type="button"
                 class={css({
                   padding: "2",
                   paddingInline: "4",
@@ -172,6 +187,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                 ← Previous
               </button>
               <button
+                type="button"
                 class={css({
                   padding: "2",
                   paddingInline: "4",
@@ -191,6 +207,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             </div>
 
             <button
+              type="button"
               onClick={handleToggleRead}
               disabled={updateStatusMutation.isPending}
               class={css({

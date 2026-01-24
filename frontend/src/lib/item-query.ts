@@ -84,7 +84,11 @@ export const useItem = (id: () => string | undefined) => {
   const transport = useTransport();
   return createQuery(() => ({
     queryKey: itemKeys.detail(id() ?? ""),
-    queryFn: () => fetchItem(transport, id()!),
+    queryFn: async () => {
+      const currentId = id();
+      if (!currentId) throw new Error("Item ID is required");
+      return fetchItem(transport, currentId);
+    },
     enabled: !!id(),
   }));
 };

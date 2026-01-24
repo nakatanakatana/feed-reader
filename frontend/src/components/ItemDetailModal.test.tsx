@@ -1,4 +1,5 @@
 import { render } from "solid-js/web";
+import type { JSX } from "solid-js";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { ItemDetailModal } from "./ItemDetailModal";
@@ -40,7 +41,7 @@ describe("ItemDetailModal", () => {
     vi.clearAllMocks();
   });
 
-  const Wrapper = (props: { children: any }) => (
+  const Wrapper = (props: { children: JSX.Element }) => (
     <TransportProvider transport={transport}>
       <QueryClientProvider client={queryClient}>
         {props.children}
@@ -49,7 +50,11 @@ describe("ItemDetailModal", () => {
   );
 
   it("renders item content when itemId is provided", async () => {
-    dispose = render(() => <ItemDetailModal itemId="test-id" onClose={() => {}} />, document.body);
+    dispose = render(() => (
+      <Wrapper>
+        <ItemDetailModal itemId="test-id" onClose={() => {}} />
+      </Wrapper>
+    ), document.body);
     
     await expect.element(page.getByText("Test Item")).toBeInTheDocument();
     await expect.element(page.getByText("By Test Author")).toBeInTheDocument();
@@ -59,7 +64,11 @@ describe("ItemDetailModal", () => {
 
   it("calls onClose when close button is clicked", async () => {
     const onClose = vi.fn();
-    dispose = render(() => <ItemDetailModal itemId="test-id" onClose={onClose} />, document.body);
+    dispose = render(() => (
+      <Wrapper>
+        <ItemDetailModal itemId="test-id" onClose={onClose} />
+      </Wrapper>
+    ), document.body);
     
     const closeButton = page.getByText("✕");
     await closeButton.click();
@@ -67,7 +76,11 @@ describe("ItemDetailModal", () => {
   });
 
   it("does not render when itemId is undefined", async () => {
-    dispose = render(() => <ItemDetailModal itemId={undefined} onClose={() => {}} />, document.body);
+    dispose = render(() => (
+      <Wrapper>
+        <ItemDetailModal itemId={undefined} onClose={() => {}} />
+      </Wrapper>
+    ), document.body);
     const modalContent = document.body.innerHTML;
     expect(modalContent).toBe("");
   });
