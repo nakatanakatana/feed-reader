@@ -16,7 +16,7 @@ This plan outlines the steps to refactor the frontend state management for Feeds
     - [ ] Implement the `queryFn` for both collections using the existing Connect-RPC services.
 - [ ] **Task 4: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)**
 
-## Phase 2: Refactoring Feed Management
+## Phase 2: Refactoring Feed Management [checkpoint: c69f337]
 
 - [x] **Task 1: Refactor `FeedList` Component** (d837d86)
     - [ ] Replace `useQuery` with the `feeds` collection query.
