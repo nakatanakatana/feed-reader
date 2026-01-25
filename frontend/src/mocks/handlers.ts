@@ -5,6 +5,12 @@ import {
   ListFeedsResponse,
   CreateFeedResponse,
   DeleteFeedResponse,
+  ListTagsResponse,
+  CreateTagResponse,
+  DeleteTagResponse,
+  SetFeedTagsResponse,
+  Tag,
+  Feed,
 } from "../gen/feed/v1/feed_pb";
 import {
   Item,
@@ -13,44 +19,89 @@ import {
   GetItemResponse,
 } from "../gen/item/v1/item_pb";
 
-const feeds = [
-  {
+const tags: Tag[] = [
+  new Tag({
+    id: "tag-1",
+    name: "Tech",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  }),
+  new Tag({
+    id: "tag-2",
+    name: "News",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  }),
+];
+
+const feeds: Feed[] = [
+  new Feed({
     uuid: "1",
     url: "https://example.com/feed1.xml",
     title: "Example Feed 1",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-  },
-  {
+    tags: [tags[0]],
+  }),
+  new Feed({
     uuid: "2",
     url: "https://example.com/feed2.xml",
     title: "Example Feed 2",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-  },
+    tags: [tags[1]],
+  }),
 ];
 
 export const handlers = [
   mockConnectWeb(FeedService)({
     method: "listFeeds",
-    handler: () => {
-      return new ListFeedsResponse({ feeds });
+    handler: (req) => {
+      let filteredFeeds = feeds;
+      if (req.tagId) {
+        filteredFeeds = feeds.filter((f) =>
+          f.tags.some((t) => t.id === req.tagId)
+        );
+      }
+      return new ListFeedsResponse({ feeds: filteredFeeds });
     },
   }),
 
   mockConnectWeb(FeedService)({
     method: "createFeed",
     handler: (req) => {
-      const newFeed = {
+      const newFeed = new Feed({
         uuid: crypto.randomUUID(),
         url: req.url,
         title: req.title || "New Feed",
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-      };
+        tags: (req.tagIds || []).map(
+          (id) => tags.find((t) => t.id === id) || new Tag({ id, name: "Unknown" })
+        ),
+      });
       // In-memory update for the session
       feeds.push(newFeed);
       return new CreateFeedResponse({ feed: newFeed });
+    },
+  }),
+
+  mockConnectWeb(FeedService)({
+    method: "updateFeed",
+    handler: (req) => {
+      const index = feeds.findIndex((f) => f.uuid === req.uuid);
+      if (index !== -1) {
+        if (req.title) feeds[index].title = req.title;
+        if (req.tagIds) {
+          feeds[index].tags = req.tagIds.map(
+            (id) =>
+              tags.find((t) => t.id === id) || new Tag({ id, name: "Unknown" })
+          );
+        }
+        feeds[index].updatedAt = new Date().toISOString();
+        return new CreateFeedResponse({ feed: feeds[index] });
+      }
+      throw new Error("Feed not found");
     },
   }),
 
@@ -62,6 +113,55 @@ export const handlers = [
         feeds.splice(index, 1);
       }
       return new DeleteFeedResponse({});
+    },
+  }),
+
+  mockConnectWeb(FeedService)({
+    method: "listTags",
+    handler: () => {
+      return new ListTagsResponse({ tags });
+    },
+  }),
+
+  mockConnectWeb(FeedService)({
+    method: "createTag",
+    handler: (req) => {
+      const newTag = new Tag({
+        id: crypto.randomUUID(),
+        name: req.name,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+      tags.push(newTag);
+      return new CreateTagResponse({ tag: newTag });
+    },
+  }),
+
+  mockConnectWeb(FeedService)({
+    method: "deleteTag",
+    handler: (req) => {
+      const index = tags.findIndex((t) => t.id === req.id);
+      if (index !== -1) {
+        tags.splice(index, 1);
+        // Also remove from feeds
+        feeds.forEach((f) => {
+          f.tags = f.tags.filter((t) => t.id !== req.id);
+        });
+      }
+      return new DeleteTagResponse({});
+    },
+  }),
+
+  mockConnectWeb(FeedService)({
+    method: "setFeedTags",
+    handler: (req) => {
+      const feed = feeds.find((f) => f.uuid === req.feedId);
+      if (feed) {
+        feed.tags = req.tagIds.map(
+          (id) => tags.find((t) => t.id === id) || new Tag({ id, name: "Unknown" })
+        );
+      }
+      return new SetFeedTagsResponse({});
     },
   }),
 
@@ -82,9 +182,10 @@ export const handlers = [
           url: `https://example.com/item/${id}`,
           publishedAt: new Date().toISOString(),
           isRead: false,
+          feedId: req.feedId || "1",
         });
       });
-      return new ListItemsResponse({ items });
+      return new ListItemsResponse({ items, totalCount: 40 });
     },
   }),
 
