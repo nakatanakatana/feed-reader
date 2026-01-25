@@ -7,16 +7,17 @@ import (
 	"testing"
 
 	"github.com/nakatanakatana/feed-reader/gen/go/feed/v1/feedv1connect"
+	"github.com/nakatanakatana/feed-reader/store"
 )
 
 func TestRouting(t *testing.T) {
 	// Setup dependencies using helpers from handler_test.go
-	queries, _ := setupTestDB(t)
+	_, db := setupTestDB(t)
 	fetcher := &mockFetcher{}
 	itemFetcher := &mockItemFetcher{}
 
 	// Create the server
-	server := NewFeedServer(queries, mockUUIDGenerator{}, fetcher, itemFetcher)
+	server := NewFeedServer(store.NewStore(db), mockUUIDGenerator{}, fetcher, itemFetcher)
 
 	// Create the handler
 	path, handler := feedv1connect.NewFeedServiceHandler(server)

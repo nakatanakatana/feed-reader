@@ -4,9 +4,29 @@ import { For, Show, createSignal } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { feeds } from "../lib/db";
+import { useTags } from "../lib/tag-query";
 
 export function FeedList() {
-  const { data: feedList } = useLiveQuery((q) => q.from({ feed: feeds }));
+  const [selectedTagId, setSelectedTagId] = createSignal<string | undefined>();
+  const tagsQuery = useTags();
+
+  const { data: feedList } = useLiveQuery((q) => {
+    const query = q.from({ feed: feeds });
+    const tagId = selectedTagId();
+    if (tagId) {
+      // NOTE: solid-db where currently has issues with boolean expressions in some versions.
+      // We perform manual filtering on the result for now to ensure stability.
+      return query;
+    }
+    return query;
+  });
+
+  const filteredFeeds = () => {
+    const list = feedList ?? [];
+    const tagId = selectedTagId();
+    if (!tagId) return list;
+    return list.filter((f) => f.tags?.some((t) => t.id === tagId));
+  };
 
   const [deleteError, setDeleteError] = createSignal<Error | null>(null);
 
@@ -26,9 +46,69 @@ export function FeedList() {
 
   return (
     <div class={stack({ gap: "4" })}>
-      <h2 class={css({ fontSize: "xl", fontWeight: "semibold" })}>
-        Your Feeds
-      </h2>
+      <div
+        class={flex({ justifyContent: "space-between", alignItems: "center" })}
+      >
+        <h2 class={css({ fontSize: "xl", fontWeight: "semibold" })}>
+          Your Feeds
+        </h2>
+        <div class={flex({ gap: "2", alignItems: "center" })}>
+          <span class={css({ fontSize: "sm", color: "gray.600" })}>
+            Filter:
+          </span>
+          <button
+            type="button"
+            onClick={() => setSelectedTagId(undefined)}
+            class={css({
+              px: "2",
+              py: "0.5",
+              rounded: "md",
+              fontSize: "xs",
+              cursor: "pointer",
+              border: "1px solid",
+              ...(selectedTagId() === undefined
+                ? { bg: "blue.100", borderColor: "blue.500", color: "blue.700" }
+                : {
+                    bg: "gray.50",
+                    borderColor: "gray.300",
+                    color: "gray.600",
+                  }),
+            })}
+          >
+            All
+          </button>
+          <For each={tagsQuery.data?.tags}>
+            {(tag) => (
+              <button
+                type="button"
+                onClick={() => setSelectedTagId(tag.id)}
+                class={css({
+                  px: "2",
+                  py: "0.5",
+                  rounded: "md",
+                  fontSize: "xs",
+                  cursor: "pointer",
+                  border: "1px solid",
+                  ...(selectedTagId() === tag.id
+                    ? {
+                        bg: "blue.100",
+                        borderColor: "blue.500",
+                        color: "blue.700",
+                      }
+                    : {
+                        bg: "gray.50",
+                        borderColor: "gray.300",
+                        color: "gray.600",
+                      }),
+                })}
+              >
+                {tag.name}
+              </button>
+            )}
+          </For>
+        </div>
+      </div>
+
       <Show when={isLoading()}>
         <p>Loading...</p>
       </Show>
@@ -38,7 +118,7 @@ export function FeedList() {
         </p>
       </Show>
       <ul class={stack({ gap: "2" })}>
-        <For each={feedList}>
+        <For each={filteredFeeds()}>
           {(feed) => (
             <li
               class={flex({
@@ -51,17 +131,42 @@ export function FeedList() {
                 _hover: { backgroundColor: "gray.50" },
               })}
             >
-              <div class={stack({ gap: "0" })}>
-                <Link
-                  to="/feeds/$feedId"
-                  params={{ feedId: feed.uuid }}
-                  class={css({
-                    fontWeight: "medium",
-                    _hover: { textDecoration: "underline", color: "blue.600" },
-                  })}
-                >
-                  {feed.title || "Untitled Feed"}
-                </Link>
+              <div class={stack({ gap: "1" })}>
+                <div class={flex({ gap: "2", alignItems: "center" })}>
+                  <Link
+                    to="/feeds/$feedId"
+                    params={{ feedId: feed.uuid }}
+                    class={css({
+                      fontWeight: "medium",
+                      _hover: {
+                        textDecoration: "underline",
+                        color: "blue.600",
+                      },
+                    })}
+                  >
+                    {feed.title || "Untitled Feed"}
+                  </Link>
+                  <div class={flex({ gap: "1" })}>
+                    <For each={feed.tags}>
+                      {(tag) => (
+                        <span
+                          class={css({
+                            px: "2",
+                            py: "0.5",
+                            bg: "gray.100",
+                            rounded: "full",
+                            fontSize: "10px",
+                            color: "gray.600",
+                            border: "1px solid",
+                            borderColor: "gray.200",
+                          })}
+                        >
+                          {tag.name}
+                        </span>
+                      )}
+                    </For>
+                  </div>
+                </div>
                 <span class={css({ fontSize: "xs", color: "gray.500" })}>
                   {feed.url}
                 </span>

@@ -1,0 +1,37 @@
+package store
+
+import (
+	"context"
+	"fmt"
+)
+
+// SetFeedTags updates the tags associated with a feed.
+func (s *Store) SetFeedTags(ctx context.Context, feedID string, tagIDs []string) error {
+	tx, err := s.DB.BeginTx(ctx, nil)
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer func() {
+		_ = tx.Rollback()
+	}()
+
+	qtx := s.WithTx(tx)
+
+	// 1. Delete existing associations
+	if err := qtx.DeleteFeedTags(ctx, feedID); err != nil {
+		return fmt.Errorf("failed to delete existing feed tags: %w", err)
+	}
+
+	// 2. Insert new associations
+	for _, tagID := range tagIDs {
+		err := qtx.CreateFeedTag(ctx, CreateFeedTagParams{
+			FeedID: feedID,
+			TagID:  tagID,
+		})
+		if err != nil {
+			return fmt.Errorf("failed to create feed tag association: %w", err)
+		}
+	}
+
+	return tx.Commit()
+}

@@ -61,6 +61,10 @@ func (s *ItemServer) ListItems(ctx context.Context, req *connect.Request[itemv1.
 			isSaved = int64(0)
 		}
 	}
+	var tagID interface{}
+	if req.Msg.TagId != nil {
+		tagID = *req.Msg.TagId
+	}
 
 	var totalCount int64
 	var err error
@@ -69,6 +73,7 @@ func (s *ItemServer) ListItems(ctx context.Context, req *connect.Request[itemv1.
 		FeedID:  feedID,
 		IsRead:  isRead,
 		IsSaved: isSaved,
+		TagID:   tagID,
 	})
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
@@ -81,6 +86,7 @@ func (s *ItemServer) ListItems(ctx context.Context, req *connect.Request[itemv1.
 			FeedID:  feedID,
 			IsRead:  isRead,
 			IsSaved: isSaved,
+			TagID:   tagID,
 			Limit:   limit,
 			Offset:  offset,
 		})
@@ -95,6 +101,7 @@ func (s *ItemServer) ListItems(ctx context.Context, req *connect.Request[itemv1.
 			FeedID:  feedID,
 			IsRead:  isRead,
 			IsSaved: isSaved,
+			TagID:   tagID,
 			Limit:   limit,
 			Offset:  offset,
 		})

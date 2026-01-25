@@ -16,9 +16,13 @@ WHERE
 
 -- name: ListFeeds :many
 SELECT
-  *
+  f.*
 FROM
-  feeds
+  feeds f
+WHERE
+  (sqlc.narg('tag_id') IS NULL OR EXISTS (
+    SELECT 1 FROM feed_tags ft WHERE ft.feed_id = f.uuid AND ft.tag_id = sqlc.narg('tag_id')
+  ))
 ORDER BY
   created_at DESC;
 
@@ -174,7 +178,10 @@ LEFT JOIN
 WHERE
   (sqlc.narg('feed_id') IS NULL OR fi.feed_id = sqlc.narg('feed_id')) AND
   (sqlc.narg('is_read') IS NULL OR COALESCE(ir.is_read, 0) = sqlc.narg('is_read')) AND
-  (sqlc.narg('is_saved') IS NULL OR COALESCE(isv.is_saved, 0) = sqlc.narg('is_saved'))
+  (sqlc.narg('is_saved') IS NULL OR COALESCE(isv.is_saved, 0) = sqlc.narg('is_saved')) AND
+  (sqlc.narg('tag_id') IS NULL OR EXISTS (
+    SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = sqlc.narg('tag_id')
+  ))
 ORDER BY
   i.published_at DESC
 LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
@@ -201,7 +208,10 @@ LEFT JOIN
 WHERE
   (sqlc.narg('feed_id') IS NULL OR fi.feed_id = sqlc.narg('feed_id')) AND
   (sqlc.narg('is_read') IS NULL OR COALESCE(ir.is_read, 0) = sqlc.narg('is_read')) AND
-  (sqlc.narg('is_saved') IS NULL OR COALESCE(isv.is_saved, 0) = sqlc.narg('is_saved'))
+  (sqlc.narg('is_saved') IS NULL OR COALESCE(isv.is_saved, 0) = sqlc.narg('is_saved')) AND
+  (sqlc.narg('tag_id') IS NULL OR EXISTS (
+    SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = sqlc.narg('tag_id')
+  ))
 ORDER BY
   i.published_at ASC
 LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
@@ -220,7 +230,10 @@ LEFT JOIN
 WHERE
   (sqlc.narg('feed_id') IS NULL OR fi.feed_id = sqlc.narg('feed_id')) AND
   (sqlc.narg('is_read') IS NULL OR COALESCE(ir.is_read, 0) = sqlc.narg('is_read')) AND
-  (sqlc.narg('is_saved') IS NULL OR COALESCE(isv.is_saved, 0) = sqlc.narg('is_saved'));
+  (sqlc.narg('is_saved') IS NULL OR COALESCE(isv.is_saved, 0) = sqlc.narg('is_saved')) AND
+  (sqlc.narg('tag_id') IS NULL OR EXISTS (
+    SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = sqlc.narg('tag_id')
+  ));
 
 -- name: SetItemRead :one
 INSERT INTO item_reads (
@@ -249,3 +262,53 @@ ON CONFLICT(item_id) DO UPDATE SET
   saved_at = excluded.saved_at,
   updated_at = CURRENT_TIMESTAMP
 RETURNING *;
+
+-- name: CreateTag :one
+INSERT INTO tags (
+  id,
+  name
+) VALUES (
+  ?, ?
+)
+RETURNING *;
+
+-- name: ListTags :many
+SELECT
+  *
+FROM
+  tags
+ORDER BY
+  name ASC;
+
+-- name: DeleteTag :exec
+DELETE FROM
+  tags
+WHERE
+  id = ?;
+
+-- name: CreateFeedTag :exec
+INSERT INTO feed_tags (
+  feed_id,
+  tag_id
+) VALUES (
+  ?, ?
+)
+ON CONFLICT(feed_id, tag_id) DO NOTHING;
+
+-- name: DeleteFeedTags :exec
+DELETE FROM
+  feed_tags
+WHERE
+  feed_id = ?;
+
+-- name: ListTagsByFeedId :many
+SELECT
+  t.*
+FROM
+  tags t
+JOIN
+  feed_tags ft ON t.id = ft.tag_id
+WHERE
+  ft.feed_id = ?
+ORDER BY
+  t.name ASC;

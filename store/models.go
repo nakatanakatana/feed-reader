@@ -27,6 +27,13 @@ type FeedItem struct {
 	UpdatedAt string `json:"updated_at"`
 }
 
+type FeedTag struct {
+	FeedID    string `json:"feed_id"`
+	TagID     string `json:"tag_id"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
+}
+
 type Item struct {
 	ID          string  `json:"id"`
 	Url         string  `json:"url"`
@@ -53,4 +60,11 @@ type ItemSafe struct {
 	SavedAt   *string `json:"saved_at"`
 	CreatedAt string  `json:"created_at"`
 	UpdatedAt string  `json:"updated_at"`
+}
+
+type Tag struct {
+	ID        string `json:"id"`
+	Name      string `json:"name"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
 }

@@ -5,6 +5,13 @@ import { FeedService } from "../gen/feed/v1/feed_connect";
 import { ItemService } from "../gen/item/v1/item_connect";
 import { transport, queryClient } from "./query";
 
+export interface Tag {
+  id: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Feed {
   uuid: string;
   url: string;
@@ -19,6 +26,7 @@ export interface Feed {
   lastFetchedAt?: string;
   createdAt: string;
   updatedAt: string;
+  tags: Tag[];
 }
 
 export interface Item {
@@ -31,13 +39,14 @@ export interface Item {
   feedId: string;
   isRead: boolean;
   isSaved: boolean;
+  tags?: Tag[];
 }
 
 const feedClient = createClient(FeedService, transport);
 const itemClient = createClient(ItemService, transport);
 
-export const addFeed = async (url: string) => {
-  const response = await feedClient.createFeed({ url });
+export const addFeed = async (url: string, tagIds?: string[]) => {
+  const response = await feedClient.createFeed({ url, tagIds });
   queryClient.invalidateQueries({ queryKey: ["feeds"] });
   return response.feed;
 };

@@ -48,6 +48,14 @@ function RootComponent() {
         >
           Feeds
         </Link>{" "}
+        <Link
+          to="/tags"
+          activeProps={{
+            class: selectedRouteStyle,
+          }}
+        >
+          Tags
+        </Link>{" "}
       </div>
       <hr />
       <Outlet />
