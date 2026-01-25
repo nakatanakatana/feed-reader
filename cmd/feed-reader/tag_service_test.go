@@ -7,7 +7,6 @@ import (
 	"connectrpc.com/connect"
 	_ "github.com/mattn/go-sqlite3"
 	tagv1 "github.com/nakatanakatana/feed-reader/gen/go/tag/v1"
-	"github.com/nakatanakatana/feed-reader/gen/go/tag/v1/tagv1connect"
 	"github.com/nakatanakatana/feed-reader/store"
 )
 
@@ -16,7 +15,7 @@ func TestTagServer(t *testing.T) {
 	_, db := setupTestDB(t)
 	s := store.NewStore(db)
 	// NewTagServer is not implemented yet, this will fail to compile.
-	var handler tagv1connect.TagServiceHandler = NewTagServer(s, nil)
+	handler := NewTagServer(s, nil)
 
 	t.Run("Create and List Tags", func(t *testing.T) {
 		name := "Test Tag"
