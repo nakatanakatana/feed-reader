@@ -18,7 +18,7 @@
 - [x] Task: Create `ManageTagsModal.tsx` component. [dac7d31]
     - [ ] Sub-task: UI layout (list of tags, add/remove indication).
     - [ ] Sub-task: Logic to handle selection state (which tags to add/remove).
-- [ ] Task: Update `FeedList.tsx` to support bulk selection.
+- [x] Task: Update `FeedList.tsx` to support bulk selection. [35190c4]
     - [ ] Sub-task: Add checkboxes to feed rows.
     - [ ] Sub-task: Add "Manage Tags" button (disabled if 0 selected).
     - [ ] Sub-task: Connect "Manage Tags" button to open the modal.
