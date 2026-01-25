@@ -81,14 +81,30 @@ func (s *FeedServer) ListFeeds(ctx context.Context, req *connect.Request[feedv1.
 }
 
 func (s *FeedServer) CreateFeed(ctx context.Context, req *connect.Request[feedv1.CreateFeedRequest]) (*connect.Response[feedv1.CreateFeedResponse], error) {
-	fetchedFeed, err := s.fetcher.Fetch(ctx, req.Msg.Url)
+	feed, err := s.createFeedFromURL(ctx, req.Msg.Url, req.Msg.Title, req.Msg.TagIds)
 	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to fetch feed: %w", err))
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	f, err := s.toProtoFeed(ctx, *feed)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	return connect.NewResponse(&feedv1.CreateFeedResponse{
+		Feed: f,
+	}), nil
+}
+
+func (s *FeedServer) createFeedFromURL(ctx context.Context, url string, titleOverride *string, tagIds []string) (*store.Feed, error) {
+	fetchedFeed, err := s.fetcher.Fetch(ctx, url)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch feed: %w", err)
 	}
 
 	newUUID, err := s.uuidGenerator.NewRandom()
 	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to generate UUID: %w", err))
+		return nil, fmt.Errorf("failed to generate UUID: %w", err)
 	}
 	id := newUUID.String()
 
@@ -104,10 +120,16 @@ func (s *FeedServer) CreateFeed(ctx context.Context, req *connect.Request[feedv1
 		imageUrl = strPtr(fetchedFeed.Image.URL)
 	}
 
+	// Use override if provided, else fetched title
+	title := fetchedFeed.Title
+	if titleOverride != nil && *titleOverride != "" {
+		title = *titleOverride
+	}
+
 	feed, err := s.store.CreateFeed(ctx, store.CreateFeedParams{
 		Uuid:        id,
-		Url:         req.Msg.Url,
-		Title:       strPtr(fetchedFeed.Title),
+		Url:         url,
+		Title:       strPtr(title),
 		Description: strPtr(fetchedFeed.Description),
 		Link:        strPtr(fetchedFeed.Link),
 		Language:    strPtr(fetchedFeed.Language),
@@ -117,11 +139,11 @@ func (s *FeedServer) CreateFeed(ctx context.Context, req *connect.Request[feedv1
 		FeedVersion: strPtr(fetchedFeed.FeedVersion),
 	})
 	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, err)
+		return nil, err
 	}
 
-	if len(req.Msg.TagIds) > 0 {
-		if err := s.store.SetFeedTags(ctx, feed.Uuid, req.Msg.TagIds); err != nil {
+	if len(tagIds) > 0 {
+		if err := s.store.SetFeedTags(ctx, feed.Uuid, tagIds); err != nil {
 			return nil, connect.NewError(connect.CodeInternal, err)
 		}
 	}
@@ -129,14 +151,7 @@ func (s *FeedServer) CreateFeed(ctx context.Context, req *connect.Request[feedv1
 	// Trigger immediate fetch of items
 	_ = s.itemFetcher.FetchAndSave(ctx, feed)
 
-	protoFeed, err := s.toProtoFeed(ctx, feed)
-	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, err)
-	}
-
-	return connect.NewResponse(&feedv1.CreateFeedResponse{
-		Feed: protoFeed,
-	}), nil
+	return &feed, nil
 }
 
 func (s *FeedServer) UpdateFeed(ctx context.Context, req *connect.Request[feedv1.UpdateFeedRequest]) (*connect.Response[feedv1.UpdateFeedResponse], error) {
@@ -193,6 +208,42 @@ func (s *FeedServer) RefreshFeeds(ctx context.Context, req *connect.Request[feed
 	}
 
 	return connect.NewResponse(&feedv1.RefreshFeedsResponse{}), nil
+}
+
+func (s *FeedServer) ImportOpml(ctx context.Context, req *connect.Request[feedv1.ImportOpmlRequest]) (*connect.Response[feedv1.ImportOpmlResponse], error) {
+	opmlFeeds, err := ParseOPML(req.Msg.OpmlContent)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("failed to parse OPML: %w", err))
+	}
+
+	response := &feedv1.ImportOpmlResponse{
+		Total: int32(len(opmlFeeds)),
+	}
+
+	for _, opmlFeed := range opmlFeeds {
+		// Deduplication
+		_, err := s.store.GetFeedByURL(ctx, opmlFeed.URL)
+		if err == nil {
+			// Found
+			response.Skipped++
+			continue
+		}
+		if !errors.Is(err, sql.ErrNoRows) {
+			// DB Error (unexpected)
+			response.FailedFeeds = append(response.FailedFeeds, opmlFeed.URL)
+			continue
+		}
+
+		// Not found, create
+		_, err = s.createFeedFromURL(ctx, opmlFeed.URL, &opmlFeed.Title, []string{})
+		if err != nil {
+			response.FailedFeeds = append(response.FailedFeeds, opmlFeed.URL)
+			continue
+		}
+		response.Success++
+	}
+
+	return connect.NewResponse(response), nil
 }
 
 func (s *FeedServer) CreateTag(ctx context.Context, req *connect.Request[feedv1.CreateTagRequest]) (*connect.Response[feedv1.CreateTagResponse], error) {

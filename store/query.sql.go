@@ -316,6 +316,36 @@ func (q *Queries) GetFeed(ctx context.Context, uuid string) (Feed, error) {
 	return i, err
 }
 
+const getFeedByURL = `-- name: GetFeedByURL :one
+SELECT
+  uuid, url, link, title, description, language, image_url, copyright, feed_type, feed_version, last_fetched_at, created_at, updated_at
+FROM
+  feeds
+WHERE
+  url = ?
+`
+
+func (q *Queries) GetFeedByURL(ctx context.Context, url string) (Feed, error) {
+	row := q.db.QueryRowContext(ctx, getFeedByURL, url)
+	var i Feed
+	err := row.Scan(
+		&i.Uuid,
+		&i.Url,
+		&i.Link,
+		&i.Title,
+		&i.Description,
+		&i.Language,
+		&i.ImageUrl,
+		&i.Copyright,
+		&i.FeedType,
+		&i.FeedVersion,
+		&i.LastFetchedAt,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const getItem = `-- name: GetItem :one
 SELECT
   i.id,

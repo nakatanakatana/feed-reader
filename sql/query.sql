@@ -6,6 +6,14 @@ FROM
 WHERE
   uuid = ?;
 
+-- name: GetFeedByURL :one
+SELECT
+  *
+FROM
+  feeds
+WHERE
+  url = ?;
+
 -- name: ListFeeds :many
 SELECT
   f.*
