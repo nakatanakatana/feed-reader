@@ -46,6 +46,14 @@ const (
 	// FeedServiceRefreshFeedsProcedure is the fully-qualified name of the FeedService's RefreshFeeds
 	// RPC.
 	FeedServiceRefreshFeedsProcedure = "/feed.v1.FeedService/RefreshFeeds"
+	// FeedServiceCreateTagProcedure is the fully-qualified name of the FeedService's CreateTag RPC.
+	FeedServiceCreateTagProcedure = "/feed.v1.FeedService/CreateTag"
+	// FeedServiceListTagsProcedure is the fully-qualified name of the FeedService's ListTags RPC.
+	FeedServiceListTagsProcedure = "/feed.v1.FeedService/ListTags"
+	// FeedServiceDeleteTagProcedure is the fully-qualified name of the FeedService's DeleteTag RPC.
+	FeedServiceDeleteTagProcedure = "/feed.v1.FeedService/DeleteTag"
+	// FeedServiceSetFeedTagsProcedure is the fully-qualified name of the FeedService's SetFeedTags RPC.
+	FeedServiceSetFeedTagsProcedure = "/feed.v1.FeedService/SetFeedTags"
 )
 
 // FeedServiceClient is a client for the feed.v1.FeedService service.
@@ -56,6 +64,11 @@ type FeedServiceClient interface {
 	UpdateFeed(context.Context, *connect.Request[v1.UpdateFeedRequest]) (*connect.Response[v1.UpdateFeedResponse], error)
 	DeleteFeed(context.Context, *connect.Request[v1.DeleteFeedRequest]) (*connect.Response[v1.DeleteFeedResponse], error)
 	RefreshFeeds(context.Context, *connect.Request[v1.RefreshFeedsRequest]) (*connect.Response[v1.RefreshFeedsResponse], error)
+	// Tag management
+	CreateTag(context.Context, *connect.Request[v1.CreateTagRequest]) (*connect.Response[v1.CreateTagResponse], error)
+	ListTags(context.Context, *connect.Request[v1.ListTagsRequest]) (*connect.Response[v1.ListTagsResponse], error)
+	DeleteTag(context.Context, *connect.Request[v1.DeleteTagRequest]) (*connect.Response[v1.DeleteTagResponse], error)
+	SetFeedTags(context.Context, *connect.Request[v1.SetFeedTagsRequest]) (*connect.Response[v1.SetFeedTagsResponse], error)
 }
 
 // NewFeedServiceClient constructs a client for the feed.v1.FeedService service. By default, it uses
@@ -105,6 +118,30 @@ func NewFeedServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(feedServiceMethods.ByName("RefreshFeeds")),
 			connect.WithClientOptions(opts...),
 		),
+		createTag: connect.NewClient[v1.CreateTagRequest, v1.CreateTagResponse](
+			httpClient,
+			baseURL+FeedServiceCreateTagProcedure,
+			connect.WithSchema(feedServiceMethods.ByName("CreateTag")),
+			connect.WithClientOptions(opts...),
+		),
+		listTags: connect.NewClient[v1.ListTagsRequest, v1.ListTagsResponse](
+			httpClient,
+			baseURL+FeedServiceListTagsProcedure,
+			connect.WithSchema(feedServiceMethods.ByName("ListTags")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteTag: connect.NewClient[v1.DeleteTagRequest, v1.DeleteTagResponse](
+			httpClient,
+			baseURL+FeedServiceDeleteTagProcedure,
+			connect.WithSchema(feedServiceMethods.ByName("DeleteTag")),
+			connect.WithClientOptions(opts...),
+		),
+		setFeedTags: connect.NewClient[v1.SetFeedTagsRequest, v1.SetFeedTagsResponse](
+			httpClient,
+			baseURL+FeedServiceSetFeedTagsProcedure,
+			connect.WithSchema(feedServiceMethods.ByName("SetFeedTags")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -116,6 +153,10 @@ type feedServiceClient struct {
 	updateFeed   *connect.Client[v1.UpdateFeedRequest, v1.UpdateFeedResponse]
 	deleteFeed   *connect.Client[v1.DeleteFeedRequest, v1.DeleteFeedResponse]
 	refreshFeeds *connect.Client[v1.RefreshFeedsRequest, v1.RefreshFeedsResponse]
+	createTag    *connect.Client[v1.CreateTagRequest, v1.CreateTagResponse]
+	listTags     *connect.Client[v1.ListTagsRequest, v1.ListTagsResponse]
+	deleteTag    *connect.Client[v1.DeleteTagRequest, v1.DeleteTagResponse]
+	setFeedTags  *connect.Client[v1.SetFeedTagsRequest, v1.SetFeedTagsResponse]
 }
 
 // GetFeed calls feed.v1.FeedService.GetFeed.
@@ -148,6 +189,26 @@ func (c *feedServiceClient) RefreshFeeds(ctx context.Context, req *connect.Reque
 	return c.refreshFeeds.CallUnary(ctx, req)
 }
 
+// CreateTag calls feed.v1.FeedService.CreateTag.
+func (c *feedServiceClient) CreateTag(ctx context.Context, req *connect.Request[v1.CreateTagRequest]) (*connect.Response[v1.CreateTagResponse], error) {
+	return c.createTag.CallUnary(ctx, req)
+}
+
+// ListTags calls feed.v1.FeedService.ListTags.
+func (c *feedServiceClient) ListTags(ctx context.Context, req *connect.Request[v1.ListTagsRequest]) (*connect.Response[v1.ListTagsResponse], error) {
+	return c.listTags.CallUnary(ctx, req)
+}
+
+// DeleteTag calls feed.v1.FeedService.DeleteTag.
+func (c *feedServiceClient) DeleteTag(ctx context.Context, req *connect.Request[v1.DeleteTagRequest]) (*connect.Response[v1.DeleteTagResponse], error) {
+	return c.deleteTag.CallUnary(ctx, req)
+}
+
+// SetFeedTags calls feed.v1.FeedService.SetFeedTags.
+func (c *feedServiceClient) SetFeedTags(ctx context.Context, req *connect.Request[v1.SetFeedTagsRequest]) (*connect.Response[v1.SetFeedTagsResponse], error) {
+	return c.setFeedTags.CallUnary(ctx, req)
+}
+
 // FeedServiceHandler is an implementation of the feed.v1.FeedService service.
 type FeedServiceHandler interface {
 	GetFeed(context.Context, *connect.Request[v1.GetFeedRequest]) (*connect.Response[v1.GetFeedResponse], error)
@@ -156,6 +217,11 @@ type FeedServiceHandler interface {
 	UpdateFeed(context.Context, *connect.Request[v1.UpdateFeedRequest]) (*connect.Response[v1.UpdateFeedResponse], error)
 	DeleteFeed(context.Context, *connect.Request[v1.DeleteFeedRequest]) (*connect.Response[v1.DeleteFeedResponse], error)
 	RefreshFeeds(context.Context, *connect.Request[v1.RefreshFeedsRequest]) (*connect.Response[v1.RefreshFeedsResponse], error)
+	// Tag management
+	CreateTag(context.Context, *connect.Request[v1.CreateTagRequest]) (*connect.Response[v1.CreateTagResponse], error)
+	ListTags(context.Context, *connect.Request[v1.ListTagsRequest]) (*connect.Response[v1.ListTagsResponse], error)
+	DeleteTag(context.Context, *connect.Request[v1.DeleteTagRequest]) (*connect.Response[v1.DeleteTagResponse], error)
+	SetFeedTags(context.Context, *connect.Request[v1.SetFeedTagsRequest]) (*connect.Response[v1.SetFeedTagsResponse], error)
 }
 
 // NewFeedServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -201,6 +267,30 @@ func NewFeedServiceHandler(svc FeedServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(feedServiceMethods.ByName("RefreshFeeds")),
 		connect.WithHandlerOptions(opts...),
 	)
+	feedServiceCreateTagHandler := connect.NewUnaryHandler(
+		FeedServiceCreateTagProcedure,
+		svc.CreateTag,
+		connect.WithSchema(feedServiceMethods.ByName("CreateTag")),
+		connect.WithHandlerOptions(opts...),
+	)
+	feedServiceListTagsHandler := connect.NewUnaryHandler(
+		FeedServiceListTagsProcedure,
+		svc.ListTags,
+		connect.WithSchema(feedServiceMethods.ByName("ListTags")),
+		connect.WithHandlerOptions(opts...),
+	)
+	feedServiceDeleteTagHandler := connect.NewUnaryHandler(
+		FeedServiceDeleteTagProcedure,
+		svc.DeleteTag,
+		connect.WithSchema(feedServiceMethods.ByName("DeleteTag")),
+		connect.WithHandlerOptions(opts...),
+	)
+	feedServiceSetFeedTagsHandler := connect.NewUnaryHandler(
+		FeedServiceSetFeedTagsProcedure,
+		svc.SetFeedTags,
+		connect.WithSchema(feedServiceMethods.ByName("SetFeedTags")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/feed.v1.FeedService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case FeedServiceGetFeedProcedure:
@@ -215,6 +305,14 @@ func NewFeedServiceHandler(svc FeedServiceHandler, opts ...connect.HandlerOption
 			feedServiceDeleteFeedHandler.ServeHTTP(w, r)
 		case FeedServiceRefreshFeedsProcedure:
 			feedServiceRefreshFeedsHandler.ServeHTTP(w, r)
+		case FeedServiceCreateTagProcedure:
+			feedServiceCreateTagHandler.ServeHTTP(w, r)
+		case FeedServiceListTagsProcedure:
+			feedServiceListTagsHandler.ServeHTTP(w, r)
+		case FeedServiceDeleteTagProcedure:
+			feedServiceDeleteTagHandler.ServeHTTP(w, r)
+		case FeedServiceSetFeedTagsProcedure:
+			feedServiceSetFeedTagsHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -246,4 +344,20 @@ func (UnimplementedFeedServiceHandler) DeleteFeed(context.Context, *connect.Requ
 
 func (UnimplementedFeedServiceHandler) RefreshFeeds(context.Context, *connect.Request[v1.RefreshFeedsRequest]) (*connect.Response[v1.RefreshFeedsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("feed.v1.FeedService.RefreshFeeds is not implemented"))
+}
+
+func (UnimplementedFeedServiceHandler) CreateTag(context.Context, *connect.Request[v1.CreateTagRequest]) (*connect.Response[v1.CreateTagResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("feed.v1.FeedService.CreateTag is not implemented"))
+}
+
+func (UnimplementedFeedServiceHandler) ListTags(context.Context, *connect.Request[v1.ListTagsRequest]) (*connect.Response[v1.ListTagsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("feed.v1.FeedService.ListTags is not implemented"))
+}
+
+func (UnimplementedFeedServiceHandler) DeleteTag(context.Context, *connect.Request[v1.DeleteTagRequest]) (*connect.Response[v1.DeleteTagResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("feed.v1.FeedService.DeleteTag is not implemented"))
+}
+
+func (UnimplementedFeedServiceHandler) SetFeedTags(context.Context, *connect.Request[v1.SetFeedTagsRequest]) (*connect.Response[v1.SetFeedTagsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("feed.v1.FeedService.SetFeedTags is not implemented"))
 }
