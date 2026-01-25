@@ -1,7 +1,4 @@
-import {
-  createMutation,
-  useQueryClient,
-} from "@tanstack/solid-query";
+import { createMutation, useQueryClient } from "@tanstack/solid-query";
 import { FeedService } from "../gen/feed/v1/feed_connect";
 import type { ManageFeedTagsRequest } from "../gen/feed/v1/feed_pb";
 import { transport } from "./query";

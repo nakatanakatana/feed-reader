@@ -44,8 +44,6 @@ describe("Feed Detail Page", () => {
     console.log("BODY:", document.body.innerHTML);
 
     // We expect "Item 1" (which is usually present in mocks) NOT to be in the document.
-    await expect
-      .element(page.getByText("Item 1"))
-      .not.toBeInTheDocument();
+    await expect.element(page.getByText("Item 1")).not.toBeInTheDocument();
   });
 });

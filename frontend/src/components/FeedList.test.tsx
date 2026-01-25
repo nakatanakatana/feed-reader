@@ -159,7 +159,7 @@ describe("FeedList", () => {
     // Select first feed
     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
     expect(checkboxes.length).toBe(2);
-    
+
     // Using native click as vitest-browser click might be tricky with multiple elements sometimes
     (checkboxes[0] as HTMLInputElement).click();
 
@@ -190,10 +190,12 @@ describe("FeedList", () => {
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     // 1. Select feed
-    const checkbox = document.querySelector('input[type="checkbox"]') as HTMLInputElement;
+    const checkbox = document.querySelector(
+      'input[type="checkbox"]',
+    ) as HTMLInputElement;
     if (!checkbox) {
-        console.log("BODY HTML:", document.body.innerHTML);
-        throw new Error("Checkbox not found");
+      console.log("BODY HTML:", document.body.innerHTML);
+      throw new Error("Checkbox not found");
     }
     checkbox.click();
 
@@ -202,18 +204,24 @@ describe("FeedList", () => {
     await manageButton.click();
 
     // 3. Modal should be open
-    await expect.element(page.getByText("Manage Tags for 1 feeds")).toBeInTheDocument();
+    await expect
+      .element(page.getByText("Manage Tags for 1 feeds"))
+      .toBeInTheDocument();
 
     // 4. Click Add for Tech tag
-    const addButton = Array.from(document.querySelectorAll('button')).find(b => b.textContent === 'Add');
+    const addButton = Array.from(document.querySelectorAll("button")).find(
+      (b) => b.textContent === "Add",
+    );
     if (!addButton) throw new Error("Add button not found");
     addButton.click();
-    
+
     // Give time for state update
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     // 5. Click Save Changes
-    const saveButton = Array.from(document.querySelectorAll('button')).find(b => b.textContent === 'Save Changes');
+    const saveButton = Array.from(document.querySelectorAll("button")).find(
+      (b) => b.textContent === "Save Changes",
+    );
     if (!saveButton) throw new Error("Save Changes button not found");
     saveButton.click();
 
@@ -221,7 +229,9 @@ describe("FeedList", () => {
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     // 6. Modal should close (button should disappear)
-    const manageButtonAfter = Array.from(document.querySelectorAll('button')).find(b => b.textContent?.includes('Manage Tags'));
+    const manageButtonAfter = Array.from(
+      document.querySelectorAll("button"),
+    ).find((b) => b.textContent?.includes("Manage Tags"));
     expect(manageButtonAfter).toBeUndefined();
   });
 });
