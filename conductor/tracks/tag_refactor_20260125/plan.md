@@ -14,17 +14,17 @@
 - [x] Task: Conductor - User Manual Verification 'Proto Definition & Generation' (Protocol in workflow.md) 1cb333e
 
 ## Phase 2: Backend Implementation (Go)
-- [ ] Task: Implement `TagService`
-    - [ ] Create `cmd/feed-reader/tag_service.go` (or similar)
-    - [ ] Implement `CreateTag`, `ListTags`, `DeleteTag` handlers in `TagService` (move logic from `FeedService`)
-    - [ ] Wire up `TagService` in `main.go`
-- [ ] Task: Refactor `FeedService`
-    - [ ] Remove `CreateTag`, `ListTags`, `DeleteTag` handlers from `FeedService`
-    - [ ] Update `Feed` message construction to use `tagv1.Tag`
-    - [ ] Update `SetFeedTags` implementation if necessary (likely just type updates)
-- [ ] Task: Update Tests
-    - [ ] Move/Refactor unit tests for Tag operations to `tag_service_test.go`
-    - [ ] Update existing `FeedService` tests to reflect changes
+- [x] Task: Implement `TagService` 38ef9b3
+    - [x] Create `cmd/feed-reader/tag_service.go` (or similar)
+    - [x] Implement `CreateTag`, `ListTags`, `DeleteTag` handlers in `TagService` (move logic from `FeedService`)
+    - [x] Wire up `TagService` in `main.go`
+- [x] Task: Refactor `FeedService` 38ef9b3
+    - [x] Remove `CreateTag`, `ListTags`, `DeleteTag` handlers from `FeedService`
+    - [x] Update `Feed` message construction to use `tagv1.Tag`
+    - [x] Update `SetFeedTags` implementation if necessary (likely just type updates)
+- [x] Task: Update Tests 38ef9b3
+    - [x] Move/Refactor unit tests for Tag operations to `tag_service_test.go`
+    - [x] Update existing `FeedService` tests to reflect changes
 - [ ] Task: Conductor - User Manual Verification 'Backend Implementation (Go)' (Protocol in workflow.md)
 
 ## Phase 3: Frontend Implementation (TypeScript)
