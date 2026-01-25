@@ -3,15 +3,15 @@ import {
   createQuery,
   useQueryClient,
 } from "@tanstack/solid-query";
-import { FeedService } from "../gen/feed/v1/feed_connect";
+import { TagService } from "../gen/tag/v1/tag_connect";
 import type {
   CreateTagRequest,
   DeleteTagRequest,
-} from "../gen/feed/v1/feed_pb";
+} from "../gen/tag/v1/tag_pb";
 import { transport } from "./query";
 import { createPromiseClient } from "@connectrpc/connect";
 
-const client = createPromiseClient(FeedService, transport);
+const client = createPromiseClient(TagService, transport);
 
 export const tagKeys = {
   all: ["tags"] as const,
