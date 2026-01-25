@@ -185,6 +185,11 @@ export class ListItemsRequest extends Message<ListItemsRequest> {
   isSaved?: boolean;
 
   /**
+   * @generated from field: optional string tag_id = 7;
+   */
+  tagId?: string;
+
+  /**
    * @generated from field: item.v1.ListItemsRequest.SortOrder sort_order = 4;
    */
   sortOrder = ListItemsRequest_SortOrder.UNSPECIFIED;
@@ -210,6 +215,7 @@ export class ListItemsRequest extends Message<ListItemsRequest> {
     { no: 1, name: "feed_id", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
     { no: 2, name: "is_read", kind: "scalar", T: 8 /* ScalarType.BOOL */, opt: true },
     { no: 3, name: "is_saved", kind: "scalar", T: 8 /* ScalarType.BOOL */, opt: true },
+    { no: 7, name: "tag_id", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
     { no: 4, name: "sort_order", kind: "enum", T: proto3.getEnumType(ListItemsRequest_SortOrder) },
     { no: 5, name: "limit", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
     { no: 6, name: "offset", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
