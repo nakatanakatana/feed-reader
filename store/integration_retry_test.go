@@ -73,4 +73,41 @@ func TestStore_RetryIntegration(t *testing.T) {
 		err = <-done
 		require.NoError(t, err)
 	})
+
+	t.Run("retry on transactional write", func(t *testing.T) {
+		db2 := openDB()
+		defer func() { _ = db2.Close() }()
+
+		// Setup a feed first
+		_, err := s.CreateFeed(ctx, store.CreateFeedParams{
+			Uuid: "f1",
+			Url:  "http://example.com/f1",
+		})
+		require.NoError(t, err)
+
+		// Start a transaction in db2 and hold a lock
+		_, err = db2.Exec("BEGIN IMMEDIATE")
+		require.NoError(t, err)
+		_, err = db2.ExecContext(ctx, "INSERT INTO feeds (uuid, url) VALUES ('lock2', 'lock2')")
+		require.NoError(t, err)
+
+		done := make(chan error, 1)
+		go func() {
+			title := "title"
+			err := s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
+				FeedID: "f1",
+				Url:    "http://example.com/item1",
+				Title:  &title,
+			})
+			done <- err
+		}()
+
+		time.Sleep(100 * time.Millisecond)
+		_, err = db2.Exec("COMMIT")
+		require.NoError(t, err)
+
+		err = <-done
+		// This should FAIL currently because SaveFetchedItem doesn't retry the transaction
+		require.NoError(t, err)
+	})
 }
