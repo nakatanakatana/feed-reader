@@ -20,11 +20,8 @@
 - [x] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md) c5cf62a
 
 ## Phase 2: Frontend Implementation
-- [ ] Task: Create `ImportOpmlModal` Component
-    - [ ] Implement file selection input
-    - [ ] Implement upload state UI (loading spinner)
-    - [ ] Implement results summary view
-- [ ] Task: Integrate API
+- [x] Task: Create `ImportOpmlModal` Component 729788f
+- [x] Task: Integrate API 729788f
     - [ ] Use generated Connect client to call `ImportOpml`
     - [ ] Handle success and error states
 - [ ] Task: Add Entry Point
