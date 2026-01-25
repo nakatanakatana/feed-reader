@@ -3,14 +3,10 @@ import { createCollection } from "@tanstack/solid-db";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { FeedService } from "../gen/feed/v1/feed_connect";
 import { ItemService } from "../gen/item/v1/item_connect";
+import { Tag } from "../gen/tag/v1/tag_pb";
 import { transport, queryClient } from "./query";
 
-export interface Tag {
-  id: string;
-  name: string;
-  createdAt: string;
-  updatedAt: string;
-}
+export { Tag };
 
 export interface Feed {
   uuid: string;

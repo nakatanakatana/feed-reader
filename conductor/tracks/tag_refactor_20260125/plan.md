@@ -28,14 +28,14 @@
 - [x] Task: Conductor - User Manual Verification 'Backend Implementation (Go)' (Protocol in workflow.md) 4b00987
 
 ## Phase 3: Frontend Implementation (TypeScript)
-- [ ] Task: Update API Client usage
-    - [ ] Instantiate `TagService` client in `frontend/src/lib/client.ts` (or wherever clients are created)
-    - [ ] Update `frontend/src/lib/tag-query.ts` (and similar) to use `TagService` for tag operations
-- [ ] Task: Update Components
-    - [ ] Refactor components using `Tag` type to use the new `tag.v1.Tag` type
-    - [ ] Ensure `TagManagement` component calls `TagService` instead of `FeedService`
-- [ ] Task: Verify Integration
-    - [ ] Run frontend tests and fix any type errors or logic breaks
+- [x] Task: Update API Client usage
+    - [x] Instantiate `TagService` client in `frontend/src/lib/client.ts` (or wherever clients are created)
+    - [x] Update `frontend/src/lib/tag-query.ts` (and similar) to use `TagService` for tag operations
+- [x] Task: Update Components
+    - [x] Refactor components using `Tag` type to use the new `tag.v1.Tag` type
+    - [x] Ensure `TagManagement` component calls `TagService` instead of `FeedService`
+- [x] Task: Verify Integration
+    - [x] Run frontend tests and fix any type errors or logic breaks
 - [ ] Task: Conductor - User Manual Verification 'Frontend Implementation (TypeScript)' (Protocol in workflow.md)
 
 ## Phase 4: Final Verification
