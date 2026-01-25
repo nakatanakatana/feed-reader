@@ -6,11 +6,11 @@
 - [x] Task: Run `sqlc generate` and verify generated Go code [4c6a042]
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Database and Backend Schema' (Protocol in workflow.md) [b6d6db7]
 
-## Phase 2: Protobuf and API Definition
+## Phase 2: Protobuf and API Definition [checkpoint: f393f00]
 - [x] Task: Update `proto/feed/v1/feed.proto` to include Tag-related messages and service methods [c163958]
 - [x] Task: Update `proto/item/v1/item.proto` to support filtering by tag IDs [9b876e9]
 - [x] Task: Run `buf generate` to update Go and TypeScript Connect RPC code [e4ef41b]
-- [~] Task: Conductor - User Manual Verification 'Phase 2: Protobuf and API Definition' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Protobuf and API Definition' (Protocol in workflow.md) [f393f00]
 
 ## Phase 3: Backend Implementation (TDD)
 - [ ] Task: Implement Tag management logic in `store/` (CRUD operations)
