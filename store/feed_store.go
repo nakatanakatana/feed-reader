@@ -15,7 +15,7 @@ type Store struct {
 
 func NewStore(db *sql.DB) *Store {
 	return &Store{
-		Queries: New(db),
+		Queries: New(NewRetryingDB(db)),
 		DB:      db,
 	}
 }
