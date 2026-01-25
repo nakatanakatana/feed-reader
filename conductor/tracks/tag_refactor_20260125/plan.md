@@ -1,16 +1,16 @@
 # Implementation Plan - Refactor Tag Operations into a Dedicated Proto Package
 
 ## Phase 1: Proto Definition & Generation
-- [ ] Task: Create new proto package `tag.v1`
-    - [ ] Create `proto/tag/v1/tag.proto`
-    - [ ] Define `Tag` message and `TagService` in `tag.v1`
-    - [ ] Move `CreateTag`, `ListTags`, `DeleteTag` RPC definitions to `TagService`
-- [ ] Task: Update `feed.v1` proto
-    - [ ] Import `tag/v1/tag.proto` in `proto/feed/v1/feed.proto`
-    - [ ] Replace `Tag` message definition in `feed.v1` with usage of `tag.v1.Tag`
-    - [ ] Remove `CreateTag`, `ListTags`, `DeleteTag` RPCs from `FeedService`
-- [ ] Task: Generate code
-    - [ ] Run `buf generate` (or equivalent) to regenerate Go and TypeScript code
+- [x] Task: Create new proto package `tag.v1` 091fd30
+    - [x] Create `proto/tag/v1/tag.proto`
+    - [x] Define `Tag` message and `TagService` in `tag.v1`
+    - [x] Move `CreateTag`, `ListTags`, `DeleteTag` RPC definitions to `TagService`
+- [x] Task: Update `feed.v1` proto 091fd30
+    - [x] Import `tag/v1/tag.proto` in `proto/feed/v1/feed.proto`
+    - [x] Replace `Tag` message definition in `feed.v1` with usage of `tag.v1.Tag`
+    - [x] Remove `CreateTag`, `ListTags`, `DeleteTag` RPCs from `FeedService`
+- [x] Task: Generate code 091fd30
+    - [x] Run `buf generate` (or equivalent) to regenerate Go and TypeScript code
 - [ ] Task: Conductor - User Manual Verification 'Proto Definition & Generation' (Protocol in workflow.md)
 
 ## Phase 2: Backend Implementation (Go)
