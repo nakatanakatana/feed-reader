@@ -10,9 +10,9 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Filtering and Sorting' (Protocol in workflow.md) 86f9782
 
 ## Phase 2: UI Interactions and Navigation
-- [ ] Task: Implement card click selection
-    - [ ] Write tests for toggling selection via card background click in `FeedList.test.tsx`
-    - [ ] Update `FeedList.tsx` to handle card-level click events without interfering with buttons/links
+- [x] Task: Implement card click selection c49545e
+    - [x] Write tests for toggling selection via card background click in `FeedList.test.tsx`
+    - [x] Update `FeedList.tsx` to handle card-level click events without interfering with buttons/links
 - [ ] Task: Update navigation links
     - [ ] Write tests for external title link and internal detail icon in `FeedList.test.tsx`
     - [ ] Update feed title to open external `link` in new tab
