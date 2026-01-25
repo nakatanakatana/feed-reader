@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { useLiveQuery, eq } from "@tanstack/solid-db";
-import { ItemList } from "../components/ItemList";
 import { css } from "../../styled-system/css";
 import { stack } from "../../styled-system/patterns";
 import { feeds } from "../lib/db";
@@ -25,7 +24,6 @@ function FeedItemsComponent() {
   return (
     <div class={stack({ padding: "4", gap: "4" })}>
       <h2 class={css({ fontSize: "xl", fontWeight: "bold" })}>{feedTitle()}</h2>
-      <ItemList feedId={params().feedId} />
     </div>
   );
 }
