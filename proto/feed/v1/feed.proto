@@ -11,6 +11,7 @@ service FeedService {
   rpc UpdateFeed(UpdateFeedRequest) returns (UpdateFeedResponse);
   rpc DeleteFeed(DeleteFeedRequest) returns (DeleteFeedResponse);
   rpc RefreshFeeds(RefreshFeedsRequest) returns (RefreshFeedsResponse);
+  rpc ImportOpml(ImportOpmlRequest) returns (ImportOpmlResponse);
 }
 
 message Feed {
@@ -87,3 +88,14 @@ message RefreshFeedsRequest {
 }
 
 message RefreshFeedsResponse {}
+
+message ImportOpmlRequest {
+  bytes opml_content = 1;
+}
+
+message ImportOpmlResponse {
+  int32 total = 1;
+  int32 success = 2;
+  int32 skipped = 3;
+  repeated string failed_feeds = 4;
+}
