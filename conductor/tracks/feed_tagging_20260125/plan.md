@@ -22,7 +22,7 @@
 - [x] Task: Update frontend API clients and mocks for new Tag-related endpoints [9f05470]
 - [x] Task: Create `TagManagement` components and management view [003d4a7]
 - [x] Task: Update `AddFeedForm` and `FeedList` to support tag selection and display [7ba9105]
-- [ ] Task: Implement tag filtering logic in the Feed and Article list views
+- [x] Task: Implement tag filtering logic in the Feed and Article list views [4e882e1]
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: Frontend Implementation (TDD)' (Protocol in workflow.md)
 
 ## Phase 5: UI/UX Polishing and Final Integration
