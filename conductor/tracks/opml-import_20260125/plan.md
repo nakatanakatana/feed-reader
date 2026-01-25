@@ -1,7 +1,7 @@
 # Implementation Plan - Track: OPML Import
 
 ## Phase 1: Backend Implementation
-- [ ] Task: Define `ImportOpml` RPC in `proto/feed/v1/feed.proto`
+- [x] Task: Define `ImportOpml` RPC in `proto/feed/v1/feed.proto` 6e3f151
     - [ ] Add `ImportOpmlRequest` with `bytes opml_content`
     - [ ] Add `ImportOpmlResponse` with `int32 total`, `int32 success`, `int32 skipped`, `repeated string failed_feeds`
     - [ ] Add RPC method definition
