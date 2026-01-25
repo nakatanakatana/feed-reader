@@ -9,6 +9,7 @@ import (
 	"connectrpc.com/connect"
 	feedv1 "github.com/nakatanakatana/feed-reader/gen/go/feed/v1"
 	"github.com/nakatanakatana/feed-reader/gen/go/feed/v1/feedv1connect"
+	tagv1 "github.com/nakatanakatana/feed-reader/gen/go/tag/v1"
 	"github.com/nakatanakatana/feed-reader/store"
 )
 
@@ -246,49 +247,6 @@ func (s *FeedServer) ImportOpml(ctx context.Context, req *connect.Request[feedv1
 	return connect.NewResponse(response), nil
 }
 
-func (s *FeedServer) CreateTag(ctx context.Context, req *connect.Request[feedv1.CreateTagRequest]) (*connect.Response[feedv1.CreateTagResponse], error) {
-	newUUID, err := s.uuidGenerator.NewRandom()
-	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to generate UUID: %w", err))
-	}
-
-	tag, err := s.store.CreateTag(ctx, store.CreateTagParams{
-		ID:   newUUID.String(),
-		Name: req.Msg.Name,
-	})
-	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, err)
-	}
-
-	return connect.NewResponse(&feedv1.CreateTagResponse{
-		Tag: toProtoTag(tag),
-	}), nil
-}
-
-func (s *FeedServer) ListTags(ctx context.Context, req *connect.Request[feedv1.ListTagsRequest]) (*connect.Response[feedv1.ListTagsResponse], error) {
-	tags, err := s.store.ListTags(ctx)
-	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, err)
-	}
-
-	protoTags := make([]*feedv1.Tag, len(tags))
-	for i, t := range tags {
-		protoTags[i] = toProtoTag(t)
-	}
-
-	return connect.NewResponse(&feedv1.ListTagsResponse{
-		Tags: protoTags,
-	}), nil
-}
-
-func (s *FeedServer) DeleteTag(ctx context.Context, req *connect.Request[feedv1.DeleteTagRequest]) (*connect.Response[feedv1.DeleteTagResponse], error) {
-	if err := s.store.DeleteTag(ctx, req.Msg.Id); err != nil {
-		return nil, connect.NewError(connect.CodeInternal, err)
-	}
-
-	return connect.NewResponse(&feedv1.DeleteTagResponse{}), nil
-}
-
 func (s *FeedServer) SetFeedTags(ctx context.Context, req *connect.Request[feedv1.SetFeedTagsRequest]) (*connect.Response[feedv1.SetFeedTagsResponse], error) {
 	if err := s.store.SetFeedTags(ctx, req.Msg.FeedId, req.Msg.TagIds); err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
@@ -308,9 +266,14 @@ func (s *FeedServer) toProtoFeed(ctx context.Context, f store.Feed) (*feedv1.Fee
 		return nil, err
 	}
 
-	protoTags := make([]*feedv1.Tag, len(tags))
+	protoTags := make([]*tagv1.Tag, len(tags))
 	for i, t := range tags {
-		protoTags[i] = toProtoTag(t)
+		protoTags[i] = &tagv1.Tag{
+			Id:        t.ID,
+			Name:      t.Name,
+			CreatedAt: t.CreatedAt,
+			UpdatedAt: t.UpdatedAt,
+		}
 	}
 
 	return &feedv1.Feed{
@@ -329,13 +292,4 @@ func (s *FeedServer) toProtoFeed(ctx context.Context, f store.Feed) (*feedv1.Fee
 		UpdatedAt:     f.UpdatedAt,
 		Tags:          protoTags,
 	}, nil
-}
-
-func toProtoTag(t store.Tag) *feedv1.Tag {
-	return &feedv1.Tag{
-		Id:        t.ID,
-		Name:      t.Name,
-		CreatedAt: t.CreatedAt,
-		UpdatedAt: t.UpdatedAt,
-	}
 }
