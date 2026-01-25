@@ -22,8 +22,8 @@
     - [ ] Sub-task: Add checkboxes to feed rows.
     - [ ] Sub-task: Add "Manage Tags" button (disabled if 0 selected).
     - [ ] Sub-task: Connect "Manage Tags" button to open the modal.
-- [ ] Task: Integrate `ManageFeedTags` RPC in the frontend.
+- [x] Task: Integrate `ManageFeedTags` RPC in the frontend. [dac7d31]
     - [ ] Sub-task: Call RPC from `ManageTagsModal` on save.
     - [ ] Sub-task: Invalidate queries to refresh feed list/tags.
-- [ ] Task: Add tests for `ManageTagsModal` and `FeedList` interaction.
+- [x] Task: Add tests for `ManageTagsModal` and `FeedList` interaction. [3162e79]
 - [ ] Task: Conductor - User Manual Verification 'Bulk Tagging UI' (Protocol in workflow.md)
