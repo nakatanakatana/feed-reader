@@ -167,4 +167,61 @@ describe("FeedList", () => {
     const manageButton = page.getByText("Manage Tags (1)");
     await expect.element(manageButton).toBeInTheDocument();
   });
+
+  it("manages tags for selected feeds", async () => {
+    const mockFeeds = [{ uuid: "1", title: "Feed 1", url: "u1", tags: [] }];
+    vi.mocked(useLiveQuery).mockReturnValue({
+      data: mockFeeds,
+    } as unknown as ReturnType<typeof useLiveQuery>);
+
+    const history = createMemoryHistory({ initialEntries: ["/feeds"] });
+    const router = createRouter({ routeTree, history });
+
+    dispose = render(
+      () => (
+        <TestWrapper>
+          <RouterProvider router={router} />
+        </TestWrapper>
+      ),
+      document.body,
+    );
+
+    // Give time for initial load
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    // 1. Select feed
+    const checkbox = document.querySelector('input[type="checkbox"]') as HTMLInputElement;
+    if (!checkbox) {
+        console.log("BODY HTML:", document.body.innerHTML);
+        throw new Error("Checkbox not found");
+    }
+    checkbox.click();
+
+    // 2. Click Manage Tags
+    const manageButton = page.getByText("Manage Tags (1)");
+    await manageButton.click();
+
+    // 3. Modal should be open
+    await expect.element(page.getByText("Manage Tags for 1 feeds")).toBeInTheDocument();
+
+    // 4. Click Add for Tech tag
+    const addButton = Array.from(document.querySelectorAll('button')).find(b => b.textContent === 'Add');
+    if (!addButton) throw new Error("Add button not found");
+    addButton.click();
+    
+    // Give time for state update
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    // 5. Click Save Changes
+    const saveButton = Array.from(document.querySelectorAll('button')).find(b => b.textContent === 'Save Changes');
+    if (!saveButton) throw new Error("Save Changes button not found");
+    saveButton.click();
+
+    // Give time for mutation and close
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    // 6. Modal should close (button should disappear)
+    const manageButtonAfter = Array.from(document.querySelectorAll('button')).find(b => b.textContent?.includes('Manage Tags'));
+    expect(manageButtonAfter).toBeUndefined();
+  });
 });
