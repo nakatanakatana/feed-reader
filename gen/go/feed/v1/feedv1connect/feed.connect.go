@@ -48,12 +48,6 @@ const (
 	FeedServiceRefreshFeedsProcedure = "/feed.v1.FeedService/RefreshFeeds"
 	// FeedServiceImportOpmlProcedure is the fully-qualified name of the FeedService's ImportOpml RPC.
 	FeedServiceImportOpmlProcedure = "/feed.v1.FeedService/ImportOpml"
-	// FeedServiceCreateTagProcedure is the fully-qualified name of the FeedService's CreateTag RPC.
-	FeedServiceCreateTagProcedure = "/feed.v1.FeedService/CreateTag"
-	// FeedServiceListTagsProcedure is the fully-qualified name of the FeedService's ListTags RPC.
-	FeedServiceListTagsProcedure = "/feed.v1.FeedService/ListTags"
-	// FeedServiceDeleteTagProcedure is the fully-qualified name of the FeedService's DeleteTag RPC.
-	FeedServiceDeleteTagProcedure = "/feed.v1.FeedService/DeleteTag"
 	// FeedServiceSetFeedTagsProcedure is the fully-qualified name of the FeedService's SetFeedTags RPC.
 	FeedServiceSetFeedTagsProcedure = "/feed.v1.FeedService/SetFeedTags"
 )
@@ -68,9 +62,6 @@ type FeedServiceClient interface {
 	RefreshFeeds(context.Context, *connect.Request[v1.RefreshFeedsRequest]) (*connect.Response[v1.RefreshFeedsResponse], error)
 	ImportOpml(context.Context, *connect.Request[v1.ImportOpmlRequest]) (*connect.Response[v1.ImportOpmlResponse], error)
 	// Tag management
-	CreateTag(context.Context, *connect.Request[v1.CreateTagRequest]) (*connect.Response[v1.CreateTagResponse], error)
-	ListTags(context.Context, *connect.Request[v1.ListTagsRequest]) (*connect.Response[v1.ListTagsResponse], error)
-	DeleteTag(context.Context, *connect.Request[v1.DeleteTagRequest]) (*connect.Response[v1.DeleteTagResponse], error)
 	SetFeedTags(context.Context, *connect.Request[v1.SetFeedTagsRequest]) (*connect.Response[v1.SetFeedTagsResponse], error)
 }
 
@@ -127,24 +118,6 @@ func NewFeedServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(feedServiceMethods.ByName("ImportOpml")),
 			connect.WithClientOptions(opts...),
 		),
-		createTag: connect.NewClient[v1.CreateTagRequest, v1.CreateTagResponse](
-			httpClient,
-			baseURL+FeedServiceCreateTagProcedure,
-			connect.WithSchema(feedServiceMethods.ByName("CreateTag")),
-			connect.WithClientOptions(opts...),
-		),
-		listTags: connect.NewClient[v1.ListTagsRequest, v1.ListTagsResponse](
-			httpClient,
-			baseURL+FeedServiceListTagsProcedure,
-			connect.WithSchema(feedServiceMethods.ByName("ListTags")),
-			connect.WithClientOptions(opts...),
-		),
-		deleteTag: connect.NewClient[v1.DeleteTagRequest, v1.DeleteTagResponse](
-			httpClient,
-			baseURL+FeedServiceDeleteTagProcedure,
-			connect.WithSchema(feedServiceMethods.ByName("DeleteTag")),
-			connect.WithClientOptions(opts...),
-		),
 		setFeedTags: connect.NewClient[v1.SetFeedTagsRequest, v1.SetFeedTagsResponse](
 			httpClient,
 			baseURL+FeedServiceSetFeedTagsProcedure,
@@ -163,9 +136,6 @@ type feedServiceClient struct {
 	deleteFeed   *connect.Client[v1.DeleteFeedRequest, v1.DeleteFeedResponse]
 	refreshFeeds *connect.Client[v1.RefreshFeedsRequest, v1.RefreshFeedsResponse]
 	importOpml   *connect.Client[v1.ImportOpmlRequest, v1.ImportOpmlResponse]
-	createTag    *connect.Client[v1.CreateTagRequest, v1.CreateTagResponse]
-	listTags     *connect.Client[v1.ListTagsRequest, v1.ListTagsResponse]
-	deleteTag    *connect.Client[v1.DeleteTagRequest, v1.DeleteTagResponse]
 	setFeedTags  *connect.Client[v1.SetFeedTagsRequest, v1.SetFeedTagsResponse]
 }
 
@@ -204,21 +174,6 @@ func (c *feedServiceClient) ImportOpml(ctx context.Context, req *connect.Request
 	return c.importOpml.CallUnary(ctx, req)
 }
 
-// CreateTag calls feed.v1.FeedService.CreateTag.
-func (c *feedServiceClient) CreateTag(ctx context.Context, req *connect.Request[v1.CreateTagRequest]) (*connect.Response[v1.CreateTagResponse], error) {
-	return c.createTag.CallUnary(ctx, req)
-}
-
-// ListTags calls feed.v1.FeedService.ListTags.
-func (c *feedServiceClient) ListTags(ctx context.Context, req *connect.Request[v1.ListTagsRequest]) (*connect.Response[v1.ListTagsResponse], error) {
-	return c.listTags.CallUnary(ctx, req)
-}
-
-// DeleteTag calls feed.v1.FeedService.DeleteTag.
-func (c *feedServiceClient) DeleteTag(ctx context.Context, req *connect.Request[v1.DeleteTagRequest]) (*connect.Response[v1.DeleteTagResponse], error) {
-	return c.deleteTag.CallUnary(ctx, req)
-}
-
 // SetFeedTags calls feed.v1.FeedService.SetFeedTags.
 func (c *feedServiceClient) SetFeedTags(ctx context.Context, req *connect.Request[v1.SetFeedTagsRequest]) (*connect.Response[v1.SetFeedTagsResponse], error) {
 	return c.setFeedTags.CallUnary(ctx, req)
@@ -234,9 +189,6 @@ type FeedServiceHandler interface {
 	RefreshFeeds(context.Context, *connect.Request[v1.RefreshFeedsRequest]) (*connect.Response[v1.RefreshFeedsResponse], error)
 	ImportOpml(context.Context, *connect.Request[v1.ImportOpmlRequest]) (*connect.Response[v1.ImportOpmlResponse], error)
 	// Tag management
-	CreateTag(context.Context, *connect.Request[v1.CreateTagRequest]) (*connect.Response[v1.CreateTagResponse], error)
-	ListTags(context.Context, *connect.Request[v1.ListTagsRequest]) (*connect.Response[v1.ListTagsResponse], error)
-	DeleteTag(context.Context, *connect.Request[v1.DeleteTagRequest]) (*connect.Response[v1.DeleteTagResponse], error)
 	SetFeedTags(context.Context, *connect.Request[v1.SetFeedTagsRequest]) (*connect.Response[v1.SetFeedTagsResponse], error)
 }
 
@@ -289,24 +241,6 @@ func NewFeedServiceHandler(svc FeedServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(feedServiceMethods.ByName("ImportOpml")),
 		connect.WithHandlerOptions(opts...),
 	)
-	feedServiceCreateTagHandler := connect.NewUnaryHandler(
-		FeedServiceCreateTagProcedure,
-		svc.CreateTag,
-		connect.WithSchema(feedServiceMethods.ByName("CreateTag")),
-		connect.WithHandlerOptions(opts...),
-	)
-	feedServiceListTagsHandler := connect.NewUnaryHandler(
-		FeedServiceListTagsProcedure,
-		svc.ListTags,
-		connect.WithSchema(feedServiceMethods.ByName("ListTags")),
-		connect.WithHandlerOptions(opts...),
-	)
-	feedServiceDeleteTagHandler := connect.NewUnaryHandler(
-		FeedServiceDeleteTagProcedure,
-		svc.DeleteTag,
-		connect.WithSchema(feedServiceMethods.ByName("DeleteTag")),
-		connect.WithHandlerOptions(opts...),
-	)
 	feedServiceSetFeedTagsHandler := connect.NewUnaryHandler(
 		FeedServiceSetFeedTagsProcedure,
 		svc.SetFeedTags,
@@ -329,12 +263,6 @@ func NewFeedServiceHandler(svc FeedServiceHandler, opts ...connect.HandlerOption
 			feedServiceRefreshFeedsHandler.ServeHTTP(w, r)
 		case FeedServiceImportOpmlProcedure:
 			feedServiceImportOpmlHandler.ServeHTTP(w, r)
-		case FeedServiceCreateTagProcedure:
-			feedServiceCreateTagHandler.ServeHTTP(w, r)
-		case FeedServiceListTagsProcedure:
-			feedServiceListTagsHandler.ServeHTTP(w, r)
-		case FeedServiceDeleteTagProcedure:
-			feedServiceDeleteTagHandler.ServeHTTP(w, r)
 		case FeedServiceSetFeedTagsProcedure:
 			feedServiceSetFeedTagsHandler.ServeHTTP(w, r)
 		default:
@@ -372,18 +300,6 @@ func (UnimplementedFeedServiceHandler) RefreshFeeds(context.Context, *connect.Re
 
 func (UnimplementedFeedServiceHandler) ImportOpml(context.Context, *connect.Request[v1.ImportOpmlRequest]) (*connect.Response[v1.ImportOpmlResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("feed.v1.FeedService.ImportOpml is not implemented"))
-}
-
-func (UnimplementedFeedServiceHandler) CreateTag(context.Context, *connect.Request[v1.CreateTagRequest]) (*connect.Response[v1.CreateTagResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("feed.v1.FeedService.CreateTag is not implemented"))
-}
-
-func (UnimplementedFeedServiceHandler) ListTags(context.Context, *connect.Request[v1.ListTagsRequest]) (*connect.Response[v1.ListTagsResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("feed.v1.FeedService.ListTags is not implemented"))
-}
-
-func (UnimplementedFeedServiceHandler) DeleteTag(context.Context, *connect.Request[v1.DeleteTagRequest]) (*connect.Response[v1.DeleteTagResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("feed.v1.FeedService.DeleteTag is not implemented"))
 }
 
 func (UnimplementedFeedServiceHandler) SetFeedTags(context.Context, *connect.Request[v1.SetFeedTagsRequest]) (*connect.Response[v1.SetFeedTagsResponse], error) {
