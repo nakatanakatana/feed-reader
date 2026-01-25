@@ -1,8 +1,0 @@
-{
-  "track_id": "improve_feed_ux_20260125",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-01-25T00:00:00Z",
-  "updated_at": "2026-01-25T00:00:00Z",
-  "description": "Improve Feed Management UX by removing items from feed pages and adding bulk tagging."
-}
