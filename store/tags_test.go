@@ -10,7 +10,7 @@ import (
 )
 
 func TestTags(t *testing.T) {
-	q := setupDB(t)
+	q, _ := setupDB(t)
 	ctx := context.Background()
 
 	// 1. Create Tag
@@ -119,7 +119,7 @@ func TestTags(t *testing.T) {
 }
 
 func TestDeleteFeedTag(t *testing.T) {
-	q := setupDB(t)
+	q, _ := setupDB(t)
 	ctx := context.Background()
 
 	// Setup: Create Feed and Tag
@@ -163,5 +163,38 @@ func TestDeleteFeedTag(t *testing.T) {
 		feedTags, err := q.ListTagsByFeedId(ctx, "f1")
 		require.NoError(t, err)
 		assert.Len(t, feedTags, 0)
+	})
+}
+
+func TestStore_ManageFeedTags(t *testing.T) {
+	q, s := setupDB(t)
+	ctx := context.Background()
+
+	// Setup: 2 Feeds, 2 Tags
+	_, _ = q.CreateTag(ctx, store.CreateTagParams{ID: "t1", Name: "Tag 1"})
+	_, _ = q.CreateTag(ctx, store.CreateTagParams{ID: "t2", Name: "Tag 2"})
+	_, _ = q.CreateFeed(ctx, store.CreateFeedParams{Uuid: "f1", Url: "u1"})
+	_, _ = q.CreateFeed(ctx, store.CreateFeedParams{Uuid: "f2", Url: "u2"})
+
+	// Initially: f1 has t1, f2 has t1
+	_ = q.CreateFeedTag(ctx, store.CreateFeedTagParams{FeedID: "f1", TagID: "t1"})
+	_ = q.CreateFeedTag(ctx, store.CreateFeedTagParams{FeedID: "f2", TagID: "t1"})
+
+	t.Run("Bulk Manage Tags", func(t *testing.T) {
+		// Action: Add t2, Remove t1 from both f1 and f2
+		err := s.ManageFeedTags(ctx, []string{"f1", "f2"}, []string{"t2"}, []string{"t1"})
+		require.NoError(t, err)
+
+		// Verify f1: should have t2, but not t1
+		tags1, err := q.ListTagsByFeedId(ctx, "f1")
+		require.NoError(t, err)
+		assert.Len(t, tags1, 1)
+		assert.Equal(t, "t2", tags1[0].ID)
+
+		// Verify f2: should have t2, but not t1
+		tags2, err := q.ListTagsByFeedId(ctx, "f2")
+		require.NoError(t, err)
+		assert.Len(t, tags2, 1)
+		assert.Equal(t, "t2", tags2[0].ID)
 	})
 }
