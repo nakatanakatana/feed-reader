@@ -1,6 +1,6 @@
 # Plan: Improve Feed Management UX
 
-## Phase 1: Remove Feed Items from Feed Pages (Frontend)
+## Phase 1: Remove Feed Items from Feed Pages (Frontend) [checkpoint: 1203892]
 - [x] Task: Remove article list display from `FeedList.tsx`. Ensure only the list of feeds is shown.
 - [x] Task: Remove article list display from `feeds.$feedId.tsx`. Ensure only feed details/stats are shown. [b903018]
 - [x] Task: Conductor - User Manual Verification 'Remove Feed Items from Feed Pages' (Protocol in workflow.md)
