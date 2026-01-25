@@ -8,7 +8,7 @@
 
 ## Phase 2: Protobuf and API Definition
 - [x] Task: Update `proto/feed/v1/feed.proto` to include Tag-related messages and service methods [c163958]
-- [ ] Task: Update `proto/item/v1/item.proto` to support filtering by tag IDs
+- [x] Task: Update `proto/item/v1/item.proto` to support filtering by tag IDs [9b876e9]
 - [ ] Task: Run `buf generate` to update Go and TypeScript Connect RPC code
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Protobuf and API Definition' (Protocol in workflow.md)
 
