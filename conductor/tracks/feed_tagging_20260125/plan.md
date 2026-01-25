@@ -18,12 +18,12 @@
 - [x] Task: Implement `ItemService` updates to support tag-based article filtering in `cmd/feed-reader/` [c97a73d]
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Backend Implementation (TDD)' (Protocol in workflow.md) [75b1e2a]
 
-## Phase 4: Frontend Implementation (TDD)
+## Phase 4: Frontend Implementation (TDD) [checkpoint: c8c9618]
 - [x] Task: Update frontend API clients and mocks for new Tag-related endpoints [9f05470]
 - [x] Task: Create `TagManagement` components and management view [003d4a7]
 - [x] Task: Update `AddFeedForm` and `FeedList` to support tag selection and display [7ba9105]
 - [x] Task: Implement tag filtering logic in the Feed and Article list views [4e882e1]
-- [~] Task: Conductor - User Manual Verification 'Phase 4: Frontend Implementation (TDD)' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Frontend Implementation (TDD)' (Protocol in workflow.md) [c8c9618]
 
 ## Phase 5: UI/UX Polishing and Final Integration
 - [ ] Task: Refine Tag chip styling using Panda CSS
