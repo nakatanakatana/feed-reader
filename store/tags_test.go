@@ -83,8 +83,8 @@ func TestTags(t *testing.T) {
 
 	// List Items with Tag 1
 	items, err := q.ListItems(ctx, store.ListItemsParams{
-		TagID: "tag-1",
-		Limit: 10,
+		TagID:  "tag-1",
+		Limit:  10,
 		Offset: 0,
 	})
 	require.NoError(t, err)
@@ -93,8 +93,8 @@ func TestTags(t *testing.T) {
 
 	// List Items with Tag 2
 	items, err = q.ListItems(ctx, store.ListItemsParams{
-		TagID: "tag-2",
-		Limit: 10,
+		TagID:  "tag-2",
+		Limit:  10,
 		Offset: 0,
 	})
 	require.NoError(t, err)

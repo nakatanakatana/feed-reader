@@ -4,10 +4,7 @@ import {
   useQueryClient,
 } from "@tanstack/solid-query";
 import { TagService } from "../gen/tag/v1/tag_connect";
-import type {
-  CreateTagRequest,
-  DeleteTagRequest,
-} from "../gen/tag/v1/tag_pb";
+import type { CreateTagRequest, DeleteTagRequest } from "../gen/tag/v1/tag_pb";
 import { transport } from "./query";
 import { createPromiseClient } from "@connectrpc/connect";
 
