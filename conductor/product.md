@@ -20,6 +20,8 @@ The primary target audience is individuals and organizations seeking control ove
 
 - **Feed Management:** Add, organize, and manage RSS/Atom feeds via the UI.
 
+- **OPML Import:** Bulk import existing subscriptions from other RSS readers using the standard OPML format, with automatic deduplication.
+
 - **Article Management:** Retrieve articles with flexible filtering and sorting. Track article status including read/unread and saved/unsaved (bookmarks).
 
 
