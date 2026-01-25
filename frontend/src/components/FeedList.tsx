@@ -8,7 +8,10 @@ import { useTags } from "../lib/tag-query";
 import { ManageTagsModal } from "./ManageTagsModal";
 
 export function FeedList() {
-  const [selectedTagId, setSelectedTagId] = createSignal<string | undefined>();
+  const [selectedTagId, setSelectedTagId] = createSignal<
+    string | undefined | null
+  >();
+  const [sortBy, setSortBy] = createSignal<string>("title_asc");
   const [selectedFeedUuids, setSelectedFeedUuids] = createSignal<string[]>([]);
   const [isManageModalOpen, setIsManageModalOpen] = createSignal(false);
 
@@ -22,8 +25,39 @@ export function FeedList() {
   const filteredFeeds = () => {
     const list = feedList ?? [];
     const tagId = selectedTagId();
-    if (!tagId) return list;
+    if (tagId === undefined) return list;
+    if (tagId === null)
+      return list.filter((f) => !f.tags || f.tags.length === 0);
     return list.filter((f) => f.tags?.some((t) => t.id === tagId));
+  };
+
+  const sortedFeeds = () => {
+    const list = [...filteredFeeds()];
+    const sort = sortBy();
+
+    return list.sort((a, b) => {
+      switch (sort) {
+        case "title_asc":
+          return (a.title || "").localeCompare(b.title || "");
+        case "title_desc":
+          return (b.title || "").localeCompare(a.title || "");
+        case "created_at_desc":
+          return (
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+        case "created_at_asc":
+          return (
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          );
+        case "last_fetched_at_desc":
+          return (
+            new Date(b.lastFetchedAt || 0).getTime() -
+            new Date(a.lastFetchedAt || 0).getTime()
+          );
+        default:
+          return 0;
+      }
+    });
   };
 
   const [deleteError, setDeleteError] = createSignal<Error | null>(null);
@@ -79,7 +113,34 @@ export function FeedList() {
           </Show>
         </div>
         <div class={flex({ gap: "2", alignItems: "center" })}>
-          <span class={css({ fontSize: "sm", color: "gray.600" })}>
+          <label
+            for="sort-by"
+            class={css({ fontSize: "sm", color: "gray.600" })}
+          >
+            Sort by:
+          </label>
+          <select
+            id="sort-by"
+            aria-label="Sort by"
+            value={sortBy()}
+            onInput={(e) => setSortBy(e.currentTarget.value)}
+            class={css({
+              fontSize: "xs",
+              px: "2",
+              py: "0.5",
+              rounded: "md",
+              border: "1px solid",
+              borderColor: "gray.300",
+              bg: "white",
+            })}
+          >
+            <option value="title_asc">Title (A-Z)</option>
+            <option value="title_desc">Title (Z-A)</option>
+            <option value="created_at_desc">Date Added (Newest)</option>
+            <option value="created_at_asc">Date Added (Oldest)</option>
+            <option value="last_fetched_at_desc">Last Fetched (Newest)</option>
+          </select>
+          <span class={css({ fontSize: "sm", color: "gray.600", ml: "2" })}>
             Filter:
           </span>
           <button
@@ -102,6 +163,27 @@ export function FeedList() {
             })}
           >
             All
+          </button>
+          <button
+            type="button"
+            onClick={() => setSelectedTagId(null)}
+            class={css({
+              px: "2",
+              py: "0.5",
+              rounded: "md",
+              fontSize: "xs",
+              cursor: "pointer",
+              border: "1px solid",
+              ...(selectedTagId() === null
+                ? { bg: "blue.100", borderColor: "blue.500", color: "blue.700" }
+                : {
+                    bg: "gray.50",
+                    borderColor: "gray.300",
+                    color: "gray.600",
+                  }),
+            })}
+          >
+            Uncategorized
           </button>
           <For each={tagsQuery.data?.tags}>
             {(tag) => (
@@ -144,9 +226,16 @@ export function FeedList() {
         </p>
       </Show>
       <ul class={stack({ gap: "2" })}>
-        <For each={filteredFeeds()}>
+        <For each={sortedFeeds()}>
           {(feed) => (
             <li
+              onClick={() => toggleFeedSelection(feed.uuid)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  toggleFeedSelection(feed.uuid);
+                }
+              }}
               class={flex({
                 justifyContent: "space-between",
                 alignItems: "center",
@@ -155,6 +244,7 @@ export function FeedList() {
                 borderColor: "gray.100",
                 borderRadius: "md",
                 gap: "3",
+                cursor: "pointer",
                 _hover: { backgroundColor: "gray.50" },
               })}
             >
@@ -162,14 +252,20 @@ export function FeedList() {
                 <input
                   type="checkbox"
                   checked={selectedFeedUuids().includes(feed.uuid)}
-                  onChange={() => toggleFeedSelection(feed.uuid)}
+                  onChange={(e) => {
+                    e.stopPropagation();
+                    toggleFeedSelection(feed.uuid);
+                  }}
+                  onClick={(e) => e.stopPropagation()}
                   class={css({ cursor: "pointer" })}
                 />
                 <div class={stack({ gap: "1" })}>
                   <div class={flex({ gap: "2", alignItems: "center" })}>
-                    <Link
-                      to="/feeds/$feedId"
-                      params={{ feedId: feed.uuid }}
+                    <a
+                      href={feed.link || feed.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
                       class={css({
                         fontWeight: "medium",
                         _hover: {
@@ -179,6 +275,33 @@ export function FeedList() {
                       })}
                     >
                       {feed.title || "Untitled Feed"}
+                    </a>
+                    <Link
+                      to="/feeds/$feedId"
+                      params={{ feedId: feed.uuid }}
+                      aria-label="View items"
+                      onClick={(e) => e.stopPropagation()}
+                      class={css({
+                        display: "flex",
+                        alignItems: "center",
+                        color: "gray.400",
+                        hover: { color: "blue.600" },
+                      })}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <title>View items</title>
+                        <path d="M9 18l6-6-6-6" />
+                      </svg>
                     </Link>
                     <div class={flex({ gap: "1" })}>
                       <For each={feed.tags}>
@@ -208,7 +331,10 @@ export function FeedList() {
               </div>
               <button
                 type="button"
-                onClick={() => handleDelete(feed.uuid)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDelete(feed.uuid);
+                }}
                 class={css({
                   color: "red.500",
                   padding: "1",
