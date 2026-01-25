@@ -1,14 +1,14 @@
-import { createMutation, useQueryClient } from "@tanstack/solid-query";
+import { useMutation, useQueryClient } from "@tanstack/solid-query";
 import { FeedService } from "../gen/feed/v1/feed_connect";
 import type { ManageFeedTagsRequest } from "../gen/feed/v1/feed_pb";
 import { transport } from "./query";
-import { createPromiseClient } from "@connectrpc/connect";
+import { createClient } from "@connectrpc/connect";
 
-const client = createPromiseClient(FeedService, transport);
+const client = createClient(FeedService, transport);
 
 export function useManageFeedTags() {
   const queryClient = useQueryClient();
-  return createMutation(() => ({
+  return useMutation(() => ({
     mutationFn: (req: ManageFeedTagsRequest) => client.manageFeedTags(req),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["feeds"] });

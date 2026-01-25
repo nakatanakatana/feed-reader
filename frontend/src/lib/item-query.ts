@@ -2,8 +2,8 @@ import type { Transport } from "@connectrpc/connect";
 import { createClient } from "@connectrpc/connect";
 import {
   createInfiniteQuery,
-  createMutation,
-  createQuery,
+  useMutation,
+  useQuery,
   infiniteQueryOptions,
   useQueryClient,
 } from "@tanstack/solid-query";
@@ -84,7 +84,7 @@ export const useItems = (
 
 export const useItem = (id: () => string | undefined) => {
   const transport = useTransport();
-  return createQuery(() => ({
+  return useQuery(() => ({
     queryKey: itemKeys.detail(id() ?? ""),
     queryFn: async () => {
       const currentId = id();
@@ -117,7 +117,7 @@ export const useUpdateItemStatus = () => {
   const transport = useTransport();
   const queryClient = useQueryClient();
 
-  return createMutation(() => ({
+  return useMutation(() => ({
     mutationFn: (params: UpdateItemStatusParams) =>
       updateItemStatus(transport, params),
     onSuccess: () => {

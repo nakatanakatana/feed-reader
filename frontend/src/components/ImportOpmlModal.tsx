@@ -1,7 +1,7 @@
 import { createSignal, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack, center } from "../../styled-system/patterns";
-import { createPromiseClient } from "@connectrpc/connect";
+import { createClient } from "@connectrpc/connect";
 import { FeedService } from "../gen/feed/v1/feed_connect";
 import { useTransport } from "../lib/transport-context";
 import { queryClient } from "../lib/query";
@@ -20,7 +20,7 @@ interface ImportResult {
 
 export function ImportOpmlModal(props: ImportOpmlModalProps) {
   const transport = useTransport();
-  const client = createPromiseClient(FeedService, transport);
+  const client = createClient(FeedService, transport);
 
   const [isPending, setIsPending] = createSignal(false);
   const [error, setError] = createSignal<string | null>(null);
