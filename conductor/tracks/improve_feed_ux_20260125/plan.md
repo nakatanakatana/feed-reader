@@ -1,0 +1,29 @@
+# Plan: Improve Feed Management UX
+
+## Phase 1: Remove Feed Items from Feed Pages (Frontend)
+- [ ] Task: Remove article list display from `FeedList.tsx`. Ensure only the list of feeds is shown.
+- [ ] Task: Remove article list display from `feeds.$feedId.tsx`. Ensure only feed details/stats are shown.
+- [ ] Task: Conductor - User Manual Verification 'Remove Feed Items from Feed Pages' (Protocol in workflow.md)
+
+## Phase 2: Backend Support for Bulk Tagging
+- [ ] Task: Update `sql/query.sql` to include `DeleteFeedTag` (delete specific tag from feed).
+- [ ] Task: Update `proto/feed/v1/feed.proto` to add `ManageFeedTags` RPC (feed_ids, add_tag_ids, remove_tag_ids).
+- [ ] Task: Run `make gen` to generate Go and TypeScript code.
+- [ ] Task: Update `store` package to support bulk tag management (transactional add/remove).
+- [ ] Task: Implement `ManageFeedTags` handler in `cmd/feed-reader/handler.go`.
+- [ ] Task: Add unit/integration tests for `ManageFeedTags` in `cmd/feed-reader/handler_test.go` or `store/feed_store_test.go`.
+- [ ] Task: Conductor - User Manual Verification 'Backend Support for Bulk Tagging' (Protocol in workflow.md)
+
+## Phase 3: Bulk Tagging UI (Frontend)
+- [ ] Task: Create `ManageTagsModal.tsx` component.
+    - [ ] Sub-task: UI layout (list of tags, add/remove indication).
+    - [ ] Sub-task: Logic to handle selection state (which tags to add/remove).
+- [ ] Task: Update `FeedList.tsx` to support bulk selection.
+    - [ ] Sub-task: Add checkboxes to feed rows.
+    - [ ] Sub-task: Add "Manage Tags" button (disabled if 0 selected).
+    - [ ] Sub-task: Connect "Manage Tags" button to open the modal.
+- [ ] Task: Integrate `ManageFeedTags` RPC in the frontend.
+    - [ ] Sub-task: Call RPC from `ManageTagsModal` on save.
+    - [ ] Sub-task: Invalidate queries to refresh feed list/tags.
+- [ ] Task: Add tests for `ManageTagsModal` and `FeedList` interaction.
+- [ ] Task: Conductor - User Manual Verification 'Bulk Tagging UI' (Protocol in workflow.md)
