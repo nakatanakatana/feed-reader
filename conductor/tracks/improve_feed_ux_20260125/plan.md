@@ -15,7 +15,7 @@
 - [x] Task: Conductor - User Manual Verification 'Backend Support for Bulk Tagging' (Protocol in workflow.md)
 
 ## Phase 3: Bulk Tagging UI (Frontend)
-- [ ] Task: Create `ManageTagsModal.tsx` component.
+- [x] Task: Create `ManageTagsModal.tsx` component. [dac7d31]
     - [ ] Sub-task: UI layout (list of tags, add/remove indication).
     - [ ] Sub-task: Logic to handle selection state (which tags to add/remove).
 - [ ] Task: Update `FeedList.tsx` to support bulk selection.
