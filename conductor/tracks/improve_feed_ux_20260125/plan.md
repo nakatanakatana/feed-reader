@@ -5,7 +5,7 @@
 - [x] Task: Remove article list display from `feeds.$feedId.tsx`. Ensure only feed details/stats are shown. [b903018]
 - [x] Task: Conductor - User Manual Verification 'Remove Feed Items from Feed Pages' (Protocol in workflow.md)
 
-## Phase 2: Backend Support for Bulk Tagging
+## Phase 2: Backend Support for Bulk Tagging [checkpoint: 2eb9d4a]
 - [x] Task: Update `sql/query.sql` to include `DeleteFeedTag` (delete specific tag from feed). [0f926a9]
 - [x] Task: Update `proto/feed/v1/feed.proto` to add `ManageFeedTags` RPC (feed_ids, add_tag_ids, remove_tag_ids). [61027b0]
 - [x] Task: Run `make gen` to generate Go and TypeScript code. [61027b0]
