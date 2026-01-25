@@ -48,7 +48,6 @@ func TestFetcherService_normalizeItem_PBT(t *testing.T) {
 	})
 }
 
-
 func TestFetcherService_FetchAndSave(t *testing.T) {
 	ctx := context.Background()
 	queries, db := setupTestDB(t)

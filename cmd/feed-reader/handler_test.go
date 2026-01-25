@@ -459,8 +459,8 @@ func TestFeedServer_ImportOpml(t *testing.T) {
 		// Pre-create existing feed
 		existingID := "existing-uuid"
 		_, err := queries.CreateFeed(ctx, store.CreateFeedParams{
-			Uuid: existingID,
-			Url:  "https://example.com/existing",
+			Uuid:  existingID,
+			Url:   "https://example.com/existing",
 			Title: func() *string { s := "Existing"; return &s }(),
 		})
 		if err != nil {
@@ -557,4 +557,3 @@ func TestFeedServer_ImportOpml(t *testing.T) {
 		}
 	})
 }
-

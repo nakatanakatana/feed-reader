@@ -31,7 +31,7 @@ func TestParseOPML(t *testing.T) {
 
 	assert.Equal(t, "Go Blog", feeds[1].Title)
 	assert.Equal(t, "https://go.dev/blog/feed.atom", feeds[1].URL)
-	
+
 	assert.Equal(t, "Another Feed", feeds[2].Title)
 	assert.Equal(t, "https://example.com/feed.xml", feeds[2].URL)
 }
@@ -55,4 +55,3 @@ func TestParseOPML_NoFeeds(t *testing.T) {
 	require.NoError(t, err)
 	assert.Empty(t, feeds)
 }
-

@@ -38,7 +38,8 @@ export function ImportOpmlModal(props: ImportOpmlModalProps) {
     try {
       const reader = new FileReader();
       const content = await new Promise<Uint8Array>((resolve, reject) => {
-        reader.onload = () => resolve(new Uint8Array(reader.result as ArrayBuffer));
+        reader.onload = () =>
+          resolve(new Uint8Array(reader.result as ArrayBuffer));
         reader.onerror = reject;
         reader.readAsArrayBuffer(file);
       });
@@ -50,7 +51,7 @@ export function ImportOpmlModal(props: ImportOpmlModalProps) {
         skipped: res.skipped,
         failedFeeds: res.failedFeeds,
       });
-      
+
       // Invalidate feeds list query
       queryClient.invalidateQueries({ queryKey: ["feeds"] });
     } catch (e) {
@@ -154,17 +155,27 @@ export function ImportOpmlModal(props: ImportOpmlModalProps) {
             </Show>
 
             <Show when={isPending()}>
-              <div class={center({ padding: "8", gap: "3", flexDirection: "column" })}>
-                <div class={css({
-                  width: "8",
-                  height: "8",
-                  border: "4px solid",
-                  borderColor: "blue.100",
-                  borderTopColor: "blue.600",
-                  borderRadius: "full",
-                  animation: "spin 1s linear infinite",
-                })} />
-                <p class={css({ color: "gray.600" })}>Processing OPML file...</p>
+              <div
+                class={center({
+                  padding: "8",
+                  gap: "3",
+                  flexDirection: "column",
+                })}
+              >
+                <div
+                  class={css({
+                    width: "8",
+                    height: "8",
+                    border: "4px solid",
+                    borderColor: "blue.100",
+                    borderTopColor: "blue.600",
+                    borderRadius: "full",
+                    animation: "spin 1s linear infinite",
+                  })}
+                />
+                <p class={css({ color: "gray.600" })}>
+                  Processing OPML file...
+                </p>
               </div>
             </Show>
 
@@ -180,17 +191,36 @@ export function ImportOpmlModal(props: ImportOpmlModalProps) {
                   <p class={css({ fontWeight: "medium", color: "green.600" })}>
                     Import Completed!
                   </p>
-                  <ul class={stack({ gap: "1", fontSize: "sm", color: "gray.700" })}>
+                  <ul
+                    class={stack({
+                      gap: "1",
+                      fontSize: "sm",
+                      color: "gray.700",
+                    })}
+                  >
                     <li>Total feeds found: {res().total}</li>
                     <li>Successfully imported: {res().success}</li>
                     <li>Skipped (already exists): {res().skipped}</li>
                   </ul>
                   <Show when={res().failedFeeds.length > 0}>
                     <div class={stack({ gap: "1", marginTop: "2" })}>
-                      <p class={css({ fontSize: "sm", fontWeight: "medium", color: "red.500" })}>
+                      <p
+                        class={css({
+                          fontSize: "sm",
+                          fontWeight: "medium",
+                          color: "red.500",
+                        })}
+                      >
                         Failed to import:
                       </p>
-                      <ul class={css({ fontSize: "xs", color: "red.400", maxHeight: "20", overflowY: "auto" })}>
+                      <ul
+                        class={css({
+                          fontSize: "xs",
+                          color: "red.400",
+                          maxHeight: "20",
+                          overflowY: "auto",
+                        })}
+                      >
                         {res().failedFeeds.map((url) => (
                           <li>{url}</li>
                         ))}

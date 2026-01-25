@@ -40,25 +40,39 @@ describe("ImportOpmlModal", () => {
     );
 
     // Initial state
-    await expect.element(page.getByText("Select an .opml or .xml file")).toBeInTheDocument();
+    await expect
+      .element(page.getByText("Select an .opml or .xml file"))
+      .toBeInTheDocument();
 
     // Mock file upload
-    const input = document.querySelector('input[type="file"]') as HTMLInputElement;
-    const file = new File(['<opml><body></body></opml>'], 'test.opml', { type: 'text/xml' });
-    
+    const input = document.querySelector(
+      'input[type="file"]',
+    ) as HTMLInputElement;
+    const file = new File(["<opml><body></body></opml>"], "test.opml", {
+      type: "text/xml",
+    });
+
     // Use vitest-browser's fill or dispatch event
     // Since page.fill doesn't support files easily in this version of vitest/browser sometimes
     // we use a workaround
-    Object.defineProperty(input, 'files', {
+    Object.defineProperty(input, "files", {
       value: [file],
     });
-    input.dispatchEvent(new Event('change', { bubbles: true }));
+    input.dispatchEvent(new Event("change", { bubbles: true }));
 
     // Wait for result
-    await expect.element(page.getByText("Import Completed!")).toBeInTheDocument();
-    await expect.element(page.getByText("Total feeds found: 10")).toBeInTheDocument();
-    await expect.element(page.getByText("Successfully imported: 8")).toBeInTheDocument();
-    await expect.element(page.getByText("Skipped (already exists): 2")).toBeInTheDocument();
+    await expect
+      .element(page.getByText("Import Completed!"))
+      .toBeInTheDocument();
+    await expect
+      .element(page.getByText("Total feeds found: 10"))
+      .toBeInTheDocument();
+    await expect
+      .element(page.getByText("Successfully imported: 8"))
+      .toBeInTheDocument();
+    await expect
+      .element(page.getByText("Skipped (already exists): 2"))
+      .toBeInTheDocument();
   });
 
   it("handles import error", async () => {
@@ -79,14 +93,18 @@ describe("ImportOpmlModal", () => {
       document.body,
     );
 
-    const input = document.querySelector('input[type="file"]') as HTMLInputElement;
-    const file = new File(['invalid'], 'test.opml', { type: 'text/xml' });
-    
-    Object.defineProperty(input, 'files', {
+    const input = document.querySelector(
+      'input[type="file"]',
+    ) as HTMLInputElement;
+    const file = new File(["invalid"], "test.opml", { type: "text/xml" });
+
+    Object.defineProperty(input, "files", {
       value: [file],
     });
-    input.dispatchEvent(new Event('change', { bubbles: true }));
+    input.dispatchEvent(new Event("change", { bubbles: true }));
 
-    await expect.element(page.getByText(/Error: .*(Invalid OPML format|internal error)/)).toBeInTheDocument();
+    await expect
+      .element(page.getByText(/Error: .*(Invalid OPML format|internal error)/))
+      .toBeInTheDocument();
   });
 });

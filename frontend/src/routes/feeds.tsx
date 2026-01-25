@@ -15,7 +15,9 @@ function FeedsComponent() {
 
   return (
     <div class={stack({ padding: "4", gap: "6" })}>
-      <div class={flex({ justifyContent: "space-between", alignItems: "center" })}>
+      <div
+        class={flex({ justifyContent: "space-between", alignItems: "center" })}
+      >
         <h1 class={css({ fontSize: "2xl", fontWeight: "bold" })}>
           Feed Management
         </h1>
@@ -43,4 +45,3 @@ function FeedsComponent() {
     </div>
   );
 }
-

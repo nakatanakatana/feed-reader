@@ -69,10 +69,10 @@ func TestScheduler_nextDelay_PBT(t *testing.T) {
 		maxJitter := time.Duration(rapid.Int64Range(0, int64(time.Hour)).Draw(t, "maxJitter"))
 
 		s := NewScheduler(interval, maxJitter, nil)
-		
+
 		for i := 0; i < 100; i++ {
 			delay := s.nextDelay()
-			
+
 			assert.GreaterOrEqual(t, int64(delay), int64(interval), "Delay should be at least the interval")
 			if maxJitter > 0 {
 				assert.Less(t, int64(delay), int64(interval+maxJitter), "Delay should be less than interval + maxJitter")
