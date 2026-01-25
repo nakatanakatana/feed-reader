@@ -14,7 +14,7 @@
 - [x] Task: Add unit/integration tests for `ManageFeedTags` in `cmd/feed-reader/handler_test.go` or `store/feed_store_test.go`. [55b3688]
 - [x] Task: Conductor - User Manual Verification 'Backend Support for Bulk Tagging' (Protocol in workflow.md)
 
-## Phase 3: Bulk Tagging UI (Frontend)
+## Phase 3: Bulk Tagging UI (Frontend) [checkpoint: a82f67d]
 - [x] Task: Create `ManageTagsModal.tsx` component. [dac7d31]
     - [ ] Sub-task: UI layout (list of tags, add/remove indication).
     - [ ] Sub-task: Logic to handle selection state (which tags to add/remove).
