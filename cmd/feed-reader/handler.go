@@ -163,6 +163,10 @@ func (s *FeedServer) RefreshFeeds(ctx context.Context, req *connect.Request[feed
 	return connect.NewResponse(&feedv1.RefreshFeedsResponse{}), nil
 }
 
+func (s *FeedServer) ImportOpml(ctx context.Context, req *connect.Request[feedv1.ImportOpmlRequest]) (*connect.Response[feedv1.ImportOpmlResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("not implemented"))
+}
+
 func toProtoFeed(f store.Feed) *feedv1.Feed {
 	// sqlite store uses strings for timestamps, need to confirm format if parsing required,
 	// but proto also uses string for now based on previous decision.
