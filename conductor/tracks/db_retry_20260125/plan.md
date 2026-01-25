@@ -26,12 +26,9 @@ Create a wrapper for `DBTX` (database/transaction interface) that automatically 
     - [ ] Create a helper in `Store` to start transactions with retries.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Integration' (Protocol in workflow.md)
 
-## Phase 3: Verification and Refactoring
+## Phase 3: Verification and Refactoring [checkpoint: 186c2e1]
 Ensure the mechanism works under simulated pressure and clean up the implementation.
 
-- [ ] Task: Integration Test with Simulated Locks.
-    - [ ] Create a test that induces `SQLITE_BUSY` (e.g., using two concurrent transactions) and verifies successful completion via retries.
-- [ ] Task: Verify Coverage and Quality Gates.
-    - [ ] Ensure `store` package coverage is >80%.
-    - [ ] Run `golangci-lint` and `go test ./...`.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Verification' (Protocol in workflow.md)
+- [x] Task: Integration Test with Simulated Locks. 1bb895d
+- [x] Task: Verify Coverage and Quality Gates. 4220c71
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Verification' (Protocol in workflow.md). 186c2e1
