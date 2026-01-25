@@ -10,7 +10,7 @@
 - [x] Task: Implement OPML Parsing Logic 742e1a1
     - [ ] Create utility function/struct to parse OPML XML content
     - [ ] Write unit tests for parser with various sample inputs
-- [ ] Task: Implement `ImportOpml` Service Handler
+- [x] Task: Implement ImportOpml Service Handler d910981
     - [ ] Implement deduplication logic (check URL existence)
     - [ ] Implement bulk creation of feeds
     - [ ] Trigger async fetch for new feeds
