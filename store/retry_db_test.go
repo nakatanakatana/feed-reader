@@ -65,6 +65,20 @@ func TestRetryingDB_ExecContext(t *testing.T) {
 	})
 }
 
+func TestRetryingDB_PrepareContext(t *testing.T) {
+	m := new(mockDBTX)
+	rdb := store.NewRetryingDB(m)
+	busyErr := sqlite3.Error{Code: sqlite3.ErrBusy}
+	stmt := &sql.Stmt{}
+
+	m.On("PrepareContext", mock.Anything, "query").Return(stmt, busyErr).Once()
+	m.On("PrepareContext", mock.Anything, "query").Return(stmt, nil).Once()
+
+	_, err := rdb.PrepareContext(context.Background(), "query")
+	assert.NoError(t, err)
+	m.AssertExpectations(t)
+}
+
 type mockResult struct{}
 
 func (m *mockResult) LastInsertId() (int64, error) { return 0, nil }
