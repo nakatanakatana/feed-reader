@@ -2,7 +2,7 @@
 
 This plan introduces an application-level retry mechanism with exponential backoff for SQLite database operations, specifically targeting transient lock conflicts (`SQLITE_BUSY`).
 
-## Phase 1: Foundation - Retry Logic and Error Detection
+## Phase 1: Foundation - Retry Logic and Error Detection [checkpoint: d1a5eda]
 Implement the core retry engine and SQLite error identification logic.
 
 - [x] Task: Define SQLite error detection utility. d5ad1b4
