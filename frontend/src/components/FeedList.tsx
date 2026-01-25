@@ -4,9 +4,19 @@ import { For, Show, createSignal } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { feeds } from "../lib/db";
+import { useTags } from "../lib/tag-query";
 
 export function FeedList() {
-  const { data: feedList } = useLiveQuery((q) => q.from({ feed: feeds }));
+  const [selectedTagId, setSelectedTagId] = createSignal<string | undefined>();
+  const tagsQuery = useTags();
+
+  const { data: feedList } = useLiveQuery((q) =>
+    q.from({ feed: feeds }).where((f) => {
+      const tagId = selectedTagId();
+      if (!tagId) return true;
+      return f.tags?.some((t) => t.id === tagId) ?? false;
+    }),
+  );
 
   const [deleteError, setDeleteError] = createSignal<Error | null>(null);
 
@@ -26,9 +36,51 @@ export function FeedList() {
 
   return (
     <div class={stack({ gap: "4" })}>
-      <h2 class={css({ fontSize: "xl", fontWeight: "semibold" })}>
-        Your Feeds
-      </h2>
+      <div class={flex({ justifyContent: "space-between", alignItems: "center" })}>
+        <h2 class={css({ fontSize: "xl", fontWeight: "semibold" })}>
+          Your Feeds
+        </h2>
+        <div class={flex({ gap: "2", alignItems: "center" })}>
+          <span class={css({ fontSize: "sm", color: "gray.600" })}>Filter:</span>
+          <button
+            onClick={() => setSelectedTagId(undefined)}
+            class={css({
+              px: "2",
+              py: "0.5",
+              rounded: "md",
+              fontSize: "xs",
+              cursor: "pointer",
+              border: "1px solid",
+              ...(selectedTagId() === undefined
+                ? { bg: "blue.100", borderColor: "blue.500", color: "blue.700" }
+                : { bg: "gray.50", borderColor: "gray.300", color: "gray.600" }),
+            })}
+          >
+            All
+          </button>
+          <For each={tagsQuery.data?.tags}>
+            {(tag) => (
+              <button
+                onClick={() => setSelectedTagId(tag.id)}
+                class={css({
+                  px: "2",
+                  py: "0.5",
+                  rounded: "md",
+                  fontSize: "xs",
+                  cursor: "pointer",
+                  border: "1px solid",
+                  ...(selectedTagId() === tag.id
+                    ? { bg: "blue.100", borderColor: "blue.500", color: "blue.700" }
+                    : { bg: "gray.50", borderColor: "gray.300", color: "gray.600" }),
+                })}
+              >
+                {tag.name}
+              </button>
+            )}
+          </For>
+        </div>
+      </div>
+
       <Show when={isLoading()}>
         <p>Loading...</p>
       </Show>
