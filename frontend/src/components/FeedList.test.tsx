@@ -132,4 +132,39 @@ describe("FeedList", () => {
 
     expect(db.feeds.delete).toHaveBeenCalledWith("1");
   });
+
+  it("supports bulk selection", async () => {
+    const mockFeeds = [
+      { uuid: "1", title: "Feed 1", url: "u1", tags: [] },
+      { uuid: "2", title: "Feed 2", url: "u2", tags: [] },
+    ];
+    vi.mocked(useLiveQuery).mockReturnValue({
+      data: mockFeeds,
+    } as unknown as ReturnType<typeof useLiveQuery>);
+
+    const history = createMemoryHistory({ initialEntries: ["/feeds"] });
+    const router = createRouter({ routeTree, history });
+
+    dispose = render(
+      () => (
+        <TestWrapper>
+          <RouterProvider router={router} />
+        </TestWrapper>
+      ),
+      document.body,
+    );
+
+    await expect.element(page.getByText("Feed 1")).toBeInTheDocument();
+
+    // Select first feed
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    expect(checkboxes.length).toBe(2);
+    
+    // Using native click as vitest-browser click might be tricky with multiple elements sometimes
+    (checkboxes[0] as HTMLInputElement).click();
+
+    // Now "Manage Tags (1)" should be visible
+    const manageButton = page.getByText("Manage Tags (1)");
+    await expect.element(manageButton).toBeInTheDocument();
+  });
 });
