@@ -48,6 +48,7 @@ export const TagManagement = () => {
             <div class="flex items-center gap-1 px-3 py-1 bg-gray-100 rounded-full text-sm border">
               <span>{tag.name}</span>
               <button
+                type="button"
                 onClick={() => handleDeleteTag(tag.id)}
                 class="text-gray-500 hover:text-red-600 font-bold ml-1"
                 aria-label={`Delete ${tag.name}`}

@@ -1,4 +1,5 @@
 import { render } from "solid-js/web";
+import type { JSX } from "solid-js";
 import { afterEach, describe, expect, it, vi, beforeEach } from "vitest";
 import { page } from "vitest/browser";
 import {
@@ -63,7 +64,7 @@ describe("FeedList", () => {
     vi.clearAllMocks();
   });
 
-  const TestWrapper = (props: { children: any }) => (
+  const TestWrapper = (props: { children: JSX.Element }) => (
     <TransportProvider transport={transport}>
       <QueryClientProvider client={queryClient}>
         {props.children}
@@ -74,7 +75,12 @@ describe("FeedList", () => {
   it("displays a list of feeds", async () => {
     // Setup mock return for useLiveQuery
     const mockFeeds = [
-      { uuid: "1", title: "Feed 1", url: "http://example.com/1", tags: [{ id: "t1", name: "Tag 1" }] },
+      {
+        uuid: "1",
+        title: "Feed 1",
+        url: "http://example.com/1",
+        tags: [{ id: "t1", name: "Tag 1" }],
+      },
       { uuid: "2", title: "Feed 2", url: "http://example.com/2", tags: [] },
     ];
 
@@ -85,11 +91,14 @@ describe("FeedList", () => {
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
     const router = createRouter({ routeTree, history });
 
-    dispose = render(() => (
-      <TestWrapper>
-        <RouterProvider router={router} />
-      </TestWrapper>
-    ), document.body);
+    dispose = render(
+      () => (
+        <TestWrapper>
+          <RouterProvider router={router} />
+        </TestWrapper>
+      ),
+      document.body,
+    );
 
     await expect.element(page.getByText("Feed 1")).toBeInTheDocument();
     await expect.element(page.getByText("Tag 1")).toBeInTheDocument();
@@ -107,11 +116,14 @@ describe("FeedList", () => {
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
     const router = createRouter({ routeTree, history });
 
-    dispose = render(() => (
-      <TestWrapper>
-        <RouterProvider router={router} />
-      </TestWrapper>
-    ), document.body);
+    dispose = render(
+      () => (
+        <TestWrapper>
+          <RouterProvider router={router} />
+        </TestWrapper>
+      ),
+      document.body,
+    );
 
     await expect.element(page.getByText("Feed 1")).toBeInTheDocument();
 

@@ -11,12 +11,12 @@ export function FeedList() {
   const tagsQuery = useTags();
 
   const { data: feedList } = useLiveQuery((q) => {
-    let query = q.from({ feed: feeds });
+    const query = q.from({ feed: feeds });
     const tagId = selectedTagId();
     if (tagId) {
       // NOTE: solid-db where currently has issues with boolean expressions in some versions.
       // We perform manual filtering on the result for now to ensure stability.
-      return query; 
+      return query;
     }
     return query;
   });
@@ -46,13 +46,18 @@ export function FeedList() {
 
   return (
     <div class={stack({ gap: "4" })}>
-      <div class={flex({ justifyContent: "space-between", alignItems: "center" })}>
+      <div
+        class={flex({ justifyContent: "space-between", alignItems: "center" })}
+      >
         <h2 class={css({ fontSize: "xl", fontWeight: "semibold" })}>
           Your Feeds
         </h2>
         <div class={flex({ gap: "2", alignItems: "center" })}>
-          <span class={css({ fontSize: "sm", color: "gray.600" })}>Filter:</span>
+          <span class={css({ fontSize: "sm", color: "gray.600" })}>
+            Filter:
+          </span>
           <button
+            type="button"
             onClick={() => setSelectedTagId(undefined)}
             class={css({
               px: "2",
@@ -63,7 +68,11 @@ export function FeedList() {
               border: "1px solid",
               ...(selectedTagId() === undefined
                 ? { bg: "blue.100", borderColor: "blue.500", color: "blue.700" }
-                : { bg: "gray.50", borderColor: "gray.300", color: "gray.600" }),
+                : {
+                    bg: "gray.50",
+                    borderColor: "gray.300",
+                    color: "gray.600",
+                  }),
             })}
           >
             All
@@ -71,6 +80,7 @@ export function FeedList() {
           <For each={tagsQuery.data?.tags}>
             {(tag) => (
               <button
+                type="button"
                 onClick={() => setSelectedTagId(tag.id)}
                 class={css({
                   px: "2",
@@ -80,8 +90,16 @@ export function FeedList() {
                   cursor: "pointer",
                   border: "1px solid",
                   ...(selectedTagId() === tag.id
-                    ? { bg: "blue.100", borderColor: "blue.500", color: "blue.700" }
-                    : { bg: "gray.50", borderColor: "gray.300", color: "gray.600" }),
+                    ? {
+                        bg: "blue.100",
+                        borderColor: "blue.500",
+                        color: "blue.700",
+                      }
+                    : {
+                        bg: "gray.50",
+                        borderColor: "gray.300",
+                        color: "gray.600",
+                      }),
                 })}
               >
                 {tag.name}
@@ -120,7 +138,10 @@ export function FeedList() {
                     params={{ feedId: feed.uuid }}
                     class={css({
                       fontWeight: "medium",
-                      _hover: { textDecoration: "underline", color: "blue.600" },
+                      _hover: {
+                        textDecoration: "underline",
+                        color: "blue.600",
+                      },
                     })}
                   >
                     {feed.title || "Untitled Feed"}

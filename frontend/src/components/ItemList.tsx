@@ -43,6 +43,7 @@ export function ItemList(props: ItemListProps) {
           Filter by Tag:
         </span>
         <button
+          type="button"
           onClick={() => setSelectedTagId(undefined)}
           class={css({
             px: "3",
@@ -62,6 +63,7 @@ export function ItemList(props: ItemListProps) {
         <For each={tagsQuery.data?.tags}>
           {(tag) => (
             <button
+              type="button"
               onClick={() => setSelectedTagId(tag.id)}
               class={css({
                 px: "3",

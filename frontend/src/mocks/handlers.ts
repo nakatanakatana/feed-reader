@@ -60,7 +60,7 @@ export const handlers = [
       let filteredFeeds = feeds;
       if (req.tagId) {
         filteredFeeds = feeds.filter((f) =>
-          f.tags.some((t) => t.id === req.tagId)
+          f.tags.some((t) => t.id === req.tagId),
         );
       }
       return new ListFeedsResponse({ feeds: filteredFeeds });
@@ -77,7 +77,8 @@ export const handlers = [
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         tags: (req.tagIds || []).map(
-          (id) => tags.find((t) => t.id === id) || new Tag({ id, name: "Unknown" })
+          (id) =>
+            tags.find((t) => t.id === id) || new Tag({ id, name: "Unknown" }),
         ),
       });
       // In-memory update for the session
@@ -95,7 +96,7 @@ export const handlers = [
         if (req.tagIds) {
           feeds[index].tags = req.tagIds.map(
             (id) =>
-              tags.find((t) => t.id === id) || new Tag({ id, name: "Unknown" })
+              tags.find((t) => t.id === id) || new Tag({ id, name: "Unknown" }),
           );
         }
         feeds[index].updatedAt = new Date().toISOString();
@@ -158,7 +159,8 @@ export const handlers = [
       const feed = feeds.find((f) => f.uuid === req.feedId);
       if (feed) {
         feed.tags = req.tagIds.map(
-          (id) => tags.find((t) => t.id === id) || new Tag({ id, name: "Unknown" })
+          (id) =>
+            tags.find((t) => t.id === id) || new Tag({ id, name: "Unknown" }),
         );
       }
       return new SetFeedTagsResponse({});

@@ -4,7 +4,10 @@ import {
   useQueryClient,
 } from "@tanstack/solid-query";
 import { FeedService } from "../gen/feed/v1/feed_connect";
-import { CreateTagRequest, DeleteTagRequest } from "../gen/feed/v1/feed_pb";
+import type {
+  CreateTagRequest,
+  DeleteTagRequest,
+} from "../gen/feed/v1/feed_pb";
 import { transport } from "./query";
 import { createPromiseClient } from "@connectrpc/connect";
 
