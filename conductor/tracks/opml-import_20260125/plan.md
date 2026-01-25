@@ -7,7 +7,7 @@
     - [ ] Add RPC method definition
 - [x] Task: Generate code d389b53
     - [ ] Run `make gen` to update Go and TS definitions
-- [ ] Task: Implement OPML Parsing Logic
+- [x] Task: Implement OPML Parsing Logic 742e1a1
     - [ ] Create utility function/struct to parse OPML XML content
     - [ ] Write unit tests for parser with various sample inputs
 - [ ] Task: Implement `ImportOpml` Service Handler
