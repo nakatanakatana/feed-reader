@@ -514,5 +514,47 @@ func TestFeedServer_ImportOpml(t *testing.T) {
 			t.Error("expected ItemFetcher to be called for new feed")
 		}
 	})
+
+	t.Run("Import with fetch failure", func(t *testing.T) {
+		queries, _ := setupTestDB(t)
+		fetcher := &mockFetcher{
+			err: errors.New("fetch failed"),
+		}
+		server := NewFeedServer(queries, nil, fetcher, &mockItemFetcher{})
+
+		req := &feedv1.ImportOpmlRequest{
+			OpmlContent: []byte(opmlContent),
+		}
+
+		res, err := server.ImportOpml(ctx, connect.NewRequest(req))
+		if err != nil {
+			t.Fatalf("ImportOpml() error = %v", err)
+		}
+
+		// Both are new. Both fail to fetch.
+		if res.Msg.Total != 2 {
+			t.Errorf("expected total 2, got %d", res.Msg.Total)
+		}
+		if res.Msg.Success != 0 {
+			t.Errorf("expected success 0, got %d", res.Msg.Success)
+		}
+		if len(res.Msg.FailedFeeds) != 2 {
+			t.Errorf("expected 2 failed feeds, got %d", len(res.Msg.FailedFeeds))
+		}
+	})
+
+	t.Run("Import invalid OPML", func(t *testing.T) {
+		queries, _ := setupTestDB(t)
+		server := NewFeedServer(queries, nil, &mockFetcher{}, &mockItemFetcher{})
+
+		req := &feedv1.ImportOpmlRequest{
+			OpmlContent: []byte("invalid"),
+		}
+
+		_, err := server.ImportOpml(ctx, connect.NewRequest(req))
+		if connect.CodeOf(err) != connect.CodeInvalidArgument {
+			t.Errorf("expected CodeInvalidArgument, got %v", connect.CodeOf(err))
+		}
+	})
 }
 
