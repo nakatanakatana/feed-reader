@@ -5,7 +5,7 @@ This plan introduces an application-level retry mechanism with exponential backo
 ## Phase 1: Foundation - Retry Logic and Error Detection
 Implement the core retry engine and SQLite error identification logic.
 
-- [ ] Task: Define SQLite error detection utility.
+- [x] Task: Define SQLite error detection utility. d5ad1b4
     - [ ] Write tests to verify `isBusyError` identifies `SQLITE_BUSY` and `SQLITE_LOCKED`.
     - [ ] Implement `isBusyError(err error) bool` in `store/retry.go`.
 - [ ] Task: Implement generic retry logic with exponential backoff.
