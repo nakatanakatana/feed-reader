@@ -75,7 +75,7 @@ func main() {
 	go scheduler.Start(ctx)
 
 	// 5. Initialize API Server
-	feedServer := NewFeedServer(s.Queries, nil, fetcher, fetchService)
+	feedServer := NewFeedServer(s, nil, fetcher, fetchService)
 	feedPath, feedHandler := feedv1connect.NewFeedServiceHandler(feedServer)
 
 	itemServer := NewItemServer(s)

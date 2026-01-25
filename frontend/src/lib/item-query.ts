@@ -22,6 +22,7 @@ export interface FetchItemsParams {
   feedId?: string;
   isRead?: boolean;
   isSaved?: boolean;
+  tagId?: string;
   limit?: number;
   offset?: number;
   sortOrder?: ListItemsRequest_SortOrder;
@@ -36,6 +37,7 @@ export const fetchItems = async (
     feedId: params.feedId,
     isRead: params.isRead,
     isSaved: params.isSaved,
+    tagId: params.tagId,
     limit: params.limit,
     offset: params.offset,
     sortOrder: params.sortOrder ?? ListItemsRequest_SortOrder.UNSPECIFIED,

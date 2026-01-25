@@ -1,5 +1,6 @@
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import type { JSX } from "solid-js";
+import { afterEach, describe, expect, it, vi, beforeEach } from "vitest";
 import { page } from "vitest/browser";
 import {
   createMemoryHistory,
@@ -9,6 +10,9 @@ import {
 import { routeTree } from "../routeTree.gen";
 import * as db from "../lib/db";
 import { useLiveQuery } from "@tanstack/solid-db";
+import { queryClient, transport } from "../lib/query";
+import { QueryClientProvider } from "@tanstack/solid-query";
+import { TransportProvider } from "../lib/transport-context";
 
 // Mock the db module
 vi.mock("../lib/db", () => ({
@@ -50,17 +54,34 @@ vi.mock("@tanstack/solid-router", async (importOriginal) => {
 describe("FeedList", () => {
   let dispose: () => void;
 
+  beforeEach(() => {
+    queryClient.clear();
+  });
+
   afterEach(() => {
     if (dispose) dispose();
     document.body.innerHTML = "";
     vi.clearAllMocks();
   });
 
+  const TestWrapper = (props: { children: JSX.Element }) => (
+    <TransportProvider transport={transport}>
+      <QueryClientProvider client={queryClient}>
+        {props.children}
+      </QueryClientProvider>
+    </TransportProvider>
+  );
+
   it("displays a list of feeds", async () => {
     // Setup mock return for useLiveQuery
     const mockFeeds = [
-      { uuid: "1", title: "Feed 1", url: "http://example.com/1" },
-      { uuid: "2", title: "Feed 2", url: "http://example.com/2" },
+      {
+        uuid: "1",
+        title: "Feed 1",
+        url: "http://example.com/1",
+        tags: [{ id: "t1", name: "Tag 1" }],
+      },
+      { uuid: "2", title: "Feed 2", url: "http://example.com/2", tags: [] },
     ];
 
     vi.mocked(useLiveQuery).mockReturnValue({
@@ -70,15 +91,23 @@ describe("FeedList", () => {
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
     const router = createRouter({ routeTree, history });
 
-    dispose = render(() => <RouterProvider router={router} />, document.body);
+    dispose = render(
+      () => (
+        <TestWrapper>
+          <RouterProvider router={router} />
+        </TestWrapper>
+      ),
+      document.body,
+    );
 
     await expect.element(page.getByText("Feed 1")).toBeInTheDocument();
+    await expect.element(page.getByText("Tag 1")).toBeInTheDocument();
     await expect.element(page.getByText("Feed 2")).toBeInTheDocument();
   });
 
   it("deletes a feed", async () => {
     const mockFeeds = [
-      { uuid: "1", title: "Feed 1", url: "http://example.com/1" },
+      { uuid: "1", title: "Feed 1", url: "http://example.com/1", tags: [] },
     ];
     vi.mocked(useLiveQuery).mockReturnValue({
       data: mockFeeds,
@@ -87,7 +116,14 @@ describe("FeedList", () => {
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
     const router = createRouter({ routeTree, history });
 
-    dispose = render(() => <RouterProvider router={router} />, document.body);
+    dispose = render(
+      () => (
+        <TestWrapper>
+          <RouterProvider router={router} />
+        </TestWrapper>
+      ),
+      document.body,
+    );
 
     await expect.element(page.getByText("Feed 1")).toBeInTheDocument();
 

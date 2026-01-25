@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TagsRouteImport } from './routes/tags'
 import { Route as FeedsRouteImport } from './routes/feeds'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as FeedsFeedIdRouteImport } from './routes/feeds.$feedId'
 
+const TagsRoute = TagsRouteImport.update({
+  id: '/tags',
+  path: '/tags',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FeedsRoute = FeedsRouteImport.update({
   id: '/feeds',
   path: '/feeds',
@@ -32,34 +38,45 @@ const FeedsFeedIdRoute = FeedsFeedIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/feeds': typeof FeedsRouteWithChildren
+  '/tags': typeof TagsRoute
   '/feeds/$feedId': typeof FeedsFeedIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/feeds': typeof FeedsRouteWithChildren
+  '/tags': typeof TagsRoute
   '/feeds/$feedId': typeof FeedsFeedIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/feeds': typeof FeedsRouteWithChildren
+  '/tags': typeof TagsRoute
   '/feeds/$feedId': typeof FeedsFeedIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/feeds' | '/feeds/$feedId'
+  fullPaths: '/' | '/feeds' | '/tags' | '/feeds/$feedId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/feeds' | '/feeds/$feedId'
-  id: '__root__' | '/' | '/feeds' | '/feeds/$feedId'
+  to: '/' | '/feeds' | '/tags' | '/feeds/$feedId'
+  id: '__root__' | '/' | '/feeds' | '/tags' | '/feeds/$feedId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   FeedsRoute: typeof FeedsRouteWithChildren
+  TagsRoute: typeof TagsRoute
 }
 
 declare module '@tanstack/solid-router' {
   interface FileRoutesByPath {
+    '/tags': {
+      id: '/tags'
+      path: '/tags'
+      fullPath: '/tags'
+      preLoaderRoute: typeof TagsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/feeds': {
       id: '/feeds'
       path: '/feeds'
@@ -97,6 +114,7 @@ const FeedsRouteWithChildren = FeedsRoute._addFileChildren(FeedsRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   FeedsRoute: FeedsRouteWithChildren,
+  TagsRoute: TagsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,9 +1,10 @@
 import { For, Show, createSignal } from "solid-js";
-import { stack } from "../../styled-system/patterns";
+import { stack, flex } from "../../styled-system/patterns";
 import { css } from "../../styled-system/css";
 import { ItemRow } from "./ItemRow";
 import { useItems } from "../lib/item-query";
 import { ItemDetailModal } from "./ItemDetailModal";
+import { useTags } from "../lib/tag-query";
 
 interface ItemListProps {
   feedId?: string;
@@ -13,7 +14,13 @@ export function ItemList(props: ItemListProps) {
   const [selectedItemId, setSelectedItemId] = createSignal<
     string | undefined
   >();
-  const itemsQuery = useItems({ feedId: props.feedId });
+  const [selectedTagId, setSelectedTagId] = createSignal<string | undefined>();
+
+  const tagsQuery = useTags();
+  const itemsQuery = useItems({
+    feedId: props.feedId,
+    tagId: selectedTagId(),
+  });
 
   const allItems = () =>
     itemsQuery.data?.pages.flatMap((page) => page.items) ?? [];
@@ -31,6 +38,60 @@ export function ItemList(props: ItemListProps) {
 
   return (
     <div class={stack({ gap: "4", width: "full" })}>
+      <div class={flex({ gap: "2", flexWrap: "wrap", alignItems: "center" })}>
+        <span class={css({ fontSize: "sm", color: "gray.600" })}>
+          Filter by Tag:
+        </span>
+        <button
+          type="button"
+          onClick={() => setSelectedTagId(undefined)}
+          class={css({
+            px: "3",
+            py: "1",
+            rounded: "full",
+            fontSize: "xs",
+            cursor: "pointer",
+            border: "1px solid",
+            transition: "all 0.2s",
+            ...(selectedTagId() === undefined
+              ? { bg: "blue.100", borderColor: "blue.500", color: "blue.700" }
+              : { bg: "gray.50", borderColor: "gray.300", color: "gray.600" }),
+          })}
+        >
+          All
+        </button>
+        <For each={tagsQuery.data?.tags}>
+          {(tag) => (
+            <button
+              type="button"
+              onClick={() => setSelectedTagId(tag.id)}
+              class={css({
+                px: "3",
+                py: "1",
+                rounded: "full",
+                fontSize: "xs",
+                cursor: "pointer",
+                border: "1px solid",
+                transition: "all 0.2s",
+                ...(selectedTagId() === tag.id
+                  ? {
+                      bg: "blue.100",
+                      borderColor: "blue.500",
+                      color: "blue.700",
+                    }
+                  : {
+                      bg: "gray.50",
+                      borderColor: "gray.300",
+                      color: "gray.600",
+                    }),
+              })}
+            >
+              {tag.name}
+            </button>
+          )}
+        </For>
+      </div>
+
       <div class={stack({ gap: "2", padding: "0" })}>
         <For each={allItems()}>
           {(item) => (

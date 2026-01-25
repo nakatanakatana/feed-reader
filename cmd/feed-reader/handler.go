@@ -13,7 +13,7 @@ import (
 )
 
 type FeedServer struct {
-	queries       *store.Queries
+	store         *store.Store
 	uuidGenerator UUIDGenerator
 	fetcher       FeedFetcher
 	itemFetcher   ItemFetcher
@@ -24,12 +24,12 @@ type ItemFetcher interface {
 	FetchFeedsByIDs(ctx context.Context, uuids []string) error
 }
 
-func NewFeedServer(queries *store.Queries, uuidGen UUIDGenerator, fetcher FeedFetcher, itemFetcher ItemFetcher) feedv1connect.FeedServiceHandler {
+func NewFeedServer(s *store.Store, uuidGen UUIDGenerator, fetcher FeedFetcher, itemFetcher ItemFetcher) feedv1connect.FeedServiceHandler {
 	if uuidGen == nil {
 		uuidGen = realUUIDGenerator{}
 	}
 	return &FeedServer{
-		queries:       queries,
+		store:         s,
 		uuidGenerator: uuidGen,
 		fetcher:       fetcher,
 		itemFetcher:   itemFetcher,
@@ -37,7 +37,7 @@ func NewFeedServer(queries *store.Queries, uuidGen UUIDGenerator, fetcher FeedFe
 }
 
 func (s *FeedServer) GetFeed(ctx context.Context, req *connect.Request[feedv1.GetFeedRequest]) (*connect.Response[feedv1.GetFeedResponse], error) {
-	feed, err := s.queries.GetFeed(ctx, req.Msg.Uuid)
+	feed, err := s.store.GetFeed(ctx, req.Msg.Uuid)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, connect.NewError(connect.CodeNotFound, err)
@@ -45,20 +45,34 @@ func (s *FeedServer) GetFeed(ctx context.Context, req *connect.Request[feedv1.Ge
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
+	protoFeed, err := s.toProtoFeed(ctx, feed)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
 	return connect.NewResponse(&feedv1.GetFeedResponse{
-		Feed: toProtoFeed(feed),
+		Feed: protoFeed,
 	}), nil
 }
 
 func (s *FeedServer) ListFeeds(ctx context.Context, req *connect.Request[feedv1.ListFeedsRequest]) (*connect.Response[feedv1.ListFeedsResponse], error) {
-	feeds, err := s.queries.ListFeeds(ctx)
+	var tagID interface{}
+	if req.Msg.TagId != nil {
+		tagID = *req.Msg.TagId
+	}
+
+	feeds, err := s.store.ListFeeds(ctx, tagID)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
 	protoFeeds := make([]*feedv1.Feed, len(feeds))
 	for i, f := range feeds {
-		protoFeeds[i] = toProtoFeed(f)
+		pf, err := s.toProtoFeed(ctx, f)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, err)
+		}
+		protoFeeds[i] = pf
 	}
 
 	return connect.NewResponse(&feedv1.ListFeedsResponse{
@@ -69,8 +83,6 @@ func (s *FeedServer) ListFeeds(ctx context.Context, req *connect.Request[feedv1.
 func (s *FeedServer) CreateFeed(ctx context.Context, req *connect.Request[feedv1.CreateFeedRequest]) (*connect.Response[feedv1.CreateFeedResponse], error) {
 	fetchedFeed, err := s.fetcher.Fetch(ctx, req.Msg.Url)
 	if err != nil {
-		// Spec says: Return appropriate error message.
-		// We could map specific errors (timeout vs invalid) to codes, but Internal is safe for now.
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to fetch feed: %w", err))
 	}
 
@@ -92,7 +104,7 @@ func (s *FeedServer) CreateFeed(ctx context.Context, req *connect.Request[feedv1
 		imageUrl = strPtr(fetchedFeed.Image.URL)
 	}
 
-	feed, err := s.queries.CreateFeed(ctx, store.CreateFeedParams{
+	feed, err := s.store.CreateFeed(ctx, store.CreateFeedParams{
 		Uuid:        id,
 		Url:         req.Msg.Url,
 		Title:       strPtr(fetchedFeed.Title),
@@ -108,18 +120,27 @@ func (s *FeedServer) CreateFeed(ctx context.Context, req *connect.Request[feedv1
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
+	if len(req.Msg.TagIds) > 0 {
+		if err := s.store.SetFeedTags(ctx, feed.Uuid, req.Msg.TagIds); err != nil {
+			return nil, connect.NewError(connect.CodeInternal, err)
+		}
+	}
+
 	// Trigger immediate fetch of items
-	// We ignore the error here as the feed is successfully created.
-	// We use the same context so if the user cancels, the fetch aborts (which is reasonable).
 	_ = s.itemFetcher.FetchAndSave(ctx, feed)
 
+	protoFeed, err := s.toProtoFeed(ctx, feed)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
 	return connect.NewResponse(&feedv1.CreateFeedResponse{
-		Feed: toProtoFeed(feed),
+		Feed: protoFeed,
 	}), nil
 }
 
 func (s *FeedServer) UpdateFeed(ctx context.Context, req *connect.Request[feedv1.UpdateFeedRequest]) (*connect.Response[feedv1.UpdateFeedResponse], error) {
-	feed, err := s.queries.UpdateFeed(ctx, store.UpdateFeedParams{
+	feed, err := s.store.UpdateFeed(ctx, store.UpdateFeedParams{
 		Link:          req.Msg.Link,
 		Title:         req.Msg.Title,
 		Description:   req.Msg.Description,
@@ -138,13 +159,24 @@ func (s *FeedServer) UpdateFeed(ctx context.Context, req *connect.Request[feedv1
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
+	if req.Msg.TagIds != nil {
+		if err := s.store.SetFeedTags(ctx, feed.Uuid, req.Msg.TagIds); err != nil {
+			return nil, connect.NewError(connect.CodeInternal, err)
+		}
+	}
+
+	protoFeed, err := s.toProtoFeed(ctx, feed)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
 	return connect.NewResponse(&feedv1.UpdateFeedResponse{
-		Feed: toProtoFeed(feed),
+		Feed: protoFeed,
 	}), nil
 }
 
 func (s *FeedServer) DeleteFeed(ctx context.Context, req *connect.Request[feedv1.DeleteFeedRequest]) (*connect.Response[feedv1.DeleteFeedResponse], error) {
-	if err := s.queries.DeleteFeed(ctx, req.Msg.Uuid); err != nil {
+	if err := s.store.DeleteFeed(ctx, req.Msg.Uuid); err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
@@ -163,14 +195,71 @@ func (s *FeedServer) RefreshFeeds(ctx context.Context, req *connect.Request[feed
 	return connect.NewResponse(&feedv1.RefreshFeedsResponse{}), nil
 }
 
-func toProtoFeed(f store.Feed) *feedv1.Feed {
-	// sqlite store uses strings for timestamps, need to confirm format if parsing required,
-	// but proto also uses string for now based on previous decision.
-	// If we wanted Timestamp, we'd parse time.RFC3339 or similar here.
+func (s *FeedServer) CreateTag(ctx context.Context, req *connect.Request[feedv1.CreateTagRequest]) (*connect.Response[feedv1.CreateTagResponse], error) {
+	newUUID, err := s.uuidGenerator.NewRandom()
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to generate UUID: %w", err))
+	}
 
+	tag, err := s.store.CreateTag(ctx, store.CreateTagParams{
+		ID:   newUUID.String(),
+		Name: req.Msg.Name,
+	})
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	return connect.NewResponse(&feedv1.CreateTagResponse{
+		Tag: toProtoTag(tag),
+	}), nil
+}
+
+func (s *FeedServer) ListTags(ctx context.Context, req *connect.Request[feedv1.ListTagsRequest]) (*connect.Response[feedv1.ListTagsResponse], error) {
+	tags, err := s.store.ListTags(ctx)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	protoTags := make([]*feedv1.Tag, len(tags))
+	for i, t := range tags {
+		protoTags[i] = toProtoTag(t)
+	}
+
+	return connect.NewResponse(&feedv1.ListTagsResponse{
+		Tags: protoTags,
+	}), nil
+}
+
+func (s *FeedServer) DeleteTag(ctx context.Context, req *connect.Request[feedv1.DeleteTagRequest]) (*connect.Response[feedv1.DeleteTagResponse], error) {
+	if err := s.store.DeleteTag(ctx, req.Msg.Id); err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	return connect.NewResponse(&feedv1.DeleteTagResponse{}), nil
+}
+
+func (s *FeedServer) SetFeedTags(ctx context.Context, req *connect.Request[feedv1.SetFeedTagsRequest]) (*connect.Response[feedv1.SetFeedTagsResponse], error) {
+	if err := s.store.SetFeedTags(ctx, req.Msg.FeedId, req.Msg.TagIds); err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	return connect.NewResponse(&feedv1.SetFeedTagsResponse{}), nil
+}
+
+func (s *FeedServer) toProtoFeed(ctx context.Context, f store.Feed) (*feedv1.Feed, error) {
 	var title string
 	if f.Title != nil {
 		title = *f.Title
+	}
+
+	tags, err := s.store.ListTagsByFeedId(ctx, f.Uuid)
+	if err != nil {
+		return nil, err
+	}
+
+	protoTags := make([]*feedv1.Tag, len(tags))
+	for i, t := range tags {
+		protoTags[i] = toProtoTag(t)
 	}
 
 	return &feedv1.Feed{
@@ -185,7 +274,17 @@ func toProtoFeed(f store.Feed) *feedv1.Feed {
 		FeedType:      f.FeedType,
 		FeedVersion:   f.FeedVersion,
 		LastFetchedAt: f.LastFetchedAt,
-		CreatedAt:     f.CreatedAt, // Assuming string format matches
-		UpdatedAt:     f.UpdatedAt, // Assuming string format matches
+		CreatedAt:     f.CreatedAt,
+		UpdatedAt:     f.UpdatedAt,
+		Tags:          protoTags,
+	}, nil
+}
+
+func toProtoTag(t store.Tag) *feedv1.Tag {
+	return &feedv1.Tag{
+		Id:        t.ID,
+		Name:      t.Name,
+		CreatedAt: t.CreatedAt,
+		UpdatedAt: t.UpdatedAt,
 	}
 }

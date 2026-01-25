@@ -18,13 +18,17 @@ The primary target audience is individuals and organizations seeking control ove
 
 - **Full-Stack Application:** Includes both a backend API and a web frontend.
 
-- **Feed Management:** Add, organize, and manage RSS/Atom feeds via the UI.
+- **Feed Management:** Add, organize, and manage RSS/Atom feeds via the UI. Supports a flexible tagging system for categorizing and grouping feeds.
 
 - **Article Management:** Retrieve articles with flexible filtering and sorting. Track article status including read/unread and saved/unsaved (bookmarks).
 
 
 
 - **Content Reading:** Clean, distraction-free modal interface for reading full article content. Supports rich HTML rendering, author information, and quick navigation between items.
+
+
+
+- **Tagging System:** Create and manage custom tags to categorize feeds. Filter both the feed list and article stream by selected tags for organized content discovery.
 
 
 

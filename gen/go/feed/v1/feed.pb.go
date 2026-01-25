@@ -36,6 +36,7 @@ type Feed struct {
 	LastFetchedAt *string                `protobuf:"bytes,11,opt,name=last_fetched_at,json=lastFetchedAt,proto3,oneof" json:"last_fetched_at,omitempty"`
 	CreatedAt     string                 `protobuf:"bytes,12,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	UpdatedAt     string                 `protobuf:"bytes,13,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	Tags          []*Tag                 `protobuf:"bytes,14,rep,name=tags,proto3" json:"tags,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -161,6 +162,81 @@ func (x *Feed) GetUpdatedAt() string {
 	return ""
 }
 
+func (x *Feed) GetTags() []*Tag {
+	if x != nil {
+		return x.Tags
+	}
+	return nil
+}
+
+type Tag struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	CreatedAt     string                 `protobuf:"bytes,3,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt     string                 `protobuf:"bytes,4,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Tag) Reset() {
+	*x = Tag{}
+	mi := &file_feed_v1_feed_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Tag) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Tag) ProtoMessage() {}
+
+func (x *Tag) ProtoReflect() protoreflect.Message {
+	mi := &file_feed_v1_feed_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Tag.ProtoReflect.Descriptor instead.
+func (*Tag) Descriptor() ([]byte, []int) {
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *Tag) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *Tag) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Tag) GetCreatedAt() string {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return ""
+}
+
+func (x *Tag) GetUpdatedAt() string {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return ""
+}
+
 type GetFeedRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Uuid          string                 `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
@@ -170,7 +246,7 @@ type GetFeedRequest struct {
 
 func (x *GetFeedRequest) Reset() {
 	*x = GetFeedRequest{}
-	mi := &file_feed_v1_feed_proto_msgTypes[1]
+	mi := &file_feed_v1_feed_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -182,7 +258,7 @@ func (x *GetFeedRequest) String() string {
 func (*GetFeedRequest) ProtoMessage() {}
 
 func (x *GetFeedRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_feed_v1_feed_proto_msgTypes[1]
+	mi := &file_feed_v1_feed_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -195,7 +271,7 @@ func (x *GetFeedRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetFeedRequest.ProtoReflect.Descriptor instead.
 func (*GetFeedRequest) Descriptor() ([]byte, []int) {
-	return file_feed_v1_feed_proto_rawDescGZIP(), []int{1}
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *GetFeedRequest) GetUuid() string {
@@ -214,7 +290,7 @@ type GetFeedResponse struct {
 
 func (x *GetFeedResponse) Reset() {
 	*x = GetFeedResponse{}
-	mi := &file_feed_v1_feed_proto_msgTypes[2]
+	mi := &file_feed_v1_feed_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -226,7 +302,7 @@ func (x *GetFeedResponse) String() string {
 func (*GetFeedResponse) ProtoMessage() {}
 
 func (x *GetFeedResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_feed_v1_feed_proto_msgTypes[2]
+	mi := &file_feed_v1_feed_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -239,7 +315,7 @@ func (x *GetFeedResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetFeedResponse.ProtoReflect.Descriptor instead.
 func (*GetFeedResponse) Descriptor() ([]byte, []int) {
-	return file_feed_v1_feed_proto_rawDescGZIP(), []int{2}
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *GetFeedResponse) GetFeed() *Feed {
@@ -251,13 +327,14 @@ func (x *GetFeedResponse) GetFeed() *Feed {
 
 type ListFeedsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	TagId         *string                `protobuf:"bytes,1,opt,name=tag_id,json=tagId,proto3,oneof" json:"tag_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ListFeedsRequest) Reset() {
 	*x = ListFeedsRequest{}
-	mi := &file_feed_v1_feed_proto_msgTypes[3]
+	mi := &file_feed_v1_feed_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -269,7 +346,7 @@ func (x *ListFeedsRequest) String() string {
 func (*ListFeedsRequest) ProtoMessage() {}
 
 func (x *ListFeedsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_feed_v1_feed_proto_msgTypes[3]
+	mi := &file_feed_v1_feed_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -282,7 +359,14 @@ func (x *ListFeedsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListFeedsRequest.ProtoReflect.Descriptor instead.
 func (*ListFeedsRequest) Descriptor() ([]byte, []int) {
-	return file_feed_v1_feed_proto_rawDescGZIP(), []int{3}
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *ListFeedsRequest) GetTagId() string {
+	if x != nil && x.TagId != nil {
+		return *x.TagId
+	}
+	return ""
 }
 
 type ListFeedsResponse struct {
@@ -294,7 +378,7 @@ type ListFeedsResponse struct {
 
 func (x *ListFeedsResponse) Reset() {
 	*x = ListFeedsResponse{}
-	mi := &file_feed_v1_feed_proto_msgTypes[4]
+	mi := &file_feed_v1_feed_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -306,7 +390,7 @@ func (x *ListFeedsResponse) String() string {
 func (*ListFeedsResponse) ProtoMessage() {}
 
 func (x *ListFeedsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_feed_v1_feed_proto_msgTypes[4]
+	mi := &file_feed_v1_feed_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -319,7 +403,7 @@ func (x *ListFeedsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListFeedsResponse.ProtoReflect.Descriptor instead.
 func (*ListFeedsResponse) Descriptor() ([]byte, []int) {
-	return file_feed_v1_feed_proto_rawDescGZIP(), []int{4}
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *ListFeedsResponse) GetFeeds() []*Feed {
@@ -340,13 +424,14 @@ type CreateFeedRequest struct {
 	Copyright     *string                `protobuf:"bytes,7,opt,name=copyright,proto3,oneof" json:"copyright,omitempty"`
 	FeedType      *string                `protobuf:"bytes,8,opt,name=feed_type,json=feedType,proto3,oneof" json:"feed_type,omitempty"`
 	FeedVersion   *string                `protobuf:"bytes,9,opt,name=feed_version,json=feedVersion,proto3,oneof" json:"feed_version,omitempty"`
+	TagIds        []string               `protobuf:"bytes,10,rep,name=tag_ids,json=tagIds,proto3" json:"tag_ids,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CreateFeedRequest) Reset() {
 	*x = CreateFeedRequest{}
-	mi := &file_feed_v1_feed_proto_msgTypes[5]
+	mi := &file_feed_v1_feed_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -358,7 +443,7 @@ func (x *CreateFeedRequest) String() string {
 func (*CreateFeedRequest) ProtoMessage() {}
 
 func (x *CreateFeedRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_feed_v1_feed_proto_msgTypes[5]
+	mi := &file_feed_v1_feed_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -371,7 +456,7 @@ func (x *CreateFeedRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateFeedRequest.ProtoReflect.Descriptor instead.
 func (*CreateFeedRequest) Descriptor() ([]byte, []int) {
-	return file_feed_v1_feed_proto_rawDescGZIP(), []int{5}
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *CreateFeedRequest) GetUrl() string {
@@ -437,6 +522,13 @@ func (x *CreateFeedRequest) GetFeedVersion() string {
 	return ""
 }
 
+func (x *CreateFeedRequest) GetTagIds() []string {
+	if x != nil {
+		return x.TagIds
+	}
+	return nil
+}
+
 type CreateFeedResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Feed          *Feed                  `protobuf:"bytes,1,opt,name=feed,proto3" json:"feed,omitempty"`
@@ -446,7 +538,7 @@ type CreateFeedResponse struct {
 
 func (x *CreateFeedResponse) Reset() {
 	*x = CreateFeedResponse{}
-	mi := &file_feed_v1_feed_proto_msgTypes[6]
+	mi := &file_feed_v1_feed_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -458,7 +550,7 @@ func (x *CreateFeedResponse) String() string {
 func (*CreateFeedResponse) ProtoMessage() {}
 
 func (x *CreateFeedResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_feed_v1_feed_proto_msgTypes[6]
+	mi := &file_feed_v1_feed_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -471,7 +563,7 @@ func (x *CreateFeedResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateFeedResponse.ProtoReflect.Descriptor instead.
 func (*CreateFeedResponse) Descriptor() ([]byte, []int) {
-	return file_feed_v1_feed_proto_rawDescGZIP(), []int{6}
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *CreateFeedResponse) GetFeed() *Feed {
@@ -493,13 +585,14 @@ type UpdateFeedRequest struct {
 	FeedType      *string                `protobuf:"bytes,9,opt,name=feed_type,json=feedType,proto3,oneof" json:"feed_type,omitempty"`
 	FeedVersion   *string                `protobuf:"bytes,10,opt,name=feed_version,json=feedVersion,proto3,oneof" json:"feed_version,omitempty"`
 	LastFetchedAt *string                `protobuf:"bytes,11,opt,name=last_fetched_at,json=lastFetchedAt,proto3,oneof" json:"last_fetched_at,omitempty"`
+	TagIds        []string               `protobuf:"bytes,12,rep,name=tag_ids,json=tagIds,proto3" json:"tag_ids,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *UpdateFeedRequest) Reset() {
 	*x = UpdateFeedRequest{}
-	mi := &file_feed_v1_feed_proto_msgTypes[7]
+	mi := &file_feed_v1_feed_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -511,7 +604,7 @@ func (x *UpdateFeedRequest) String() string {
 func (*UpdateFeedRequest) ProtoMessage() {}
 
 func (x *UpdateFeedRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_feed_v1_feed_proto_msgTypes[7]
+	mi := &file_feed_v1_feed_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -524,7 +617,7 @@ func (x *UpdateFeedRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateFeedRequest.ProtoReflect.Descriptor instead.
 func (*UpdateFeedRequest) Descriptor() ([]byte, []int) {
-	return file_feed_v1_feed_proto_rawDescGZIP(), []int{7}
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *UpdateFeedRequest) GetUuid() string {
@@ -597,6 +690,13 @@ func (x *UpdateFeedRequest) GetLastFetchedAt() string {
 	return ""
 }
 
+func (x *UpdateFeedRequest) GetTagIds() []string {
+	if x != nil {
+		return x.TagIds
+	}
+	return nil
+}
+
 type UpdateFeedResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Feed          *Feed                  `protobuf:"bytes,1,opt,name=feed,proto3" json:"feed,omitempty"`
@@ -606,7 +706,7 @@ type UpdateFeedResponse struct {
 
 func (x *UpdateFeedResponse) Reset() {
 	*x = UpdateFeedResponse{}
-	mi := &file_feed_v1_feed_proto_msgTypes[8]
+	mi := &file_feed_v1_feed_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -618,7 +718,7 @@ func (x *UpdateFeedResponse) String() string {
 func (*UpdateFeedResponse) ProtoMessage() {}
 
 func (x *UpdateFeedResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_feed_v1_feed_proto_msgTypes[8]
+	mi := &file_feed_v1_feed_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -631,7 +731,7 @@ func (x *UpdateFeedResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateFeedResponse.ProtoReflect.Descriptor instead.
 func (*UpdateFeedResponse) Descriptor() ([]byte, []int) {
-	return file_feed_v1_feed_proto_rawDescGZIP(), []int{8}
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *UpdateFeedResponse) GetFeed() *Feed {
@@ -650,7 +750,7 @@ type DeleteFeedRequest struct {
 
 func (x *DeleteFeedRequest) Reset() {
 	*x = DeleteFeedRequest{}
-	mi := &file_feed_v1_feed_proto_msgTypes[9]
+	mi := &file_feed_v1_feed_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -662,7 +762,7 @@ func (x *DeleteFeedRequest) String() string {
 func (*DeleteFeedRequest) ProtoMessage() {}
 
 func (x *DeleteFeedRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_feed_v1_feed_proto_msgTypes[9]
+	mi := &file_feed_v1_feed_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -675,7 +775,7 @@ func (x *DeleteFeedRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteFeedRequest.ProtoReflect.Descriptor instead.
 func (*DeleteFeedRequest) Descriptor() ([]byte, []int) {
-	return file_feed_v1_feed_proto_rawDescGZIP(), []int{9}
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *DeleteFeedRequest) GetUuid() string {
@@ -693,7 +793,7 @@ type DeleteFeedResponse struct {
 
 func (x *DeleteFeedResponse) Reset() {
 	*x = DeleteFeedResponse{}
-	mi := &file_feed_v1_feed_proto_msgTypes[10]
+	mi := &file_feed_v1_feed_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -705,7 +805,7 @@ func (x *DeleteFeedResponse) String() string {
 func (*DeleteFeedResponse) ProtoMessage() {}
 
 func (x *DeleteFeedResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_feed_v1_feed_proto_msgTypes[10]
+	mi := &file_feed_v1_feed_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -718,7 +818,7 @@ func (x *DeleteFeedResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteFeedResponse.ProtoReflect.Descriptor instead.
 func (*DeleteFeedResponse) Descriptor() ([]byte, []int) {
-	return file_feed_v1_feed_proto_rawDescGZIP(), []int{10}
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{11}
 }
 
 type RefreshFeedsRequest struct {
@@ -730,7 +830,7 @@ type RefreshFeedsRequest struct {
 
 func (x *RefreshFeedsRequest) Reset() {
 	*x = RefreshFeedsRequest{}
-	mi := &file_feed_v1_feed_proto_msgTypes[11]
+	mi := &file_feed_v1_feed_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -742,7 +842,7 @@ func (x *RefreshFeedsRequest) String() string {
 func (*RefreshFeedsRequest) ProtoMessage() {}
 
 func (x *RefreshFeedsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_feed_v1_feed_proto_msgTypes[11]
+	mi := &file_feed_v1_feed_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -755,7 +855,7 @@ func (x *RefreshFeedsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RefreshFeedsRequest.ProtoReflect.Descriptor instead.
 func (*RefreshFeedsRequest) Descriptor() ([]byte, []int) {
-	return file_feed_v1_feed_proto_rawDescGZIP(), []int{11}
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *RefreshFeedsRequest) GetUuids() []string {
@@ -773,7 +873,7 @@ type RefreshFeedsResponse struct {
 
 func (x *RefreshFeedsResponse) Reset() {
 	*x = RefreshFeedsResponse{}
-	mi := &file_feed_v1_feed_proto_msgTypes[12]
+	mi := &file_feed_v1_feed_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -785,7 +885,7 @@ func (x *RefreshFeedsResponse) String() string {
 func (*RefreshFeedsResponse) ProtoMessage() {}
 
 func (x *RefreshFeedsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_feed_v1_feed_proto_msgTypes[12]
+	mi := &file_feed_v1_feed_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -798,14 +898,350 @@ func (x *RefreshFeedsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RefreshFeedsResponse.ProtoReflect.Descriptor instead.
 func (*RefreshFeedsResponse) Descriptor() ([]byte, []int) {
-	return file_feed_v1_feed_proto_rawDescGZIP(), []int{12}
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{13}
+}
+
+type CreateTagRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateTagRequest) Reset() {
+	*x = CreateTagRequest{}
+	mi := &file_feed_v1_feed_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateTagRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateTagRequest) ProtoMessage() {}
+
+func (x *CreateTagRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_feed_v1_feed_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateTagRequest.ProtoReflect.Descriptor instead.
+func (*CreateTagRequest) Descriptor() ([]byte, []int) {
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *CreateTagRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+type CreateTagResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Tag           *Tag                   `protobuf:"bytes,1,opt,name=tag,proto3" json:"tag,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateTagResponse) Reset() {
+	*x = CreateTagResponse{}
+	mi := &file_feed_v1_feed_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateTagResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateTagResponse) ProtoMessage() {}
+
+func (x *CreateTagResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_feed_v1_feed_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateTagResponse.ProtoReflect.Descriptor instead.
+func (*CreateTagResponse) Descriptor() ([]byte, []int) {
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *CreateTagResponse) GetTag() *Tag {
+	if x != nil {
+		return x.Tag
+	}
+	return nil
+}
+
+type ListTagsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListTagsRequest) Reset() {
+	*x = ListTagsRequest{}
+	mi := &file_feed_v1_feed_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListTagsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListTagsRequest) ProtoMessage() {}
+
+func (x *ListTagsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_feed_v1_feed_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListTagsRequest.ProtoReflect.Descriptor instead.
+func (*ListTagsRequest) Descriptor() ([]byte, []int) {
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{16}
+}
+
+type ListTagsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Tags          []*Tag                 `protobuf:"bytes,1,rep,name=tags,proto3" json:"tags,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListTagsResponse) Reset() {
+	*x = ListTagsResponse{}
+	mi := &file_feed_v1_feed_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListTagsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListTagsResponse) ProtoMessage() {}
+
+func (x *ListTagsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_feed_v1_feed_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListTagsResponse.ProtoReflect.Descriptor instead.
+func (*ListTagsResponse) Descriptor() ([]byte, []int) {
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *ListTagsResponse) GetTags() []*Tag {
+	if x != nil {
+		return x.Tags
+	}
+	return nil
+}
+
+type DeleteTagRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteTagRequest) Reset() {
+	*x = DeleteTagRequest{}
+	mi := &file_feed_v1_feed_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteTagRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteTagRequest) ProtoMessage() {}
+
+func (x *DeleteTagRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_feed_v1_feed_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteTagRequest.ProtoReflect.Descriptor instead.
+func (*DeleteTagRequest) Descriptor() ([]byte, []int) {
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *DeleteTagRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type DeleteTagResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteTagResponse) Reset() {
+	*x = DeleteTagResponse{}
+	mi := &file_feed_v1_feed_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteTagResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteTagResponse) ProtoMessage() {}
+
+func (x *DeleteTagResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_feed_v1_feed_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteTagResponse.ProtoReflect.Descriptor instead.
+func (*DeleteTagResponse) Descriptor() ([]byte, []int) {
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{19}
+}
+
+type SetFeedTagsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	FeedId        string                 `protobuf:"bytes,1,opt,name=feed_id,json=feedId,proto3" json:"feed_id,omitempty"`
+	TagIds        []string               `protobuf:"bytes,2,rep,name=tag_ids,json=tagIds,proto3" json:"tag_ids,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SetFeedTagsRequest) Reset() {
+	*x = SetFeedTagsRequest{}
+	mi := &file_feed_v1_feed_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SetFeedTagsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetFeedTagsRequest) ProtoMessage() {}
+
+func (x *SetFeedTagsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_feed_v1_feed_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetFeedTagsRequest.ProtoReflect.Descriptor instead.
+func (*SetFeedTagsRequest) Descriptor() ([]byte, []int) {
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *SetFeedTagsRequest) GetFeedId() string {
+	if x != nil {
+		return x.FeedId
+	}
+	return ""
+}
+
+func (x *SetFeedTagsRequest) GetTagIds() []string {
+	if x != nil {
+		return x.TagIds
+	}
+	return nil
+}
+
+type SetFeedTagsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SetFeedTagsResponse) Reset() {
+	*x = SetFeedTagsResponse{}
+	mi := &file_feed_v1_feed_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SetFeedTagsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetFeedTagsResponse) ProtoMessage() {}
+
+func (x *SetFeedTagsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_feed_v1_feed_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetFeedTagsResponse.ProtoReflect.Descriptor instead.
+func (*SetFeedTagsResponse) Descriptor() ([]byte, []int) {
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{21}
 }
 
 var File_feed_v1_feed_proto protoreflect.FileDescriptor
 
 const file_feed_v1_feed_proto_rawDesc = "" +
 	"\n" +
-	"\x12feed/v1/feed.proto\x12\afeed.v1\"\x92\x04\n" +
+	"\x12feed/v1/feed.proto\x12\afeed.v1\"\xb4\x04\n" +
 	"\x04Feed\x12\x12\n" +
 	"\x04uuid\x18\x01 \x01(\tR\x04uuid\x12\x10\n" +
 	"\x03url\x18\x02 \x01(\tR\x03url\x12\x17\n" +
@@ -822,7 +1258,8 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\f \x01(\tR\tcreatedAt\x12\x1d\n" +
 	"\n" +
-	"updated_at\x18\r \x01(\tR\tupdatedAtB\a\n" +
+	"updated_at\x18\r \x01(\tR\tupdatedAt\x12 \n" +
+	"\x04tags\x18\x0e \x03(\v2\f.feed.v1.TagR\x04tagsB\a\n" +
 	"\x05_linkB\x0e\n" +
 	"\f_descriptionB\v\n" +
 	"\t_languageB\f\n" +
@@ -833,14 +1270,23 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"\n" +
 	"_feed_typeB\x0f\n" +
 	"\r_feed_versionB\x12\n" +
-	"\x10_last_fetched_at\"$\n" +
+	"\x10_last_fetched_at\"g\n" +
+	"\x03Tag\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x1d\n" +
+	"\n" +
+	"created_at\x18\x03 \x01(\tR\tcreatedAt\x12\x1d\n" +
+	"\n" +
+	"updated_at\x18\x04 \x01(\tR\tupdatedAt\"$\n" +
 	"\x0eGetFeedRequest\x12\x12\n" +
 	"\x04uuid\x18\x01 \x01(\tR\x04uuid\"4\n" +
 	"\x0fGetFeedResponse\x12!\n" +
-	"\x04feed\x18\x01 \x01(\v2\r.feed.v1.FeedR\x04feed\"\x12\n" +
-	"\x10ListFeedsRequest\"8\n" +
+	"\x04feed\x18\x01 \x01(\v2\r.feed.v1.FeedR\x04feed\"9\n" +
+	"\x10ListFeedsRequest\x12\x1a\n" +
+	"\x06tag_id\x18\x01 \x01(\tH\x00R\x05tagId\x88\x01\x01B\t\n" +
+	"\a_tag_id\"8\n" +
 	"\x11ListFeedsResponse\x12#\n" +
-	"\x05feeds\x18\x01 \x03(\v2\r.feed.v1.FeedR\x05feeds\"\x9b\x03\n" +
+	"\x05feeds\x18\x01 \x03(\v2\r.feed.v1.FeedR\x05feeds\"\xb4\x03\n" +
 	"\x11CreateFeedRequest\x12\x10\n" +
 	"\x03url\x18\x01 \x01(\tR\x03url\x12\x19\n" +
 	"\x05title\x18\x02 \x01(\tH\x00R\x05title\x88\x01\x01\x12\x17\n" +
@@ -850,7 +1296,9 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"\timage_url\x18\x06 \x01(\tH\x04R\bimageUrl\x88\x01\x01\x12!\n" +
 	"\tcopyright\x18\a \x01(\tH\x05R\tcopyright\x88\x01\x01\x12 \n" +
 	"\tfeed_type\x18\b \x01(\tH\x06R\bfeedType\x88\x01\x01\x12&\n" +
-	"\ffeed_version\x18\t \x01(\tH\aR\vfeedVersion\x88\x01\x01B\b\n" +
+	"\ffeed_version\x18\t \x01(\tH\aR\vfeedVersion\x88\x01\x01\x12\x17\n" +
+	"\atag_ids\x18\n" +
+	" \x03(\tR\x06tagIdsB\b\n" +
 	"\x06_titleB\a\n" +
 	"\x05_linkB\x0e\n" +
 	"\f_descriptionB\v\n" +
@@ -863,7 +1311,7 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"_feed_typeB\x0f\n" +
 	"\r_feed_version\"7\n" +
 	"\x12CreateFeedResponse\x12!\n" +
-	"\x04feed\x18\x01 \x01(\v2\r.feed.v1.FeedR\x04feed\"\xde\x03\n" +
+	"\x04feed\x18\x01 \x01(\v2\r.feed.v1.FeedR\x04feed\"\xf7\x03\n" +
 	"\x11UpdateFeedRequest\x12\x12\n" +
 	"\x04uuid\x18\x01 \x01(\tR\x04uuid\x12\x19\n" +
 	"\x05title\x18\x03 \x01(\tH\x00R\x05title\x88\x01\x01\x12\x17\n" +
@@ -875,7 +1323,8 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"\tfeed_type\x18\t \x01(\tH\x06R\bfeedType\x88\x01\x01\x12&\n" +
 	"\ffeed_version\x18\n" +
 	" \x01(\tH\aR\vfeedVersion\x88\x01\x01\x12+\n" +
-	"\x0flast_fetched_at\x18\v \x01(\tH\bR\rlastFetchedAt\x88\x01\x01B\b\n" +
+	"\x0flast_fetched_at\x18\v \x01(\tH\bR\rlastFetchedAt\x88\x01\x01\x12\x17\n" +
+	"\atag_ids\x18\f \x03(\tR\x06tagIdsB\b\n" +
 	"\x06_titleB\a\n" +
 	"\x05_linkB\x0e\n" +
 	"\f_descriptionB\v\n" +
@@ -895,7 +1344,21 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"\x12DeleteFeedResponse\"+\n" +
 	"\x13RefreshFeedsRequest\x12\x14\n" +
 	"\x05uuids\x18\x01 \x03(\tR\x05uuids\"\x16\n" +
-	"\x14RefreshFeedsResponse2\xb1\x03\n" +
+	"\x14RefreshFeedsResponse\"&\n" +
+	"\x10CreateTagRequest\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\"3\n" +
+	"\x11CreateTagResponse\x12\x1e\n" +
+	"\x03tag\x18\x01 \x01(\v2\f.feed.v1.TagR\x03tag\"\x11\n" +
+	"\x0fListTagsRequest\"4\n" +
+	"\x10ListTagsResponse\x12 \n" +
+	"\x04tags\x18\x01 \x03(\v2\f.feed.v1.TagR\x04tags\"\"\n" +
+	"\x10DeleteTagRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\x13\n" +
+	"\x11DeleteTagResponse\"F\n" +
+	"\x12SetFeedTagsRequest\x12\x17\n" +
+	"\afeed_id\x18\x01 \x01(\tR\x06feedId\x12\x17\n" +
+	"\atag_ids\x18\x02 \x03(\tR\x06tagIds\"\x15\n" +
+	"\x13SetFeedTagsResponse2\xc4\x05\n" +
 	"\vFeedService\x12<\n" +
 	"\aGetFeed\x12\x17.feed.v1.GetFeedRequest\x1a\x18.feed.v1.GetFeedResponse\x12B\n" +
 	"\tListFeeds\x12\x19.feed.v1.ListFeedsRequest\x1a\x1a.feed.v1.ListFeedsResponse\x12E\n" +
@@ -905,7 +1368,11 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"UpdateFeed\x12\x1a.feed.v1.UpdateFeedRequest\x1a\x1b.feed.v1.UpdateFeedResponse\x12E\n" +
 	"\n" +
 	"DeleteFeed\x12\x1a.feed.v1.DeleteFeedRequest\x1a\x1b.feed.v1.DeleteFeedResponse\x12K\n" +
-	"\fRefreshFeeds\x12\x1c.feed.v1.RefreshFeedsRequest\x1a\x1d.feed.v1.RefreshFeedsResponseB=Z;github.com/nakatanakatana/feed-reader/gen/go/feed/v1;feedv1b\x06proto3"
+	"\fRefreshFeeds\x12\x1c.feed.v1.RefreshFeedsRequest\x1a\x1d.feed.v1.RefreshFeedsResponse\x12B\n" +
+	"\tCreateTag\x12\x19.feed.v1.CreateTagRequest\x1a\x1a.feed.v1.CreateTagResponse\x12?\n" +
+	"\bListTags\x12\x18.feed.v1.ListTagsRequest\x1a\x19.feed.v1.ListTagsResponse\x12B\n" +
+	"\tDeleteTag\x12\x19.feed.v1.DeleteTagRequest\x1a\x1a.feed.v1.DeleteTagResponse\x12H\n" +
+	"\vSetFeedTags\x12\x1b.feed.v1.SetFeedTagsRequest\x1a\x1c.feed.v1.SetFeedTagsResponseB=Z;github.com/nakatanakatana/feed-reader/gen/go/feed/v1;feedv1b\x06proto3"
 
 var (
 	file_feed_v1_feed_proto_rawDescOnce sync.Once
@@ -919,44 +1386,64 @@ func file_feed_v1_feed_proto_rawDescGZIP() []byte {
 	return file_feed_v1_feed_proto_rawDescData
 }
 
-var file_feed_v1_feed_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
+var file_feed_v1_feed_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
 var file_feed_v1_feed_proto_goTypes = []any{
 	(*Feed)(nil),                 // 0: feed.v1.Feed
-	(*GetFeedRequest)(nil),       // 1: feed.v1.GetFeedRequest
-	(*GetFeedResponse)(nil),      // 2: feed.v1.GetFeedResponse
-	(*ListFeedsRequest)(nil),     // 3: feed.v1.ListFeedsRequest
-	(*ListFeedsResponse)(nil),    // 4: feed.v1.ListFeedsResponse
-	(*CreateFeedRequest)(nil),    // 5: feed.v1.CreateFeedRequest
-	(*CreateFeedResponse)(nil),   // 6: feed.v1.CreateFeedResponse
-	(*UpdateFeedRequest)(nil),    // 7: feed.v1.UpdateFeedRequest
-	(*UpdateFeedResponse)(nil),   // 8: feed.v1.UpdateFeedResponse
-	(*DeleteFeedRequest)(nil),    // 9: feed.v1.DeleteFeedRequest
-	(*DeleteFeedResponse)(nil),   // 10: feed.v1.DeleteFeedResponse
-	(*RefreshFeedsRequest)(nil),  // 11: feed.v1.RefreshFeedsRequest
-	(*RefreshFeedsResponse)(nil), // 12: feed.v1.RefreshFeedsResponse
+	(*Tag)(nil),                  // 1: feed.v1.Tag
+	(*GetFeedRequest)(nil),       // 2: feed.v1.GetFeedRequest
+	(*GetFeedResponse)(nil),      // 3: feed.v1.GetFeedResponse
+	(*ListFeedsRequest)(nil),     // 4: feed.v1.ListFeedsRequest
+	(*ListFeedsResponse)(nil),    // 5: feed.v1.ListFeedsResponse
+	(*CreateFeedRequest)(nil),    // 6: feed.v1.CreateFeedRequest
+	(*CreateFeedResponse)(nil),   // 7: feed.v1.CreateFeedResponse
+	(*UpdateFeedRequest)(nil),    // 8: feed.v1.UpdateFeedRequest
+	(*UpdateFeedResponse)(nil),   // 9: feed.v1.UpdateFeedResponse
+	(*DeleteFeedRequest)(nil),    // 10: feed.v1.DeleteFeedRequest
+	(*DeleteFeedResponse)(nil),   // 11: feed.v1.DeleteFeedResponse
+	(*RefreshFeedsRequest)(nil),  // 12: feed.v1.RefreshFeedsRequest
+	(*RefreshFeedsResponse)(nil), // 13: feed.v1.RefreshFeedsResponse
+	(*CreateTagRequest)(nil),     // 14: feed.v1.CreateTagRequest
+	(*CreateTagResponse)(nil),    // 15: feed.v1.CreateTagResponse
+	(*ListTagsRequest)(nil),      // 16: feed.v1.ListTagsRequest
+	(*ListTagsResponse)(nil),     // 17: feed.v1.ListTagsResponse
+	(*DeleteTagRequest)(nil),     // 18: feed.v1.DeleteTagRequest
+	(*DeleteTagResponse)(nil),    // 19: feed.v1.DeleteTagResponse
+	(*SetFeedTagsRequest)(nil),   // 20: feed.v1.SetFeedTagsRequest
+	(*SetFeedTagsResponse)(nil),  // 21: feed.v1.SetFeedTagsResponse
 }
 var file_feed_v1_feed_proto_depIdxs = []int32{
-	0,  // 0: feed.v1.GetFeedResponse.feed:type_name -> feed.v1.Feed
-	0,  // 1: feed.v1.ListFeedsResponse.feeds:type_name -> feed.v1.Feed
-	0,  // 2: feed.v1.CreateFeedResponse.feed:type_name -> feed.v1.Feed
-	0,  // 3: feed.v1.UpdateFeedResponse.feed:type_name -> feed.v1.Feed
-	1,  // 4: feed.v1.FeedService.GetFeed:input_type -> feed.v1.GetFeedRequest
-	3,  // 5: feed.v1.FeedService.ListFeeds:input_type -> feed.v1.ListFeedsRequest
-	5,  // 6: feed.v1.FeedService.CreateFeed:input_type -> feed.v1.CreateFeedRequest
-	7,  // 7: feed.v1.FeedService.UpdateFeed:input_type -> feed.v1.UpdateFeedRequest
-	9,  // 8: feed.v1.FeedService.DeleteFeed:input_type -> feed.v1.DeleteFeedRequest
-	11, // 9: feed.v1.FeedService.RefreshFeeds:input_type -> feed.v1.RefreshFeedsRequest
-	2,  // 10: feed.v1.FeedService.GetFeed:output_type -> feed.v1.GetFeedResponse
-	4,  // 11: feed.v1.FeedService.ListFeeds:output_type -> feed.v1.ListFeedsResponse
-	6,  // 12: feed.v1.FeedService.CreateFeed:output_type -> feed.v1.CreateFeedResponse
-	8,  // 13: feed.v1.FeedService.UpdateFeed:output_type -> feed.v1.UpdateFeedResponse
-	10, // 14: feed.v1.FeedService.DeleteFeed:output_type -> feed.v1.DeleteFeedResponse
-	12, // 15: feed.v1.FeedService.RefreshFeeds:output_type -> feed.v1.RefreshFeedsResponse
-	10, // [10:16] is the sub-list for method output_type
-	4,  // [4:10] is the sub-list for method input_type
-	4,  // [4:4] is the sub-list for extension type_name
-	4,  // [4:4] is the sub-list for extension extendee
-	0,  // [0:4] is the sub-list for field type_name
+	1,  // 0: feed.v1.Feed.tags:type_name -> feed.v1.Tag
+	0,  // 1: feed.v1.GetFeedResponse.feed:type_name -> feed.v1.Feed
+	0,  // 2: feed.v1.ListFeedsResponse.feeds:type_name -> feed.v1.Feed
+	0,  // 3: feed.v1.CreateFeedResponse.feed:type_name -> feed.v1.Feed
+	0,  // 4: feed.v1.UpdateFeedResponse.feed:type_name -> feed.v1.Feed
+	1,  // 5: feed.v1.CreateTagResponse.tag:type_name -> feed.v1.Tag
+	1,  // 6: feed.v1.ListTagsResponse.tags:type_name -> feed.v1.Tag
+	2,  // 7: feed.v1.FeedService.GetFeed:input_type -> feed.v1.GetFeedRequest
+	4,  // 8: feed.v1.FeedService.ListFeeds:input_type -> feed.v1.ListFeedsRequest
+	6,  // 9: feed.v1.FeedService.CreateFeed:input_type -> feed.v1.CreateFeedRequest
+	8,  // 10: feed.v1.FeedService.UpdateFeed:input_type -> feed.v1.UpdateFeedRequest
+	10, // 11: feed.v1.FeedService.DeleteFeed:input_type -> feed.v1.DeleteFeedRequest
+	12, // 12: feed.v1.FeedService.RefreshFeeds:input_type -> feed.v1.RefreshFeedsRequest
+	14, // 13: feed.v1.FeedService.CreateTag:input_type -> feed.v1.CreateTagRequest
+	16, // 14: feed.v1.FeedService.ListTags:input_type -> feed.v1.ListTagsRequest
+	18, // 15: feed.v1.FeedService.DeleteTag:input_type -> feed.v1.DeleteTagRequest
+	20, // 16: feed.v1.FeedService.SetFeedTags:input_type -> feed.v1.SetFeedTagsRequest
+	3,  // 17: feed.v1.FeedService.GetFeed:output_type -> feed.v1.GetFeedResponse
+	5,  // 18: feed.v1.FeedService.ListFeeds:output_type -> feed.v1.ListFeedsResponse
+	7,  // 19: feed.v1.FeedService.CreateFeed:output_type -> feed.v1.CreateFeedResponse
+	9,  // 20: feed.v1.FeedService.UpdateFeed:output_type -> feed.v1.UpdateFeedResponse
+	11, // 21: feed.v1.FeedService.DeleteFeed:output_type -> feed.v1.DeleteFeedResponse
+	13, // 22: feed.v1.FeedService.RefreshFeeds:output_type -> feed.v1.RefreshFeedsResponse
+	15, // 23: feed.v1.FeedService.CreateTag:output_type -> feed.v1.CreateTagResponse
+	17, // 24: feed.v1.FeedService.ListTags:output_type -> feed.v1.ListTagsResponse
+	19, // 25: feed.v1.FeedService.DeleteTag:output_type -> feed.v1.DeleteTagResponse
+	21, // 26: feed.v1.FeedService.SetFeedTags:output_type -> feed.v1.SetFeedTagsResponse
+	17, // [17:27] is the sub-list for method output_type
+	7,  // [7:17] is the sub-list for method input_type
+	7,  // [7:7] is the sub-list for extension type_name
+	7,  // [7:7] is the sub-list for extension extendee
+	0,  // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_feed_v1_feed_proto_init() }
@@ -965,15 +1452,16 @@ func file_feed_v1_feed_proto_init() {
 		return
 	}
 	file_feed_v1_feed_proto_msgTypes[0].OneofWrappers = []any{}
-	file_feed_v1_feed_proto_msgTypes[5].OneofWrappers = []any{}
-	file_feed_v1_feed_proto_msgTypes[7].OneofWrappers = []any{}
+	file_feed_v1_feed_proto_msgTypes[4].OneofWrappers = []any{}
+	file_feed_v1_feed_proto_msgTypes[6].OneofWrappers = []any{}
+	file_feed_v1_feed_proto_msgTypes[8].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_feed_v1_feed_proto_rawDesc), len(file_feed_v1_feed_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   13,
+			NumMessages:   22,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
