@@ -24,7 +24,7 @@
 - [x] Task: Integrate API 729788f
     - [ ] Use generated Connect client to call `ImportOpml`
     - [ ] Handle success and error states
-- [ ] Task: Add Entry Point
+- [x] Task: Add Entry Point c439855
     - [ ] Add "Import OPML" button to the Feeds List page
 - [ ] Task: Frontend Tests
     - [ ] Write unit tests for the Modal component
