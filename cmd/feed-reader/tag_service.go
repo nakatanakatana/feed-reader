@@ -1,0 +1,78 @@
+package main
+
+import (
+	"context"
+	"fmt"
+
+	"connectrpc.com/connect"
+	tagv1 "github.com/nakatanakatana/feed-reader/gen/go/tag/v1"
+	"github.com/nakatanakatana/feed-reader/gen/go/tag/v1/tagv1connect"
+	"github.com/nakatanakatana/feed-reader/store"
+)
+
+type TagServer struct {
+	store         *store.Store
+	uuidGenerator UUIDGenerator
+}
+
+func NewTagServer(s *store.Store, uuidGen UUIDGenerator) tagv1connect.TagServiceHandler {
+	if uuidGen == nil {
+		uuidGen = realUUIDGenerator{}
+	}
+	return &TagServer{
+		store:         s,
+		uuidGenerator: uuidGen,
+	}
+}
+
+func (s *TagServer) CreateTag(ctx context.Context, req *connect.Request[tagv1.CreateTagRequest]) (*connect.Response[tagv1.CreateTagResponse], error) {
+	newUUID, err := s.uuidGenerator.NewRandom()
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to generate UUID: %w", err))
+	}
+
+	tag, err := s.store.CreateTag(ctx, store.CreateTagParams{
+		ID:   newUUID.String(),
+		Name: req.Msg.Name,
+	})
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	return connect.NewResponse(&tagv1.CreateTagResponse{
+		Tag: toProtoTagV1(tag),
+	}), nil
+}
+
+func (s *TagServer) ListTags(ctx context.Context, req *connect.Request[tagv1.ListTagsRequest]) (*connect.Response[tagv1.ListTagsResponse], error) {
+	tags, err := s.store.ListTags(ctx)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	protoTags := make([]*tagv1.Tag, len(tags))
+	for i, t := range tags {
+		protoTags[i] = toProtoTagV1(t)
+	}
+
+	return connect.NewResponse(&tagv1.ListTagsResponse{
+		Tags: protoTags,
+	}), nil
+}
+
+func (s *TagServer) DeleteTag(ctx context.Context, req *connect.Request[tagv1.DeleteTagRequest]) (*connect.Response[tagv1.DeleteTagResponse], error) {
+	if err := s.store.DeleteTag(ctx, req.Msg.Id); err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	return connect.NewResponse(&tagv1.DeleteTagResponse{}), nil
+}
+
+func toProtoTagV1(t store.Tag) *tagv1.Tag {
+	return &tagv1.Tag{
+		Id:        t.ID,
+		Name:      t.Name,
+		CreatedAt: t.CreatedAt,
+		UpdatedAt: t.UpdatedAt,
+	}
+}

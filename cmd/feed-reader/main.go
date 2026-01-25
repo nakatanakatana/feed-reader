@@ -14,6 +14,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/nakatanakatana/feed-reader/gen/go/feed/v1/feedv1connect"
 	"github.com/nakatanakatana/feed-reader/gen/go/item/v1/itemv1connect"
+	"github.com/nakatanakatana/feed-reader/gen/go/tag/v1/tagv1connect"
 	"github.com/nakatanakatana/feed-reader/sql"
 	"github.com/nakatanakatana/feed-reader/store"
 	"golang.org/x/net/http2"
@@ -81,9 +82,13 @@ func main() {
 	itemServer := NewItemServer(s)
 	itemPath, itemHandler := itemv1connect.NewItemServiceHandler(itemServer)
 
+	tagServer := NewTagServer(s, nil)
+	tagPath, tagHandler := tagv1connect.NewTagServiceHandler(tagServer)
+
 	mux := http.NewServeMux()
 	mux.Handle("/api"+feedPath, http.StripPrefix("/api", feedHandler))
 	mux.Handle("/api"+itemPath, http.StripPrefix("/api", itemHandler))
+	mux.Handle("/api"+tagPath, http.StripPrefix("/api", tagHandler))
 
 	server := &http.Server{
 		Addr:    ":" + cfg.Port,

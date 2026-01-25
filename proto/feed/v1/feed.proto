@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package feed.v1;
 
+import "tag/v1/tag.proto";
+
 option go_package = "github.com/nakatanakatana/feed-reader/gen/go/feed/v1;feedv1";
 
 service FeedService {
@@ -14,9 +16,6 @@ service FeedService {
   rpc ImportOpml(ImportOpmlRequest) returns (ImportOpmlResponse);
 
   // Tag management
-  rpc CreateTag(CreateTagRequest) returns (CreateTagResponse);
-  rpc ListTags(ListTagsRequest) returns (ListTagsResponse);
-  rpc DeleteTag(DeleteTagRequest) returns (DeleteTagResponse);
   rpc SetFeedTags(SetFeedTagsRequest) returns (SetFeedTagsResponse);
 }
 
@@ -34,14 +33,7 @@ message Feed {
   optional string last_fetched_at = 11;
   string created_at = 12;
   string updated_at = 13;
-  repeated Tag tags = 14;
-}
-
-message Tag {
-  string id = 1;
-  string name = 2;
-  string created_at = 3;
-  string updated_at = 4;
+  repeated tag.v1.Tag tags = 14;
 }
 
 message GetFeedRequest {
@@ -117,26 +109,6 @@ message ImportOpmlResponse {
   int32 skipped = 3;
   repeated string failed_feeds = 4;
 }
-
-message CreateTagRequest {
-  string name = 1;
-}
-
-message CreateTagResponse {
-  Tag tag = 1;
-}
-
-message ListTagsRequest {}
-
-message ListTagsResponse {
-  repeated Tag tags = 1;
-}
-
-message DeleteTagRequest {
-  string id = 1;
-}
-
-message DeleteTagResponse {}
 
 message SetFeedTagsRequest {
   string feed_id = 1;

@@ -1,17 +1,20 @@
 import { mockConnectWeb } from "./connect";
 import { FeedService } from "../gen/feed/v1/feed_connect";
 import { ItemService } from "../gen/item/v1/item_connect";
+import { TagService } from "../gen/tag/v1/tag_connect";
 import {
   ListFeedsResponse,
   CreateFeedResponse,
   DeleteFeedResponse,
+  SetFeedTagsResponse,
+  Feed,
+} from "../gen/feed/v1/feed_pb";
+import {
+  Tag,
   ListTagsResponse,
   CreateTagResponse,
   DeleteTagResponse,
-  SetFeedTagsResponse,
-  Tag,
-  Feed,
-} from "../gen/feed/v1/feed_pb";
+} from "../gen/tag/v1/tag_pb";
 import {
   Item,
   ListItemsResponse,
@@ -117,14 +120,14 @@ export const handlers = [
     },
   }),
 
-  mockConnectWeb(FeedService)({
+  mockConnectWeb(TagService)({
     method: "listTags",
     handler: () => {
       return new ListTagsResponse({ tags });
     },
   }),
 
-  mockConnectWeb(FeedService)({
+  mockConnectWeb(TagService)({
     method: "createTag",
     handler: (req) => {
       const newTag = new Tag({
@@ -138,7 +141,7 @@ export const handlers = [
     },
   }),
 
-  mockConnectWeb(FeedService)({
+  mockConnectWeb(TagService)({
     method: "deleteTag",
     handler: (req) => {
       const index = tags.findIndex((t) => t.id === req.id);

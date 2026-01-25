@@ -1,6 +1,6 @@
 import { createSignal, For } from "solid-js";
 import { useTags, useCreateTag, useDeleteTag } from "../lib/tag-query";
-import { CreateTagRequest, DeleteTagRequest } from "../gen/feed/v1/feed_pb";
+import { CreateTagRequest, DeleteTagRequest } from "../gen/tag/v1/tag_pb";
 
 export const TagManagement = () => {
   const [newTagName, setNewTagName] = createSignal("");

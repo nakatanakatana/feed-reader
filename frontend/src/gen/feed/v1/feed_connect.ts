@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { CreateFeedRequest, CreateFeedResponse, CreateTagRequest, CreateTagResponse, DeleteFeedRequest, DeleteFeedResponse, DeleteTagRequest, DeleteTagResponse, GetFeedRequest, GetFeedResponse, ImportOpmlRequest, ImportOpmlResponse, ListFeedsRequest, ListFeedsResponse, ListTagsRequest, ListTagsResponse, RefreshFeedsRequest, RefreshFeedsResponse, SetFeedTagsRequest, SetFeedTagsResponse, UpdateFeedRequest, UpdateFeedResponse } from "./feed_pb.js";
+import { CreateFeedRequest, CreateFeedResponse, DeleteFeedRequest, DeleteFeedResponse, GetFeedRequest, GetFeedResponse, ImportOpmlRequest, ImportOpmlResponse, ListFeedsRequest, ListFeedsResponse, RefreshFeedsRequest, RefreshFeedsResponse, SetFeedTagsRequest, SetFeedTagsResponse, UpdateFeedRequest, UpdateFeedResponse } from "./feed_pb.js";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**
@@ -78,33 +78,6 @@ export const FeedService = {
     /**
      * Tag management
      *
-     * @generated from rpc feed.v1.FeedService.CreateTag
-     */
-    createTag: {
-      name: "CreateTag",
-      I: CreateTagRequest,
-      O: CreateTagResponse,
-      kind: MethodKind.Unary,
-    },
-    /**
-     * @generated from rpc feed.v1.FeedService.ListTags
-     */
-    listTags: {
-      name: "ListTags",
-      I: ListTagsRequest,
-      O: ListTagsResponse,
-      kind: MethodKind.Unary,
-    },
-    /**
-     * @generated from rpc feed.v1.FeedService.DeleteTag
-     */
-    deleteTag: {
-      name: "DeleteTag",
-      I: DeleteTagRequest,
-      O: DeleteTagResponse,
-      kind: MethodKind.Unary,
-    },
-    /**
      * @generated from rpc feed.v1.FeedService.SetFeedTags
      */
     setFeedTags: {
