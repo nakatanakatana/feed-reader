@@ -1,6 +1,6 @@
 # Implementation Plan - Refactor Tag Operations into a Dedicated Proto Package
 
-## Phase 1: Proto Definition & Generation
+## Phase 1: Proto Definition & Generation [checkpoint: 1cb333e]
 - [x] Task: Create new proto package `tag.v1` 091fd30
     - [x] Create `proto/tag/v1/tag.proto`
     - [x] Define `Tag` message and `TagService` in `tag.v1`
@@ -11,7 +11,7 @@
     - [x] Remove `CreateTag`, `ListTags`, `DeleteTag` RPCs from `FeedService`
 - [x] Task: Generate code 091fd30
     - [x] Run `buf generate` (or equivalent) to regenerate Go and TypeScript code
-- [ ] Task: Conductor - User Manual Verification 'Proto Definition & Generation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Proto Definition & Generation' (Protocol in workflow.md) 1cb333e
 
 ## Phase 2: Backend Implementation (Go)
 - [ ] Task: Implement `TagService`
