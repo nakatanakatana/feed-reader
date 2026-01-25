@@ -3,6 +3,6 @@
   "extends": [
     "config:recommended",
     "github>aquaproj/aqua-renovate-config#2.9.0",
-    "github>nakatanakatana/renovate-config#0.0.1"
+    "github>nakatanakatana/renovate-config#0.0.2"
   ]
 }
