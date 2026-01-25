@@ -4,9 +4,9 @@
 - [x] Task: Implement "Uncategorized" filter 7013b0b
     - [x] Write tests for filtering feeds with no tags in `FeedList.test.tsx`
     - [x] Add "Uncategorized" button and update filter logic in `FeedList.tsx`
-- [ ] Task: Implement sorting functionality
-    - [ ] Write tests for various sort orders (Title, Date Added, Last Fetched) in `FeedList.test.tsx`
-    - [ ] Add Sort dropdown and sorting implementation in `FeedList.tsx`
+- [x] Task: Implement sorting functionality 371ec3b
+    - [x] Write tests for various sort orders (Title, Date Added, Last Fetched) in `FeedList.test.tsx`
+    - [x] Add Sort dropdown and sorting implementation in `FeedList.tsx`
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Filtering and Sorting' (Protocol in workflow.md)
 
 ## Phase 2: UI Interactions and Navigation
