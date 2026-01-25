@@ -21,7 +21,7 @@ Create a wrapper for `DBTX` (database/transaction interface) that automatically 
     - [ ] Implement `RetryingDB` in `store/retry_db.go` satisfying the `DBTX` interface.
 - [x] Task: Update Store to use RetryingDB. 1bb895d
     - [ ] Modify `NewStore` in `store/feed_store.go` to wrap the `DBTX` passed to `New`.
-- [ ] Task: Implement Transaction Retry.
+- [x] Task: Implement Transaction Retry. f69d1a4
     - [ ] Write tests for retrying `BeginTx`.
     - [ ] Create a helper in `Store` to start transactions with retries.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Integration' (Protocol in workflow.md)
