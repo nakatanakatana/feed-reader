@@ -19,14 +19,17 @@
     - [x] Write integration/service tests for `ImportOpml`
 - [x] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md) c5cf62a
 
-## Phase 2: Frontend Implementation
+## Phase 2: Frontend Implementation [checkpoint: 763f0be]
 - [x] Task: Create `ImportOpmlModal` Component 729788f
+    - [x] Implement file selection input
+    - [x] Implement upload state UI (loading spinner)
+    - [x] Implement results summary view
 - [x] Task: Integrate API 729788f
-    - [ ] Use generated Connect client to call `ImportOpml`
-    - [ ] Handle success and error states
+    - [x] Use generated Connect client to call `ImportOpml`
+    - [x] Handle success and error states
 - [x] Task: Add Entry Point c439855
-    - [ ] Add "Import OPML" button to the Feeds List page
+    - [x] Add "Import OPML" button to the Feeds List page
 - [x] Task: Frontend Tests f0fef6a
-    - [ ] Write unit tests for the Modal component
-    - [ ] Write integration test for the import flow
-- [ ] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md)
+    - [x] Write unit tests for the Modal component
+    - [x] Write integration test for the import flow
+- [x] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md) 763f0be
