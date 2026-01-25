@@ -7,7 +7,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Database and Backend Schema' (Protocol in workflow.md) [b6d6db7]
 
 ## Phase 2: Protobuf and API Definition
-- [ ] Task: Update `proto/feed/v1/feed.proto` to include Tag-related messages and service methods
+- [x] Task: Update `proto/feed/v1/feed.proto` to include Tag-related messages and service methods [c163958]
 - [ ] Task: Update `proto/item/v1/item.proto` to support filtering by tag IDs
 - [ ] Task: Run `buf generate` to update Go and TypeScript Connect RPC code
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Protobuf and API Definition' (Protocol in workflow.md)
