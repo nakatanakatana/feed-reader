@@ -51,17 +51,39 @@ export function FeedList() {
                 _hover: { backgroundColor: "gray.50" },
               })}
             >
-              <div class={stack({ gap: "0" })}>
-                <Link
-                  to="/feeds/$feedId"
-                  params={{ feedId: feed.uuid }}
-                  class={css({
-                    fontWeight: "medium",
-                    _hover: { textDecoration: "underline", color: "blue.600" },
-                  })}
-                >
-                  {feed.title || "Untitled Feed"}
-                </Link>
+              <div class={stack({ gap: "1" })}>
+                <div class={flex({ gap: "2", alignItems: "center" })}>
+                  <Link
+                    to="/feeds/$feedId"
+                    params={{ feedId: feed.uuid }}
+                    class={css({
+                      fontWeight: "medium",
+                      _hover: { textDecoration: "underline", color: "blue.600" },
+                    })}
+                  >
+                    {feed.title || "Untitled Feed"}
+                  </Link>
+                  <div class={flex({ gap: "1" })}>
+                    <For each={feed.tags}>
+                      {(tag) => (
+                        <span
+                          class={css({
+                            px: "2",
+                            py: "0.5",
+                            bg: "gray.100",
+                            rounded: "full",
+                            fontSize: "10px",
+                            color: "gray.600",
+                            border: "1px solid",
+                            borderColor: "gray.200",
+                          })}
+                        >
+                          {tag.name}
+                        </span>
+                      )}
+                    </For>
+                  </div>
+                </div>
                 <span class={css({ fontSize: "xs", color: "gray.500" })}>
                   {feed.url}
                 </span>
