@@ -27,7 +27,7 @@
     - [x] Update existing `FeedService` tests to reflect changes
 - [x] Task: Conductor - User Manual Verification 'Backend Implementation (Go)' (Protocol in workflow.md) 4b00987
 
-## Phase 3: Frontend Implementation (TypeScript)
+## Phase 3: Frontend Implementation (TypeScript) [checkpoint: be4b01b]
 - [x] Task: Update API Client usage
     - [x] Instantiate `TagService` client in `frontend/src/lib/client.ts` (or wherever clients are created)
     - [x] Update `frontend/src/lib/tag-query.ts` (and similar) to use `TagService` for tag operations
