@@ -50,6 +50,9 @@ const (
 	FeedServiceImportOpmlProcedure = "/feed.v1.FeedService/ImportOpml"
 	// FeedServiceSetFeedTagsProcedure is the fully-qualified name of the FeedService's SetFeedTags RPC.
 	FeedServiceSetFeedTagsProcedure = "/feed.v1.FeedService/SetFeedTags"
+	// FeedServiceManageFeedTagsProcedure is the fully-qualified name of the FeedService's
+	// ManageFeedTags RPC.
+	FeedServiceManageFeedTagsProcedure = "/feed.v1.FeedService/ManageFeedTags"
 )
 
 // FeedServiceClient is a client for the feed.v1.FeedService service.
@@ -63,6 +66,7 @@ type FeedServiceClient interface {
 	ImportOpml(context.Context, *connect.Request[v1.ImportOpmlRequest]) (*connect.Response[v1.ImportOpmlResponse], error)
 	// Tag management
 	SetFeedTags(context.Context, *connect.Request[v1.SetFeedTagsRequest]) (*connect.Response[v1.SetFeedTagsResponse], error)
+	ManageFeedTags(context.Context, *connect.Request[v1.ManageFeedTagsRequest]) (*connect.Response[v1.ManageFeedTagsResponse], error)
 }
 
 // NewFeedServiceClient constructs a client for the feed.v1.FeedService service. By default, it uses
@@ -124,19 +128,26 @@ func NewFeedServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(feedServiceMethods.ByName("SetFeedTags")),
 			connect.WithClientOptions(opts...),
 		),
+		manageFeedTags: connect.NewClient[v1.ManageFeedTagsRequest, v1.ManageFeedTagsResponse](
+			httpClient,
+			baseURL+FeedServiceManageFeedTagsProcedure,
+			connect.WithSchema(feedServiceMethods.ByName("ManageFeedTags")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // feedServiceClient implements FeedServiceClient.
 type feedServiceClient struct {
-	getFeed      *connect.Client[v1.GetFeedRequest, v1.GetFeedResponse]
-	listFeeds    *connect.Client[v1.ListFeedsRequest, v1.ListFeedsResponse]
-	createFeed   *connect.Client[v1.CreateFeedRequest, v1.CreateFeedResponse]
-	updateFeed   *connect.Client[v1.UpdateFeedRequest, v1.UpdateFeedResponse]
-	deleteFeed   *connect.Client[v1.DeleteFeedRequest, v1.DeleteFeedResponse]
-	refreshFeeds *connect.Client[v1.RefreshFeedsRequest, v1.RefreshFeedsResponse]
-	importOpml   *connect.Client[v1.ImportOpmlRequest, v1.ImportOpmlResponse]
-	setFeedTags  *connect.Client[v1.SetFeedTagsRequest, v1.SetFeedTagsResponse]
+	getFeed        *connect.Client[v1.GetFeedRequest, v1.GetFeedResponse]
+	listFeeds      *connect.Client[v1.ListFeedsRequest, v1.ListFeedsResponse]
+	createFeed     *connect.Client[v1.CreateFeedRequest, v1.CreateFeedResponse]
+	updateFeed     *connect.Client[v1.UpdateFeedRequest, v1.UpdateFeedResponse]
+	deleteFeed     *connect.Client[v1.DeleteFeedRequest, v1.DeleteFeedResponse]
+	refreshFeeds   *connect.Client[v1.RefreshFeedsRequest, v1.RefreshFeedsResponse]
+	importOpml     *connect.Client[v1.ImportOpmlRequest, v1.ImportOpmlResponse]
+	setFeedTags    *connect.Client[v1.SetFeedTagsRequest, v1.SetFeedTagsResponse]
+	manageFeedTags *connect.Client[v1.ManageFeedTagsRequest, v1.ManageFeedTagsResponse]
 }
 
 // GetFeed calls feed.v1.FeedService.GetFeed.
@@ -179,6 +190,11 @@ func (c *feedServiceClient) SetFeedTags(ctx context.Context, req *connect.Reques
 	return c.setFeedTags.CallUnary(ctx, req)
 }
 
+// ManageFeedTags calls feed.v1.FeedService.ManageFeedTags.
+func (c *feedServiceClient) ManageFeedTags(ctx context.Context, req *connect.Request[v1.ManageFeedTagsRequest]) (*connect.Response[v1.ManageFeedTagsResponse], error) {
+	return c.manageFeedTags.CallUnary(ctx, req)
+}
+
 // FeedServiceHandler is an implementation of the feed.v1.FeedService service.
 type FeedServiceHandler interface {
 	GetFeed(context.Context, *connect.Request[v1.GetFeedRequest]) (*connect.Response[v1.GetFeedResponse], error)
@@ -190,6 +206,7 @@ type FeedServiceHandler interface {
 	ImportOpml(context.Context, *connect.Request[v1.ImportOpmlRequest]) (*connect.Response[v1.ImportOpmlResponse], error)
 	// Tag management
 	SetFeedTags(context.Context, *connect.Request[v1.SetFeedTagsRequest]) (*connect.Response[v1.SetFeedTagsResponse], error)
+	ManageFeedTags(context.Context, *connect.Request[v1.ManageFeedTagsRequest]) (*connect.Response[v1.ManageFeedTagsResponse], error)
 }
 
 // NewFeedServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -247,6 +264,12 @@ func NewFeedServiceHandler(svc FeedServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(feedServiceMethods.ByName("SetFeedTags")),
 		connect.WithHandlerOptions(opts...),
 	)
+	feedServiceManageFeedTagsHandler := connect.NewUnaryHandler(
+		FeedServiceManageFeedTagsProcedure,
+		svc.ManageFeedTags,
+		connect.WithSchema(feedServiceMethods.ByName("ManageFeedTags")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/feed.v1.FeedService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case FeedServiceGetFeedProcedure:
@@ -265,6 +288,8 @@ func NewFeedServiceHandler(svc FeedServiceHandler, opts ...connect.HandlerOption
 			feedServiceImportOpmlHandler.ServeHTTP(w, r)
 		case FeedServiceSetFeedTagsProcedure:
 			feedServiceSetFeedTagsHandler.ServeHTTP(w, r)
+		case FeedServiceManageFeedTagsProcedure:
+			feedServiceManageFeedTagsHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -304,4 +329,8 @@ func (UnimplementedFeedServiceHandler) ImportOpml(context.Context, *connect.Requ
 
 func (UnimplementedFeedServiceHandler) SetFeedTags(context.Context, *connect.Request[v1.SetFeedTagsRequest]) (*connect.Response[v1.SetFeedTagsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("feed.v1.FeedService.SetFeedTags is not implemented"))
+}
+
+func (UnimplementedFeedServiceHandler) ManageFeedTags(context.Context, *connect.Request[v1.ManageFeedTagsRequest]) (*connect.Response[v1.ManageFeedTagsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("feed.v1.FeedService.ManageFeedTags is not implemented"))
 }
