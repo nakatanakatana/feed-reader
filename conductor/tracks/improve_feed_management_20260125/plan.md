@@ -9,7 +9,7 @@
     - [x] Add Sort dropdown and sorting implementation in `FeedList.tsx`
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Filtering and Sorting' (Protocol in workflow.md) 86f9782
 
-## Phase 2: UI Interactions and Navigation
+## Phase 2: UI Interactions and Navigation [checkpoint: f216cb6]
 - [x] Task: Implement card click selection c49545e
     - [x] Write tests for toggling selection via card background click in `FeedList.test.tsx`
     - [x] Update `FeedList.tsx` to handle card-level click events without interfering with buttons/links
@@ -17,4 +17,4 @@
     - [x] Write tests for external title link and internal detail icon in `FeedList.test.tsx`
     - [x] Update feed title to open external `link` in new tab
     - [x] Add internal detail icon for navigating to `/feeds/$feedId`
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: UI Interactions and Navigation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: UI Interactions and Navigation' (Protocol in workflow.md) f216cb6
