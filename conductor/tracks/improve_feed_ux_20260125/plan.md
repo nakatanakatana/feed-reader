@@ -8,8 +8,8 @@
 ## Phase 2: Backend Support for Bulk Tagging
 - [x] Task: Update `sql/query.sql` to include `DeleteFeedTag` (delete specific tag from feed). [0f926a9]
 - [x] Task: Update `proto/feed/v1/feed.proto` to add `ManageFeedTags` RPC (feed_ids, add_tag_ids, remove_tag_ids). [61027b0]
-- [ ] Task: Run `make gen` to generate Go and TypeScript code.
-- [ ] Task: Update `store` package to support bulk tag management (transactional add/remove).
+- [x] Task: Run `make gen` to generate Go and TypeScript code. [61027b0]
+- [x] Task: Update `store` package to support bulk tag management (transactional add/remove). [63d2eef]
 - [ ] Task: Implement `ManageFeedTags` handler in `cmd/feed-reader/handler.go`.
 - [ ] Task: Add unit/integration tests for `ManageFeedTags` in `cmd/feed-reader/handler_test.go` or `store/feed_store_test.go`.
 - [ ] Task: Conductor - User Manual Verification 'Backend Support for Bulk Tagging' (Protocol in workflow.md)
