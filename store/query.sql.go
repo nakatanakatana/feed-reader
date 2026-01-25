@@ -24,17 +24,26 @@ LEFT JOIN
 WHERE
   (?1 IS NULL OR fi.feed_id = ?1) AND
   (?2 IS NULL OR COALESCE(ir.is_read, 0) = ?2) AND
-  (?3 IS NULL OR COALESCE(isv.is_saved, 0) = ?3)
+  (?3 IS NULL OR COALESCE(isv.is_saved, 0) = ?3) AND
+  (?4 IS NULL OR EXISTS (
+    SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = ?4
+  ))
 `
 
 type CountItemsParams struct {
 	FeedID  interface{} `json:"feed_id"`
 	IsRead  interface{} `json:"is_read"`
 	IsSaved interface{} `json:"is_saved"`
+	TagID   interface{} `json:"tag_id"`
 }
 
 func (q *Queries) CountItems(ctx context.Context, arg CountItemsParams) (int64, error) {
-	row := q.db.QueryRowContext(ctx, countItems, arg.FeedID, arg.IsRead, arg.IsSaved)
+	row := q.db.QueryRowContext(ctx, countItems,
+		arg.FeedID,
+		arg.IsRead,
+		arg.IsSaved,
+		arg.TagID,
+	)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
@@ -123,6 +132,26 @@ func (q *Queries) CreateFeedItem(ctx context.Context, arg CreateFeedItemParams) 
 	return err
 }
 
+const createFeedTag = `-- name: CreateFeedTag :exec
+INSERT INTO feed_tags (
+  feed_id,
+  tag_id
+) VALUES (
+  ?, ?
+)
+ON CONFLICT(feed_id, tag_id) DO NOTHING
+`
+
+type CreateFeedTagParams struct {
+	FeedID string `json:"feed_id"`
+	TagID  string `json:"tag_id"`
+}
+
+func (q *Queries) CreateFeedTag(ctx context.Context, arg CreateFeedTagParams) error {
+	_, err := q.db.ExecContext(ctx, createFeedTag, arg.FeedID, arg.TagID)
+	return err
+}
+
 const createItem = `-- name: CreateItem :one
 INSERT INTO items (
   id,
@@ -194,6 +223,33 @@ func (q *Queries) CreateItemRead(ctx context.Context, itemID string) error {
 	return err
 }
 
+const createTag = `-- name: CreateTag :one
+INSERT INTO tags (
+  id,
+  name
+) VALUES (
+  ?, ?
+)
+RETURNING id, name, created_at, updated_at
+`
+
+type CreateTagParams struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+func (q *Queries) CreateTag(ctx context.Context, arg CreateTagParams) (Tag, error) {
+	row := q.db.QueryRowContext(ctx, createTag, arg.ID, arg.Name)
+	var i Tag
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const deleteFeed = `-- name: DeleteFeed :exec
 DELETE FROM
   feeds
@@ -203,6 +259,30 @@ WHERE
 
 func (q *Queries) DeleteFeed(ctx context.Context, uuid string) error {
 	_, err := q.db.ExecContext(ctx, deleteFeed, uuid)
+	return err
+}
+
+const deleteFeedTags = `-- name: DeleteFeedTags :exec
+DELETE FROM
+  feed_tags
+WHERE
+  feed_id = ?
+`
+
+func (q *Queries) DeleteFeedTags(ctx context.Context, feedID string) error {
+	_, err := q.db.ExecContext(ctx, deleteFeedTags, feedID)
+	return err
+}
+
+const deleteTag = `-- name: DeleteTag :exec
+DELETE FROM
+  tags
+WHERE
+  id = ?
+`
+
+func (q *Queries) DeleteTag(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, deleteTag, id)
 	return err
 }
 
@@ -290,15 +370,19 @@ func (q *Queries) GetItem(ctx context.Context, id string) (GetItemRow, error) {
 
 const listFeeds = `-- name: ListFeeds :many
 SELECT
-  uuid, url, link, title, description, language, image_url, copyright, feed_type, feed_version, last_fetched_at, created_at, updated_at
+  f.uuid, f.url, f.link, f.title, f.description, f.language, f.image_url, f.copyright, f.feed_type, f.feed_version, f.last_fetched_at, f.created_at, f.updated_at
 FROM
-  feeds
+  feeds f
+WHERE
+  (?1 IS NULL OR EXISTS (
+    SELECT 1 FROM feed_tags ft WHERE ft.feed_id = f.uuid AND ft.tag_id = ?1
+  ))
 ORDER BY
   created_at DESC
 `
 
-func (q *Queries) ListFeeds(ctx context.Context) ([]Feed, error) {
-	rows, err := q.db.QueryContext(ctx, listFeeds)
+func (q *Queries) ListFeeds(ctx context.Context, tagID interface{}) ([]Feed, error) {
+	rows, err := q.db.QueryContext(ctx, listFeeds, tagID)
 	if err != nil {
 		return nil, err
 	}
@@ -412,16 +496,20 @@ LEFT JOIN
 WHERE
   (?1 IS NULL OR fi.feed_id = ?1) AND
   (?2 IS NULL OR COALESCE(ir.is_read, 0) = ?2) AND
-  (?3 IS NULL OR COALESCE(isv.is_saved, 0) = ?3)
+  (?3 IS NULL OR COALESCE(isv.is_saved, 0) = ?3) AND
+  (?4 IS NULL OR EXISTS (
+    SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = ?4
+  ))
 ORDER BY
   i.published_at DESC
-LIMIT ?5 OFFSET ?4
+LIMIT ?6 OFFSET ?5
 `
 
 type ListItemsParams struct {
 	FeedID  interface{} `json:"feed_id"`
 	IsRead  interface{} `json:"is_read"`
 	IsSaved interface{} `json:"is_saved"`
+	TagID   interface{} `json:"tag_id"`
 	Offset  int64       `json:"offset"`
 	Limit   int64       `json:"limit"`
 }
@@ -443,6 +531,7 @@ func (q *Queries) ListItems(ctx context.Context, arg ListItemsParams) ([]ListIte
 		arg.FeedID,
 		arg.IsRead,
 		arg.IsSaved,
+		arg.TagID,
 		arg.Offset,
 		arg.Limit,
 	)
@@ -499,16 +588,20 @@ LEFT JOIN
 WHERE
   (?1 IS NULL OR fi.feed_id = ?1) AND
   (?2 IS NULL OR COALESCE(ir.is_read, 0) = ?2) AND
-  (?3 IS NULL OR COALESCE(isv.is_saved, 0) = ?3)
+  (?3 IS NULL OR COALESCE(isv.is_saved, 0) = ?3) AND
+  (?4 IS NULL OR EXISTS (
+    SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = ?4
+  ))
 ORDER BY
   i.published_at ASC
-LIMIT ?5 OFFSET ?4
+LIMIT ?6 OFFSET ?5
 `
 
 type ListItemsAscParams struct {
 	FeedID  interface{} `json:"feed_id"`
 	IsRead  interface{} `json:"is_read"`
 	IsSaved interface{} `json:"is_saved"`
+	TagID   interface{} `json:"tag_id"`
 	Offset  int64       `json:"offset"`
 	Limit   int64       `json:"limit"`
 }
@@ -530,6 +623,7 @@ func (q *Queries) ListItemsAsc(ctx context.Context, arg ListItemsAscParams) ([]L
 		arg.FeedID,
 		arg.IsRead,
 		arg.IsSaved,
+		arg.TagID,
 		arg.Offset,
 		arg.Limit,
 	)
@@ -594,6 +688,84 @@ func (q *Queries) ListItemsByFeed(ctx context.Context, feedID string) ([]Item, e
 			&i.PublishedAt,
 			&i.Author,
 			&i.Guid,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listTags = `-- name: ListTags :many
+SELECT
+  id, name, created_at, updated_at
+FROM
+  tags
+ORDER BY
+  name ASC
+`
+
+func (q *Queries) ListTags(ctx context.Context) ([]Tag, error) {
+	rows, err := q.db.QueryContext(ctx, listTags)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Tag
+	for rows.Next() {
+		var i Tag
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listTagsByFeedId = `-- name: ListTagsByFeedId :many
+SELECT
+  t.id, t.name, t.created_at, t.updated_at
+FROM
+  tags t
+JOIN
+  feed_tags ft ON t.id = ft.tag_id
+WHERE
+  ft.feed_id = ?
+ORDER BY
+  t.name ASC
+`
+
+func (q *Queries) ListTagsByFeedId(ctx context.Context, feedID string) ([]Tag, error) {
+	rows, err := q.db.QueryContext(ctx, listTagsByFeedId, feedID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Tag
+	for rows.Next() {
+		var i Tag
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {

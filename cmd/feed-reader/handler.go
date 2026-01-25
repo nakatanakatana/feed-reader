@@ -51,7 +51,7 @@ func (s *FeedServer) GetFeed(ctx context.Context, req *connect.Request[feedv1.Ge
 }
 
 func (s *FeedServer) ListFeeds(ctx context.Context, req *connect.Request[feedv1.ListFeedsRequest]) (*connect.Response[feedv1.ListFeedsResponse], error) {
-	feeds, err := s.queries.ListFeeds(ctx)
+	feeds, err := s.queries.ListFeeds(ctx, nil)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
