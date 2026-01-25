@@ -8,7 +8,7 @@ import { useTags } from "../lib/tag-query";
 import { ManageTagsModal } from "./ManageTagsModal";
 
 export function FeedList() {
-  const [selectedTagId, setSelectedTagId] = createSignal<string | undefined>();
+  const [selectedTagId, setSelectedTagId] = createSignal<string | undefined | null>();
   const [selectedFeedUuids, setSelectedFeedUuids] = createSignal<string[]>([]);
   const [isManageModalOpen, setIsManageModalOpen] = createSignal(false);
 
@@ -22,7 +22,8 @@ export function FeedList() {
   const filteredFeeds = () => {
     const list = feedList ?? [];
     const tagId = selectedTagId();
-    if (!tagId) return list;
+    if (tagId === undefined) return list;
+    if (tagId === null) return list.filter((f) => !f.tags || f.tags.length === 0);
     return list.filter((f) => f.tags?.some((t) => t.id === tagId));
   };
 
@@ -102,6 +103,27 @@ export function FeedList() {
             })}
           >
             All
+          </button>
+          <button
+            type="button"
+            onClick={() => setSelectedTagId(null)}
+            class={css({
+              px: "2",
+              py: "0.5",
+              rounded: "md",
+              fontSize: "xs",
+              cursor: "pointer",
+              border: "1px solid",
+              ...(selectedTagId() === null
+                ? { bg: "blue.100", borderColor: "blue.500", color: "blue.700" }
+                : {
+                    bg: "gray.50",
+                    borderColor: "gray.300",
+                    color: "gray.600",
+                  }),
+            })}
+          >
+            Uncategorized
           </button>
           <For each={tagsQuery.data?.tags}>
             {(tag) => (
