@@ -13,7 +13,7 @@
     - [x] Run `buf generate` (or equivalent) to regenerate Go and TypeScript code
 - [x] Task: Conductor - User Manual Verification 'Proto Definition & Generation' (Protocol in workflow.md) 1cb333e
 
-## Phase 2: Backend Implementation (Go)
+## Phase 2: Backend Implementation (Go) [checkpoint: 4b00987]
 - [x] Task: Implement `TagService` 38ef9b3
     - [x] Create `cmd/feed-reader/tag_service.go` (or similar)
     - [x] Implement `CreateTag`, `ListTags`, `DeleteTag` handlers in `TagService` (move logic from `FeedService`)
@@ -25,7 +25,7 @@
 - [x] Task: Update Tests 38ef9b3
     - [x] Move/Refactor unit tests for Tag operations to `tag_service_test.go`
     - [x] Update existing `FeedService` tests to reflect changes
-- [ ] Task: Conductor - User Manual Verification 'Backend Implementation (Go)' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Backend Implementation (Go)' (Protocol in workflow.md) 4b00987
 
 ## Phase 3: Frontend Implementation (TypeScript)
 - [ ] Task: Update API Client usage
