@@ -17,6 +17,7 @@ service FeedService {
 
   // Tag management
   rpc SetFeedTags(SetFeedTagsRequest) returns (SetFeedTagsResponse);
+  rpc ManageFeedTags(ManageFeedTagsRequest) returns (ManageFeedTagsResponse);
 }
 
 message Feed {
@@ -116,3 +117,11 @@ message SetFeedTagsRequest {
 }
 
 message SetFeedTagsResponse {}
+
+message ManageFeedTagsRequest {
+  repeated string feed_ids = 1;
+  repeated string add_tag_ids = 2;
+  repeated string remove_tag_ids = 3;
+}
+
+message ManageFeedTagsResponse {}

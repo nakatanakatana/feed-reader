@@ -255,6 +255,14 @@ func (s *FeedServer) SetFeedTags(ctx context.Context, req *connect.Request[feedv
 	return connect.NewResponse(&feedv1.SetFeedTagsResponse{}), nil
 }
 
+func (s *FeedServer) ManageFeedTags(ctx context.Context, req *connect.Request[feedv1.ManageFeedTagsRequest]) (*connect.Response[feedv1.ManageFeedTagsResponse], error) {
+	if err := s.store.ManageFeedTags(ctx, req.Msg.FeedIds, req.Msg.AddTagIds, req.Msg.RemoveTagIds); err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	return connect.NewResponse(&feedv1.ManageFeedTagsResponse{}), nil
+}
+
 func (s *FeedServer) toProtoFeed(ctx context.Context, f store.Feed) (*feedv1.Feed, error) {
 	var title string
 	if f.Title != nil {

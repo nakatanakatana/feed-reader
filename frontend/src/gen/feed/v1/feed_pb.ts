@@ -834,3 +834,83 @@ export class SetFeedTagsResponse extends Message<SetFeedTagsResponse> {
   }
 }
 
+/**
+ * @generated from message feed.v1.ManageFeedTagsRequest
+ */
+export class ManageFeedTagsRequest extends Message<ManageFeedTagsRequest> {
+  /**
+   * @generated from field: repeated string feed_ids = 1;
+   */
+  feedIds: string[] = [];
+
+  /**
+   * @generated from field: repeated string add_tag_ids = 2;
+   */
+  addTagIds: string[] = [];
+
+  /**
+   * @generated from field: repeated string remove_tag_ids = 3;
+   */
+  removeTagIds: string[] = [];
+
+  constructor(data?: PartialMessage<ManageFeedTagsRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "feed.v1.ManageFeedTagsRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "feed_ids", kind: "scalar", T: 9 /* ScalarType.STRING */, repeated: true },
+    { no: 2, name: "add_tag_ids", kind: "scalar", T: 9 /* ScalarType.STRING */, repeated: true },
+    { no: 3, name: "remove_tag_ids", kind: "scalar", T: 9 /* ScalarType.STRING */, repeated: true },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ManageFeedTagsRequest {
+    return new ManageFeedTagsRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ManageFeedTagsRequest {
+    return new ManageFeedTagsRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ManageFeedTagsRequest {
+    return new ManageFeedTagsRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: ManageFeedTagsRequest | PlainMessage<ManageFeedTagsRequest> | undefined, b: ManageFeedTagsRequest | PlainMessage<ManageFeedTagsRequest> | undefined): boolean {
+    return proto3.util.equals(ManageFeedTagsRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message feed.v1.ManageFeedTagsResponse
+ */
+export class ManageFeedTagsResponse extends Message<ManageFeedTagsResponse> {
+  constructor(data?: PartialMessage<ManageFeedTagsResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "feed.v1.ManageFeedTagsResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ManageFeedTagsResponse {
+    return new ManageFeedTagsResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ManageFeedTagsResponse {
+    return new ManageFeedTagsResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ManageFeedTagsResponse {
+    return new ManageFeedTagsResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: ManageFeedTagsResponse | PlainMessage<ManageFeedTagsResponse> | undefined, b: ManageFeedTagsResponse | PlainMessage<ManageFeedTagsResponse> | undefined): boolean {
+    return proto3.util.equals(ManageFeedTagsResponse, a, b);
+  }
+}
+

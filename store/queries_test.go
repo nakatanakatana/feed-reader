@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func setupDB(t *testing.T) *store.Queries {
+func setupDB(t *testing.T) (*store.Queries, *store.Store) {
 	db, err := sql.Open("sqlite3", ":memory:")
 	require.NoError(t, err)
 
@@ -24,11 +24,11 @@ func setupDB(t *testing.T) *store.Queries {
 		_ = db.Close()
 	})
 
-	return store.New(db)
+	return store.New(db), store.NewStore(db)
 }
 
 func TestQueries_CreateItem(t *testing.T) {
-	q := setupDB(t)
+	q, _ := setupDB(t)
 	ctx := context.Background()
 
 	t.Run("Create new item", func(t *testing.T) {
@@ -94,7 +94,7 @@ func TestQueries_CreateItem(t *testing.T) {
 }
 
 func TestQueries_CreateFeedItem(t *testing.T) {
-	q := setupDB(t)
+	q, _ := setupDB(t)
 	ctx := context.Background()
 
 	// Create Feed
@@ -131,7 +131,7 @@ func TestQueries_CreateFeedItem(t *testing.T) {
 }
 
 func TestQueries_CreateItemRead(t *testing.T) {
-	q := setupDB(t)
+	q, _ := setupDB(t)
 	ctx := context.Background()
 
 	// Create Item

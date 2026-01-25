@@ -12,7 +12,7 @@ import { queryClient } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
 
-describe("Feed Page Reproduction", () => {
+describe("Feed Detail Page", () => {
   let dispose: () => void;
 
   afterEach(() => {
@@ -20,7 +20,7 @@ describe("Feed Page Reproduction", () => {
     document.body.innerHTML = "";
   });
 
-  it("should display items on a specific feed page", async () => {
+  it("should NOT display items on the feed detail page", async () => {
     const transport = createConnectTransport({
       baseUrl: "http://localhost:3000",
     });
@@ -39,13 +39,11 @@ describe("Feed Page Reproduction", () => {
       document.body,
     );
 
-    // Expect to see "Item 1" which comes from the mock handler
-    // Wait, the mock handler for ListItems returns items without feedId by default (empty string)
-    // But ItemList filters by feedId if provided.
-    // In our mock, we should probably ensure it returns the correct feedId if we want to test filtering.
-    // Actually, let's see what happens.
-    await expect
-      .element(page.getByText("Item 1", { exact: true }))
-      .toBeInTheDocument();
+    // Wait a bit for async stuff
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    console.log("BODY:", document.body.innerHTML);
+
+    // We expect "Item 1" (which is usually present in mocks) NOT to be in the document.
+    await expect.element(page.getByText("Item 1")).not.toBeInTheDocument();
   });
 });

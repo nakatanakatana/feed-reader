@@ -7,6 +7,7 @@ import {
   CreateFeedResponse,
   DeleteFeedResponse,
   SetFeedTagsResponse,
+  ManageFeedTagsResponse,
   Feed,
 } from "../gen/feed/v1/feed_pb";
 import {
@@ -167,6 +168,29 @@ export const handlers = [
         );
       }
       return new SetFeedTagsResponse({});
+    },
+  }),
+
+  mockConnectWeb(FeedService)({
+    method: "manageFeedTags",
+    handler: (req) => {
+      const addTagIds = req.addTagIds || [];
+      const removeTagIds = req.removeTagIds || [];
+      for (const feedId of req.feedIds || []) {
+        const feed = feeds.find((f) => f.uuid === feedId);
+        if (feed) {
+          // Remove tags
+          feed.tags = feed.tags.filter((t) => !removeTagIds.includes(t.id));
+          // Add tags
+          for (const tagId of addTagIds) {
+            const tag = tags.find((t) => t.id === tagId);
+            if (tag && !feed.tags.some((ft) => ft.id === tagId)) {
+              feed.tags.push(tag);
+            }
+          }
+        }
+      }
+      return new ManageFeedTagsResponse({});
     },
   }),
 

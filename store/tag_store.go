@@ -35,3 +35,42 @@ func (s *Store) SetFeedTags(ctx context.Context, feedID string, tagIDs []string)
 
 	return tx.Commit()
 }
+
+// ManageFeedTags handles bulk adding and removing tags for multiple feeds.
+func (s *Store) ManageFeedTags(ctx context.Context, feedIDs []string, addTagIDs []string, removeTagIDs []string) error {
+	tx, err := s.DB.BeginTx(ctx, nil)
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer func() {
+		_ = tx.Rollback()
+	}()
+
+	qtx := s.WithTx(tx)
+
+	for _, feedID := range feedIDs {
+		// 1. Remove tags
+		for _, tagID := range removeTagIDs {
+			err := qtx.DeleteFeedTag(ctx, DeleteFeedTagParams{
+				FeedID: feedID,
+				TagID:  tagID,
+			})
+			if err != nil {
+				return fmt.Errorf("failed to remove tag %s from feed %s: %w", tagID, feedID, err)
+			}
+		}
+
+		// 2. Add tags
+		for _, tagID := range addTagIDs {
+			err := qtx.CreateFeedTag(ctx, CreateFeedTagParams{
+				FeedID: feedID,
+				TagID:  tagID,
+			})
+			if err != nil {
+				return fmt.Errorf("failed to add tag %s to feed %s: %w", tagID, feedID, err)
+			}
+		}
+	}
+
+	return tx.Commit()
+}

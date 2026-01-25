@@ -301,6 +301,12 @@ DELETE FROM
 WHERE
   feed_id = ?;
 
+-- name: DeleteFeedTag :exec
+DELETE FROM
+  feed_tags
+WHERE
+  feed_id = ? AND tag_id = ?;
+
 -- name: ListTagsByFeedId :many
 SELECT
   t.*

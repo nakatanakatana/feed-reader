@@ -10,7 +10,7 @@ import (
 )
 
 func TestTags(t *testing.T) {
-	q := setupDB(t)
+	q, _ := setupDB(t)
 	ctx := context.Background()
 
 	// 1. Create Tag
@@ -116,4 +116,85 @@ func TestTags(t *testing.T) {
 	require.NoError(t, err)
 	assert.Len(t, tags, 1)
 	assert.Equal(t, "News", tags[0].Name)
+}
+
+func TestDeleteFeedTag(t *testing.T) {
+	q, _ := setupDB(t)
+	ctx := context.Background()
+
+	// Setup: Create Feed and Tag
+	_, _ = q.CreateTag(ctx, store.CreateTagParams{ID: "t1", Name: "Tag 1"})
+	_, _ = q.CreateFeed(ctx, store.CreateFeedParams{Uuid: "f1", Url: "u1"})
+	_ = q.CreateFeedTag(ctx, store.CreateFeedTagParams{FeedID: "f1", TagID: "t1"})
+
+	// Verify setup
+	feedTags, err := q.ListTagsByFeedId(ctx, "f1")
+	require.NoError(t, err)
+	assert.Len(t, feedTags, 1)
+
+	// Attempt to delete specific tag association using the name we want to add to sqlc
+	// This SHOULD fail because the statement doesn't exist in the current generated code
+	// or we can just try to run it via raw SQL and expect it to work after we add it.
+	// For RED phase, I will try to call a method that doesn't exist, but that won't compile.
+	// So I will use a test that asserts the behavior we WANT, which is currently NOT supported
+	// by any single-tag delete method.
+
+	// Actually, I'll just use a raw SQL exec to try to call the name we intend to use.
+	// Since we are using sqlc, we don't have named statements in the DB directly usually,
+	// but we can try to EXEC the SQL we intend to add.
+	// But that would PASS if the SQL is valid.
+	
+	// Better: write a test that uses the (soon to be generated) method.
+	// To make it compile but fail to run, I can't really do that easily in Go without it being a compilation error.
+	
+	// I'll add the SQL first, then run make gen, then run tests. 
+	// Protocol says: 1. Select Task, 2. Mark In Progress, 3. Write Failing Tests (Red Phase).
+	
+	// I will write a test that expects DeleteFeedTag to exist. 
+	// I'll comment it out or use a trick to make it compile but fail.
+	
+	t.Run("Delete specific tag from feed", func(t *testing.T) {
+		err := q.DeleteFeedTag(ctx, store.DeleteFeedTagParams{
+			FeedID: "f1",
+			TagID:  "t1",
+		})
+		require.NoError(t, err)
+
+		feedTags, err := q.ListTagsByFeedId(ctx, "f1")
+		require.NoError(t, err)
+		assert.Len(t, feedTags, 0)
+	})
+}
+
+func TestStore_ManageFeedTags(t *testing.T) {
+	q, s := setupDB(t)
+	ctx := context.Background()
+
+	// Setup: 2 Feeds, 2 Tags
+	_, _ = q.CreateTag(ctx, store.CreateTagParams{ID: "t1", Name: "Tag 1"})
+	_, _ = q.CreateTag(ctx, store.CreateTagParams{ID: "t2", Name: "Tag 2"})
+	_, _ = q.CreateFeed(ctx, store.CreateFeedParams{Uuid: "f1", Url: "u1"})
+	_, _ = q.CreateFeed(ctx, store.CreateFeedParams{Uuid: "f2", Url: "u2"})
+
+	// Initially: f1 has t1, f2 has t1
+	_ = q.CreateFeedTag(ctx, store.CreateFeedTagParams{FeedID: "f1", TagID: "t1"})
+	_ = q.CreateFeedTag(ctx, store.CreateFeedTagParams{FeedID: "f2", TagID: "t1"})
+
+	t.Run("Bulk Manage Tags", func(t *testing.T) {
+		// Action: Add t2, Remove t1 from both f1 and f2
+		err := s.ManageFeedTags(ctx, []string{"f1", "f2"}, []string{"t2"}, []string{"t1"})
+		require.NoError(t, err)
+
+		// Verify f1: should have t2, but not t1
+		tags1, err := q.ListTagsByFeedId(ctx, "f1")
+		require.NoError(t, err)
+		assert.Len(t, tags1, 1)
+		assert.Equal(t, "t2", tags1[0].ID)
+
+		// Verify f2: should have t2, but not t1
+		tags2, err := q.ListTagsByFeedId(ctx, "f2")
+		require.NoError(t, err)
+		assert.Len(t, tags2, 1)
+		assert.Equal(t, "t2", tags2[0].ID)
+	})
 }

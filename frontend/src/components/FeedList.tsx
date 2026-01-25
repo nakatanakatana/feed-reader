@@ -5,19 +5,17 @@ import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { feeds } from "../lib/db";
 import { useTags } from "../lib/tag-query";
+import { ManageTagsModal } from "./ManageTagsModal";
 
 export function FeedList() {
   const [selectedTagId, setSelectedTagId] = createSignal<string | undefined>();
+  const [selectedFeedUuids, setSelectedFeedUuids] = createSignal<string[]>([]);
+  const [isManageModalOpen, setIsManageModalOpen] = createSignal(false);
+
   const tagsQuery = useTags();
 
   const { data: feedList } = useLiveQuery((q) => {
     const query = q.from({ feed: feeds });
-    const tagId = selectedTagId();
-    if (tagId) {
-      // NOTE: solid-db where currently has issues with boolean expressions in some versions.
-      // We perform manual filtering on the result for now to ensure stability.
-      return query;
-    }
     return query;
   });
 
@@ -41,6 +39,14 @@ export function FeedList() {
     }
   };
 
+  const toggleFeedSelection = (uuid: string) => {
+    if (selectedFeedUuids().includes(uuid)) {
+      setSelectedFeedUuids(selectedFeedUuids().filter((u) => u !== uuid));
+    } else {
+      setSelectedFeedUuids([...selectedFeedUuids(), uuid]);
+    }
+  };
+
   // Loading state approximation
   const isLoading = () => !feeds.isReady();
 
@@ -49,9 +55,29 @@ export function FeedList() {
       <div
         class={flex({ justifyContent: "space-between", alignItems: "center" })}
       >
-        <h2 class={css({ fontSize: "xl", fontWeight: "semibold" })}>
-          Your Feeds
-        </h2>
+        <div class={flex({ gap: "4", alignItems: "center" })}>
+          <h2 class={css({ fontSize: "xl", fontWeight: "semibold" })}>
+            Your Feeds
+          </h2>
+          <Show when={selectedFeedUuids().length > 0}>
+            <button
+              type="button"
+              onClick={() => setIsManageModalOpen(true)}
+              class={css({
+                px: "3",
+                py: "1.5",
+                bg: "blue.600",
+                color: "white",
+                rounded: "md",
+                fontSize: "sm",
+                cursor: "pointer",
+                hover: { bg: "blue.700" },
+              })}
+            >
+              Manage Tags ({selectedFeedUuids().length})
+            </button>
+          </Show>
+        </div>
         <div class={flex({ gap: "2", alignItems: "center" })}>
           <span class={css({ fontSize: "sm", color: "gray.600" })}>
             Filter:
@@ -128,48 +154,57 @@ export function FeedList() {
                 border: "1px solid",
                 borderColor: "gray.100",
                 borderRadius: "md",
+                gap: "3",
                 _hover: { backgroundColor: "gray.50" },
               })}
             >
-              <div class={stack({ gap: "1" })}>
-                <div class={flex({ gap: "2", alignItems: "center" })}>
-                  <Link
-                    to="/feeds/$feedId"
-                    params={{ feedId: feed.uuid }}
-                    class={css({
-                      fontWeight: "medium",
-                      _hover: {
-                        textDecoration: "underline",
-                        color: "blue.600",
-                      },
-                    })}
-                  >
-                    {feed.title || "Untitled Feed"}
-                  </Link>
-                  <div class={flex({ gap: "1" })}>
-                    <For each={feed.tags}>
-                      {(tag) => (
-                        <span
-                          class={css({
-                            px: "2",
-                            py: "0.5",
-                            bg: "gray.100",
-                            rounded: "full",
-                            fontSize: "10px",
-                            color: "gray.600",
-                            border: "1px solid",
-                            borderColor: "gray.200",
-                          })}
-                        >
-                          {tag.name}
-                        </span>
-                      )}
-                    </For>
+              <div class={flex({ gap: "3", alignItems: "center", flex: 1 })}>
+                <input
+                  type="checkbox"
+                  checked={selectedFeedUuids().includes(feed.uuid)}
+                  onChange={() => toggleFeedSelection(feed.uuid)}
+                  class={css({ cursor: "pointer" })}
+                />
+                <div class={stack({ gap: "1" })}>
+                  <div class={flex({ gap: "2", alignItems: "center" })}>
+                    <Link
+                      to="/feeds/$feedId"
+                      params={{ feedId: feed.uuid }}
+                      class={css({
+                        fontWeight: "medium",
+                        _hover: {
+                          textDecoration: "underline",
+                          color: "blue.600",
+                        },
+                      })}
+                    >
+                      {feed.title || "Untitled Feed"}
+                    </Link>
+                    <div class={flex({ gap: "1" })}>
+                      <For each={feed.tags}>
+                        {(tag) => (
+                          <span
+                            class={css({
+                              px: "2",
+                              py: "0.5",
+                              bg: "gray.100",
+                              rounded: "full",
+                              fontSize: "10px",
+                              color: "gray.600",
+                              border: "1px solid",
+                              borderColor: "gray.200",
+                            })}
+                          >
+                            {tag.name}
+                          </span>
+                        )}
+                      </For>
+                    </div>
                   </div>
+                  <span class={css({ fontSize: "xs", color: "gray.500" })}>
+                    {feed.url}
+                  </span>
                 </div>
-                <span class={css({ fontSize: "xs", color: "gray.500" })}>
-                  {feed.url}
-                </span>
               </div>
               <button
                 type="button"
@@ -194,6 +229,15 @@ export function FeedList() {
           )}
         </For>
       </ul>
+
+      <ManageTagsModal
+        isOpen={isManageModalOpen()}
+        onClose={() => {
+          setIsManageModalOpen(false);
+          setSelectedFeedUuids([]);
+        }}
+        feedIds={selectedFeedUuids()}
+      />
     </div>
   );
 }

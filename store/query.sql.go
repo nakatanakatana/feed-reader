@@ -262,6 +262,23 @@ func (q *Queries) DeleteFeed(ctx context.Context, uuid string) error {
 	return err
 }
 
+const deleteFeedTag = `-- name: DeleteFeedTag :exec
+DELETE FROM
+  feed_tags
+WHERE
+  feed_id = ? AND tag_id = ?
+`
+
+type DeleteFeedTagParams struct {
+	FeedID string `json:"feed_id"`
+	TagID  string `json:"tag_id"`
+}
+
+func (q *Queries) DeleteFeedTag(ctx context.Context, arg DeleteFeedTagParams) error {
+	_, err := q.db.ExecContext(ctx, deleteFeedTag, arg.FeedID, arg.TagID)
+	return err
+}
+
 const deleteFeedTags = `-- name: DeleteFeedTags :exec
 DELETE FROM
   feed_tags

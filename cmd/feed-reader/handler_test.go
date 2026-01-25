@@ -16,6 +16,8 @@ import (
 	"github.com/nakatanakatana/feed-reader/gen/go/feed/v1/feedv1connect"
 	"github.com/nakatanakatana/feed-reader/sql"
 	"github.com/nakatanakatana/feed-reader/store"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func setupTestDB(t *testing.T) (*store.Queries, *sql.DB) {
@@ -23,6 +25,10 @@ func setupTestDB(t *testing.T) (*store.Queries, *sql.DB) {
 	db, err := sql.Open("sqlite3", ":memory:")
 	if err != nil {
 		t.Fatalf("failed to open db: %v", err)
+	}
+
+	if _, err := db.Exec("PRAGMA foreign_keys = ON"); err != nil {
+		t.Fatalf("failed to enable foreign keys: %v", err)
 	}
 
 	if _, err := db.Exec(schema.Schema); err != nil {
@@ -555,5 +561,55 @@ func TestFeedServer_ImportOpml(t *testing.T) {
 		if connect.CodeOf(err) != connect.CodeInvalidArgument {
 			t.Errorf("expected CodeInvalidArgument, got %v", connect.CodeOf(err))
 		}
+	})
+}
+
+func TestFeedServer_ManageFeedTags(t *testing.T) {
+	ctx := context.Background()
+	_, db := setupTestDB(t)
+	server := NewFeedServer(store.NewStore(db), nil, &mockFetcher{}, &mockItemFetcher{})
+
+	// Setup: 2 feeds and 2 tags
+	f1Res, _ := server.CreateFeed(ctx, connect.NewRequest(&feedv1.CreateFeedRequest{Url: "u1", Title: proto.String("f1")}))
+	f2Res, _ := server.CreateFeed(ctx, connect.NewRequest(&feedv1.CreateFeedRequest{Url: "u2", Title: proto.String("f2")}))
+	
+	// Assuming TagService is managed separately, but for handler test we can just use store directly to create tags
+	q := store.New(db)
+	_, _ = q.CreateTag(ctx, store.CreateTagParams{ID: "t1", Name: "Tag 1"})
+	_, _ = q.CreateTag(ctx, store.CreateTagParams{ID: "t2", Name: "Tag 2"})
+
+	// Initially f1, f2 have t1
+	_ = q.CreateFeedTag(ctx, store.CreateFeedTagParams{FeedID: f1Res.Msg.Feed.Uuid, TagID: "t1"})
+	_ = q.CreateFeedTag(ctx, store.CreateFeedTagParams{FeedID: f2Res.Msg.Feed.Uuid, TagID: "t1"})
+
+	t.Run("Bulk Manage Tags", func(t *testing.T) {
+		req := &feedv1.ManageFeedTagsRequest{
+			FeedIds:       []string{f1Res.Msg.Feed.Uuid, f2Res.Msg.Feed.Uuid},
+			AddTagIds:    []string{"t2"},
+			RemoveTagIds: []string{"t1"},
+		}
+
+		_, err := server.ManageFeedTags(ctx, connect.NewRequest(req))
+		require.NoError(t, err)
+
+		// Verify f1
+		res1, _ := server.GetFeed(ctx, connect.NewRequest(&feedv1.GetFeedRequest{Uuid: f1Res.Msg.Feed.Uuid}))
+		assert.Len(t, res1.Msg.Feed.Tags, 1)
+		assert.Equal(t, "t2", res1.Msg.Feed.Tags[0].Id)
+
+		// Verify f2
+		res2, _ := server.GetFeed(ctx, connect.NewRequest(&feedv1.GetFeedRequest{Uuid: f2Res.Msg.Feed.Uuid}))
+		assert.Len(t, res2.Msg.Feed.Tags, 1)
+		assert.Equal(t, "t2", res2.Msg.Feed.Tags[0].Id)
+	})
+
+	t.Run("Store Error", func(t *testing.T) {
+		req := &feedv1.ManageFeedTagsRequest{
+			FeedIds:    []string{"non-existent"},
+			AddTagIds: []string{"t2"},
+		}
+		_, err := server.ManageFeedTags(ctx, connect.NewRequest(req))
+		assert.Error(t, err)
+		assert.Equal(t, connect.CodeInternal, connect.CodeOf(err))
 	})
 }
