@@ -39,6 +39,6 @@
 - [ ] Task: Conductor - User Manual Verification 'Frontend Implementation (TypeScript)' (Protocol in workflow.md)
 
 ## Phase 4: Final Verification
-- [ ] Task: Run full test suite (Backend & Frontend)
-- [ ] Task: Manual smoke test of all Tag features
-- [ ] Task: Conductor - User Manual Verification 'Final Verification' (Protocol in workflow.md)
+- [x] Task: Run full test suite (Backend & Frontend)
+- [x] Task: Manual smoke test of all Tag features
+- [~] Task: Conductor - User Manual Verification 'Final Verification' (Protocol in workflow.md)
