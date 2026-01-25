@@ -219,6 +219,7 @@ export function FeedList() {
         <For each={sortedFeeds()}>
           {(feed) => (
             <li
+              onClick={() => toggleFeedSelection(feed.uuid)}
               class={flex({
                 justifyContent: "space-between",
                 alignItems: "center",
@@ -227,6 +228,7 @@ export function FeedList() {
                 borderColor: "gray.100",
                 borderRadius: "md",
                 gap: "3",
+                cursor: "pointer",
                 _hover: { backgroundColor: "gray.50" },
               })}
             >
@@ -234,7 +236,11 @@ export function FeedList() {
                 <input
                   type="checkbox"
                   checked={selectedFeedUuids().includes(feed.uuid)}
-                  onChange={() => toggleFeedSelection(feed.uuid)}
+                  onChange={(e) => {
+                    e.stopPropagation();
+                    toggleFeedSelection(feed.uuid);
+                  }}
+                  onClick={(e) => e.stopPropagation()}
                   class={css({ cursor: "pointer" })}
                 />
                 <div class={stack({ gap: "1" })}>
@@ -242,6 +248,7 @@ export function FeedList() {
                     <Link
                       to="/feeds/$feedId"
                       params={{ feedId: feed.uuid }}
+                      onClick={(e) => e.stopPropagation()}
                       class={css({
                         fontWeight: "medium",
                         _hover: {
@@ -280,7 +287,10 @@ export function FeedList() {
               </div>
               <button
                 type="button"
-                onClick={() => handleDelete(feed.uuid)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDelete(feed.uuid);
+                }}
                 class={css({
                   color: "red.500",
                   padding: "1",
