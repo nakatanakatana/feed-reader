@@ -92,7 +92,7 @@ jobs:
           path: ~/.npm
           key: npm-${{runner.os}}-${{runner.arch}}-${{hashFiles('package-lock.json')}}
           restore-keys: npm-${{runner.os}}-${{runner.arch}}-
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: "24"
 
