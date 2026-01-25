@@ -15,7 +15,7 @@
 ## Phase 3: Backend Implementation (TDD)
 - [x] Task: Implement Tag management logic in `store/` (CRUD operations) [07f87a9]
 - [x] Task: Implement `FeedService` updates to handle tag associations in `cmd/feed-reader/` [a1d39f5]
-- [ ] Task: Implement `ItemService` updates to support tag-based article filtering in `cmd/feed-reader/`
+- [x] Task: Implement `ItemService` updates to support tag-based article filtering in `cmd/feed-reader/` [c97a73d]
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Backend Implementation (TDD)' (Protocol in workflow.md)
 
 ## Phase 4: Frontend Implementation (TDD)
