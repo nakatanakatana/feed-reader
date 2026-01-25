@@ -1,0 +1,8 @@
+{
+  "track_id": "improve_feed_management_20260125",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-01-25T10:00:00Z",
+  "updated_at": "2026-01-25T10:00:00Z",
+  "description": "Improve Feed Management screen with 'Uncategorized' filter, sorting, card-level selection, and external/internal link split."
+}
