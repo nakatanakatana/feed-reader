@@ -801,6 +801,118 @@ func (*RefreshFeedsResponse) Descriptor() ([]byte, []int) {
 	return file_feed_v1_feed_proto_rawDescGZIP(), []int{12}
 }
 
+type ImportOpmlRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	OpmlContent   []byte                 `protobuf:"bytes,1,opt,name=opml_content,json=opmlContent,proto3" json:"opml_content,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ImportOpmlRequest) Reset() {
+	*x = ImportOpmlRequest{}
+	mi := &file_feed_v1_feed_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ImportOpmlRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ImportOpmlRequest) ProtoMessage() {}
+
+func (x *ImportOpmlRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_feed_v1_feed_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ImportOpmlRequest.ProtoReflect.Descriptor instead.
+func (*ImportOpmlRequest) Descriptor() ([]byte, []int) {
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *ImportOpmlRequest) GetOpmlContent() []byte {
+	if x != nil {
+		return x.OpmlContent
+	}
+	return nil
+}
+
+type ImportOpmlResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Total         int32                  `protobuf:"varint,1,opt,name=total,proto3" json:"total,omitempty"`
+	Success       int32                  `protobuf:"varint,2,opt,name=success,proto3" json:"success,omitempty"`
+	Skipped       int32                  `protobuf:"varint,3,opt,name=skipped,proto3" json:"skipped,omitempty"`
+	FailedFeeds   []string               `protobuf:"bytes,4,rep,name=failed_feeds,json=failedFeeds,proto3" json:"failed_feeds,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ImportOpmlResponse) Reset() {
+	*x = ImportOpmlResponse{}
+	mi := &file_feed_v1_feed_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ImportOpmlResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ImportOpmlResponse) ProtoMessage() {}
+
+func (x *ImportOpmlResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_feed_v1_feed_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ImportOpmlResponse.ProtoReflect.Descriptor instead.
+func (*ImportOpmlResponse) Descriptor() ([]byte, []int) {
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *ImportOpmlResponse) GetTotal() int32 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+func (x *ImportOpmlResponse) GetSuccess() int32 {
+	if x != nil {
+		return x.Success
+	}
+	return 0
+}
+
+func (x *ImportOpmlResponse) GetSkipped() int32 {
+	if x != nil {
+		return x.Skipped
+	}
+	return 0
+}
+
+func (x *ImportOpmlResponse) GetFailedFeeds() []string {
+	if x != nil {
+		return x.FailedFeeds
+	}
+	return nil
+}
+
 var File_feed_v1_feed_proto protoreflect.FileDescriptor
 
 const file_feed_v1_feed_proto_rawDesc = "" +
@@ -895,7 +1007,14 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"\x12DeleteFeedResponse\"+\n" +
 	"\x13RefreshFeedsRequest\x12\x14\n" +
 	"\x05uuids\x18\x01 \x03(\tR\x05uuids\"\x16\n" +
-	"\x14RefreshFeedsResponse2\xb1\x03\n" +
+	"\x14RefreshFeedsResponse\"6\n" +
+	"\x11ImportOpmlRequest\x12!\n" +
+	"\fopml_content\x18\x01 \x01(\fR\vopmlContent\"\x81\x01\n" +
+	"\x12ImportOpmlResponse\x12\x14\n" +
+	"\x05total\x18\x01 \x01(\x05R\x05total\x12\x18\n" +
+	"\asuccess\x18\x02 \x01(\x05R\asuccess\x12\x18\n" +
+	"\askipped\x18\x03 \x01(\x05R\askipped\x12!\n" +
+	"\ffailed_feeds\x18\x04 \x03(\tR\vfailedFeeds2\xf8\x03\n" +
 	"\vFeedService\x12<\n" +
 	"\aGetFeed\x12\x17.feed.v1.GetFeedRequest\x1a\x18.feed.v1.GetFeedResponse\x12B\n" +
 	"\tListFeeds\x12\x19.feed.v1.ListFeedsRequest\x1a\x1a.feed.v1.ListFeedsResponse\x12E\n" +
@@ -905,7 +1024,9 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"UpdateFeed\x12\x1a.feed.v1.UpdateFeedRequest\x1a\x1b.feed.v1.UpdateFeedResponse\x12E\n" +
 	"\n" +
 	"DeleteFeed\x12\x1a.feed.v1.DeleteFeedRequest\x1a\x1b.feed.v1.DeleteFeedResponse\x12K\n" +
-	"\fRefreshFeeds\x12\x1c.feed.v1.RefreshFeedsRequest\x1a\x1d.feed.v1.RefreshFeedsResponseB=Z;github.com/nakatanakatana/feed-reader/gen/go/feed/v1;feedv1b\x06proto3"
+	"\fRefreshFeeds\x12\x1c.feed.v1.RefreshFeedsRequest\x1a\x1d.feed.v1.RefreshFeedsResponse\x12E\n" +
+	"\n" +
+	"ImportOpml\x12\x1a.feed.v1.ImportOpmlRequest\x1a\x1b.feed.v1.ImportOpmlResponseB=Z;github.com/nakatanakatana/feed-reader/gen/go/feed/v1;feedv1b\x06proto3"
 
 var (
 	file_feed_v1_feed_proto_rawDescOnce sync.Once
@@ -919,7 +1040,7 @@ func file_feed_v1_feed_proto_rawDescGZIP() []byte {
 	return file_feed_v1_feed_proto_rawDescData
 }
 
-var file_feed_v1_feed_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
+var file_feed_v1_feed_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
 var file_feed_v1_feed_proto_goTypes = []any{
 	(*Feed)(nil),                 // 0: feed.v1.Feed
 	(*GetFeedRequest)(nil),       // 1: feed.v1.GetFeedRequest
@@ -934,6 +1055,8 @@ var file_feed_v1_feed_proto_goTypes = []any{
 	(*DeleteFeedResponse)(nil),   // 10: feed.v1.DeleteFeedResponse
 	(*RefreshFeedsRequest)(nil),  // 11: feed.v1.RefreshFeedsRequest
 	(*RefreshFeedsResponse)(nil), // 12: feed.v1.RefreshFeedsResponse
+	(*ImportOpmlRequest)(nil),    // 13: feed.v1.ImportOpmlRequest
+	(*ImportOpmlResponse)(nil),   // 14: feed.v1.ImportOpmlResponse
 }
 var file_feed_v1_feed_proto_depIdxs = []int32{
 	0,  // 0: feed.v1.GetFeedResponse.feed:type_name -> feed.v1.Feed
@@ -946,14 +1069,16 @@ var file_feed_v1_feed_proto_depIdxs = []int32{
 	7,  // 7: feed.v1.FeedService.UpdateFeed:input_type -> feed.v1.UpdateFeedRequest
 	9,  // 8: feed.v1.FeedService.DeleteFeed:input_type -> feed.v1.DeleteFeedRequest
 	11, // 9: feed.v1.FeedService.RefreshFeeds:input_type -> feed.v1.RefreshFeedsRequest
-	2,  // 10: feed.v1.FeedService.GetFeed:output_type -> feed.v1.GetFeedResponse
-	4,  // 11: feed.v1.FeedService.ListFeeds:output_type -> feed.v1.ListFeedsResponse
-	6,  // 12: feed.v1.FeedService.CreateFeed:output_type -> feed.v1.CreateFeedResponse
-	8,  // 13: feed.v1.FeedService.UpdateFeed:output_type -> feed.v1.UpdateFeedResponse
-	10, // 14: feed.v1.FeedService.DeleteFeed:output_type -> feed.v1.DeleteFeedResponse
-	12, // 15: feed.v1.FeedService.RefreshFeeds:output_type -> feed.v1.RefreshFeedsResponse
-	10, // [10:16] is the sub-list for method output_type
-	4,  // [4:10] is the sub-list for method input_type
+	13, // 10: feed.v1.FeedService.ImportOpml:input_type -> feed.v1.ImportOpmlRequest
+	2,  // 11: feed.v1.FeedService.GetFeed:output_type -> feed.v1.GetFeedResponse
+	4,  // 12: feed.v1.FeedService.ListFeeds:output_type -> feed.v1.ListFeedsResponse
+	6,  // 13: feed.v1.FeedService.CreateFeed:output_type -> feed.v1.CreateFeedResponse
+	8,  // 14: feed.v1.FeedService.UpdateFeed:output_type -> feed.v1.UpdateFeedResponse
+	10, // 15: feed.v1.FeedService.DeleteFeed:output_type -> feed.v1.DeleteFeedResponse
+	12, // 16: feed.v1.FeedService.RefreshFeeds:output_type -> feed.v1.RefreshFeedsResponse
+	14, // 17: feed.v1.FeedService.ImportOpml:output_type -> feed.v1.ImportOpmlResponse
+	11, // [11:18] is the sub-list for method output_type
+	4,  // [4:11] is the sub-list for method input_type
 	4,  // [4:4] is the sub-list for extension type_name
 	4,  // [4:4] is the sub-list for extension extendee
 	0,  // [0:4] is the sub-list for field type_name
@@ -973,7 +1098,7 @@ func file_feed_v1_feed_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_feed_v1_feed_proto_rawDesc), len(file_feed_v1_feed_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   13,
+			NumMessages:   15,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

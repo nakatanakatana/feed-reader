@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { CreateFeedRequest, CreateFeedResponse, DeleteFeedRequest, DeleteFeedResponse, GetFeedRequest, GetFeedResponse, ListFeedsRequest, ListFeedsResponse, RefreshFeedsRequest, RefreshFeedsResponse, UpdateFeedRequest, UpdateFeedResponse } from "./feed_pb.js";
+import { CreateFeedRequest, CreateFeedResponse, DeleteFeedRequest, DeleteFeedResponse, GetFeedRequest, GetFeedResponse, ImportOpmlRequest, ImportOpmlResponse, ListFeedsRequest, ListFeedsResponse, RefreshFeedsRequest, RefreshFeedsResponse, UpdateFeedRequest, UpdateFeedResponse } from "./feed_pb.js";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**
@@ -64,6 +64,15 @@ export const FeedService = {
       name: "RefreshFeeds",
       I: RefreshFeedsRequest,
       O: RefreshFeedsResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * @generated from rpc feed.v1.FeedService.ImportOpml
+     */
+    importOpml: {
+      name: "ImportOpml",
+      I: ImportOpmlRequest,
+      O: ImportOpmlResponse,
       kind: MethodKind.Unary,
     },
   }

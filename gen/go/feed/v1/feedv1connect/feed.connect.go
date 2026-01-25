@@ -46,6 +46,8 @@ const (
 	// FeedServiceRefreshFeedsProcedure is the fully-qualified name of the FeedService's RefreshFeeds
 	// RPC.
 	FeedServiceRefreshFeedsProcedure = "/feed.v1.FeedService/RefreshFeeds"
+	// FeedServiceImportOpmlProcedure is the fully-qualified name of the FeedService's ImportOpml RPC.
+	FeedServiceImportOpmlProcedure = "/feed.v1.FeedService/ImportOpml"
 )
 
 // FeedServiceClient is a client for the feed.v1.FeedService service.
@@ -56,6 +58,7 @@ type FeedServiceClient interface {
 	UpdateFeed(context.Context, *connect.Request[v1.UpdateFeedRequest]) (*connect.Response[v1.UpdateFeedResponse], error)
 	DeleteFeed(context.Context, *connect.Request[v1.DeleteFeedRequest]) (*connect.Response[v1.DeleteFeedResponse], error)
 	RefreshFeeds(context.Context, *connect.Request[v1.RefreshFeedsRequest]) (*connect.Response[v1.RefreshFeedsResponse], error)
+	ImportOpml(context.Context, *connect.Request[v1.ImportOpmlRequest]) (*connect.Response[v1.ImportOpmlResponse], error)
 }
 
 // NewFeedServiceClient constructs a client for the feed.v1.FeedService service. By default, it uses
@@ -105,6 +108,12 @@ func NewFeedServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(feedServiceMethods.ByName("RefreshFeeds")),
 			connect.WithClientOptions(opts...),
 		),
+		importOpml: connect.NewClient[v1.ImportOpmlRequest, v1.ImportOpmlResponse](
+			httpClient,
+			baseURL+FeedServiceImportOpmlProcedure,
+			connect.WithSchema(feedServiceMethods.ByName("ImportOpml")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -116,6 +125,7 @@ type feedServiceClient struct {
 	updateFeed   *connect.Client[v1.UpdateFeedRequest, v1.UpdateFeedResponse]
 	deleteFeed   *connect.Client[v1.DeleteFeedRequest, v1.DeleteFeedResponse]
 	refreshFeeds *connect.Client[v1.RefreshFeedsRequest, v1.RefreshFeedsResponse]
+	importOpml   *connect.Client[v1.ImportOpmlRequest, v1.ImportOpmlResponse]
 }
 
 // GetFeed calls feed.v1.FeedService.GetFeed.
@@ -148,6 +158,11 @@ func (c *feedServiceClient) RefreshFeeds(ctx context.Context, req *connect.Reque
 	return c.refreshFeeds.CallUnary(ctx, req)
 }
 
+// ImportOpml calls feed.v1.FeedService.ImportOpml.
+func (c *feedServiceClient) ImportOpml(ctx context.Context, req *connect.Request[v1.ImportOpmlRequest]) (*connect.Response[v1.ImportOpmlResponse], error) {
+	return c.importOpml.CallUnary(ctx, req)
+}
+
 // FeedServiceHandler is an implementation of the feed.v1.FeedService service.
 type FeedServiceHandler interface {
 	GetFeed(context.Context, *connect.Request[v1.GetFeedRequest]) (*connect.Response[v1.GetFeedResponse], error)
@@ -156,6 +171,7 @@ type FeedServiceHandler interface {
 	UpdateFeed(context.Context, *connect.Request[v1.UpdateFeedRequest]) (*connect.Response[v1.UpdateFeedResponse], error)
 	DeleteFeed(context.Context, *connect.Request[v1.DeleteFeedRequest]) (*connect.Response[v1.DeleteFeedResponse], error)
 	RefreshFeeds(context.Context, *connect.Request[v1.RefreshFeedsRequest]) (*connect.Response[v1.RefreshFeedsResponse], error)
+	ImportOpml(context.Context, *connect.Request[v1.ImportOpmlRequest]) (*connect.Response[v1.ImportOpmlResponse], error)
 }
 
 // NewFeedServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -201,6 +217,12 @@ func NewFeedServiceHandler(svc FeedServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(feedServiceMethods.ByName("RefreshFeeds")),
 		connect.WithHandlerOptions(opts...),
 	)
+	feedServiceImportOpmlHandler := connect.NewUnaryHandler(
+		FeedServiceImportOpmlProcedure,
+		svc.ImportOpml,
+		connect.WithSchema(feedServiceMethods.ByName("ImportOpml")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/feed.v1.FeedService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case FeedServiceGetFeedProcedure:
@@ -215,6 +237,8 @@ func NewFeedServiceHandler(svc FeedServiceHandler, opts ...connect.HandlerOption
 			feedServiceDeleteFeedHandler.ServeHTTP(w, r)
 		case FeedServiceRefreshFeedsProcedure:
 			feedServiceRefreshFeedsHandler.ServeHTTP(w, r)
+		case FeedServiceImportOpmlProcedure:
+			feedServiceImportOpmlHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -246,4 +270,8 @@ func (UnimplementedFeedServiceHandler) DeleteFeed(context.Context, *connect.Requ
 
 func (UnimplementedFeedServiceHandler) RefreshFeeds(context.Context, *connect.Request[v1.RefreshFeedsRequest]) (*connect.Response[v1.RefreshFeedsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("feed.v1.FeedService.RefreshFeeds is not implemented"))
+}
+
+func (UnimplementedFeedServiceHandler) ImportOpml(context.Context, *connect.Request[v1.ImportOpmlRequest]) (*connect.Response[v1.ImportOpmlResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("feed.v1.FeedService.ImportOpml is not implemented"))
 }

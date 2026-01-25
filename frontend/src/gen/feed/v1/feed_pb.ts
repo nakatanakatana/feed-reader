@@ -643,3 +643,95 @@ export class RefreshFeedsResponse extends Message<RefreshFeedsResponse> {
   }
 }
 
+/**
+ * @generated from message feed.v1.ImportOpmlRequest
+ */
+export class ImportOpmlRequest extends Message<ImportOpmlRequest> {
+  /**
+   * @generated from field: bytes opml_content = 1;
+   */
+  opmlContent = new Uint8Array(0);
+
+  constructor(data?: PartialMessage<ImportOpmlRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "feed.v1.ImportOpmlRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "opml_content", kind: "scalar", T: 12 /* ScalarType.BYTES */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ImportOpmlRequest {
+    return new ImportOpmlRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ImportOpmlRequest {
+    return new ImportOpmlRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ImportOpmlRequest {
+    return new ImportOpmlRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: ImportOpmlRequest | PlainMessage<ImportOpmlRequest> | undefined, b: ImportOpmlRequest | PlainMessage<ImportOpmlRequest> | undefined): boolean {
+    return proto3.util.equals(ImportOpmlRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message feed.v1.ImportOpmlResponse
+ */
+export class ImportOpmlResponse extends Message<ImportOpmlResponse> {
+  /**
+   * @generated from field: int32 total = 1;
+   */
+  total = 0;
+
+  /**
+   * @generated from field: int32 success = 2;
+   */
+  success = 0;
+
+  /**
+   * @generated from field: int32 skipped = 3;
+   */
+  skipped = 0;
+
+  /**
+   * @generated from field: repeated string failed_feeds = 4;
+   */
+  failedFeeds: string[] = [];
+
+  constructor(data?: PartialMessage<ImportOpmlResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "feed.v1.ImportOpmlResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "total", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+    { no: 2, name: "success", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+    { no: 3, name: "skipped", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+    { no: 4, name: "failed_feeds", kind: "scalar", T: 9 /* ScalarType.STRING */, repeated: true },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ImportOpmlResponse {
+    return new ImportOpmlResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ImportOpmlResponse {
+    return new ImportOpmlResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ImportOpmlResponse {
+    return new ImportOpmlResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: ImportOpmlResponse | PlainMessage<ImportOpmlResponse> | undefined, b: ImportOpmlResponse | PlainMessage<ImportOpmlResponse> | undefined): boolean {
+    return proto3.util.equals(ImportOpmlResponse, a, b);
+  }
+}
+
