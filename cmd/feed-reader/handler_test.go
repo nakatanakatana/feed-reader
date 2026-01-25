@@ -107,7 +107,7 @@ func TestFeedServer_CreateFeed(t *testing.T) {
 				},
 			},
 			mockFeed:  &gofeed.Feed{Title: "Fetched Title"},
-			wantTitle: "Fetched Title",
+			wantTitle: "Test Feed",
 			wantErr:   false,
 			wantFetch: true,
 		},
@@ -442,3 +442,77 @@ func TestFeedServer_RefreshFeeds(t *testing.T) {
 		})
 	}
 }
+
+func TestFeedServer_ImportOpml(t *testing.T) {
+	ctx := context.Background()
+
+	opmlContent := `<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+    <body>
+        <outline text="Existing" xmlUrl="https://example.com/existing" />
+        <outline text="New" xmlUrl="https://example.com/new" />
+    </body>
+</opml>`
+
+	t.Run("Import with deduplication", func(t *testing.T) {
+		queries, _ := setupTestDB(t)
+		// Pre-create existing feed
+		existingID := "existing-uuid"
+		_, err := queries.CreateFeed(ctx, store.CreateFeedParams{
+			Uuid: existingID,
+			Url:  "https://example.com/existing",
+			Title: func() *string { s := "Existing"; return &s }(),
+		})
+		if err != nil {
+			t.Fatalf("failed to create existing feed: %v", err)
+		}
+
+		itemFetcher := &mockItemFetcher{}
+		// Mock fetcher needs to return something for the NEW feed if we call Fetch() during CreateFeed.
+		// Current implementation of CreateFeed calls fetcher.Fetch.
+		// So ImportOpml will likely call CreateFeed or duplicated logic.
+		// If it calls CreateFeed, we need mockFetcher to work.
+		fetcher := &mockFetcher{
+			feed: &gofeed.Feed{Title: "Fetched Title"},
+		}
+
+		server := NewFeedServer(queries, nil, fetcher, itemFetcher)
+
+		req := &feedv1.ImportOpmlRequest{
+			OpmlContent: []byte(opmlContent),
+		}
+
+		res, err := server.ImportOpml(ctx, connect.NewRequest(req))
+		if err != nil {
+			t.Fatalf("ImportOpml() error = %v", err)
+		}
+
+		if res.Msg.Total != 2 {
+			t.Errorf("expected total 2, got %d", res.Msg.Total)
+		}
+		if res.Msg.Success != 1 {
+			t.Errorf("expected success 1, got %d", res.Msg.Success)
+		}
+		if res.Msg.Skipped != 1 {
+			t.Errorf("expected skipped 1, got %d", res.Msg.Skipped)
+		}
+		if len(res.Msg.FailedFeeds) != 0 {
+			t.Errorf("expected 0 failed feeds, got %v", res.Msg.FailedFeeds)
+		}
+
+		// Verify DB
+		feeds, err := queries.ListFeeds(ctx)
+		if err != nil {
+			t.Fatalf("ListFeeds error: %v", err)
+		}
+		if len(feeds) != 2 {
+			t.Errorf("expected 2 feeds in DB, got %d", len(feeds))
+		}
+
+		// Verify ItemFetcher called for new feed
+		if !itemFetcher.called {
+			t.Error("expected ItemFetcher to be called for new feed")
+		}
+	})
+}
+
