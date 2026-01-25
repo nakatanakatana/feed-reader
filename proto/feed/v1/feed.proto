@@ -11,6 +11,12 @@ service FeedService {
   rpc UpdateFeed(UpdateFeedRequest) returns (UpdateFeedResponse);
   rpc DeleteFeed(DeleteFeedRequest) returns (DeleteFeedResponse);
   rpc RefreshFeeds(RefreshFeedsRequest) returns (RefreshFeedsResponse);
+
+  // Tag management
+  rpc CreateTag(CreateTagRequest) returns (CreateTagResponse);
+  rpc ListTags(ListTagsRequest) returns (ListTagsResponse);
+  rpc DeleteTag(DeleteTagRequest) returns (DeleteTagResponse);
+  rpc SetFeedTags(SetFeedTagsRequest) returns (SetFeedTagsResponse);
 }
 
 message Feed {
@@ -27,6 +33,14 @@ message Feed {
   optional string last_fetched_at = 11;
   string created_at = 12;
   string updated_at = 13;
+  repeated Tag tags = 14;
+}
+
+message Tag {
+  string id = 1;
+  string name = 2;
+  string created_at = 3;
+  string updated_at = 4;
 }
 
 message GetFeedRequest {
@@ -37,7 +51,9 @@ message GetFeedResponse {
   Feed feed = 1;
 }
 
-message ListFeedsRequest {}
+message ListFeedsRequest {
+  optional string tag_id = 1;
+}
 
 message ListFeedsResponse {
   repeated Feed feeds = 1;
@@ -53,6 +69,7 @@ message CreateFeedRequest {
   optional string copyright = 7;
   optional string feed_type = 8;
   optional string feed_version = 9;
+  repeated string tag_ids = 10;
 }
 
 message CreateFeedResponse {
@@ -70,6 +87,7 @@ message UpdateFeedRequest {
   optional string feed_type = 9;
   optional string feed_version = 10;
   optional string last_fetched_at = 11;
+  repeated string tag_ids = 12;
 }
 
 message UpdateFeedResponse {
@@ -87,3 +105,30 @@ message RefreshFeedsRequest {
 }
 
 message RefreshFeedsResponse {}
+
+message CreateTagRequest {
+  string name = 1;
+}
+
+message CreateTagResponse {
+  Tag tag = 1;
+}
+
+message ListTagsRequest {}
+
+message ListTagsResponse {
+  repeated Tag tags = 1;
+}
+
+message DeleteTagRequest {
+  string id = 1;
+}
+
+message DeleteTagResponse {}
+
+message SetFeedTagsRequest {
+  string feed_id = 1;
+  repeated string tag_ids = 2;
+}
+
+message SetFeedTagsResponse {}
