@@ -15,7 +15,7 @@
     - [ ] Implement bulk creation of feeds
     - [ ] Trigger async fetch for new feeds
     - [ ] Return stats in response
-- [ ] Task: Backend Tests
+- [x] Task: Backend Tests 51937fd
     - [ ] Write integration/service tests for `ImportOpml`
 - [ ] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md)
 
