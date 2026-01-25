@@ -143,16 +143,16 @@ func TestDeleteFeedTag(t *testing.T) {
 	// Since we are using sqlc, we don't have named statements in the DB directly usually,
 	// but we can try to EXEC the SQL we intend to add.
 	// But that would PASS if the SQL is valid.
-	
+
 	// Better: write a test that uses the (soon to be generated) method.
 	// To make it compile but fail to run, I can't really do that easily in Go without it being a compilation error.
-	
-	// I'll add the SQL first, then run make gen, then run tests. 
+
+	// I'll add the SQL first, then run make gen, then run tests.
 	// Protocol says: 1. Select Task, 2. Mark In Progress, 3. Write Failing Tests (Red Phase).
-	
-	// I will write a test that expects DeleteFeedTag to exist. 
+
+	// I will write a test that expects DeleteFeedTag to exist.
 	// I'll comment it out or use a trick to make it compile but fail.
-	
+
 	t.Run("Delete specific tag from feed", func(t *testing.T) {
 		err := q.DeleteFeedTag(ctx, store.DeleteFeedTagParams{
 			FeedID: "f1",
@@ -196,5 +196,34 @@ func TestStore_ManageFeedTags(t *testing.T) {
 		require.NoError(t, err)
 		assert.Len(t, tags2, 1)
 		assert.Equal(t, "t2", tags2[0].ID)
+	})
+}
+
+func TestStore_SetFeedTags(t *testing.T) {
+	q, s := setupDB(t)
+	ctx := context.Background()
+
+	// Setup: 1 Feed, 3 Tags
+	_, _ = q.CreateTag(ctx, store.CreateTagParams{ID: "t1", Name: "Tag 1"})
+	_, _ = q.CreateTag(ctx, store.CreateTagParams{ID: "t2", Name: "Tag 2"})
+	_, _ = q.CreateTag(ctx, store.CreateTagParams{ID: "t3", Name: "Tag 3"})
+	_, _ = q.CreateFeed(ctx, store.CreateFeedParams{Uuid: "f1", Url: "u1"})
+
+	// Initially: f1 has t1
+	_ = q.CreateFeedTag(ctx, store.CreateFeedTagParams{FeedID: "f1", TagID: "t1"})
+
+	t.Run("Set Tags (Replace existing)", func(t *testing.T) {
+		// Action: Set f1 tags to t2, t3 (t1 should be removed)
+		err := s.SetFeedTags(ctx, "f1", []string{"t2", "t3"})
+		require.NoError(t, err)
+
+		// Verify
+		tags, err := q.ListTagsByFeedId(ctx, "f1")
+		require.NoError(t, err)
+		assert.Len(t, tags, 2)
+		ids := []string{tags[0].ID, tags[1].ID}
+		assert.Contains(t, ids, "t2")
+		assert.Contains(t, ids, "t3")
+		assert.NotContains(t, ids, "t1")
 	})
 }

@@ -8,6 +8,7 @@ The backend is responsible for feed management, article fetching, and providing 
 -   **Programming Language:** Go (Golang)
 -   **API Framework:** Connect RPC (Protobuf over HTTP/2)
 -   **Database:** SQLite (Relational storage)
+-   **SQLite Resilience:** Application-level retry mechanism with exponential backoff for transient lock conflicts (`SQLITE_BUSY`).
 -   **Query Tooling:** `sqlc` (Type-safe SQL generation)
 -   **Feed Parsing:** `gofeed` (Robust RSS/Atom parsing)
 -   **HTTP Client:** `hashicorp/go-retryablehttp` (Resilient network requests)
