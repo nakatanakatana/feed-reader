@@ -8,7 +8,7 @@ Implement the core retry engine and SQLite error identification logic.
 - [x] Task: Define SQLite error detection utility. d5ad1b4
     - [ ] Write tests to verify `isBusyError` identifies `SQLITE_BUSY` and `SQLITE_LOCKED`.
     - [ ] Implement `isBusyError(err error) bool` in `store/retry.go`.
-- [ ] Task: Implement generic retry logic with exponential backoff.
+- [x] Task: Implement generic retry logic with exponential backoff. ba54ac2
     - [ ] Write tests for the retry function ensuring backoff timing and max attempts.
     - [ ] Implement `withRetry(ctx, operation)` in `store/retry.go`.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Foundation' (Protocol in workflow.md)
