@@ -245,9 +245,10 @@ export function FeedList() {
                 />
                 <div class={stack({ gap: "1" })}>
                   <div class={flex({ gap: "2", alignItems: "center" })}>
-                    <Link
-                      to="/feeds/$feedId"
-                      params={{ feedId: feed.uuid }}
+                    <a
+                      href={feed.link || feed.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
                       class={css({
                         fontWeight: "medium",
@@ -258,6 +259,33 @@ export function FeedList() {
                       })}
                     >
                       {feed.title || "Untitled Feed"}
+                    </a>
+                    <Link
+                      to="/feeds/$feedId"
+                      params={{ feedId: feed.uuid }}
+                      aria-label="View items"
+                      onClick={(e) => e.stopPropagation()}
+                      class={css({
+                        display: "flex",
+                        alignItems: "center",
+                        color: "gray.400",
+                        hover: { color: "blue.600" },
+                      })}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <title>View items</title>
+                        <path d="M9 18l6-6-6-6" />
+                      </svg>
                     </Link>
                     <div class={flex({ gap: "1" })}>
                       <For each={feed.tags}>
