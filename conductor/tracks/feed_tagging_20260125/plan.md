@@ -12,11 +12,11 @@
 - [x] Task: Run `buf generate` to update Go and TypeScript Connect RPC code [e4ef41b]
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Protobuf and API Definition' (Protocol in workflow.md) [f393f00]
 
-## Phase 3: Backend Implementation (TDD)
+## Phase 3: Backend Implementation (TDD) [checkpoint: 75b1e2a]
 - [x] Task: Implement Tag management logic in `store/` (CRUD operations) [07f87a9]
 - [x] Task: Implement `FeedService` updates to handle tag associations in `cmd/feed-reader/` [a1d39f5]
 - [x] Task: Implement `ItemService` updates to support tag-based article filtering in `cmd/feed-reader/` [c97a73d]
-- [~] Task: Conductor - User Manual Verification 'Phase 3: Backend Implementation (TDD)' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Backend Implementation (TDD)' (Protocol in workflow.md) [75b1e2a]
 
 ## Phase 4: Frontend Implementation (TDD)
 - [ ] Task: Update frontend API clients and mocks for new Tag-related endpoints
