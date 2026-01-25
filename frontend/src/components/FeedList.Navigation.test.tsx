@@ -38,9 +38,11 @@ vi.mock("@tanstack/solid-db", async (importOriginal) => {
 
 // Mock Link from solid-router
 vi.mock("@tanstack/solid-router", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@tanstack/solid-router")>();
+  const actual =
+    await importOriginal<typeof import("@tanstack/solid-router")>();
   return {
     ...actual,
+    // biome-ignore lint/suspicious/noExplicitAny: Test mock for simplicity
     Link: (props: any) => {
       let href = props.to;
       if (props.params) {
@@ -62,7 +64,7 @@ vi.mock("../lib/tag-query", () => ({
   useTags: vi.fn(),
   useCreateTag: vi.fn(),
   useDeleteTag: vi.fn(),
-  tagKeys: { all: ["tags"] }
+  tagKeys: { all: ["tags"] },
 }));
 
 describe("FeedList Navigation", () => {
@@ -88,12 +90,12 @@ describe("FeedList Navigation", () => {
 
   it("has correct navigation links: external title and internal detail icon", async () => {
     const mockFeeds = [
-      { 
-        uuid: "1", 
-        title: "Feed 1", 
-        url: "url1", 
-        link: "http://external.site", 
-        tags: [] 
+      {
+        uuid: "1",
+        title: "Feed 1",
+        url: "url1",
+        link: "http://external.site",
+        tags: [],
       },
     ];
 
@@ -103,6 +105,7 @@ describe("FeedList Navigation", () => {
 
     vi.mocked(useTags).mockReturnValue({
       data: { tags: [] },
+      // biome-ignore lint/suspicious/noExplicitAny: Test mock for simplicity
     } as any);
 
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
@@ -118,9 +121,12 @@ describe("FeedList Navigation", () => {
     );
 
     // 1. External title link
+    // biome-ignore lint/suspicious/noExplicitAny: Vitest browser element type handling
     const titleLink = page.getByText("Feed 1") as any;
     await expect.element(titleLink).toBeInTheDocument();
-    expect(titleLink.element().getAttribute("href")).toBe("http://external.site");
+    expect(titleLink.element().getAttribute("href")).toBe(
+      "http://external.site",
+    );
     expect(titleLink.element().getAttribute("target")).toBe("_blank");
 
     // 2. Internal detail link icon (This button does not exist yet)

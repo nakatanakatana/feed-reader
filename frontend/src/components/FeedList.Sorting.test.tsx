@@ -38,9 +38,11 @@ vi.mock("@tanstack/solid-db", async (importOriginal) => {
 
 // Mock Link from solid-router
 vi.mock("@tanstack/solid-router", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@tanstack/solid-router")>();
+  const actual =
+    await importOriginal<typeof import("@tanstack/solid-router")>();
   return {
     ...actual,
+    // biome-ignore lint/suspicious/noExplicitAny: Test mock for simplicity
     Link: (props: any) => (
       <a href={props.to} {...props}>
         {props.children}
@@ -54,7 +56,7 @@ vi.mock("../lib/tag-query", () => ({
   useTags: vi.fn(),
   useCreateTag: vi.fn(),
   useDeleteTag: vi.fn(),
-  tagKeys: { all: ["tags"] }
+  tagKeys: { all: ["tags"] },
 }));
 
 describe("FeedList Sorting", () => {
@@ -112,6 +114,7 @@ describe("FeedList Sorting", () => {
 
     vi.mocked(useTags).mockReturnValue({
       data: { tags: [] },
+      // biome-ignore lint/suspicious/noExplicitAny: Test mock for simplicity
     } as any);
 
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
@@ -128,13 +131,13 @@ describe("FeedList Sorting", () => {
 
     // Default sorting (should be Title A-Z if implemented as default, or unsorted)
     // Let's assume we implement Title A-Z as default.
-    
+
     const sortSelect = page.getByRole("combobox", { name: /sort by/i });
     await expect.element(sortSelect).toBeInTheDocument();
 
     // 1. Sort by Title (Z-A)
     await sortSelect.selectOptions("title_desc");
-    
+
     let feedItems = document.querySelectorAll("li");
     expect(feedItems[0].textContent).toContain("C Feed");
     expect(feedItems[1].textContent).toContain("B Feed");

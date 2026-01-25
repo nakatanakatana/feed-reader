@@ -8,7 +8,9 @@ import { useTags } from "../lib/tag-query";
 import { ManageTagsModal } from "./ManageTagsModal";
 
 export function FeedList() {
-  const [selectedTagId, setSelectedTagId] = createSignal<string | undefined | null>();
+  const [selectedTagId, setSelectedTagId] = createSignal<
+    string | undefined | null
+  >();
   const [sortBy, setSortBy] = createSignal<string>("title_asc");
   const [selectedFeedUuids, setSelectedFeedUuids] = createSignal<string[]>([]);
   const [isManageModalOpen, setIsManageModalOpen] = createSignal(false);
@@ -24,7 +26,8 @@ export function FeedList() {
     const list = feedList ?? [];
     const tagId = selectedTagId();
     if (tagId === undefined) return list;
-    if (tagId === null) return list.filter((f) => !f.tags || f.tags.length === 0);
+    if (tagId === null)
+      return list.filter((f) => !f.tags || f.tags.length === 0);
     return list.filter((f) => f.tags?.some((t) => t.id === tagId));
   };
 
@@ -39,9 +42,13 @@ export function FeedList() {
         case "title_desc":
           return (b.title || "").localeCompare(a.title || "");
         case "created_at_desc":
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          return (
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
         case "created_at_asc":
-          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+          return (
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          );
         case "last_fetched_at_desc":
           return (
             new Date(b.lastFetchedAt || 0).getTime() -
@@ -106,7 +113,10 @@ export function FeedList() {
           </Show>
         </div>
         <div class={flex({ gap: "2", alignItems: "center" })}>
-          <label for="sort-by" class={css({ fontSize: "sm", color: "gray.600" })}>
+          <label
+            for="sort-by"
+            class={css({ fontSize: "sm", color: "gray.600" })}
+          >
             Sort by:
           </label>
           <select
@@ -220,6 +230,12 @@ export function FeedList() {
           {(feed) => (
             <li
               onClick={() => toggleFeedSelection(feed.uuid)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  toggleFeedSelection(feed.uuid);
+                }
+              }}
               class={flex({
                 justifyContent: "space-between",
                 alignItems: "center",

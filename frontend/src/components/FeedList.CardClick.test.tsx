@@ -38,9 +38,11 @@ vi.mock("@tanstack/solid-db", async (importOriginal) => {
 
 // Mock Link from solid-router
 vi.mock("@tanstack/solid-router", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@tanstack/solid-router")>();
+  const actual =
+    await importOriginal<typeof import("@tanstack/solid-router")>();
   return {
     ...actual,
+    // biome-ignore lint/suspicious/noExplicitAny: Test mock for simplicity
     Link: (props: any) => (
       <a href={props.to} {...props}>
         {props.children}
@@ -54,7 +56,7 @@ vi.mock("../lib/tag-query", () => ({
   useTags: vi.fn(),
   useCreateTag: vi.fn(),
   useDeleteTag: vi.fn(),
-  tagKeys: { all: ["tags"] }
+  tagKeys: { all: ["tags"] },
 }));
 
 describe("FeedList Card Click Selection", () => {
@@ -79,9 +81,7 @@ describe("FeedList Card Click Selection", () => {
   );
 
   it("toggles selection when clicking the card background", async () => {
-    const mockFeeds = [
-      { uuid: "1", title: "Feed 1", url: "url1", tags: [] },
-    ];
+    const mockFeeds = [{ uuid: "1", title: "Feed 1", url: "url1", tags: [] }];
 
     vi.mocked(useLiveQuery).mockReturnValue({
       data: mockFeeds,
@@ -89,6 +89,7 @@ describe("FeedList Card Click Selection", () => {
 
     vi.mocked(useTags).mockReturnValue({
       data: { tags: [] },
+      // biome-ignore lint/suspicious/noExplicitAny: Test mock for simplicity
     } as any);
 
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
@@ -108,12 +109,14 @@ describe("FeedList Card Click Selection", () => {
     const card = document.querySelector("li");
     if (!card) throw new Error("Card not found");
 
-    const checkbox = card.querySelector('input[type="checkbox"]') as HTMLInputElement;
+    const checkbox = card.querySelector(
+      'input[type="checkbox"]',
+    ) as HTMLInputElement;
     expect(checkbox.checked).toBe(false);
 
     // Click the card background (li element)
     card.click();
-    
+
     // Checkbox should be checked (This will fail initially)
     expect(checkbox.checked).toBe(true);
 

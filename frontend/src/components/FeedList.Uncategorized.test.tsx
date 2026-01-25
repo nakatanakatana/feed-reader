@@ -38,9 +38,11 @@ vi.mock("@tanstack/solid-db", async (importOriginal) => {
 
 // Mock Link from solid-router
 vi.mock("@tanstack/solid-router", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@tanstack/solid-router")>();
+  const actual =
+    await importOriginal<typeof import("@tanstack/solid-router")>();
   return {
     ...actual,
+    // biome-ignore lint/suspicious/noExplicitAny: Test mock for simplicity
     Link: (props: any) => (
       <a href={props.to} {...props}>
         {props.children}
@@ -54,7 +56,7 @@ vi.mock("../lib/tag-query", () => ({
   useTags: vi.fn(),
   useCreateTag: vi.fn(),
   useDeleteTag: vi.fn(),
-  tagKeys: { all: ["tags"] }
+  tagKeys: { all: ["tags"] },
 }));
 
 describe("FeedList Uncategorized Filter", () => {
@@ -87,11 +89,11 @@ describe("FeedList Uncategorized Filter", () => {
         url: "http://example.com/1",
         tags: [{ id: "t1", name: "Tech" }],
       },
-      { 
-        uuid: "2", 
-        title: "Untagged Feed", 
-        url: "http://example.com/2", 
-        tags: [] 
+      {
+        uuid: "2",
+        title: "Untagged Feed",
+        url: "http://example.com/2",
+        tags: [],
       },
     ];
 
@@ -102,6 +104,7 @@ describe("FeedList Uncategorized Filter", () => {
     // Setup mock for useTags
     vi.mocked(useTags).mockReturnValue({
       data: { tags: [{ id: "t1", name: "Tech" }] },
+      // biome-ignore lint/suspicious/noExplicitAny: Test mock for simplicity
     } as any);
 
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
@@ -117,8 +120,12 @@ describe("FeedList Uncategorized Filter", () => {
     );
 
     // Initial state: All feeds visible
-    await expect.element(page.getByText("Tagged Feed", { exact: true })).toBeInTheDocument();
-    await expect.element(page.getByText("Untagged Feed", { exact: true })).toBeInTheDocument();
+    await expect
+      .element(page.getByText("Tagged Feed", { exact: true }))
+      .toBeInTheDocument();
+    await expect
+      .element(page.getByText("Untagged Feed", { exact: true }))
+      .toBeInTheDocument();
 
     // Find and click "Uncategorized" filter button
     const uncategorizedBtn = page.getByText("Uncategorized", { exact: true });
@@ -126,7 +133,11 @@ describe("FeedList Uncategorized Filter", () => {
     await uncategorizedBtn.click();
 
     // Expect only Untagged Feed to be visible
-    await expect.element(page.getByText("Untagged Feed", { exact: true })).toBeInTheDocument();
-    await expect.element(page.getByText("Tagged Feed", { exact: true })).not.toBeInTheDocument();
+    await expect
+      .element(page.getByText("Untagged Feed", { exact: true }))
+      .toBeInTheDocument();
+    await expect
+      .element(page.getByText("Tagged Feed", { exact: true }))
+      .not.toBeInTheDocument();
   });
 });
