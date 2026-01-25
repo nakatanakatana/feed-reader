@@ -3,7 +3,7 @@
 ## Phase 1: Remove Feed Items from Feed Pages (Frontend)
 - [x] Task: Remove article list display from `FeedList.tsx`. Ensure only the list of feeds is shown.
 - [x] Task: Remove article list display from `feeds.$feedId.tsx`. Ensure only feed details/stats are shown. [b903018]
-- [ ] Task: Conductor - User Manual Verification 'Remove Feed Items from Feed Pages' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Remove Feed Items from Feed Pages' (Protocol in workflow.md)
 
 ## Phase 2: Backend Support for Bulk Tagging
 - [ ] Task: Update `sql/query.sql` to include `DeleteFeedTag` (delete specific tag from feed).
