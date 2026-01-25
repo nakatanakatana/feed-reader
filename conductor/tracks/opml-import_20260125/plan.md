@@ -26,7 +26,7 @@
     - [ ] Handle success and error states
 - [x] Task: Add Entry Point c439855
     - [ ] Add "Import OPML" button to the Feeds List page
-- [ ] Task: Frontend Tests
+- [x] Task: Frontend Tests f0fef6a
     - [ ] Write unit tests for the Modal component
     - [ ] Write integration test for the import flow
 - [ ] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md)
