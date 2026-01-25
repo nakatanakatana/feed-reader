@@ -11,8 +11,8 @@
 - [x] Task: Run `make gen` to generate Go and TypeScript code. [61027b0]
 - [x] Task: Update `store` package to support bulk tag management (transactional add/remove). [63d2eef]
 - [x] Task: Implement `ManageFeedTags` handler in `cmd/feed-reader/handler.go`. [55b3688]
-- [ ] Task: Add unit/integration tests for `ManageFeedTags` in `cmd/feed-reader/handler_test.go` or `store/feed_store_test.go`.
-- [ ] Task: Conductor - User Manual Verification 'Backend Support for Bulk Tagging' (Protocol in workflow.md)
+- [x] Task: Add unit/integration tests for `ManageFeedTags` in `cmd/feed-reader/handler_test.go` or `store/feed_store_test.go`. [55b3688]
+- [x] Task: Conductor - User Manual Verification 'Backend Support for Bulk Tagging' (Protocol in workflow.md)
 
 ## Phase 3: Bulk Tagging UI (Frontend)
 - [ ] Task: Create `ManageTagsModal.tsx` component.
