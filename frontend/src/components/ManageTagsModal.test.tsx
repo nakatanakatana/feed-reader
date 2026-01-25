@@ -1,7 +1,6 @@
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-// @ts-ignore - will be implemented soon
 import { ManageTagsModal } from "./ManageTagsModal";
 import { TransportProvider } from "../lib/transport-context";
 import { createRouterTransport } from "@connectrpc/connect";

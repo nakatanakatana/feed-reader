@@ -55,6 +55,8 @@ export function ManageTagsModal(props: ManageTagsModalProps) {
 
   return (
     <Show when={props.isOpen}>
+      {/* biome-ignore lint/a11y/noStaticElementInteractions: Backdrop click handling */}
+      {/* biome-ignore lint/a11y/useKeyWithClickEvents: Backdrop click handling */}
       <div
         class={css({
           position: "fixed",
@@ -68,7 +70,11 @@ export function ManageTagsModal(props: ManageTagsModalProps) {
           justifyContent: "center",
           zIndex: 1000,
         })}
-        onClick={props.onClose}
+        onClick={(e) => {
+          if (e.target === e.currentTarget) {
+            props.onClose();
+          }
+        }}
       >
         <div
           class={stack({
@@ -79,7 +85,6 @@ export function ManageTagsModal(props: ManageTagsModalProps) {
             maxWidth: "90%",
             gap: "6",
           })}
-          onClick={(e) => e.stopPropagation()}
         >
           <div class={stack({ gap: "1" })}>
             <h2 class={css({ fontSize: "xl", fontWeight: "bold" })}>
