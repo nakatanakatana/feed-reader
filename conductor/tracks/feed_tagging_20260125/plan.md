@@ -13,7 +13,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Protobuf and API Definition' (Protocol in workflow.md) [f393f00]
 
 ## Phase 3: Backend Implementation (TDD)
-- [ ] Task: Implement Tag management logic in `store/` (CRUD operations)
+- [x] Task: Implement Tag management logic in `store/` (CRUD operations) [07f87a9]
 - [ ] Task: Implement `FeedService` updates to handle tag associations in `cmd/feed-reader/`
 - [ ] Task: Implement `ItemService` updates to support tag-based article filtering in `cmd/feed-reader/`
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Backend Implementation (TDD)' (Protocol in workflow.md)
