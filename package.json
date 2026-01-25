@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@bufbuild/protobuf": "^1.10.1",
-    "@connectrpc/connect": "^1.7.0",
+    "@connectrpc/connect": "^2.0.0",
     "@connectrpc/connect-web": "^1.7.0",
     "@tanstack/query-db-collection": "^1.0.20",
     "@tanstack/router-plugin": "^1.131.35",
