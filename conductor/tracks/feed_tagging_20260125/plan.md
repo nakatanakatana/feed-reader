@@ -25,7 +25,7 @@
 - [x] Task: Implement tag filtering logic in the Feed and Article list views [4e882e1]
 - [x] Task: Conductor - User Manual Verification 'Phase 4: Frontend Implementation (TDD)' (Protocol in workflow.md) [c8c9618]
 
-## Phase 5: UI/UX Polishing and Final Integration
+## Phase 5: UI/UX Polishing and Final Integration [checkpoint: 86db0b1]
 - [x] Task: Refine Tag chip styling using Panda CSS [30b03a9]
 - [x] Task: Final end-to-end testing of the tagging and filtering flow [e62f61e]
-- [~] Task: Conductor - User Manual Verification 'Phase 5: UI/UX Polishing and Final Integration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 5: UI/UX Polishing and Final Integration' (Protocol in workflow.md) [86db0b1]
