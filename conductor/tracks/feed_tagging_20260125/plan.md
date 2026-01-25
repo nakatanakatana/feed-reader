@@ -19,7 +19,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Backend Implementation (TDD)' (Protocol in workflow.md) [75b1e2a]
 
 ## Phase 4: Frontend Implementation (TDD)
-- [ ] Task: Update frontend API clients and mocks for new Tag-related endpoints
+- [x] Task: Update frontend API clients and mocks for new Tag-related endpoints [9f05470]
 - [ ] Task: Create `TagManagement` components and management view
 - [ ] Task: Update `AddFeedForm` and `FeedList` to support tag selection and display
 - [ ] Task: Implement tag filtering logic in the Feed and Article list views
