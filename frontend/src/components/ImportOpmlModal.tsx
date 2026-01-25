@@ -73,6 +73,9 @@ export function ImportOpmlModal(props: ImportOpmlModalProps) {
       {/* biome-ignore lint/a11y/noStaticElementInteractions: Backdrop click to close */}
       <div
         onClick={handleBackdropClick}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") props.onClose();
+        }}
         class={center({
           position: "fixed",
           top: 0,
@@ -88,6 +91,7 @@ export function ImportOpmlModal(props: ImportOpmlModalProps) {
           role="dialog"
           aria-modal="true"
           onClick={(e) => e.stopPropagation()}
+          onKeyDown={() => {}}
           class={stack({
             backgroundColor: "white",
             width: "full",
