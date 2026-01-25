@@ -1,8 +1,8 @@
 # Plan: Improve Feed Management UX
 
 ## Phase 1: Remove Feed Items from Feed Pages (Frontend)
-- [ ] Task: Remove article list display from `FeedList.tsx`. Ensure only the list of feeds is shown.
-- [ ] Task: Remove article list display from `feeds.$feedId.tsx`. Ensure only feed details/stats are shown.
+- [x] Task: Remove article list display from `FeedList.tsx`. Ensure only the list of feeds is shown.
+- [x] Task: Remove article list display from `feeds.$feedId.tsx`. Ensure only feed details/stats are shown. [b903018]
 - [ ] Task: Conductor - User Manual Verification 'Remove Feed Items from Feed Pages' (Protocol in workflow.md)
 
 ## Phase 2: Backend Support for Bulk Tagging
