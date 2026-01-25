@@ -120,48 +120,43 @@ func (s *ItemServer) ListItems(ctx context.Context, req *connect.Request[itemv1.
 }
 
 func (s *ItemServer) UpdateItemStatus(ctx context.Context, req *connect.Request[itemv1.UpdateItemStatusRequest]) (*connect.Response[itemv1.UpdateItemStatusResponse], error) {
-	tx, err := s.store.DB.BeginTx(ctx, nil)
+	err := s.store.WithTransaction(ctx, func(qtx *store.Queries) error {
+		now := time.Now().Format(time.RFC3339)
+
+		for _, id := range req.Msg.Ids {
+			if req.Msg.IsRead != nil {
+				isRead := int64(0)
+				if *req.Msg.IsRead {
+					isRead = 1
+				}
+				_, err := qtx.SetItemRead(ctx, store.SetItemReadParams{
+					ItemID: id,
+					IsRead: isRead,
+					ReadAt: &now,
+				})
+				if err != nil {
+					return err
+				}
+			}
+			if req.Msg.IsSaved != nil {
+				isSaved := int64(0)
+				if *req.Msg.IsSaved {
+					isSaved = 1
+				}
+				_, err := qtx.SetItemSaved(ctx, store.SetItemSavedParams{
+					ItemID:  id,
+					IsSaved: isSaved,
+					SavedAt: &now,
+				})
+				if err != nil {
+					return err
+				}
+			}
+		}
+		return nil
+	})
+
 	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, err)
-	}
-	defer func() { _ = tx.Rollback() }()
-
-	qtx := s.store.WithTx(tx)
-
-	now := time.Now().Format(time.RFC3339)
-
-	for _, id := range req.Msg.Ids {
-		if req.Msg.IsRead != nil {
-			isRead := int64(0)
-			if *req.Msg.IsRead {
-				isRead = 1
-			}
-			_, err := qtx.SetItemRead(ctx, store.SetItemReadParams{
-				ItemID: id,
-				IsRead: isRead,
-				ReadAt: &now,
-			})
-			if err != nil {
-				return nil, connect.NewError(connect.CodeInternal, err)
-			}
-		}
-		if req.Msg.IsSaved != nil {
-			isSaved := int64(0)
-			if *req.Msg.IsSaved {
-				isSaved = 1
-			}
-			_, err := qtx.SetItemSaved(ctx, store.SetItemSavedParams{
-				ItemID:  id,
-				IsSaved: isSaved,
-				SavedAt: &now,
-			})
-			if err != nil {
-				return nil, connect.NewError(connect.CodeInternal, err)
-			}
-		}
-	}
-
-	if err := tx.Commit(); err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
