@@ -9,6 +9,7 @@ import { ManageTagsModal } from "./ManageTagsModal";
 
 export function FeedList() {
   const [selectedTagId, setSelectedTagId] = createSignal<string | undefined | null>();
+  const [sortBy, setSortBy] = createSignal<string>("title_asc");
   const [selectedFeedUuids, setSelectedFeedUuids] = createSignal<string[]>([]);
   const [isManageModalOpen, setIsManageModalOpen] = createSignal(false);
 
@@ -25,6 +26,31 @@ export function FeedList() {
     if (tagId === undefined) return list;
     if (tagId === null) return list.filter((f) => !f.tags || f.tags.length === 0);
     return list.filter((f) => f.tags?.some((t) => t.id === tagId));
+  };
+
+  const sortedFeeds = () => {
+    const list = [...filteredFeeds()];
+    const sort = sortBy();
+
+    return list.sort((a, b) => {
+      switch (sort) {
+        case "title_asc":
+          return (a.title || "").localeCompare(b.title || "");
+        case "title_desc":
+          return (b.title || "").localeCompare(a.title || "");
+        case "created_at_desc":
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        case "created_at_asc":
+          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        case "last_fetched_at_desc":
+          return (
+            new Date(b.lastFetchedAt || 0).getTime() -
+            new Date(a.lastFetchedAt || 0).getTime()
+          );
+        default:
+          return 0;
+      }
+    });
   };
 
   const [deleteError, setDeleteError] = createSignal<Error | null>(null);
@@ -80,7 +106,31 @@ export function FeedList() {
           </Show>
         </div>
         <div class={flex({ gap: "2", alignItems: "center" })}>
-          <span class={css({ fontSize: "sm", color: "gray.600" })}>
+          <label for="sort-by" class={css({ fontSize: "sm", color: "gray.600" })}>
+            Sort by:
+          </label>
+          <select
+            id="sort-by"
+            aria-label="Sort by"
+            value={sortBy()}
+            onInput={(e) => setSortBy(e.currentTarget.value)}
+            class={css({
+              fontSize: "xs",
+              px: "2",
+              py: "0.5",
+              rounded: "md",
+              border: "1px solid",
+              borderColor: "gray.300",
+              bg: "white",
+            })}
+          >
+            <option value="title_asc">Title (A-Z)</option>
+            <option value="title_desc">Title (Z-A)</option>
+            <option value="created_at_desc">Date Added (Newest)</option>
+            <option value="created_at_asc">Date Added (Oldest)</option>
+            <option value="last_fetched_at_desc">Last Fetched (Newest)</option>
+          </select>
+          <span class={css({ fontSize: "sm", color: "gray.600", ml: "2" })}>
             Filter:
           </span>
           <button
@@ -166,7 +216,7 @@ export function FeedList() {
         </p>
       </Show>
       <ul class={stack({ gap: "2" })}>
-        <For each={filteredFeeds()}>
+        <For each={sortedFeeds()}>
           {(feed) => (
             <li
               class={flex({
