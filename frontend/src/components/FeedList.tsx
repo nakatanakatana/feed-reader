@@ -10,13 +10,23 @@ export function FeedList() {
   const [selectedTagId, setSelectedTagId] = createSignal<string | undefined>();
   const tagsQuery = useTags();
 
-  const { data: feedList } = useLiveQuery((q) =>
-    q.from({ feed: feeds }).where((f) => {
-      const tagId = selectedTagId();
-      if (!tagId) return true;
-      return f.tags?.some((t) => t.id === tagId) ?? false;
-    }),
-  );
+  const { data: feedList } = useLiveQuery((q) => {
+    let query = q.from({ feed: feeds });
+    const tagId = selectedTagId();
+    if (tagId) {
+      // NOTE: solid-db where currently has issues with boolean expressions in some versions.
+      // We perform manual filtering on the result for now to ensure stability.
+      return query; 
+    }
+    return query;
+  });
+
+  const filteredFeeds = () => {
+    const list = feedList ?? [];
+    const tagId = selectedTagId();
+    if (!tagId) return list;
+    return list.filter((f) => f.tags?.some((t) => t.id === tagId));
+  };
 
   const [deleteError, setDeleteError] = createSignal<Error | null>(null);
 
@@ -90,7 +100,7 @@ export function FeedList() {
         </p>
       </Show>
       <ul class={stack({ gap: "2" })}>
-        <For each={feedList}>
+        <For each={filteredFeeds()}>
           {(feed) => (
             <li
               class={flex({
