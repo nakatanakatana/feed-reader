@@ -1,7 +1,7 @@
 # Implementation Plan: Feed Tagging System
 
 ## Phase 1: Database and Backend Schema
-- [ ] Task: Create migration for `tags` and `feed_tags` tables in `sql/schema.sql`
+- [x] Task: Create migration for `tags` and `feed_tags` tables in `sql/schema.sql` [c6286e5]
 - [ ] Task: Define SQL queries for tag CRUD and filtering in `sql/query.sql`
 - [ ] Task: Run `sqlc generate` and verify generated Go code
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Database and Backend Schema' (Protocol in workflow.md)
