@@ -18,9 +18,13 @@ The primary target audience is individuals and organizations seeking control ove
 
 - **Full-Stack Application:** Includes both a backend API and a web frontend.
 
-- **Feed Management:** Add, organize, and manage RSS/Atom feeds via the UI. Supports a flexible tagging system for categorizing and grouping feeds.
+- **Feed Management:** Add, organize, and manage RSS/Atom feeds via the UI. Supports bulk operations like tagging multiple feeds simultaneously.
+
+
 
 - **OPML Import:** Bulk import existing subscriptions from other RSS readers using the standard OPML format, with automatic deduplication.
+
+
 
 - **Article Management:** Retrieve articles with flexible filtering and sorting. Track article status including read/unread and saved/unsaved (bookmarks).
 
@@ -30,7 +34,7 @@ The primary target audience is individuals and organizations seeking control ove
 
 
 
-- **Tagging System:** Create and manage custom tags to categorize feeds. Filter both the feed list and article stream by selected tags for organized content discovery.
+- **Tagging System:** Create and manage custom tags to categorize feeds. Features a robust bulk tagging UI to efficiently organize multiple subscriptions at once. Filter both the feed list and article stream by selected tags for organized content discovery.
 
 
 
