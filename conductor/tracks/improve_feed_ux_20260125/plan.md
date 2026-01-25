@@ -26,4 +26,4 @@
     - [ ] Sub-task: Call RPC from `ManageTagsModal` on save.
     - [ ] Sub-task: Invalidate queries to refresh feed list/tags.
 - [x] Task: Add tests for `ManageTagsModal` and `FeedList` interaction. [3162e79]
-- [ ] Task: Conductor - User Manual Verification 'Bulk Tagging UI' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Bulk Tagging UI' (Protocol in workflow.md)
