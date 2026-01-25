@@ -5,7 +5,7 @@
     - [ ] Add `ImportOpmlRequest` with `bytes opml_content`
     - [ ] Add `ImportOpmlResponse` with `int32 total`, `int32 success`, `int32 skipped`, `repeated string failed_feeds`
     - [ ] Add RPC method definition
-- [ ] Task: Generate code
+- [x] Task: Generate code d389b53
     - [ ] Run `make gen` to update Go and TS definitions
 - [ ] Task: Implement OPML Parsing Logic
     - [ ] Create utility function/struct to parse OPML XML content
