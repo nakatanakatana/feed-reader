@@ -1,6 +1,6 @@
 import { useNavigate } from "@tanstack/solid-router";
 import { ItemDetailModal } from "./ItemDetailModal";
-import { useItems } from "../lib/item-query";
+import { useItems, useUpdateItemStatus } from "../lib/item-query";
 
 interface ItemDetailRouteViewProps {
   itemId: string;
@@ -12,6 +12,7 @@ interface ItemDetailRouteViewProps {
 
 export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
   const navigate = useNavigate();
+  const updateStatusMutation = useUpdateItemStatus();
 
   const itemsQuery = useItems({
     feedId: props.feedId,
@@ -29,6 +30,13 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
       ? allItems()[currentIndex() + 1]
       : undefined;
 
+  const markCurrentAsRead = () => {
+    updateStatusMutation.mutate({
+      ids: [props.itemId],
+      isRead: true,
+    });
+  };
+
   const handleClose = () => {
     navigate({
       to: props.basePath as any,
@@ -40,6 +48,7 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
   const handlePrev = () => {
     const item = prevItem();
     if (item) {
+      markCurrentAsRead();
       navigate({
         to: `${props.basePath}/items/$itemId` as any,
         params: { ...props.baseParams, itemId: item.id },
@@ -51,6 +60,7 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
   const handleNext = () => {
     const item = nextItem();
     if (item) {
+      markCurrentAsRead();
       navigate({
         to: `${props.basePath}/items/$itemId` as any,
         params: { ...props.baseParams, itemId: item.id },
