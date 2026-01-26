@@ -12,7 +12,7 @@ import { queryClient } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
 
-describe("Feed Detail Page", () => {
+describe("Item Routing", () => {
   let dispose: () => void;
 
   afterEach(() => {
@@ -20,12 +20,13 @@ describe("Feed Detail Page", () => {
     document.body.innerHTML = "";
   });
 
-  it("should display items on the feed detail page", async () => {
+  it("should display item detail modal when navigating to /items/$itemId", async () => {
     const transport = createConnectTransport({
       baseUrl: "http://localhost:3000",
     });
 
-    const history = createMemoryHistory({ initialEntries: ["/feeds/1"] });
+    // We navigate to /items/1
+    const history = createMemoryHistory({ initialEntries: ["/items/1"] });
     const router = createRouter({ routeTree, history });
 
     dispose = render(
@@ -39,9 +40,9 @@ describe("Feed Detail Page", () => {
       document.body,
     );
 
-    // Wait for items to load
+    // Wait for the modal content to appear
     await expect
-      .element(page.getByText("Item 1", { exact: true }))
+      .element(page.getByText("Detail for Item 1"))
       .toBeInTheDocument();
   });
 });

@@ -26,11 +26,11 @@ The primary target audience is individuals and organizations seeking control ove
 
 
 
-- **Article Management:** Retrieve articles with flexible filtering and sorting. Track article status including read/unread and saved/unsaved (bookmarks).
+- **Article Management:** Retrieve articles with flexible filtering and sorting. Track article status including read/unread and saved/unsaved (bookmarks). Supports bulk operations, such as marking multiple articles as read simultaneously for improved efficiency.
 
 
 
-- **Content Reading:** Clean, distraction-free modal interface for reading full article content. Supports rich HTML rendering, author information, and quick navigation between items.
+- **Content Reading:** Clean, distraction-free modal interface for reading full article content. Supports rich HTML rendering, author information, and intelligent navigation between items with automatic read-status management. Features full URL synchronization (deep linking) for direct access and browser history support.
 
 
 

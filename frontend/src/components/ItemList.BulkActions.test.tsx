@@ -12,15 +12,19 @@ import {
 import { routeTree } from "../routeTree.gen";
 
 // Mock hooks
+const updateStatusMock = vi.fn().mockResolvedValue({});
 vi.mock("../lib/item-query", () => ({
   useItems: vi.fn(),
   useItem: vi.fn(),
-  useUpdateItemStatus: vi.fn(),
+  useUpdateItemStatus: () => ({
+    mutateAsync: updateStatusMock,
+    isPending: false,
+  }),
 }));
 
-import { useItems, useItem, useUpdateItemStatus } from "../lib/item-query";
+import { useItems } from "../lib/item-query";
 
-describe("ItemList", () => {
+describe("ItemList Bulk Actions", () => {
   let dispose: () => void;
   const queryClient = new QueryClient();
   const transport = createConnectTransport({ baseUrl: "http://localhost" });
@@ -31,9 +35,10 @@ describe("ItemList", () => {
     vi.clearAllMocks();
   });
 
-  it("renders a list of items and navigates on click", async () => {
+  it("marks multiple items as read", async () => {
     const mockItems = [
       { id: "1", title: "Item 1", url: "http://example.com/1", isRead: false },
+      { id: "2", title: "Item 2", url: "http://example.com/2", isRead: false },
     ];
 
     vi.mocked(useItems).mockReturnValue({
@@ -45,21 +50,6 @@ describe("ItemList", () => {
       fetchNextPage: vi.fn(),
       isFetchingNextPage: false,
     } as unknown as ReturnType<typeof useItems>);
-
-    vi.mocked(useItem).mockReturnValue({
-      data: {
-        ...mockItems[0],
-        description: "Test description",
-        publishedAt: "2026-01-26",
-        author: "Author",
-      },
-      isLoading: false,
-    } as unknown as ReturnType<typeof useItem>);
-
-    vi.mocked(useUpdateItemStatus).mockReturnValue({
-      mutate: vi.fn(),
-      isPending: false,
-    } as unknown as ReturnType<typeof useUpdateItemStatus>);
 
     const history = createMemoryHistory({ initialEntries: ["/"] });
     const router = createRouter({ routeTree, history });
@@ -75,15 +65,20 @@ describe("ItemList", () => {
       document.body,
     );
 
-    const item = page.getByText("Item 1");
-    await expect.element(item).toBeInTheDocument();
+    const selectAll = page.getByRole("checkbox").nth(0);
+    await selectAll.click();
 
-    await item.click();
+    const bulkMarkBtn = page.getByText("Mark as Read").first();
+    // There are individual "Mark as Read" buttons too, the bulk one is in the blue bar.
+    // The bulk one is usually first in the DOM because it's sticky at the top.
+    await bulkMarkBtn.click();
 
-    // Check if modal content is visible
-    await expect.element(page.getByRole("dialog")).toBeInTheDocument();
-    await expect
-      .element(page.getByRole("heading", { name: "Item 1" }))
-      .toBeInTheDocument();
+    expect(updateStatusMock).toHaveBeenCalledWith({
+      ids: ["1", "2"],
+      isRead: true,
+    });
+
+    // Selection should be cleared
+    await expect.element(selectAll).not.toBeChecked();
   });
 });
