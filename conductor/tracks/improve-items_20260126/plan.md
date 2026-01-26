@@ -35,12 +35,8 @@ Focus: Streamlining the reading experience with intuitive navigation and smart r
 ## Phase 3: Bulk Actions (Select & Mark Read)
 Focus: Improving efficiency for managing large numbers of items.
 
-- [ ] Task: Implement Item Selection State & UI
-    - [ ] Write Failing Tests (Red): Test selection logic (toggle single, toggle all, selection count).
-    - [ ] Implement to Pass Tests (Green): Add checkboxes to `ItemRow` and a global selection state management (likely in a Store or Context).
-    - [ ] Refactor: Ensure performance is maintained when selecting large lists.
-    - [ ] Verify Coverage: Test interaction with filters (selecting all should only select visible items).
-- [ ] Task: Implement Bulk Mark as Read Action
+- [x] Task: Implement Item Selection State & UI 9ae5b3c
+- [x] Task: Implement Bulk Mark as Read Action ff4e746
     - [ ] Write Failing Tests (Red): Test that the "Mark as Read" action sends the correct list of IDs to the backend.
     - [ ] Implement to Pass Tests (Green): Add the UI button and connect it to the API.
     - [ ] Refactor: Improve error handling and optimistic UI updates for bulk operations.
