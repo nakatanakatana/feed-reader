@@ -17,7 +17,7 @@ Focus: Making the item detail view a first-class citizen with its own URL and im
     - [ ] Verify Coverage: Verify styling logic via tests.
 - [ ] Task: Conductor - User Manual Verification 'Deep Linking & Enhanced Modal UI' (Protocol in workflow.md)
 
-## Phase 2: Navigation & Auto-Read Logic
+## Phase 2: Navigation & Auto-Read Logic [checkpoint: afa0487]
 Focus: Streamlining the reading experience with intuitive navigation and smart read-status management.
 
 - [x] Task: Implement In-Modal Navigation 4e1b641
