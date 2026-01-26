@@ -22,14 +22,14 @@ Update the store layer to pass sorting parameters to the database queries.
 - [x] Task: Add unit tests in `store/tags_test.go` for sorting tags 32889ff
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Store Layer Implementation' (Protocol in workflow.md)
 
-## Phase 3: Service Layer Implementation
+## Phase 3: Service Layer Implementation [checkpoint: c3da3be]
 Update the service handlers to handle the new proto parameters.
 
 - [x] Task: Update `cmd/feed-reader/handler.go` (or relevant feed handler) to handle `ListFeeds` sorting e6eb730
 - [x] Task: Update `cmd/feed-reader/tag_service.go` to handle `ListTags` sorting 174e9da
 - [x] Task: Add integration tests in `cmd/feed-reader/handler_test.go` (or relevant test file) for `ListFeeds` API e6eb730
 - [x] Task: Add integration tests in `cmd/feed-reader/tag_service_test.go` for `ListTags` API 174e9da
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Service Layer Implementation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Service Layer Implementation' (Protocol in workflow.md)
 
 ## Phase 4: Final Verification
 Ensure everything is working correctly and follows project standards.
