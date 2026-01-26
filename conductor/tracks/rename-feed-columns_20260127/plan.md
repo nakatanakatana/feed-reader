@@ -14,7 +14,7 @@ Refactor the Go backend code to use the new field names `Id` and `Lang`.
 ## Phase 2: TypeScript Frontend Refactoring
 Refactor the TypeScript frontend code to use the new property names `id` and `lang`.
 
-- [~] Task: Refactor frontend library and query files (`frontend/src/lib/`, `frontend/src/mocks/`)
+- [x] Task: Refactor frontend library and query files (`frontend/src/lib/`, `frontend/src/mocks/`) 68386f9
 - [ ] Task: Refactor frontend components and routes (`frontend/src/components/`, `frontend/src/routes/`)
 - [ ] Task: Update all frontend tests (Vitest)
 - [ ] Task: Verify frontend builds and all tests pass (`npm run test`)
