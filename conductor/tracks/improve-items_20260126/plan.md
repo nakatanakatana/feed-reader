@@ -8,7 +8,7 @@ Focus: Making the item detail view a first-class citizen with its own URL and im
     - [ ] Implement to Pass Tests (Green): Define new routes (e.g., `/items/$itemId`) or child routes using TanStack Router. Ensure navigating to this URL opens the modal.
     - [ ] Refactor: Optimize route definitions and loader data pre-fetching.
     - [ ] Verify Coverage: Ensure route transitions are covered.
-- [ ] Task: Implement Responsive Modal Design
+- [x] Task: Implement Responsive Modal Design 434fe4e
     - [ ] Write Failing Tests (Red): Create visual regression or component tests checking modal dimensions on different viewports.
     - [ ] Implement to Pass Tests (Green): Update `ItemDetailModal` styling.
         - Desktop: 80-90% width/height.
