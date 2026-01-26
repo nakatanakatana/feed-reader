@@ -3,6 +3,7 @@ package store_test
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/nakatanakatana/feed-reader/store"
 	"github.com/stretchr/testify/assert"
@@ -225,5 +226,48 @@ func TestStore_SetFeedTags(t *testing.T) {
 		assert.Contains(t, ids, "t2")
 		assert.Contains(t, ids, "t3")
 		assert.NotContains(t, ids, "t1")
+	})
+}
+
+func TestStore_ListTags_Sorting(t *testing.T) {
+	q, s := setupDB(t)
+	ctx := context.Background()
+
+	// 1. Create Tag 1
+	_, err := q.CreateTag(ctx, store.CreateTagParams{
+		ID:   "tag-1",
+		Name: "Tag 1",
+	})
+	require.NoError(t, err)
+
+	time.Sleep(1100 * time.Millisecond)
+
+	// 2. Create Tag 2
+	_, err = q.CreateTag(ctx, store.CreateTagParams{
+		ID:   "tag-2",
+		Name: "Tag 2",
+	})
+	require.NoError(t, err)
+
+	// 3. List Tags ASC
+	t.Run("List Tags ASC", func(t *testing.T) {
+		tags, err := s.ListTags(ctx, store.ListTagsParams{
+			SortDescending: false,
+		})
+		require.NoError(t, err)
+		require.Len(t, tags, 2)
+		assert.Equal(t, "Tag 1", tags[0].Name)
+		assert.Equal(t, "Tag 2", tags[1].Name)
+	})
+
+	// 4. List Tags DESC
+	t.Run("List Tags DESC", func(t *testing.T) {
+		tags, err := s.ListTags(ctx, store.ListTagsParams{
+			SortDescending: true,
+		})
+		require.NoError(t, err)
+		require.Len(t, tags, 2)
+		assert.Equal(t, "Tag 2", tags[0].Name)
+		assert.Equal(t, "Tag 1", tags[1].Name)
 	})
 }

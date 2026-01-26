@@ -5,6 +5,17 @@ import (
 	"fmt"
 )
 
+type ListTagsParams struct {
+	SortDescending bool
+}
+
+func (s *Store) ListTags(ctx context.Context, params ListTagsParams) ([]Tag, error) {
+	if params.SortDescending {
+		return s.Queries.ListTagsDesc(ctx)
+	}
+	return s.Queries.ListTags(ctx)
+}
+
 // SetFeedTags updates the tags associated with a feed.
 func (s *Store) SetFeedTags(ctx context.Context, feedID string, tagIDs []string) error {
 	return s.WithTransaction(ctx, func(qtx *Queries) error {
