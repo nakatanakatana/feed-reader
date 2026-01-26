@@ -45,7 +45,7 @@ func (s *TagServer) CreateTag(ctx context.Context, req *connect.Request[tagv1.Cr
 }
 
 func (s *TagServer) ListTags(ctx context.Context, req *connect.Request[tagv1.ListTagsRequest]) (*connect.Response[tagv1.ListTagsResponse], error) {
-	tags, err := s.store.ListTags(ctx)
+	tags, err := s.store.ListTags(ctx, store.ListTagsParams{})
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}

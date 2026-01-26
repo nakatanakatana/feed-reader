@@ -62,7 +62,7 @@ func (s *FeedServer) ListFeeds(ctx context.Context, req *connect.Request[feedv1.
 		tagID = *req.Msg.TagId
 	}
 
-	feeds, err := s.store.ListFeeds(ctx, tagID)
+	feeds, err := s.store.ListFeeds(ctx, store.ListFeedsParams{TagID: tagID})
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
