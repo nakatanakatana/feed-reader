@@ -40,7 +40,7 @@ const tags: Tag[] = [
 
 const feeds: Feed[] = [
   new Feed({
-    uuid: "1",
+    id: "1",
     url: "https://example.com/feed1.xml",
     title: "Example Feed 1",
     createdAt: new Date().toISOString(),
@@ -48,7 +48,7 @@ const feeds: Feed[] = [
     tags: [tags[0]],
   }),
   new Feed({
-    uuid: "2",
+    id: "2",
     url: "https://example.com/feed2.xml",
     title: "Example Feed 2",
     createdAt: new Date().toISOString(),
@@ -75,7 +75,7 @@ export const handlers = [
     method: "createFeed",
     handler: (req) => {
       const newFeed = new Feed({
-        uuid: crypto.randomUUID(),
+        id: crypto.randomUUID(),
         url: req.url,
         title: req.title || "New Feed",
         createdAt: new Date().toISOString(),
@@ -94,7 +94,7 @@ export const handlers = [
   mockConnectWeb(FeedService)({
     method: "updateFeed",
     handler: (req) => {
-      const index = feeds.findIndex((f) => f.uuid === req.uuid);
+      const index = feeds.findIndex((f) => f.id === req.id);
       if (index !== -1) {
         if (req.title) feeds[index].title = req.title;
         if (req.tagIds) {
@@ -113,7 +113,7 @@ export const handlers = [
   mockConnectWeb(FeedService)({
     method: "deleteFeed",
     handler: (req) => {
-      const index = feeds.findIndex((f) => f.uuid === req.uuid);
+      const index = feeds.findIndex((f) => f.id === req.id);
       if (index !== -1) {
         feeds.splice(index, 1);
       }
@@ -160,7 +160,7 @@ export const handlers = [
   mockConnectWeb(FeedService)({
     method: "setFeedTags",
     handler: (req) => {
-      const feed = feeds.find((f) => f.uuid === req.feedId);
+      const feed = feeds.find((f) => f.id === req.feedId);
       if (feed) {
         feed.tags = req.tagIds.map(
           (id) =>
@@ -177,7 +177,7 @@ export const handlers = [
       const addTagIds = req.addTagIds || [];
       const removeTagIds = req.removeTagIds || [];
       for (const feedId of req.feedIds || []) {
-        const feed = feeds.find((f) => f.uuid === feedId);
+        const feed = feeds.find((f) => f.id === feedId);
         if (feed) {
           // Remove tags
           feed.tags = feed.tags.filter((t) => !removeTagIds.includes(t.id));
