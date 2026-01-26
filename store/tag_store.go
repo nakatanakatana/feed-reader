@@ -11,7 +11,7 @@ type ListTagsParams struct {
 
 func (s *Store) ListTags(ctx context.Context, params ListTagsParams) ([]Tag, error) {
 	if params.SortDescending {
-		return s.Queries.ListTagsDesc(ctx)
+		return s.ListTagsDesc(ctx)
 	}
 	return s.Queries.ListTags(ctx)
 }

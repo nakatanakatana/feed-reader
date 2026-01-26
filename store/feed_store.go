@@ -27,7 +27,7 @@ func NewStore(db *sql.DB) *Store {
 
 func (s *Store) ListFeeds(ctx context.Context, params ListFeedsParams) ([]Feed, error) {
 	if params.SortDescending {
-		return s.Queries.ListFeedsDesc(ctx, params.TagID)
+		return s.ListFeedsDesc(ctx, params.TagID)
 	}
 	return s.Queries.ListFeeds(ctx, params.TagID)
 }
