@@ -3,6 +3,7 @@ import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { useTags } from "../lib/tag-query";
 import { useManageFeedTags } from "../lib/feed-query";
+import { ManageFeedTagsRequest } from "../gen/feed/v1/feed_pb";
 
 interface ManageTagsModalProps {
   isOpen: boolean;
@@ -39,11 +40,13 @@ export function ManageTagsModal(props: ManageTagsModalProps) {
 
   const handleSave = async () => {
     try {
-      await manageTagsMutation.mutateAsync({
-        feedIds: props.feedIds,
-        addTagIds: addTagIds(),
-        removeTagIds: removeTagIds(),
-      });
+      await manageTagsMutation.mutateAsync(
+        new ManageFeedTagsRequest({
+          feedIds: props.feedIds,
+          addTagIds: addTagIds(),
+          removeTagIds: removeTagIds(),
+        }),
+      );
       props.onClose();
       // Reset state
       setAddTagIds([]);
@@ -192,7 +195,7 @@ export function ManageTagsModal(props: ManageTagsModalProps) {
                 fontSize: "sm",
                 cursor: "pointer",
                 bg: "gray.100",
-                hover: { bg: "gray.200" },
+                _hover: { bg: "gray.200" },
               })}
             >
               Cancel
@@ -212,7 +215,7 @@ export function ManageTagsModal(props: ManageTagsModalProps) {
                 cursor: "pointer",
                 bg: "blue.600",
                 color: "white",
-                hover: { bg: "blue.700" },
+                _hover: { bg: "blue.700" },
                 _disabled: { opacity: 0.5, cursor: "not-allowed" },
               })}
             >

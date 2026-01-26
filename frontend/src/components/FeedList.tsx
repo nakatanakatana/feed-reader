@@ -1,5 +1,4 @@
 import { useLiveQuery } from "@tanstack/solid-db";
-import { Link } from "@tanstack/solid-router";
 import { For, Show, createSignal } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
@@ -105,7 +104,7 @@ export function FeedList() {
                 rounded: "md",
                 fontSize: "sm",
                 cursor: "pointer",
-                hover: { bg: "blue.700" },
+                _hover: { bg: "blue.700" },
               })}
             >
               Manage Tags ({selectedFeedUuids().length})

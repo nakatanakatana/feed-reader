@@ -37,7 +37,7 @@ export function ImportOpmlModal(props: ImportOpmlModalProps) {
 
     try {
       const reader = new FileReader();
-      const content = await new Promise<Uint8Array>((resolve, reject) => {
+      const content = await new Promise<any>((resolve, reject) => {
         reader.onload = () =>
           resolve(new Uint8Array(reader.result as ArrayBuffer));
         reader.onerror = reject;

@@ -24,6 +24,6 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)
 
 ## Phase 4: Final Verification
-- [ ] Task: Run all frontend tests to ensure no regressions.
-- [ ] Task: Run full build and lint checks.
+- [~] Task: Run all frontend tests to ensure no regressions.
+- [~] Task: Run full build and lint checks.
 - [ ] Task: Conductor - User Manual Verification 'Phase 4' (Protocol in workflow.md)

@@ -53,27 +53,19 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
   });
 
   const getLinkProps = (targetItemId: string | undefined) => {
+    const to = "/items/$itemId";
     // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
-    const to = (
-      props.feedId ? "/feeds/$feedId/items/$itemId" : "/items/$itemId"
-    ) as any;
-    // biome-ignore lint/style/noNonNullAssertion: router param fix
-    // biome-ignore lint/suspicious/noExplicitAny: router param fix
-    const params = { feedId: props.feedId!, itemId: targetItemId } as any;
+    const params = { itemId: targetItemId } as any;
     // biome-ignore lint/suspicious/noExplicitAny: router search fix
     const search = ((prev: any) => ({ ...prev })) as any;
     return { to, params, search };
   };
 
   const getCloseLinkProps = () => {
-    // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
-    const to = (props.feedId ? "/feeds/$feedId" : "/") as any;
-    // biome-ignore lint/style/noNonNullAssertion: router param fix
-    // biome-ignore lint/suspicious/noExplicitAny: router param fix
-    const params = { feedId: props.feedId! } as any;
+    const to = "/";
     // biome-ignore lint/suspicious/noExplicitAny: router search fix
     const search = ((prev: any) => ({ ...prev })) as any;
-    return { to, params, search };
+    return { to, search };
   };
 
   return (
