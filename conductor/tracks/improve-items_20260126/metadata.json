@@ -1,8 +1,0 @@
-{
-  "track_id": "improve-items_20260126",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-01-26T10:00:00Z",
-  "updated_at": "2026-01-26T10:00:00Z",
-  "description": "Improve item list and detail view with deep linking, enhanced modal size, auto-mark as read, and bulk actions."
-}
