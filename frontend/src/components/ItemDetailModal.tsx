@@ -56,7 +56,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
           height: "screen",
           backgroundColor: "rgba(0, 0, 0, 0.5)",
           zIndex: 1000,
-          padding: "4",
+          padding: { base: "0", md: "4" },
         })}
       >
         <div
@@ -66,10 +66,11 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
           onKeyDown={() => {}}
           class={stack({
             backgroundColor: "white",
-            width: "full",
-            maxWidth: "3xl",
-            maxHeight: "90vh",
-            borderRadius: "lg",
+            width: { base: "full", md: "90%" },
+            height: { base: "full", md: "90%" },
+            maxWidth: { base: "full", md: "none" },
+            maxHeight: { base: "full", md: "90vh" },
+            borderRadius: { base: "none", md: "lg" },
             boxShadow: "xl",
             overflow: "hidden",
             position: "relative",
