@@ -1,8 +1,8 @@
 # Implementation Plan: Remove Unused Feed Routes and Modal Elements
 
 ## Phase 1: Preparation and Environment Check
-- [ ] Task: Verify current project state and ensure tests pass.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)
+- [x] Task: Verify current project state and ensure tests pass.
+- [~] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)
 
 ## Phase 2: Remove UI Elements and Update Components
 - [ ] Task: Remove the close button (×) from ItemDetailModal.

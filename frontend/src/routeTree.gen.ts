@@ -53,10 +53,10 @@ const FeedsFeedIdItemsItemIdRoute = FeedsFeedIdItemsItemIdRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/': typeof ItemsIndexRoute
   '/feeds': typeof FeedsRouteWithChildren
   '/tags': typeof TagsRoute
   '/feeds/$feedId': typeof FeedsFeedIdRouteWithChildren
-  '/': typeof ItemsIndexRoute
   '/items/$itemId': typeof ItemsItemsItemIdRoute
   '/feeds/$feedId/items/$itemId': typeof FeedsFeedIdItemsItemIdRoute
 }
@@ -81,10 +81,10 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/'
     | '/feeds'
     | '/tags'
     | '/feeds/$feedId'
-    | '/'
     | '/items/$itemId'
     | '/feeds/$feedId/items/$itemId'
   fileRoutesByTo: FileRoutesByTo
@@ -131,7 +131,7 @@ declare module '@tanstack/solid-router' {
     '/_items': {
       id: '/_items'
       path: ''
-      fullPath: ''
+      fullPath: '/'
       preLoaderRoute: typeof ItemsRouteImport
       parentRoute: typeof rootRouteImport
     }
