@@ -62,7 +62,15 @@ func (s *FeedServer) ListFeeds(ctx context.Context, req *connect.Request[feedv1.
 		tagID = *req.Msg.TagId
 	}
 
-	feeds, err := s.store.ListFeeds(ctx, store.ListFeedsParams{TagID: tagID})
+	sortDescending := false
+	if req.Msg.SortDescending != nil {
+		sortDescending = *req.Msg.SortDescending
+	}
+
+	feeds, err := s.store.ListFeeds(ctx, store.ListFeedsParams{
+		TagID:          tagID,
+		SortDescending: sortDescending,
+	})
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}

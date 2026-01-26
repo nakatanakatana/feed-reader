@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"testing"
+	"time"
 
 	"connectrpc.com/connect"
 	"github.com/google/uuid"
@@ -611,5 +612,57 @@ func TestFeedServer_ManageFeedTags(t *testing.T) {
 		_, err := server.ManageFeedTags(ctx, connect.NewRequest(req))
 		assert.Error(t, err)
 		assert.Equal(t, connect.CodeInternal, connect.CodeOf(err))
+	})
+}
+
+func TestFeedServer_ListFeeds_Sorting(t *testing.T) {
+	ctx := context.Background()
+
+	setup := func(t *testing.T, server feedv1connect.FeedServiceHandler) (string, string) {
+		// Feed 1
+		res1, err := server.CreateFeed(ctx, connect.NewRequest(&feedv1.CreateFeedRequest{
+			Url:   "http://example.com/f1",
+			Title: proto.String("Feed 1"),
+		}))
+		require.NoError(t, err)
+
+		time.Sleep(1100 * time.Millisecond)
+
+		// Feed 2
+		res2, err := server.CreateFeed(ctx, connect.NewRequest(&feedv1.CreateFeedRequest{
+			Url:   "http://example.com/f2",
+			Title: proto.String("Feed 2"),
+		}))
+		require.NoError(t, err)
+
+		return res1.Msg.Feed.Uuid, res2.Msg.Feed.Uuid
+	}
+
+	t.Run("Sort Descending True", func(t *testing.T) {
+		_, db := setupTestDB(t)
+		server := NewFeedServer(store.NewStore(db), nil, &mockFetcher{}, &mockItemFetcher{})
+		id1, id2 := setup(t, server)
+
+		req := &feedv1.ListFeedsRequest{SortDescending: proto.Bool(true)}
+		res, err := server.ListFeeds(ctx, connect.NewRequest(req))
+		require.NoError(t, err)
+
+		require.Len(t, res.Msg.Feeds, 2)
+		assert.Equal(t, id2, res.Msg.Feeds[0].Uuid)
+		assert.Equal(t, id1, res.Msg.Feeds[1].Uuid)
+	})
+
+	t.Run("Sort Descending False", func(t *testing.T) {
+		_, db := setupTestDB(t)
+		server := NewFeedServer(store.NewStore(db), nil, &mockFetcher{}, &mockItemFetcher{})
+		id1, id2 := setup(t, server)
+
+		req := &feedv1.ListFeedsRequest{SortDescending: proto.Bool(false)}
+		res, err := server.ListFeeds(ctx, connect.NewRequest(req))
+		require.NoError(t, err)
+
+		require.Len(t, res.Msg.Feeds, 2)
+		assert.Equal(t, id1, res.Msg.Feeds[0].Uuid)
+		assert.Equal(t, id2, res.Msg.Feeds[1].Uuid)
 	})
 }
