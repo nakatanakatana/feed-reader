@@ -20,7 +20,7 @@ Focus: Making the item detail view a first-class citizen with its own URL and im
 ## Phase 2: Navigation & Auto-Read Logic
 Focus: Streamlining the reading experience with intuitive navigation and smart read-status management.
 
-- [ ] Task: Implement In-Modal Navigation
+- [x] Task: Implement In-Modal Navigation 4e1b641
     - [ ] Write Failing Tests (Red): Create tests for "Next" and "Previous" actions, ensuring they calculate the correct adjacent item ID.
     - [ ] Implement to Pass Tests (Green): Add UI buttons and keyboard shortcuts (e.g., Arrow keys, J/K) to switch items without closing the modal.
     - [ ] Refactor: Optimize the logic for finding adjacent items within the current list context.
