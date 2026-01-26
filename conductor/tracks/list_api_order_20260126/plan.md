@@ -25,9 +25,9 @@ Update the store layer to pass sorting parameters to the database queries.
 ## Phase 3: Service Layer Implementation
 Update the service handlers to handle the new proto parameters.
 
-- [ ] Task: Update `cmd/feed-reader/handler.go` (or relevant feed handler) to handle `ListFeeds` sorting
+- [x] Task: Update `cmd/feed-reader/handler.go` (or relevant feed handler) to handle `ListFeeds` sorting e6eb730
 - [ ] Task: Update `cmd/feed-reader/tag_service.go` to handle `ListTags` sorting
-- [ ] Task: Add integration tests in `cmd/feed-reader/handler_test.go` (or relevant test file) for `ListFeeds` API
+- [x] Task: Add integration tests in `cmd/feed-reader/handler_test.go` (or relevant test file) for `ListFeeds` API e6eb730
 - [ ] Task: Add integration tests in `cmd/feed-reader/tag_service_test.go` for `ListTags` API
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Service Layer Implementation' (Protocol in workflow.md)
 
