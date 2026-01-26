@@ -13,7 +13,6 @@ function ItemDetailRoute() {
     <ItemDetailRouteView
       itemId={params().itemId}
       tagId={search().tagId}
-      basePath=""
     />
   );
 }

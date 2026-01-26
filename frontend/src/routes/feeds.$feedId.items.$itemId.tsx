@@ -12,8 +12,6 @@ function ItemDetailRoute() {
     <ItemDetailRouteView
       itemId={params().itemId}
       feedId={params().feedId}
-      basePath="/feeds/$feedId"
-      baseParams={{ feedId: params().feedId }}
     />
   );
 }

@@ -1,8 +1,6 @@
 import { render } from "solid-js/web";
-import type { JSX } from "solid-js";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { ItemDetailRouteView } from "./ItemDetailRouteView";
 import { TransportProvider } from "../lib/transport-context";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
@@ -25,6 +23,24 @@ vi.mock("../lib/item-query", () => ({
     },
     isLoading: false,
   }),
+  useItem: (id: () => string | undefined) => ({
+    get data() {
+      const itemId = id();
+      if (!itemId) return undefined;
+      return {
+        id: itemId,
+        title: "Test Item " + itemId,
+        description: "<p>Test Content</p>",
+        publishedAt: "2026-01-24",
+        author: "Test Author",
+        url: "http://example.com",
+        isRead: false,
+      };
+    },
+    get isLoading() {
+      return false;
+    },
+  }),
   useUpdateItemStatus: () => ({
     mutate: markAsReadMock,
     isPending: false,
@@ -44,26 +60,17 @@ describe("ItemDetailRouteView Auto-Read", () => {
     vi.clearAllMocks();
   });
 
-  const Wrapper = (props: { children: JSX.Element, initialEntries: string[] }) => {
-    const history = createMemoryHistory({ initialEntries: props.initialEntries });
-    const router = createRouter({ routeTree, history });
-    return (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router}>
-                {props.children}
-            </RouterProvider>
-          </QueryClientProvider>
-        </TransportProvider>
-    );
-  };
-
   it("marks current item as read when navigating to next", async () => {
+    const history = createMemoryHistory({ initialEntries: ["/items/1"] });
+    const router = createRouter({ routeTree, history });
+
     dispose = render(
       () => (
-        <Wrapper initialEntries={["/items/1"]}>
-          <ItemDetailRouteView itemId="1" />
-        </Wrapper>
+        <TransportProvider transport={transport}>
+          <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} />
+          </QueryClientProvider>
+        </TransportProvider>
       ),
       document.body,
     );
@@ -78,11 +85,16 @@ describe("ItemDetailRouteView Auto-Read", () => {
   });
 
   it("marks current item as read when navigating to prev", async () => {
+    const history = createMemoryHistory({ initialEntries: ["/items/2"] });
+    const router = createRouter({ routeTree, history });
+
     dispose = render(
       () => (
-        <Wrapper initialEntries={["/items/2"]}>
-          <ItemDetailRouteView itemId="2" />
-        </Wrapper>
+        <TransportProvider transport={transport}>
+          <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} />
+          </QueryClientProvider>
+        </TransportProvider>
       ),
       document.body,
     );
