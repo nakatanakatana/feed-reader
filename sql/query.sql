@@ -4,7 +4,7 @@ SELECT
 FROM
   feeds
 WHERE
-  uuid = ?;
+  id = ?;
 
 -- name: GetFeedByURL :one
 SELECT
@@ -21,7 +21,7 @@ FROM
   feeds f
 WHERE
   (sqlc.narg('tag_id') IS NULL OR EXISTS (
-    SELECT 1 FROM feed_tags ft WHERE ft.feed_id = f.uuid AND ft.tag_id = sqlc.narg('tag_id')
+    SELECT 1 FROM feed_tags ft WHERE ft.feed_id = f.id AND ft.tag_id = sqlc.narg('tag_id')
   ))
 ORDER BY
   updated_at ASC;
@@ -33,7 +33,7 @@ FROM
   feeds f
 WHERE
   (sqlc.narg('tag_id') IS NULL OR EXISTS (
-    SELECT 1 FROM feed_tags ft WHERE ft.feed_id = f.uuid AND ft.tag_id = sqlc.narg('tag_id')
+    SELECT 1 FROM feed_tags ft WHERE ft.feed_id = f.id AND ft.tag_id = sqlc.narg('tag_id')
   ))
 ORDER BY
   updated_at DESC;
@@ -44,16 +44,16 @@ SELECT
 FROM
   feeds
 WHERE
-  uuid IN (sqlc.slice('uuids'));
+  id IN (sqlc.slice('ids'));
 
 -- name: CreateFeed :one
 INSERT INTO feeds (
-  uuid,
+  id,
   url,
   link,
   title,
   description,
-  language,
+  lang,
   image_url,
   copyright,
   feed_type,
@@ -70,7 +70,7 @@ SET
   link = ?,
   title = ?,
   description = ?,
-  language = ?,
+  lang = ?,
   image_url = ?,
   copyright = ?,
   feed_type = ?,
@@ -78,14 +78,14 @@ SET
   last_fetched_at = ?,
   updated_at = CURRENT_TIMESTAMP
 WHERE
-  uuid = ?
+  id = ?
 RETURNING *;
 
 -- name: DeleteFeed :exec
 DELETE FROM
   feeds
 WHERE
-  uuid = ?;
+  id = ?;
 
 -- name: ListItemsByFeed :many
 SELECT
@@ -144,7 +144,7 @@ SET
   last_fetched_at = ?,
   updated_at = CURRENT_TIMESTAMP
 WHERE
-  uuid = ?;
+  id = ?;
 
 -- name: GetItem :one
 SELECT

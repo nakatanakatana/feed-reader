@@ -51,12 +51,12 @@ func (q *Queries) CountItems(ctx context.Context, arg CountItemsParams) (int64, 
 
 const createFeed = `-- name: CreateFeed :one
 INSERT INTO feeds (
-  uuid,
+  id,
   url,
   link,
   title,
   description,
-  language,
+  lang,
   image_url,
   copyright,
   feed_type,
@@ -64,16 +64,16 @@ INSERT INTO feeds (
 ) VALUES (
   ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 )
-RETURNING uuid, url, link, title, description, language, image_url, copyright, feed_type, feed_version, last_fetched_at, created_at, updated_at
+RETURNING id, url, link, title, description, lang, hoge, image_url, copyright, feed_type, feed_version, last_fetched_at, created_at, updated_at
 `
 
 type CreateFeedParams struct {
-	Uuid        string  `json:"uuid"`
+	ID          string  `json:"id"`
 	Url         string  `json:"url"`
 	Link        *string `json:"link"`
 	Title       *string `json:"title"`
 	Description *string `json:"description"`
-	Language    *string `json:"language"`
+	Lang        *string `json:"lang"`
 	ImageUrl    *string `json:"image_url"`
 	Copyright   *string `json:"copyright"`
 	FeedType    *string `json:"feed_type"`
@@ -82,12 +82,12 @@ type CreateFeedParams struct {
 
 func (q *Queries) CreateFeed(ctx context.Context, arg CreateFeedParams) (Feed, error) {
 	row := q.db.QueryRowContext(ctx, createFeed,
-		arg.Uuid,
+		arg.ID,
 		arg.Url,
 		arg.Link,
 		arg.Title,
 		arg.Description,
-		arg.Language,
+		arg.Lang,
 		arg.ImageUrl,
 		arg.Copyright,
 		arg.FeedType,
@@ -95,12 +95,13 @@ func (q *Queries) CreateFeed(ctx context.Context, arg CreateFeedParams) (Feed, e
 	)
 	var i Feed
 	err := row.Scan(
-		&i.Uuid,
+		&i.ID,
 		&i.Url,
 		&i.Link,
 		&i.Title,
 		&i.Description,
-		&i.Language,
+		&i.Lang,
+		&i.Hoge,
 		&i.ImageUrl,
 		&i.Copyright,
 		&i.FeedType,
@@ -254,11 +255,11 @@ const deleteFeed = `-- name: DeleteFeed :exec
 DELETE FROM
   feeds
 WHERE
-  uuid = ?
+  id = ?
 `
 
-func (q *Queries) DeleteFeed(ctx context.Context, uuid string) error {
-	_, err := q.db.ExecContext(ctx, deleteFeed, uuid)
+func (q *Queries) DeleteFeed(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, deleteFeed, id)
 	return err
 }
 
@@ -305,23 +306,24 @@ func (q *Queries) DeleteTag(ctx context.Context, id string) error {
 
 const getFeed = `-- name: GetFeed :one
 SELECT
-  uuid, url, link, title, description, language, image_url, copyright, feed_type, feed_version, last_fetched_at, created_at, updated_at
+  id, url, link, title, description, lang, hoge, image_url, copyright, feed_type, feed_version, last_fetched_at, created_at, updated_at
 FROM
   feeds
 WHERE
-  uuid = ?
+  id = ?
 `
 
-func (q *Queries) GetFeed(ctx context.Context, uuid string) (Feed, error) {
-	row := q.db.QueryRowContext(ctx, getFeed, uuid)
+func (q *Queries) GetFeed(ctx context.Context, id string) (Feed, error) {
+	row := q.db.QueryRowContext(ctx, getFeed, id)
 	var i Feed
 	err := row.Scan(
-		&i.Uuid,
+		&i.ID,
 		&i.Url,
 		&i.Link,
 		&i.Title,
 		&i.Description,
-		&i.Language,
+		&i.Lang,
+		&i.Hoge,
 		&i.ImageUrl,
 		&i.Copyright,
 		&i.FeedType,
@@ -335,7 +337,7 @@ func (q *Queries) GetFeed(ctx context.Context, uuid string) (Feed, error) {
 
 const getFeedByURL = `-- name: GetFeedByURL :one
 SELECT
-  uuid, url, link, title, description, language, image_url, copyright, feed_type, feed_version, last_fetched_at, created_at, updated_at
+  id, url, link, title, description, lang, hoge, image_url, copyright, feed_type, feed_version, last_fetched_at, created_at, updated_at
 FROM
   feeds
 WHERE
@@ -346,12 +348,13 @@ func (q *Queries) GetFeedByURL(ctx context.Context, url string) (Feed, error) {
 	row := q.db.QueryRowContext(ctx, getFeedByURL, url)
 	var i Feed
 	err := row.Scan(
-		&i.Uuid,
+		&i.ID,
 		&i.Url,
 		&i.Link,
 		&i.Title,
 		&i.Description,
-		&i.Language,
+		&i.Lang,
+		&i.Hoge,
 		&i.ImageUrl,
 		&i.Copyright,
 		&i.FeedType,
@@ -417,12 +420,12 @@ func (q *Queries) GetItem(ctx context.Context, id string) (GetItemRow, error) {
 
 const listFeeds = `-- name: ListFeeds :many
 SELECT
-  f.uuid, f.url, f.link, f.title, f.description, f.language, f.image_url, f.copyright, f.feed_type, f.feed_version, f.last_fetched_at, f.created_at, f.updated_at
+  f.id, f.url, f.link, f.title, f.description, f.lang, f.hoge, f.image_url, f.copyright, f.feed_type, f.feed_version, f.last_fetched_at, f.created_at, f.updated_at
 FROM
   feeds f
 WHERE
   (?1 IS NULL OR EXISTS (
-    SELECT 1 FROM feed_tags ft WHERE ft.feed_id = f.uuid AND ft.tag_id = ?1
+    SELECT 1 FROM feed_tags ft WHERE ft.feed_id = f.id AND ft.tag_id = ?1
   ))
 ORDER BY
   updated_at ASC
@@ -438,12 +441,13 @@ func (q *Queries) ListFeeds(ctx context.Context, tagID interface{}) ([]Feed, err
 	for rows.Next() {
 		var i Feed
 		if err := rows.Scan(
-			&i.Uuid,
+			&i.ID,
 			&i.Url,
 			&i.Link,
 			&i.Title,
 			&i.Description,
-			&i.Language,
+			&i.Lang,
+			&i.Hoge,
 			&i.ImageUrl,
 			&i.Copyright,
 			&i.FeedType,
@@ -467,23 +471,23 @@ func (q *Queries) ListFeeds(ctx context.Context, tagID interface{}) ([]Feed, err
 
 const listFeedsByUUIDs = `-- name: ListFeedsByUUIDs :many
 SELECT
-  uuid, url, link, title, description, language, image_url, copyright, feed_type, feed_version, last_fetched_at, created_at, updated_at
+  id, url, link, title, description, lang, hoge, image_url, copyright, feed_type, feed_version, last_fetched_at, created_at, updated_at
 FROM
   feeds
 WHERE
-  uuid IN (/*SLICE:uuids*/?)
+  id IN (/*SLICE:ids*/?)
 `
 
-func (q *Queries) ListFeedsByUUIDs(ctx context.Context, uuids []string) ([]Feed, error) {
+func (q *Queries) ListFeedsByUUIDs(ctx context.Context, ids []string) ([]Feed, error) {
 	query := listFeedsByUUIDs
 	var queryParams []interface{}
-	if len(uuids) > 0 {
-		for _, v := range uuids {
+	if len(ids) > 0 {
+		for _, v := range ids {
 			queryParams = append(queryParams, v)
 		}
-		query = strings.Replace(query, "/*SLICE:uuids*/?", strings.Repeat(",?", len(uuids))[1:], 1)
+		query = strings.Replace(query, "/*SLICE:ids*/?", strings.Repeat(",?", len(ids))[1:], 1)
 	} else {
-		query = strings.Replace(query, "/*SLICE:uuids*/?", "NULL", 1)
+		query = strings.Replace(query, "/*SLICE:ids*/?", "NULL", 1)
 	}
 	rows, err := q.db.QueryContext(ctx, query, queryParams...)
 	if err != nil {
@@ -494,12 +498,13 @@ func (q *Queries) ListFeedsByUUIDs(ctx context.Context, uuids []string) ([]Feed,
 	for rows.Next() {
 		var i Feed
 		if err := rows.Scan(
-			&i.Uuid,
+			&i.ID,
 			&i.Url,
 			&i.Link,
 			&i.Title,
 			&i.Description,
-			&i.Language,
+			&i.Lang,
+			&i.Hoge,
 			&i.ImageUrl,
 			&i.Copyright,
 			&i.FeedType,
@@ -523,12 +528,12 @@ func (q *Queries) ListFeedsByUUIDs(ctx context.Context, uuids []string) ([]Feed,
 
 const listFeedsDesc = `-- name: ListFeedsDesc :many
 SELECT
-  f.uuid, f.url, f.link, f.title, f.description, f.language, f.image_url, f.copyright, f.feed_type, f.feed_version, f.last_fetched_at, f.created_at, f.updated_at
+  f.id, f.url, f.link, f.title, f.description, f.lang, f.hoge, f.image_url, f.copyright, f.feed_type, f.feed_version, f.last_fetched_at, f.created_at, f.updated_at
 FROM
   feeds f
 WHERE
   (?1 IS NULL OR EXISTS (
-    SELECT 1 FROM feed_tags ft WHERE ft.feed_id = f.uuid AND ft.tag_id = ?1
+    SELECT 1 FROM feed_tags ft WHERE ft.feed_id = f.id AND ft.tag_id = ?1
   ))
 ORDER BY
   updated_at DESC
@@ -544,12 +549,13 @@ func (q *Queries) ListFeedsDesc(ctx context.Context, tagID interface{}) ([]Feed,
 	for rows.Next() {
 		var i Feed
 		if err := rows.Scan(
-			&i.Uuid,
+			&i.ID,
 			&i.Url,
 			&i.Link,
 			&i.Title,
 			&i.Description,
-			&i.Language,
+			&i.Lang,
+			&i.Hoge,
 			&i.ImageUrl,
 			&i.Copyright,
 			&i.FeedType,
@@ -923,16 +929,16 @@ SET
   last_fetched_at = ?,
   updated_at = CURRENT_TIMESTAMP
 WHERE
-  uuid = ?
+  id = ?
 `
 
 type MarkFeedFetchedParams struct {
 	LastFetchedAt *string `json:"last_fetched_at"`
-	Uuid          string  `json:"uuid"`
+	ID            string  `json:"id"`
 }
 
 func (q *Queries) MarkFeedFetched(ctx context.Context, arg MarkFeedFetchedParams) error {
-	_, err := q.db.ExecContext(ctx, markFeedFetched, arg.LastFetchedAt, arg.Uuid)
+	_, err := q.db.ExecContext(ctx, markFeedFetched, arg.LastFetchedAt, arg.ID)
 	return err
 }
 
@@ -1011,7 +1017,7 @@ SET
   link = ?,
   title = ?,
   description = ?,
-  language = ?,
+  lang = ?,
   image_url = ?,
   copyright = ?,
   feed_type = ?,
@@ -1019,21 +1025,21 @@ SET
   last_fetched_at = ?,
   updated_at = CURRENT_TIMESTAMP
 WHERE
-  uuid = ?
-RETURNING uuid, url, link, title, description, language, image_url, copyright, feed_type, feed_version, last_fetched_at, created_at, updated_at
+  id = ?
+RETURNING id, url, link, title, description, lang, hoge, image_url, copyright, feed_type, feed_version, last_fetched_at, created_at, updated_at
 `
 
 type UpdateFeedParams struct {
 	Link          *string `json:"link"`
 	Title         *string `json:"title"`
 	Description   *string `json:"description"`
-	Language      *string `json:"language"`
+	Lang          *string `json:"lang"`
 	ImageUrl      *string `json:"image_url"`
 	Copyright     *string `json:"copyright"`
 	FeedType      *string `json:"feed_type"`
 	FeedVersion   *string `json:"feed_version"`
 	LastFetchedAt *string `json:"last_fetched_at"`
-	Uuid          string  `json:"uuid"`
+	ID            string  `json:"id"`
 }
 
 func (q *Queries) UpdateFeed(ctx context.Context, arg UpdateFeedParams) (Feed, error) {
@@ -1041,22 +1047,23 @@ func (q *Queries) UpdateFeed(ctx context.Context, arg UpdateFeedParams) (Feed, e
 		arg.Link,
 		arg.Title,
 		arg.Description,
-		arg.Language,
+		arg.Lang,
 		arg.ImageUrl,
 		arg.Copyright,
 		arg.FeedType,
 		arg.FeedVersion,
 		arg.LastFetchedAt,
-		arg.Uuid,
+		arg.ID,
 	)
 	var i Feed
 	err := row.Scan(
-		&i.Uuid,
+		&i.ID,
 		&i.Url,
 		&i.Link,
 		&i.Title,
 		&i.Description,
-		&i.Language,
+		&i.Lang,
+		&i.Hoge,
 		&i.ImageUrl,
 		&i.Copyright,
 		&i.FeedType,
