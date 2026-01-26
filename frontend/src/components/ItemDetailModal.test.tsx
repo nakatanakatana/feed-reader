@@ -71,20 +71,18 @@ describe("ItemDetailModal", () => {
       .toBeInTheDocument();
   });
 
-  it("calls onClose when close button is clicked", async () => {
-    const onClose = vi.fn();
+  it("does NOT render a close button (✕)", async () => {
     dispose = render(
       () => (
         <Wrapper>
-          <ItemDetailModal itemId="test-id" onClose={onClose} />
+          <ItemDetailModal itemId="test-id" onClose={() => {}} />
         </Wrapper>
       ),
       document.body,
     );
 
     const closeButton = page.getByText("✕");
-    await closeButton.click();
-    expect(onClose).toHaveBeenCalled();
+    await expect.element(closeButton).not.toBeInTheDocument();
   });
 
   it("does not render when itemId is undefined", async () => {
