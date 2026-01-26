@@ -10,7 +10,7 @@ Update Protobuf definitions and database queries to support sorting.
 - [x] Task: Run `make gen` to regenerate Go and TypeScript code from proto files 73aba91
 - [x] Task: Add indexes for `updated_at` in `sql/schema.sql` to optimize sorting d03072f
 - [x] Task: Update `sql/query.sql` to add sorting logic to `ListFeeds` and `ListTags` queries 6a14934
-- [ ] Task: Run `make sqlc` to regenerate Go database code
+- [x] Task: Run `make sqlc` to regenerate Go database code 26abdf0
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Protocol and Schema Updates' (Protocol in workflow.md)
 
 ## Phase 2: Store Layer Implementation
