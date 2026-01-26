@@ -9,9 +9,6 @@ function ItemDetailRoute() {
   const params = Route.useParams();
 
   return (
-    <ItemDetailRouteView
-      itemId={params().itemId}
-      feedId={params().feedId}
-    />
+    <ItemDetailRouteView itemId={params().itemId} feedId={params().feedId} />
   );
 }

@@ -14,7 +14,7 @@ vi.mock("../lib/item-query", () => ({
       if (!id()) return undefined;
       return {
         id: id(),
-        title: "Test Item " + id(),
+        title: `Test Item ${id()}`,
         description: "<p>Test Content</p>",
         publishedAt: "2026-01-24",
         author: "Test Author",
@@ -58,7 +58,12 @@ describe("ItemDetailModal Navigation", () => {
     dispose = render(
       () => (
         <Wrapper>
-          <ItemDetailModal itemId="1" onClose={() => {}} nextItemId="2" onNext={onNext} />
+          <ItemDetailModal
+            itemId="1"
+            onClose={() => {}}
+            nextItemId="2"
+            onNext={onNext}
+          />
         </Wrapper>
       ),
       document.body,
@@ -74,7 +79,12 @@ describe("ItemDetailModal Navigation", () => {
     dispose = render(
       () => (
         <Wrapper>
-          <ItemDetailModal itemId="2" onClose={() => {}} prevItemId="1" onPrev={onPrev} />
+          <ItemDetailModal
+            itemId="2"
+            onClose={() => {}}
+            prevItemId="1"
+            onPrev={onPrev}
+          />
         </Wrapper>
       ),
       document.body,
@@ -90,7 +100,12 @@ describe("ItemDetailModal Navigation", () => {
     dispose = render(
       () => (
         <Wrapper>
-          <ItemDetailModal itemId="1" onClose={() => {}} nextItemId="2" onNext={onNext} />
+          <ItemDetailModal
+            itemId="1"
+            onClose={() => {}}
+            nextItemId="2"
+            onNext={onNext}
+          />
         </Wrapper>
       ),
       document.body,
@@ -105,7 +120,12 @@ describe("ItemDetailModal Navigation", () => {
     dispose = render(
       () => (
         <Wrapper>
-          <ItemDetailModal itemId="2" onClose={() => {}} prevItemId="1" onPrev={onPrev} />
+          <ItemDetailModal
+            itemId="2"
+            onClose={() => {}}
+            prevItemId="1"
+            onPrev={onPrev}
+          />
         </Wrapper>
       ),
       document.body,

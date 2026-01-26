@@ -1,11 +1,14 @@
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { ItemList } from "./ItemList";
 import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
 import { TransportProvider } from "../lib/transport-context";
 import { createConnectTransport } from "@connectrpc/connect-web";
-import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
+import {
+  createMemoryHistory,
+  createRouter,
+  RouterProvider,
+} from "@tanstack/solid-router";
 import { routeTree } from "../routeTree.gen";
 
 // Mock hooks
@@ -79,6 +82,8 @@ describe("ItemList", () => {
 
     // Check if modal content is visible
     await expect.element(page.getByRole("dialog")).toBeInTheDocument();
-    await expect.element(page.getByRole("heading", { name: "Item 1" })).toBeInTheDocument();
+    await expect
+      .element(page.getByRole("heading", { name: "Item 1" }))
+      .toBeInTheDocument();
   });
 });

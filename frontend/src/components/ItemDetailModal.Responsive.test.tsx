@@ -91,9 +91,9 @@ describe("ItemDetailModal Responsive", () => {
 
     const el = dialog.element();
     const rect = el.getBoundingClientRect();
-    
+
     // Desktop: 80-90% width (1920 * 0.8 = 1536)
     // Currently it's maxWidth: 3xl (approx 768px)
-    expect(rect.width).toBeGreaterThan(1500); 
+    expect(rect.width).toBeGreaterThan(1500);
   });
 });

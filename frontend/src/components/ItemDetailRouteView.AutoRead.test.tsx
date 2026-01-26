@@ -4,7 +4,11 @@ import { page } from "vitest/browser";
 import { TransportProvider } from "../lib/transport-context";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
-import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
+import {
+  createMemoryHistory,
+  createRouter,
+  RouterProvider,
+} from "@tanstack/solid-router";
 import { routeTree } from "../routeTree.gen";
 
 // Mock the query hooks
@@ -29,7 +33,7 @@ vi.mock("../lib/item-query", () => ({
       if (!itemId) return undefined;
       return {
         id: itemId,
-        title: "Test Item " + itemId,
+        title: `Test Item ${itemId}`,
         description: "<p>Test Content</p>",
         publishedAt: "2026-01-24",
         author: "Test Author",
@@ -77,10 +81,10 @@ describe("ItemDetailRouteView Auto-Read", () => {
 
     const nextButton = page.getByText("Next →");
     await nextButton.click();
-    
+
     expect(markAsReadMock).toHaveBeenCalledWith({
-        ids: ["1"],
-        isRead: true,
+      ids: ["1"],
+      isRead: true,
     });
   });
 
@@ -101,10 +105,10 @@ describe("ItemDetailRouteView Auto-Read", () => {
 
     const prevButton = page.getByText("← Previous");
     await prevButton.click();
-    
+
     expect(markAsReadMock).toHaveBeenCalledWith({
-        ids: ["2"],
-        isRead: true,
+      ids: ["2"],
+      isRead: true,
     });
   });
 });

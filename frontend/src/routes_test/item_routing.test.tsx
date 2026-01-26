@@ -41,6 +41,8 @@ describe("Item Routing", () => {
     );
 
     // Wait for the modal content to appear
-    await expect.element(page.getByText("Detail for Item 1")).toBeInTheDocument();
+    await expect
+      .element(page.getByText("Detail for Item 1"))
+      .toBeInTheDocument();
   });
 });

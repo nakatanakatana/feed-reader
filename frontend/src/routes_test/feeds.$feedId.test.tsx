@@ -40,6 +40,8 @@ describe("Feed Detail Page", () => {
     );
 
     // Wait for items to load
-    await expect.element(page.getByText("Item 1", { exact: true })).toBeInTheDocument();
+    await expect
+      .element(page.getByText("Item 1", { exact: true }))
+      .toBeInTheDocument();
   });
 });

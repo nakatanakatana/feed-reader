@@ -110,7 +110,11 @@ export function ItemList(props: ItemListProps) {
               transition: "all 0.2s",
               ...(props.tagId === undefined
                 ? { bg: "blue.100", borderColor: "blue.500", color: "blue.700" }
-                : { bg: "gray.50", borderColor: "gray.300", color: "gray.600" }),
+                : {
+                    bg: "gray.50",
+                    borderColor: "gray.300",
+                    color: "gray.600",
+                  }),
             })}
           >
             All
@@ -177,7 +181,13 @@ export function ItemList(props: ItemListProps) {
             boxShadow: "sm",
           })}
         >
-          <span class={css({ fontSize: "sm", fontWeight: "medium", color: "blue.800" })}>
+          <span
+            class={css({
+              fontSize: "sm",
+              fontWeight: "medium",
+              color: "blue.800",
+            })}
+          >
             {selectedItemIds().size} items selected
           </span>
           <div class={flex({ gap: "2" })}>
@@ -212,7 +222,9 @@ export function ItemList(props: ItemListProps) {
                 _disabled: { opacity: 0.5, cursor: "not-allowed" },
               })}
             >
-              {updateStatusMutation.isPending ? "Processing..." : "Mark as Read"}
+              {updateStatusMutation.isPending
+                ? "Processing..."
+                : "Mark as Read"}
             </button>
           </div>
         </div>

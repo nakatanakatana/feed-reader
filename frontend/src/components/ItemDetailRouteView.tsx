@@ -52,6 +52,30 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
     _disabled: { opacity: 0.5, cursor: "not-allowed" },
   });
 
+  const getLinkProps = (targetItemId: string | undefined) => {
+    // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
+    const to = (
+      props.feedId ? "/feeds/$feedId/items/$itemId" : "/items/$itemId"
+    ) as any;
+    // biome-ignore lint/style/noNonNullAssertion: router param fix
+    // biome-ignore lint/suspicious/noExplicitAny: router param fix
+    const params = { feedId: props.feedId!, itemId: targetItemId } as any;
+    // biome-ignore lint/suspicious/noExplicitAny: router search fix
+    const search = ((prev: any) => ({ ...prev })) as any;
+    return { to, params, search };
+  };
+
+  const getCloseLinkProps = () => {
+    // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
+    const to = (props.feedId ? "/feeds/$feedId" : "/") as any;
+    // biome-ignore lint/style/noNonNullAssertion: router param fix
+    // biome-ignore lint/suspicious/noExplicitAny: router param fix
+    const params = { feedId: props.feedId! } as any;
+    // biome-ignore lint/suspicious/noExplicitAny: router search fix
+    const search = ((prev: any) => ({ ...prev })) as any;
+    return { to, params, search };
+  };
+
   return (
     <ItemDetailModal
       itemId={props.itemId}
@@ -64,9 +88,7 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
           <div class={css({ display: "flex", gap: "2" })}>
             {prevItem() ? (
               <Link
-                to={(props.feedId ? "/feeds/$feedId/items/$itemId" : "/items/$itemId") as any}
-                params={{ feedId: props.feedId!, itemId: prevItem()!.id } as any}
-                search={((prev: any) => ({ ...prev })) as any}
+                {...getLinkProps(prevItem()?.id)}
                 onClick={markCurrentAsRead}
                 class={navButtonStyle}
               >
@@ -79,9 +101,7 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
             )}
             {nextItem() ? (
               <Link
-                to={(props.feedId ? "/feeds/$feedId/items/$itemId" : "/items/$itemId") as any}
-                params={{ feedId: props.feedId!, itemId: nextItem()!.id } as any}
-                search={((prev: any) => ({ ...prev })) as any}
+                {...getLinkProps(nextItem()?.id)}
                 onClick={markCurrentAsRead}
                 class={navButtonStyle}
               >
@@ -97,16 +117,29 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
           <div class={css({ display: "flex", gap: "4", alignItems: "center" })}>
             <button
               type="button"
-              onClick={() => updateStatusMutation.mutate({ ids: [props.itemId], isRead: !itemsQuery.data?.pages.flatMap(p => p.items).find(i => i.id === props.itemId)?.isRead })}
+              onClick={() =>
+                updateStatusMutation.mutate({
+                  ids: [props.itemId],
+                  isRead: !itemsQuery.data?.pages
+                    .flatMap((p) => p.items)
+                    .find((i) => i.id === props.itemId)?.isRead,
+                })
+              }
               disabled={updateStatusMutation.isPending}
               class={css({
                 padding: "2",
                 paddingInline: "4",
                 borderRadius: "md",
-                backgroundColor: itemsQuery.data?.pages.flatMap(p => p.items).find(i => i.id === props.itemId)?.isRead
+                backgroundColor: itemsQuery.data?.pages
+                  .flatMap((p) => p.items)
+                  .find((i) => i.id === props.itemId)?.isRead
                   ? "gray.200"
                   : "blue.50",
-                color: itemsQuery.data?.pages.flatMap(p => p.items).find(i => i.id === props.itemId)?.isRead ? "gray.700" : "blue.700",
+                color: itemsQuery.data?.pages
+                  .flatMap((p) => p.items)
+                  .find((i) => i.id === props.itemId)?.isRead
+                  ? "gray.700"
+                  : "blue.700",
                 cursor: "pointer",
                 fontSize: "sm",
                 fontWeight: "medium",
@@ -114,13 +147,15 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
                 _disabled: { opacity: 0.5, cursor: "not-allowed" },
               })}
             >
-              {itemsQuery.data?.pages.flatMap(p => p.items).find(i => i.id === props.itemId)?.isRead ? "Mark as Unread" : "Mark as Read"}
+              {itemsQuery.data?.pages
+                .flatMap((p) => p.items)
+                .find((i) => i.id === props.itemId)?.isRead
+                ? "Mark as Unread"
+                : "Mark as Read"}
             </button>
 
             <Link
-              to={(props.feedId ? "/feeds/$feedId" : "/") as any}
-              params={{ feedId: props.feedId! } as any}
-              search={((prev: any) => ({ ...prev })) as any}
+              {...getCloseLinkProps()}
               class={css({
                 fontSize: "sm",
                 color: "gray.500",

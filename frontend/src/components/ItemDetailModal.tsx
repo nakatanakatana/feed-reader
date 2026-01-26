@@ -53,6 +53,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   return (
     <Show when={props.itemId}>
       {/* biome-ignore lint/a11y/noStaticElementInteractions: Backdrop click to close */}
+      {/* biome-ignore lint/a11y/useKeyWithClickEvents: Backdrop click to close */}
       <div
         onClick={handleBackdropClick}
         class={center({
