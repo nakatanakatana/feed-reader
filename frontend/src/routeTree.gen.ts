@@ -11,8 +11,11 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TagsRouteImport } from './routes/tags'
 import { Route as FeedsRouteImport } from './routes/feeds'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as ItemsRouteImport } from './routes/_items'
+import { Route as ItemsIndexRouteImport } from './routes/_items.index'
 import { Route as FeedsFeedIdRouteImport } from './routes/feeds.$feedId'
+import { Route as ItemsItemsItemIdRouteImport } from './routes/_items.items.$itemId'
+import { Route as FeedsFeedIdItemsItemIdRouteImport } from './routes/feeds.$feedId.items.$itemId'
 
 const TagsRoute = TagsRouteImport.update({
   id: '/tags',
@@ -24,46 +27,87 @@ const FeedsRoute = FeedsRouteImport.update({
   path: '/feeds',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
+const ItemsRoute = ItemsRouteImport.update({
+  id: '/_items',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ItemsIndexRoute = ItemsIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => ItemsRoute,
 } as any)
 const FeedsFeedIdRoute = FeedsFeedIdRouteImport.update({
   id: '/$feedId',
   path: '/$feedId',
   getParentRoute: () => FeedsRoute,
 } as any)
+const ItemsItemsItemIdRoute = ItemsItemsItemIdRouteImport.update({
+  id: '/items/$itemId',
+  path: '/items/$itemId',
+  getParentRoute: () => ItemsRoute,
+} as any)
+const FeedsFeedIdItemsItemIdRoute = FeedsFeedIdItemsItemIdRouteImport.update({
+  id: '/items/$itemId',
+  path: '/items/$itemId',
+  getParentRoute: () => FeedsFeedIdRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
   '/feeds': typeof FeedsRouteWithChildren
   '/tags': typeof TagsRoute
-  '/feeds/$feedId': typeof FeedsFeedIdRoute
+  '/feeds/$feedId': typeof FeedsFeedIdRouteWithChildren
+  '/': typeof ItemsIndexRoute
+  '/items/$itemId': typeof ItemsItemsItemIdRoute
+  '/feeds/$feedId/items/$itemId': typeof FeedsFeedIdItemsItemIdRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
   '/feeds': typeof FeedsRouteWithChildren
   '/tags': typeof TagsRoute
-  '/feeds/$feedId': typeof FeedsFeedIdRoute
+  '/feeds/$feedId': typeof FeedsFeedIdRouteWithChildren
+  '/': typeof ItemsIndexRoute
+  '/items/$itemId': typeof ItemsItemsItemIdRoute
+  '/feeds/$feedId/items/$itemId': typeof FeedsFeedIdItemsItemIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
+  '/_items': typeof ItemsRouteWithChildren
   '/feeds': typeof FeedsRouteWithChildren
   '/tags': typeof TagsRoute
-  '/feeds/$feedId': typeof FeedsFeedIdRoute
+  '/feeds/$feedId': typeof FeedsFeedIdRouteWithChildren
+  '/_items/': typeof ItemsIndexRoute
+  '/_items/items/$itemId': typeof ItemsItemsItemIdRoute
+  '/feeds/$feedId/items/$itemId': typeof FeedsFeedIdItemsItemIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/feeds' | '/tags' | '/feeds/$feedId'
+  fullPaths:
+    | '/feeds'
+    | '/tags'
+    | '/feeds/$feedId'
+    | '/'
+    | '/items/$itemId'
+    | '/feeds/$feedId/items/$itemId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/feeds' | '/tags' | '/feeds/$feedId'
-  id: '__root__' | '/' | '/feeds' | '/tags' | '/feeds/$feedId'
+  to:
+    | '/feeds'
+    | '/tags'
+    | '/feeds/$feedId'
+    | '/'
+    | '/items/$itemId'
+    | '/feeds/$feedId/items/$itemId'
+  id:
+    | '__root__'
+    | '/_items'
+    | '/feeds'
+    | '/tags'
+    | '/feeds/$feedId'
+    | '/_items/'
+    | '/_items/items/$itemId'
+    | '/feeds/$feedId/items/$itemId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  ItemsRoute: typeof ItemsRouteWithChildren
   FeedsRoute: typeof FeedsRouteWithChildren
   TagsRoute: typeof TagsRoute
 }
@@ -84,12 +128,19 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof FeedsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
+    '/_items': {
+      id: '/_items'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof ItemsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_items/': {
+      id: '/_items/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof ItemsIndexRouteImport
+      parentRoute: typeof ItemsRoute
     }
     '/feeds/$feedId': {
       id: '/feeds/$feedId'
@@ -98,21 +149,59 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof FeedsFeedIdRouteImport
       parentRoute: typeof FeedsRoute
     }
+    '/_items/items/$itemId': {
+      id: '/_items/items/$itemId'
+      path: '/items/$itemId'
+      fullPath: '/items/$itemId'
+      preLoaderRoute: typeof ItemsItemsItemIdRouteImport
+      parentRoute: typeof ItemsRoute
+    }
+    '/feeds/$feedId/items/$itemId': {
+      id: '/feeds/$feedId/items/$itemId'
+      path: '/items/$itemId'
+      fullPath: '/feeds/$feedId/items/$itemId'
+      preLoaderRoute: typeof FeedsFeedIdItemsItemIdRouteImport
+      parentRoute: typeof FeedsFeedIdRoute
+    }
   }
 }
 
+interface ItemsRouteChildren {
+  ItemsIndexRoute: typeof ItemsIndexRoute
+  ItemsItemsItemIdRoute: typeof ItemsItemsItemIdRoute
+}
+
+const ItemsRouteChildren: ItemsRouteChildren = {
+  ItemsIndexRoute: ItemsIndexRoute,
+  ItemsItemsItemIdRoute: ItemsItemsItemIdRoute,
+}
+
+const ItemsRouteWithChildren = ItemsRoute._addFileChildren(ItemsRouteChildren)
+
+interface FeedsFeedIdRouteChildren {
+  FeedsFeedIdItemsItemIdRoute: typeof FeedsFeedIdItemsItemIdRoute
+}
+
+const FeedsFeedIdRouteChildren: FeedsFeedIdRouteChildren = {
+  FeedsFeedIdItemsItemIdRoute: FeedsFeedIdItemsItemIdRoute,
+}
+
+const FeedsFeedIdRouteWithChildren = FeedsFeedIdRoute._addFileChildren(
+  FeedsFeedIdRouteChildren,
+)
+
 interface FeedsRouteChildren {
-  FeedsFeedIdRoute: typeof FeedsFeedIdRoute
+  FeedsFeedIdRoute: typeof FeedsFeedIdRouteWithChildren
 }
 
 const FeedsRouteChildren: FeedsRouteChildren = {
-  FeedsFeedIdRoute: FeedsFeedIdRoute,
+  FeedsFeedIdRoute: FeedsFeedIdRouteWithChildren,
 }
 
 const FeedsRouteWithChildren = FeedsRoute._addFileChildren(FeedsRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  ItemsRoute: ItemsRouteWithChildren,
   FeedsRoute: FeedsRouteWithChildren,
   TagsRoute: TagsRoute,
 }

@@ -7,6 +7,8 @@ import { updateItemStatus } from "../lib/db";
 interface ItemRowProps {
   item: Item;
   onClick: (item: Item) => void;
+  selected?: boolean;
+  onToggleSelection?: (selected: boolean) => void;
 }
 
 export function ItemRow(props: ItemRowProps) {
@@ -25,6 +27,11 @@ export function ItemRow(props: ItemRowProps) {
     } finally {
       setIsPending(false);
     }
+  };
+
+  const handleCheckboxClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    props.onToggleSelection?.((e.target as HTMLInputElement).checked);
   };
 
   const handleClick = (e: MouseEvent) => {
@@ -53,47 +60,57 @@ export function ItemRow(props: ItemRowProps) {
         _hover: { backgroundColor: "gray.50" },
       })}
     >
-      <button
-        type="button"
-        onClick={handleClick}
-        onKeyDown={handleKeyDown}
-        class={stack({
-          gap: "1",
-          flex: 1,
-          padding: "3",
-          textAlign: "left",
-          cursor: "pointer",
-        })}
-      >
-        <div
-          class={css({
-            fontWeight: "medium",
-            color: props.item.isRead ? "gray.500" : "blue.600",
-            textDecoration: props.item.isRead ? "none" : "underline",
-            _hover: { color: "blue.800" },
+      <div class={flex({ alignItems: "center", flex: 1 })}>
+        <div class={css({ paddingInline: "3" })}>
+          <input
+            type="checkbox"
+            checked={props.selected}
+            onClick={handleCheckboxClick}
+            class={css({ cursor: "pointer" })}
+          />
+        </div>
+        <button
+          type="button"
+          onClick={handleClick}
+          onKeyDown={handleKeyDown}
+          class={stack({
+            gap: "1",
+            flex: 1,
+            padding: "3",
+            textAlign: "left",
+            cursor: "pointer",
           })}
         >
-          {props.item.title || "Untitled Article"}
-        </div>
-        <div class={flex({ gap: "2", alignItems: "center" })}>
-          <span class={css({ fontSize: "xs", color: "gray.500" })}>
-            {props.item.publishedAt}
-          </span>
-          <Show when={props.item.isRead}>
-            <span
-              class={css({
-                fontSize: "xs",
-                color: "gray.400",
-                backgroundColor: "gray.100",
-                paddingInline: "1.5",
-                borderRadius: "sm",
-              })}
-            >
-              Read
+          <div
+            class={css({
+              fontWeight: "medium",
+              color: props.item.isRead ? "gray.500" : "blue.600",
+              textDecoration: props.item.isRead ? "none" : "underline",
+              _hover: { color: "blue.800" },
+            })}
+          >
+            {props.item.title || "Untitled Article"}
+          </div>
+          <div class={flex({ gap: "2", alignItems: "center" })}>
+            <span class={css({ fontSize: "xs", color: "gray.500" })}>
+              {props.item.publishedAt}
             </span>
-          </Show>
-        </div>
-      </button>
+            <Show when={props.item.isRead}>
+              <span
+                class={css({
+                  fontSize: "xs",
+                  color: "gray.400",
+                  backgroundColor: "gray.100",
+                  paddingInline: "1.5",
+                  borderRadius: "sm",
+                })}
+              >
+                Read
+              </span>
+            </Show>
+          </div>
+        </button>
+      </div>
       <div class={css({ padding: "3" })}>
         <button
           type="button"
