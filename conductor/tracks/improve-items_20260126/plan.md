@@ -1,6 +1,6 @@
 # Plan: Improve Item List and Detail View
 
-## Phase 1: Deep Linking & Enhanced Modal UI
+## Phase 1: Deep Linking & Enhanced Modal UI [checkpoint: e1cb21f]
 Focus: Making the item detail view a first-class citizen with its own URL and improved responsive layout.
 
 - [x] Task: Implement Item Detail Routing (Deep Linking) 2d4ed1a
