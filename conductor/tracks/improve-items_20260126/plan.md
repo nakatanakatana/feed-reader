@@ -3,7 +3,7 @@
 ## Phase 1: Deep Linking & Enhanced Modal UI
 Focus: Making the item detail view a first-class citizen with its own URL and improved responsive layout.
 
-- [ ] Task: Implement Item Detail Routing (Deep Linking)
+- [x] Task: Implement Item Detail Routing (Deep Linking) 2d4ed1a
     - [ ] Write Failing Tests (Red): Create tests for route matching and URL parameter extraction for item details.
     - [ ] Implement to Pass Tests (Green): Define new routes (e.g., `/items/$itemId`) or child routes using TanStack Router. Ensure navigating to this URL opens the modal.
     - [ ] Refactor: Optimize route definitions and loader data pre-fetching.
