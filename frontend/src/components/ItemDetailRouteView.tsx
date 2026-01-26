@@ -55,8 +55,8 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
   const getLinkProps = (targetItemId: string | undefined) => {
     const to = (
       props.feedId ? "/feeds/$feedId/items/$itemId" : "/items/$itemId"
-      // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
     ) as any;
+    // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
     // biome-ignore lint/style/noNonNullAssertion: router param fix
     // biome-ignore lint/suspicious/noExplicitAny: router param fix
     const params = { feedId: props.feedId!, itemId: targetItemId } as any;
