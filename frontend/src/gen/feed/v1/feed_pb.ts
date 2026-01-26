@@ -12,9 +12,9 @@ import { Tag } from "../../tag/v1/tag_pb.js";
  */
 export class Feed extends Message<Feed> {
   /**
-   * @generated from field: string uuid = 1;
+   * @generated from field: string id = 1;
    */
-  uuid = "";
+  id = "";
 
   /**
    * @generated from field: string url = 2;
@@ -37,9 +37,9 @@ export class Feed extends Message<Feed> {
   description?: string;
 
   /**
-   * @generated from field: optional string language = 6;
+   * @generated from field: optional string lang = 6;
    */
-  language?: string;
+  lang?: string;
 
   /**
    * @generated from field: optional string image_url = 7;
@@ -89,12 +89,12 @@ export class Feed extends Message<Feed> {
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "feed.v1.Feed";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "uuid", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 2, name: "url", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 3, name: "link", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
     { no: 4, name: "title", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 5, name: "description", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
-    { no: 6, name: "language", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+    { no: 6, name: "lang", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
     { no: 7, name: "image_url", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
     { no: 8, name: "copyright", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
     { no: 9, name: "feed_type", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
@@ -127,9 +127,9 @@ export class Feed extends Message<Feed> {
  */
 export class GetFeedRequest extends Message<GetFeedRequest> {
   /**
-   * @generated from field: string uuid = 1;
+   * @generated from field: string id = 1;
    */
-  uuid = "";
+  id = "";
 
   constructor(data?: PartialMessage<GetFeedRequest>) {
     super();
@@ -139,7 +139,7 @@ export class GetFeedRequest extends Message<GetFeedRequest> {
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "feed.v1.GetFeedRequest";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "uuid", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): GetFeedRequest {
@@ -301,9 +301,9 @@ export class CreateFeedRequest extends Message<CreateFeedRequest> {
   description?: string;
 
   /**
-   * @generated from field: optional string language = 5;
+   * @generated from field: optional string lang = 5;
    */
-  language?: string;
+  lang?: string;
 
   /**
    * @generated from field: optional string image_url = 6;
@@ -342,7 +342,7 @@ export class CreateFeedRequest extends Message<CreateFeedRequest> {
     { no: 2, name: "title", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
     { no: 3, name: "link", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
     { no: 4, name: "description", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
-    { no: 5, name: "language", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+    { no: 5, name: "lang", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
     { no: 6, name: "image_url", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
     { no: 7, name: "copyright", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
     { no: 8, name: "feed_type", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
@@ -409,9 +409,9 @@ export class CreateFeedResponse extends Message<CreateFeedResponse> {
  */
 export class UpdateFeedRequest extends Message<UpdateFeedRequest> {
   /**
-   * @generated from field: string uuid = 1;
+   * @generated from field: string id = 1;
    */
-  uuid = "";
+  id = "";
 
   /**
    * @generated from field: optional string title = 3;
@@ -429,9 +429,9 @@ export class UpdateFeedRequest extends Message<UpdateFeedRequest> {
   description?: string;
 
   /**
-   * @generated from field: optional string language = 6;
+   * @generated from field: optional string lang = 6;
    */
-  language?: string;
+  lang?: string;
 
   /**
    * @generated from field: optional string image_url = 7;
@@ -471,11 +471,11 @@ export class UpdateFeedRequest extends Message<UpdateFeedRequest> {
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "feed.v1.UpdateFeedRequest";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "uuid", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 3, name: "title", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
     { no: 4, name: "link", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
     { no: 5, name: "description", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
-    { no: 6, name: "language", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+    { no: 6, name: "lang", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
     { no: 7, name: "image_url", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
     { no: 8, name: "copyright", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
     { no: 9, name: "feed_type", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
@@ -543,9 +543,9 @@ export class UpdateFeedResponse extends Message<UpdateFeedResponse> {
  */
 export class DeleteFeedRequest extends Message<DeleteFeedRequest> {
   /**
-   * @generated from field: string uuid = 1;
+   * @generated from field: string id = 1;
    */
-  uuid = "";
+  id = "";
 
   constructor(data?: PartialMessage<DeleteFeedRequest>) {
     super();
@@ -555,7 +555,7 @@ export class DeleteFeedRequest extends Message<DeleteFeedRequest> {
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "feed.v1.DeleteFeedRequest";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "uuid", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 1, name: "id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): DeleteFeedRequest {
@@ -611,9 +611,9 @@ export class DeleteFeedResponse extends Message<DeleteFeedResponse> {
  */
 export class RefreshFeedsRequest extends Message<RefreshFeedsRequest> {
   /**
-   * @generated from field: repeated string uuids = 1;
+   * @generated from field: repeated string ids = 1;
    */
-  uuids: string[] = [];
+  ids: string[] = [];
 
   constructor(data?: PartialMessage<RefreshFeedsRequest>) {
     super();
@@ -623,7 +623,7 @@ export class RefreshFeedsRequest extends Message<RefreshFeedsRequest> {
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "feed.v1.RefreshFeedsRequest";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
-    { no: 1, name: "uuids", kind: "scalar", T: 9 /* ScalarType.STRING */, repeated: true },
+    { no: 1, name: "ids", kind: "scalar", T: 9 /* ScalarType.STRING */, repeated: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): RefreshFeedsRequest {
