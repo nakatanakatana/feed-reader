@@ -3,7 +3,7 @@ import { Link } from "@tanstack/solid-router";
 import { For, Show, createSignal } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
-import { feeds } from "../lib/db";
+import { type Feed, type Tag, feeds } from "../lib/db";
 import { useTags } from "../lib/tag-query";
 import { ManageTagsModal } from "./ManageTagsModal";
 
@@ -23,12 +23,13 @@ export function FeedList() {
   });
 
   const filteredFeeds = () => {
+    // biome-ignore lint/suspicious/noExplicitAny: TanStack DB query results are complex to type precisely here
     const list = (feedList as any[]) ?? [];
     const tagId = selectedTagId();
     if (tagId === undefined) return list;
     if (tagId === null)
       return list.filter((f) => !f.tags || f.tags.length === 0);
-    return list.filter((f) => f.tags?.some((t: any) => t.id === tagId));
+    return list.filter((f) => f.tags?.some((t: Tag) => t.id === tagId));
   };
 
   const sortedFeeds = () => {
@@ -229,7 +230,7 @@ export function FeedList() {
       </Show>
       <ul class={stack({ gap: "2" })}>
         <For each={sortedFeeds()}>
-          {(feed: any) => (
+          {(feed: Feed) => (
             <li
               onClick={() => toggleFeedSelection(feed.id)}
               onKeyDown={(e) => {

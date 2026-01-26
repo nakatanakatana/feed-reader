@@ -39,12 +39,14 @@ export function ImportOpmlModal(props: ImportOpmlModalProps) {
       const reader = new FileReader();
       const content = await new Promise<Uint8Array>((resolve, reject) => {
         reader.onload = () =>
+          // biome-ignore lint/suspicious/noExplicitAny: ArrayBuffer to Uint8Array cast issue in some TS environments
           resolve(new Uint8Array(reader.result as any) as any);
         reader.onerror = reject;
         reader.readAsArrayBuffer(file);
       });
 
       const res = await client.importOpml({
+        // biome-ignore lint/suspicious/noExplicitAny: Protobuf bytes field expects specific Uint8Array subtype
         opmlContent: content as any,
       });
       setResult({

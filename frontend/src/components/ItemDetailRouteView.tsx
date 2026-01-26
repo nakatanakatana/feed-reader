@@ -53,19 +53,27 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
   });
 
   const getLinkProps = (targetItemId: string | undefined) => {
-    const to = "/items/$itemId";
-    // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
-    const params = { itemId: targetItemId } as any;
+    const to = (
+      props.feedId ? "/feeds/$feedId/items/$itemId" : "/items/$itemId"
+      // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
+    ) as any;
+    // biome-ignore lint/style/noNonNullAssertion: router param fix
+    // biome-ignore lint/suspicious/noExplicitAny: router param fix
+    const params = { feedId: props.feedId!, itemId: targetItemId } as any;
     // biome-ignore lint/suspicious/noExplicitAny: router search fix
     const search = ((prev: any) => ({ ...prev })) as any;
     return { to, params, search };
   };
 
   const getCloseLinkProps = () => {
-    const to = "/";
+    // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
+    const to = (props.feedId ? "/feeds/$feedId" : "/") as any;
+    // biome-ignore lint/style/noNonNullAssertion: router param fix
+    // biome-ignore lint/suspicious/noExplicitAny: router param fix
+    const params = { feedId: props.feedId! } as any;
     // biome-ignore lint/suspicious/noExplicitAny: router search fix
     const search = ((prev: any) => ({ ...prev })) as any;
-    return { to, search };
+    return { to, params, search };
   };
 
   return (
