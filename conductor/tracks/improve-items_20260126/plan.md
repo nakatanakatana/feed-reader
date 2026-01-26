@@ -32,7 +32,7 @@ Focus: Streamlining the reading experience with intuitive navigation and smart r
     - [ ] Verify Coverage: Verify network calls in tests.
 - [ ] Task: Conductor - User Manual Verification 'Navigation & Auto-Read Logic' (Protocol in workflow.md)
 
-## Phase 3: Bulk Actions (Select & Mark Read)
+## Phase 3: Bulk Actions (Select & Mark Read) [checkpoint: 55b1d77]
 Focus: Improving efficiency for managing large numbers of items.
 
 - [x] Task: Implement Item Selection State & UI 9ae5b3c
