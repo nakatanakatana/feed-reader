@@ -21,7 +21,7 @@
     - [x] Remove `frontend/src/routes_test/feeds.$feedId.test.tsx`.
     - [x] Identify and remove any remaining references to these routes in other tests (e.g., `item_routing.test.tsx`).
     - [x] Verify `frontend/src/routeTree.gen.ts` is updated after route file deletion.
-- [~] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)
 
 ## Phase 4: Final Verification
 - [ ] Task: Run all frontend tests to ensure no regressions.
