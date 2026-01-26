@@ -33,7 +33,7 @@ func NewFetcherService(s *store.Store, f FeedFetcher, p *WorkerPool, l *slog.Log
 func (s *FetcherService) FetchAllFeeds(ctx context.Context) error {
 	s.logger.InfoContext(ctx, "starting background fetch for all feeds")
 
-	feeds, err := s.store.ListFeeds(ctx, nil)
+	feeds, err := s.store.ListFeeds(ctx, store.ListFeedsParams{})
 	if err != nil {
 		s.logger.ErrorContext(ctx, "failed to list feeds", "error", err)
 		return err

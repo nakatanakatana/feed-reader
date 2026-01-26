@@ -178,9 +178,10 @@ func (x *CreateTagResponse) GetTag() *Tag {
 }
 
 type ListTagsRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	SortDescending *bool                  `protobuf:"varint,1,opt,name=sort_descending,json=sortDescending,proto3,oneof" json:"sort_descending,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *ListTagsRequest) Reset() {
@@ -211,6 +212,13 @@ func (x *ListTagsRequest) ProtoReflect() protoreflect.Message {
 // Deprecated: Use ListTagsRequest.ProtoReflect.Descriptor instead.
 func (*ListTagsRequest) Descriptor() ([]byte, []int) {
 	return file_tag_v1_tag_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *ListTagsRequest) GetSortDescending() bool {
+	if x != nil && x.SortDescending != nil {
+		return *x.SortDescending
+	}
+	return false
 }
 
 type ListTagsResponse struct {
@@ -352,8 +360,10 @@ const file_tag_v1_tag_proto_rawDesc = "" +
 	"\x10CreateTagRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\"2\n" +
 	"\x11CreateTagResponse\x12\x1d\n" +
-	"\x03tag\x18\x01 \x01(\v2\v.tag.v1.TagR\x03tag\"\x11\n" +
-	"\x0fListTagsRequest\"3\n" +
+	"\x03tag\x18\x01 \x01(\v2\v.tag.v1.TagR\x03tag\"S\n" +
+	"\x0fListTagsRequest\x12,\n" +
+	"\x0fsort_descending\x18\x01 \x01(\bH\x00R\x0esortDescending\x88\x01\x01B\x12\n" +
+	"\x10_sort_descending\"3\n" +
 	"\x10ListTagsResponse\x12\x1f\n" +
 	"\x04tags\x18\x01 \x03(\v2\v.tag.v1.TagR\x04tags\"\"\n" +
 	"\x10DeleteTagRequest\x12\x0e\n" +
@@ -408,6 +418,7 @@ func file_tag_v1_tag_proto_init() {
 	if File_tag_v1_tag_proto != nil {
 		return
 	}
+	file_tag_v1_tag_proto_msgTypes[3].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

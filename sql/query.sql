@@ -24,7 +24,19 @@ WHERE
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = f.uuid AND ft.tag_id = sqlc.narg('tag_id')
   ))
 ORDER BY
-  created_at DESC;
+  updated_at ASC;
+
+-- name: ListFeedsDesc :many
+SELECT
+  f.*
+FROM
+  feeds f
+WHERE
+  (sqlc.narg('tag_id') IS NULL OR EXISTS (
+    SELECT 1 FROM feed_tags ft WHERE ft.feed_id = f.uuid AND ft.tag_id = sqlc.narg('tag_id')
+  ))
+ORDER BY
+  updated_at DESC;
 
 -- name: ListFeedsByUUIDs :many
 SELECT
@@ -278,7 +290,15 @@ SELECT
 FROM
   tags
 ORDER BY
-  name ASC;
+  updated_at ASC;
+
+-- name: ListTagsDesc :many
+SELECT
+  *
+FROM
+  tags
+ORDER BY
+  updated_at DESC;
 
 -- name: DeleteTag :exec
 DELETE FROM

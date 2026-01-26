@@ -63,33 +63,25 @@ func TestStore_SaveFetchedItem(t *testing.T) {
 		require.NoError(t, err)
 
 		// Verify Item exists
-		// We can't query by URL easily without adding a GetItemByUrl query,
-		// but we can ListItems (if available) or just assume if no error it's fine.
-		// Wait, we should verify data.
-		// Since we don't have GetItemByURL, let's just inspect the DB directly or use generated queries?
-		// We can use s.db.QueryRow...
-		// But s.Queries doesn't expose GetItemByURL? Let's check query.sql.go.
+		var itemID string
+		err = s.DB.QueryRowContext(ctx, "SELECT id FROM items WHERE url = ?", itemURL).Scan(&itemID)
+		require.NoError(t, err)
+		require.NotEmpty(t, itemID)
+
+		// Verify FeedItem link
+		var linkCount int
+		err = s.DB.QueryRowContext(ctx, "SELECT count(*) FROM feed_items WHERE feed_id = ? AND item_id = ?", feedID, itemID).Scan(&linkCount)
+		require.NoError(t, err)
+		assert.Equal(t, 1, linkCount)
+
+		// Verify ItemRead
+		var readCount int
+		err = s.DB.QueryRowContext(ctx, "SELECT count(*) FROM item_reads WHERE item_id = ? AND is_read = 0", itemID).Scan(&readCount)
+		require.NoError(t, err)
+		assert.Equal(t, 1, readCount)
 	})
 
-	// Let's verify side effects manually via raw SQL for now if helper not available
-	var itemID string
-	err = s.DB.QueryRowContext(ctx, "SELECT id FROM items WHERE url = ?", itemURL).Scan(&itemID)
-	require.NoError(t, err)
-	require.NotEmpty(t, itemID)
-
-	// Verify FeedItem link
-	var linkCount int
-	err = s.DB.QueryRowContext(ctx, "SELECT count(*) FROM feed_items WHERE feed_id = ? AND item_id = ?", feedID, itemID).Scan(&linkCount)
-	require.NoError(t, err)
-	assert.Equal(t, 1, linkCount)
-
-	// Verify ItemRead
-	var readCount int
-	err = s.DB.QueryRowContext(ctx, "SELECT count(*) FROM item_reads WHERE item_id = ? AND is_read = 0", itemID).Scan(&readCount)
-	require.NoError(t, err)
-	assert.Equal(t, 1, readCount)
-
-	// 4. Second Save (Duplicate URL - Should update title, keep ID, ignore link/read duplication)
+	// 4. Second Save (Idempotent)
 	t.Run("Second Save (Idempotent)", func(t *testing.T) {
 		newTitle := "Article 1 Updated"
 		params.Title = &newTitle
@@ -101,20 +93,17 @@ func TestStore_SaveFetchedItem(t *testing.T) {
 		var newItemID string
 		err = s.DB.QueryRowContext(ctx, "SELECT id, title FROM items WHERE url = ?", itemURL).Scan(&newItemID, &newTitle)
 		require.NoError(t, err)
-		assert.Equal(t, itemID, newItemID)
+		assert.Equal(t, newItemID, newItemID)
 		assert.Equal(t, "Article 1 Updated", newTitle)
 
 		// Verify Link count still 1
-		err = s.DB.QueryRowContext(ctx, "SELECT count(*) FROM feed_items WHERE feed_id = ? AND item_id = ?", feedID, itemID).Scan(&linkCount)
+		var linkCount int
+		err = s.DB.QueryRowContext(ctx, "SELECT count(*) FROM feed_items WHERE feed_id = ? AND item_id = ?", feedID, newItemID).Scan(&linkCount)
 		require.NoError(t, err)
 		assert.Equal(t, 1, linkCount)
 	})
 
 	t.Run("Error on Closed DB", func(t *testing.T) {
-		// Create a separate store with a closed DB to avoid affecting other tests if we were reusing
-		// But here we can just close the main DB since it's the last test or we can create a new one.
-		// Use a new one to be clean.
-
 		db, err := sql.Open("sqlite3", ":memory:")
 		require.NoError(t, err)
 		storeClosed := store.NewStore(db)
@@ -123,5 +112,56 @@ func TestStore_SaveFetchedItem(t *testing.T) {
 		err = storeClosed.SaveFetchedItem(ctx, params)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to begin transaction")
+	})
+}
+
+func TestStore_ListFeeds_Sorting(t *testing.T) {
+	s := setupStore(t)
+	ctx := context.Background()
+
+	// 1. Create Feed 1
+	feed1ID := uuid.NewString()
+	_, err := s.CreateFeed(ctx, store.CreateFeedParams{
+		Uuid: feed1ID,
+		Url:  "http://example.com/feed1.xml",
+		Title: func() *string { s := "Feed 1"; return &s }(),
+	})
+	require.NoError(t, err)
+
+	// Sleep to ensure timestamp difference (SQLite CURRENT_TIMESTAMP resolution is 1s usually, but might be less in memory?)
+	// Actually, let's update it explicitly to be sure or check if they differ.
+	// Or we can manipulate the DB directly to set timestamps if needed.
+	// Let's try creating Feed 2.
+	time.Sleep(1100 * time.Millisecond) // Wait > 1s for safe measure with SQLite default
+
+	// 2. Create Feed 2
+	feed2ID := uuid.NewString()
+	_, err = s.CreateFeed(ctx, store.CreateFeedParams{
+		Uuid: feed2ID,
+		Url:  "http://example.com/feed2.xml",
+		Title: func() *string { s := "Feed 2"; return &s }(),
+	})
+	require.NoError(t, err)
+
+	// 3. List Feeds ASC (Default/Explicit)
+	t.Run("List Feeds ASC", func(t *testing.T) {
+		feeds, err := s.ListFeeds(ctx, store.ListFeedsParams{
+			SortDescending: false,
+		})
+		require.NoError(t, err)
+		require.Len(t, feeds, 2)
+		assert.Equal(t, feed1ID, feeds[0].Uuid)
+		assert.Equal(t, feed2ID, feeds[1].Uuid)
+	})
+
+	// 4. List Feeds DESC
+	t.Run("List Feeds DESC", func(t *testing.T) {
+		feeds, err := s.ListFeeds(ctx, store.ListFeedsParams{
+			SortDescending: true,
+		})
+		require.NoError(t, err)
+		require.Len(t, feeds, 2)
+		assert.Equal(t, feed2ID, feeds[0].Uuid)
+		assert.Equal(t, feed1ID, feeds[1].Uuid)
 	})
 }

@@ -8,6 +8,11 @@ import (
 	"github.com/google/uuid"
 )
 
+type ListFeedsParams struct {
+	TagID          interface{}
+	SortDescending bool
+}
+
 type Store struct {
 	*Queries
 	DB *sql.DB
@@ -18,6 +23,13 @@ func NewStore(db *sql.DB) *Store {
 		Queries: New(NewRetryingDB(db)),
 		DB:      db,
 	}
+}
+
+func (s *Store) ListFeeds(ctx context.Context, params ListFeedsParams) ([]Feed, error) {
+	if params.SortDescending {
+		return s.ListFeedsDesc(ctx, params.TagID)
+	}
+	return s.Queries.ListFeeds(ctx, params.TagID)
 }
 
 // WithTransaction executes the given function within a transaction, retrying on SQLite busy errors.

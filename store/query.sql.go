@@ -425,7 +425,7 @@ WHERE
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = f.uuid AND ft.tag_id = ?1
   ))
 ORDER BY
-  created_at DESC
+  updated_at ASC
 `
 
 func (q *Queries) ListFeeds(ctx context.Context, tagID interface{}) ([]Feed, error) {
@@ -486,6 +486,56 @@ func (q *Queries) ListFeedsByUUIDs(ctx context.Context, uuids []string) ([]Feed,
 		query = strings.Replace(query, "/*SLICE:uuids*/?", "NULL", 1)
 	}
 	rows, err := q.db.QueryContext(ctx, query, queryParams...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Feed
+	for rows.Next() {
+		var i Feed
+		if err := rows.Scan(
+			&i.Uuid,
+			&i.Url,
+			&i.Link,
+			&i.Title,
+			&i.Description,
+			&i.Language,
+			&i.ImageUrl,
+			&i.Copyright,
+			&i.FeedType,
+			&i.FeedVersion,
+			&i.LastFetchedAt,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listFeedsDesc = `-- name: ListFeedsDesc :many
+SELECT
+  f.uuid, f.url, f.link, f.title, f.description, f.language, f.image_url, f.copyright, f.feed_type, f.feed_version, f.last_fetched_at, f.created_at, f.updated_at
+FROM
+  feeds f
+WHERE
+  (?1 IS NULL OR EXISTS (
+    SELECT 1 FROM feed_tags ft WHERE ft.feed_id = f.uuid AND ft.tag_id = ?1
+  ))
+ORDER BY
+  updated_at DESC
+`
+
+func (q *Queries) ListFeedsDesc(ctx context.Context, tagID interface{}) ([]Feed, error) {
+	rows, err := q.db.QueryContext(ctx, listFeedsDesc, tagID)
 	if err != nil {
 		return nil, err
 	}
@@ -757,7 +807,7 @@ SELECT
 FROM
   tags
 ORDER BY
-  name ASC
+  updated_at ASC
 `
 
 func (q *Queries) ListTags(ctx context.Context) ([]Tag, error) {
@@ -803,6 +853,43 @@ ORDER BY
 
 func (q *Queries) ListTagsByFeedId(ctx context.Context, feedID string) ([]Tag, error) {
 	rows, err := q.db.QueryContext(ctx, listTagsByFeedId, feedID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Tag
+	for rows.Next() {
+		var i Tag
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listTagsDesc = `-- name: ListTagsDesc :many
+SELECT
+  id, name, created_at, updated_at
+FROM
+  tags
+ORDER BY
+  updated_at DESC
+`
+
+func (q *Queries) ListTagsDesc(ctx context.Context) ([]Tag, error) {
+	rows, err := q.db.QueryContext(ctx, listTagsDesc)
 	if err != nil {
 		return nil, err
 	}
