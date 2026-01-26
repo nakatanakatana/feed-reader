@@ -129,9 +129,8 @@ describe("FeedList Navigation", () => {
     );
     expect(titleLink.element().getAttribute("target")).toBe("_blank");
 
-    // 2. Internal detail link icon (This button does not exist yet)
+    // 2. Internal detail link icon should NOT exist
     const detailLink = page.getByRole("link", { name: /view items/i });
-    await expect.element(detailLink).toBeInTheDocument();
-    expect(detailLink.element().getAttribute("href")).toBe("/feeds/1");
+    await expect.element(detailLink).not.toBeInTheDocument();
   });
 });
