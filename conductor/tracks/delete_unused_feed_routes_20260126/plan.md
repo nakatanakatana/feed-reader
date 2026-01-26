@@ -14,10 +14,10 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)
 
 ## Phase 3: Route Removal and Cleanup
-- [ ] Task: Remove Feed-specific route files.
+- [~] Task: Remove Feed-specific route files.
     - [ ] Delete `frontend/src/routes/feeds.$feedId.tsx`.
     - [ ] Delete `frontend/src/routes/feeds.$feedId.items.$itemId.tsx`.
-- [ ] Task: Cleanup related tests and routing references.
+- [~] Task: Cleanup related tests and routing references.
     - [ ] Remove `frontend/src/routes_test/feeds.$feedId.test.tsx`.
     - [ ] Identify and remove any remaining references to these routes in other tests (e.g., `item_routing.test.tsx`).
     - [ ] Verify `frontend/src/routeTree.gen.ts` is updated after route file deletion.
