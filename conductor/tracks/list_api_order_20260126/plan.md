@@ -13,14 +13,14 @@ Update Protobuf definitions and database queries to support sorting.
 - [x] Task: Run `make sqlc` to regenerate Go database code 26abdf0
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Protocol and Schema Updates' (Protocol in workflow.md)
 
-## Phase 2: Store Layer Implementation
+## Phase 2: Store Layer Implementation [checkpoint: 06df05d]
 Update the store layer to pass sorting parameters to the database queries.
 
 - [x] Task: Update `store/feed_store.go` to support `sort_descending` in `ListFeeds` 9abe2c8
 - [x] Task: Update `store/tag_store.go` to support `sort_descending` in `ListTags` 32889ff
 - [x] Task: Add unit tests in `store/feed_store_test.go` for sorting feeds 9abe2c8
 - [x] Task: Add unit tests in `store/tags_test.go` for sorting tags 32889ff
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Store Layer Implementation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Store Layer Implementation' (Protocol in workflow.md)
 
 ## Phase 3: Service Layer Implementation
 Update the service handlers to handle the new proto parameters.
