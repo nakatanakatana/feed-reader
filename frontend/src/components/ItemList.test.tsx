@@ -5,6 +5,8 @@ import { ItemList } from "./ItemList";
 import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
 import { TransportProvider } from "../lib/transport-context";
 import { createConnectTransport } from "@connectrpc/connect-web";
+import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
+import { routeTree } from "../routeTree.gen";
 
 // Mock hooks
 vi.mock("../lib/item-query", () => ({
@@ -26,7 +28,7 @@ describe("ItemList", () => {
     vi.clearAllMocks();
   });
 
-  it("renders a list of items and opens modal on click", async () => {
+  it("renders a list of items and navigates on click", async () => {
     const mockItems = [
       { id: "1", title: "Item 1", url: "http://example.com/1", isRead: false },
     ];
@@ -42,7 +44,12 @@ describe("ItemList", () => {
     } as unknown as ReturnType<typeof useItems>);
 
     vi.mocked(useItem).mockReturnValue({
-      data: mockItems[0],
+      data: {
+        ...mockItems[0],
+        description: "Test description",
+        publishedAt: "2026-01-26",
+        author: "Author",
+      },
       isLoading: false,
     } as unknown as ReturnType<typeof useItem>);
 
@@ -51,11 +58,14 @@ describe("ItemList", () => {
       isPending: false,
     } as unknown as ReturnType<typeof useUpdateItemStatus>);
 
+    const history = createMemoryHistory({ initialEntries: ["/"] });
+    const router = createRouter({ routeTree, history });
+
     dispose = render(
       () => (
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>
-            <ItemList />
+            <RouterProvider router={router} />
           </QueryClientProvider>
         </TransportProvider>
       ),
@@ -67,10 +77,8 @@ describe("ItemList", () => {
 
     await item.click();
 
-    // Check if modal content is visible (ItemDetailModal uses a dialog role now)
+    // Check if modal content is visible
     await expect.element(page.getByRole("dialog")).toBeInTheDocument();
-    await expect
-      .element(page.getByText("Open original article ↗"))
-      .toBeInTheDocument();
+    await expect.element(page.getByRole("heading", { name: "Item 1" })).toBeInTheDocument();
   });
 });
