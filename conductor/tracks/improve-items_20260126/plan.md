@@ -25,7 +25,7 @@ Focus: Streamlining the reading experience with intuitive navigation and smart r
     - [ ] Implement to Pass Tests (Green): Add UI buttons and keyboard shortcuts (e.g., Arrow keys, J/K) to switch items without closing the modal.
     - [ ] Refactor: Optimize the logic for finding adjacent items within the current list context.
     - [ ] Verify Coverage: Test navigation at list boundaries (first/last items).
-- [ ] Task: Implement Auto-Mark as Read on Navigation
+- [x] Task: Implement Auto-Mark as Read on Navigation 7a9eeef
     - [ ] Write Failing Tests (Red): Mock the API and assert `markAsRead` is called for *Item A* when navigating from *Item A* to *Item B*.
     - [ ] Implement to Pass Tests (Green): Hook into the navigation event to trigger the status update for the previous item.
     - [ ] Refactor: Ensure clean separation between navigation state and side-effects.
