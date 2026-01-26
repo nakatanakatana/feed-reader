@@ -11,14 +11,14 @@ Refactor the Go backend code to use the new field names `Id` and `Lang`.
 - [x] Task: Verify backend builds and all tests pass (`go test ./...`) a4c60da
 - [x] Task: Conductor - User Manual Verification 'Go Backend Refactoring' (Protocol in workflow.md) 529e3b7
 
-## Phase 2: TypeScript Frontend Refactoring
+## Phase 2: TypeScript Frontend Refactoring [checkpoint: 42a7ef7]
 Refactor the TypeScript frontend code to use the new property names `id` and `lang`.
 
 - [x] Task: Refactor frontend library and query files (`frontend/src/lib/`, `frontend/src/mocks/`) 68386f9
 - [x] Task: Refactor frontend components and routes (`frontend/src/components/`, `frontend/src/routes/`) 7a85977
 - [x] Task: Update all frontend tests (Vitest) 540654f
-- [~] Task: Verify frontend builds and all tests pass (`npm run test`)
-- [ ] Task: Conductor - User Manual Verification 'TypeScript Frontend Refactoring' (Protocol in workflow.md)
+- [x] Task: Verify frontend builds and all tests pass (`npm run test`) cf87272
+- [x] Task: Conductor - User Manual Verification 'TypeScript Frontend Refactoring' (Protocol in workflow.md) 42a7ef7
 
 ## Phase 3: Final Verification and Cleanup
 Ensure consistency across the entire codebase.
