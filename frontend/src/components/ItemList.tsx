@@ -3,23 +3,21 @@ import { stack, flex } from "../../styled-system/patterns";
 import { css } from "../../styled-system/css";
 import { ItemRow } from "./ItemRow";
 import { useItems } from "../lib/item-query";
-import { ItemDetailModal } from "./ItemDetailModal";
 import { useTags } from "../lib/tag-query";
+import { useNavigate } from "@tanstack/solid-router";
 
 interface ItemListProps {
   feedId?: string;
+  tagId?: string;
 }
 
 export function ItemList(props: ItemListProps) {
-  const [selectedItemId, setSelectedItemId] = createSignal<
-    string | undefined
-  >();
-  const [selectedTagId, setSelectedTagId] = createSignal<string | undefined>();
+  const navigate = useNavigate();
 
   const tagsQuery = useTags();
   const itemsQuery = useItems({
     feedId: props.feedId,
-    tagId: selectedTagId(),
+    tagId: props.tagId,
   });
 
   const allItems = () =>
@@ -27,14 +25,27 @@ export function ItemList(props: ItemListProps) {
 
   const isLoading = () => itemsQuery.isLoading;
 
-  const currentIndex = () =>
-    allItems().findIndex((i) => i.id === selectedItemId());
-  const prevItem = () =>
-    currentIndex() > 0 ? allItems()[currentIndex() - 1] : undefined;
-  const nextItem = () =>
-    currentIndex() >= 0 && currentIndex() < allItems().length - 1
-      ? allItems()[currentIndex() + 1]
-      : undefined;
+  const handleItemClick = (itemId: string) => {
+    if (props.feedId) {
+      navigate({
+        to: "/feeds/$feedId/items/$itemId",
+        params: { feedId: props.feedId, itemId },
+      });
+    } else {
+      navigate({
+        to: "/items/$itemId",
+        params: { itemId },
+        search: (prev) => ({ ...prev }),
+      });
+    }
+  };
+
+  const handleTagClick = (tagId: string | undefined) => {
+    navigate({
+      to: ".",
+      search: (prev) => ({ ...prev, tagId }),
+    });
+  };
 
   return (
     <div class={stack({ gap: "4", width: "full" })}>
@@ -44,7 +55,7 @@ export function ItemList(props: ItemListProps) {
         </span>
         <button
           type="button"
-          onClick={() => setSelectedTagId(undefined)}
+          onClick={() => handleTagClick(undefined)}
           class={css({
             px: "3",
             py: "1",
@@ -53,7 +64,7 @@ export function ItemList(props: ItemListProps) {
             cursor: "pointer",
             border: "1px solid",
             transition: "all 0.2s",
-            ...(selectedTagId() === undefined
+            ...(props.tagId === undefined
               ? { bg: "blue.100", borderColor: "blue.500", color: "blue.700" }
               : { bg: "gray.50", borderColor: "gray.300", color: "gray.600" }),
           })}
@@ -64,7 +75,7 @@ export function ItemList(props: ItemListProps) {
           {(tag) => (
             <button
               type="button"
-              onClick={() => setSelectedTagId(tag.id)}
+              onClick={() => handleTagClick(tag.id)}
               class={css({
                 px: "3",
                 py: "1",
@@ -73,7 +84,7 @@ export function ItemList(props: ItemListProps) {
                 cursor: "pointer",
                 border: "1px solid",
                 transition: "all 0.2s",
-                ...(selectedTagId() === tag.id
+                ...(props.tagId === tag.id
                   ? {
                       bg: "blue.100",
                       borderColor: "blue.500",
@@ -95,19 +106,10 @@ export function ItemList(props: ItemListProps) {
       <div class={stack({ gap: "2", padding: "0" })}>
         <For each={allItems()}>
           {(item) => (
-            <ItemRow item={item} onClick={(i) => setSelectedItemId(i.id)} />
+            <ItemRow item={item} onClick={() => handleItemClick(item.id)} />
           )}
         </For>
       </div>
-
-      <ItemDetailModal
-        itemId={selectedItemId()}
-        onClose={() => setSelectedItemId(undefined)}
-        prevItemId={prevItem()?.id}
-        nextItemId={nextItem()?.id}
-        onPrev={() => setSelectedItemId(prevItem()?.id)}
-        onNext={() => setSelectedItemId(nextItem()?.id)}
-      />
 
       <Show when={isLoading()}>
         <div
