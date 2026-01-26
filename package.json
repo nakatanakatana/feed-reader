@@ -17,9 +17,9 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@bufbuild/protobuf": "^1.10.1",
-    "@connectrpc/connect": "^1.7.0",
-    "@connectrpc/connect-web": "^1.7.0",
+    "@bufbuild/protobuf": "^2.0.0",
+    "@connectrpc/connect": "^2.0.0",
+    "@connectrpc/connect-web": "^2.0.0",
     "@tanstack/query-db-collection": "^1.0.20",
     "@tanstack/router-plugin": "^1.131.35",
     "@tanstack/solid-db": "^0.2.3",
@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.12",
-    "@bufbuild/protoc-gen-es": "^1.10.1",
+    "@bufbuild/protoc-gen-es": "^2.0.0",
     "@connectrpc/protoc-gen-connect-es": "^1.7.0",
     "@pandacss/dev": "^1.7.2",
     "@vitest/browser-playwright": "^4.0.16",
