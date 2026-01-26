@@ -32,8 +32,8 @@ func TestTags(t *testing.T) {
 	tags, err := q.ListTags(ctx)
 	require.NoError(t, err)
 	assert.Len(t, tags, 2)
-	assert.Equal(t, "News", tags[0].Name) // Ordered by Name ASC
-	assert.Equal(t, "Tech", tags[1].Name)
+	assert.Equal(t, "Tech", tags[0].Name) // Ordered by UpdatedAt ASC (Default)
+	assert.Equal(t, "News", tags[1].Name)
 
 	// 3. Create Feed and Associate Tag
 	feedParams := store.CreateFeedParams{
