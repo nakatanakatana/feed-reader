@@ -37,7 +37,7 @@ describe("AddFeedForm", () => {
   it("creates a new feed", async () => {
     vi.mocked(db.addFeed).mockResolvedValue(
       new Feed({
-        uuid: "1",
+        id: "1",
         url: "http://example.com",
         title: "Mocked Feed",
       }),
