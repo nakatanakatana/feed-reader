@@ -8,9 +8,9 @@
 - [x] Task: Remove the close button (×) from ItemDetailModal. cb4c2a5
     - [x] Write failing test in `frontend/src/components/ItemDetailModal.test.tsx` to assert the "X" button is NOT present.
     - [x] Remove the button and its associated logic from `frontend/src/components/ItemDetailModal.tsx`.
-- [ ] Task: Remove navigation functionality from FeedList sidebar.
-    - [ ] Write failing test in `frontend/src/components/FeedList.test.tsx` ensuring clicking a feed doesn't navigate.
-    - [ ] Update `frontend/src/components/FeedList.tsx` to remove the `<Link>` or navigation wrapper around feed items.
+- [x] Task: Remove navigation functionality from FeedList sidebar. e386edc
+    - [x] Write failing test in `frontend/src/components/FeedList.test.tsx` ensuring clicking a feed doesn't navigate.
+    - [x] Update `frontend/src/components/FeedList.tsx` to remove the `<Link>` or navigation wrapper around feed items.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)
 
 ## Phase 3: Route Removal and Cleanup
