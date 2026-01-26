@@ -236,9 +236,7 @@ describe("FeedList", () => {
   });
 
   it("does NOT have a navigation link to feed details", async () => {
-    const mockFeeds = [
-      { uuid: "1", title: "Feed 1", url: "u1", tags: [] },
-    ];
+    const mockFeeds = [{ uuid: "1", title: "Feed 1", url: "u1", tags: [] }];
     vi.mocked(useLiveQuery).mockReturnValue({
       data: mockFeeds,
     } as unknown as ReturnType<typeof useLiveQuery>);
