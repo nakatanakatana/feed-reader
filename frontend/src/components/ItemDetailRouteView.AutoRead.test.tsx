@@ -25,24 +25,6 @@ vi.mock("../lib/item-query", () => ({
     },
     isLoading: false,
   }),
-  useItem: (id: () => string | undefined) => ({
-    get data() {
-      const itemId = id();
-      if (!itemId) return undefined;
-      return {
-        id: itemId,
-        title: "Test Item " + itemId,
-        description: "<p>Test Content</p>",
-        publishedAt: "2026-01-24",
-        author: "Test Author",
-        url: "http://example.com",
-        isRead: false,
-      };
-    },
-    get isLoading() {
-      return false;
-    },
-  }),
   useUpdateItemStatus: () => ({
     mutate: markAsReadMock,
     isPending: false,
@@ -80,7 +62,7 @@ describe("ItemDetailRouteView Auto-Read", () => {
     dispose = render(
       () => (
         <Wrapper initialEntries={["/items/1"]}>
-          <ItemDetailRouteView itemId="1" basePath="" />
+          <ItemDetailRouteView itemId="1" />
         </Wrapper>
       ),
       document.body,
@@ -99,7 +81,7 @@ describe("ItemDetailRouteView Auto-Read", () => {
     dispose = render(
       () => (
         <Wrapper initialEntries={["/items/2"]}>
-          <ItemDetailRouteView itemId="2" basePath="" />
+          <ItemDetailRouteView itemId="2" />
         </Wrapper>
       ),
       document.body,

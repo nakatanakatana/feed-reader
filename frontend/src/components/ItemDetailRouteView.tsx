@@ -1,17 +1,15 @@
-import { useNavigate } from "@tanstack/solid-router";
+import { Link } from "@tanstack/solid-router";
 import { ItemDetailModal } from "./ItemDetailModal";
 import { useItems, useUpdateItemStatus } from "../lib/item-query";
+import { css } from "../../styled-system/css";
 
 interface ItemDetailRouteViewProps {
   itemId: string;
   feedId?: string;
   tagId?: string;
-  basePath: string;
-  baseParams?: Record<string, string>;
 }
 
 export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
-  const navigate = useNavigate();
   const updateStatusMutation = useUpdateItemStatus();
 
   const itemsQuery = useItems({
@@ -37,46 +35,104 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
     });
   };
 
-  const handleClose = () => {
-    navigate({
-      to: props.basePath as any,
-      params: props.baseParams,
-      search: (prev) => ({ ...prev }),
-    });
-  };
-
-  const handlePrev = () => {
-    const item = prevItem();
-    if (item) {
-      markCurrentAsRead();
-      navigate({
-        to: `${props.basePath}/items/$itemId` as any,
-        params: { ...props.baseParams, itemId: item.id },
-        search: (prev) => ({ ...prev }),
-      });
-    }
-  };
-
-  const handleNext = () => {
-    const item = nextItem();
-    if (item) {
-      markCurrentAsRead();
-      navigate({
-        to: `${props.basePath}/items/$itemId` as any,
-        params: { ...props.baseParams, itemId: item.id },
-        search: (prev) => ({ ...prev }),
-      });
-    }
-  };
+  const navButtonStyle = css({
+    display: "inline-flex",
+    alignItems: "center",
+    padding: "2",
+    paddingInline: "4",
+    borderRadius: "md",
+    border: "1px solid",
+    borderColor: "gray.300",
+    backgroundColor: "white",
+    cursor: "pointer",
+    fontSize: "sm",
+    textDecoration: "none",
+    color: "inherit",
+    _hover: { backgroundColor: "gray.100" },
+    _disabled: { opacity: 0.5, cursor: "not-allowed" },
+  });
 
   return (
     <ItemDetailModal
       itemId={props.itemId}
-      onClose={handleClose}
+      onClose={() => {}} // Not strictly used when using Link but kept for props
       prevItemId={prevItem()?.id}
       nextItemId={nextItem()?.id}
-      onPrev={handlePrev}
-      onNext={handleNext}
+      // Override footer buttons with Links
+      footerExtras={
+        <>
+          <div class={css({ display: "flex", gap: "2" })}>
+            {prevItem() ? (
+              <Link
+                to={(props.feedId ? "/feeds/$feedId/items/$itemId" : "/items/$itemId") as any}
+                params={{ feedId: props.feedId!, itemId: prevItem()!.id } as any}
+                search={((prev: any) => ({ ...prev })) as any}
+                onClick={markCurrentAsRead}
+                class={navButtonStyle}
+              >
+                ← Previous
+              </Link>
+            ) : (
+              <button type="button" disabled class={navButtonStyle}>
+                ← Previous
+              </button>
+            )}
+            {nextItem() ? (
+              <Link
+                to={(props.feedId ? "/feeds/$feedId/items/$itemId" : "/items/$itemId") as any}
+                params={{ feedId: props.feedId!, itemId: nextItem()!.id } as any}
+                search={((prev: any) => ({ ...prev })) as any}
+                onClick={markCurrentAsRead}
+                class={navButtonStyle}
+              >
+                Next →
+              </Link>
+            ) : (
+              <button type="button" disabled class={navButtonStyle}>
+                Next →
+              </button>
+            )}
+          </div>
+
+          <div class={css({ display: "flex", gap: "4", alignItems: "center" })}>
+            <button
+              type="button"
+              onClick={() => updateStatusMutation.mutate({ ids: [props.itemId], isRead: !itemsQuery.data?.pages.flatMap(p => p.items).find(i => i.id === props.itemId)?.isRead })}
+              disabled={updateStatusMutation.isPending}
+              class={css({
+                padding: "2",
+                paddingInline: "4",
+                borderRadius: "md",
+                backgroundColor: itemsQuery.data?.pages.flatMap(p => p.items).find(i => i.id === props.itemId)?.isRead
+                  ? "gray.200"
+                  : "blue.50",
+                color: itemsQuery.data?.pages.flatMap(p => p.items).find(i => i.id === props.itemId)?.isRead ? "gray.700" : "blue.700",
+                cursor: "pointer",
+                fontSize: "sm",
+                fontWeight: "medium",
+                _hover: { opacity: 0.8 },
+                _disabled: { opacity: 0.5, cursor: "not-allowed" },
+              })}
+            >
+              {itemsQuery.data?.pages.flatMap(p => p.items).find(i => i.id === props.itemId)?.isRead ? "Mark as Unread" : "Mark as Read"}
+            </button>
+
+            <Link
+              to={(props.feedId ? "/feeds/$feedId" : "/") as any}
+              params={{ feedId: props.feedId! } as any}
+              search={((prev: any) => ({ ...prev })) as any}
+              class={css({
+                fontSize: "sm",
+                color: "gray.500",
+                cursor: "pointer",
+                _hover: { color: "gray.700" },
+              })}
+            >
+              Close
+            </Link>
+          </div>
+        </>
+      }
     />
   );
 }

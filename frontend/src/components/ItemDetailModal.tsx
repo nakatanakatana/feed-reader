@@ -1,4 +1,4 @@
-import { Show, onMount } from "solid-js";
+import { Show, onMount, type JSX } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack, center } from "../../styled-system/patterns";
 import { useItem, useUpdateItemStatus } from "../lib/item-query";
@@ -10,6 +10,7 @@ interface ItemDetailModalProps {
   nextItemId?: string;
   onPrev?: () => void;
   onNext?: () => void;
+  footerExtras?: JSX.Element;
 }
 
 export function ItemDetailModal(props: ItemDetailModalProps) {
@@ -199,68 +200,77 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
               backgroundColor: "gray.50",
             })}
           >
-            <div class={flex({ gap: "2" })}>
-              <button
-                type="button"
-                onClick={props.onPrev}
-                disabled={!props.prevItemId}
-                class={css({
-                  padding: "2",
-                  paddingInline: "4",
-                  borderRadius: "md",
-                  border: "1px solid",
-                  borderColor: "gray.300",
-                  backgroundColor: "white",
-                  cursor: "pointer",
-                  fontSize: "sm",
-                  _hover: { backgroundColor: "gray.100" },
-                  _disabled: { opacity: 0.5, cursor: "not-allowed" },
-                })}
-              >
-                ← Previous
-              </button>
-              <button
-                type="button"
-                onClick={props.onNext}
-                disabled={!props.nextItemId}
-                class={css({
-                  padding: "2",
-                  paddingInline: "4",
-                  borderRadius: "md",
-                  border: "1px solid",
-                  borderColor: "gray.300",
-                  backgroundColor: "white",
-                  cursor: "pointer",
-                  fontSize: "sm",
-                  _hover: { backgroundColor: "gray.100" },
-                  _disabled: { opacity: 0.5, cursor: "not-allowed" },
-                })}
-              >
-                Next →
-              </button>
-            </div>
+            <Show
+              when={props.footerExtras}
+              fallback={
+                <>
+                  <div class={flex({ gap: "2" })}>
+                    <button
+                      type="button"
+                      onClick={props.onPrev}
+                      disabled={!props.prevItemId}
+                      class={css({
+                        padding: "2",
+                        paddingInline: "4",
+                        borderRadius: "md",
+                        border: "1px solid",
+                        borderColor: "gray.300",
+                        backgroundColor: "white",
+                        cursor: "pointer",
+                        fontSize: "sm",
+                        _hover: { backgroundColor: "gray.100" },
+                        _disabled: { opacity: 0.5, cursor: "not-allowed" },
+                      })}
+                    >
+                      ← Previous
+                    </button>
+                    <button
+                      type="button"
+                      onClick={props.onNext}
+                      disabled={!props.nextItemId}
+                      class={css({
+                        padding: "2",
+                        paddingInline: "4",
+                        borderRadius: "md",
+                        border: "1px solid",
+                        borderColor: "gray.300",
+                        backgroundColor: "white",
+                        cursor: "pointer",
+                        fontSize: "sm",
+                        _hover: { backgroundColor: "gray.100" },
+                        _disabled: { opacity: 0.5, cursor: "not-allowed" },
+                      })}
+                    >
+                      Next →
+                    </button>
+                  </div>
 
-            <button
-              type="button"
-              onClick={handleToggleRead}
-              disabled={updateStatusMutation.isPending}
-              class={css({
-                padding: "2",
-                paddingInline: "4",
-                borderRadius: "md",
-                backgroundColor: itemQuery.data?.isRead
-                  ? "gray.200"
-                  : "blue.50",
-                color: itemQuery.data?.isRead ? "gray.700" : "blue.700",
-                cursor: "pointer",
-                fontSize: "sm",
-                fontWeight: "medium",
-                _hover: { opacity: 0.8 },
-                _disabled: { opacity: 0.5, cursor: "not-allowed" },
-              })}
+                  <button
+                    type="button"
+                    onClick={handleToggleRead}
+                    disabled={updateStatusMutation.isPending}
+                    class={css({
+                      padding: "2",
+                      paddingInline: "4",
+                      borderRadius: "md",
+                      backgroundColor: itemQuery.data?.isRead
+                        ? "gray.200"
+                        : "blue.50",
+                      color: itemQuery.data?.isRead ? "gray.700" : "blue.700",
+                      cursor: "pointer",
+                      fontSize: "sm",
+                      fontWeight: "medium",
+                      _hover: { opacity: 0.8 },
+                      _disabled: { opacity: 0.5, cursor: "not-allowed" },
+                    })}
+                  >
+                    {itemQuery.data?.isRead ? "Mark as Unread" : "Mark as Read"}
+                  </button>
+                </>
+              }
             >
-              {itemQuery.data?.isRead ? "Mark as Unread" : "Mark as Read"}
-            </button>
+              {props.footerExtras}
+            </Show>
           </div>
         </div>
       </div>
