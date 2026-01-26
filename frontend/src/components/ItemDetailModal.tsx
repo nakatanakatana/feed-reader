@@ -1,4 +1,4 @@
-import { Show } from "solid-js";
+import { Show, onMount } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack, center } from "../../styled-system/patterns";
 import { useItem, useUpdateItemStatus } from "../lib/item-query";
@@ -13,8 +13,15 @@ interface ItemDetailModalProps {
 }
 
 export function ItemDetailModal(props: ItemDetailModalProps) {
+  let modalRef: HTMLDivElement | undefined;
   const itemQuery = useItem(() => props.itemId);
   const updateStatusMutation = useUpdateItemStatus();
+
+  onMount(() => {
+    if (modalRef) {
+      modalRef.focus();
+    }
+  });
 
   const handleToggleRead = () => {
     const item = itemQuery.data;
@@ -47,7 +54,6 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
       {/* biome-ignore lint/a11y/noStaticElementInteractions: Backdrop click to close */}
       <div
         onClick={handleBackdropClick}
-        onKeyDown={handleKeyDown}
         class={center({
           position: "fixed",
           top: 0,
@@ -60,10 +66,12 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
         })}
       >
         <div
+          ref={modalRef}
+          tabindex="-1"
           role="dialog"
           aria-modal="true"
           onClick={(e) => e.stopPropagation()}
-          onKeyDown={() => {}}
+          onKeyDown={handleKeyDown}
           class={stack({
             backgroundColor: "white",
             width: { base: "full", md: "90%" },
@@ -72,6 +80,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             maxHeight: { base: "full", md: "90vh" },
             borderRadius: { base: "none", md: "lg" },
             boxShadow: "xl",
+            outline: "none",
             overflow: "hidden",
             position: "relative",
             textAlign: "left",
