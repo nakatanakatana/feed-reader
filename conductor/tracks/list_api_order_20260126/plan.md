@@ -16,9 +16,9 @@ Update Protobuf definitions and database queries to support sorting.
 ## Phase 2: Store Layer Implementation
 Update the store layer to pass sorting parameters to the database queries.
 
-- [ ] Task: Update `store/feed_store.go` to support `sort_descending` in `ListFeeds`
+- [x] Task: Update `store/feed_store.go` to support `sort_descending` in `ListFeeds` 9abe2c8
 - [ ] Task: Update `store/tag_store.go` to support `sort_descending` in `ListTags`
-- [ ] Task: Add unit tests in `store/feed_store_test.go` for sorting feeds
+- [x] Task: Add unit tests in `store/feed_store_test.go` for sorting feeds 9abe2c8
 - [ ] Task: Add unit tests in `store/tags_test.go` for sorting tags
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Store Layer Implementation' (Protocol in workflow.md)
 
