@@ -84,13 +84,13 @@ describe("FeedList Uncategorized Filter", () => {
     // Setup mock return for useLiveQuery
     const mockFeeds = [
       {
-        uuid: "1",
+        id: "1",
         title: "Tagged Feed",
         url: "http://example.com/1",
         tags: [{ id: "t1", name: "Tech" }],
       },
       {
-        uuid: "2",
+        id: "2",
         title: "Untagged Feed",
         url: "http://example.com/2",
         tags: [],

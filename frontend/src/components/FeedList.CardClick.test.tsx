@@ -81,7 +81,7 @@ describe("FeedList Card Click Selection", () => {
   );
 
   it("toggles selection when clicking the card background", async () => {
-    const mockFeeds = [{ uuid: "1", title: "Feed 1", url: "url1", tags: [] }];
+    const mockFeeds = [{ id: "1", title: "Feed 1", url: "url1", tags: [] }];
 
     vi.mocked(useLiveQuery).mockReturnValue({
       data: mockFeeds,

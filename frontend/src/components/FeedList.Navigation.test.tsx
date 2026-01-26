@@ -91,7 +91,7 @@ describe("FeedList Navigation", () => {
   it("has correct navigation links: external title and internal detail icon", async () => {
     const mockFeeds = [
       {
-        uuid: "1",
+        id: "1",
         title: "Feed 1",
         url: "url1",
         link: "http://external.site",
