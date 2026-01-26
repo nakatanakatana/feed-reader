@@ -14,14 +14,14 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)
 
 ## Phase 3: Route Removal and Cleanup
-- [~] Task: Remove Feed-specific route files.
-    - [ ] Delete `frontend/src/routes/feeds.$feedId.tsx`.
-    - [ ] Delete `frontend/src/routes/feeds.$feedId.items.$itemId.tsx`.
-- [~] Task: Cleanup related tests and routing references.
-    - [ ] Remove `frontend/src/routes_test/feeds.$feedId.test.tsx`.
-    - [ ] Identify and remove any remaining references to these routes in other tests (e.g., `item_routing.test.tsx`).
-    - [ ] Verify `frontend/src/routeTree.gen.ts` is updated after route file deletion.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)
+- [x] Task: Remove Feed-specific route files. 10e7f13
+    - [x] Delete `frontend/src/routes/feeds.$feedId.tsx`.
+    - [x] Delete `frontend/src/routes/feeds.$feedId.items.$itemId.tsx`.
+- [x] Task: Cleanup related tests and routing references. 10e7f13
+    - [x] Remove `frontend/src/routes_test/feeds.$feedId.test.tsx`.
+    - [x] Identify and remove any remaining references to these routes in other tests (e.g., `item_routing.test.tsx`).
+    - [x] Verify `frontend/src/routeTree.gen.ts` is updated after route file deletion.
+- [~] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)
 
 ## Phase 4: Final Verification
 - [ ] Task: Run all frontend tests to ensure no regressions.
