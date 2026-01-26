@@ -13,7 +13,7 @@
     - [x] Update `frontend/src/components/FeedList.tsx` to remove the `<Link>` or navigation wrapper around feed items.
 - [x] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)
 
-## Phase 3: Route Removal and Cleanup
+## Phase 3: Route Removal and Cleanup [checkpoint: f98c805]
 - [x] Task: Remove Feed-specific route files. 10e7f13
     - [x] Delete `frontend/src/routes/feeds.$feedId.tsx`.
     - [x] Delete `frontend/src/routes/feeds.$feedId.items.$itemId.tsx`.
