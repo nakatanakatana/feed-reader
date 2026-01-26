@@ -2,7 +2,7 @@
 
 This plan covers the addition of sorting by `updated_at` to the `ListFeeds` and `ListTags` API endpoints.
 
-## Phase 1: Protocol and Schema Updates
+## Phase 1: Protocol and Schema Updates [checkpoint: 5e091f3]
 Update Protobuf definitions and database queries to support sorting.
 
 - [x] Task: Update `proto/feed/v1/feed.proto` to add `sort_descending` to `ListFeedsRequest` 880e50e
