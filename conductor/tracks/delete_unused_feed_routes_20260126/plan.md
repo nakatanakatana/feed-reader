@@ -4,7 +4,7 @@
 - [x] Task: Verify current project state and ensure tests pass.
 - [x] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)
 
-## Phase 2: Remove UI Elements and Update Components
+## Phase 2: Remove UI Elements and Update Components [checkpoint: 5a589fb]
 - [x] Task: Remove the close button (×) from ItemDetailModal. cb4c2a5
     - [x] Write failing test in `frontend/src/components/ItemDetailModal.test.tsx` to assert the "X" button is NOT present.
     - [x] Remove the button and its associated logic from `frontend/src/components/ItemDetailModal.tsx`.
