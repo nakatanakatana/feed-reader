@@ -6,7 +6,7 @@ This plan covers the addition of sorting by `updated_at` to the `ListFeeds` and 
 Update Protobuf definitions and database queries to support sorting.
 
 - [x] Task: Update `proto/feed/v1/feed.proto` to add `sort_descending` to `ListFeedsRequest` 880e50e
-- [ ] Task: Update `proto/tag/v1/tag.proto` to add `sort_descending` to `ListTagsRequest`
+- [x] Task: Update `proto/tag/v1/tag.proto` to add `sort_descending` to `ListTagsRequest` fa549a2
 - [ ] Task: Run `make gen` to regenerate Go and TypeScript code from proto files
 - [ ] Task: Add indexes for `updated_at` in `sql/schema.sql` to optimize sorting
 - [ ] Task: Update `sql/query.sql` to add sorting logic to `ListFeeds` and `ListTags` queries
