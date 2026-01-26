@@ -5,9 +5,9 @@ This plan outlines the steps to refactor the application code to match the renam
 ## Phase 1: Go Backend Refactoring
 Refactor the Go backend code to use the new field names `Id` and `Lang`.
 
-- [ ] Task: Refactor `store/` package to use new `sqlc` field names
-- [ ] Task: Refactor `cmd/feed-reader/` package (services and handlers) to use new field names
-- [ ] Task: Update all backend tests in `store/` and `cmd/feed-reader/`
+- [~] Task: Refactor `store/` package to use new `sqlc` field names
+- [~] Task: Refactor `cmd/feed-reader/` package (services and handlers) to use new field names
+- [~] Task: Update all backend tests in `store/` and `cmd/feed-reader/`
 - [ ] Task: Verify backend builds and all tests pass (`go test ./...`)
 - [ ] Task: Conductor - User Manual Verification 'Go Backend Refactoring' (Protocol in workflow.md)
 

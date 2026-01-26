@@ -469,7 +469,7 @@ func (q *Queries) ListFeeds(ctx context.Context, tagID interface{}) ([]Feed, err
 	return items, nil
 }
 
-const listFeedsByUUIDs = `-- name: ListFeedsByUUIDs :many
+const listFeedsByIDs = `-- name: ListFeedsByIDs :many
 SELECT
   id, url, link, title, description, lang, hoge, image_url, copyright, feed_type, feed_version, last_fetched_at, created_at, updated_at
 FROM
@@ -478,8 +478,8 @@ WHERE
   id IN (/*SLICE:ids*/?)
 `
 
-func (q *Queries) ListFeedsByUUIDs(ctx context.Context, ids []string) ([]Feed, error) {
-	query := listFeedsByUUIDs
+func (q *Queries) ListFeedsByIDs(ctx context.Context, ids []string) ([]Feed, error) {
+	query := listFeedsByIDs
 	var queryParams []interface{}
 	if len(ids) > 0 {
 		for _, v := range ids {

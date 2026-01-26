@@ -99,7 +99,7 @@ func TestQueries_CreateFeedItem(t *testing.T) {
 
 	// Create Feed
 	feedParams := store.CreateFeedParams{
-		Uuid: "feed-1",
+		ID:   "feed-1",
 		Url:  "http://example.com/feed.xml",
 	}
 	_, err := q.CreateFeed(ctx, feedParams)

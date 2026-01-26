@@ -49,7 +49,7 @@ func TestStore_RetryIntegration(t *testing.T) {
 		require.NoError(t, err)
 
 		// Execute a write in tx2
-		_, err = db2.ExecContext(ctx, "INSERT INTO feeds (uuid, url) VALUES ('lock', 'lock')")
+		_, err = db2.ExecContext(ctx, "INSERT INTO feeds (id, url) VALUES ('lock', 'lock')")
 		require.NoError(t, err)
 
 		// Now try to write via s (db1). It should fail with BUSY but retry.
@@ -80,15 +80,15 @@ func TestStore_RetryIntegration(t *testing.T) {
 
 		// Setup a feed first
 		_, err := s.CreateFeed(ctx, store.CreateFeedParams{
-			Uuid: "f1",
-			Url:  "http://example.com/f1",
+			ID:  "f1",
+			Url: "http://example.com/f1",
 		})
 		require.NoError(t, err)
 
 		// Start a transaction in db2 and hold a lock
 		_, err = db2.Exec("BEGIN IMMEDIATE")
 		require.NoError(t, err)
-		_, err = db2.ExecContext(ctx, "INSERT INTO feeds (uuid, url) VALUES ('lock2', 'lock2')")
+		_, err = db2.ExecContext(ctx, "INSERT INTO feeds (id, url) VALUES ('lock2', 'lock2')")
 		require.NoError(t, err)
 
 		done := make(chan error, 1)

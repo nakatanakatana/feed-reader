@@ -54,12 +54,12 @@ func (s *FetcherService) FetchAllFeeds(ctx context.Context) error {
 }
 
 // FetchFeedsByIDs initiates the fetching process for specified feeds, bypassing the interval check.
-func (s *FetcherService) FetchFeedsByIDs(ctx context.Context, uuids []string) error {
-	s.logger.InfoContext(ctx, "starting forced fetch for feeds", "count", len(uuids))
+func (s *FetcherService) FetchFeedsByIDs(ctx context.Context, ids []string) error {
+	s.logger.InfoContext(ctx, "starting forced fetch for feeds", "count", len(ids))
 
-	feeds, err := s.store.ListFeedsByUUIDs(ctx, uuids)
+	feeds, err := s.store.ListFeedsByIDs(ctx, ids)
 	if err != nil {
-		s.logger.ErrorContext(ctx, "failed to list feeds by uuids", "error", err)
+		s.logger.ErrorContext(ctx, "failed to list feeds by ids", "error", err)
 		return err
 	}
 
@@ -80,7 +80,7 @@ func (s *FetcherService) shouldFetch(f store.Feed) bool {
 
 	lastFetched, err := time.Parse(time.RFC3339, *f.LastFetchedAt)
 	if err != nil {
-		s.logger.Warn("failed to parse last_fetched_at", "uuid", f.Uuid, "error", err)
+		s.logger.Warn("failed to parse last_fetched_at", "id", f.ID, "error", err)
 		return true // Fetch if date is invalid
 	}
 
@@ -88,7 +88,7 @@ func (s *FetcherService) shouldFetch(f store.Feed) bool {
 }
 
 func (s *FetcherService) FetchAndSave(ctx context.Context, f store.Feed) error {
-	s.logger.DebugContext(ctx, "fetching feed", "url", f.Url, "uuid", f.Uuid)
+	s.logger.DebugContext(ctx, "fetching feed", "url", f.Url, "id", f.ID)
 
 	parsedFeed, err := s.fetcher.Fetch(ctx, f.Url)
 	if err != nil {
@@ -97,7 +97,7 @@ func (s *FetcherService) FetchAndSave(ctx context.Context, f store.Feed) error {
 	}
 
 	for _, item := range parsedFeed.Items {
-		params := s.normalizeItem(f.Uuid, item)
+		params := s.normalizeItem(f.ID, item)
 
 		if err := s.store.SaveFetchedItem(ctx, params); err != nil {
 			s.logger.ErrorContext(ctx, "failed to save item", "url", item.Link, "error", err)
@@ -110,9 +110,9 @@ func (s *FetcherService) FetchAndSave(ctx context.Context, f store.Feed) error {
 	now := time.Now().Format(time.RFC3339)
 	if err := s.store.MarkFeedFetched(ctx, store.MarkFeedFetchedParams{
 		LastFetchedAt: &now,
-		Uuid:          f.Uuid,
+		ID:            f.ID,
 	}); err != nil {
-		s.logger.ErrorContext(ctx, "failed to update last_fetched_at", "uuid", f.Uuid, "error", err)
+		s.logger.ErrorContext(ctx, "failed to update last_fetched_at", "id", f.ID, "error", err)
 		// Not a critical error, so we don't return it
 	}
 

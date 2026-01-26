@@ -38,7 +38,7 @@ WHERE
 ORDER BY
   updated_at DESC;
 
--- name: ListFeedsByUUIDs :many
+-- name: ListFeedsByIDs :many
 SELECT
   *
 FROM

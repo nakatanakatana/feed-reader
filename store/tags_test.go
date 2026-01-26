@@ -38,7 +38,7 @@ func TestTags(t *testing.T) {
 
 	// 3. Create Feed and Associate Tag
 	feedParams := store.CreateFeedParams{
-		Uuid: "feed-1",
+		ID:   "feed-1",
 		Url:  "http://example.com/feed.xml",
 	}
 	_, err = q.CreateFeed(ctx, feedParams)
@@ -61,7 +61,7 @@ func TestTags(t *testing.T) {
 	feeds, err := q.ListFeeds(ctx, "tag-1")
 	require.NoError(t, err)
 	assert.Len(t, feeds, 1)
-	assert.Equal(t, "feed-1", feeds[0].Uuid)
+	assert.Equal(t, "feed-1", feeds[0].ID)
 
 	feeds, err = q.ListFeeds(ctx, "tag-2")
 	require.NoError(t, err)
@@ -125,7 +125,7 @@ func TestDeleteFeedTag(t *testing.T) {
 
 	// Setup: Create Feed and Tag
 	_, _ = q.CreateTag(ctx, store.CreateTagParams{ID: "t1", Name: "Tag 1"})
-	_, _ = q.CreateFeed(ctx, store.CreateFeedParams{Uuid: "f1", Url: "u1"})
+	_, _ = q.CreateFeed(ctx, store.CreateFeedParams{ID: "f1", Url: "u1"})
 	_ = q.CreateFeedTag(ctx, store.CreateFeedTagParams{FeedID: "f1", TagID: "t1"})
 
 	// Verify setup
@@ -174,8 +174,8 @@ func TestStore_ManageFeedTags(t *testing.T) {
 	// Setup: 2 Feeds, 2 Tags
 	_, _ = q.CreateTag(ctx, store.CreateTagParams{ID: "t1", Name: "Tag 1"})
 	_, _ = q.CreateTag(ctx, store.CreateTagParams{ID: "t2", Name: "Tag 2"})
-	_, _ = q.CreateFeed(ctx, store.CreateFeedParams{Uuid: "f1", Url: "u1"})
-	_, _ = q.CreateFeed(ctx, store.CreateFeedParams{Uuid: "f2", Url: "u2"})
+	_, _ = q.CreateFeed(ctx, store.CreateFeedParams{ID: "f1", Url: "u1"})
+	_, _ = q.CreateFeed(ctx, store.CreateFeedParams{ID: "f2", Url: "u2"})
 
 	// Initially: f1 has t1, f2 has t1
 	_ = q.CreateFeedTag(ctx, store.CreateFeedTagParams{FeedID: "f1", TagID: "t1"})
@@ -208,7 +208,7 @@ func TestStore_SetFeedTags(t *testing.T) {
 	_, _ = q.CreateTag(ctx, store.CreateTagParams{ID: "t1", Name: "Tag 1"})
 	_, _ = q.CreateTag(ctx, store.CreateTagParams{ID: "t2", Name: "Tag 2"})
 	_, _ = q.CreateTag(ctx, store.CreateTagParams{ID: "t3", Name: "Tag 3"})
-	_, _ = q.CreateFeed(ctx, store.CreateFeedParams{Uuid: "f1", Url: "u1"})
+	_, _ = q.CreateFeed(ctx, store.CreateFeedParams{ID: "f1", Url: "u1"})
 
 	// Initially: f1 has t1
 	_ = q.CreateFeedTag(ctx, store.CreateFeedTagParams{FeedID: "f1", TagID: "t1"})

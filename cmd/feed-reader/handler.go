@@ -22,7 +22,7 @@ type FeedServer struct {
 
 type ItemFetcher interface {
 	FetchAndSave(ctx context.Context, f store.Feed) error
-	FetchFeedsByIDs(ctx context.Context, uuids []string) error
+	FetchFeedsByIDs(ctx context.Context, ids []string) error
 }
 
 func NewFeedServer(s *store.Store, uuidGen UUIDGenerator, fetcher FeedFetcher, itemFetcher ItemFetcher) feedv1connect.FeedServiceHandler {
@@ -38,7 +38,7 @@ func NewFeedServer(s *store.Store, uuidGen UUIDGenerator, fetcher FeedFetcher, i
 }
 
 func (s *FeedServer) GetFeed(ctx context.Context, req *connect.Request[feedv1.GetFeedRequest]) (*connect.Response[feedv1.GetFeedResponse], error) {
-	feed, err := s.store.GetFeed(ctx, req.Msg.Uuid)
+	feed, err := s.store.GetFeed(ctx, req.Msg.Id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, connect.NewError(connect.CodeNotFound, err)
@@ -136,12 +136,12 @@ func (s *FeedServer) createFeedFromURL(ctx context.Context, url string, titleOve
 	}
 
 	feed, err := s.store.CreateFeed(ctx, store.CreateFeedParams{
-		Uuid:        id,
+		ID:          id,
 		Url:         url,
 		Title:       strPtr(title),
 		Description: strPtr(fetchedFeed.Description),
 		Link:        strPtr(fetchedFeed.Link),
-		Language:    strPtr(fetchedFeed.Language),
+		Lang:        strPtr(fetchedFeed.Language),
 		ImageUrl:    imageUrl,
 		Copyright:   strPtr(fetchedFeed.Copyright),
 		FeedType:    strPtr(fetchedFeed.FeedType),
@@ -152,7 +152,7 @@ func (s *FeedServer) createFeedFromURL(ctx context.Context, url string, titleOve
 	}
 
 	if len(tagIds) > 0 {
-		if err := s.store.SetFeedTags(ctx, feed.Uuid, tagIds); err != nil {
+		if err := s.store.SetFeedTags(ctx, feed.ID, tagIds); err != nil {
 			return nil, connect.NewError(connect.CodeInternal, err)
 		}
 	}
@@ -168,13 +168,13 @@ func (s *FeedServer) UpdateFeed(ctx context.Context, req *connect.Request[feedv1
 		Link:          req.Msg.Link,
 		Title:         req.Msg.Title,
 		Description:   req.Msg.Description,
-		Language:      req.Msg.Language,
+		Lang:          req.Msg.Lang,
 		ImageUrl:      req.Msg.ImageUrl,
 		Copyright:     req.Msg.Copyright,
 		FeedType:      req.Msg.FeedType,
 		FeedVersion:   req.Msg.FeedVersion,
 		LastFetchedAt: req.Msg.LastFetchedAt,
-		Uuid:          req.Msg.Uuid,
+		ID:            req.Msg.Id,
 	})
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -184,7 +184,7 @@ func (s *FeedServer) UpdateFeed(ctx context.Context, req *connect.Request[feedv1
 	}
 
 	if req.Msg.TagIds != nil {
-		if err := s.store.SetFeedTags(ctx, feed.Uuid, req.Msg.TagIds); err != nil {
+		if err := s.store.SetFeedTags(ctx, feed.ID, req.Msg.TagIds); err != nil {
 			return nil, connect.NewError(connect.CodeInternal, err)
 		}
 	}
@@ -200,7 +200,7 @@ func (s *FeedServer) UpdateFeed(ctx context.Context, req *connect.Request[feedv1
 }
 
 func (s *FeedServer) DeleteFeed(ctx context.Context, req *connect.Request[feedv1.DeleteFeedRequest]) (*connect.Response[feedv1.DeleteFeedResponse], error) {
-	if err := s.store.DeleteFeed(ctx, req.Msg.Uuid); err != nil {
+	if err := s.store.DeleteFeed(ctx, req.Msg.Id); err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
@@ -208,11 +208,11 @@ func (s *FeedServer) DeleteFeed(ctx context.Context, req *connect.Request[feedv1
 }
 
 func (s *FeedServer) RefreshFeeds(ctx context.Context, req *connect.Request[feedv1.RefreshFeedsRequest]) (*connect.Response[feedv1.RefreshFeedsResponse], error) {
-	if len(req.Msg.Uuids) == 0 {
+	if len(req.Msg.Ids) == 0 {
 		return connect.NewResponse(&feedv1.RefreshFeedsResponse{}), nil
 	}
 
-	if err := s.itemFetcher.FetchFeedsByIDs(ctx, req.Msg.Uuids); err != nil {
+	if err := s.itemFetcher.FetchFeedsByIDs(ctx, req.Msg.Ids); err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
@@ -277,7 +277,7 @@ func (s *FeedServer) toProtoFeed(ctx context.Context, f store.Feed) (*feedv1.Fee
 		title = *f.Title
 	}
 
-	tags, err := s.store.ListTagsByFeedId(ctx, f.Uuid)
+	tags, err := s.store.ListTagsByFeedId(ctx, f.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -293,12 +293,12 @@ func (s *FeedServer) toProtoFeed(ctx context.Context, f store.Feed) (*feedv1.Fee
 	}
 
 	return &feedv1.Feed{
-		Uuid:          f.Uuid,
+		Id:            f.ID,
 		Url:           f.Url,
 		Link:          f.Link,
 		Title:         title,
 		Description:   f.Description,
-		Language:      f.Language,
+		Lang:          f.Lang,
 		ImageUrl:      f.ImageUrl,
 		Copyright:     f.Copyright,
 		FeedType:      f.FeedType,

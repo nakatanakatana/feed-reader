@@ -23,8 +23,8 @@ func TestItemServer(t *testing.T) {
 	// Setup Feed
 	feedID := uuid.NewString()
 	_, err := queries.CreateFeed(ctx, store.CreateFeedParams{
-		Uuid: feedID,
-		Url:  "http://example.com/feed",
+		ID:  feedID,
+		Url: "http://example.com/feed",
 	})
 	require.NoError(t, err)
 

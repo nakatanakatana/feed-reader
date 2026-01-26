@@ -19,7 +19,7 @@ func TestStore_ItemOperations(t *testing.T) {
 	feedID := uuid.NewString()
 	feedTitle := "My Feed"
 	feedParams := store.CreateFeedParams{
-		Uuid:  feedID,
+		ID:    feedID,
 		Url:   "http://example.com/feed.xml",
 		Title: &feedTitle,
 	}
