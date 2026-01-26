@@ -573,7 +573,7 @@ func TestFeedServer_ManageFeedTags(t *testing.T) {
 	// Setup: 2 feeds and 2 tags
 	f1Res, _ := server.CreateFeed(ctx, connect.NewRequest(&feedv1.CreateFeedRequest{Url: "u1", Title: proto.String("f1")}))
 	f2Res, _ := server.CreateFeed(ctx, connect.NewRequest(&feedv1.CreateFeedRequest{Url: "u2", Title: proto.String("f2")}))
-	
+
 	// Assuming TagService is managed separately, but for handler test we can just use store directly to create tags
 	q := store.New(db)
 	_, _ = q.CreateTag(ctx, store.CreateTagParams{ID: "t1", Name: "Tag 1"})
@@ -585,7 +585,7 @@ func TestFeedServer_ManageFeedTags(t *testing.T) {
 
 	t.Run("Bulk Manage Tags", func(t *testing.T) {
 		req := &feedv1.ManageFeedTagsRequest{
-			FeedIds:       []string{f1Res.Msg.Feed.Id, f2Res.Msg.Feed.Id},
+			FeedIds:      []string{f1Res.Msg.Feed.Id, f2Res.Msg.Feed.Id},
 			AddTagIds:    []string{"t2"},
 			RemoveTagIds: []string{"t1"},
 		}
@@ -606,7 +606,7 @@ func TestFeedServer_ManageFeedTags(t *testing.T) {
 
 	t.Run("Store Error", func(t *testing.T) {
 		req := &feedv1.ManageFeedTagsRequest{
-			FeedIds:    []string{"non-existent"},
+			FeedIds:   []string{"non-existent"},
 			AddTagIds: []string{"t2"},
 		}
 		_, err := server.ManageFeedTags(ctx, connect.NewRequest(req))

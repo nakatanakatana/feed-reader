@@ -38,8 +38,8 @@ func TestTags(t *testing.T) {
 
 	// 3. Create Feed and Associate Tag
 	feedParams := store.CreateFeedParams{
-		ID:   "feed-1",
-		Url:  "http://example.com/feed.xml",
+		ID:  "feed-1",
+		Url: "http://example.com/feed.xml",
 	}
 	_, err = q.CreateFeed(ctx, feedParams)
 	require.NoError(t, err)

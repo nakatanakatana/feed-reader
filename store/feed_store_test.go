@@ -122,8 +122,8 @@ func TestStore_ListFeeds_Sorting(t *testing.T) {
 	// 1. Create Feed 1
 	feed1ID := uuid.NewString()
 	_, err := s.CreateFeed(ctx, store.CreateFeedParams{
-		ID:  feed1ID,
-		Url: "http://example.com/feed1.xml",
+		ID:    feed1ID,
+		Url:   "http://example.com/feed1.xml",
 		Title: func() *string { s := "Feed 1"; return &s }(),
 	})
 	require.NoError(t, err)
@@ -137,8 +137,8 @@ func TestStore_ListFeeds_Sorting(t *testing.T) {
 	// 2. Create Feed 2
 	feed2ID := uuid.NewString()
 	_, err = s.CreateFeed(ctx, store.CreateFeedParams{
-		ID:  feed2ID,
-		Url: "http://example.com/feed2.xml",
+		ID:    feed2ID,
+		Url:   "http://example.com/feed2.xml",
 		Title: func() *string { s := "Feed 2"; return &s }(),
 	})
 	require.NoError(t, err)
