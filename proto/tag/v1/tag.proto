@@ -25,7 +25,9 @@ message CreateTagResponse {
   Tag tag = 1;
 }
 
-message ListTagsRequest {}
+message ListTagsRequest {
+  optional bool sort_descending = 1;
+}
 
 message ListTagsResponse {
   repeated Tag tags = 1;
