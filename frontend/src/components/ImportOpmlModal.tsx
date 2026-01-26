@@ -44,7 +44,9 @@ export function ImportOpmlModal(props: ImportOpmlModalProps) {
         reader.readAsArrayBuffer(file);
       });
 
-      const res = await client.importOpml({ opmlContent: content });
+      const res = await client.importOpml({
+        opmlContent: content as Uint8Array<ArrayBuffer>,
+      });
       setResult({
         total: res.total,
         success: res.success,

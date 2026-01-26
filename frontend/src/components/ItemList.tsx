@@ -51,18 +51,11 @@ export function ItemList(props: ItemListProps) {
   };
 
   const handleItemClick = (itemId: string) => {
-    if (props.feedId) {
-      navigate({
-        to: "/feeds/$feedId/items/$itemId",
-        params: { feedId: props.feedId, itemId },
-      });
-    } else {
-      navigate({
-        to: "/items/$itemId",
-        params: { itemId },
-        search: (prev) => ({ ...prev }),
-      });
-    }
+    navigate({
+      to: "/items/$itemId",
+      params: { itemId },
+      search: (prev) => ({ ...prev }),
+    });
   };
 
   const handleTagClick = (tagId: string | undefined) => {

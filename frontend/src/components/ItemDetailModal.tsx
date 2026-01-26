@@ -108,19 +108,6 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             >
               {itemQuery.data?.title || "Loading..."}
             </h2>
-            <button
-              type="button"
-              onClick={props.onClose}
-              aria-label="Close modal"
-              class={css({
-                padding: "2",
-                cursor: "pointer",
-                color: "gray.500",
-                _hover: { color: "gray.700" },
-              })}
-            >
-              ✕
-            </button>
           </div>
 
           {/* Content */}
