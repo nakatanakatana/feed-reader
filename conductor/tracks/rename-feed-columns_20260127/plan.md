@@ -16,7 +16,7 @@ Refactor the TypeScript frontend code to use the new property names `id` and `la
 
 - [x] Task: Refactor frontend library and query files (`frontend/src/lib/`, `frontend/src/mocks/`) 68386f9
 - [x] Task: Refactor frontend components and routes (`frontend/src/components/`, `frontend/src/routes/`) 7a85977
-- [~] Task: Update all frontend tests (Vitest)
+- [x] Task: Update all frontend tests (Vitest) 540654f
 - [ ] Task: Verify frontend builds and all tests pass (`npm run test`)
 - [ ] Task: Conductor - User Manual Verification 'TypeScript Frontend Refactoring' (Protocol in workflow.md)
 
