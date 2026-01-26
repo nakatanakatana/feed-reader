@@ -2,5 +2,4 @@
 
 ---
 
-- [~] **Track: Improve item list and detail view**
-*Link: [./tracks/improve-items_20260126/](./tracks/improve-items_20260126/)*
+- [x] Improve item list and detail view (Deep Linking, Auto-Read, Bulk Actions) [link](./tracks/improve-items_20260126/index.md)
