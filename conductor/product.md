@@ -18,7 +18,7 @@ The primary target audience is individuals and organizations seeking control ove
 
 - **Full-Stack Application:** Includes both a backend API and a web frontend.
 
-- **Feed Management:** Add, organize, and manage RSS/Atom feeds via the UI. Supports bulk operations like tagging multiple feeds simultaneously.
+- **Feed Management:** Add, organize, and manage RSS/Atom feeds via the UI. Supports sorting by update time and bulk operations like tagging multiple feeds simultaneously.
 
 
 
