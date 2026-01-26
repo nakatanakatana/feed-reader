@@ -5,9 +5,9 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)
 
 ## Phase 2: Remove UI Elements and Update Components
-- [ ] Task: Remove the close button (×) from ItemDetailModal.
-    - [ ] Write failing test in `frontend/src/components/ItemDetailModal.test.tsx` to assert the "X" button is NOT present.
-    - [ ] Remove the button and its associated logic from `frontend/src/components/ItemDetailModal.tsx`.
+- [x] Task: Remove the close button (×) from ItemDetailModal. cb4c2a5
+    - [x] Write failing test in `frontend/src/components/ItemDetailModal.test.tsx` to assert the "X" button is NOT present.
+    - [x] Remove the button and its associated logic from `frontend/src/components/ItemDetailModal.tsx`.
 - [ ] Task: Remove navigation functionality from FeedList sidebar.
     - [ ] Write failing test in `frontend/src/components/FeedList.test.tsx` ensuring clicking a feed doesn't navigate.
     - [ ] Update `frontend/src/components/FeedList.tsx` to remove the `<Link>` or navigation wrapper around feed items.
