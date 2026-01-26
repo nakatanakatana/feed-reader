@@ -8,7 +8,7 @@ Update Protobuf definitions and database queries to support sorting.
 - [x] Task: Update `proto/feed/v1/feed.proto` to add `sort_descending` to `ListFeedsRequest` 880e50e
 - [x] Task: Update `proto/tag/v1/tag.proto` to add `sort_descending` to `ListTagsRequest` fa549a2
 - [x] Task: Run `make gen` to regenerate Go and TypeScript code from proto files 73aba91
-- [ ] Task: Add indexes for `updated_at` in `sql/schema.sql` to optimize sorting
+- [x] Task: Add indexes for `updated_at` in `sql/schema.sql` to optimize sorting d03072f
 - [ ] Task: Update `sql/query.sql` to add sorting logic to `ListFeeds` and `ListTags` queries
 - [ ] Task: Run `make sqlc` to regenerate Go database code
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Protocol and Schema Updates' (Protocol in workflow.md)
