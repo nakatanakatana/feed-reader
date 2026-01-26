@@ -23,5 +23,5 @@ Refactor the TypeScript frontend code to use the new property names `id` and `la
 ## Phase 3: Final Verification and Cleanup
 Ensure consistency across the entire codebase.
 
-- [ ] Task: Run all project-wide checks (linting, formatting, full build)
+- [~] Task: Run all project-wide checks (linting, formatting, full build)
 - [ ] Task: Conductor - User Manual Verification 'Final Verification and Cleanup' (Protocol in workflow.md)
