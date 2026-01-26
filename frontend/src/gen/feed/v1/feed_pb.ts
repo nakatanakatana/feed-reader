@@ -205,6 +205,11 @@ export class ListFeedsRequest extends Message<ListFeedsRequest> {
    */
   tagId?: string;
 
+  /**
+   * @generated from field: optional bool sort_descending = 2;
+   */
+  sortDescending?: boolean;
+
   constructor(data?: PartialMessage<ListFeedsRequest>) {
     super();
     proto3.util.initPartial(data, this);
@@ -214,6 +219,7 @@ export class ListFeedsRequest extends Message<ListFeedsRequest> {
   static readonly typeName = "feed.v1.ListFeedsRequest";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
     { no: 1, name: "tag_id", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+    { no: 2, name: "sort_descending", kind: "scalar", T: 8 /* ScalarType.BOOL */, opt: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListFeedsRequest {

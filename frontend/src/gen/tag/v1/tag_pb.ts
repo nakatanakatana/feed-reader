@@ -139,6 +139,11 @@ export class CreateTagResponse extends Message<CreateTagResponse> {
  * @generated from message tag.v1.ListTagsRequest
  */
 export class ListTagsRequest extends Message<ListTagsRequest> {
+  /**
+   * @generated from field: optional bool sort_descending = 1;
+   */
+  sortDescending?: boolean;
+
   constructor(data?: PartialMessage<ListTagsRequest>) {
     super();
     proto3.util.initPartial(data, this);
@@ -147,6 +152,7 @@ export class ListTagsRequest extends Message<ListTagsRequest> {
   static readonly runtime: typeof proto3 = proto3;
   static readonly typeName = "tag.v1.ListTagsRequest";
   static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "sort_descending", kind: "scalar", T: 8 /* ScalarType.BOOL */, opt: true },
   ]);
 
   static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListTagsRequest {
