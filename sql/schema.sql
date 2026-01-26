@@ -72,3 +72,6 @@ CREATE TABLE IF NOT EXISTS feed_tags (
   FOREIGN KEY (feed_id) REFERENCES feeds(uuid) ON DELETE CASCADE,
   FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
 );
+
+CREATE INDEX IF NOT EXISTS idx_feeds_updated_at ON feeds(updated_at);
+CREATE INDEX IF NOT EXISTS idx_tags_updated_at ON tags(updated_at);
