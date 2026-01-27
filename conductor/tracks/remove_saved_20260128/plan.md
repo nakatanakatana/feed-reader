@@ -20,14 +20,12 @@ This plan outlines the steps to completely remove the "Saved" feature from the d
 - [x] Task: Verify backend changes. [b317f6a]
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Backend API and Logic' (Protocol in workflow.md) [b8adc07]
 
-## Phase 4: Frontend UI and Logic
+## Phase 4: Frontend UI and Logic [checkpoint: 8cc28b4]
 - [x] Task: Update frontend types and data fetching. [5af6513]
-- [~] Task: Remove "Saved" UI elements.
-- [ ] Task: Fix frontend tests.
-    - [ ] Update Vitest tests (e.g., `frontend/src/components/ItemRow.test.tsx`, `frontend/src/lib/item-utils.test.ts`).
-- [ ] Task: Verify frontend changes.
-    - [ ] Run `npm run test` (or the project's frontend test command).
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Frontend UI and Logic' (Protocol in workflow.md)
+- [x] Task: Remove "Saved" UI elements. [3fe04ec]
+- [x] Task: Fix frontend tests. [3fe04ec]
+- [x] Task: Verify frontend changes. [3fe04ec]
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Frontend UI and Logic' (Protocol in workflow.md) [8cc28b4]
 
 ## Phase 5: Final Verification
 - [ ] Task: Full system check.
