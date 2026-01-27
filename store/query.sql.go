@@ -40,6 +40,48 @@ func (q *Queries) CountItems(ctx context.Context, arg CountItemsParams) (int64, 
 	return count, err
 }
 
+const countUnreadItemsPerFeed = `-- name: CountUnreadItemsPerFeed :many
+SELECT
+  fi.feed_id,
+  COUNT(*) AS count
+FROM
+  feed_items fi
+LEFT JOIN
+  item_reads ir ON fi.item_id = ir.item_id
+WHERE
+  COALESCE(ir.is_read, 0) = 0
+GROUP BY
+  fi.feed_id
+`
+
+type CountUnreadItemsPerFeedRow struct {
+	FeedID string `json:"feed_id"`
+	Count  int64  `json:"count"`
+}
+
+func (q *Queries) CountUnreadItemsPerFeed(ctx context.Context) ([]CountUnreadItemsPerFeedRow, error) {
+	rows, err := q.db.QueryContext(ctx, countUnreadItemsPerFeed)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []CountUnreadItemsPerFeedRow
+	for rows.Next() {
+		var i CountUnreadItemsPerFeedRow
+		if err := rows.Scan(&i.FeedID, &i.Count); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const createFeed = `-- name: CreateFeed :one
 INSERT INTO feeds (
   id,
@@ -151,9 +193,12 @@ INSERT INTO items (
   description,
   published_at,
   author,
-  guid
+  guid,
+  content,
+  image_url,
+  categories
 ) VALUES (
-  ?, ?, ?, ?, ?, ?, ?
+  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 )
 ON CONFLICT(url) DO UPDATE SET
   title = excluded.title,
@@ -161,8 +206,11 @@ ON CONFLICT(url) DO UPDATE SET
   published_at = excluded.published_at,
   author = excluded.author,
   guid = excluded.guid,
+  content = excluded.content,
+  image_url = excluded.image_url,
+  categories = excluded.categories,
   updated_at = CURRENT_TIMESTAMP
-RETURNING id, url, title, description, published_at, author, guid, created_at, updated_at
+RETURNING id, url, title, description, published_at, author, guid, content, image_url, categories, created_at, updated_at
 `
 
 type CreateItemParams struct {
@@ -173,6 +221,9 @@ type CreateItemParams struct {
 	PublishedAt *string `json:"published_at"`
 	Author      *string `json:"author"`
 	Guid        *string `json:"guid"`
+	Content     *string `json:"content"`
+	ImageUrl    *string `json:"image_url"`
+	Categories  *string `json:"categories"`
 }
 
 func (q *Queries) CreateItem(ctx context.Context, arg CreateItemParams) (Item, error) {
@@ -184,6 +235,9 @@ func (q *Queries) CreateItem(ctx context.Context, arg CreateItemParams) (Item, e
 		arg.PublishedAt,
 		arg.Author,
 		arg.Guid,
+		arg.Content,
+		arg.ImageUrl,
+		arg.Categories,
 	)
 	var i Item
 	err := row.Scan(
@@ -194,6 +248,9 @@ func (q *Queries) CreateItem(ctx context.Context, arg CreateItemParams) (Item, e
 		&i.PublishedAt,
 		&i.Author,
 		&i.Guid,
+		&i.Content,
+		&i.ImageUrl,
+		&i.Categories,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -362,6 +419,10 @@ SELECT
   i.description,
   i.published_at,
   i.author,
+  i.guid,
+  i.content,
+  i.image_url,
+  i.categories,
   fi.feed_id,
   CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read
 FROM
@@ -381,6 +442,10 @@ type GetItemRow struct {
 	Description *string `json:"description"`
 	PublishedAt *string `json:"published_at"`
 	Author      *string `json:"author"`
+	Guid        *string `json:"guid"`
+	Content     *string `json:"content"`
+	ImageUrl    *string `json:"image_url"`
+	Categories  *string `json:"categories"`
 	FeedID      string  `json:"feed_id"`
 	IsRead      int64   `json:"is_read"`
 }
@@ -395,6 +460,10 @@ func (q *Queries) GetItem(ctx context.Context, id string) (GetItemRow, error) {
 		&i.Description,
 		&i.PublishedAt,
 		&i.Author,
+		&i.Guid,
+		&i.Content,
+		&i.ImageUrl,
+		&i.Categories,
 		&i.FeedID,
 		&i.IsRead,
 	)
@@ -565,6 +634,10 @@ SELECT
   i.description,
   i.published_at,
   i.author,
+  i.guid,
+  i.content,
+  i.image_url,
+  i.categories,
   fi.feed_id,
   CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read
 FROM
@@ -599,6 +672,10 @@ type ListItemsRow struct {
 	Description *string `json:"description"`
 	PublishedAt *string `json:"published_at"`
 	Author      *string `json:"author"`
+	Guid        *string `json:"guid"`
+	Content     *string `json:"content"`
+	ImageUrl    *string `json:"image_url"`
+	Categories  *string `json:"categories"`
 	FeedID      string  `json:"feed_id"`
 	IsRead      int64   `json:"is_read"`
 }
@@ -625,6 +702,10 @@ func (q *Queries) ListItems(ctx context.Context, arg ListItemsParams) ([]ListIte
 			&i.Description,
 			&i.PublishedAt,
 			&i.Author,
+			&i.Guid,
+			&i.Content,
+			&i.ImageUrl,
+			&i.Categories,
 			&i.FeedID,
 			&i.IsRead,
 		); err != nil {
@@ -649,6 +730,10 @@ SELECT
   i.description,
   i.published_at,
   i.author,
+  i.guid,
+  i.content,
+  i.image_url,
+  i.categories,
   fi.feed_id,
   CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read
 FROM
@@ -683,6 +768,10 @@ type ListItemsAscRow struct {
 	Description *string `json:"description"`
 	PublishedAt *string `json:"published_at"`
 	Author      *string `json:"author"`
+	Guid        *string `json:"guid"`
+	Content     *string `json:"content"`
+	ImageUrl    *string `json:"image_url"`
+	Categories  *string `json:"categories"`
 	FeedID      string  `json:"feed_id"`
 	IsRead      int64   `json:"is_read"`
 }
@@ -709,6 +798,10 @@ func (q *Queries) ListItemsAsc(ctx context.Context, arg ListItemsAscParams) ([]L
 			&i.Description,
 			&i.PublishedAt,
 			&i.Author,
+			&i.Guid,
+			&i.Content,
+			&i.ImageUrl,
+			&i.Categories,
 			&i.FeedID,
 			&i.IsRead,
 		); err != nil {
@@ -727,7 +820,18 @@ func (q *Queries) ListItemsAsc(ctx context.Context, arg ListItemsAscParams) ([]L
 
 const listItemsByFeed = `-- name: ListItemsByFeed :many
 SELECT
-  i.id, i.url, i.title, i.description, i.published_at, i.author, i.guid, i.created_at, i.updated_at
+  i.id,
+  i.url,
+  i.title,
+  i.description,
+  i.published_at,
+  i.author,
+  i.guid,
+  i.content,
+  i.image_url,
+  i.categories,
+  i.created_at,
+  i.updated_at
 FROM
   items i
 JOIN
@@ -755,6 +859,9 @@ func (q *Queries) ListItemsByFeed(ctx context.Context, feedID string) ([]Item, e
 			&i.PublishedAt,
 			&i.Author,
 			&i.Guid,
+			&i.Content,
+			&i.ImageUrl,
+			&i.Categories,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {

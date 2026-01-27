@@ -42,6 +42,9 @@ type Item struct {
 	PublishedAt *string `json:"published_at"`
 	Author      *string `json:"author"`
 	Guid        *string `json:"guid"`
+	Content     *string `json:"content"`
+	ImageUrl    *string `json:"image_url"`
+	Categories  *string `json:"categories"`
 	CreatedAt   string  `json:"created_at"`
 	UpdatedAt   string  `json:"updated_at"`
 }
