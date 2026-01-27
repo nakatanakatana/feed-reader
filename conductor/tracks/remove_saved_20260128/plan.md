@@ -3,7 +3,7 @@
 This plan outlines the steps to completely remove the "Saved" feature from the database, backend, frontend, and documentation.
 
 ## Phase 1: Preparation and Documentation
-- [ ] Task: Update project documentation to remove "Saved" feature references.
+- [x] Task: Update project documentation to remove "Saved" feature references. [7da6e87]
     - [ ] Remove from `conductor/product.md`.
     - [ ] Remove from `docs/feed_specification.md`.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Preparation and Documentation' (Protocol in workflow.md)
