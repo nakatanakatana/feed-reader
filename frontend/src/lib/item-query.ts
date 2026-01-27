@@ -21,7 +21,6 @@ export const itemKeys = {
 export interface FetchItemsParams {
   feedId?: string;
   isRead?: boolean;
-  isSaved?: boolean;
   tagId?: string;
   limit?: number;
   offset?: number;
@@ -36,7 +35,6 @@ export const fetchItems = async (
   return await client.listItems({
     feedId: params.feedId,
     isRead: params.isRead,
-    isSaved: params.isSaved,
     tagId: params.tagId,
     limit: params.limit,
     offset: params.offset,
@@ -98,7 +96,6 @@ export const useItem = (id: () => string | undefined) => {
 export interface UpdateItemStatusParams {
   ids: string[];
   isRead?: boolean;
-  isSaved?: boolean;
 }
 
 export const updateItemStatus = async (
@@ -109,7 +106,6 @@ export const updateItemStatus = async (
   return await client.updateItemStatus({
     ids: params.ids,
     isRead: params.isRead,
-    isSaved: params.isSaved,
   });
 };
 

@@ -37,16 +37,11 @@ func TestStore_ItemOperations(t *testing.T) {
 	t3 := now.Format(time.RFC3339)
 
 	item1ID := createTestItem(t, s, ctx, feedID, "http://example.com/1", "Item 1", t1)
-	item2ID := createTestItem(t, s, ctx, feedID, "http://example.com/2", "Item 2", t2)
+	_ = createTestItem(t, s, ctx, feedID, "http://example.com/2", "Item 2", t2)
 	item3ID := createTestItem(t, s, ctx, feedID, "http://example.com/3", "Item 3", t3)
 
 	// Set Statuses
 	_, err = s.SetItemRead(ctx, store.SetItemReadParams{ItemID: item1ID, IsRead: 1, ReadAt: &t3})
-	require.NoError(t, err)
-	_, err = s.SetItemSaved(ctx, store.SetItemSavedParams{ItemID: item1ID, IsSaved: 1, SavedAt: &t3})
-	require.NoError(t, err)
-
-	_, err = s.SetItemSaved(ctx, store.SetItemSavedParams{ItemID: item2ID, IsSaved: 1, SavedAt: &t3})
 	require.NoError(t, err)
 
 	// Test GetItem
@@ -55,13 +50,11 @@ func TestStore_ItemOperations(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, item1ID, got.ID)
 		assert.Equal(t, int64(1), got.IsRead)
-		assert.Equal(t, int64(1), got.IsSaved)
 		assert.Equal(t, feedID, got.FeedID)
 
 		got3, err := s.GetItem(ctx, item3ID)
 		require.NoError(t, err)
 		assert.Equal(t, int64(0), got3.IsRead)
-		assert.Equal(t, int64(0), got3.IsSaved)
 	})
 
 	// Test ListItems
@@ -78,11 +71,6 @@ func TestStore_ItemOperations(t *testing.T) {
 		require.NoError(t, err)
 		assert.Len(t, reads, 1)
 		assert.Equal(t, item1ID, reads[0].ID)
-
-		// Filter by IsSaved
-		saves, err := s.ListItems(ctx, store.ListItemsParams{IsSaved: int64(1), Limit: 10})
-		require.NoError(t, err)
-		assert.Len(t, saves, 2) // Item 1 and 2
 
 		// Filter by Feed (should be all)
 		feedItems, err := s.ListItems(ctx, store.ListItemsParams{FeedID: feedID, Limit: 10})
@@ -104,10 +92,6 @@ func TestStore_ItemOperations(t *testing.T) {
 		count, err := s.CountItems(ctx, store.CountItemsParams{})
 		require.NoError(t, err)
 		assert.Equal(t, int64(3), count)
-
-		savedCount, err := s.CountItems(ctx, store.CountItemsParams{IsSaved: int64(1)})
-		require.NoError(t, err)
-		assert.Equal(t, int64(2), savedCount)
 	})
 }
 

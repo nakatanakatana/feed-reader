@@ -54,14 +54,6 @@ type ItemRead struct {
 	UpdatedAt string  `json:"updated_at"`
 }
 
-type ItemSafe struct {
-	ItemID    string  `json:"item_id"`
-	IsSaved   int64   `json:"is_saved"`
-	SavedAt   *string `json:"saved_at"`
-	CreatedAt string  `json:"created_at"`
-	UpdatedAt string  `json:"updated_at"`
-}
-
 type Tag struct {
 	ID        string `json:"id"`
 	Name      string `json:"name"`

@@ -155,16 +155,13 @@ SELECT
   i.published_at,
   i.author,
   fi.feed_id,
-  CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read,
-  CAST(COALESCE(isv.is_saved, 0) AS INTEGER) AS is_saved
+  CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read
 FROM
   items i
 JOIN
   feed_items fi ON i.id = fi.item_id
 LEFT JOIN
   item_reads ir ON i.id = ir.item_id
-LEFT JOIN
-  item_saves isv ON i.id = isv.item_id
 WHERE
   i.id = ?;
 
@@ -177,20 +174,16 @@ SELECT
   i.published_at,
   i.author,
   fi.feed_id,
-  CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read,
-  CAST(COALESCE(isv.is_saved, 0) AS INTEGER) AS is_saved
+  CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read
 FROM
   items i
 JOIN
   feed_items fi ON i.id = fi.item_id
 LEFT JOIN
   item_reads ir ON i.id = ir.item_id
-LEFT JOIN
-  item_saves isv ON i.id = isv.item_id
 WHERE
   (sqlc.narg('feed_id') IS NULL OR fi.feed_id = sqlc.narg('feed_id')) AND
   (sqlc.narg('is_read') IS NULL OR COALESCE(ir.is_read, 0) = sqlc.narg('is_read')) AND
-  (sqlc.narg('is_saved') IS NULL OR COALESCE(isv.is_saved, 0) = sqlc.narg('is_saved')) AND
   (sqlc.narg('tag_id') IS NULL OR EXISTS (
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = sqlc.narg('tag_id')
   ))
@@ -207,20 +200,16 @@ SELECT
   i.published_at,
   i.author,
   fi.feed_id,
-  CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read,
-  CAST(COALESCE(isv.is_saved, 0) AS INTEGER) AS is_saved
+  CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read
 FROM
   items i
 JOIN
   feed_items fi ON i.id = fi.item_id
 LEFT JOIN
   item_reads ir ON i.id = ir.item_id
-LEFT JOIN
-  item_saves isv ON i.id = isv.item_id
 WHERE
   (sqlc.narg('feed_id') IS NULL OR fi.feed_id = sqlc.narg('feed_id')) AND
   (sqlc.narg('is_read') IS NULL OR COALESCE(ir.is_read, 0) = sqlc.narg('is_read')) AND
-  (sqlc.narg('is_saved') IS NULL OR COALESCE(isv.is_saved, 0) = sqlc.narg('is_saved')) AND
   (sqlc.narg('tag_id') IS NULL OR EXISTS (
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = sqlc.narg('tag_id')
   ))
@@ -237,12 +226,9 @@ JOIN
   feed_items fi ON i.id = fi.item_id
 LEFT JOIN
   item_reads ir ON i.id = ir.item_id
-LEFT JOIN
-  item_saves isv ON i.id = isv.item_id
 WHERE
   (sqlc.narg('feed_id') IS NULL OR fi.feed_id = sqlc.narg('feed_id')) AND
   (sqlc.narg('is_read') IS NULL OR COALESCE(ir.is_read, 0) = sqlc.narg('is_read')) AND
-  (sqlc.narg('is_saved') IS NULL OR COALESCE(isv.is_saved, 0) = sqlc.narg('is_saved')) AND
   (sqlc.narg('tag_id') IS NULL OR EXISTS (
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = sqlc.narg('tag_id')
   ));
@@ -258,20 +244,6 @@ INSERT INTO item_reads (
 ON CONFLICT(item_id) DO UPDATE SET
   is_read = excluded.is_read,
   read_at = excluded.read_at,
-  updated_at = CURRENT_TIMESTAMP
-RETURNING *;
-
--- name: SetItemSaved :one
-INSERT INTO item_saves (
-  item_id,
-  is_saved,
-  saved_at
-) VALUES (
-  ?, ?, ?
-)
-ON CONFLICT(item_id) DO UPDATE SET
-  is_saved = excluded.is_saved,
-  saved_at = excluded.saved_at,
   updated_at = CURRENT_TIMESTAMP
 RETURNING *;
 

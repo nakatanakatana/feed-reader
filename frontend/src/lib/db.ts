@@ -34,7 +34,6 @@ export interface Item {
   author: string;
   feedId: string;
   isRead: boolean;
-  isSaved: boolean;
   tags?: Tag[];
 }
 
@@ -50,7 +49,6 @@ export const addFeed = async (url: string, tagIds?: string[]) => {
 export const updateItemStatus = async (params: {
   ids: string[];
   isRead?: boolean;
-  isSaved?: boolean;
 }) => {
   await itemClient.updateItemStatus(params);
   queryClient.invalidateQueries({ queryKey: ["items"] });
@@ -97,7 +95,6 @@ export const items = createCollection(
         author: item.author,
         feedId: item.feedId,
         isRead: item.isRead,
-        isSaved: item.isSaved,
       }));
     },
     getKey: (item: Item) => item.id,

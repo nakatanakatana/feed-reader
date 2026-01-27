@@ -6,7 +6,6 @@ export interface Item {
   publishedAt: string;
   feedId: string;
   isRead: boolean;
-  isSaved: boolean;
 }
 
 export enum SortOrder {
@@ -18,7 +17,6 @@ export enum SortOrder {
 export interface ItemFilters {
   feedId?: string;
   isRead?: boolean;
-  isSaved?: boolean;
   sortOrder?: SortOrder;
 }
 
@@ -33,9 +31,6 @@ export const filterAndSortItems = (
   }
   if (filters.isRead !== undefined) {
     result = result.filter((item) => item.isRead === filters.isRead);
-  }
-  if (filters.isSaved !== undefined) {
-    result = result.filter((item) => item.isSaved === filters.isSaved);
   }
 
   if (filters.sortOrder === SortOrder.ASC) {
