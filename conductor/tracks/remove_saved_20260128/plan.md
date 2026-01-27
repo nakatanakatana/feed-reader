@@ -28,7 +28,7 @@ This plan outlines the steps to completely remove the "Saved" feature from the d
 - [x] Task: Conductor - User Manual Verification 'Phase 4: Frontend UI and Logic' (Protocol in workflow.md) [8cc28b4]
 
 ## Phase 5: Final Verification
-- [ ] Task: Full system check.
+- [~] Task: Full system check.
     - [ ] Run `go fmt`.
     - [ ] Run `golangci-lint run`.
     - [ ] Run `go test ./...`.
