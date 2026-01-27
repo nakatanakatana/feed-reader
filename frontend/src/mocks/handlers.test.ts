@@ -1,6 +1,6 @@
 import { createClient } from "@connectrpc/connect";
 import { describe, expect, it } from "vitest";
-import { FeedService } from "../gen/feed/v1/feed_connect";
+import { FeedService } from "../gen/feed/v1/feed_pb";
 import { transport } from "../lib/query";
 
 describe("FeedService Mock Handlers", () => {

@@ -1,7 +1,8 @@
 import { createSignal, For, Show } from "solid-js";
+import { create } from "@bufbuild/protobuf";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
-import { ManageFeedTagsRequest } from "../gen/feed/v1/feed_pb";
+import { ManageFeedTagsRequestSchema } from "../gen/feed/v1/feed_pb";
 import { useManageFeedTags } from "../lib/feed-query";
 import { useTags } from "../lib/tag-query";
 
@@ -41,7 +42,7 @@ export function ManageTagsModal(props: ManageTagsModalProps) {
   const handleSave = async () => {
     try {
       await manageTagsMutation.mutateAsync(
-        new ManageFeedTagsRequest({
+        create(ManageFeedTagsRequestSchema, {
           feedIds: props.feedIds,
           addTagIds: addTagIds(),
           removeTagIds: removeTagIds(),

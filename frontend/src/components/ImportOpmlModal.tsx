@@ -2,7 +2,7 @@ import { createClient } from "@connectrpc/connect";
 import { createSignal, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { center, flex, stack } from "../../styled-system/patterns";
-import { FeedService } from "../gen/feed/v1/feed_connect";
+import { FeedService } from "../gen/feed/v1/feed_pb";
 import { queryClient } from "../lib/query";
 import { useTransport } from "../lib/transport-context";
 

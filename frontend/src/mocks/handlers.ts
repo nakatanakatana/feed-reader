@@ -1,5 +1,16 @@
-import { FeedService } from "../gen/feed/v1/feed_connect";
+import { FeedService } from "../gen/feed/v1/feed_pb";
+import { create } from "@bufbuild/protobuf";
+
 import {
+  CreateFeedResponseSchema,
+  DeleteFeedResponseSchema,
+  FeedSchema,
+  ListFeedsResponseSchema,
+  ManageFeedTagsResponseSchema,
+  SetFeedTagsResponseSchema,
+} from "../gen/feed/v1/feed_pb";
+
+import type {
   CreateFeedResponse,
   DeleteFeedResponse,
   Feed,
@@ -7,30 +18,36 @@ import {
   ManageFeedTagsResponse,
   SetFeedTagsResponse,
 } from "../gen/feed/v1/feed_pb";
-import { ItemService } from "../gen/item/v1/item_connect";
+
+import { ItemService } from "../gen/item/v1/item_pb";
+
 import {
-  GetItemResponse,
-  Item,
-  ListItemsResponse,
-  UpdateItemStatusResponse,
+  GetItemResponseSchema,
+  ItemSchema,
+  ListItemsResponseSchema,
+  UpdateItemStatusResponseSchema,
 } from "../gen/item/v1/item_pb";
-import { TagService } from "../gen/tag/v1/tag_connect";
+
+import { TagService } from "../gen/tag/v1/tag_pb";
+
 import {
-  CreateTagResponse,
-  DeleteTagResponse,
-  ListTagsResponse,
-  Tag,
+  CreateTagResponseSchema,
+  DeleteTagResponseSchema,
+  ListTagsResponseSchema,
+  TagSchema,
 } from "../gen/tag/v1/tag_pb";
+
+import type { CreateTagResponse, DeleteTagResponse, ListTagsResponse, Tag } from "../gen/tag/v1/tag_pb";
 import { mockConnectWeb } from "./connect";
 
 const tags: Tag[] = [
-  new Tag({
+  create(TagSchema, {
     id: "tag-1",
     name: "Tech",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   }),
-  new Tag({
+  create(TagSchema, {
     id: "tag-2",
     name: "News",
     createdAt: new Date().toISOString(),
@@ -39,7 +56,7 @@ const tags: Tag[] = [
 ];
 
 const feeds: Feed[] = [
-  new Feed({
+  create(FeedSchema, {
     id: "1",
     url: "https://example.com/feed1.xml",
     title: "Example Feed 1",
@@ -47,7 +64,7 @@ const feeds: Feed[] = [
     updatedAt: new Date().toISOString(),
     tags: [tags[0]],
   }),
-  new Feed({
+  create(FeedSchema, {
     id: "2",
     url: "https://example.com/feed2.xml",
     title: "Example Feed 2",
@@ -67,14 +84,14 @@ export const handlers = [
           f.tags.some((t) => t.id === req.tagId),
         );
       }
-      return new ListFeedsResponse({ feeds: filteredFeeds });
+      return create(ListFeedsResponseSchema, { feeds: filteredFeeds });
     },
   }),
 
   mockConnectWeb(FeedService)({
     method: "createFeed",
     handler: (req) => {
-      const newFeed = new Feed({
+      const newFeed = create(FeedSchema, {
         id: crypto.randomUUID(),
         url: req.url,
         title: req.title || "New Feed",
@@ -82,12 +99,12 @@ export const handlers = [
         updatedAt: new Date().toISOString(),
         tags: (req.tagIds || []).map(
           (id) =>
-            tags.find((t) => t.id === id) || new Tag({ id, name: "Unknown" }),
+            tags.find((t) => t.id === id) || create(TagSchema, { id, name: "Unknown" }),
         ),
       });
       // In-memory update for the session
       feeds.push(newFeed);
-      return new CreateFeedResponse({ feed: newFeed });
+      return create(CreateFeedResponseSchema, { feed: newFeed });
     },
   }),
 
@@ -100,11 +117,11 @@ export const handlers = [
         if (req.tagIds) {
           feeds[index].tags = req.tagIds.map(
             (id) =>
-              tags.find((t) => t.id === id) || new Tag({ id, name: "Unknown" }),
+              tags.find((t) => t.id === id) || create(TagSchema, { id, name: "Unknown" }),
           );
         }
         feeds[index].updatedAt = new Date().toISOString();
-        return new CreateFeedResponse({ feed: feeds[index] });
+        return create(CreateFeedResponseSchema, { feed: feeds[index] });
       }
       throw new Error("Feed not found");
     },
@@ -117,28 +134,28 @@ export const handlers = [
       if (index !== -1) {
         feeds.splice(index, 1);
       }
-      return new DeleteFeedResponse({});
+      return create(DeleteFeedResponseSchema, {});
     },
   }),
 
   mockConnectWeb(TagService)({
     method: "listTags",
     handler: () => {
-      return new ListTagsResponse({ tags });
+      return create(ListTagsResponseSchema, { tags });
     },
   }),
 
   mockConnectWeb(TagService)({
     method: "createTag",
     handler: (req) => {
-      const newTag = new Tag({
+      const newTag = create(TagSchema, {
         id: crypto.randomUUID(),
         name: req.name,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       });
       tags.push(newTag);
-      return new CreateTagResponse({ tag: newTag });
+      return create(CreateTagResponseSchema, { tag: newTag });
     },
   }),
 
@@ -153,7 +170,7 @@ export const handlers = [
           f.tags = f.tags.filter((t) => t.id !== req.id);
         });
       }
-      return new DeleteTagResponse({});
+      return create(DeleteTagResponseSchema, {});
     },
   }),
 
@@ -164,10 +181,10 @@ export const handlers = [
       if (feed) {
         feed.tags = req.tagIds.map(
           (id) =>
-            tags.find((t) => t.id === id) || new Tag({ id, name: "Unknown" }),
+            tags.find((t) => t.id === id) || create(TagSchema, { id, name: "Unknown" }),
         );
       }
-      return new SetFeedTagsResponse({});
+      return create(SetFeedTagsResponseSchema, {});
     },
   }),
 
@@ -190,7 +207,7 @@ export const handlers = [
           }
         }
       }
-      return new ManageFeedTagsResponse({});
+      return create(ManageFeedTagsResponseSchema, {});
     },
   }),
 
@@ -201,11 +218,11 @@ export const handlers = [
       const limit = req.limit ?? 20;
 
       if (offset >= 40) {
-        return new ListItemsResponse({ items: [] });
+        return create(ListItemsResponseSchema, { items: [] });
       }
       const items = Array.from({ length: limit }, (_, i) => {
         const id = (offset + i + 1).toString();
-        return new Item({
+        return create(ItemSchema, {
           id,
           title: `Item ${id}`,
           url: `https://example.com/item/${id}`,
@@ -214,22 +231,22 @@ export const handlers = [
           feedId: req.feedId || "1",
         });
       });
-      return new ListItemsResponse({ items, totalCount: 40 });
+      return create(ListItemsResponseSchema, { items, totalCount: 40 });
     },
   }),
 
   mockConnectWeb(ItemService)({
     method: "updateItemStatus",
     handler: () => {
-      return new UpdateItemStatusResponse({});
+      return create(UpdateItemStatusResponseSchema, {});
     },
   }),
 
   mockConnectWeb(ItemService)({
     method: "getItem",
     handler: (req) => {
-      return new GetItemResponse({
-        item: new Item({
+      return create(GetItemResponseSchema, {
+        item: create(ItemSchema, {
           id: req.id,
           title: `Detail for Item ${req.id}`,
           description: `<p>This is the full content for item ${req.id}. It includes <strong>HTML</strong> formatting.</p>`,

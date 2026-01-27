@@ -7,7 +7,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/solid-query";
-import { ItemService } from "../gen/item/v1/item_connect";
+import { ItemService } from "../gen/item/v1/item_pb";
 import { ListItemsRequest_SortOrder } from "../gen/item/v1/item_pb";
 import { useTransport } from "./transport-context";
 

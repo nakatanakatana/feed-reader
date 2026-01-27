@@ -1,8 +1,9 @@
 import { QueryClientProvider } from "@tanstack/solid-query";
+import { create } from "@bufbuild/protobuf";
 import { render } from "solid-js/web";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { Feed } from "../gen/feed/v1/feed_pb";
+import { FeedSchema } from "../gen/feed/v1/feed_pb";
 import * as db from "../lib/db";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
@@ -36,7 +37,7 @@ describe("AddFeedForm", () => {
 
   it("creates a new feed", async () => {
     vi.mocked(db.addFeed).mockResolvedValue(
-      new Feed({
+      create(FeedSchema, {
         id: "1",
         url: "http://example.com",
         title: "Mocked Feed",

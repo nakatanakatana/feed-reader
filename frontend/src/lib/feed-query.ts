@@ -1,7 +1,7 @@
 import type { PartialMessage } from "@bufbuild/protobuf";
 import { createClient } from "@connectrpc/connect";
 import { useMutation, useQueryClient } from "@tanstack/solid-query";
-import { FeedService } from "../gen/feed/v1/feed_connect";
+import { FeedService } from "../gen/feed/v1/feed_pb";
 import type { ManageFeedTagsRequest } from "../gen/feed/v1/feed_pb";
 import { transport } from "./query";
 
