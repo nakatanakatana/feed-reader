@@ -6,7 +6,7 @@
     - [ ] Update `sql/query.sql` to include new columns in `CreateItem`, `GetItem`, `ListItems`, `ListItemsAsc`, `ListItemsByFeed`.
     - [ ] Add `CountUnreadItemsPerFeed` query to `sql/query.sql` to aggregate unread counts.
     - [ ] Run `sqlc generate` to regenerate Go code.
-- [ ] Task: Protobuf Definition Updates
+- [x] Task: Protobuf Definition Updates 27397fc
     - [ ] Update `proto/item/v1/item.proto` to include `content`, `image_url`, and `categories` in `Item` message.
     - [ ] Update `proto/feed/v1/feed.proto` to include `unread_count` in `Feed` message.
     - [ ] Run `buf generate` to regenerate Go and TypeScript code.
