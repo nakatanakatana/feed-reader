@@ -10,7 +10,7 @@
     - [ ] Update `proto/item/v1/item.proto` to include `content`, `image_url`, and `categories` in `Item` message.
     - [ ] Update `proto/feed/v1/feed.proto` to include `unread_count` in `Feed` message.
     - [ ] Run `buf generate` to regenerate Go and TypeScript code.
-- [ ] Task: Fetcher Service Update
+- [x] Task: Fetcher Service Update e7bd20e
     - [ ] Update `cmd/feed-reader/fetcher_service.go` to map `gofeed.Item.Content`, `Image`, and `Categories` to the `Item` struct when saving.
 - [ ] Task: Item Handler Update
     - [ ] Update `cmd/feed-reader/item_handler.go` to ensure new fields are passed in responses.
