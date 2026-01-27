@@ -1,9 +1,8 @@
 import { useLiveQuery } from "@tanstack/solid-db";
-import { Link } from "@tanstack/solid-router";
-import { For, Show, createSignal } from "solid-js";
+import { createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
-import { type Feed, type Tag, feeds } from "../lib/db";
+import { type Feed, feeds, type Tag } from "../lib/db";
 import { useTags } from "../lib/tag-query";
 import { ManageTagsModal } from "./ManageTagsModal";
 
@@ -279,33 +278,6 @@ export function FeedList() {
                     >
                       {feed.title || "Untitled Feed"}
                     </a>
-                    <Link
-                      to="/feeds/$feedId"
-                      params={{ feedId: feed.id }}
-                      aria-label="View items"
-                      onClick={(e) => e.stopPropagation()}
-                      class={css({
-                        display: "flex",
-                        alignItems: "center",
-                        color: "gray.400",
-                        _hover: { color: "blue.600" },
-                      })}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      >
-                        <title>View items</title>
-                        <path d="M9 18l6-6-6-6" />
-                      </svg>
-                    </Link>
                     <div class={flex({ gap: "1" })}>
                       <For each={feed.tags}>
                         {(tag) => (

@@ -1,8 +1,8 @@
+import type { Transport } from "@connectrpc/connect";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it } from "vitest";
 import { transport } from "./query";
 import { TransportProvider, useTransport } from "./transport-context";
-import type { Transport } from "@connectrpc/connect";
 
 describe("TransportContext", () => {
   let dispose: () => void;

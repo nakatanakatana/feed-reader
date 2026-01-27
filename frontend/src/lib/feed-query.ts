@@ -1,9 +1,9 @@
+import type { PartialMessage } from "@bufbuild/protobuf";
+import { createClient } from "@connectrpc/connect";
 import { useMutation, useQueryClient } from "@tanstack/solid-query";
 import { FeedService } from "../gen/feed/v1/feed_connect";
 import type { ManageFeedTagsRequest } from "../gen/feed/v1/feed_pb";
 import { transport } from "./query";
-import { createClient } from "@connectrpc/connect";
-import type { PartialMessage } from "@bufbuild/protobuf";
 
 const client = createClient(FeedService, transport);
 

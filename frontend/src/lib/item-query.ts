@@ -2,9 +2,9 @@ import type { Transport } from "@connectrpc/connect";
 import { createClient } from "@connectrpc/connect";
 import {
   createInfiniteQuery,
+  infiniteQueryOptions,
   useMutation,
   useQuery,
-  infiniteQueryOptions,
   useQueryClient,
 } from "@tanstack/solid-query";
 import { ItemService } from "../gen/item/v1/item_connect";

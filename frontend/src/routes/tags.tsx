@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/solid-router";
-import { TagManagement } from "../components/TagManagement";
-import { stack } from "../../styled-system/patterns";
 import { css } from "../../styled-system/css";
+import { stack } from "../../styled-system/patterns";
+import { TagManagement } from "../components/TagManagement";
 
 export const Route = createFileRoute("/tags")({
   component: TagsComponent,

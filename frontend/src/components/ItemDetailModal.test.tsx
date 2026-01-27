@@ -1,11 +1,11 @@
-import { render } from "solid-js/web";
-import type { JSX } from "solid-js";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { page } from "vitest/browser";
-import { ItemDetailModal } from "./ItemDetailModal";
-import { TransportProvider } from "../lib/transport-context";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
+import type { JSX } from "solid-js";
+import { render } from "solid-js/web";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { page } from "vitest/browser";
+import { TransportProvider } from "../lib/transport-context";
+import { ItemDetailModal } from "./ItemDetailModal";
 
 // Mock the query hooks
 vi.mock("../lib/item-query", () => ({

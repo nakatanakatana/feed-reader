@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/solid-router";
-import { ItemDetailModal } from "./ItemDetailModal";
-import { useItems, useUpdateItemStatus } from "../lib/item-query";
 import { css } from "../../styled-system/css";
+import { useItems, useUpdateItemStatus } from "../lib/item-query";
+import { ItemDetailModal } from "./ItemDetailModal";
 
 interface ItemDetailRouteViewProps {
   itemId: string;
@@ -58,7 +58,7 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
     ) as any;
     // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
     // biome-ignore lint/style/noNonNullAssertion: router param fix
-    // biome-ignore lint/suspicious/noExplicitAny: router param fix
+    // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
     const params = { feedId: props.feedId!, itemId: targetItemId } as any;
     // biome-ignore lint/suspicious/noExplicitAny: router search fix
     const search = ((prev: any) => ({ ...prev })) as any;
@@ -66,10 +66,10 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
   };
 
   const getCloseLinkProps = () => {
-    // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
     const to = (props.feedId ? "/feeds/$feedId" : "/") as any;
+    // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
     // biome-ignore lint/style/noNonNullAssertion: router param fix
-    // biome-ignore lint/suspicious/noExplicitAny: router param fix
+    // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
     const params = { feedId: props.feedId! } as any;
     // biome-ignore lint/suspicious/noExplicitAny: router search fix
     const search = ((prev: any) => ({ ...prev })) as any;

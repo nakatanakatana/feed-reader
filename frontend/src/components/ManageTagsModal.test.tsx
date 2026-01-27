@@ -1,13 +1,13 @@
+import { createRouterTransport } from "@connectrpc/connect";
+import { QueryClientProvider } from "@tanstack/solid-query";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { ManageTagsModal } from "./ManageTagsModal";
-import { TransportProvider } from "../lib/transport-context";
-import { createRouterTransport } from "@connectrpc/connect";
 import { TagService } from "../gen/tag/v1/tag_connect";
 import { ListTagsResponse, Tag } from "../gen/tag/v1/tag_pb";
-import { QueryClientProvider } from "@tanstack/solid-query";
 import { queryClient } from "../lib/query";
+import { TransportProvider } from "../lib/transport-context";
+import { ManageTagsModal } from "./ManageTagsModal";
 
 describe("ManageTagsModal", () => {
   let dispose: () => void;

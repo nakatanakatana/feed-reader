@@ -1,10 +1,10 @@
 import { createClient } from "@connectrpc/connect";
-import { createCollection } from "@tanstack/solid-db";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
+import { createCollection } from "@tanstack/solid-db";
 import { FeedService } from "../gen/feed/v1/feed_connect";
 import { ItemService } from "../gen/item/v1/item_connect";
 import { Tag } from "../gen/tag/v1/tag_pb";
-import { transport, queryClient } from "./query";
+import { queryClient, transport } from "./query";
 
 export { Tag };
 

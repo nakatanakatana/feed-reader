@@ -1,8 +1,8 @@
+import { createClient } from "@connectrpc/connect";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/solid-query";
 import { TagService } from "../gen/tag/v1/tag_connect";
 import type { CreateTagRequest, DeleteTagRequest } from "../gen/tag/v1/tag_pb";
 import { transport } from "./query";
-import { createClient } from "@connectrpc/connect";
 
 const client = createClient(TagService, transport);
 

@@ -1,9 +1,9 @@
+import { eq, useLiveQuery } from "@tanstack/solid-db";
 import { createFileRoute, Outlet } from "@tanstack/solid-router";
-import { useLiveQuery, eq } from "@tanstack/solid-db";
 import { css } from "../../styled-system/css";
 import { stack } from "../../styled-system/patterns";
-import { feeds } from "../lib/db";
 import { ItemList } from "../components/ItemList";
+import { feeds } from "../lib/db";
 
 export const Route = createFileRoute("/feeds/$feedId")({
   component: FeedItemsComponent,

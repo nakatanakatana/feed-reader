@@ -1,6 +1,6 @@
-import { Show, onMount, type JSX } from "solid-js";
+import { type JSX, onMount, Show } from "solid-js";
 import { css } from "../../styled-system/css";
-import { flex, stack, center } from "../../styled-system/patterns";
+import { center, flex, stack } from "../../styled-system/patterns";
 import { useItem, useUpdateItemStatus } from "../lib/item-query";
 
 interface ItemDetailModalProps {
