@@ -6,18 +6,12 @@ This plan outlines the steps to completely remove the "Saved" feature from the d
 - [x] Task: Update project documentation to remove "Saved" feature references. [7da6e87]
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Preparation and Documentation' (Protocol in workflow.md) [38749ca]
 
-## Phase 2: Database Schema and Queries
-- [ ] Task: Modify database schema to remove `is_saved` and `saved_at`.
-    - [ ] Update `sql/schema.sql` to remove columns from `items` table and any relevant views.
-    - [ ] Update `sql/query.sql` to remove references in SQL queries.
-- [ ] Task: Regenerate code from SQL.
-    - [ ] Run `sqlc generate`.
-- [ ] Task: Fix backend store layer.
-    - [ ] Update `store/` package to handle the removed fields.
-    - [ ] Fix or remove tests in `store/` that rely on the "Saved" feature (e.g., `store/item_store_test.go`).
-- [ ] Task: Verify database changes.
-    - [ ] Run `go test ./store/...`.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Database Schema and Queries' (Protocol in workflow.md)
+## Phase 2: Database Schema and Queries [checkpoint: 35686d8]
+- [x] Task: Modify database schema to remove `is_saved` and `saved_at`. [b57a5e3]
+- [x] Task: Regenerate code from SQL. [b57a5e3]
+- [x] Task: Fix backend store layer. [b57a5e3]
+- [x] Task: Verify database changes. [b57a5e3]
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Database Schema and Queries' (Protocol in workflow.md) [35686d8]
 
 ## Phase 3: Backend API and Logic
 - [ ] Task: Update Protobuf definitions.
