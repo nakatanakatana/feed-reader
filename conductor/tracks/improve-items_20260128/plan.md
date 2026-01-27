@@ -12,7 +12,7 @@
     - [ ] Run `buf generate` to regenerate Go and TypeScript code.
 - [x] Task: Fetcher Service Update e7bd20e
     - [ ] Update `cmd/feed-reader/fetcher_service.go` to map `gofeed.Item.Content`, `Image`, and `Categories` to the `Item` struct when saving.
-- [ ] Task: Item Handler Update
+- [x] Task: Item Handler Update 6383a0e
     - [ ] Update `cmd/feed-reader/item_handler.go` to ensure new fields are passed in responses.
 - [ ] Task: Feed Handler Update (Unread Counts)
     - [ ] Update `cmd/feed-reader/handler.go` (`ListFeeds`) to execute `CountUnreadItemsPerFeed`.
