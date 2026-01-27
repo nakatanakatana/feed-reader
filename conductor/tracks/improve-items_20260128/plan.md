@@ -1,23 +1,12 @@
 # Implementation Plan - Item List and Detail Modal Improvements
 
-## Phase 1: Backend Data & API Enhancements
+## Phase 1: Backend Data & API Enhancements [checkpoint: 3a77154]
 - [x] Task: Database Migration 552727c
-    - [ ] Update `sql/schema.sql` to add `content`, `image_url`, and `categories` columns to `items` table.
-    - [ ] Update `sql/query.sql` to include new columns in `CreateItem`, `GetItem`, `ListItems`, `ListItemsAsc`, `ListItemsByFeed`.
-    - [ ] Add `CountUnreadItemsPerFeed` query to `sql/query.sql` to aggregate unread counts.
-    - [ ] Run `sqlc generate` to regenerate Go code.
 - [x] Task: Protobuf Definition Updates 27397fc
-    - [ ] Update `proto/item/v1/item.proto` to include `content`, `image_url`, and `categories` in `Item` message.
-    - [ ] Update `proto/feed/v1/feed.proto` to include `unread_count` in `Feed` message.
-    - [ ] Run `buf generate` to regenerate Go and TypeScript code.
 - [x] Task: Fetcher Service Update e7bd20e
-    - [ ] Update `cmd/feed-reader/fetcher_service.go` to map `gofeed.Item.Content`, `Image`, and `Categories` to the `Item` struct when saving.
 - [x] Task: Item Handler Update 6383a0e
-    - [ ] Update `cmd/feed-reader/item_handler.go` to ensure new fields are passed in responses.
 - [x] Task: Feed Handler Update (Unread Counts) 48feaac
-    - [ ] Update `cmd/feed-reader/handler.go` (`ListFeeds`) to execute `CountUnreadItemsPerFeed`.
-    - [ ] Map the results to the `unread_count` field in the `ListFeedsResponse`.
-- [ ] Task: Conductor - User Manual Verification 'Backend Data & API Enhancements' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Backend Data & API Enhancements' (Protocol in workflow.md) 3a77154
 
 ## Phase 2: Frontend List & Unread Counts
 - [ ] Task: Display Unread Counts
