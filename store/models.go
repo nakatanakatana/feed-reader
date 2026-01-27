@@ -11,7 +11,6 @@ type Feed struct {
 	Title         *string `json:"title"`
 	Description   *string `json:"description"`
 	Lang          *string `json:"lang"`
-	Hoge          *string `json:"hoge"`
 	ImageUrl      *string `json:"image_url"`
 	Copyright     *string `json:"copyright"`
 	FeedType      *string `json:"feed_type"`

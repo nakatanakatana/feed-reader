@@ -64,7 +64,7 @@ INSERT INTO feeds (
 ) VALUES (
   ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 )
-RETURNING id, url, link, title, description, lang, hoge, image_url, copyright, feed_type, feed_version, last_fetched_at, created_at, updated_at
+RETURNING id, url, link, title, description, lang, image_url, copyright, feed_type, feed_version, last_fetched_at, created_at, updated_at
 `
 
 type CreateFeedParams struct {
@@ -101,7 +101,6 @@ func (q *Queries) CreateFeed(ctx context.Context, arg CreateFeedParams) (Feed, e
 		&i.Title,
 		&i.Description,
 		&i.Lang,
-		&i.Hoge,
 		&i.ImageUrl,
 		&i.Copyright,
 		&i.FeedType,
@@ -306,7 +305,7 @@ func (q *Queries) DeleteTag(ctx context.Context, id string) error {
 
 const getFeed = `-- name: GetFeed :one
 SELECT
-  id, url, link, title, description, lang, hoge, image_url, copyright, feed_type, feed_version, last_fetched_at, created_at, updated_at
+  id, url, link, title, description, lang, image_url, copyright, feed_type, feed_version, last_fetched_at, created_at, updated_at
 FROM
   feeds
 WHERE
@@ -323,7 +322,6 @@ func (q *Queries) GetFeed(ctx context.Context, id string) (Feed, error) {
 		&i.Title,
 		&i.Description,
 		&i.Lang,
-		&i.Hoge,
 		&i.ImageUrl,
 		&i.Copyright,
 		&i.FeedType,
@@ -337,7 +335,7 @@ func (q *Queries) GetFeed(ctx context.Context, id string) (Feed, error) {
 
 const getFeedByURL = `-- name: GetFeedByURL :one
 SELECT
-  id, url, link, title, description, lang, hoge, image_url, copyright, feed_type, feed_version, last_fetched_at, created_at, updated_at
+  id, url, link, title, description, lang, image_url, copyright, feed_type, feed_version, last_fetched_at, created_at, updated_at
 FROM
   feeds
 WHERE
@@ -354,7 +352,6 @@ func (q *Queries) GetFeedByURL(ctx context.Context, url string) (Feed, error) {
 		&i.Title,
 		&i.Description,
 		&i.Lang,
-		&i.Hoge,
 		&i.ImageUrl,
 		&i.Copyright,
 		&i.FeedType,
@@ -420,7 +417,7 @@ func (q *Queries) GetItem(ctx context.Context, id string) (GetItemRow, error) {
 
 const listFeeds = `-- name: ListFeeds :many
 SELECT
-  f.id, f.url, f.link, f.title, f.description, f.lang, f.hoge, f.image_url, f.copyright, f.feed_type, f.feed_version, f.last_fetched_at, f.created_at, f.updated_at
+  f.id, f.url, f.link, f.title, f.description, f.lang, f.image_url, f.copyright, f.feed_type, f.feed_version, f.last_fetched_at, f.created_at, f.updated_at
 FROM
   feeds f
 WHERE
@@ -447,7 +444,6 @@ func (q *Queries) ListFeeds(ctx context.Context, tagID interface{}) ([]Feed, err
 			&i.Title,
 			&i.Description,
 			&i.Lang,
-			&i.Hoge,
 			&i.ImageUrl,
 			&i.Copyright,
 			&i.FeedType,
@@ -471,7 +467,7 @@ func (q *Queries) ListFeeds(ctx context.Context, tagID interface{}) ([]Feed, err
 
 const listFeedsByIDs = `-- name: ListFeedsByIDs :many
 SELECT
-  id, url, link, title, description, lang, hoge, image_url, copyright, feed_type, feed_version, last_fetched_at, created_at, updated_at
+  id, url, link, title, description, lang, image_url, copyright, feed_type, feed_version, last_fetched_at, created_at, updated_at
 FROM
   feeds
 WHERE
@@ -504,7 +500,6 @@ func (q *Queries) ListFeedsByIDs(ctx context.Context, ids []string) ([]Feed, err
 			&i.Title,
 			&i.Description,
 			&i.Lang,
-			&i.Hoge,
 			&i.ImageUrl,
 			&i.Copyright,
 			&i.FeedType,
@@ -528,7 +523,7 @@ func (q *Queries) ListFeedsByIDs(ctx context.Context, ids []string) ([]Feed, err
 
 const listFeedsDesc = `-- name: ListFeedsDesc :many
 SELECT
-  f.id, f.url, f.link, f.title, f.description, f.lang, f.hoge, f.image_url, f.copyright, f.feed_type, f.feed_version, f.last_fetched_at, f.created_at, f.updated_at
+  f.id, f.url, f.link, f.title, f.description, f.lang, f.image_url, f.copyright, f.feed_type, f.feed_version, f.last_fetched_at, f.created_at, f.updated_at
 FROM
   feeds f
 WHERE
@@ -555,7 +550,6 @@ func (q *Queries) ListFeedsDesc(ctx context.Context, tagID interface{}) ([]Feed,
 			&i.Title,
 			&i.Description,
 			&i.Lang,
-			&i.Hoge,
 			&i.ImageUrl,
 			&i.Copyright,
 			&i.FeedType,
@@ -1026,7 +1020,7 @@ SET
   updated_at = CURRENT_TIMESTAMP
 WHERE
   id = ?
-RETURNING id, url, link, title, description, lang, hoge, image_url, copyright, feed_type, feed_version, last_fetched_at, created_at, updated_at
+RETURNING id, url, link, title, description, lang, image_url, copyright, feed_type, feed_version, last_fetched_at, created_at, updated_at
 `
 
 type UpdateFeedParams struct {
@@ -1063,7 +1057,6 @@ func (q *Queries) UpdateFeed(ctx context.Context, arg UpdateFeedParams) (Feed, e
 		&i.Title,
 		&i.Description,
 		&i.Lang,
-		&i.Hoge,
 		&i.ImageUrl,
 		&i.Copyright,
 		&i.FeedType,
