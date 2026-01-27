@@ -2,11 +2,9 @@
 
 This plan outlines the steps to completely remove the "Saved" feature from the database, backend, frontend, and documentation.
 
-## Phase 1: Preparation and Documentation
+## Phase 1: Preparation and Documentation [checkpoint: 38749ca]
 - [x] Task: Update project documentation to remove "Saved" feature references. [7da6e87]
-    - [ ] Remove from `conductor/product.md`.
-    - [ ] Remove from `docs/feed_specification.md`.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Preparation and Documentation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Preparation and Documentation' (Protocol in workflow.md) [38749ca]
 
 ## Phase 2: Database Schema and Queries
 - [ ] Task: Modify database schema to remove `is_saved` and `saved_at`.
