@@ -1,10 +1,10 @@
-import { render } from "solid-js/web";
-import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
-import { page } from "vitest/browser";
-import { TagManagement } from "./TagManagement";
-import { transport, queryClient } from "../lib/query";
-import { TransportProvider } from "../lib/transport-context";
 import { QueryClientProvider } from "@tanstack/solid-query";
+import { render } from "solid-js/web";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { page } from "vitest/browser";
+import { queryClient, transport } from "../lib/query";
+import { TransportProvider } from "../lib/transport-context";
+import { TagManagement } from "./TagManagement";
 
 describe("TagManagement", () => {
   let dispose: () => void;

@@ -1,8 +1,8 @@
 import { useLiveQuery } from "@tanstack/solid-db";
-import { For, Show, createSignal } from "solid-js";
+import { createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
-import { feeds } from "../lib/db";
+import { type Feed, feeds, type Tag } from "../lib/db";
 import { useTags } from "../lib/tag-query";
 import { ManageTagsModal } from "./ManageTagsModal";
 
@@ -11,7 +11,7 @@ export function FeedList() {
     string | undefined | null
   >();
   const [sortBy, setSortBy] = createSignal<string>("title_asc");
-  const [selectedFeedUuids, setSelectedFeedUuids] = createSignal<string[]>([]);
+  const [selectedFeedIds, setSelectedFeedIds] = createSignal<string[]>([]);
   const [isManageModalOpen, setIsManageModalOpen] = createSignal(false);
 
   const tagsQuery = useTags();
@@ -22,12 +22,13 @@ export function FeedList() {
   });
 
   const filteredFeeds = () => {
-    const list = feedList ?? [];
+    // biome-ignore lint/suspicious/noExplicitAny: TanStack DB query results are complex to type precisely here
+    const list = (feedList as any[]) ?? [];
     const tagId = selectedTagId();
     if (tagId === undefined) return list;
     if (tagId === null)
       return list.filter((f) => !f.tags || f.tags.length === 0);
-    return list.filter((f) => f.tags?.some((t) => t.id === tagId));
+    return list.filter((f) => f.tags?.some((t: Tag) => t.id === tagId));
   };
 
   const sortedFeeds = () => {
@@ -42,16 +43,18 @@ export function FeedList() {
           return (b.title || "").localeCompare(a.title || "");
         case "created_at_desc":
           return (
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            new Date(b.createdAt as string).getTime() -
+            new Date(a.createdAt as string).getTime()
           );
         case "created_at_asc":
           return (
-            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+            new Date(a.createdAt as string).getTime() -
+            new Date(b.createdAt as string).getTime()
           );
         case "last_fetched_at_desc":
           return (
-            new Date(b.lastFetchedAt || 0).getTime() -
-            new Date(a.lastFetchedAt || 0).getTime()
+            new Date((b.lastFetchedAt as string) || 0).getTime() -
+            new Date((a.lastFetchedAt as string) || 0).getTime()
           );
         default:
           return 0;
@@ -61,10 +64,10 @@ export function FeedList() {
 
   const [deleteError, setDeleteError] = createSignal<Error | null>(null);
 
-  const handleDelete = async (uuid: string) => {
+  const handleDelete = async (id: string) => {
     setDeleteError(null);
     try {
-      await feeds.delete(uuid);
+      await feeds.delete(id);
     } catch (e) {
       setDeleteError(
         e instanceof Error ? e : new Error("Failed to delete feed"),
@@ -72,11 +75,11 @@ export function FeedList() {
     }
   };
 
-  const toggleFeedSelection = (uuid: string) => {
-    if (selectedFeedUuids().includes(uuid)) {
-      setSelectedFeedUuids(selectedFeedUuids().filter((u) => u !== uuid));
+  const toggleFeedSelection = (id: string) => {
+    if (selectedFeedIds().includes(id)) {
+      setSelectedFeedIds(selectedFeedIds().filter((u) => u !== id));
     } else {
-      setSelectedFeedUuids([...selectedFeedUuids(), uuid]);
+      setSelectedFeedIds([...selectedFeedIds(), id]);
     }
   };
 
@@ -92,7 +95,7 @@ export function FeedList() {
           <h2 class={css({ fontSize: "xl", fontWeight: "semibold" })}>
             Your Feeds
           </h2>
-          <Show when={selectedFeedUuids().length > 0}>
+          <Show when={selectedFeedIds().length > 0}>
             <button
               type="button"
               onClick={() => setIsManageModalOpen(true)}
@@ -107,7 +110,7 @@ export function FeedList() {
                 _hover: { bg: "blue.700" },
               })}
             >
-              Manage Tags ({selectedFeedUuids().length})
+              Manage Tags ({selectedFeedIds().length})
             </button>
           </Show>
         </div>
@@ -226,13 +229,13 @@ export function FeedList() {
       </Show>
       <ul class={stack({ gap: "2" })}>
         <For each={sortedFeeds()}>
-          {(feed) => (
+          {(feed: Feed) => (
             <li
-              onClick={() => toggleFeedSelection(feed.uuid)}
+              onClick={() => toggleFeedSelection(feed.id)}
               onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
-                  toggleFeedSelection(feed.uuid);
+                  toggleFeedSelection(feed.id);
                 }
               }}
               class={flex({
@@ -250,10 +253,10 @@ export function FeedList() {
               <div class={flex({ gap: "3", alignItems: "center", flex: 1 })}>
                 <input
                   type="checkbox"
-                  checked={selectedFeedUuids().includes(feed.uuid)}
+                  checked={selectedFeedIds().includes(feed.id)}
                   onChange={(e) => {
                     e.stopPropagation();
-                    toggleFeedSelection(feed.uuid);
+                    toggleFeedSelection(feed.id);
                   }}
                   onClick={(e) => e.stopPropagation()}
                   class={css({ cursor: "pointer" })}
@@ -305,7 +308,7 @@ export function FeedList() {
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleDelete(feed.uuid);
+                  handleDelete(feed.id);
                 }}
                 class={css({
                   color: "red.500",
@@ -332,9 +335,9 @@ export function FeedList() {
         isOpen={isManageModalOpen()}
         onClose={() => {
           setIsManageModalOpen(false);
-          setSelectedFeedUuids([]);
+          setSelectedFeedIds([]);
         }}
-        feedIds={selectedFeedUuids()}
+        feedIds={selectedFeedIds()}
       />
     </div>
   );

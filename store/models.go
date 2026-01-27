@@ -5,12 +5,13 @@
 package store
 
 type Feed struct {
-	Uuid          string  `json:"uuid"`
+	ID            string  `json:"id"`
 	Url           string  `json:"url"`
 	Link          *string `json:"link"`
 	Title         *string `json:"title"`
 	Description   *string `json:"description"`
-	Language      *string `json:"language"`
+	Lang          *string `json:"lang"`
+	Hoge          *string `json:"hoge"`
 	ImageUrl      *string `json:"image_url"`
 	Copyright     *string `json:"copyright"`
 	FeedType      *string `json:"feed_type"`

@@ -35,8 +35,8 @@ func TestStore_SaveFetchedItem(t *testing.T) {
 	// 1. Setup a Feed
 	feedID := uuid.NewString()
 	feedParams := store.CreateFeedParams{
-		Uuid: feedID,
-		Url:  "http://example.com/feed.xml",
+		ID:  feedID,
+		Url: "http://example.com/feed.xml",
 	}
 	_, err := s.CreateFeed(ctx, feedParams)
 	require.NoError(t, err)
@@ -122,8 +122,8 @@ func TestStore_ListFeeds_Sorting(t *testing.T) {
 	// 1. Create Feed 1
 	feed1ID := uuid.NewString()
 	_, err := s.CreateFeed(ctx, store.CreateFeedParams{
-		Uuid: feed1ID,
-		Url:  "http://example.com/feed1.xml",
+		ID:    feed1ID,
+		Url:   "http://example.com/feed1.xml",
 		Title: func() *string { s := "Feed 1"; return &s }(),
 	})
 	require.NoError(t, err)
@@ -137,8 +137,8 @@ func TestStore_ListFeeds_Sorting(t *testing.T) {
 	// 2. Create Feed 2
 	feed2ID := uuid.NewString()
 	_, err = s.CreateFeed(ctx, store.CreateFeedParams{
-		Uuid: feed2ID,
-		Url:  "http://example.com/feed2.xml",
+		ID:    feed2ID,
+		Url:   "http://example.com/feed2.xml",
 		Title: func() *string { s := "Feed 2"; return &s }(),
 	})
 	require.NoError(t, err)
@@ -150,8 +150,8 @@ func TestStore_ListFeeds_Sorting(t *testing.T) {
 		})
 		require.NoError(t, err)
 		require.Len(t, feeds, 2)
-		assert.Equal(t, feed1ID, feeds[0].Uuid)
-		assert.Equal(t, feed2ID, feeds[1].Uuid)
+		assert.Equal(t, feed1ID, feeds[0].ID)
+		assert.Equal(t, feed2ID, feeds[1].ID)
 	})
 
 	// 4. List Feeds DESC
@@ -161,7 +161,7 @@ func TestStore_ListFeeds_Sorting(t *testing.T) {
 		})
 		require.NoError(t, err)
 		require.Len(t, feeds, 2)
-		assert.Equal(t, feed2ID, feeds[0].Uuid)
-		assert.Equal(t, feed1ID, feeds[1].Uuid)
+		assert.Equal(t, feed2ID, feeds[0].ID)
+		assert.Equal(t, feed1ID, feeds[1].ID)
 	})
 }

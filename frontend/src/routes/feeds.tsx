@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet } from "@tanstack/solid-router";
 import { createSignal } from "solid-js";
 import { css } from "../../styled-system/css";
-import { stack, flex } from "../../styled-system/patterns";
+import { flex, stack } from "../../styled-system/patterns";
 import { AddFeedForm } from "../components/AddFeedForm";
 import { FeedList } from "../components/FeedList";
 import { ImportOpmlModal } from "../components/ImportOpmlModal";

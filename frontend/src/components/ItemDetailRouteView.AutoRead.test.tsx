@@ -1,7 +1,3 @@
-import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { page } from "vitest/browser";
-import { TransportProvider } from "../lib/transport-context";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
 import {
@@ -9,6 +5,10 @@ import {
   createRouter,
   RouterProvider,
 } from "@tanstack/solid-router";
+import { render } from "solid-js/web";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { page } from "vitest/browser";
+import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
 
 // Mock the query hooks

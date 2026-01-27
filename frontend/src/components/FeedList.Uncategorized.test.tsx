@@ -1,18 +1,18 @@
-import { render } from "solid-js/web";
-import type { JSX } from "solid-js";
-import { afterEach, describe, expect, it, vi, beforeEach } from "vitest";
-import { page } from "vitest/browser";
+import { useLiveQuery } from "@tanstack/solid-db";
+import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
   createRouter,
   RouterProvider,
 } from "@tanstack/solid-router";
-import { routeTree } from "../routeTree.gen";
-import { useLiveQuery } from "@tanstack/solid-db";
-import { useTags } from "../lib/tag-query";
+import type { JSX } from "solid-js";
+import { render } from "solid-js/web";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { page } from "vitest/browser";
 import { queryClient, transport } from "../lib/query";
-import { QueryClientProvider } from "@tanstack/solid-query";
+import { useTags } from "../lib/tag-query";
 import { TransportProvider } from "../lib/transport-context";
+import { routeTree } from "../routeTree.gen";
 
 // Mock the db module
 vi.mock("../lib/db", () => ({
@@ -84,13 +84,13 @@ describe("FeedList Uncategorized Filter", () => {
     // Setup mock return for useLiveQuery
     const mockFeeds = [
       {
-        uuid: "1",
+        id: "1",
         title: "Tagged Feed",
         url: "http://example.com/1",
         tags: [{ id: "t1", name: "Tech" }],
       },
       {
-        uuid: "2",
+        id: "2",
         title: "Untagged Feed",
         url: "http://example.com/2",
         tags: [],

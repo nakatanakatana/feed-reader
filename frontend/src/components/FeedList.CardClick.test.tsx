@@ -1,18 +1,18 @@
-import { render } from "solid-js/web";
-import type { JSX } from "solid-js";
-import { afterEach, describe, expect, it, vi, beforeEach } from "vitest";
-import { page } from "vitest/browser";
+import { useLiveQuery } from "@tanstack/solid-db";
+import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
   createRouter,
   RouterProvider,
 } from "@tanstack/solid-router";
-import { routeTree } from "../routeTree.gen";
-import { useLiveQuery } from "@tanstack/solid-db";
-import { useTags } from "../lib/tag-query";
+import type { JSX } from "solid-js";
+import { render } from "solid-js/web";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { page } from "vitest/browser";
 import { queryClient, transport } from "../lib/query";
-import { QueryClientProvider } from "@tanstack/solid-query";
+import { useTags } from "../lib/tag-query";
 import { TransportProvider } from "../lib/transport-context";
+import { routeTree } from "../routeTree.gen";
 
 // Mock the db module
 vi.mock("../lib/db", () => ({
@@ -81,7 +81,7 @@ describe("FeedList Card Click Selection", () => {
   );
 
   it("toggles selection when clicking the card background", async () => {
-    const mockFeeds = [{ uuid: "1", title: "Feed 1", url: "url1", tags: [] }];
+    const mockFeeds = [{ id: "1", title: "Feed 1", url: "url1", tags: [] }];
 
     vi.mocked(useLiveQuery).mockReturnValue({
       data: mockFeeds,

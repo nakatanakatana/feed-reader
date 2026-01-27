@@ -55,8 +55,8 @@ func TestFetcherService_FetchAndSave(t *testing.T) {
 
 	// Setup a feed in DB
 	feed, err := queries.CreateFeed(ctx, store.CreateFeedParams{
-		Uuid: "test-uuid",
-		Url:  "https://example.com/rss",
+		ID:  "test-uuid",
+		Url: "https://example.com/rss",
 	})
 	if err != nil {
 		t.Fatalf("failed to create feed: %v", err)
@@ -90,7 +90,7 @@ func TestFetcherService_FetchAndSave(t *testing.T) {
 	}
 
 	// Verify items are saved
-	items, err := queries.ListItemsByFeed(ctx, feed.Uuid)
+	items, err := queries.ListItemsByFeed(ctx, feed.ID)
 	if err != nil {
 		t.Fatalf("failed to get items: %v", err)
 	}
@@ -128,16 +128,16 @@ func TestFetcherService_FetchAllFeeds_Interval(t *testing.T) {
 
 	// Case 1: Feed fetched recently (should NOT fetch)
 	recentTime := time.Now().Add(-5 * time.Minute).Format(time.RFC3339)
-	feedRecent, _ := queries.CreateFeed(ctx, store.CreateFeedParams{Uuid: "recent", Url: "http://recent"})
-	_ = queries.MarkFeedFetched(ctx, store.MarkFeedFetchedParams{Uuid: feedRecent.Uuid, LastFetchedAt: &recentTime})
+	feedRecent, _ := queries.CreateFeed(ctx, store.CreateFeedParams{ID: "recent", Url: "http://recent"})
+	_ = queries.MarkFeedFetched(ctx, store.MarkFeedFetchedParams{ID: feedRecent.ID, LastFetchedAt: &recentTime})
 
 	// Case 2: Feed fetched long ago (should fetch)
 	oldTime := time.Now().Add(-60 * time.Minute).Format(time.RFC3339)
-	feedOld, _ := queries.CreateFeed(ctx, store.CreateFeedParams{Uuid: "old", Url: "http://old"})
-	_ = queries.MarkFeedFetched(ctx, store.MarkFeedFetchedParams{Uuid: feedOld.Uuid, LastFetchedAt: &oldTime})
+	feedOld, _ := queries.CreateFeed(ctx, store.CreateFeedParams{ID: "old", Url: "http://old"})
+	_ = queries.MarkFeedFetched(ctx, store.MarkFeedFetchedParams{ID: feedOld.ID, LastFetchedAt: &oldTime})
 
 	// Case 3: Feed never fetched (should fetch)
-	feedNew, _ := queries.CreateFeed(ctx, store.CreateFeedParams{Uuid: "new", Url: "http://new"})
+	feedNew, _ := queries.CreateFeed(ctx, store.CreateFeedParams{ID: "new", Url: "http://new"})
 
 	// Run FetchAllFeeds
 	err := service.FetchAllFeeds(ctx)
@@ -153,17 +153,17 @@ func TestFetcherService_FetchAllFeeds_Interval(t *testing.T) {
 	// Actually, if it fetched, it would update timestamp to NOW.
 	// So we check if timestamp is close to NOW vs close to recentTime.
 
-	fRecent, _ := queries.GetFeed(ctx, feedRecent.Uuid)
+	fRecent, _ := queries.GetFeed(ctx, feedRecent.ID)
 	if *fRecent.LastFetchedAt != recentTime {
 		t.Errorf("Recent feed should not have been fetched. Want %s, got %s", recentTime, *fRecent.LastFetchedAt)
 	}
 
-	fOld, _ := queries.GetFeed(ctx, feedOld.Uuid)
+	fOld, _ := queries.GetFeed(ctx, feedOld.ID)
 	if *fOld.LastFetchedAt == oldTime {
 		t.Error("Old feed should have been fetched and updated")
 	}
 
-	fNew, _ := queries.GetFeed(ctx, feedNew.Uuid)
+	fNew, _ := queries.GetFeed(ctx, feedNew.ID)
 	if fNew.LastFetchedAt == nil {
 		t.Error("New feed should have been fetched")
 	}
@@ -184,11 +184,11 @@ func TestFetcherService_FetchFeedsByIDs(t *testing.T) {
 
 	// Create a feed that was fetched recently (so normally wouldn't be fetched)
 	recentTime := time.Now().Add(-1 * time.Minute).Format(time.RFC3339)
-	feed, _ := queries.CreateFeed(ctx, store.CreateFeedParams{Uuid: "forced", Url: "http://forced"})
-	_ = queries.MarkFeedFetched(ctx, store.MarkFeedFetchedParams{Uuid: feed.Uuid, LastFetchedAt: &recentTime})
+	feed, _ := queries.CreateFeed(ctx, store.CreateFeedParams{ID: "forced", Url: "http://forced"})
+	_ = queries.MarkFeedFetched(ctx, store.MarkFeedFetchedParams{ID: feed.ID, LastFetchedAt: &recentTime})
 
 	// Force refresh
-	err := service.FetchFeedsByIDs(ctx, []string{feed.Uuid})
+	err := service.FetchFeedsByIDs(ctx, []string{feed.ID})
 	if err != nil {
 		t.Fatalf("FetchFeedsByIDs failed: %v", err)
 	}
@@ -196,7 +196,7 @@ func TestFetcherService_FetchFeedsByIDs(t *testing.T) {
 	pool.Wait()
 
 	// Verify it was fetched (last_fetched_at updated to NOW)
-	updatedFeed, _ := queries.GetFeed(ctx, feed.Uuid)
+	updatedFeed, _ := queries.GetFeed(ctx, feed.ID)
 	if *updatedFeed.LastFetchedAt == recentTime {
 		t.Error("Feed should have been force refreshed")
 	}

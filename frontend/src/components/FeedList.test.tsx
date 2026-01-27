@@ -1,18 +1,18 @@
-import { render } from "solid-js/web";
-import type { JSX } from "solid-js";
-import { afterEach, describe, expect, it, vi, beforeEach } from "vitest";
-import { page } from "vitest/browser";
+import { useLiveQuery } from "@tanstack/solid-db";
+import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
   createRouter,
   RouterProvider,
 } from "@tanstack/solid-router";
-import { routeTree } from "../routeTree.gen";
+import type { JSX } from "solid-js";
+import { render } from "solid-js/web";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { page } from "vitest/browser";
 import * as db from "../lib/db";
-import { useLiveQuery } from "@tanstack/solid-db";
 import { queryClient, transport } from "../lib/query";
-import { QueryClientProvider } from "@tanstack/solid-query";
 import { TransportProvider } from "../lib/transport-context";
+import { routeTree } from "../routeTree.gen";
 
 // Mock the db module
 vi.mock("../lib/db", () => ({
@@ -76,12 +76,12 @@ describe("FeedList", () => {
     // Setup mock return for useLiveQuery
     const mockFeeds = [
       {
-        uuid: "1",
+        id: "1",
         title: "Feed 1",
         url: "http://example.com/1",
         tags: [{ id: "t1", name: "Tag 1" }],
       },
-      { uuid: "2", title: "Feed 2", url: "http://example.com/2", tags: [] },
+      { id: "2", title: "Feed 2", url: "http://example.com/2", tags: [] },
     ];
 
     vi.mocked(useLiveQuery).mockReturnValue({
@@ -107,7 +107,7 @@ describe("FeedList", () => {
 
   it("deletes a feed", async () => {
     const mockFeeds = [
-      { uuid: "1", title: "Feed 1", url: "http://example.com/1", tags: [] },
+      { id: "1", title: "Feed 1", url: "http://example.com/1", tags: [] },
     ];
     vi.mocked(useLiveQuery).mockReturnValue({
       data: mockFeeds,
@@ -135,8 +135,8 @@ describe("FeedList", () => {
 
   it("supports bulk selection", async () => {
     const mockFeeds = [
-      { uuid: "1", title: "Feed 1", url: "u1", tags: [] },
-      { uuid: "2", title: "Feed 2", url: "u2", tags: [] },
+      { id: "1", title: "Feed 1", url: "u1", tags: [] },
+      { id: "2", title: "Feed 2", url: "u2", tags: [] },
     ];
     vi.mocked(useLiveQuery).mockReturnValue({
       data: mockFeeds,
@@ -169,7 +169,7 @@ describe("FeedList", () => {
   });
 
   it("manages tags for selected feeds", async () => {
-    const mockFeeds = [{ uuid: "1", title: "Feed 1", url: "u1", tags: [] }];
+    const mockFeeds = [{ id: "1", title: "Feed 1", url: "u1", tags: [] }];
     vi.mocked(useLiveQuery).mockReturnValue({
       data: mockFeeds,
     } as unknown as ReturnType<typeof useLiveQuery>);

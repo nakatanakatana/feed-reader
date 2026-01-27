@@ -27,16 +27,16 @@ describe("FeedService Mock Handlers", () => {
     expect(data).toHaveProperty("feed");
     expect(response.feed?.url).toBe(feedData.url);
     expect(response.feed?.title).toBe(feedData.title);
-    expect(response.feed?.uuid).toBeDefined();
+    expect(response.feed?.id).toBeDefined();
   });
 
   it("should mock DeleteFeed", async () => {
     // Get current feeds first
     const client = createClient(FeedService, transport);
     const listResponse = await client.listFeeds({});
-    const uuidToDelete = listResponse.feeds[0].uuid;
+    const idToDelete = listResponse.feeds[0].id;
 
-    const response = await client.deleteFeed({ uuid: uuidToDelete });
+    const response = await client.deleteFeed({ id: idToDelete });
 
     const data = response.toJson();
     expect(data).toEqual({});
@@ -44,7 +44,7 @@ describe("FeedService Mock Handlers", () => {
     // Verify it's deleted
     const listResponseAfter = await client.listFeeds({});
     expect(
-      listResponseAfter.feeds.find((f) => f.uuid === uuidToDelete),
+      listResponseAfter.feeds.find((f) => f.id === idToDelete),
     ).toBeUndefined();
   });
 });

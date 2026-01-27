@@ -24,12 +24,12 @@ const (
 
 type Feed struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Uuid          string                 `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Url           string                 `protobuf:"bytes,2,opt,name=url,proto3" json:"url,omitempty"`
 	Link          *string                `protobuf:"bytes,3,opt,name=link,proto3,oneof" json:"link,omitempty"`
 	Title         string                 `protobuf:"bytes,4,opt,name=title,proto3" json:"title,omitempty"`
 	Description   *string                `protobuf:"bytes,5,opt,name=description,proto3,oneof" json:"description,omitempty"`
-	Language      *string                `protobuf:"bytes,6,opt,name=language,proto3,oneof" json:"language,omitempty"`
+	Lang          *string                `protobuf:"bytes,6,opt,name=lang,proto3,oneof" json:"lang,omitempty"`
 	ImageUrl      *string                `protobuf:"bytes,7,opt,name=image_url,json=imageUrl,proto3,oneof" json:"image_url,omitempty"`
 	Copyright     *string                `protobuf:"bytes,8,opt,name=copyright,proto3,oneof" json:"copyright,omitempty"`
 	FeedType      *string                `protobuf:"bytes,9,opt,name=feed_type,json=feedType,proto3,oneof" json:"feed_type,omitempty"`
@@ -72,9 +72,9 @@ func (*Feed) Descriptor() ([]byte, []int) {
 	return file_feed_v1_feed_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *Feed) GetUuid() string {
+func (x *Feed) GetId() string {
 	if x != nil {
-		return x.Uuid
+		return x.Id
 	}
 	return ""
 }
@@ -107,9 +107,9 @@ func (x *Feed) GetDescription() string {
 	return ""
 }
 
-func (x *Feed) GetLanguage() string {
-	if x != nil && x.Language != nil {
-		return *x.Language
+func (x *Feed) GetLang() string {
+	if x != nil && x.Lang != nil {
+		return *x.Lang
 	}
 	return ""
 }
@@ -172,7 +172,7 @@ func (x *Feed) GetTags() []*v1.Tag {
 
 type GetFeedRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Uuid          string                 `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -207,9 +207,9 @@ func (*GetFeedRequest) Descriptor() ([]byte, []int) {
 	return file_feed_v1_feed_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *GetFeedRequest) GetUuid() string {
+func (x *GetFeedRequest) GetId() string {
 	if x != nil {
-		return x.Uuid
+		return x.Id
 	}
 	return ""
 }
@@ -360,7 +360,7 @@ type CreateFeedRequest struct {
 	Title         *string                `protobuf:"bytes,2,opt,name=title,proto3,oneof" json:"title,omitempty"`
 	Link          *string                `protobuf:"bytes,3,opt,name=link,proto3,oneof" json:"link,omitempty"`
 	Description   *string                `protobuf:"bytes,4,opt,name=description,proto3,oneof" json:"description,omitempty"`
-	Language      *string                `protobuf:"bytes,5,opt,name=language,proto3,oneof" json:"language,omitempty"`
+	Lang          *string                `protobuf:"bytes,5,opt,name=lang,proto3,oneof" json:"lang,omitempty"`
 	ImageUrl      *string                `protobuf:"bytes,6,opt,name=image_url,json=imageUrl,proto3,oneof" json:"image_url,omitempty"`
 	Copyright     *string                `protobuf:"bytes,7,opt,name=copyright,proto3,oneof" json:"copyright,omitempty"`
 	FeedType      *string                `protobuf:"bytes,8,opt,name=feed_type,json=feedType,proto3,oneof" json:"feed_type,omitempty"`
@@ -428,9 +428,9 @@ func (x *CreateFeedRequest) GetDescription() string {
 	return ""
 }
 
-func (x *CreateFeedRequest) GetLanguage() string {
-	if x != nil && x.Language != nil {
-		return *x.Language
+func (x *CreateFeedRequest) GetLang() string {
+	if x != nil && x.Lang != nil {
+		return *x.Lang
 	}
 	return ""
 }
@@ -516,11 +516,11 @@ func (x *CreateFeedResponse) GetFeed() *Feed {
 
 type UpdateFeedRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Uuid          string                 `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Title         *string                `protobuf:"bytes,3,opt,name=title,proto3,oneof" json:"title,omitempty"`
 	Link          *string                `protobuf:"bytes,4,opt,name=link,proto3,oneof" json:"link,omitempty"`
 	Description   *string                `protobuf:"bytes,5,opt,name=description,proto3,oneof" json:"description,omitempty"`
-	Language      *string                `protobuf:"bytes,6,opt,name=language,proto3,oneof" json:"language,omitempty"`
+	Lang          *string                `protobuf:"bytes,6,opt,name=lang,proto3,oneof" json:"lang,omitempty"`
 	ImageUrl      *string                `protobuf:"bytes,7,opt,name=image_url,json=imageUrl,proto3,oneof" json:"image_url,omitempty"`
 	Copyright     *string                `protobuf:"bytes,8,opt,name=copyright,proto3,oneof" json:"copyright,omitempty"`
 	FeedType      *string                `protobuf:"bytes,9,opt,name=feed_type,json=feedType,proto3,oneof" json:"feed_type,omitempty"`
@@ -561,9 +561,9 @@ func (*UpdateFeedRequest) Descriptor() ([]byte, []int) {
 	return file_feed_v1_feed_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *UpdateFeedRequest) GetUuid() string {
+func (x *UpdateFeedRequest) GetId() string {
 	if x != nil {
-		return x.Uuid
+		return x.Id
 	}
 	return ""
 }
@@ -589,9 +589,9 @@ func (x *UpdateFeedRequest) GetDescription() string {
 	return ""
 }
 
-func (x *UpdateFeedRequest) GetLanguage() string {
-	if x != nil && x.Language != nil {
-		return *x.Language
+func (x *UpdateFeedRequest) GetLang() string {
+	if x != nil && x.Lang != nil {
+		return *x.Lang
 	}
 	return ""
 }
@@ -684,7 +684,7 @@ func (x *UpdateFeedResponse) GetFeed() *Feed {
 
 type DeleteFeedRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Uuid          string                 `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -719,9 +719,9 @@ func (*DeleteFeedRequest) Descriptor() ([]byte, []int) {
 	return file_feed_v1_feed_proto_rawDescGZIP(), []int{9}
 }
 
-func (x *DeleteFeedRequest) GetUuid() string {
+func (x *DeleteFeedRequest) GetId() string {
 	if x != nil {
-		return x.Uuid
+		return x.Id
 	}
 	return ""
 }
@@ -764,7 +764,7 @@ func (*DeleteFeedResponse) Descriptor() ([]byte, []int) {
 
 type RefreshFeedsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Uuids         []string               `protobuf:"bytes,1,rep,name=uuids,proto3" json:"uuids,omitempty"`
+	Ids           []string               `protobuf:"bytes,1,rep,name=ids,proto3" json:"ids,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -799,9 +799,9 @@ func (*RefreshFeedsRequest) Descriptor() ([]byte, []int) {
 	return file_feed_v1_feed_proto_rawDescGZIP(), []int{11}
 }
 
-func (x *RefreshFeedsRequest) GetUuids() []string {
+func (x *RefreshFeedsRequest) GetIds() []string {
 	if x != nil {
-		return x.Uuids
+		return x.Ids
 	}
 	return nil
 }
@@ -1142,14 +1142,14 @@ var File_feed_v1_feed_proto protoreflect.FileDescriptor
 
 const file_feed_v1_feed_proto_rawDesc = "" +
 	"\n" +
-	"\x12feed/v1/feed.proto\x12\afeed.v1\x1a\x10tag/v1/tag.proto\"\xb3\x04\n" +
-	"\x04Feed\x12\x12\n" +
-	"\x04uuid\x18\x01 \x01(\tR\x04uuid\x12\x10\n" +
+	"\x12feed/v1/feed.proto\x12\afeed.v1\x1a\x10tag/v1/tag.proto\"\xa3\x04\n" +
+	"\x04Feed\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x10\n" +
 	"\x03url\x18\x02 \x01(\tR\x03url\x12\x17\n" +
 	"\x04link\x18\x03 \x01(\tH\x00R\x04link\x88\x01\x01\x12\x14\n" +
 	"\x05title\x18\x04 \x01(\tR\x05title\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tH\x01R\vdescription\x88\x01\x01\x12\x1f\n" +
-	"\blanguage\x18\x06 \x01(\tH\x02R\blanguage\x88\x01\x01\x12 \n" +
+	"\vdescription\x18\x05 \x01(\tH\x01R\vdescription\x88\x01\x01\x12\x17\n" +
+	"\x04lang\x18\x06 \x01(\tH\x02R\x04lang\x88\x01\x01\x12 \n" +
 	"\timage_url\x18\a \x01(\tH\x03R\bimageUrl\x88\x01\x01\x12!\n" +
 	"\tcopyright\x18\b \x01(\tH\x04R\tcopyright\x88\x01\x01\x12 \n" +
 	"\tfeed_type\x18\t \x01(\tH\x05R\bfeedType\x88\x01\x01\x12&\n" +
@@ -1162,8 +1162,8 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"updated_at\x18\r \x01(\tR\tupdatedAt\x12\x1f\n" +
 	"\x04tags\x18\x0e \x03(\v2\v.tag.v1.TagR\x04tagsB\a\n" +
 	"\x05_linkB\x0e\n" +
-	"\f_descriptionB\v\n" +
-	"\t_languageB\f\n" +
+	"\f_descriptionB\a\n" +
+	"\x05_langB\f\n" +
 	"\n" +
 	"_image_urlB\f\n" +
 	"\n" +
@@ -1171,9 +1171,9 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"\n" +
 	"_feed_typeB\x0f\n" +
 	"\r_feed_versionB\x12\n" +
-	"\x10_last_fetched_at\"$\n" +
-	"\x0eGetFeedRequest\x12\x12\n" +
-	"\x04uuid\x18\x01 \x01(\tR\x04uuid\"4\n" +
+	"\x10_last_fetched_at\" \n" +
+	"\x0eGetFeedRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"4\n" +
 	"\x0fGetFeedResponse\x12!\n" +
 	"\x04feed\x18\x01 \x01(\v2\r.feed.v1.FeedR\x04feed\"{\n" +
 	"\x10ListFeedsRequest\x12\x1a\n" +
@@ -1182,13 +1182,13 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"\a_tag_idB\x12\n" +
 	"\x10_sort_descending\"8\n" +
 	"\x11ListFeedsResponse\x12#\n" +
-	"\x05feeds\x18\x01 \x03(\v2\r.feed.v1.FeedR\x05feeds\"\xb4\x03\n" +
+	"\x05feeds\x18\x01 \x03(\v2\r.feed.v1.FeedR\x05feeds\"\xa8\x03\n" +
 	"\x11CreateFeedRequest\x12\x10\n" +
 	"\x03url\x18\x01 \x01(\tR\x03url\x12\x19\n" +
 	"\x05title\x18\x02 \x01(\tH\x00R\x05title\x88\x01\x01\x12\x17\n" +
 	"\x04link\x18\x03 \x01(\tH\x01R\x04link\x88\x01\x01\x12%\n" +
-	"\vdescription\x18\x04 \x01(\tH\x02R\vdescription\x88\x01\x01\x12\x1f\n" +
-	"\blanguage\x18\x05 \x01(\tH\x03R\blanguage\x88\x01\x01\x12 \n" +
+	"\vdescription\x18\x04 \x01(\tH\x02R\vdescription\x88\x01\x01\x12\x17\n" +
+	"\x04lang\x18\x05 \x01(\tH\x03R\x04lang\x88\x01\x01\x12 \n" +
 	"\timage_url\x18\x06 \x01(\tH\x04R\bimageUrl\x88\x01\x01\x12!\n" +
 	"\tcopyright\x18\a \x01(\tH\x05R\tcopyright\x88\x01\x01\x12 \n" +
 	"\tfeed_type\x18\b \x01(\tH\x06R\bfeedType\x88\x01\x01\x12&\n" +
@@ -1197,8 +1197,8 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	" \x03(\tR\x06tagIdsB\b\n" +
 	"\x06_titleB\a\n" +
 	"\x05_linkB\x0e\n" +
-	"\f_descriptionB\v\n" +
-	"\t_languageB\f\n" +
+	"\f_descriptionB\a\n" +
+	"\x05_langB\f\n" +
 	"\n" +
 	"_image_urlB\f\n" +
 	"\n" +
@@ -1207,13 +1207,13 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"_feed_typeB\x0f\n" +
 	"\r_feed_version\"7\n" +
 	"\x12CreateFeedResponse\x12!\n" +
-	"\x04feed\x18\x01 \x01(\v2\r.feed.v1.FeedR\x04feed\"\xf7\x03\n" +
-	"\x11UpdateFeedRequest\x12\x12\n" +
-	"\x04uuid\x18\x01 \x01(\tR\x04uuid\x12\x19\n" +
+	"\x04feed\x18\x01 \x01(\v2\r.feed.v1.FeedR\x04feed\"\xe7\x03\n" +
+	"\x11UpdateFeedRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
 	"\x05title\x18\x03 \x01(\tH\x00R\x05title\x88\x01\x01\x12\x17\n" +
 	"\x04link\x18\x04 \x01(\tH\x01R\x04link\x88\x01\x01\x12%\n" +
-	"\vdescription\x18\x05 \x01(\tH\x02R\vdescription\x88\x01\x01\x12\x1f\n" +
-	"\blanguage\x18\x06 \x01(\tH\x03R\blanguage\x88\x01\x01\x12 \n" +
+	"\vdescription\x18\x05 \x01(\tH\x02R\vdescription\x88\x01\x01\x12\x17\n" +
+	"\x04lang\x18\x06 \x01(\tH\x03R\x04lang\x88\x01\x01\x12 \n" +
 	"\timage_url\x18\a \x01(\tH\x04R\bimageUrl\x88\x01\x01\x12!\n" +
 	"\tcopyright\x18\b \x01(\tH\x05R\tcopyright\x88\x01\x01\x12 \n" +
 	"\tfeed_type\x18\t \x01(\tH\x06R\bfeedType\x88\x01\x01\x12&\n" +
@@ -1223,8 +1223,8 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"\atag_ids\x18\f \x03(\tR\x06tagIdsB\b\n" +
 	"\x06_titleB\a\n" +
 	"\x05_linkB\x0e\n" +
-	"\f_descriptionB\v\n" +
-	"\t_languageB\f\n" +
+	"\f_descriptionB\a\n" +
+	"\x05_langB\f\n" +
 	"\n" +
 	"_image_urlB\f\n" +
 	"\n" +
@@ -1234,12 +1234,12 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"\r_feed_versionB\x12\n" +
 	"\x10_last_fetched_at\"7\n" +
 	"\x12UpdateFeedResponse\x12!\n" +
-	"\x04feed\x18\x01 \x01(\v2\r.feed.v1.FeedR\x04feed\"'\n" +
-	"\x11DeleteFeedRequest\x12\x12\n" +
-	"\x04uuid\x18\x01 \x01(\tR\x04uuid\"\x14\n" +
-	"\x12DeleteFeedResponse\"+\n" +
-	"\x13RefreshFeedsRequest\x12\x14\n" +
-	"\x05uuids\x18\x01 \x03(\tR\x05uuids\"\x16\n" +
+	"\x04feed\x18\x01 \x01(\v2\r.feed.v1.FeedR\x04feed\"#\n" +
+	"\x11DeleteFeedRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\x14\n" +
+	"\x12DeleteFeedResponse\"'\n" +
+	"\x13RefreshFeedsRequest\x12\x10\n" +
+	"\x03ids\x18\x01 \x03(\tR\x03ids\"\x16\n" +
 	"\x14RefreshFeedsResponse\"6\n" +
 	"\x11ImportOpmlRequest\x12!\n" +
 	"\fopml_content\x18\x01 \x01(\fR\vopmlContent\"\x81\x01\n" +

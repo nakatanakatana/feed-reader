@@ -74,7 +74,7 @@ func (m *mockFetcher) Fetch(ctx context.Context, url string) (*gofeed.Feed, erro
 type mockItemFetcher struct {
 	called bool
 	err    error
-	uuids  []string
+	ids    []string
 }
 
 func (m *mockItemFetcher) FetchAndSave(ctx context.Context, f store.Feed) error {
@@ -82,9 +82,9 @@ func (m *mockItemFetcher) FetchAndSave(ctx context.Context, f store.Feed) error 
 	return m.err
 }
 
-func (m *mockItemFetcher) FetchFeedsByIDs(ctx context.Context, uuids []string) error {
+func (m *mockItemFetcher) FetchFeedsByIDs(ctx context.Context, ids []string) error {
 	m.called = true
-	m.uuids = uuids
+	m.ids = ids
 	return m.err
 }
 
@@ -163,8 +163,8 @@ func TestFeedServer_CreateFeed(t *testing.T) {
 				return
 			}
 
-			if res.Msg.Feed.Uuid == "" {
-				t.Error("expected non-empty uuid")
+			if res.Msg.Feed.Id == "" {
+				t.Error("expected non-empty id")
 			}
 			if res.Msg.Feed.Url != tt.args.req.Url {
 				t.Errorf("expected url %s, got %s", tt.args.req.Url, res.Msg.Feed.Url)
@@ -202,7 +202,7 @@ func TestFeedServer_GetFeed(t *testing.T) {
 				if err != nil {
 					t.Fatalf("setup failed: %v", err)
 				}
-				return res.Msg.Feed.Uuid
+				return res.Msg.Feed.Id
 			},
 			wantErr: false,
 		},
@@ -220,9 +220,9 @@ func TestFeedServer_GetFeed(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			_, db := setupTestDB(t)
 			server := NewFeedServer(store.NewStore(db), nil, &mockFetcher{}, &mockItemFetcher{})
-			uuid := tt.setup(t, server)
+			id := tt.setup(t, server)
 
-			_, err := server.GetFeed(ctx, connect.NewRequest(&feedv1.GetFeedRequest{Uuid: uuid}))
+			_, err := server.GetFeed(ctx, connect.NewRequest(&feedv1.GetFeedRequest{Id: id}))
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetFeed() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -304,7 +304,7 @@ func TestFeedServer_UpdateFeed(t *testing.T) {
 				}
 				feed := res.Msg.Feed
 				return &feedv1.UpdateFeedRequest{
-					Uuid:  feed.Uuid,
+					Id:    feed.Id,
 					Title: proto.String("Updated"),
 				}
 			},
@@ -314,7 +314,7 @@ func TestFeedServer_UpdateFeed(t *testing.T) {
 			name: "NotFound",
 			setup: func(t *testing.T, server feedv1connect.FeedServiceHandler) *feedv1.UpdateFeedRequest {
 				return &feedv1.UpdateFeedRequest{
-					Uuid:  "00000000-0000-0000-0000-000000000000",
+					Id:    "00000000-0000-0000-0000-000000000000",
 					Title: proto.String("Updated"),
 				}
 			},
@@ -361,7 +361,7 @@ func TestFeedServer_DeleteFeed(t *testing.T) {
 				if err != nil {
 					t.Fatalf("setup failed: %v", err)
 				}
-				return res.Msg.Feed.Uuid
+				return res.Msg.Feed.Id
 			},
 			wantErr: false,
 		},
@@ -371,16 +371,16 @@ func TestFeedServer_DeleteFeed(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			_, db := setupTestDB(t)
 			server := NewFeedServer(store.NewStore(db), nil, &mockFetcher{}, &mockItemFetcher{})
-			uuid := tt.setup(t, server)
+			id := tt.setup(t, server)
 
-			_, err := server.DeleteFeed(ctx, connect.NewRequest(&feedv1.DeleteFeedRequest{Uuid: uuid}))
+			_, err := server.DeleteFeed(ctx, connect.NewRequest(&feedv1.DeleteFeedRequest{Id: id}))
 			if (err != nil) != tt.wantErr {
 				t.Errorf("DeleteFeed() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
 			// Verify deletion
 			if !tt.wantErr {
-				_, err := server.GetFeed(ctx, connect.NewRequest(&feedv1.GetFeedRequest{Uuid: uuid}))
+				_, err := server.GetFeed(ctx, connect.NewRequest(&feedv1.GetFeedRequest{Id: id}))
 				if connect.CodeOf(err) != connect.CodeNotFound {
 					t.Errorf("GetFeed() after DeleteFeed() code = %v, want CodeNotFound", connect.CodeOf(err))
 				}
@@ -394,7 +394,7 @@ func TestFeedServer_RefreshFeeds(t *testing.T) {
 
 	tests := []struct {
 		name      string
-		uuids     []string
+		ids       []string
 		fetchErr  error
 		wantErr   bool
 		errCode   connect.Code
@@ -402,19 +402,19 @@ func TestFeedServer_RefreshFeeds(t *testing.T) {
 	}{
 		{
 			name:      "Success",
-			uuids:     []string{"uuid-1", "uuid-2"},
+			ids:       []string{"uuid-1", "uuid-2"},
 			wantErr:   false,
 			wantFetch: true,
 		},
 		{
-			name:      "Empty UUIDs",
-			uuids:     []string{},
+			name:      "Empty IDs",
+			ids:       []string{},
 			wantErr:   false,
 			wantFetch: false,
 		},
 		{
 			name:      "Fetch Error",
-			uuids:     []string{"uuid-1"},
+			ids:       []string{"uuid-1"},
 			fetchErr:  errors.New("fetch error"),
 			wantErr:   true,
 			errCode:   connect.CodeInternal,
@@ -428,7 +428,7 @@ func TestFeedServer_RefreshFeeds(t *testing.T) {
 			itemFetcher := &mockItemFetcher{err: tt.fetchErr}
 			server := NewFeedServer(store.NewStore(db), nil, &mockFetcher{}, itemFetcher)
 
-			_, err := server.RefreshFeeds(ctx, connect.NewRequest(&feedv1.RefreshFeedsRequest{Uuids: tt.uuids}))
+			_, err := server.RefreshFeeds(ctx, connect.NewRequest(&feedv1.RefreshFeedsRequest{Ids: tt.ids}))
 			if (err != nil) != tt.wantErr {
 				t.Errorf("RefreshFeeds() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -443,8 +443,8 @@ func TestFeedServer_RefreshFeeds(t *testing.T) {
 			if tt.wantFetch && !itemFetcher.called {
 				t.Error("expected FetchFeedsByIDs to be called")
 			}
-			if tt.wantFetch && len(itemFetcher.uuids) != len(tt.uuids) {
-				t.Errorf("expected %d uuids, got %d", len(tt.uuids), len(itemFetcher.uuids))
+			if tt.wantFetch && len(itemFetcher.ids) != len(tt.ids) {
+				t.Errorf("expected %d ids, got %d", len(tt.ids), len(itemFetcher.ids))
 			}
 		})
 	}
@@ -466,7 +466,7 @@ func TestFeedServer_ImportOpml(t *testing.T) {
 		// Pre-create existing feed
 		existingID := "existing-uuid"
 		_, err := queries.CreateFeed(ctx, store.CreateFeedParams{
-			Uuid:  existingID,
+			ID:    existingID,
 			Url:   "https://example.com/existing",
 			Title: func() *string { s := "Existing"; return &s }(),
 		})
@@ -573,19 +573,19 @@ func TestFeedServer_ManageFeedTags(t *testing.T) {
 	// Setup: 2 feeds and 2 tags
 	f1Res, _ := server.CreateFeed(ctx, connect.NewRequest(&feedv1.CreateFeedRequest{Url: "u1", Title: proto.String("f1")}))
 	f2Res, _ := server.CreateFeed(ctx, connect.NewRequest(&feedv1.CreateFeedRequest{Url: "u2", Title: proto.String("f2")}))
-	
+
 	// Assuming TagService is managed separately, but for handler test we can just use store directly to create tags
 	q := store.New(db)
 	_, _ = q.CreateTag(ctx, store.CreateTagParams{ID: "t1", Name: "Tag 1"})
 	_, _ = q.CreateTag(ctx, store.CreateTagParams{ID: "t2", Name: "Tag 2"})
 
 	// Initially f1, f2 have t1
-	_ = q.CreateFeedTag(ctx, store.CreateFeedTagParams{FeedID: f1Res.Msg.Feed.Uuid, TagID: "t1"})
-	_ = q.CreateFeedTag(ctx, store.CreateFeedTagParams{FeedID: f2Res.Msg.Feed.Uuid, TagID: "t1"})
+	_ = q.CreateFeedTag(ctx, store.CreateFeedTagParams{FeedID: f1Res.Msg.Feed.Id, TagID: "t1"})
+	_ = q.CreateFeedTag(ctx, store.CreateFeedTagParams{FeedID: f2Res.Msg.Feed.Id, TagID: "t1"})
 
 	t.Run("Bulk Manage Tags", func(t *testing.T) {
 		req := &feedv1.ManageFeedTagsRequest{
-			FeedIds:       []string{f1Res.Msg.Feed.Uuid, f2Res.Msg.Feed.Uuid},
+			FeedIds:      []string{f1Res.Msg.Feed.Id, f2Res.Msg.Feed.Id},
 			AddTagIds:    []string{"t2"},
 			RemoveTagIds: []string{"t1"},
 		}
@@ -594,19 +594,19 @@ func TestFeedServer_ManageFeedTags(t *testing.T) {
 		require.NoError(t, err)
 
 		// Verify f1
-		res1, _ := server.GetFeed(ctx, connect.NewRequest(&feedv1.GetFeedRequest{Uuid: f1Res.Msg.Feed.Uuid}))
+		res1, _ := server.GetFeed(ctx, connect.NewRequest(&feedv1.GetFeedRequest{Id: f1Res.Msg.Feed.Id}))
 		assert.Len(t, res1.Msg.Feed.Tags, 1)
 		assert.Equal(t, "t2", res1.Msg.Feed.Tags[0].Id)
 
 		// Verify f2
-		res2, _ := server.GetFeed(ctx, connect.NewRequest(&feedv1.GetFeedRequest{Uuid: f2Res.Msg.Feed.Uuid}))
+		res2, _ := server.GetFeed(ctx, connect.NewRequest(&feedv1.GetFeedRequest{Id: f2Res.Msg.Feed.Id}))
 		assert.Len(t, res2.Msg.Feed.Tags, 1)
 		assert.Equal(t, "t2", res2.Msg.Feed.Tags[0].Id)
 	})
 
 	t.Run("Store Error", func(t *testing.T) {
 		req := &feedv1.ManageFeedTagsRequest{
-			FeedIds:    []string{"non-existent"},
+			FeedIds:   []string{"non-existent"},
 			AddTagIds: []string{"t2"},
 		}
 		_, err := server.ManageFeedTags(ctx, connect.NewRequest(req))
@@ -635,7 +635,7 @@ func TestFeedServer_ListFeeds_Sorting(t *testing.T) {
 		}))
 		require.NoError(t, err)
 
-		return res1.Msg.Feed.Uuid, res2.Msg.Feed.Uuid
+		return res1.Msg.Feed.Id, res2.Msg.Feed.Id
 	}
 
 	t.Run("Sort Descending True", func(t *testing.T) {
@@ -648,8 +648,8 @@ func TestFeedServer_ListFeeds_Sorting(t *testing.T) {
 		require.NoError(t, err)
 
 		require.Len(t, res.Msg.Feeds, 2)
-		assert.Equal(t, id2, res.Msg.Feeds[0].Uuid)
-		assert.Equal(t, id1, res.Msg.Feeds[1].Uuid)
+		assert.Equal(t, id2, res.Msg.Feeds[0].Id)
+		assert.Equal(t, id1, res.Msg.Feeds[1].Id)
 	})
 
 	t.Run("Sort Descending False", func(t *testing.T) {
@@ -662,7 +662,7 @@ func TestFeedServer_ListFeeds_Sorting(t *testing.T) {
 		require.NoError(t, err)
 
 		require.Len(t, res.Msg.Feeds, 2)
-		assert.Equal(t, id1, res.Msg.Feeds[0].Uuid)
-		assert.Equal(t, id2, res.Msg.Feeds[1].Uuid)
+		assert.Equal(t, id1, res.Msg.Feeds[0].Id)
+		assert.Equal(t, id2, res.Msg.Feeds[1].Id)
 	})
 }

@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
 import * as fc from "fast-check";
+import { describe, expect, it } from "vitest";
 import { filterAndSortItems, SortOrder } from "./item-utils";
 
 describe("item-utils PBT", () => {

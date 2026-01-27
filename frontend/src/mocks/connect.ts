@@ -1,5 +1,5 @@
-import type { ServiceType, MessageType } from "@bufbuild/protobuf";
-import { HttpResponse, type HttpHandler, http } from "msw";
+import type { MessageType, ServiceType } from "@bufbuild/protobuf";
+import { type HttpHandler, HttpResponse, http } from "msw";
 
 export const mockConnectWeb =
   <T extends ServiceType>(service: T) =>

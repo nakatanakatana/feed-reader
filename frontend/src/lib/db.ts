@@ -1,20 +1,20 @@
 import { createClient } from "@connectrpc/connect";
-import { createCollection } from "@tanstack/solid-db";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
+import { createCollection } from "@tanstack/solid-db";
 import { FeedService } from "../gen/feed/v1/feed_connect";
 import { ItemService } from "../gen/item/v1/item_connect";
 import { Tag } from "../gen/tag/v1/tag_pb";
-import { transport, queryClient } from "./query";
+import { queryClient, transport } from "./query";
 
 export { Tag };
 
 export interface Feed {
-  uuid: string;
+  id: string;
   url: string;
   link?: string;
   title: string;
   description?: string;
-  language?: string;
+  lang?: string;
   imageUrl?: string;
   copyright?: string;
   feedType?: string;
@@ -65,7 +65,7 @@ export const feeds = createCollection(
       const response = await feedClient.listFeeds({});
       return response.feeds;
     },
-    getKey: (feed: Feed) => feed.uuid,
+    getKey: (feed: Feed) => feed.id,
     onInsert: async () => {
       // In a real app, we might want to call the API here.
       // But the spec says "Minimal UX regression: Synchronization behavior should remain reliable."
@@ -74,7 +74,7 @@ export const feeds = createCollection(
     onDelete: async ({ transaction }) => {
       for (const mutation of transaction.mutations) {
         if (mutation.type === "delete") {
-          await feedClient.deleteFeed({ uuid: mutation.key as string });
+          await feedClient.deleteFeed({ id: mutation.key as string });
         }
       }
     },

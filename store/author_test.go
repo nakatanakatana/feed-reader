@@ -18,8 +18,8 @@ func TestStore_AuthorField(t *testing.T) {
 	// Setup Feed
 	feedID := uuid.NewString()
 	_, err := s.CreateFeed(ctx, store.CreateFeedParams{
-		Uuid: feedID,
-		Url:  "http://example.com/feed",
+		ID:  feedID,
+		Url: "http://example.com/feed",
 	})
 	require.NoError(t, err)
 

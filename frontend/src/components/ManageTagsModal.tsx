@@ -1,9 +1,9 @@
-import { For, Show, createSignal } from "solid-js";
+import { createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
-import { useTags } from "../lib/tag-query";
-import { useManageFeedTags } from "../lib/feed-query";
 import { ManageFeedTagsRequest } from "../gen/feed/v1/feed_pb";
+import { useManageFeedTags } from "../lib/feed-query";
+import { useTags } from "../lib/tag-query";
 
 interface ManageTagsModalProps {
   isOpen: boolean;

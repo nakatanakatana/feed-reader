@@ -1,10 +1,10 @@
+import { createClient } from "@connectrpc/connect";
 import { createSignal, Show } from "solid-js";
 import { css } from "../../styled-system/css";
-import { flex, stack, center } from "../../styled-system/patterns";
-import { createClient } from "@connectrpc/connect";
+import { center, flex, stack } from "../../styled-system/patterns";
 import { FeedService } from "../gen/feed/v1/feed_connect";
-import { useTransport } from "../lib/transport-context";
 import { queryClient } from "../lib/query";
+import { useTransport } from "../lib/transport-context";
 
 interface ImportOpmlModalProps {
   isOpen: boolean;
@@ -39,13 +39,15 @@ export function ImportOpmlModal(props: ImportOpmlModalProps) {
       const reader = new FileReader();
       const content = await new Promise<Uint8Array>((resolve, reject) => {
         reader.onload = () =>
-          resolve(new Uint8Array(reader.result as ArrayBuffer));
+          // biome-ignore lint/suspicious/noExplicitAny: ArrayBuffer to Uint8Array cast issue in some TS environments
+          resolve(new Uint8Array(reader.result as any) as any);
         reader.onerror = reject;
         reader.readAsArrayBuffer(file);
       });
 
       const res = await client.importOpml({
-        opmlContent: content as Uint8Array<ArrayBuffer>,
+        // biome-ignore lint/suspicious/noExplicitAny: Protobuf bytes field expects specific Uint8Array subtype
+        opmlContent: content as any,
       });
       setResult({
         total: res.total,
