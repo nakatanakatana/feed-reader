@@ -1,12 +1,12 @@
 import { createClient } from "@connectrpc/connect";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { createCollection } from "@tanstack/solid-db";
-import { FeedService } from "../gen/feed/v1/feed_connect";
-import { ItemService } from "../gen/item/v1/item_connect";
-import { Tag } from "../gen/tag/v1/tag_pb";
+import { FeedService } from "../gen/feed/v1/feed_pb";
+import { ItemService } from "../gen/item/v1/item_pb";
+import type { Tag } from "../gen/tag/v1/tag_pb";
 import { queryClient, transport } from "./query";
 
-export { Tag };
+export type { Tag };
 
 export interface Feed {
   id: string;

@@ -1,5 +1,9 @@
 import { createSignal, For } from "solid-js";
-import { CreateTagRequest, DeleteTagRequest } from "../gen/tag/v1/tag_pb";
+import { create } from "@bufbuild/protobuf";
+import {
+  CreateTagRequestSchema,
+  DeleteTagRequestSchema,
+} from "../gen/tag/v1/tag_pb";
 import { useCreateTag, useDeleteTag, useTags } from "../lib/tag-query";
 
 export const TagManagement = () => {
@@ -11,14 +15,17 @@ export const TagManagement = () => {
   const handleCreateTag = (e: Event) => {
     e.preventDefault();
     if (!newTagName()) return;
-    createTagMutation.mutate(new CreateTagRequest({ name: newTagName() }), {
-      onSuccess: () => setNewTagName(""),
-    });
+    createTagMutation.mutate(
+      create(CreateTagRequestSchema, { name: newTagName() }),
+      {
+        onSuccess: () => setNewTagName(""),
+      },
+    );
   };
 
   const handleDeleteTag = (id: string) => {
     if (confirm("Are you sure you want to delete this tag?")) {
-      deleteTagMutation.mutate(new DeleteTagRequest({ id }));
+      deleteTagMutation.mutate(create(DeleteTagRequestSchema, { id }));
     }
   };
 

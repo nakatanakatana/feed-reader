@@ -1,9 +1,10 @@
 import { createRouterTransport } from "@connectrpc/connect";
+import { create } from "@bufbuild/protobuf";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { FeedService } from "../gen/feed/v1/feed_connect";
-import { ImportOpmlResponse } from "../gen/feed/v1/feed_pb";
+import { FeedService } from "../gen/feed/v1/feed_pb";
+import { ImportOpmlResponseSchema } from "../gen/feed/v1/feed_pb";
 import { TransportProvider } from "../lib/transport-context";
 import { ImportOpmlModal } from "./ImportOpmlModal";
 
@@ -20,7 +21,7 @@ describe("ImportOpmlModal", () => {
     const transport = createRouterTransport(({ service }) => {
       service(FeedService, {
         async importOpml() {
-          return new ImportOpmlResponse({
+          return create(ImportOpmlResponseSchema, {
             total: 10,
             success: 8,
             skipped: 2,
