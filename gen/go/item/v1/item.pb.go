@@ -80,6 +80,9 @@ type Item struct {
 	FeedId        string                 `protobuf:"bytes,6,opt,name=feed_id,json=feedId,proto3" json:"feed_id,omitempty"`
 	IsRead        bool                   `protobuf:"varint,7,opt,name=is_read,json=isRead,proto3" json:"is_read,omitempty"`
 	Author        string                 `protobuf:"bytes,9,opt,name=author,proto3" json:"author,omitempty"`
+	Content       string                 `protobuf:"bytes,10,opt,name=content,proto3" json:"content,omitempty"`
+	ImageUrl      string                 `protobuf:"bytes,11,opt,name=image_url,json=imageUrl,proto3" json:"image_url,omitempty"`
+	Categories    string                 `protobuf:"bytes,12,opt,name=categories,proto3" json:"categories,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -166,6 +169,27 @@ func (x *Item) GetIsRead() bool {
 func (x *Item) GetAuthor() string {
 	if x != nil {
 		return x.Author
+	}
+	return ""
+}
+
+func (x *Item) GetContent() string {
+	if x != nil {
+		return x.Content
+	}
+	return ""
+}
+
+func (x *Item) GetImageUrl() string {
+	if x != nil {
+		return x.ImageUrl
+	}
+	return ""
+}
+
+func (x *Item) GetCategories() string {
+	if x != nil {
+		return x.Categories
 	}
 	return ""
 }
@@ -486,7 +510,7 @@ var File_item_v1_item_proto protoreflect.FileDescriptor
 
 const file_item_v1_item_proto_rawDesc = "" +
 	"\n" +
-	"\x12item/v1/item.proto\x12\aitem.v1\"\xcd\x01\n" +
+	"\x12item/v1/item.proto\x12\aitem.v1\"\xa4\x02\n" +
 	"\x04Item\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x10\n" +
 	"\x03url\x18\x02 \x01(\tR\x03url\x12\x14\n" +
@@ -495,7 +519,13 @@ const file_item_v1_item_proto_rawDesc = "" +
 	"\fpublished_at\x18\x05 \x01(\tR\vpublishedAt\x12\x17\n" +
 	"\afeed_id\x18\x06 \x01(\tR\x06feedId\x12\x17\n" +
 	"\ais_read\x18\a \x01(\bR\x06isRead\x12\x16\n" +
-	"\x06author\x18\t \x01(\tR\x06author\" \n" +
+	"\x06author\x18\t \x01(\tR\x06author\x12\x18\n" +
+	"\acontent\x18\n" +
+	" \x01(\tR\acontent\x12\x1b\n" +
+	"\timage_url\x18\v \x01(\tR\bimageUrl\x12\x1e\n" +
+	"\n" +
+	"categories\x18\f \x01(\tR\n" +
+	"categories\" \n" +
 	"\x0eGetItemRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"4\n" +
 	"\x0fGetItemResponse\x12!\n" +

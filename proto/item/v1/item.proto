@@ -19,6 +19,9 @@ message Item {
   string feed_id = 6;
   bool is_read = 7;
   string author = 9;
+  string content = 10;
+  string image_url = 11;
+  string categories = 12;
 }
 
 message GetItemRequest {
