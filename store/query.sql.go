@@ -19,31 +19,22 @@ JOIN
   feed_items fi ON i.id = fi.item_id
 LEFT JOIN
   item_reads ir ON i.id = ir.item_id
-LEFT JOIN
-  item_saves isv ON i.id = isv.item_id
 WHERE
   (?1 IS NULL OR fi.feed_id = ?1) AND
   (?2 IS NULL OR COALESCE(ir.is_read, 0) = ?2) AND
-  (?3 IS NULL OR COALESCE(isv.is_saved, 0) = ?3) AND
-  (?4 IS NULL OR EXISTS (
-    SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = ?4
+  (?3 IS NULL OR EXISTS (
+    SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = ?3
   ))
 `
 
 type CountItemsParams struct {
-	FeedID  interface{} `json:"feed_id"`
-	IsRead  interface{} `json:"is_read"`
-	IsSaved interface{} `json:"is_saved"`
-	TagID   interface{} `json:"tag_id"`
+	FeedID interface{} `json:"feed_id"`
+	IsRead interface{} `json:"is_read"`
+	TagID  interface{} `json:"tag_id"`
 }
 
 func (q *Queries) CountItems(ctx context.Context, arg CountItemsParams) (int64, error) {
-	row := q.db.QueryRowContext(ctx, countItems,
-		arg.FeedID,
-		arg.IsRead,
-		arg.IsSaved,
-		arg.TagID,
-	)
+	row := q.db.QueryRowContext(ctx, countItems, arg.FeedID, arg.IsRead, arg.TagID)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
@@ -372,16 +363,13 @@ SELECT
   i.published_at,
   i.author,
   fi.feed_id,
-  CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read,
-  CAST(COALESCE(isv.is_saved, 0) AS INTEGER) AS is_saved
+  CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read
 FROM
   items i
 JOIN
   feed_items fi ON i.id = fi.item_id
 LEFT JOIN
   item_reads ir ON i.id = ir.item_id
-LEFT JOIN
-  item_saves isv ON i.id = isv.item_id
 WHERE
   i.id = ?
 `
@@ -395,7 +383,6 @@ type GetItemRow struct {
 	Author      *string `json:"author"`
 	FeedID      string  `json:"feed_id"`
 	IsRead      int64   `json:"is_read"`
-	IsSaved     int64   `json:"is_saved"`
 }
 
 func (q *Queries) GetItem(ctx context.Context, id string) (GetItemRow, error) {
@@ -410,7 +397,6 @@ func (q *Queries) GetItem(ctx context.Context, id string) (GetItemRow, error) {
 		&i.Author,
 		&i.FeedID,
 		&i.IsRead,
-		&i.IsSaved,
 	)
 	return i, err
 }
@@ -580,35 +566,30 @@ SELECT
   i.published_at,
   i.author,
   fi.feed_id,
-  CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read,
-  CAST(COALESCE(isv.is_saved, 0) AS INTEGER) AS is_saved
+  CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read
 FROM
   items i
 JOIN
   feed_items fi ON i.id = fi.item_id
 LEFT JOIN
   item_reads ir ON i.id = ir.item_id
-LEFT JOIN
-  item_saves isv ON i.id = isv.item_id
 WHERE
   (?1 IS NULL OR fi.feed_id = ?1) AND
   (?2 IS NULL OR COALESCE(ir.is_read, 0) = ?2) AND
-  (?3 IS NULL OR COALESCE(isv.is_saved, 0) = ?3) AND
-  (?4 IS NULL OR EXISTS (
-    SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = ?4
+  (?3 IS NULL OR EXISTS (
+    SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = ?3
   ))
 ORDER BY
   i.published_at DESC
-LIMIT ?6 OFFSET ?5
+LIMIT ?5 OFFSET ?4
 `
 
 type ListItemsParams struct {
-	FeedID  interface{} `json:"feed_id"`
-	IsRead  interface{} `json:"is_read"`
-	IsSaved interface{} `json:"is_saved"`
-	TagID   interface{} `json:"tag_id"`
-	Offset  int64       `json:"offset"`
-	Limit   int64       `json:"limit"`
+	FeedID interface{} `json:"feed_id"`
+	IsRead interface{} `json:"is_read"`
+	TagID  interface{} `json:"tag_id"`
+	Offset int64       `json:"offset"`
+	Limit  int64       `json:"limit"`
 }
 
 type ListItemsRow struct {
@@ -620,14 +601,12 @@ type ListItemsRow struct {
 	Author      *string `json:"author"`
 	FeedID      string  `json:"feed_id"`
 	IsRead      int64   `json:"is_read"`
-	IsSaved     int64   `json:"is_saved"`
 }
 
 func (q *Queries) ListItems(ctx context.Context, arg ListItemsParams) ([]ListItemsRow, error) {
 	rows, err := q.db.QueryContext(ctx, listItems,
 		arg.FeedID,
 		arg.IsRead,
-		arg.IsSaved,
 		arg.TagID,
 		arg.Offset,
 		arg.Limit,
@@ -648,7 +627,6 @@ func (q *Queries) ListItems(ctx context.Context, arg ListItemsParams) ([]ListIte
 			&i.Author,
 			&i.FeedID,
 			&i.IsRead,
-			&i.IsSaved,
 		); err != nil {
 			return nil, err
 		}
@@ -672,35 +650,30 @@ SELECT
   i.published_at,
   i.author,
   fi.feed_id,
-  CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read,
-  CAST(COALESCE(isv.is_saved, 0) AS INTEGER) AS is_saved
+  CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read
 FROM
   items i
 JOIN
   feed_items fi ON i.id = fi.item_id
 LEFT JOIN
   item_reads ir ON i.id = ir.item_id
-LEFT JOIN
-  item_saves isv ON i.id = isv.item_id
 WHERE
   (?1 IS NULL OR fi.feed_id = ?1) AND
   (?2 IS NULL OR COALESCE(ir.is_read, 0) = ?2) AND
-  (?3 IS NULL OR COALESCE(isv.is_saved, 0) = ?3) AND
-  (?4 IS NULL OR EXISTS (
-    SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = ?4
+  (?3 IS NULL OR EXISTS (
+    SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = ?3
   ))
 ORDER BY
   i.published_at ASC
-LIMIT ?6 OFFSET ?5
+LIMIT ?5 OFFSET ?4
 `
 
 type ListItemsAscParams struct {
-	FeedID  interface{} `json:"feed_id"`
-	IsRead  interface{} `json:"is_read"`
-	IsSaved interface{} `json:"is_saved"`
-	TagID   interface{} `json:"tag_id"`
-	Offset  int64       `json:"offset"`
-	Limit   int64       `json:"limit"`
+	FeedID interface{} `json:"feed_id"`
+	IsRead interface{} `json:"is_read"`
+	TagID  interface{} `json:"tag_id"`
+	Offset int64       `json:"offset"`
+	Limit  int64       `json:"limit"`
 }
 
 type ListItemsAscRow struct {
@@ -712,14 +685,12 @@ type ListItemsAscRow struct {
 	Author      *string `json:"author"`
 	FeedID      string  `json:"feed_id"`
 	IsRead      int64   `json:"is_read"`
-	IsSaved     int64   `json:"is_saved"`
 }
 
 func (q *Queries) ListItemsAsc(ctx context.Context, arg ListItemsAscParams) ([]ListItemsAscRow, error) {
 	rows, err := q.db.QueryContext(ctx, listItemsAsc,
 		arg.FeedID,
 		arg.IsRead,
-		arg.IsSaved,
 		arg.TagID,
 		arg.Offset,
 		arg.Limit,
@@ -740,7 +711,6 @@ func (q *Queries) ListItemsAsc(ctx context.Context, arg ListItemsAscParams) ([]L
 			&i.Author,
 			&i.FeedID,
 			&i.IsRead,
-			&i.IsSaved,
 		); err != nil {
 			return nil, err
 		}
@@ -964,40 +934,6 @@ func (q *Queries) SetItemRead(ctx context.Context, arg SetItemReadParams) (ItemR
 		&i.ItemID,
 		&i.IsRead,
 		&i.ReadAt,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
-}
-
-const setItemSaved = `-- name: SetItemSaved :one
-INSERT INTO item_saves (
-  item_id,
-  is_saved,
-  saved_at
-) VALUES (
-  ?, ?, ?
-)
-ON CONFLICT(item_id) DO UPDATE SET
-  is_saved = excluded.is_saved,
-  saved_at = excluded.saved_at,
-  updated_at = CURRENT_TIMESTAMP
-RETURNING item_id, is_saved, saved_at, created_at, updated_at
-`
-
-type SetItemSavedParams struct {
-	ItemID  string  `json:"item_id"`
-	IsSaved int64   `json:"is_saved"`
-	SavedAt *string `json:"saved_at"`
-}
-
-func (q *Queries) SetItemSaved(ctx context.Context, arg SetItemSavedParams) (ItemSafe, error) {
-	row := q.db.QueryRowContext(ctx, setItemSaved, arg.ItemID, arg.IsSaved, arg.SavedAt)
-	var i ItemSafe
-	err := row.Scan(
-		&i.ItemID,
-		&i.IsSaved,
-		&i.SavedAt,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
