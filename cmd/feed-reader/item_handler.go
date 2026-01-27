@@ -163,6 +163,18 @@ func toProtoItem(row store.GetItemRow) *itemv1.Item {
 	if row.Author != nil {
 		author = *row.Author
 	}
+	var content string
+	if row.Content != nil {
+		content = *row.Content
+	}
+	var img string
+	if row.ImageUrl != nil {
+		img = *row.ImageUrl
+	}
+	var cats string
+	if row.Categories != nil {
+		cats = *row.Categories
+	}
 
 	return &itemv1.Item{
 		Id:          row.ID,
@@ -173,5 +185,8 @@ func toProtoItem(row store.GetItemRow) *itemv1.Item {
 		Author:      author,
 		FeedId:      row.FeedID,
 		IsRead:      row.IsRead == 1,
+		Content:     content,
+		ImageUrl:    img,
+		Categories:  cats,
 	}
 }
