@@ -14,7 +14,7 @@
     - [ ] Update `cmd/feed-reader/fetcher_service.go` to map `gofeed.Item.Content`, `Image`, and `Categories` to the `Item` struct when saving.
 - [x] Task: Item Handler Update 6383a0e
     - [ ] Update `cmd/feed-reader/item_handler.go` to ensure new fields are passed in responses.
-- [ ] Task: Feed Handler Update (Unread Counts)
+- [x] Task: Feed Handler Update (Unread Counts) 48feaac
     - [ ] Update `cmd/feed-reader/handler.go` (`ListFeeds`) to execute `CountUnreadItemsPerFeed`.
     - [ ] Map the results to the `unread_count` field in the `ListFeedsResponse`.
 - [ ] Task: Conductor - User Manual Verification 'Backend Data & API Enhancements' (Protocol in workflow.md)
