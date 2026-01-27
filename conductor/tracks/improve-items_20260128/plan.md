@@ -1,7 +1,7 @@
 # Implementation Plan - Item List and Detail Modal Improvements
 
 ## Phase 1: Backend Data & API Enhancements
-- [ ] Task: Database Migration
+- [x] Task: Database Migration 552727c
     - [ ] Update `sql/schema.sql` to add `content`, `image_url`, and `categories` columns to `items` table.
     - [ ] Update `sql/query.sql` to include new columns in `CreateItem`, `GetItem`, `ListItems`, `ListItemsAsc`, `ListItemsByFeed`.
     - [ ] Add `CountUnreadItemsPerFeed` query to `sql/query.sql` to aggregate unread counts.
