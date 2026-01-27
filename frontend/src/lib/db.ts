@@ -3,7 +3,7 @@ import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { createCollection } from "@tanstack/solid-db";
 import { FeedService } from "../gen/feed/v1/feed_pb";
 import { ItemService } from "../gen/item/v1/item_pb";
-import { Tag } from "../gen/tag/v1/tag_pb";
+import type { Tag } from "../gen/tag/v1/tag_pb";
 import { queryClient, transport } from "./query";
 
 export type { Tag };

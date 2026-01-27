@@ -11,14 +11,7 @@ import {
   UpdateFeedResponseSchema,
 } from "../gen/feed/v1/feed_pb";
 
-import type {
-  CreateFeedResponse,
-  DeleteFeedResponse,
-  Feed,
-  ListFeedsResponse,
-  ManageFeedTagsResponse,
-  SetFeedTagsResponse,
-} from "../gen/feed/v1/feed_pb";
+import type { Feed } from "../gen/feed/v1/feed_pb";
 
 import { ItemService } from "../gen/item/v1/item_pb";
 
@@ -38,7 +31,7 @@ import {
   TagSchema,
 } from "../gen/tag/v1/tag_pb";
 
-import type { CreateTagResponse, DeleteTagResponse, ListTagsResponse, Tag } from "../gen/tag/v1/tag_pb";
+import type { Tag } from "../gen/tag/v1/tag_pb";
 import { mockConnectWeb } from "./connect";
 
 const tags: Tag[] = [
@@ -100,7 +93,8 @@ export const handlers = [
         updatedAt: new Date().toISOString(),
         tags: (req.tagIds || []).map(
           (id) =>
-            tags.find((t) => t.id === id) || create(TagSchema, { id, name: "Unknown" }),
+            tags.find((t) => t.id === id) ||
+            create(TagSchema, { id, name: "Unknown" }),
         ),
       });
       // In-memory update for the session
@@ -118,7 +112,8 @@ export const handlers = [
         if (req.tagIds) {
           feeds[index].tags = req.tagIds.map(
             (id) =>
-              tags.find((t) => t.id === id) || create(TagSchema, { id, name: "Unknown" }),
+              tags.find((t) => t.id === id) ||
+              create(TagSchema, { id, name: "Unknown" }),
           );
         }
         feeds[index].updatedAt = new Date().toISOString();
@@ -182,7 +177,8 @@ export const handlers = [
       if (feed) {
         feed.tags = req.tagIds.map(
           (id) =>
-            tags.find((t) => t.id === id) || create(TagSchema, { id, name: "Unknown" }),
+            tags.find((t) => t.id === id) ||
+            create(TagSchema, { id, name: "Unknown" }),
         );
       }
       return create(SetFeedTagsResponseSchema, {});

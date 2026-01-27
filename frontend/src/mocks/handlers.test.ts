@@ -1,11 +1,11 @@
 import { createClient } from "@connectrpc/connect";
 import { describe, expect, it } from "vitest";
 import { toJson } from "@bufbuild/protobuf";
-import { 
-  FeedService, 
-  ListFeedsResponseSchema, 
-  CreateFeedResponseSchema, 
-  DeleteFeedResponseSchema 
+import {
+  FeedService,
+  ListFeedsResponseSchema,
+  CreateFeedResponseSchema,
+  DeleteFeedResponseSchema,
 } from "../gen/feed/v1/feed_pb";
 import { transport } from "../lib/query";
 
@@ -14,7 +14,7 @@ describe("FeedService Mock Handlers", () => {
     const client = createClient(FeedService, transport);
     const response = await client.listFeeds({});
 
-    const data = toJson(ListFeedsResponseSchema, response) as any;
+    const data = toJson(ListFeedsResponseSchema, response);
     expect(data).toHaveProperty("feeds");
     expect(Array.isArray(response.feeds)).toBe(true);
     expect(response.feeds.length).toBeGreaterThan(0);
@@ -29,7 +29,7 @@ describe("FeedService Mock Handlers", () => {
     const client = createClient(FeedService, transport);
     const response = await client.createFeed(feedData);
 
-    const data = toJson(CreateFeedResponseSchema, response) as any;
+    const data = toJson(CreateFeedResponseSchema, response);
     expect(data).toHaveProperty("feed");
     expect(response.feed?.url).toBe(feedData.url);
     expect(response.feed?.title).toBe(feedData.title);

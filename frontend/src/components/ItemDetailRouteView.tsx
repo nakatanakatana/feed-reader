@@ -53,10 +53,7 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
   });
 
   const getLinkProps = (targetItemId: string | undefined) => {
-    const to = (
-      props.feedId ? "/feeds/$feedId/items/$itemId" : "/items/$itemId"
-    ) as any;
-    // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
+    const to = props.feedId ? "/feeds/$feedId/items/$itemId" : "/items/$itemId";
     // biome-ignore lint/style/noNonNullAssertion: router param fix
     // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
     const params = { feedId: props.feedId!, itemId: targetItemId } as any;
@@ -66,8 +63,8 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
   };
 
   const getCloseLinkProps = () => {
-    const to = (props.feedId ? "/feeds/$feedId" : "/") as any;
     // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
+    const to = (props.feedId ? "/feeds/$feedId" : "/") as any;
     // biome-ignore lint/style/noNonNullAssertion: router param fix
     // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
     const params = { feedId: props.feedId! } as any;
