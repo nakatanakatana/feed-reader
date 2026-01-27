@@ -6,7 +6,7 @@ import { ItemService } from "../gen/item/v1/item_pb";
 import { Tag } from "../gen/tag/v1/tag_pb";
 import { queryClient, transport } from "./query";
 
-export { Tag };
+export type { Tag };
 
 export interface Feed {
   id: string;

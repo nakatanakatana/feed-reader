@@ -1,6 +1,12 @@
 import { createClient } from "@connectrpc/connect";
 import { describe, expect, it } from "vitest";
-import { FeedService } from "../gen/feed/v1/feed_pb";
+import { toJson } from "@bufbuild/protobuf";
+import { 
+  FeedService, 
+  ListFeedsResponseSchema, 
+  CreateFeedResponseSchema, 
+  DeleteFeedResponseSchema 
+} from "../gen/feed/v1/feed_pb";
 import { transport } from "../lib/query";
 
 describe("FeedService Mock Handlers", () => {
@@ -8,7 +14,7 @@ describe("FeedService Mock Handlers", () => {
     const client = createClient(FeedService, transport);
     const response = await client.listFeeds({});
 
-    const data = response.toJson();
+    const data = toJson(ListFeedsResponseSchema, response) as any;
     expect(data).toHaveProperty("feeds");
     expect(Array.isArray(response.feeds)).toBe(true);
     expect(response.feeds.length).toBeGreaterThan(0);
@@ -23,7 +29,7 @@ describe("FeedService Mock Handlers", () => {
     const client = createClient(FeedService, transport);
     const response = await client.createFeed(feedData);
 
-    const data = response.toJson();
+    const data = toJson(CreateFeedResponseSchema, response) as any;
     expect(data).toHaveProperty("feed");
     expect(response.feed?.url).toBe(feedData.url);
     expect(response.feed?.title).toBe(feedData.title);
@@ -38,7 +44,7 @@ describe("FeedService Mock Handlers", () => {
 
     const response = await client.deleteFeed({ id: idToDelete });
 
-    const data = response.toJson();
+    const data = toJson(DeleteFeedResponseSchema, response);
     expect(data).toEqual({});
 
     // Verify it's deleted

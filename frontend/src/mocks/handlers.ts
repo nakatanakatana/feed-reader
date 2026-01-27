@@ -8,6 +8,7 @@ import {
   ListFeedsResponseSchema,
   ManageFeedTagsResponseSchema,
   SetFeedTagsResponseSchema,
+  UpdateFeedResponseSchema,
 } from "../gen/feed/v1/feed_pb";
 
 import type {
@@ -121,7 +122,7 @@ export const handlers = [
           );
         }
         feeds[index].updatedAt = new Date().toISOString();
-        return create(CreateFeedResponseSchema, { feed: feeds[index] });
+        return create(UpdateFeedResponseSchema, { feed: feeds[index] });
       }
       throw new Error("Feed not found");
     },
