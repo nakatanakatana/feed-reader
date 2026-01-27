@@ -283,6 +283,52 @@ func TestFeedServer_ListFeeds(t *testing.T) {
 	}
 }
 
+func TestFeedServer_ListFeeds_UnreadCounts(t *testing.T) {
+	ctx := context.Background()
+	_, db := setupTestDB(t)
+	s := store.NewStore(db)
+	server := NewFeedServer(s, nil, &mockFetcher{}, &mockItemFetcher{})
+
+	// Feed 1
+	f1, err := s.CreateFeed(ctx, store.CreateFeedParams{ID: "f1", Url: "u1", Title: proto.String("Feed 1")})
+	require.NoError(t, err)
+
+	// Feed 2
+	f2, err := s.CreateFeed(ctx, store.CreateFeedParams{ID: "f2", Url: "u2", Title: proto.String("Feed 2")})
+	require.NoError(t, err)
+
+	// Items for F1: 1 unread, 1 read
+	err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{FeedID: f1.ID, Url: "i1-1", Title: proto.String("i1-1")}) // Unread by default
+	require.NoError(t, err)
+	err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{FeedID: f1.ID, Url: "i1-2", Title: proto.String("i1-2")})
+	require.NoError(t, err)
+	
+	// Mark i1-2 as read. Need ID.
+	var id1_2 string
+	err = db.QueryRow("SELECT id FROM items WHERE url = 'i1-2'").Scan(&id1_2)
+	require.NoError(t, err)
+	_, err = s.SetItemRead(ctx, store.SetItemReadParams{ItemID: id1_2, IsRead: 1})
+	require.NoError(t, err)
+
+	// Items for F2: 1 unread
+	err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{FeedID: f2.ID, Url: "i2-1", Title: proto.String("i2-1")})
+	require.NoError(t, err)
+
+	// List Feeds
+	res, err := server.ListFeeds(ctx, connect.NewRequest(&feedv1.ListFeedsRequest{}))
+	require.NoError(t, err)
+	require.Len(t, res.Msg.Feeds, 2)
+
+	// Check counts
+	feedsMap := make(map[string]*feedv1.Feed)
+	for _, f := range res.Msg.Feeds {
+		feedsMap[f.Id] = f
+	}
+
+	assert.Equal(t, int64(1), feedsMap[f1.ID].UnreadCount, "Feed 1 should have 1 unread")
+	assert.Equal(t, int64(1), feedsMap[f2.ID].UnreadCount, "Feed 2 should have 1 unread")
+}
+
 func TestFeedServer_UpdateFeed(t *testing.T) {
 	ctx := context.Background()
 
