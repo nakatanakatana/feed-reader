@@ -115,6 +115,3 @@ func createItem(t *testing.T, q *store.Queries, ctx context.Context, id, url, fe
 	require.NoError(t, err)
 }
 
-func stringPtr(s string) *string {
-	return &s
-}
