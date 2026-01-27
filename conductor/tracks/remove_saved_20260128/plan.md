@@ -21,11 +21,8 @@ This plan outlines the steps to completely remove the "Saved" feature from the d
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Backend API and Logic' (Protocol in workflow.md) [b8adc07]
 
 ## Phase 4: Frontend UI and Logic
-- [ ] Task: Update frontend types and data fetching.
-    - [ ] Update `frontend/src/lib/db.ts`, `frontend/src/lib/item-query.ts`, etc., to remove `isSaved`.
-- [ ] Task: Remove "Saved" UI elements.
-    - [ ] Remove star icons and actions from `frontend/src/components/ItemRow.tsx` and `frontend/src/components/ItemList.tsx`.
-    - [ ] Remove filtering options from `frontend/src/components/ItemList.tsx` or related components.
+- [x] Task: Update frontend types and data fetching. [5af6513]
+- [~] Task: Remove "Saved" UI elements.
 - [ ] Task: Fix frontend tests.
     - [ ] Update Vitest tests (e.g., `frontend/src/components/ItemRow.test.tsx`, `frontend/src/lib/item-utils.test.ts`).
 - [ ] Task: Verify frontend changes.
