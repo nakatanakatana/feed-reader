@@ -17,13 +17,11 @@ describe("item-utils PBT", () => {
       .map((d) => d.toISOString()),
     feedId: fc.uuid(),
     isRead: fc.boolean(),
-    isSaved: fc.boolean(),
   });
 
   const filtersArbitrary = fc.record({
     feedId: fc.option(fc.uuid(), { nil: undefined }),
     isRead: fc.option(fc.boolean(), { nil: undefined }),
-    isSaved: fc.option(fc.boolean(), { nil: undefined }),
     sortOrder: fc.constantFrom(
       SortOrder.UNSPECIFIED,
       SortOrder.ASC,
@@ -54,11 +52,6 @@ describe("item-utils PBT", () => {
             expect(result.every((item) => item.isRead === filters.isRead)).toBe(
               true,
             );
-          }
-          if (filters.isSaved !== undefined) {
-            expect(
-              result.every((item) => item.isSaved === filters.isSaved),
-            ).toBe(true);
           }
         },
       ),
