@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"log/slog"
 	"time"
 
@@ -127,10 +128,25 @@ func (s *FetcherService) normalizeItem(feedID string, item *gofeed.Item) store.S
 		Title:       &item.Title,
 		Description: &item.Description,
 		Guid:        &item.GUID,
+		Content:     &item.Content,
 	}
 	if item.PublishedParsed != nil {
 		pubAt := item.PublishedParsed.Format(time.RFC3339)
 		params.PublishedAt = &pubAt
 	}
+
+	if item.Image != nil {
+		params.ImageUrl = &item.Image.URL
+	}
+
+	if len(item.Categories) > 0 {
+		// Simple JSON encoding
+		// We ignore error here as []string should always be encodable
+		if b, err := json.Marshal(item.Categories); err == nil {
+			cat := string(b)
+			params.Categories = &cat
+		}
+	}
+
 	return params
 }
