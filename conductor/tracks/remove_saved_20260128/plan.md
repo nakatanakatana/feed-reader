@@ -13,18 +13,12 @@ This plan outlines the steps to completely remove the "Saved" feature from the d
 - [x] Task: Verify database changes. [b57a5e3]
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Database Schema and Queries' (Protocol in workflow.md) [35686d8]
 
-## Phase 3: Backend API and Logic
-- [ ] Task: Update Protobuf definitions.
-    - [ ] Remove `is_saved` from `proto/item/v1/item.proto` (Item, ListItemsRequest, UpdateItemStatusRequest).
-    - [ ] Run `buf generate`.
-- [ ] Task: Update backend handler logic.
-    - [ ] Remove "Saved" related logic in `cmd/feed-reader/item_handler.go`.
-    - [ ] Update other handlers or services in `cmd/feed-reader/` as needed.
-- [ ] Task: Fix backend tests.
-    - [ ] Update or remove tests in `cmd/feed-reader/` that use the "Saved" feature.
-- [ ] Task: Verify backend changes.
-    - [ ] Run `go test ./cmd/feed-reader/...`.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Backend API and Logic' (Protocol in workflow.md)
+## Phase 3: Backend API and Logic [checkpoint: b8adc07]
+- [x] Task: Update Protobuf definitions. [b317f6a]
+- [x] Task: Update backend handler logic. [b317f6a]
+- [x] Task: Fix backend tests. [b317f6a]
+- [x] Task: Verify backend changes. [b317f6a]
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Backend API and Logic' (Protocol in workflow.md) [b8adc07]
 
 ## Phase 4: Frontend UI and Logic
 - [ ] Task: Update frontend types and data fetching.
