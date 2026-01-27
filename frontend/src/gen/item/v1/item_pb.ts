@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file item/v1/item.proto.
  */
 export const file_item_v1_item: GenFile = /*@__PURE__*/
-  fileDesc("ChJpdGVtL3YxL2l0ZW0ucHJvdG8SB2l0ZW0udjEinQEKBEl0ZW0SCgoCaWQYASABKAkSCwoDdXJsGAIgASgJEg0KBXRpdGxlGAMgASgJEhMKC2Rlc2NyaXB0aW9uGAQgASgJEhQKDHB1Ymxpc2hlZF9hdBgFIAEoCRIPCgdmZWVkX2lkGAYgASgJEg8KB2lzX3JlYWQYByABKAgSEAoIaXNfc2F2ZWQYCCABKAgSDgoGYXV0aG9yGAkgASgJIhwKDkdldEl0ZW1SZXF1ZXN0EgoKAmlkGAEgASgJIi4KD0dldEl0ZW1SZXNwb25zZRIbCgRpdGVtGAEgASgLMg0uaXRlbS52MS5JdGVtIsQCChBMaXN0SXRlbXNSZXF1ZXN0EhQKB2ZlZWRfaWQYASABKAlIAIgBARIUCgdpc19yZWFkGAIgASgISAGIAQESFQoIaXNfc2F2ZWQYAyABKAhIAogBARITCgZ0YWdfaWQYByABKAlIA4gBARI3Cgpzb3J0X29yZGVyGAQgASgOMiMuaXRlbS52MS5MaXN0SXRlbXNSZXF1ZXN0LlNvcnRPcmRlchINCgVsaW1pdBgFIAEoBRIOCgZvZmZzZXQYBiABKAUiUAoJU29ydE9yZGVyEhoKFlNPUlRfT1JERVJfVU5TUEVDSUZJRUQQABITCg9TT1JUX09SREVSX0RFU0MQARISCg5TT1JUX09SREVSX0FTQxACQgoKCF9mZWVkX2lkQgoKCF9pc19yZWFkQgsKCV9pc19zYXZlZEIJCgdfdGFnX2lkIkYKEUxpc3RJdGVtc1Jlc3BvbnNlEhwKBWl0ZW1zGAEgAygLMg0uaXRlbS52MS5JdGVtEhMKC3RvdGFsX2NvdW50GAIgASgFImwKF1VwZGF0ZUl0ZW1TdGF0dXNSZXF1ZXN0EgsKA2lkcxgBIAMoCRIUCgdpc19yZWFkGAIgASgISACIAQESFQoIaXNfc2F2ZWQYAyABKAhIAYgBAUIKCghfaXNfcmVhZEILCglfaXNfc2F2ZWQiGgoYVXBkYXRlSXRlbVN0YXR1c1Jlc3BvbnNlMugBCgtJdGVtU2VydmljZRI8CgdHZXRJdGVtEhcuaXRlbS52MS5HZXRJdGVtUmVxdWVzdBoYLml0ZW0udjEuR2V0SXRlbVJlc3BvbnNlEkIKCUxpc3RJdGVtcxIZLml0ZW0udjEuTGlzdEl0ZW1zUmVxdWVzdBoaLml0ZW0udjEuTGlzdEl0ZW1zUmVzcG9uc2USVwoQVXBkYXRlSXRlbVN0YXR1cxIgLml0ZW0udjEuVXBkYXRlSXRlbVN0YXR1c1JlcXVlc3QaIS5pdGVtLnYxLlVwZGF0ZUl0ZW1TdGF0dXNSZXNwb25zZUI9WjtnaXRodWIuY29tL25ha2F0YW5ha2F0YW5hL2ZlZWQtcmVhZGVyL2dlbi9nby9pdGVtL3YxO2l0ZW12MWIGcHJvdG8z");
+  fileDesc("ChJpdGVtL3YxL2l0ZW0ucHJvdG8SB2l0ZW0udjEiiwEKBEl0ZW0SCgoCaWQYASABKAkSCwoDdXJsGAIgASgJEg0KBXRpdGxlGAMgASgJEhMKC2Rlc2NyaXB0aW9uGAQgASgJEhQKDHB1Ymxpc2hlZF9hdBgFIAEoCRIPCgdmZWVkX2lkGAYgASgJEg8KB2lzX3JlYWQYByABKAgSDgoGYXV0aG9yGAkgASgJIhwKDkdldEl0ZW1SZXF1ZXN0EgoKAmlkGAEgASgJIi4KD0dldEl0ZW1SZXNwb25zZRIbCgRpdGVtGAEgASgLMg0uaXRlbS52MS5JdGVtIqACChBMaXN0SXRlbXNSZXF1ZXN0EhQKB2ZlZWRfaWQYASABKAlIAIgBARIUCgdpc19yZWFkGAIgASgISAGIAQESEwoGdGFnX2lkGAcgASgJSAKIAQESNwoKc29ydF9vcmRlchgEIAEoDjIjLml0ZW0udjEuTGlzdEl0ZW1zUmVxdWVzdC5Tb3J0T3JkZXISDQoFbGltaXQYBSABKAUSDgoGb2Zmc2V0GAYgASgFIlAKCVNvcnRPcmRlchIaChZTT1JUX09SREVSX1VOU1BFQ0lGSUVEEAASEwoPU09SVF9PUkRFUl9ERVNDEAESEgoOU09SVF9PUkRFUl9BU0MQAkIKCghfZmVlZF9pZEIKCghfaXNfcmVhZEIJCgdfdGFnX2lkIkYKEUxpc3RJdGVtc1Jlc3BvbnNlEhwKBWl0ZW1zGAEgAygLMg0uaXRlbS52MS5JdGVtEhMKC3RvdGFsX2NvdW50GAIgASgFIkgKF1VwZGF0ZUl0ZW1TdGF0dXNSZXF1ZXN0EgsKA2lkcxgBIAMoCRIUCgdpc19yZWFkGAIgASgISACIAQFCCgoIX2lzX3JlYWQiGgoYVXBkYXRlSXRlbVN0YXR1c1Jlc3BvbnNlMugBCgtJdGVtU2VydmljZRI8CgdHZXRJdGVtEhcuaXRlbS52MS5HZXRJdGVtUmVxdWVzdBoYLml0ZW0udjEuR2V0SXRlbVJlc3BvbnNlEkIKCUxpc3RJdGVtcxIZLml0ZW0udjEuTGlzdEl0ZW1zUmVxdWVzdBoaLml0ZW0udjEuTGlzdEl0ZW1zUmVzcG9uc2USVwoQVXBkYXRlSXRlbVN0YXR1cxIgLml0ZW0udjEuVXBkYXRlSXRlbVN0YXR1c1JlcXVlc3QaIS5pdGVtLnYxLlVwZGF0ZUl0ZW1TdGF0dXNSZXNwb25zZUI9WjtnaXRodWIuY29tL25ha2F0YW5ha2F0YW5hL2ZlZWQtcmVhZGVyL2dlbi9nby9pdGVtL3YxO2l0ZW12MWIGcHJvdG8z");
 
 /**
  * @generated from message item.v1.Item
@@ -50,11 +50,6 @@ export type Item = Message<"item.v1.Item"> & {
    * @generated from field: bool is_read = 7;
    */
   isRead: boolean;
-
-  /**
-   * @generated from field: bool is_saved = 8;
-   */
-  isSaved: boolean;
 
   /**
    * @generated from field: string author = 9;
@@ -116,11 +111,6 @@ export type ListItemsRequest = Message<"item.v1.ListItemsRequest"> & {
    * @generated from field: optional bool is_read = 2;
    */
   isRead?: boolean;
-
-  /**
-   * @generated from field: optional bool is_saved = 3;
-   */
-  isSaved?: boolean;
 
   /**
    * @generated from field: optional string tag_id = 7;
@@ -211,11 +201,6 @@ export type UpdateItemStatusRequest = Message<"item.v1.UpdateItemStatusRequest">
    * @generated from field: optional bool is_read = 2;
    */
   isRead?: boolean;
-
-  /**
-   * @generated from field: optional bool is_saved = 3;
-   */
-  isSaved?: boolean;
 };
 
 /**

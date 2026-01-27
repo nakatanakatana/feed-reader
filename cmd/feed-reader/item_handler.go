@@ -53,14 +53,6 @@ func (s *ItemServer) ListItems(ctx context.Context, req *connect.Request[itemv1.
 			isRead = int64(0)
 		}
 	}
-	var isSaved interface{}
-	if req.Msg.IsSaved != nil {
-		if *req.Msg.IsSaved {
-			isSaved = int64(1)
-		} else {
-			isSaved = int64(0)
-		}
-	}
 	var tagID interface{}
 	if req.Msg.TagId != nil {
 		tagID = *req.Msg.TagId
@@ -70,10 +62,9 @@ func (s *ItemServer) ListItems(ctx context.Context, req *connect.Request[itemv1.
 	var err error
 
 	totalCount, err = s.store.CountItems(ctx, store.CountItemsParams{
-		FeedID:  feedID,
-		IsRead:  isRead,
-		IsSaved: isSaved,
-		TagID:   tagID,
+		FeedID: feedID,
+		IsRead: isRead,
+		TagID:  tagID,
 	})
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
@@ -83,12 +74,11 @@ func (s *ItemServer) ListItems(ctx context.Context, req *connect.Request[itemv1.
 
 	if req.Msg.SortOrder == itemv1.ListItemsRequest_SORT_ORDER_ASC {
 		rows, err := s.store.ListItemsAsc(ctx, store.ListItemsAscParams{
-			FeedID:  feedID,
-			IsRead:  isRead,
-			IsSaved: isSaved,
-			TagID:   tagID,
-			Limit:   limit,
-			Offset:  offset,
+			FeedID: feedID,
+			IsRead: isRead,
+			TagID:  tagID,
+			Limit:  limit,
+			Offset: offset,
 		})
 		if err != nil {
 			return nil, connect.NewError(connect.CodeInternal, err)
@@ -98,12 +88,11 @@ func (s *ItemServer) ListItems(ctx context.Context, req *connect.Request[itemv1.
 		}
 	} else {
 		rows, err := s.store.ListItems(ctx, store.ListItemsParams{
-			FeedID:  feedID,
-			IsRead:  isRead,
-			IsSaved: isSaved,
-			TagID:   tagID,
-			Limit:   limit,
-			Offset:  offset,
+			FeedID: feedID,
+			IsRead: isRead,
+			TagID:  tagID,
+			Limit:  limit,
+			Offset: offset,
 		})
 		if err != nil {
 			return nil, connect.NewError(connect.CodeInternal, err)
@@ -133,20 +122,6 @@ func (s *ItemServer) UpdateItemStatus(ctx context.Context, req *connect.Request[
 					ItemID: id,
 					IsRead: isRead,
 					ReadAt: &now,
-				})
-				if err != nil {
-					return err
-				}
-			}
-			if req.Msg.IsSaved != nil {
-				isSaved := int64(0)
-				if *req.Msg.IsSaved {
-					isSaved = 1
-				}
-				_, err := qtx.SetItemSaved(ctx, store.SetItemSavedParams{
-					ItemID:  id,
-					IsSaved: isSaved,
-					SavedAt: &now,
 				})
 				if err != nil {
 					return err
@@ -198,6 +173,5 @@ func toProtoItem(row store.GetItemRow) *itemv1.Item {
 		Author:      author,
 		FeedId:      row.FeedID,
 		IsRead:      row.IsRead == 1,
-		IsSaved:     row.IsSaved == 1,
 	}
 }

@@ -79,7 +79,6 @@ type Item struct {
 	PublishedAt   string                 `protobuf:"bytes,5,opt,name=published_at,json=publishedAt,proto3" json:"published_at,omitempty"`
 	FeedId        string                 `protobuf:"bytes,6,opt,name=feed_id,json=feedId,proto3" json:"feed_id,omitempty"`
 	IsRead        bool                   `protobuf:"varint,7,opt,name=is_read,json=isRead,proto3" json:"is_read,omitempty"`
-	IsSaved       bool                   `protobuf:"varint,8,opt,name=is_saved,json=isSaved,proto3" json:"is_saved,omitempty"`
 	Author        string                 `protobuf:"bytes,9,opt,name=author,proto3" json:"author,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -160,13 +159,6 @@ func (x *Item) GetFeedId() string {
 func (x *Item) GetIsRead() bool {
 	if x != nil {
 		return x.IsRead
-	}
-	return false
-}
-
-func (x *Item) GetIsSaved() bool {
-	if x != nil {
-		return x.IsSaved
 	}
 	return false
 }
@@ -270,7 +262,6 @@ type ListItemsRequest struct {
 	state         protoimpl.MessageState     `protogen:"open.v1"`
 	FeedId        *string                    `protobuf:"bytes,1,opt,name=feed_id,json=feedId,proto3,oneof" json:"feed_id,omitempty"`
 	IsRead        *bool                      `protobuf:"varint,2,opt,name=is_read,json=isRead,proto3,oneof" json:"is_read,omitempty"`
-	IsSaved       *bool                      `protobuf:"varint,3,opt,name=is_saved,json=isSaved,proto3,oneof" json:"is_saved,omitempty"`
 	TagId         *string                    `protobuf:"bytes,7,opt,name=tag_id,json=tagId,proto3,oneof" json:"tag_id,omitempty"`
 	SortOrder     ListItemsRequest_SortOrder `protobuf:"varint,4,opt,name=sort_order,json=sortOrder,proto3,enum=item.v1.ListItemsRequest_SortOrder" json:"sort_order,omitempty"`
 	Limit         int32                      `protobuf:"varint,5,opt,name=limit,proto3" json:"limit,omitempty"`
@@ -319,13 +310,6 @@ func (x *ListItemsRequest) GetFeedId() string {
 func (x *ListItemsRequest) GetIsRead() bool {
 	if x != nil && x.IsRead != nil {
 		return *x.IsRead
-	}
-	return false
-}
-
-func (x *ListItemsRequest) GetIsSaved() bool {
-	if x != nil && x.IsSaved != nil {
-		return *x.IsSaved
 	}
 	return false
 }
@@ -414,7 +398,6 @@ type UpdateItemStatusRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Ids           []string               `protobuf:"bytes,1,rep,name=ids,proto3" json:"ids,omitempty"`
 	IsRead        *bool                  `protobuf:"varint,2,opt,name=is_read,json=isRead,proto3,oneof" json:"is_read,omitempty"`
-	IsSaved       *bool                  `protobuf:"varint,3,opt,name=is_saved,json=isSaved,proto3,oneof" json:"is_saved,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -463,13 +446,6 @@ func (x *UpdateItemStatusRequest) GetIsRead() bool {
 	return false
 }
 
-func (x *UpdateItemStatusRequest) GetIsSaved() bool {
-	if x != nil && x.IsSaved != nil {
-		return *x.IsSaved
-	}
-	return false
-}
-
 type UpdateItemStatusResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -510,7 +486,7 @@ var File_item_v1_item_proto protoreflect.FileDescriptor
 
 const file_item_v1_item_proto_rawDesc = "" +
 	"\n" +
-	"\x12item/v1/item.proto\x12\aitem.v1\"\xe8\x01\n" +
+	"\x12item/v1/item.proto\x12\aitem.v1\"\xcd\x01\n" +
 	"\x04Item\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x10\n" +
 	"\x03url\x18\x02 \x01(\tR\x03url\x12\x14\n" +
@@ -518,18 +494,16 @@ const file_item_v1_item_proto_rawDesc = "" +
 	"\vdescription\x18\x04 \x01(\tR\vdescription\x12!\n" +
 	"\fpublished_at\x18\x05 \x01(\tR\vpublishedAt\x12\x17\n" +
 	"\afeed_id\x18\x06 \x01(\tR\x06feedId\x12\x17\n" +
-	"\ais_read\x18\a \x01(\bR\x06isRead\x12\x19\n" +
-	"\bis_saved\x18\b \x01(\bR\aisSaved\x12\x16\n" +
+	"\ais_read\x18\a \x01(\bR\x06isRead\x12\x16\n" +
 	"\x06author\x18\t \x01(\tR\x06author\" \n" +
 	"\x0eGetItemRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"4\n" +
 	"\x0fGetItemResponse\x12!\n" +
-	"\x04item\x18\x01 \x01(\v2\r.item.v1.ItemR\x04item\"\xfe\x02\n" +
+	"\x04item\x18\x01 \x01(\v2\r.item.v1.ItemR\x04item\"\xd1\x02\n" +
 	"\x10ListItemsRequest\x12\x1c\n" +
 	"\afeed_id\x18\x01 \x01(\tH\x00R\x06feedId\x88\x01\x01\x12\x1c\n" +
-	"\ais_read\x18\x02 \x01(\bH\x01R\x06isRead\x88\x01\x01\x12\x1e\n" +
-	"\bis_saved\x18\x03 \x01(\bH\x02R\aisSaved\x88\x01\x01\x12\x1a\n" +
-	"\x06tag_id\x18\a \x01(\tH\x03R\x05tagId\x88\x01\x01\x12B\n" +
+	"\ais_read\x18\x02 \x01(\bH\x01R\x06isRead\x88\x01\x01\x12\x1a\n" +
+	"\x06tag_id\x18\a \x01(\tH\x02R\x05tagId\x88\x01\x01\x12B\n" +
 	"\n" +
 	"sort_order\x18\x04 \x01(\x0e2#.item.v1.ListItemsRequest.SortOrderR\tsortOrder\x12\x14\n" +
 	"\x05limit\x18\x05 \x01(\x05R\x05limit\x12\x16\n" +
@@ -541,20 +515,17 @@ const file_item_v1_item_proto_rawDesc = "" +
 	"\n" +
 	"\b_feed_idB\n" +
 	"\n" +
-	"\b_is_readB\v\n" +
-	"\t_is_savedB\t\n" +
+	"\b_is_readB\t\n" +
 	"\a_tag_id\"Y\n" +
 	"\x11ListItemsResponse\x12#\n" +
 	"\x05items\x18\x01 \x03(\v2\r.item.v1.ItemR\x05items\x12\x1f\n" +
 	"\vtotal_count\x18\x02 \x01(\x05R\n" +
-	"totalCount\"\x82\x01\n" +
+	"totalCount\"U\n" +
 	"\x17UpdateItemStatusRequest\x12\x10\n" +
 	"\x03ids\x18\x01 \x03(\tR\x03ids\x12\x1c\n" +
-	"\ais_read\x18\x02 \x01(\bH\x00R\x06isRead\x88\x01\x01\x12\x1e\n" +
-	"\bis_saved\x18\x03 \x01(\bH\x01R\aisSaved\x88\x01\x01B\n" +
+	"\ais_read\x18\x02 \x01(\bH\x00R\x06isRead\x88\x01\x01B\n" +
 	"\n" +
-	"\b_is_readB\v\n" +
-	"\t_is_saved\"\x1a\n" +
+	"\b_is_read\"\x1a\n" +
 	"\x18UpdateItemStatusResponse2\xe8\x01\n" +
 	"\vItemService\x12<\n" +
 	"\aGetItem\x12\x17.item.v1.GetItemRequest\x1a\x18.item.v1.GetItemResponse\x12B\n" +
