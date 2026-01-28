@@ -1,8 +1,0 @@
-{
-  "track_id": "improve-items_20260128",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-01-28T10:00:00Z",
-  "updated_at": "2026-01-28T10:00:00Z",
-  "description": "Improve item list metadata display, fix detail modal navigation, add backdrop/ESC dismissal, and add read item visibility toggle."
-}
