@@ -2,6 +2,7 @@ import { For, type JSX, onMount, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { center, flex, stack } from "../../styled-system/patterns";
 import { useItem, useUpdateItemStatus } from "../lib/item-query";
+import { formatDate, getItemDisplayDate } from "../lib/item-utils";
 
 interface ItemDetailModalProps {
   itemId: string | undefined;
@@ -155,7 +156,10 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                       alignItems: "center",
                     })}
                   >
-                    <span>{item().publishedAt}</span>
+                    <span>
+                      {getItemDisplayDate(item()).labelJa}:{" "}
+                      {formatDate(getItemDisplayDate(item()).date)}
+                    </span>
                     <Show when={item().author}>
                       <span>By {item().author}</span>
                     </Show>

@@ -16,7 +16,8 @@ vi.mock("../lib/item-query", () => ({
         id: id(),
         title: "Test Item",
         description: "<p>Test Content</p>",
-        publishedAt: "2026-01-24",
+        publishedAt: "2026-01-24T10:00:00Z",
+        createdAt: "2026-01-24T09:00:00Z",
         author: "Test Author",
         url: "http://example.com",
         isRead: false,
@@ -64,6 +65,7 @@ describe("ItemDetailModal", () => {
     );
 
     await expect.element(page.getByText("Test Item")).toBeInTheDocument();
+    await expect.element(page.getByText(/公開日:/)).toBeInTheDocument();
     await expect.element(page.getByText("By Test Author")).toBeInTheDocument();
     await expect.element(page.getByText("Test Content")).toBeInTheDocument();
 

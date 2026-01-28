@@ -59,12 +59,12 @@ func TestStore_ItemOperations(t *testing.T) {
 
 	// Test ListItems
 	t.Run("ListItems", func(t *testing.T) {
-		// All items, desc (default)
+		// All items, asc (standardized)
 		all, err := s.ListItems(ctx, store.ListItemsParams{Limit: 10, Offset: 0})
 		require.NoError(t, err)
 		assert.Len(t, all, 3)
-		assert.Equal(t, item3ID, all[0].ID) // Newest first
-		assert.Equal(t, item1ID, all[2].ID) // Oldest last
+		assert.Equal(t, item1ID, all[0].ID) // Oldest first
+		assert.Equal(t, item3ID, all[2].ID) // Newest last
 
 		// Filter by IsRead
 		reads, err := s.ListItems(ctx, store.ListItemsParams{IsRead: int64(1), Limit: 10})
