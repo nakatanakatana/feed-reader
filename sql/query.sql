@@ -200,7 +200,7 @@ SELECT
   i.image_url,
   i.categories,
   i.created_at,
-  fi.feed_id,
+  CAST(MIN(fi.feed_id) AS TEXT) AS feed_id,
   CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read
 FROM
   items i
@@ -215,6 +215,8 @@ WHERE
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = sqlc.narg('tag_id')
   )) AND
   (sqlc.narg('published_since') IS NULL OR COALESCE(i.published_at, i.created_at) >= sqlc.narg('published_since'))
+GROUP BY
+  i.id
 ORDER BY
   COALESCE(i.published_at, i.created_at) ASC
 LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
@@ -232,7 +234,7 @@ SELECT
   i.image_url,
   i.categories,
   i.created_at,
-  fi.feed_id,
+  CAST(MIN(fi.feed_id) AS TEXT) AS feed_id,
   CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read
 FROM
   items i
@@ -247,6 +249,8 @@ WHERE
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = sqlc.narg('tag_id')
   )) AND
   (sqlc.narg('published_since') IS NULL OR COALESCE(i.published_at, i.created_at) >= sqlc.narg('published_since'))
+GROUP BY
+  i.id
 ORDER BY
   COALESCE(i.published_at, i.created_at) ASC
 LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
@@ -266,7 +270,7 @@ GROUP BY
 
 -- name: CountItems :one
 SELECT
-  COUNT(*)
+  COUNT(DISTINCT i.id)
 FROM
   items i
 JOIN
@@ -280,6 +284,7 @@ WHERE
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = sqlc.narg('tag_id')
   )) AND
   (sqlc.narg('published_since') IS NULL OR COALESCE(i.published_at, i.created_at) >= sqlc.narg('published_since'));
+
 
 -- name: SetItemRead :one
 INSERT INTO item_reads (
