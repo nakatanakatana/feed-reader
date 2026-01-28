@@ -2,7 +2,7 @@
 
 Adding a date-based "since" filter to the item list, falling back to `created_at` if `published_at` is missing.
 
-## Phase 1: Backend Implementation
+## Phase 1: Backend Implementation [checkpoint: 76c0828]
 
 - [x] Task: Update Protobuf definition db776c3
     - [ ] Add `google.protobuf.Timestamp published_since` to `ListItemsRequest` in `proto/item/v1/item.proto`.
