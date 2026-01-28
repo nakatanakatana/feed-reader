@@ -3,10 +3,12 @@ import { createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { type Feed, feeds, type Tag } from "../lib/db";
+import { useItems } from "../lib/item-query";
 import { useTags } from "../lib/tag-query";
 import { ManageTagsModal } from "./ManageTagsModal";
 
 export function FeedList() {
+  console.log("DEBUG: Rendering FeedList component");
   const [selectedTagId, setSelectedTagId] = createSignal<
     string | undefined | null
   >();
@@ -15,6 +17,15 @@ export function FeedList() {
   const [isManageModalOpen, setIsManageModalOpen] = createSignal(false);
 
   const tagsQuery = useTags();
+  const itemsQuery = useItems({});
+
+  const unreadCount = () => {
+    const pages = itemsQuery.data?.pages || [];
+    return pages.reduce(
+      (acc, page) => acc + page.items.filter((i) => !i.isRead).length,
+      0,
+    );
+  };
 
   const { data: feedList } = useLiveQuery((q) => {
     const query = q.from({ feed: feeds });
@@ -89,17 +100,65 @@ export function FeedList() {
   return (
     <div class={stack({ gap: "4" })}>
       <div
-        class={flex({ justifyContent: "space-between", alignItems: "center" })}
+        class={css({
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "stretch",
+          flexDirection: "column",
+          gap: "4",
+          md: {
+            alignItems: "center",
+            flexDirection: "row",
+          },
+        })}
       >
-        <div class={flex({ gap: "4", alignItems: "center" })}>
-          <h2 class={css({ fontSize: "xl", fontWeight: "semibold" })}>
-            Your Feeds
-          </h2>
+        <div
+          class={css({
+            display: "flex",
+            gap: "4",
+            alignItems: "stretch",
+            justifyContent: "space-between",
+            flexDirection: "column",
+            sm: {
+              alignItems: "center",
+              flexDirection: "row",
+            },
+          })}
+        >
+          <div class={flex({ gap: "4", alignItems: "center" })}>
+            <h2
+              class={css({
+                fontSize: "xl",
+                fontWeight: "semibold",
+                display: "none",
+                sm: { display: "block" },
+              })}
+            >
+              Your Feeds
+            </h2>
+            <div
+              class={css({
+                bg: "blue.50",
+                color: "blue.700",
+                px: "3",
+                py: "1.5",
+                rounded: "md",
+                fontSize: "sm",
+                fontWeight: "bold",
+                border: "1px solid",
+                borderColor: "blue.200",
+              })}
+            >
+              Total Unread: {unreadCount()}
+            </div>
+          </div>
           <Show when={selectedFeedIds().length > 0}>
             <button
               type="button"
               onClick={() => setIsManageModalOpen(true)}
               class={css({
+                display: "none",
+                sm: { display: "block" },
                 px: "3",
                 py: "1.5",
                 bg: "blue.600",
@@ -114,7 +173,18 @@ export function FeedList() {
             </button>
           </Show>
         </div>
-        <div class={flex({ gap: "2", alignItems: "center" })}>
+        <div
+          class={css({
+            display: "flex",
+            gap: "2",
+            alignItems: "center",
+            flexWrap: "wrap",
+            justifyContent: "flex-start",
+            md: {
+              justifyContent: "flex-end",
+            },
+          })}
+        >
           <label
             for="sort-by"
             class={css({ fontSize: "sm", color: "gray.600" })}

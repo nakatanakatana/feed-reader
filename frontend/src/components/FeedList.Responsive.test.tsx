@@ -72,9 +72,8 @@ describe("FeedList Responsive", () => {
     </TransportProvider>
   );
 
-  it("breaks layout on narrow viewports (Regression Test)", async () => {
+  it("stacks elements vertically on narrow viewports", async () => {
     // Set a narrow viewport
-    // Note: in newer vitest browser versions, we use resize
     // @ts-ignore
     await page.viewport?.(375, 667);
     
@@ -103,19 +102,89 @@ describe("FeedList Responsive", () => {
       document.body,
     );
 
+    // 1. Assert Total Unread exists
+    const totalUnread = page.getByText(/Total Unread/i);
+    await expect.element(totalUnread).toBeInTheDocument();
+
+    // 2. Assert inner header container is now vertical (column)
+    // We find h2, then its parent (title div), then its parent (the responsive inner container)
+    // Note: title might be hidden but it's still in the DOM
     const headerTitle = page.getByText("Your Feeds");
-    await expect.element(headerTitle).toBeInTheDocument();
-    
     const headerContainer = headerTitle.element().parentElement?.parentElement;
     if (!headerContainer) throw new Error("Header container not found");
-
+    
+    console.log("Header classes:", headerContainer.className);
     const styles = window.getComputedStyle(headerContainer);
+    console.log("Header display:", styles.display);
+    console.log("Header flex-direction:", styles.flexDirection);
+    console.log("Header align-items:", styles.alignItems);
     
-    // In current implementation, it's always flex-row, which breaks on mobile
-    expect(styles.display).toBe("flex");
-    expect(styles.flexDirection).toBe("row");
+    expect(styles.flexDirection).toBe("column");
+    expect(styles.alignItems).toBe("stretch");
+
+    // 3. Assert Filter/Sort controls are wrapped or stacked
+    const sortLabel = page.getByText("Sort by:");
+    const controlsContainer = sortLabel.element().parentElement;
+    if (!controlsContainer) throw new Error("Controls container not found");
+    const controlsStyles = window.getComputedStyle(controlsContainer);
     
-    // Check if it has justify-content: space-between which pushes elements to edges
-    expect(styles.justifyContent).toBe("space-between");
+    // We expect it to wrap or be a column
+    expect(["column", "row"]).toContain(controlsStyles.flexDirection);
+    if (controlsStyles.flexDirection === "row") {
+      expect(controlsStyles.flexWrap).toBe("wrap");
+    }
+
+    // 4. Assert that the "Manage Tags" button is NOT visible in the header on mobile
+    // First, we need to make some feeds selected to trigger the button visibility
+    // But since we are testing layout, we can just check if it's hidden if it were there,
+    // or better, actually mock the selection.
+    
+    // For now, let's just assert it's not there by default, 
+    // but the task says "assert that action buttons are hidden from the header on mobile".
+    // If I add selection, I can test it.
+  });
+
+  it("hides action buttons from the header on mobile", async () => {
+    // Set a narrow viewport
+    // @ts-ignore
+    await page.viewport?.(375, 667);
+    
+    const mockFeeds = [
+      {
+        id: "1",
+        title: "Feed 1",
+        url: "http://example.com/1",
+        tags: [{ id: "t1", name: "Tag 1" }],
+      },
+    ];
+
+    vi.mocked(useLiveQuery).mockReturnValue({
+      data: mockFeeds,
+    } as unknown as ReturnType<typeof useLiveQuery>);
+
+    const history = createMemoryHistory({ initialEntries: ["/feeds"] });
+    const router = createRouter({ routeTree, history });
+
+    dispose = render(
+      () => (
+        <TestWrapper>
+          <RouterProvider router={router} />
+        </TestWrapper>
+      ),
+      document.body,
+    );
+
+    // Select a feed to make the "Manage Tags" button appear
+    // We'll use the first checkbox
+    const checkbox = page.getByRole("checkbox").first();
+    await checkbox.click();
+
+    // Check if the button is in the document
+    const manageButton = page.getByText(/Manage Tags/i);
+    await expect.element(manageButton).toBeInTheDocument();
+    
+    // Check if it is hidden via CSS display: none
+    const styles = window.getComputedStyle(manageButton.element());
+    expect(styles.display).toBe("none");
   });
 });
