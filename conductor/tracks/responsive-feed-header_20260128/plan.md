@@ -12,11 +12,11 @@ Verify existing components and set up regression tests for mobile viewports.
 ## Phase 2: Implement Responsive Header Layout
 Refactor the header to support stacked layout using Panda CSS.
 
-- [ ] Task: [Red] Update `FeedList.Responsive.test.tsx` to assert that "Total Unread" is at the top and filters are stacked on mobile.
-- [ ] Task: [Green] Modify `frontend/src/components/FeedList.tsx` to use responsive grid/flex layouts for the header.
-- [ ] Task: [Red] Update `FeedList.Responsive.test.tsx` to assert that action buttons are hidden from the header on mobile.
-- [ ] Task: [Green] Update `frontend/src/components/FeedList.tsx` to hide action buttons in the header for narrow viewports.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Implement Responsive Header Layout' (Protocol in workflow.md)
+- [x] Task: [Red] Update `FeedList.Responsive.test.tsx` to assert that "Total Unread" is at the top and filters are stacked on mobile. 6d31ff8
+- [x] Task: [Green] Modify `frontend/src/components/FeedList.tsx` to use responsive grid/flex layouts for the header. 6d31ff8
+- [x] Task: [Red] Update `FeedList.Responsive.test.tsx` to assert that action buttons are hidden from the header on mobile. 6d31ff8
+- [x] Task: [Green] Update `frontend/src/components/FeedList.tsx` to hide action buttons in the header for narrow viewports. 6d31ff8
+- [~] Task: Conductor - User Manual Verification 'Phase 2: Implement Responsive Header Layout' (Protocol in workflow.md)
 
 ## Phase 3: Implement Floating Action Buttons (FAB)
 Add FAB for primary actions on mobile.
