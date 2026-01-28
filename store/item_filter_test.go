@@ -71,12 +71,12 @@ func TestStore_ListItems_DateFilter(t *testing.T) {
 		assert.Len(t, items, 3)
 	})
 
-    t.Run("Count with Filter", func(t *testing.T) {
+	t.Run("Count with Filter", func(t *testing.T) {
 		since := now.Add(-24 * time.Hour).Format(time.RFC3339)
-        count, err := s.CountItems(ctx, store.CountItemsParams{
-            PublishedSince: &since,
-        })
-        require.NoError(t, err)
-        assert.Equal(t, int64(2), count)
-    })
+		count, err := s.CountItems(ctx, store.CountItemsParams{
+			PublishedSince: &since,
+		})
+		require.NoError(t, err)
+		assert.Equal(t, int64(2), count)
+	})
 }

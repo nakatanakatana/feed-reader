@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/caarlos0/env/v11"
-	_ "github.com/mattn/go-sqlite3"
 	"github.com/nakatanakatana/feed-reader/gen/go/feed/v1/feedv1connect"
 	"github.com/nakatanakatana/feed-reader/gen/go/item/v1/itemv1connect"
 	"github.com/nakatanakatana/feed-reader/gen/go/tag/v1/tagv1connect"
@@ -19,6 +18,7 @@ import (
 	"github.com/nakatanakatana/feed-reader/store"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
+	_ "modernc.org/sqlite"
 )
 
 type config struct {
@@ -48,7 +48,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	db, err := sql.Open("sqlite3", cfg.DBPath)
+	db, err := sql.Open("sqlite", cfg.DBPath)
 	if err != nil {
 		logger.ErrorContext(ctx, "failed to open database", "error", err)
 		os.Exit(1)
