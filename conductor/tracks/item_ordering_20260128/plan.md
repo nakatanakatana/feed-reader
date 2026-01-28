@@ -14,12 +14,8 @@ Modify the database queries to use the standardized sorting logic (`COALESCE(pub
 ## Phase 2: Frontend Implementation (Display Logic)
 Update the UI components to display the correct date and label based on the availability of `published_at`.
 
-- [ ] Task: Create a utility function for date display logic in `frontend/src/lib/item-utils.ts`.
-    - [ ] Implement a function that returns the date string and its type (Published vs Received).
-- [ ] Task: Update `ItemRow` component to use the new display logic.
-    - [ ] Modify `frontend/src/components/ItemRow.tsx` to show the appropriate label.
-- [ ] Task: Update `ItemDetailModal` component to reflect the same date display logic.
-    - [ ] Modify `frontend/src/components/ItemDetailModal.tsx`.
-- [ ] Task: Update frontend tests to verify label changes.
-    - [ ] Update tests in `frontend/src/components/ItemRow.test.tsx` and `frontend/src/components/ItemDetailModal.test.tsx`.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Frontend Implementation' (Protocol in workflow.md)
+- [x] Task: Create a utility function for date display logic in `frontend/src/lib/item-utils.ts`. e59b78a
+- [x] Task: Update `ItemRow` component to use the new display logic. e59b78a
+- [x] Task: Update `ItemDetailModal` component to reflect the same date display logic. e59b78a
+- [x] Task: Update frontend tests to verify label changes. e59b78a
+- [~] Task: Conductor - User Manual Verification 'Phase 2: Frontend Implementation' (Protocol in workflow.md)
