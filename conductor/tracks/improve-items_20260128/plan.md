@@ -8,11 +8,8 @@ Improve the information density of the item list and implement the ability to to
 - [x] Task: Update `ItemRow` to display `created_at` and `description` 56ad0d4
     - [ ] Write tests for `ItemRow` to verify display of new metadata (date and description snippet).
     - [ ] Modify `ItemRow.tsx` to include the second line of information with appropriate styling.
-- [ ] Task: Implement "Show Read" toggle in `ItemList` header
-    - [ ] Write tests for `ItemList` header to verify the toggle UI exists and functions.
-    - [ ] Add the toggle UI to `ItemList.tsx`.
-    - [ ] Update state management to track the visibility of read items.
-- [ ] Task: Update filtering logic to support read items
+- [x] Task: Implement "Show Read" toggle in `ItemList` header ffc1ba6
+- [x] Task: Update filtering logic to support read items ffc1ba6
     - [ ] Write tests to verify that the list correctly filters items based on the "Show Read" state.
     - [ ] Modify the data fetching or filtering logic in `ItemList.tsx` (or relevant hooks) to handle the read status filter.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Item List UI Enhancements & Filtering' (Protocol in workflow.md)
