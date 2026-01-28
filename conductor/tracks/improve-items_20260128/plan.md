@@ -5,7 +5,7 @@ This plan covers the enhancement of the item list UI, fixing navigation in the d
 ## Phase 1: Item List UI Enhancements & Filtering
 Improve the information density of the item list and implement the ability to toggle read items.
 
-- [ ] Task: Update `ItemRow` to display `created_at` and `description`
+- [x] Task: Update `ItemRow` to display `created_at` and `description` 56ad0d4
     - [ ] Write tests for `ItemRow` to verify display of new metadata (date and description snippet).
     - [ ] Modify `ItemRow.tsx` to include the second line of information with appropriate styling.
 - [ ] Task: Implement "Show Read" toggle in `ItemList` header
