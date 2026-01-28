@@ -12,10 +12,27 @@ import { ListItemsRequest_SortOrder } from "../gen/item/v1/item_pb";
 import { useTransport } from "./transport-context";
 import type { Timestamp } from "@bufbuild/protobuf";
 
+const serializeForQueryKey = (obj: Record<string, unknown>) => {
+  const result: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(obj)) {
+    if (
+      value &&
+      typeof value === "object" &&
+      "seconds" in value &&
+      typeof (value as any).seconds === "bigint"
+    ) {
+      result[key] = { ...value, seconds: (value as any).seconds.toString() };
+    } else {
+      result[key] = value;
+    }
+  }
+  return result;
+};
+
 export const itemKeys = {
   all: ["items"] as const,
   list: (filters: Record<string, unknown>) =>
-    [...itemKeys.all, "list", filters] as const,
+    [...itemKeys.all, "list", serializeForQueryKey(filters)] as const,
   detail: (id: string) => [...itemKeys.all, "detail", id] as const,
 };
 
