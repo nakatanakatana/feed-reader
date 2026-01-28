@@ -128,6 +128,15 @@ func TestQueries_CreateFeedItem(t *testing.T) {
 		})
 		require.NoError(t, err)
 	})
+
+	t.Run("ListItems returns CreatedAt", func(t *testing.T) {
+		items, err := q.ListItems(ctx, store.ListItemsParams{
+			Limit: 10,
+		})
+		require.NoError(t, err)
+		assert.NotEmpty(t, items)
+		assert.NotEmpty(t, items[0].CreatedAt)
+	})
 }
 
 func TestQueries_CreateItemRead(t *testing.T) {

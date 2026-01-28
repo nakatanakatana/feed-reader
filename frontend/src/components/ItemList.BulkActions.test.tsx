@@ -65,12 +65,12 @@ describe("ItemList Bulk Actions", () => {
       document.body,
     );
 
-    const selectAll = page.getByRole("checkbox").nth(0);
+    const selectAll = page.getByLabelText(/Select All/i);
     await selectAll.click();
 
-    const bulkMarkBtn = page.getByText("Mark as Read").first();
-    // There are individual "Mark as Read" buttons too, the bulk one is in the blue bar.
-    // The bulk one is usually first in the DOM because it's sticky at the top.
+    // The bulk bar appears when items are selected. 
+    // It contains a "Mark as Read" button.
+    const bulkMarkBtn = page.getByRole("button", { name: "Mark as Read" }).nth(0);
     await bulkMarkBtn.click();
 
     expect(updateStatusMock).toHaveBeenCalledWith({

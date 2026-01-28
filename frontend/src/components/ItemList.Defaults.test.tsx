@@ -63,7 +63,9 @@ describe("ItemList Defaults", () => {
 
     // Check if useItems was called with the correct defaults
     // Note: ASC is 2 in ListItemsRequest_SortOrder
-    expect(useItems).toHaveBeenCalledWith(
+    expect(useItems).toHaveBeenCalledWith(expect.any(Function));
+    const paramsGetter = vi.mocked(useItems).mock.calls[0][0] as Function;
+    expect(paramsGetter()).toEqual(
       expect.objectContaining({
         isRead: false,
         sortOrder: 2,

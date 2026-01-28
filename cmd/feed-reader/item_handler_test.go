@@ -65,6 +65,7 @@ func TestItemServer(t *testing.T) {
 		assert.Equal(t, item1ID, res.Msg.Item.Id)
 		assert.Equal(t, "Item 1", res.Msg.Item.Title)
 		assert.Equal(t, author, res.Msg.Item.Author)
+		assert.NotEmpty(t, res.Msg.Item.CreatedAt)
 	})
 
 	t.Run("GetItem_WithRichContent", func(t *testing.T) {
@@ -92,6 +93,7 @@ func TestItemServer(t *testing.T) {
 		assert.Equal(t, content, res.Msg.Item.Content)
 		assert.Equal(t, img, res.Msg.Item.ImageUrl)
 		assert.Equal(t, cats, res.Msg.Item.Categories)
+		assert.NotEmpty(t, res.Msg.Item.CreatedAt)
 	})
 
 	t.Run("ListItems", func(t *testing.T) {
@@ -100,16 +102,9 @@ func TestItemServer(t *testing.T) {
 		}))
 		require.NoError(t, err)
 		assert.Len(t, res.Msg.Items, 3)
-		// The order depends on PublishedAt.
-		// Item 1: t1 (-2h)
-		// Item 2: t2 (-1h)
-		// Rich Item: no published_at set in params?
-		// Wait, I didn't set PublishedAt for Rich Item.
-		// DB defaults? No, it's nullable.
-		// If PublishedAt is nil/empty, sort order might be undefined or last/first.
-		// Let's set PublishedAt for Rich Item to be recent.
-		// But in the previous step I didn't set it.
-		// I'll update "GetItem_WithRichContent" to set PublishedAt so order is deterministic.
+		for _, item := range res.Msg.Items {
+			assert.NotEmpty(t, item.CreatedAt)
+		}
 	})
 
 	t.Run("UpdateItemStatus", func(t *testing.T) {

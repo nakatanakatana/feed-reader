@@ -165,14 +165,18 @@ export function ItemList(props: ItemListProps) {
             </label>
           </div>
           <input
+            id="select-all-checkbox"
             type="checkbox"
             checked={isAllSelected()}
             onChange={(e) => handleToggleAll(e.currentTarget.checked)}
             class={css({ cursor: "pointer" })}
           />
-          <span class={css({ fontSize: "sm", color: "gray.600" })}>
+          <label
+            for="select-all-checkbox"
+            class={css({ fontSize: "sm", color: "gray.600", cursor: "pointer" })}
+          >
             Select All
-          </span>
+          </label>
         </div>
       </div>
 
