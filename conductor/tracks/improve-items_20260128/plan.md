@@ -14,7 +14,7 @@ Improve the information density of the item list and implement the ability to to
     - [ ] Modify the data fetching or filtering logic in `ItemList.tsx` (or relevant hooks) to handle the read status filter.
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Item List UI Enhancements & Filtering' (Protocol in workflow.md) 0c497ce
 
-## Phase 2: Item Detail Modal Fixes and Improvements
+## Phase 2: Item Detail Modal Fixes and Improvements [checkpoint: cdbf2dc]
 Fix the broken navigation and add standard dismissal interactions to the modal.
 
 - [x] Task: Fix Next/Prev navigation in `ItemDetailModal` 16af0f1
