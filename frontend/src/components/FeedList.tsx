@@ -199,7 +199,7 @@ export function FeedList() {
             class={css({
               fontSize: "xs",
               px: "2",
-              py: "0.5",
+              py: "1.5",
               rounded: "md",
               border: "1px solid",
               borderColor: "gray.300",
@@ -219,8 +219,8 @@ export function FeedList() {
             type="button"
             onClick={() => setSelectedTagId(undefined)}
             class={css({
-              px: "2",
-              py: "0.5",
+              px: "3",
+              py: "1.5",
               rounded: "md",
               fontSize: "xs",
               cursor: "pointer",
@@ -240,8 +240,8 @@ export function FeedList() {
             type="button"
             onClick={() => setSelectedTagId(null)}
             class={css({
-              px: "2",
-              py: "0.5",
+              px: "3",
+              py: "1.5",
               rounded: "md",
               fontSize: "xs",
               cursor: "pointer",
@@ -263,8 +263,8 @@ export function FeedList() {
                 type="button"
                 onClick={() => setSelectedTagId(tag.id)}
                 class={css({
-                  px: "2",
-                  py: "0.5",
+                  px: "3",
+                  py: "1.5",
                   rounded: "md",
                   fontSize: "xs",
                   cursor: "pointer",
