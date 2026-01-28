@@ -10,16 +10,20 @@ Ensure `last_fetched_at` is correctly returned by the API and populated during f
     - [x] Run backend tests to verify data mapping.
 - [x] Task: Conductor - User Manual Verification 'Backend Verification' (Protocol in workflow.md) 2e15dd7
 
-## Phase 2: Frontend Implementation
+## Phase 2: Frontend Implementation [checkpoint: 87ddc1c]
 Display the timestamp in the Feed List UI.
 
 - [x] Task: Update `FeedList` component to display `last_fetched_at`. f5fa1e1
-    - [ ] Modify `frontend/src/components/FeedList.tsx` to include the timestamp near the feed title.
-    - [ ] Format the timestamp to `YYYY-MM-DD HH:MM`.
-    - [ ] Handle null/missing values by displaying "Never".
+    - [x] Modify `frontend/src/components/FeedList.tsx` to include the timestamp near the feed title.
+    - [x] Format the timestamp to `YYYY-MM-DD HH:MM`.
+    - [x] Handle null/missing values by displaying "Never".
 - [x] Task: Style the timestamp. f5fa1e1
+    - [x] Add Panda CSS styling to ensure it appears as a subtle subtext.
+    - [x] Verify responsive behavior.
 - [x] Task: Write tests for `FeedList` date display. f5fa1e1
-- [ ] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md)
+    - [x] Add/Update tests in `frontend/src/components/FeedList.test.tsx` to verify the date is rendered correctly.
+    - [x] Test the "Never" placeholder case.
+- [x] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md) 87ddc1c
 
 ## Phase 3: Verification & Finalization
 Final checks and cleanup.
