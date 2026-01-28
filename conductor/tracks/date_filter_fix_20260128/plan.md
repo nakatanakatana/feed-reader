@@ -8,7 +8,7 @@ Focus on identifying and fixing the BigInt serialization issue when applying dat
 - [x] Task: Verify the fix by running the reproduction test and ensuring it passes. [a3bb21a]
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Fix BigInt Serialization Error' (Protocol in workflow.md)
 
-## Phase 2: Expand Date Filter Options
+## Phase 2: Expand Date Filter Options [checkpoint: eaa3818]
 Add "90 days" and "365 days" options to the date filter.
 
 - [x] Task: Update the type definitions and constants for date filters in the frontend. [929f4e7]
