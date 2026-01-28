@@ -23,6 +23,7 @@ export interface Feed {
   createdAt: string;
   updatedAt: string;
   tags: Tag[];
+  unreadCount?: bigint;
 }
 
 export interface Item {

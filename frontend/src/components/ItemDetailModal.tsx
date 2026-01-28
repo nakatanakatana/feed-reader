@@ -1,4 +1,4 @@
-import { type JSX, onMount, Show } from "solid-js";
+import { For, type JSX, onMount, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { center, flex, stack } from "../../styled-system/patterns";
 import { useItem, useUpdateItemStatus } from "../lib/item-query";

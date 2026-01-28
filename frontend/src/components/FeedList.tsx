@@ -22,12 +22,12 @@ export function FeedList() {
   });
 
   const totalUnreadCount = () => {
-    const list = (feedList as Feed[]) ?? [];
+    const list = (feedList as unknown as Feed[]) ?? [];
     return list.reduce((acc, feed) => acc + Number(feed.unreadCount || 0), 0);
   };
 
   const filteredFeeds = () => {
-    const list = (feedList as Feed[]) ?? [];
+    const list = (feedList as unknown as Feed[]) ?? [];
     const tagId = selectedTagId();
     if (tagId === undefined) return list;
     if (tagId === null)
