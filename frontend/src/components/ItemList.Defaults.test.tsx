@@ -72,6 +72,9 @@ describe("ItemList Defaults", () => {
       expect.objectContaining({
         isRead: false,
         sortOrder: 2,
+        publishedSince: expect.objectContaining({
+          seconds: expect.any(BigInt),
+        }),
       }),
     );
   });
