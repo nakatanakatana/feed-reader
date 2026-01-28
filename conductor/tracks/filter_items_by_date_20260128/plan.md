@@ -28,7 +28,7 @@ Adding a date-based "since" filter to the item list, falling back to `created_at
 - [x] Task: Create Date Filter UI Component (TDD) a7bc3eb
     - [x] Write failing tests for a new `DateFilterSelector` component (or similar).
     - [x] Implement the component with presets: All Time, Past 24h, 7d, 30d.
-- [ ] Task: Integrate Date Filter into ItemList (TDD)
-    - [ ] Write failing integration tests in `frontend/src/components/ItemList.test.tsx`.
-    - [ ] Update `ItemList.tsx` to include the date filter in the view and pass it to the query hook.
+- [x] Task: Integrate Date Filter into ItemList (TDD) 8fa776e
+    - [x] Write failing integration tests in `frontend/src/components/ItemList.test.tsx`.
+    - [x] Update `ItemList.tsx` to include the date filter in the view and pass it to the query hook.
 - [ ] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md)
