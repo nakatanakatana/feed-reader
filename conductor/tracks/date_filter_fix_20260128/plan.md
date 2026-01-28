@@ -3,9 +3,9 @@
 ## Phase 1: Fix BigInt Serialization Error
 Focus on identifying and fixing the BigInt serialization issue when applying date filters.
 
-- [ ] Task: Reproduce the BigInt serialization error with a Vitest unit test in `frontend/src/lib/item-query.test.ts` or similar.
-- [ ] Task: Locate the BigInt value in the frontend state or API request payload and ensure it is serialized correctly (e.g., as a string for Connect RPC).
-- [ ] Task: Verify the fix by running the reproduction test and ensuring it passes.
+- [x] Task: Reproduce the BigInt serialization error with a Vitest unit test in `frontend/src/lib/item-query.test.ts` or similar. [a3bb21a]
+- [x] Task: Locate the BigInt value in the frontend state or API request payload and ensure it is serialized correctly (e.g., as a string for Connect RPC). [a3bb21a]
+- [x] Task: Verify the fix by running the reproduction test and ensuring it passes. [a3bb21a]
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Fix BigInt Serialization Error' (Protocol in workflow.md)
 
 ## Phase 2: Expand Date Filter Options
