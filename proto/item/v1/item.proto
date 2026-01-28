@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package item.v1;
 
+import "google/protobuf/timestamp.proto";
+
 option go_package = "github.com/nakatanakatana/feed-reader/gen/go/item/v1;itemv1";
 
 service ItemService {
@@ -37,6 +39,7 @@ message ListItemsRequest {
   optional string feed_id = 1;
   optional bool is_read = 2;
   optional string tag_id = 7;
+  optional google.protobuf.Timestamp published_since = 8;
 
   enum SortOrder {
     SORT_ORDER_UNSPECIFIED = 0;

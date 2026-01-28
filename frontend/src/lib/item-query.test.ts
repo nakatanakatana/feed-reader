@@ -1,8 +1,9 @@
 import type { Transport } from "@connectrpc/connect";
 import { createClient } from "@connectrpc/connect";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi, beforeEach } from "vitest";
 import { ItemService } from "../gen/item/v1/item_pb";
 import type { ListItemsResponse } from "../gen/item/v1/item_pb";
+import type { Timestamp } from "@bufbuild/protobuf";
 import {
   fetchItems,
   itemKeys,
@@ -21,6 +22,10 @@ vi.mock("@connectrpc/connect", () => ({
 }));
 
 describe("Item Queries", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("should generate correct query keys", () => {
     expect(itemKeys.all).toEqual(["items"]);
     expect(itemKeys.list({ feedId: "123" })).toEqual([
@@ -51,6 +56,23 @@ describe("Item Queries", () => {
       sortOrder: 0, // UNSPECIFIED
     });
     expect(result).toEqual(mockResponse);
+  });
+
+  it("should fetch items with publishedSince filter", async () => {
+    const mockResponse = { items: [], totalCount: 0 };
+    mockClient.listItems.mockResolvedValue(mockResponse);
+
+    const transport = {} as unknown as Transport;
+    const since = { seconds: BigInt(1234567890), nanos: 0 } as Timestamp;
+    const params = { publishedSince: since };
+
+    await fetchItems(transport, params);
+
+    expect(mockClient.listItems).toHaveBeenCalledWith(
+      expect.objectContaining({
+        publishedSince: since,
+      }),
+    );
   });
 
   it("should generate correct infinite query options", () => {

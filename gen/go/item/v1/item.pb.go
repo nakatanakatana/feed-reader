@@ -9,6 +9,7 @@ package itemv1
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -291,15 +292,16 @@ func (x *GetItemResponse) GetItem() *Item {
 }
 
 type ListItemsRequest struct {
-	state         protoimpl.MessageState     `protogen:"open.v1"`
-	FeedId        *string                    `protobuf:"bytes,1,opt,name=feed_id,json=feedId,proto3,oneof" json:"feed_id,omitempty"`
-	IsRead        *bool                      `protobuf:"varint,2,opt,name=is_read,json=isRead,proto3,oneof" json:"is_read,omitempty"`
-	TagId         *string                    `protobuf:"bytes,7,opt,name=tag_id,json=tagId,proto3,oneof" json:"tag_id,omitempty"`
-	SortOrder     ListItemsRequest_SortOrder `protobuf:"varint,4,opt,name=sort_order,json=sortOrder,proto3,enum=item.v1.ListItemsRequest_SortOrder" json:"sort_order,omitempty"`
-	Limit         int32                      `protobuf:"varint,5,opt,name=limit,proto3" json:"limit,omitempty"`
-	Offset        int32                      `protobuf:"varint,6,opt,name=offset,proto3" json:"offset,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state          protoimpl.MessageState     `protogen:"open.v1"`
+	FeedId         *string                    `protobuf:"bytes,1,opt,name=feed_id,json=feedId,proto3,oneof" json:"feed_id,omitempty"`
+	IsRead         *bool                      `protobuf:"varint,2,opt,name=is_read,json=isRead,proto3,oneof" json:"is_read,omitempty"`
+	TagId          *string                    `protobuf:"bytes,7,opt,name=tag_id,json=tagId,proto3,oneof" json:"tag_id,omitempty"`
+	PublishedSince *timestamppb.Timestamp     `protobuf:"bytes,8,opt,name=published_since,json=publishedSince,proto3,oneof" json:"published_since,omitempty"`
+	SortOrder      ListItemsRequest_SortOrder `protobuf:"varint,4,opt,name=sort_order,json=sortOrder,proto3,enum=item.v1.ListItemsRequest_SortOrder" json:"sort_order,omitempty"`
+	Limit          int32                      `protobuf:"varint,5,opt,name=limit,proto3" json:"limit,omitempty"`
+	Offset         int32                      `protobuf:"varint,6,opt,name=offset,proto3" json:"offset,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *ListItemsRequest) Reset() {
@@ -351,6 +353,13 @@ func (x *ListItemsRequest) GetTagId() string {
 		return *x.TagId
 	}
 	return ""
+}
+
+func (x *ListItemsRequest) GetPublishedSince() *timestamppb.Timestamp {
+	if x != nil {
+		return x.PublishedSince
+	}
+	return nil
 }
 
 func (x *ListItemsRequest) GetSortOrder() ListItemsRequest_SortOrder {
@@ -518,7 +527,7 @@ var File_item_v1_item_proto protoreflect.FileDescriptor
 
 const file_item_v1_item_proto_rawDesc = "" +
 	"\n" +
-	"\x12item/v1/item.proto\x12\aitem.v1\"\xc3\x02\n" +
+	"\x12item/v1/item.proto\x12\aitem.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc3\x02\n" +
 	"\x04Item\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x10\n" +
 	"\x03url\x18\x02 \x01(\tR\x03url\x12\x14\n" +
@@ -539,11 +548,12 @@ const file_item_v1_item_proto_rawDesc = "" +
 	"\x0eGetItemRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"4\n" +
 	"\x0fGetItemResponse\x12!\n" +
-	"\x04item\x18\x01 \x01(\v2\r.item.v1.ItemR\x04item\"\xd1\x02\n" +
+	"\x04item\x18\x01 \x01(\v2\r.item.v1.ItemR\x04item\"\xaf\x03\n" +
 	"\x10ListItemsRequest\x12\x1c\n" +
 	"\afeed_id\x18\x01 \x01(\tH\x00R\x06feedId\x88\x01\x01\x12\x1c\n" +
 	"\ais_read\x18\x02 \x01(\bH\x01R\x06isRead\x88\x01\x01\x12\x1a\n" +
-	"\x06tag_id\x18\a \x01(\tH\x02R\x05tagId\x88\x01\x01\x12B\n" +
+	"\x06tag_id\x18\a \x01(\tH\x02R\x05tagId\x88\x01\x01\x12H\n" +
+	"\x0fpublished_since\x18\b \x01(\v2\x1a.google.protobuf.TimestampH\x03R\x0epublishedSince\x88\x01\x01\x12B\n" +
 	"\n" +
 	"sort_order\x18\x04 \x01(\x0e2#.item.v1.ListItemsRequest.SortOrderR\tsortOrder\x12\x14\n" +
 	"\x05limit\x18\x05 \x01(\x05R\x05limit\x12\x16\n" +
@@ -556,7 +566,8 @@ const file_item_v1_item_proto_rawDesc = "" +
 	"\b_feed_idB\n" +
 	"\n" +
 	"\b_is_readB\t\n" +
-	"\a_tag_id\"Y\n" +
+	"\a_tag_idB\x12\n" +
+	"\x10_published_since\"Y\n" +
 	"\x11ListItemsResponse\x12#\n" +
 	"\x05items\x18\x01 \x03(\v2\r.item.v1.ItemR\x05items\x12\x1f\n" +
 	"\vtotal_count\x18\x02 \x01(\x05R\n" +
@@ -595,22 +606,24 @@ var file_item_v1_item_proto_goTypes = []any{
 	(*ListItemsResponse)(nil),        // 5: item.v1.ListItemsResponse
 	(*UpdateItemStatusRequest)(nil),  // 6: item.v1.UpdateItemStatusRequest
 	(*UpdateItemStatusResponse)(nil), // 7: item.v1.UpdateItemStatusResponse
+	(*timestamppb.Timestamp)(nil),    // 8: google.protobuf.Timestamp
 }
 var file_item_v1_item_proto_depIdxs = []int32{
 	1, // 0: item.v1.GetItemResponse.item:type_name -> item.v1.Item
-	0, // 1: item.v1.ListItemsRequest.sort_order:type_name -> item.v1.ListItemsRequest.SortOrder
-	1, // 2: item.v1.ListItemsResponse.items:type_name -> item.v1.Item
-	2, // 3: item.v1.ItemService.GetItem:input_type -> item.v1.GetItemRequest
-	4, // 4: item.v1.ItemService.ListItems:input_type -> item.v1.ListItemsRequest
-	6, // 5: item.v1.ItemService.UpdateItemStatus:input_type -> item.v1.UpdateItemStatusRequest
-	3, // 6: item.v1.ItemService.GetItem:output_type -> item.v1.GetItemResponse
-	5, // 7: item.v1.ItemService.ListItems:output_type -> item.v1.ListItemsResponse
-	7, // 8: item.v1.ItemService.UpdateItemStatus:output_type -> item.v1.UpdateItemStatusResponse
-	6, // [6:9] is the sub-list for method output_type
-	3, // [3:6] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	8, // 1: item.v1.ListItemsRequest.published_since:type_name -> google.protobuf.Timestamp
+	0, // 2: item.v1.ListItemsRequest.sort_order:type_name -> item.v1.ListItemsRequest.SortOrder
+	1, // 3: item.v1.ListItemsResponse.items:type_name -> item.v1.Item
+	2, // 4: item.v1.ItemService.GetItem:input_type -> item.v1.GetItemRequest
+	4, // 5: item.v1.ItemService.ListItems:input_type -> item.v1.ListItemsRequest
+	6, // 6: item.v1.ItemService.UpdateItemStatus:input_type -> item.v1.UpdateItemStatusRequest
+	3, // 7: item.v1.ItemService.GetItem:output_type -> item.v1.GetItemResponse
+	5, // 8: item.v1.ItemService.ListItems:output_type -> item.v1.ListItemsResponse
+	7, // 9: item.v1.ItemService.UpdateItemStatus:output_type -> item.v1.UpdateItemStatusResponse
+	7, // [7:10] is the sub-list for method output_type
+	4, // [4:7] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_item_v1_item_proto_init() }

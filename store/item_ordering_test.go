@@ -25,11 +25,11 @@ func TestStore_ItemOrdering(t *testing.T) {
 	require.NoError(t, err)
 
 	/*
-	Target Order (ASC):
-	1. Item A: Published 2026-01-01
-	2. Item B: Published 2026-01-02
-	3. Item C: Published NULL, Created 2026-01-03 (fallback)
-	4. Item D: Published NULL, Created 2026-01-04 (fallback)
+		Target Order (ASC):
+		1. Item A: Published 2026-01-01
+		2. Item B: Published 2026-01-02
+		3. Item C: Published NULL, Created 2026-01-03 (fallback)
+		4. Item D: Published NULL, Created 2026-01-04 (fallback)
 	*/
 
 	createItemWithDates := func(id, url, title string, pubAt *string, createdAt string) {

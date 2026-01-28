@@ -10,6 +10,7 @@ import {
 import { ItemService } from "../gen/item/v1/item_pb";
 import { ListItemsRequest_SortOrder } from "../gen/item/v1/item_pb";
 import { useTransport } from "./transport-context";
+import type { Timestamp } from "@bufbuild/protobuf";
 
 export const itemKeys = {
   all: ["items"] as const,
@@ -22,6 +23,7 @@ export interface FetchItemsParams {
   feedId?: string;
   isRead?: boolean;
   tagId?: string;
+  publishedSince?: Timestamp;
   limit?: number;
   offset?: number;
   sortOrder?: ListItemsRequest_SortOrder;
@@ -36,6 +38,7 @@ export const fetchItems = async (
     feedId: params.feedId,
     isRead: params.isRead,
     tagId: params.tagId,
+    publishedSince: params.publishedSince,
     limit: params.limit,
     offset: params.offset,
     sortOrder: params.sortOrder ?? ListItemsRequest_SortOrder.UNSPECIFIED,

@@ -213,7 +213,8 @@ WHERE
   (sqlc.narg('is_read') IS NULL OR COALESCE(ir.is_read, 0) = sqlc.narg('is_read')) AND
   (sqlc.narg('tag_id') IS NULL OR EXISTS (
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = sqlc.narg('tag_id')
-  ))
+  )) AND
+  (sqlc.narg('published_since') IS NULL OR COALESCE(i.published_at, i.created_at) >= sqlc.narg('published_since'))
 ORDER BY
   COALESCE(i.published_at, i.created_at) ASC
 LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
@@ -244,7 +245,8 @@ WHERE
   (sqlc.narg('is_read') IS NULL OR COALESCE(ir.is_read, 0) = sqlc.narg('is_read')) AND
   (sqlc.narg('tag_id') IS NULL OR EXISTS (
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = sqlc.narg('tag_id')
-  ))
+  )) AND
+  (sqlc.narg('published_since') IS NULL OR COALESCE(i.published_at, i.created_at) >= sqlc.narg('published_since'))
 ORDER BY
   COALESCE(i.published_at, i.created_at) ASC
 LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
@@ -276,7 +278,8 @@ WHERE
   (sqlc.narg('is_read') IS NULL OR COALESCE(ir.is_read, 0) = sqlc.narg('is_read')) AND
   (sqlc.narg('tag_id') IS NULL OR EXISTS (
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = sqlc.narg('tag_id')
-  ));
+  )) AND
+  (sqlc.narg('published_since') IS NULL OR COALESCE(i.published_at, i.created_at) >= sqlc.narg('published_since'));
 
 -- name: SetItemRead :one
 INSERT INTO item_reads (
