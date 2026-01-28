@@ -45,14 +45,13 @@ func TestFetcherService_normalizeItem_PBT(t *testing.T) {
 		assert.Equal(t, item.GUID, *params.Guid)
 		assert.Equal(t, item.Content, *params.Content)
 		assert.Equal(t, item.Image.URL, *params.ImageUrl)
-		
+
 		if len(item.Categories) > 0 {
 			assert.NotNil(t, params.Categories)
 			// Optional: verify JSON content
 		} else {
 			assert.Nil(t, params.Categories)
 		}
-
 
 		if hasPubDate {
 			assert.NotNil(t, params.PublishedAt)

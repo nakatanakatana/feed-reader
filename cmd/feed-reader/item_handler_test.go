@@ -100,10 +100,10 @@ func TestItemServer(t *testing.T) {
 		}))
 		require.NoError(t, err)
 		assert.Len(t, res.Msg.Items, 3)
-		// The order depends on PublishedAt. 
+		// The order depends on PublishedAt.
 		// Item 1: t1 (-2h)
 		// Item 2: t2 (-1h)
-		// Rich Item: no published_at set in params? 
+		// Rich Item: no published_at set in params?
 		// Wait, I didn't set PublishedAt for Rich Item.
 		// DB defaults? No, it's nullable.
 		// If PublishedAt is nil/empty, sort order might be undefined or last/first.

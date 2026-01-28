@@ -115,7 +115,10 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                     class={css({
                       color: "inherit",
                       textDecoration: "none",
-                      _hover: { textDecoration: "underline", color: "blue.600" },
+                      _hover: {
+                        textDecoration: "underline",
+                        color: "blue.600",
+                      },
                     })}
                   >
                     {item().title}
@@ -158,7 +161,11 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                     </Show>
                     <Show when={item().categories}>
                       <div class={flex({ gap: "1", flexWrap: "wrap" })}>
-                        <For each={item().categories.split(",").map((c) => c.trim())}>
+                        <For
+                          each={item()
+                            .categories.split(",")
+                            .map((c) => c.trim())}
+                        >
                           {(cat) => (
                             <span
                               class={css({

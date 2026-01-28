@@ -16,7 +16,7 @@ import (
 func TestNewFeatures_SchemaAndQueries(t *testing.T) {
 	db, err := sql.Open("sqlite3", ":memory:")
 	require.NoError(t, err)
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	// Apply schema
 	_, err = db.ExecContext(context.Background(), schema.Schema)
@@ -40,7 +40,7 @@ func TestNewFeatures_SchemaAndQueries(t *testing.T) {
 		content := "<h1>Content</h1>"
 		imageURL := "http://example.com/image.jpg"
 		categories := `["tech", "news"]`
-		
+
 		item, err := q.CreateItem(ctx, store.CreateItemParams{
 			ID:          "item-new-fields",
 			Url:         "http://example.com/new-fields",
@@ -73,10 +73,10 @@ func TestNewFeatures_SchemaAndQueries(t *testing.T) {
 	t.Run("Verify CountUnreadItemsPerFeed", func(t *testing.T) {
 		// Setup: Feed 1 has 2 items (1 read, 1 unread)
 		//        Feed 2 has 1 item (1 unread)
-		
+
 		feed1 := "feed-count-1"
 		feed2 := "feed-count-2"
-		
+
 		_, err := q.CreateFeed(ctx, store.CreateFeedParams{ID: feed1, Url: "http://f1.com"})
 		require.NoError(t, err)
 		_, err = q.CreateFeed(ctx, store.CreateFeedParams{ID: feed2, Url: "http://f2.com"})
@@ -97,7 +97,7 @@ func TestNewFeatures_SchemaAndQueries(t *testing.T) {
 
 		counts, err := q.CountUnreadItemsPerFeed(ctx)
 		require.NoError(t, err)
-		
+
 		countsMap := make(map[string]int64)
 		for _, c := range counts {
 			countsMap[c.FeedID] = c.Count
@@ -114,4 +114,3 @@ func createItem(t *testing.T, q *store.Queries, ctx context.Context, id, url, fe
 	err = q.CreateFeedItem(ctx, store.CreateFeedItemParams{FeedID: feedID, ItemID: id})
 	require.NoError(t, err)
 }
-

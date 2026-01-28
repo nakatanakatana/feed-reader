@@ -42,11 +42,13 @@ describe("ItemDetailModal UI Updates", () => {
     vi.mocked(useItem).mockReturnValue({
       data: mockItem,
       isLoading: false,
+      // biome-ignore lint/suspicious/noExplicitAny: Mocking query result
     } as any);
 
     vi.mocked(useUpdateItemStatus).mockReturnValue({
       mutate: vi.fn(),
       isPending: false,
+      // biome-ignore lint/suspicious/noExplicitAny: Mocking mutation result
     } as any);
 
     dispose = render(
@@ -63,15 +65,19 @@ describe("ItemDetailModal UI Updates", () => {
     // 1. Title should be a link to item.url
     const titleLink = page.getByRole("link", { name: "Test Item Title" });
     await expect.element(titleLink).toBeInTheDocument();
-    await expect.element(titleLink).toHaveAttribute("href", "http://example.com/article");
+    await expect
+      .element(titleLink)
+      .toHaveAttribute("href", "http://example.com/article");
 
     // 2. "Open Original Article" button should NOT be present (integrated into title)
     const oldButton = page.getByText(/Open original article/i);
     await expect.element(oldButton).not.toBeInTheDocument();
 
     // 3. content, imageUrl, and categories should be displayed
-    await expect.element(page.getByText("Full body content")).toBeInTheDocument();
-    
+    await expect
+      .element(page.getByText("Full body content"))
+      .toBeInTheDocument();
+
     const img = document.body.querySelector("img");
     expect(img).not.toBeNull();
     expect(img).toHaveAttribute("src", "http://example.com/image.jpg");

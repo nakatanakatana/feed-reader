@@ -302,7 +302,7 @@ func TestFeedServer_ListFeeds_UnreadCounts(t *testing.T) {
 	require.NoError(t, err)
 	err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{FeedID: f1.ID, Url: "i1-2", Title: proto.String("i1-2")})
 	require.NoError(t, err)
-	
+
 	// Mark i1-2 as read. Need ID.
 	var id1_2 string
 	err = db.QueryRow("SELECT id FROM items WHERE url = 'i1-2'").Scan(&id1_2)
