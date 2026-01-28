@@ -108,7 +108,7 @@ JOIN
 WHERE
   fi.feed_id = ?
 ORDER BY
-  i.published_at DESC;
+  COALESCE(i.published_at, i.created_at) ASC;
 
 -- name: CreateItem :one
 INSERT INTO items (
@@ -215,7 +215,7 @@ WHERE
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = sqlc.narg('tag_id')
   ))
 ORDER BY
-  i.published_at DESC
+  COALESCE(i.published_at, i.created_at) ASC
 LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
 
 -- name: ListItemsAsc :many
@@ -246,7 +246,7 @@ WHERE
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = sqlc.narg('tag_id')
   ))
 ORDER BY
-  i.published_at ASC
+  COALESCE(i.published_at, i.created_at) ASC
 LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
 
 -- name: CountUnreadItemsPerFeed :many

@@ -657,7 +657,7 @@ WHERE
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = ?3
   ))
 ORDER BY
-  i.published_at DESC
+  COALESCE(i.published_at, i.created_at) ASC
 LIMIT ?5 OFFSET ?4
 `
 
@@ -756,7 +756,7 @@ WHERE
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = ?3
   ))
 ORDER BY
-  i.published_at ASC
+  COALESCE(i.published_at, i.created_at) ASC
 LIMIT ?5 OFFSET ?4
 `
 
@@ -848,7 +848,7 @@ JOIN
 WHERE
   fi.feed_id = ?
 ORDER BY
-  i.published_at DESC
+  COALESCE(i.published_at, i.created_at) ASC
 `
 
 func (q *Queries) ListItemsByFeed(ctx context.Context, feedID string) ([]Item, error) {
