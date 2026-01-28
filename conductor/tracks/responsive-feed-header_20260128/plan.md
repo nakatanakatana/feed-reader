@@ -29,6 +29,6 @@ Add FAB for primary actions on mobile.
 ## Phase 4: Final Polishing and Verification
 Ensure consistency and handle edge cases.
 
-- [ ] Task: Verify touch target sizes for all header controls on mobile.
-- [ ] Task: Run full frontend test suite `npm test` and linting `npm run lint`.
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Final Polishing and Verification' (Protocol in workflow.md)
+- [x] Task: Verify touch target sizes for all header controls on mobile. c95d301
+- [x] Task: Run full frontend test suite `npm test` and linting `npm run lint`. c95d301
+- [~] Task: Conductor - User Manual Verification 'Phase 4: Final Polishing and Verification' (Protocol in workflow.md)
