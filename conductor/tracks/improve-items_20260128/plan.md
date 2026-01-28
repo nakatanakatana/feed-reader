@@ -21,7 +21,7 @@ Fix the broken navigation and add standard dismissal interactions to the modal.
     - [ ] Write tests to reproduce the navigation failure in `ItemDetailModal`.
     - [ ] Debug and fix the navigation logic within `ItemDetailModal.tsx` or its parent context.
     - [ ] Verify that Next/Prev buttons correctly cycle through the current filtered list.
-- [ ] Task: Implement Backdrop and ESC key dismissal for `ItemDetailModal`
+- [x] Task: Implement Backdrop and ESC key dismissal for `ItemDetailModal` 6b94060
     - [ ] Write tests to verify modal closes on ESC key and backdrop click.
     - [ ] Implement event listeners for the Escape key in `ItemDetailModal.tsx`.
     - [ ] Add backdrop click handler to the modal overlay.
