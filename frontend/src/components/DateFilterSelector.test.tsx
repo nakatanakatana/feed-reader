@@ -27,6 +27,8 @@ describe("DateFilterSelector", () => {
     await expect.element(page.getByText("Past 24 Hours")).toBeInTheDocument();
     await expect.element(page.getByText("Past 7 Days")).toBeInTheDocument();
     await expect.element(page.getByText("Past 30 Days")).toBeInTheDocument();
+    await expect.element(page.getByText("Past 90 Days")).toBeInTheDocument();
+    await expect.element(page.getByText("Past 365 Days")).toBeInTheDocument();
   });
 
   it("calls onSelect when an option is chosen", async () => {
@@ -38,8 +40,13 @@ describe("DateFilterSelector", () => {
 
     const select = page.getByRole("combobox");
     await select.selectOptions("24h");
-
     expect(onSelect).toHaveBeenCalledWith("24h");
+
+    await select.selectOptions("90d");
+    expect(onSelect).toHaveBeenCalledWith("90d");
+
+    await select.selectOptions("365d");
+    expect(onSelect).toHaveBeenCalledWith("365d");
   });
 
   it("reflects the current value", async () => {

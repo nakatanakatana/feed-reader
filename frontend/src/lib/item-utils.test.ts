@@ -1,13 +1,58 @@
 import * as fc from "fast-check";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
   filterAndSortItems,
   getItemDisplayDate,
+  getPublishedSince,
   type Item,
   SortOrder,
 } from "./item-utils";
 
 describe("item-utils", () => {
+  describe("getPublishedSince", () => {
+    it("should return undefined for 'all'", () => {
+      expect(getPublishedSince("all")).toBeUndefined();
+    });
+
+    it("should calculate correct timestamp for presets", () => {
+      const mockNow = new Date("2026-01-28T12:00:00Z");
+      vi.setSystemTime(mockNow);
+
+      const tests = [
+        {
+          value: "24h",
+          expected: new Date(mockNow.getTime() - 24 * 60 * 60 * 1000),
+        },
+        {
+          value: "7d",
+          expected: new Date(mockNow.getTime() - 7 * 24 * 60 * 60 * 1000),
+        },
+        {
+          value: "30d",
+          expected: new Date(mockNow.getTime() - 30 * 24 * 60 * 60 * 1000),
+        },
+        {
+          value: "90d",
+          expected: new Date(mockNow.getTime() - 90 * 24 * 60 * 60 * 1000),
+        },
+        {
+          value: "365d",
+          expected: new Date(mockNow.getTime() - 365 * 24 * 60 * 60 * 1000),
+        },
+      ] as const;
+
+      for (const { value, expected } of tests) {
+        const result = getPublishedSince(value);
+        expect(result).toBeDefined();
+        expect(result?.seconds).toBe(
+          BigInt(Math.floor(expected.getTime() / 1000)),
+        );
+      }
+
+      vi.useRealTimers();
+    });
+  });
+
   describe("getItemDisplayDate", () => {
     it("should return Published label and date when publishedAt is present", () => {
       const item: Pick<Item, "publishedAt" | "createdAt"> = {

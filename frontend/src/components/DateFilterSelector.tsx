@@ -1,7 +1,6 @@
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
-
-export type DateFilterValue = "all" | "24h" | "7d" | "30d";
+import type { DateFilterValue } from "../lib/item-utils";
 
 interface DateFilterSelectorProps {
   value: DateFilterValue;
@@ -47,6 +46,8 @@ export function DateFilterSelector(props: DateFilterSelectorProps) {
         <option value="24h">Past 24 Hours</option>
         <option value="7d">Past 7 Days</option>
         <option value="30d">Past 30 Days</option>
+        <option value="90d">Past 90 Days</option>
+        <option value="365d">Past 365 Days</option>
       </select>
     </div>
   );
