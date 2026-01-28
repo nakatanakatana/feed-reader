@@ -12,7 +12,7 @@ import (
 
 const countItems = `-- name: CountItems :one
 SELECT
-  COUNT(*)
+  COUNT(DISTINCT i.id)
 FROM
   items i
 JOIN
@@ -649,7 +649,7 @@ SELECT
   i.image_url,
   i.categories,
   i.created_at,
-  fi.feed_id,
+  CAST(MIN(fi.feed_id) AS TEXT) AS feed_id,
   CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read
 FROM
   items i
@@ -664,6 +664,8 @@ WHERE
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = ?3
   )) AND
   (?4 IS NULL OR COALESCE(i.published_at, i.created_at) >= ?4)
+GROUP BY
+  i.id
 ORDER BY
   COALESCE(i.published_at, i.created_at) ASC
 LIMIT ?6 OFFSET ?5
@@ -751,7 +753,7 @@ SELECT
   i.image_url,
   i.categories,
   i.created_at,
-  fi.feed_id,
+  CAST(MIN(fi.feed_id) AS TEXT) AS feed_id,
   CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read
 FROM
   items i
@@ -766,6 +768,8 @@ WHERE
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = ?3
   )) AND
   (?4 IS NULL OR COALESCE(i.published_at, i.created_at) >= ?4)
+GROUP BY
+  i.id
 ORDER BY
   COALESCE(i.published_at, i.created_at) ASC
 LIMIT ?6 OFFSET ?5
