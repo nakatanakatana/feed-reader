@@ -20,7 +20,7 @@ Adding a date-based "since" filter to the item list, falling back to `created_at
 
 ## Phase 2: Frontend Implementation
 
-- [ ] Task: Update API Mocks
+- [x] Task: Update API Mocks c5840a4
     - [ ] Update `frontend/src/mocks/handlers.ts` to handle the `publishedSince` parameter in the `listItems` mock.
 - [ ] Task: Update Data Fetching Logic (TDD)
     - [ ] Write failing tests in `frontend/src/lib/item-query.test.ts`.
