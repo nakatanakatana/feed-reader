@@ -26,9 +26,9 @@ Add FAB for primary actions on mobile.
 - [x] Task: Verify that FAB does not appear on desktop resolutions. a87c812
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Implement Floating Action Buttons' (Protocol in workflow.md) 822b9fe
 
-## Phase 4: Final Polishing and Verification
+## Phase 4: Final Polishing and Verification [checkpoint: f3f82bf]
 Ensure consistency and handle edge cases.
 
 - [x] Task: Verify touch target sizes for all header controls on mobile. c95d301
 - [x] Task: Run full frontend test suite `npm test` and linting `npm run lint`. c95d301
-- [~] Task: Conductor - User Manual Verification 'Phase 4: Final Polishing and Verification' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Final Polishing and Verification' (Protocol in workflow.md) f3f82bf
