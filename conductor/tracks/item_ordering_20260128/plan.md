@@ -3,12 +3,12 @@
 ## Phase 1: Backend Refactoring (Sorting Logic)
 Modify the database queries to use the standardized sorting logic (`COALESCE(published_at, created_at) ASC`).
 
-- [ ] Task: Update `sql/query.sql` to implement `COALESCE` sorting in item listing queries.
-    - [ ] Modify `ListItems`, `ListItemsByFeed`, etc., to include `ORDER BY COALESCE(published_at, created_at) ASC`.
-- [ ] Task: Generate Go code from updated SQL using `sqlc`.
-    - [ ] Run `make generate` (or equivalent) to update `store/query.sql.go`.
-- [ ] Task: Update Store layer tests to verify the new sorting order.
-    - [ ] Create/Update tests in `store/item_store_test.go` to ensure items are returned in the correct ascending order with fallback logic.
+- [x] Task: Update `sql/query.sql` to implement `COALESCE` sorting in item listing queries. fa6431a
+    - [x] Modify `ListItems`, `ListItemsByFeed`, etc., to include `ORDER BY COALESCE(published_at, created_at) ASC`. fa6431a
+- [x] Task: Generate Go code from updated SQL using `sqlc`. fa6431a
+    - [x] Run `make generate` (or equivalent) to update `store/query.sql.go`. fa6431a
+- [x] Task: Update Store layer tests to verify the new sorting order. fa6431a
+    - [x] Create/Update tests in `store/item_store_test.go` to ensure items are returned in the correct ascending order with fallback logic. fa6431a
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend Refactoring' (Protocol in workflow.md)
 
 ## Phase 2: Frontend Implementation (Display Logic)
