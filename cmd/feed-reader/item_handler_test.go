@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestItemServer(t *testing.T) {
@@ -29,7 +30,7 @@ func TestItemServer(t *testing.T) {
 	require.NoError(t, err)
 
 	// Create test items
-	now := time.Now()
+	now := time.Now().UTC()
 	t1 := now.Add(-2 * time.Hour).Format(time.RFC3339)
 	t2 := now.Add(-1 * time.Hour).Format(time.RFC3339)
 	author := "Test Author"
@@ -117,5 +118,16 @@ func TestItemServer(t *testing.T) {
 		got, err := server.GetItem(ctx, connect.NewRequest(&itemv1.GetItemRequest{Id: item1ID}))
 		require.NoError(t, err)
 		assert.True(t, got.Msg.Item.IsRead)
+	})
+
+	t.Run("ListItems_DateFilter", func(t *testing.T) {
+		since := now.Add(-90 * time.Minute)
+		res, err := server.ListItems(ctx, connect.NewRequest(&itemv1.ListItemsRequest{
+			PublishedSince: timestamppb.New(since),
+			Limit:          10,
+		}))
+		require.NoError(t, err)
+		// Should include item2 and rich item, but not item1 (2h ago)
+		assert.Len(t, res.Msg.Items, 2)
 	})
 }
