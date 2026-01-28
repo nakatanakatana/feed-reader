@@ -21,10 +21,10 @@ Refactor the header to support stacked layout using Panda CSS.
 ## Phase 3: Implement Floating Action Buttons (FAB)
 Add FAB for primary actions on mobile.
 
-- [ ] Task: [Red] Update `FeedList.Responsive.test.tsx` to assert that a floating action button is visible on mobile and performs the "Mark all as read" action.
-- [ ] Task: [Green] Create or update a component to provide a FAB for mobile users in `frontend/src/components/FeedList.tsx`.
-- [ ] Task: Verify that FAB does not appear on desktop resolutions.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Implement Floating Action Buttons' (Protocol in workflow.md)
+- [x] Task: [Red] Update `FeedList.Responsive.test.tsx` to assert that a floating action button is visible on mobile and performs the "Mark all as read" action. a87c812
+- [x] Task: [Green] Create or update a component to provide a FAB for mobile users in `frontend/src/components/FeedList.tsx`. a87c812
+- [x] Task: Verify that FAB does not appear on desktop resolutions. a87c812
+- [~] Task: Conductor - User Manual Verification 'Phase 3: Implement Floating Action Buttons' (Protocol in workflow.md)
 
 ## Phase 4: Final Polishing and Verification
 Ensure consistency and handle edge cases.
