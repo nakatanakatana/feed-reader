@@ -27,9 +27,10 @@ As a self-hosted tool focused on data and content, the tone should inspire confi
 -   Transitions should be smooth but fast.
 
 ### Mobile-First Intuition
--   Ensure all interactive elements are touch-friendly with appropriate hit targets.
+-   Ensure all interactive elements are touch-friendly with appropriate hit targets (minimum 44x44px).
 -   Use intuitive gestures (swiping to mark read/unread) that feel natural in a mobile browser.
--   Responsive layouts must adapt gracefully from desktop density to mobile focus.
+-   Responsive layouts must adapt gracefully from desktop density to mobile focus. On narrow screens, prioritize high-value information (like unread counts) and move complex header actions into accessible Floating Action Buttons (FAB).
+-   Minimize UI chrome on mobile to maximize content space, such as hiding non-essential titles or static headers when space is at a premium.
 
 ## 4. Content Presentation: Magazine/Card View
 Articles should be presented in a visual grid to allow for engaging browsing.

@@ -3,10 +3,12 @@ import { createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { type Feed, feeds, type Tag } from "../lib/db";
+import { useItems } from "../lib/item-query";
 import { useTags } from "../lib/tag-query";
 import { ManageTagsModal } from "./ManageTagsModal";
 
 export function FeedList() {
+  console.log("DEBUG: Rendering FeedList component");
   const [selectedTagId, setSelectedTagId] = createSignal<
     string | undefined | null
   >();
@@ -15,6 +17,15 @@ export function FeedList() {
   const [isManageModalOpen, setIsManageModalOpen] = createSignal(false);
 
   const tagsQuery = useTags();
+  const itemsQuery = useItems({});
+
+  const unreadCount = () => {
+    const pages = itemsQuery.data?.pages || [];
+    return pages.reduce(
+      (acc, page) => acc + page.items.filter((i) => !i.isRead).length,
+      0,
+    );
+  };
 
   const { data: feedList } = useLiveQuery((q) => {
     const query = q.from({ feed: feeds });
@@ -93,32 +104,65 @@ export function FeedList() {
   return (
     <div class={stack({ gap: "4" })}>
       <div
-        class={flex({ justifyContent: "space-between", alignItems: "center" })}
+        class={css({
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "stretch",
+          flexDirection: "column",
+          gap: "4",
+          md: {
+            alignItems: "center",
+            flexDirection: "row",
+          },
+        })}
       >
-        <div class={flex({ gap: "4", alignItems: "center" })}>
-          <h2 class={css({ fontSize: "xl", fontWeight: "semibold" })}>
-            Your Feeds
-          </h2>
-          <Show when={totalUnreadCount() > 0}>
-            <span
+        <div
+          class={css({
+            display: "flex",
+            gap: "4",
+            alignItems: "stretch",
+            justifyContent: "space-between",
+            flexDirection: "column",
+            sm: {
+              alignItems: "center",
+              flexDirection: "row",
+            },
+          })}
+        >
+          <div class={flex({ gap: "4", alignItems: "center" })}>
+            <h2
               class={css({
-                bg: "blue.100",
+                fontSize: "xl",
+                fontWeight: "semibold",
+                display: "none",
+                sm: { display: "block" },
+              })}
+            >
+              Your Feeds
+            </h2>
+            <div
+              class={css({
+                bg: "blue.50",
                 color: "blue.700",
-                px: "2.5",
-                py: "0.5",
-                rounded: "full",
+                px: "3",
+                py: "1.5",
+                rounded: "md",
                 fontSize: "sm",
                 fontWeight: "bold",
+                border: "1px solid",
+                borderColor: "blue.200",
               })}
             >
               Total Unread: {totalUnreadCount()}
-            </span>
-          </Show>
+            </div>
+          </div>
           <Show when={selectedFeedIds().length > 0}>
             <button
               type="button"
               onClick={() => setIsManageModalOpen(true)}
               class={css({
+                display: "none",
+                sm: { display: "block" },
                 px: "3",
                 py: "1.5",
                 bg: "blue.600",
@@ -133,7 +177,18 @@ export function FeedList() {
             </button>
           </Show>
         </div>
-        <div class={flex({ gap: "2", alignItems: "center" })}>
+        <div
+          class={css({
+            display: "flex",
+            gap: "2",
+            alignItems: "center",
+            flexWrap: "wrap",
+            justifyContent: "flex-start",
+            md: {
+              justifyContent: "flex-end",
+            },
+          })}
+        >
           <label
             for="sort-by"
             class={css({ fontSize: "sm", color: "gray.600" })}
@@ -148,7 +203,7 @@ export function FeedList() {
             class={css({
               fontSize: "xs",
               px: "2",
-              py: "0.5",
+              py: "1.5",
               rounded: "md",
               border: "1px solid",
               borderColor: "gray.300",
@@ -168,8 +223,8 @@ export function FeedList() {
             type="button"
             onClick={() => setSelectedTagId(undefined)}
             class={css({
-              px: "2",
-              py: "0.5",
+              px: "3",
+              py: "1.5",
               rounded: "md",
               fontSize: "xs",
               cursor: "pointer",
@@ -189,8 +244,8 @@ export function FeedList() {
             type="button"
             onClick={() => setSelectedTagId(null)}
             class={css({
-              px: "2",
-              py: "0.5",
+              px: "3",
+              py: "1.5",
               rounded: "md",
               fontSize: "xs",
               cursor: "pointer",
@@ -212,8 +267,8 @@ export function FeedList() {
                 type="button"
                 onClick={() => setSelectedTagId(tag.id)}
                 class={css({
-                  px: "2",
-                  py: "0.5",
+                  px: "3",
+                  py: "1.5",
                   rounded: "md",
                   fontSize: "xs",
                   cursor: "pointer",
@@ -375,6 +430,52 @@ export function FeedList() {
         }}
         feedIds={selectedFeedIds()}
       />
+
+      <Show when={selectedFeedIds().length > 0}>
+        <button
+          type="button"
+          onClick={() => setIsManageModalOpen(true)}
+          class={css({
+            display: "block",
+            sm: { display: "none" },
+            position: "fixed",
+            bottom: "6",
+            right: "6",
+            px: "4",
+            py: "4",
+            bg: "blue.600",
+            color: "white",
+            rounded: "full",
+            fontSize: "sm",
+            fontWeight: "bold",
+            cursor: "pointer",
+            boxShadow: "lg",
+            zIndex: 100,
+            _hover: { bg: "blue.700" },
+            _active: { transform: "scale(0.95)" },
+          })}
+          aria-label="Manage Tags"
+        >
+          <div class={flex({ gap: "2", alignItems: "center" })}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z" />
+              <path d="M7 7h.01" />
+            </svg>
+            <span>Tags ({selectedFeedIds().length})</span>
+          </div>
+        </button>
+      </Show>
     </div>
   );
 }
