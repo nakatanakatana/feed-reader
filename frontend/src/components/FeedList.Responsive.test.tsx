@@ -76,7 +76,7 @@ describe("FeedList Responsive", () => {
     // Set a narrow viewport
     // @ts-expect-error
     await page.viewport?.(375, 667);
-    
+
     const mockFeeds = [
       {
         id: "1",
@@ -112,13 +112,13 @@ describe("FeedList Responsive", () => {
     const headerTitle = page.getByText("Your Feeds");
     const headerContainer = headerTitle.element().parentElement?.parentElement;
     if (!headerContainer) throw new Error("Header container not found");
-    
+
     console.log("Header classes:", headerContainer.className);
     const styles = window.getComputedStyle(headerContainer);
     console.log("Header display:", styles.display);
     console.log("Header flex-direction:", styles.flexDirection);
     console.log("Header align-items:", styles.alignItems);
-    
+
     expect(styles.flexDirection).toBe("column");
     expect(styles.alignItems).toBe("stretch");
 
@@ -127,7 +127,7 @@ describe("FeedList Responsive", () => {
     const controlsContainer = sortLabel.element().parentElement;
     if (!controlsContainer) throw new Error("Controls container not found");
     const controlsStyles = window.getComputedStyle(controlsContainer);
-    
+
     // We expect it to wrap or be a column
     expect(["column", "row"]).toContain(controlsStyles.flexDirection);
     if (controlsStyles.flexDirection === "row") {
@@ -138,8 +138,8 @@ describe("FeedList Responsive", () => {
     // First, we need to make some feeds selected to trigger the button visibility
     // But since we are testing layout, we can just check if it's hidden if it were there,
     // or better, actually mock the selection.
-    
-    // For now, let's just assert it's not there by default, 
+
+    // For now, let's just assert it's not there by default,
     // but the task says "assert that action buttons are hidden from the header on mobile".
     // If I add selection, I can test it.
   });
@@ -148,7 +148,7 @@ describe("FeedList Responsive", () => {
     // Set a narrow viewport
     // @ts-expect-error
     await page.viewport?.(375, 667);
-    
+
     const mockFeeds = [
       {
         id: "1",
@@ -182,7 +182,7 @@ describe("FeedList Responsive", () => {
     // Check if the button is in the document
     const manageButton = page.getByText(/Manage Tags/i);
     await expect.element(manageButton).toBeInTheDocument();
-    
+
     // Check if it is hidden via CSS display: none
     const styles = window.getComputedStyle(manageButton.element());
     expect(styles.display).toBe("none");
@@ -192,7 +192,7 @@ describe("FeedList Responsive", () => {
     // Set a narrow viewport
     // @ts-expect-error
     await page.viewport?.(375, 667);
-    
+
     const mockFeeds = [
       {
         id: "1",
@@ -220,7 +220,7 @@ describe("FeedList Responsive", () => {
 
     // Initially, FAB should not be visible (or not have the action)
     // We'll look for a button with a fixed/absolute position
-    
+
     // Select a feed
     const checkbox = page.getByRole("checkbox").first();
     await checkbox.click();
@@ -229,7 +229,7 @@ describe("FeedList Responsive", () => {
     // We expect a button with "Manage Tags" text or similar, but styled as a FAB
     const fab = page.getByRole("button", { name: /Manage Tags/i });
     await expect.element(fab).toBeInTheDocument();
-    
+
     const fabStyles = window.getComputedStyle(fab.element());
     expect(fabStyles.position).toBe("fixed");
     expect(fabStyles.bottom).not.toBe("auto");
@@ -241,7 +241,7 @@ describe("FeedList Responsive", () => {
     // Set a wide viewport
     // @ts-expect-error
     await page.viewport?.(1024, 768);
-    
+
     const mockFeeds = [
       {
         id: "1",
@@ -274,7 +274,7 @@ describe("FeedList Responsive", () => {
     // The Manage Tags button should be in the header, not a FAB
     const manageButton = page.getByRole("button", { name: /Manage Tags/i });
     await expect.element(manageButton).toBeInTheDocument();
-    
+
     const styles = window.getComputedStyle(manageButton.element());
     // On desktop, it should be part of the flow (not fixed) and visible
     expect(styles.position).not.toBe("fixed");
