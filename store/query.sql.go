@@ -423,6 +423,7 @@ SELECT
   i.content,
   i.image_url,
   i.categories,
+  i.created_at,
   fi.feed_id,
   CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read
 FROM
@@ -446,6 +447,7 @@ type GetItemRow struct {
 	Content     *string `json:"content"`
 	ImageUrl    *string `json:"image_url"`
 	Categories  *string `json:"categories"`
+	CreatedAt   string  `json:"created_at"`
 	FeedID      string  `json:"feed_id"`
 	IsRead      int64   `json:"is_read"`
 }
@@ -464,6 +466,7 @@ func (q *Queries) GetItem(ctx context.Context, id string) (GetItemRow, error) {
 		&i.Content,
 		&i.ImageUrl,
 		&i.Categories,
+		&i.CreatedAt,
 		&i.FeedID,
 		&i.IsRead,
 	)
@@ -638,6 +641,7 @@ SELECT
   i.content,
   i.image_url,
   i.categories,
+  i.created_at,
   fi.feed_id,
   CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read
 FROM
@@ -676,6 +680,7 @@ type ListItemsRow struct {
 	Content     *string `json:"content"`
 	ImageUrl    *string `json:"image_url"`
 	Categories  *string `json:"categories"`
+	CreatedAt   string  `json:"created_at"`
 	FeedID      string  `json:"feed_id"`
 	IsRead      int64   `json:"is_read"`
 }
@@ -706,6 +711,7 @@ func (q *Queries) ListItems(ctx context.Context, arg ListItemsParams) ([]ListIte
 			&i.Content,
 			&i.ImageUrl,
 			&i.Categories,
+			&i.CreatedAt,
 			&i.FeedID,
 			&i.IsRead,
 		); err != nil {
@@ -734,6 +740,7 @@ SELECT
   i.content,
   i.image_url,
   i.categories,
+  i.created_at,
   fi.feed_id,
   CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read
 FROM
@@ -772,6 +779,7 @@ type ListItemsAscRow struct {
 	Content     *string `json:"content"`
 	ImageUrl    *string `json:"image_url"`
 	Categories  *string `json:"categories"`
+	CreatedAt   string  `json:"created_at"`
 	FeedID      string  `json:"feed_id"`
 	IsRead      int64   `json:"is_read"`
 }
@@ -802,6 +810,7 @@ func (q *Queries) ListItemsAsc(ctx context.Context, arg ListItemsAscParams) ([]L
 			&i.Content,
 			&i.ImageUrl,
 			&i.Categories,
+			&i.CreatedAt,
 			&i.FeedID,
 			&i.IsRead,
 		); err != nil {

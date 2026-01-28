@@ -83,6 +83,7 @@ type Item struct {
 	Content       string                 `protobuf:"bytes,10,opt,name=content,proto3" json:"content,omitempty"`
 	ImageUrl      string                 `protobuf:"bytes,11,opt,name=image_url,json=imageUrl,proto3" json:"image_url,omitempty"`
 	Categories    string                 `protobuf:"bytes,12,opt,name=categories,proto3" json:"categories,omitempty"`
+	CreatedAt     string                 `protobuf:"bytes,13,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -190,6 +191,13 @@ func (x *Item) GetImageUrl() string {
 func (x *Item) GetCategories() string {
 	if x != nil {
 		return x.Categories
+	}
+	return ""
+}
+
+func (x *Item) GetCreatedAt() string {
+	if x != nil {
+		return x.CreatedAt
 	}
 	return ""
 }
@@ -510,7 +518,7 @@ var File_item_v1_item_proto protoreflect.FileDescriptor
 
 const file_item_v1_item_proto_rawDesc = "" +
 	"\n" +
-	"\x12item/v1/item.proto\x12\aitem.v1\"\xa4\x02\n" +
+	"\x12item/v1/item.proto\x12\aitem.v1\"\xc3\x02\n" +
 	"\x04Item\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x10\n" +
 	"\x03url\x18\x02 \x01(\tR\x03url\x12\x14\n" +
@@ -525,7 +533,9 @@ const file_item_v1_item_proto_rawDesc = "" +
 	"\timage_url\x18\v \x01(\tR\bimageUrl\x12\x1e\n" +
 	"\n" +
 	"categories\x18\f \x01(\tR\n" +
-	"categories\" \n" +
+	"categories\x12\x1d\n" +
+	"\n" +
+	"created_at\x18\r \x01(\tR\tcreatedAt\" \n" +
 	"\x0eGetItemRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"4\n" +
 	"\x0fGetItemResponse\x12!\n" +

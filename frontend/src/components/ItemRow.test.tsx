@@ -32,10 +32,12 @@ describe("ItemRow", () => {
     title: "Test Article Title",
     url: "https://example.com/article",
     publishedAt: "2026-01-21T10:00:00Z",
+    createdAt: "2026-01-20T10:00:00Z",
+    description: "This is a test description snippet that should be displayed.",
     isRead: false,
   });
 
-  it("renders item title and metadata", () => {
+  it("renders item title, description and metadata", () => {
     dispose = render(
       () => (
         <TransportProvider transport={transport}>
@@ -49,6 +51,8 @@ describe("ItemRow", () => {
 
     expect(page.getByText("Test Article Title")).toBeInTheDocument();
     expect(page.getByText("2026-01-21T10:00:00Z")).toBeInTheDocument();
+    expect(page.getByText("2026-01-20T10:00:00Z")).toBeInTheDocument();
+    expect(page.getByText("This is a test description snippet that should be displayed.")).toBeInTheDocument();
   });
 
   it("renders read status correctly", () => {

@@ -188,5 +188,6 @@ func toProtoItem(row store.GetItemRow) *itemv1.Item {
 		Content:     content,
 		ImageUrl:    img,
 		Categories:  cats,
+		CreatedAt:   row.CreatedAt,
 	}
 }

@@ -175,6 +175,7 @@ SELECT
   i.content,
   i.image_url,
   i.categories,
+  i.created_at,
   fi.feed_id,
   CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read
 FROM
@@ -198,6 +199,7 @@ SELECT
   i.content,
   i.image_url,
   i.categories,
+  i.created_at,
   fi.feed_id,
   CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read
 FROM
@@ -228,6 +230,7 @@ SELECT
   i.content,
   i.image_url,
   i.categories,
+  i.created_at,
   fi.feed_id,
   CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read
 FROM

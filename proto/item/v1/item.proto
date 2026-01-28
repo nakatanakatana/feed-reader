@@ -22,6 +22,7 @@ message Item {
   string content = 10;
   string image_url = 11;
   string categories = 12;
+  string created_at = 13;
 }
 
 message GetItemRequest {

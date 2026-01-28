@@ -87,13 +87,27 @@ export function ItemRow(props: ItemRowProps) {
               color: props.item.isRead ? "gray.500" : "blue.600",
               textDecoration: props.item.isRead ? "none" : "underline",
               _hover: { color: "blue.800" },
+              lineClamp: 1,
             })}
           >
             {props.item.title || "Untitled Article"}
           </div>
-          <div class={flex({ gap: "2", alignItems: "center" })}>
+          <div
+            class={css({
+              fontSize: "sm",
+              color: "gray.600",
+              lineClamp: 1,
+              marginTop: "0.5",
+            })}
+          >
+            {props.item.description}
+          </div>
+          <div class={flex({ gap: "2", alignItems: "center", marginTop: "1" })}>
             <span class={css({ fontSize: "xs", color: "gray.500" })}>
               {props.item.publishedAt}
+            </span>
+            <span class={css({ fontSize: "xs", color: "gray.400" })}>
+              {props.item.createdAt}
             </span>
             <Show when={props.item.isRead}>
               <span
