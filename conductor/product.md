@@ -44,7 +44,7 @@ The primary target audience is individuals and organizations seeking control ove
 
 
 - **Standard Compliance:** Supports standard RSS and Atom feed formats.
--   **Responsive Design:** Accessible on desktop and mobile devices.
+-   **Responsive Design:** Accessible on desktop and mobile devices with a tailored experience. Features adaptive headers that prioritize content on small screens and Floating Action Buttons (FAB) for ergonomic access to primary actions like tag management.
 -   **Instant Content:** Automatically triggers an initial fetch when a new feed is added, ensuring immediate content availability.
 
 ### Success Metrics
