@@ -120,4 +120,27 @@ describe("ItemList Date Filter", () => {
     expect(diffHours).toBeGreaterThan(23.9);
     expect(diffHours).toBeLessThan(24.1);
   });
+
+  it("updates URL search params when date filter is changed", async () => {
+    const history = createMemoryHistory({ initialEntries: ["/"] });
+    const router = createRouter({ routeTree, history });
+
+    dispose = render(
+      () => (
+        <TransportProvider transport={transport}>
+          <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} />
+          </QueryClientProvider>
+        </TransportProvider>
+      ),
+      document.body,
+    );
+
+    const select = page.getByRole("combobox");
+    await select.selectOptions("30d");
+
+    // Check if URL is updated
+    // Note: createMemoryHistory location.search is an object in TanStack Router v1
+    expect(history.location.search).toEqual("?publishedSince=30d");
+  });
 });

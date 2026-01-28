@@ -34,6 +34,16 @@ export function ItemList(props: ItemListProps) {
     }
   });
 
+  const handleDateFilterSelect = (value: DateFilterValue) => {
+    setDateFilter(value);
+    navigate({
+      search: (prev) => ({
+        ...prev,
+        publishedSince: value === "all" ? undefined : value,
+      }),
+    });
+  };
+
   const itemsQuery = useItems(() => ({
     feedId: props.feedId,
     tagId: props.tagId,
@@ -166,7 +176,10 @@ export function ItemList(props: ItemListProps) {
           <div
             class={flex({ gap: "2", alignItems: "center", marginRight: "4" })}
           >
-            <DateFilterSelector value={dateFilter()} onSelect={setDateFilter} />
+            <DateFilterSelector
+            value={dateFilter()}
+            onSelect={handleDateFilterSelect}
+          />
           </div>
           <div
             class={flex({ gap: "2", alignItems: "center", marginRight: "4" })}
