@@ -68,9 +68,11 @@ describe("ItemList Bulk Actions", () => {
     const selectAll = page.getByLabelText(/Select All/i);
     await selectAll.click();
 
-    // The bulk bar appears when items are selected. 
+    // The bulk bar appears when items are selected.
     // It contains a "Mark as Read" button.
-    const bulkMarkBtn = page.getByRole("button", { name: "Mark as Read" }).nth(0);
+    const bulkMarkBtn = page
+      .getByRole("button", { name: "Mark as Read" })
+      .nth(0);
     await bulkMarkBtn.click();
 
     expect(updateStatusMock).toHaveBeenCalledWith({

@@ -149,7 +149,9 @@ export function ItemList(props: ItemListProps) {
         </div>
 
         <div class={flex({ gap: "2", alignItems: "center" })}>
-          <div class={flex({ gap: "2", alignItems: "center", marginRight: "4" })}>
+          <div
+            class={flex({ gap: "2", alignItems: "center", marginRight: "4" })}
+          >
             <input
               id="show-read-toggle"
               type="checkbox"
@@ -159,7 +161,11 @@ export function ItemList(props: ItemListProps) {
             />
             <label
               for="show-read-toggle"
-              class={css({ fontSize: "sm", color: "gray.600", cursor: "pointer" })}
+              class={css({
+                fontSize: "sm",
+                color: "gray.600",
+                cursor: "pointer",
+              })}
             >
               Show Read
             </label>
@@ -173,7 +179,11 @@ export function ItemList(props: ItemListProps) {
           />
           <label
             for="select-all-checkbox"
-            class={css({ fontSize: "sm", color: "gray.600", cursor: "pointer" })}
+            class={css({
+              fontSize: "sm",
+              color: "gray.600",
+              cursor: "pointer",
+            })}
           >
             Select All
           </label>

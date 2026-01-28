@@ -18,7 +18,12 @@ vi.mock("../lib/item-query", () => ({
   useUpdateItemStatus: vi.fn(),
 }));
 
-import { useItems, useItem, useUpdateItemStatus } from "../lib/item-query";
+import {
+  useItems,
+  useItem,
+  useUpdateItemStatus,
+  type FetchItemsParams,
+} from "../lib/item-query";
 
 describe("ItemList Show Read Toggle", () => {
   let dispose: () => void;
@@ -32,17 +37,17 @@ describe("ItemList Show Read Toggle", () => {
       },
       isLoading: false,
       hasNextPage: false,
-    } as any);
+    } as unknown as ReturnType<typeof useItems>);
 
     vi.mocked(useItem).mockReturnValue({
       data: undefined,
       isLoading: false,
-    } as any);
+    } as unknown as ReturnType<typeof useItem>);
 
     vi.mocked(useUpdateItemStatus).mockReturnValue({
       mutate: vi.fn(),
       isPending: false,
-    } as any);
+    } as unknown as ReturnType<typeof useUpdateItemStatus>);
   });
 
   afterEach(() => {
@@ -58,7 +63,7 @@ describe("ItemList Show Read Toggle", () => {
       },
       isLoading: false,
       hasNextPage: false,
-    } as any);
+    } as unknown as ReturnType<typeof useItems>);
 
     const history = createMemoryHistory({ initialEntries: ["/"] });
     const router = createRouter({ routeTree, history });
@@ -86,7 +91,7 @@ describe("ItemList Show Read Toggle", () => {
       },
       isLoading: false,
       hasNextPage: false,
-    } as any);
+    } as unknown as ReturnType<typeof useItems>);
 
     const history = createMemoryHistory({ initialEntries: ["/"] });
     const router = createRouter({ routeTree, history });
@@ -104,23 +109,32 @@ describe("ItemList Show Read Toggle", () => {
 
     const toggle = page.getByLabelText(/Show Read/i);
     await expect.element(toggle).toBeInTheDocument();
-    
+
     // By default it should be false
     expect(useItems).toHaveBeenCalledWith(expect.any(Function));
-    
+
     // Initial call should have isRead: false
-    const firstCallParams = vi.mocked(useItems).mock.calls[0][0] as Function;
-    expect(firstCallParams()).toEqual(expect.objectContaining({
-      isRead: false
-    }));
+    const firstCallParams = vi.mocked(useItems).mock.calls[0][0] as () => Omit<
+      FetchItemsParams,
+      "limit" | "offset"
+    >;
+    expect(firstCallParams()).toEqual(
+      expect.objectContaining({
+        isRead: false,
+      }),
+    );
 
     await toggle.click();
 
     // After click, it should call useItems again or the getter should return undefined
     // Note: useItems uses a getter, so we check what the getter returns
-    const latestParams = vi.mocked(useItems).mock.calls[vi.mocked(useItems).mock.calls.length - 1][0] as Function;
-    expect(latestParams()).toEqual(expect.objectContaining({
-      isRead: undefined
-    }));
+    const latestParams = vi.mocked(useItems).mock.calls[
+      vi.mocked(useItems).mock.calls.length - 1
+    ][0] as () => Omit<FetchItemsParams, "limit" | "offset">;
+    expect(latestParams()).toEqual(
+      expect.objectContaining({
+        isRead: undefined,
+      }),
+    );
   });
 });

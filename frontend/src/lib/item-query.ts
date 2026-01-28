@@ -78,7 +78,10 @@ export const useItems = (
 ) => {
   const transport = useTransport();
   return createInfiniteQuery(() => {
-    const p = typeof params === "function" ? (params as () => any)() : params;
+    const p =
+      typeof params === "function"
+        ? (params as () => Omit<FetchItemsParams, "limit" | "offset">)()
+        : params;
     return itemsInfiniteQueryOptions(transport, p);
   });
 };

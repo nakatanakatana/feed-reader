@@ -8,7 +8,7 @@ import { ItemDetailModal } from "./ItemDetailModal";
 
 // Mock the query hooks
 vi.mock("../lib/item-query", () => ({
-  useItem: (id: () => string | undefined) => ({
+  useItem: (_id: () => string | undefined) => ({
     data: { id: "1", title: "Test" },
     isLoading: false,
   }),
@@ -66,7 +66,7 @@ describe("ItemDetailModal Dismissal", () => {
     // Since center() pattern is used, we can try to click the dialog's parent
     const dialog = page.getByRole("dialog");
     await dialog.element().parentElement?.click();
-    
+
     expect(onClose).toHaveBeenCalled();
   });
 });

@@ -69,7 +69,6 @@ describe("ItemList Selection", () => {
     // Should have 1 (Show Read) + 1 (Select All) + 2 (Items) = 4 checkboxes
     await expect.element(checkboxes).toHaveLength(4);
 
-    const showRead = page.getByLabelText(/Show Read/i);
     const selectAll = page.getByLabelText(/Select All/i);
     // Item checkboxes don't have labels in ItemRow yet, so we use nth or find them differently
     // Actually, ItemRow has a checkbox. Let's use the ones that are not showRead or selectAll.

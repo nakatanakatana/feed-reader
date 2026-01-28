@@ -47,7 +47,7 @@ describe("ItemDetailModal Navigation Logic", () => {
   it("calls onNext and onPrev correctly from props", async () => {
     const onNext = vi.fn();
     const onPrev = vi.fn();
-    
+
     dispose = render(
       () => (
         <TransportProvider transport={transport}>

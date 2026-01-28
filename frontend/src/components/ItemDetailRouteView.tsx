@@ -1,6 +1,5 @@
-import { Link, useNavigate } from "@tanstack/solid-router";
+import { useNavigate } from "@tanstack/solid-router";
 import { createEffect, createSignal } from "solid-js";
-import { css } from "../../styled-system/css";
 import { useItems, useUpdateItemStatus } from "../lib/item-query";
 import { ItemDetailModal } from "./ItemDetailModal";
 
@@ -131,7 +130,9 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
         });
       }}
       prevItemId={prevItem()?.id}
-      nextItemId={nextItem()?.id || (itemsQuery.hasNextPage ? "loading" : undefined)}
+      nextItemId={
+        nextItem()?.id || (itemsQuery.hasNextPage ? "loading" : undefined)
+      }
       onPrev={handlePrev}
       onNext={handleNext}
     />

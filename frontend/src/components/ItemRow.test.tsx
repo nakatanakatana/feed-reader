@@ -52,7 +52,11 @@ describe("ItemRow", () => {
     expect(page.getByText("Test Article Title")).toBeInTheDocument();
     expect(page.getByText("2026-01-21T10:00:00Z")).toBeInTheDocument();
     expect(page.getByText("2026-01-20T10:00:00Z")).toBeInTheDocument();
-    expect(page.getByText("This is a test description snippet that should be displayed.")).toBeInTheDocument();
+    expect(
+      page.getByText(
+        "This is a test description snippet that should be displayed.",
+      ),
+    ).toBeInTheDocument();
   });
 
   it("renders read status correctly", () => {

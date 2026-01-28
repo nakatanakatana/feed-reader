@@ -24,7 +24,7 @@ vi.mock("../lib/tag-query", () => ({
   useDeleteTag: vi.fn(),
 }));
 
-import { useItems } from "../lib/item-query";
+import { useItems, type FetchItemsParams } from "../lib/item-query";
 
 describe("ItemList Defaults", () => {
   let dispose: () => void;
@@ -64,7 +64,10 @@ describe("ItemList Defaults", () => {
     // Check if useItems was called with the correct defaults
     // Note: ASC is 2 in ListItemsRequest_SortOrder
     expect(useItems).toHaveBeenCalledWith(expect.any(Function));
-    const paramsGetter = vi.mocked(useItems).mock.calls[0][0] as Function;
+    const paramsGetter = vi.mocked(useItems).mock.calls[0][0] as () => Omit<
+      FetchItemsParams,
+      "limit" | "offset"
+    >;
     expect(paramsGetter()).toEqual(
       expect.objectContaining({
         isRead: false,
