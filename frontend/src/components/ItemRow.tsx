@@ -107,7 +107,7 @@ export function ItemRow(props: ItemRowProps) {
           </div>
           <div class={flex({ gap: "2", alignItems: "center", marginTop: "1" })}>
             <span class={css({ fontSize: "xs", color: "gray.500" })}>
-              {displayDate().labelJa}: {formatDate(displayDate().date)}
+              {displayDate().label}: {formatDate(displayDate().date)}
             </span>
             <Show when={props.item.isRead}>
               <span

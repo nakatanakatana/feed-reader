@@ -157,7 +157,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                     })}
                   >
                     <span>
-                      {getItemDisplayDate(item()).labelJa}:{" "}
+                      {getItemDisplayDate(item()).label}:{" "}
                       {formatDate(getItemDisplayDate(item()).date)}
                     </span>
                     <Show when={item().author}>
