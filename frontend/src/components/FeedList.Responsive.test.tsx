@@ -187,4 +187,97 @@ describe("FeedList Responsive", () => {
     const styles = window.getComputedStyle(manageButton.element());
     expect(styles.display).toBe("none");
   });
+
+  it("shows a floating action button on mobile when feeds are selected", async () => {
+    // Set a narrow viewport
+    // @ts-ignore
+    await page.viewport?.(375, 667);
+    
+    const mockFeeds = [
+      {
+        id: "1",
+        title: "Feed 1",
+        url: "http://example.com/1",
+        tags: [{ id: "t1", name: "Tag 1" }],
+      },
+    ];
+
+    vi.mocked(useLiveQuery).mockReturnValue({
+      data: mockFeeds,
+    } as unknown as ReturnType<typeof useLiveQuery>);
+
+    const history = createMemoryHistory({ initialEntries: ["/feeds"] });
+    const router = createRouter({ routeTree, history });
+
+    dispose = render(
+      () => (
+        <TestWrapper>
+          <RouterProvider router={router} />
+        </TestWrapper>
+      ),
+      document.body,
+    );
+
+    // Initially, FAB should not be visible (or not have the action)
+    // We'll look for a button with a fixed/absolute position
+    
+    // Select a feed
+    const checkbox = page.getByRole("checkbox").first();
+    await checkbox.click();
+
+    // Now a FAB should be visible
+    // We expect a button with "Manage Tags" text or similar, but styled as a FAB
+    const fab = page.getByRole("button", { name: /Manage Tags/i });
+    await expect.element(fab).toBeInTheDocument();
+    
+    const fabStyles = window.getComputedStyle(fab.element());
+    expect(fabStyles.position).toBe("fixed");
+    expect(fabStyles.bottom).not.toBe("auto");
+    expect(fabStyles.right).not.toBe("auto");
+    expect(fabStyles.display).not.toBe("none");
+  });
+
+  it("does not show a floating action button on desktop", async () => {
+    // Set a wide viewport
+    // @ts-ignore
+    await page.viewport?.(1024, 768);
+    
+    const mockFeeds = [
+      {
+        id: "1",
+        title: "Feed 1",
+        url: "http://example.com/1",
+        tags: [{ id: "t1", name: "Tag 1" }],
+      },
+    ];
+
+    vi.mocked(useLiveQuery).mockReturnValue({
+      data: mockFeeds,
+    } as unknown as ReturnType<typeof useLiveQuery>);
+
+    const history = createMemoryHistory({ initialEntries: ["/feeds"] });
+    const router = createRouter({ routeTree, history });
+
+    dispose = render(
+      () => (
+        <TestWrapper>
+          <RouterProvider router={router} />
+        </TestWrapper>
+      ),
+      document.body,
+    );
+
+    // Select a feed
+    const checkbox = page.getByRole("checkbox").first();
+    await checkbox.click();
+
+    // The Manage Tags button should be in the header, not a FAB
+    const manageButton = page.getByRole("button", { name: /Manage Tags/i });
+    await expect.element(manageButton).toBeInTheDocument();
+    
+    const styles = window.getComputedStyle(manageButton.element());
+    // On desktop, it should be part of the flow (not fixed) and visible
+    expect(styles.position).not.toBe("fixed");
+    expect(styles.display).toBe("block");
+  });
 });

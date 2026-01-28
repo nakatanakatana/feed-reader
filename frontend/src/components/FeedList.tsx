@@ -409,6 +409,52 @@ export function FeedList() {
         }}
         feedIds={selectedFeedIds()}
       />
+
+      <Show when={selectedFeedIds().length > 0}>
+        <button
+          type="button"
+          onClick={() => setIsManageModalOpen(true)}
+          class={css({
+            display: "block",
+            sm: { display: "none" },
+            position: "fixed",
+            bottom: "6",
+            right: "6",
+            px: "4",
+            py: "4",
+            bg: "blue.600",
+            color: "white",
+            rounded: "full",
+            fontSize: "sm",
+            fontWeight: "bold",
+            cursor: "pointer",
+            boxShadow: "lg",
+            zIndex: 100,
+            _hover: { bg: "blue.700" },
+            _active: { transform: "scale(0.95)" },
+          })}
+          aria-label="Manage Tags"
+        >
+          <div class={flex({ gap: "2", alignItems: "center" })}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z" />
+              <path d="M7 7h.01" />
+            </svg>
+            <span>Tags ({selectedFeedIds().length})</span>
+          </div>
+        </button>
+      </Show>
     </div>
   );
 }
