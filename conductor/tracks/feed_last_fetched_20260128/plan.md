@@ -25,9 +25,9 @@ Display the timestamp in the Feed List UI.
     - [x] Test the "Never" placeholder case.
 - [x] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md) 87ddc1c
 
-## Phase 3: Verification & Finalization
+## Phase 3: Verification & Finalization [checkpoint: 34363cf]
 Final checks and cleanup.
 
 - [x] Task: Run full suite of tests (Frontend & Backend). 927fbb7
-- [ ] Task: Perform manual verification of the UI on desktop and mobile.
-- [ ] Task: Conductor - User Manual Verification 'Finalization' (Protocol in workflow.md)
+- [x] Task: Perform manual verification of the UI on desktop and mobile. 34363cf
+- [x] Task: Conductor - User Manual Verification 'Finalization' (Protocol in workflow.md) 34363cf
