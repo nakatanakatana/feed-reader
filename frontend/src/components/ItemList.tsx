@@ -5,37 +5,14 @@ import { flex, stack } from "../../styled-system/patterns";
 import { ListItemsRequest_SortOrder } from "../gen/item/v1/item_pb";
 import { useItems, useUpdateItemStatus } from "../lib/item-query";
 import { useTags } from "../lib/tag-query";
-import { DateFilterSelector, type DateFilterValue } from "./DateFilterSelector";
+import { DateFilterSelector } from "./DateFilterSelector";
 import { ItemRow } from "./ItemRow";
-import type { Timestamp } from "@bufbuild/protobuf/wkt";
+import { getPublishedSince, type DateFilterValue } from "../lib/item-utils";
 
 interface ItemListProps {
   feedId?: string;
   tagId?: string;
 }
-
-const getPublishedSince = (value: DateFilterValue): Timestamp | undefined => {
-  if (value === "all") return undefined;
-  const now = new Date();
-  let since: Date;
-  switch (value) {
-    case "24h":
-      since = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-      break;
-    case "7d":
-      since = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-      break;
-    case "30d":
-      since = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-      break;
-    default:
-      return undefined;
-  }
-  return {
-    seconds: BigInt(Math.floor(since.getTime() / 1000)),
-    nanos: (since.getTime() % 1000) * 1000000,
-  } as Timestamp;
-};
 
 export function ItemList(props: ItemListProps) {
   const navigate = useNavigate();

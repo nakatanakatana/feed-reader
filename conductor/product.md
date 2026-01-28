@@ -24,7 +24,7 @@ The primary target audience is individuals and organizations seeking control ove
 - **OPML Import:** Bulk import existing subscriptions from other RSS readers using the standard OPML format, with automatic deduplication.
 
 
-- **Article Management:** Retrieve articles with flexible filtering and sorting. Track article status including read/unread. Features an information-dense list view displaying key metadata (publication/creation dates, snippets) with guaranteed deduplication of items across feeds. Includes date-based filtering (e.g., Past 24 hours, Past 7 days) and a visibility toggle to easily show or hide read items. Supports bulk operations, such as marking multiple articles as read simultaneously for improved efficiency.
+- **Article Management:** Retrieve articles with flexible filtering and sorting. Track article status including read/unread. Features an information-dense list view displaying key metadata (publication/creation dates, snippets). Includes date-based filtering (e.g., Past 24 hours, Past 7 days, Past 30 days, Past 90 days, or Past 365 days) and a visibility toggle to easily show or hide read items. Supports bulk operations, such as marking multiple articles as read simultaneously for improved efficiency.
 
 
 - **Content Reading:** Clean, distraction-free modal interface for reading full article content. Supports rich HTML rendering, images, and categories. Features robust, keyboard-centric navigation between items with automatic pagination and read-status management. Implements standard modal interactions including Escape key and backdrop dismissal. Full URL synchronization (deep linking) for direct access and browser history support.
