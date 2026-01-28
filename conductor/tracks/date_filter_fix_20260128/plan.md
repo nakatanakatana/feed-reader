@@ -18,10 +18,10 @@ Add "90 days" and "365 days" options to the date filter.
 - [x] Task: Update the filtering logic to handle the new durations. [929f4e7]
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Expand Date Filter Options' (Protocol in workflow.md)
 
-## Phase 3: Verification and Quality Assurance
+## Phase 3: Verification and Quality Assurance [checkpoint: aba9b8c]
 Final checks to ensure everything works correctly and adheres to project standards.
 
 - [x] Task: Run all frontend tests (`npm test`) to ensure no regressions. [eaa3818]
 - [x] Task: Run Biome linting and formatting checks (`npm run lint`). [99abeb0]
-- [~] Task: Verify the entire flow manually in the browser.
+- [x] Task: Verify the entire flow manually in the browser. [8b38fec]
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Verification and Quality Assurance' (Protocol in workflow.md)
