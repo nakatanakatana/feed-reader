@@ -27,7 +27,7 @@ Fix the broken navigation and add standard dismissal interactions to the modal.
     - [ ] Add backdrop click handler to the modal overlay.
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Item Detail Modal Fixes and Improvements' (Protocol in workflow.md) 5a8be57
 
-## Phase 3: Final Verification and Cleanup
+## Phase 3: Final Verification and Cleanup [checkpoint: 668779a]
 Ensure everything works together and meets the definition of done.
 
 - [~] Task: End-to-End verification of all features
