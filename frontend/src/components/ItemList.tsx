@@ -2,6 +2,7 @@ import { useNavigate } from "@tanstack/solid-router";
 import { createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
+import { ListItemsRequest_SortOrder } from "../gen/item/v1/item_pb";
 import { useItems, useUpdateItemStatus } from "../lib/item-query";
 import { useTags } from "../lib/tag-query";
 import { ItemRow } from "./ItemRow";
@@ -22,6 +23,8 @@ export function ItemList(props: ItemListProps) {
   const itemsQuery = useItems({
     feedId: props.feedId,
     tagId: props.tagId,
+    isRead: false,
+    sortOrder: ListItemsRequest_SortOrder.ASC,
   });
 
   const allItems = () =>
