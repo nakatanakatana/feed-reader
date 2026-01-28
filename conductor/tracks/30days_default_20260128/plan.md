@@ -5,7 +5,7 @@ This plan outlines the steps to change the default date filter to "30 Days" for 
 ## Phase 1: Search Parameter Synchronization
 Support `publishedSince` in URL search parameters and synchronize it with the `ItemList` component.
 
-- [ ] Task: Update `_items` layout route (`frontend/src/routes/_items.tsx`) to validate and include `publishedSince` in search parameters.
+- [x] Task: Update `_items` layout route (`frontend/src/routes/_items.tsx`) to validate and include `publishedSince` in search parameters. [f30ff25]
 - [ ] Task: Update `ItemList` component (`frontend/src/components/ItemList.tsx`) to accept `dateFilter` as an optional prop and use it to initialize or override its internal state.
 - [ ] Task: Synchronize `ItemList` internal `dateFilter` changes with the URL search parameters using `navigate`.
 - [ ] Task: Conductor - User Manual Verification 'Search Parameter Synchronization' (Protocol in workflow.md)
