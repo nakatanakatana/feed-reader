@@ -21,7 +21,7 @@ Add "90 days" and "365 days" options to the date filter.
 ## Phase 3: Verification and Quality Assurance
 Final checks to ensure everything works correctly and adheres to project standards.
 
-- [ ] Task: Run all frontend tests (`npm test`) to ensure no regressions.
-- [ ] Task: Run Biome linting and formatting checks (`npm run lint`).
-- [ ] Task: Verify the entire flow manually in the browser.
+- [x] Task: Run all frontend tests (`npm test`) to ensure no regressions. [eaa3818]
+- [x] Task: Run Biome linting and formatting checks (`npm run lint`). [99abeb0]
+- [~] Task: Verify the entire flow manually in the browser.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Verification and Quality Assurance' (Protocol in workflow.md)
