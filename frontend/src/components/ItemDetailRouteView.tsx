@@ -1,4 +1,5 @@
-import { Link } from "@tanstack/solid-router";
+import { Link, useNavigate } from "@tanstack/solid-router";
+import { createEffect, createSignal, on } from "solid-js";
 import { css } from "../../styled-system/css";
 import { useItems, useUpdateItemStatus } from "../lib/item-query";
 import { ItemDetailModal } from "./ItemDetailModal";
@@ -10,7 +11,9 @@ interface ItemDetailRouteViewProps {
 }
 
 export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
+  const navigate = useNavigate();
   const updateStatusMutation = useUpdateItemStatus();
+  const [isWaitingForNextPage, setIsWaitingForNextPage] = createSignal(false);
 
   const itemsQuery = useItems({
     feedId: props.feedId,
@@ -20,6 +23,25 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
   const allItems = () =>
     itemsQuery.data?.pages.flatMap((page) => page.items) ?? [];
 
+  // Auto-navigate when next page is loaded
+  createEffect(() => {
+    const data = itemsQuery.data;
+    if (isWaitingForNextPage() && data) {
+      const items = data.pages.flatMap((p) => p.items);
+      const index = items.findIndex((i) => i.id === props.itemId);
+      if (index !== -1 && index < items.length - 1) {
+        setIsWaitingForNextPage(false);
+        const targetItem = items[index + 1];
+        const linkProps = getLinkProps(targetItem.id);
+        navigate({
+          to: linkProps.to,
+          params: linkProps.params,
+          search: linkProps.search,
+        });
+      }
+    }
+  });
+
   const currentIndex = () => allItems().findIndex((i) => i.id === props.itemId);
   const prevItem = () =>
     currentIndex() > 0 ? allItems()[currentIndex() - 1] : undefined;
@@ -27,6 +49,22 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
     currentIndex() >= 0 && currentIndex() < allItems().length - 1
       ? allItems()[currentIndex() + 1]
       : undefined;
+
+  const handleNext = () => {
+    markCurrentAsRead();
+    const next = nextItem();
+    if (next) {
+      const linkProps = getLinkProps(next.id);
+      navigate({
+        to: linkProps.to,
+        params: linkProps.params,
+        search: linkProps.search,
+      });
+    } else if (itemsQuery.hasNextPage) {
+      setIsWaitingForNextPage(true);
+      itemsQuery.fetchNextPage();
+    }
+  };
 
   const markCurrentAsRead = () => {
     updateStatusMutation.mutate({
@@ -99,13 +137,18 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
             {nextItem() ? (
               <Link
                 {...getLinkProps(nextItem()?.id)}
-                onClick={markCurrentAsRead}
+                onClick={handleNext}
                 class={navButtonStyle}
               >
                 Next →
               </Link>
             ) : (
-              <button type="button" disabled class={navButtonStyle}>
+              <button
+                type="button"
+                onClick={handleNext}
+                disabled={!itemsQuery.hasNextPage}
+                class={navButtonStyle}
+              >
                 Next →
               </button>
             )}

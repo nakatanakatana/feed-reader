@@ -106,7 +106,22 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                 flex: 1,
               })}
             >
-              {itemQuery.data?.title || "Loading..."}
+              <Show when={itemQuery.data} fallback="Loading...">
+                {(item) => (
+                  <a
+                    href={item().url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class={css({
+                      color: "inherit",
+                      textDecoration: "none",
+                      _hover: { textDecoration: "underline", color: "blue.600" },
+                    })}
+                  >
+                    {item().title}
+                  </a>
+                )}
+              </Show>
             </h2>
           </div>
 
@@ -134,44 +149,61 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                       fontSize: "sm",
                       color: "gray.500",
                       flexWrap: "wrap",
+                      alignItems: "center",
                     })}
                   >
                     <span>{item().publishedAt}</span>
                     <Show when={item().author}>
                       <span>By {item().author}</span>
                     </Show>
+                    <Show when={item().categories}>
+                      <div class={flex({ gap: "1", flexWrap: "wrap" })}>
+                        <For each={item().categories.split(",").map((c) => c.trim())}>
+                          {(cat) => (
+                            <span
+                              class={css({
+                                px: "2",
+                                py: "0.5",
+                                bg: "gray.100",
+                                rounded: "full",
+                                fontSize: "10px",
+                                color: "gray.600",
+                                border: "1px solid",
+                                borderColor: "gray.200",
+                              })}
+                            >
+                              {cat}
+                            </span>
+                          )}
+                        </For>
+                      </div>
+                    </Show>
                   </div>
+
+                  <Show when={item().imageUrl}>
+                    <div class={css({ my: "4" })}>
+                      <img
+                        src={item().imageUrl}
+                        alt=""
+                        class={css({
+                          maxWidth: "full",
+                          height: "auto",
+                          borderRadius: "md",
+                          boxShadow: "sm",
+                        })}
+                      />
+                    </div>
+                  </Show>
 
                   <div
                     class={css({
                       lineHeight: "relaxed",
                       "& a": { color: "blue.600", textDecoration: "underline" },
                       "& p": { marginBottom: "4" },
+                      "& img": { maxWidth: "full", height: "auto", my: "4" },
                     })}
-                    innerHTML={item().description}
+                    innerHTML={item().content || item().description}
                   />
-
-                  <div class={flex({ gap: "4", marginTop: "4" })}>
-                    <a
-                      href={item().url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class={css({
-                        display: "inline-flex",
-                        alignItems: "center",
-                        padding: "2",
-                        paddingInline: "4",
-                        backgroundColor: "blue.600",
-                        color: "white",
-                        borderRadius: "md",
-                        fontWeight: "medium",
-                        textDecoration: "none",
-                        _hover: { backgroundColor: "blue.700" },
-                      })}
-                    >
-                      Open original article ↗
-                    </a>
-                  </div>
                 </>
               )}
             </Show>
