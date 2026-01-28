@@ -1,24 +1,29 @@
 import * as fc from "fast-check";
 import { describe, expect, it } from "vitest";
-import { filterAndSortItems, getItemDisplayDate, SortOrder } from "./item-utils";
+import {
+  filterAndSortItems,
+  getItemDisplayDate,
+  type Item,
+  SortOrder,
+} from "./item-utils";
 
 describe("item-utils", () => {
   describe("getItemDisplayDate", () => {
     it("should return Published label and date when publishedAt is present", () => {
-      const item = {
+      const item: Pick<Item, "publishedAt" | "createdAt"> = {
         publishedAt: "2026-01-01T00:00:00Z",
         createdAt: "2026-01-02T00:00:00Z",
-      } as any;
+      };
       const result = getItemDisplayDate(item);
       expect(result.label).toBe("Published");
       expect(result.date).toBe("2026-01-01T00:00:00Z");
     });
 
     it("should return Received label and createdAt when publishedAt is empty", () => {
-      const item = {
+      const item: Pick<Item, "publishedAt" | "createdAt"> = {
         publishedAt: "",
         createdAt: "2026-01-02T00:00:00Z",
-      } as any;
+      };
       const result = getItemDisplayDate(item);
       expect(result.label).toBe("Received");
       expect(result.date).toBe("2026-01-02T00:00:00Z");
@@ -101,7 +106,7 @@ describe("item-utils PBT", () => {
 
           for (let i = 0; i < result.length - 1; i++) {
             const a = result[i].publishedAt || result[i].createdAt;
-            const b = result[i+1].publishedAt || result[i+1].createdAt;
+            const b = result[i + 1].publishedAt || result[i + 1].createdAt;
             if (filters.sortOrder === SortOrder.ASC) {
               expect(a <= b).toBe(true);
             } else {

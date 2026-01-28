@@ -26,12 +26,14 @@ export const formatDate = (dateString: string) => {
   try {
     const date = new Date(dateString);
     return date.toLocaleString();
-  } catch (e) {
+  } catch (_e) {
     return dateString;
   }
 };
 
-export const getItemDisplayDate = (item: Pick<Item, "publishedAt" | "createdAt">) => {
+export const getItemDisplayDate = (
+  item: Pick<Item, "publishedAt" | "createdAt">,
+) => {
   if (item.publishedAt) {
     return {
       label: "Published",
