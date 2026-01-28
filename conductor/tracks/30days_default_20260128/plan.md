@@ -14,7 +14,7 @@ Support `publishedSince` in URL search parameters and synchronize it with the `I
 Configure the main item list to use "30 Days" as the default when no parameter is present.
 
 - [x] Task: Set the default value for `publishedSince` to `"30d"` in the `_items` route validation logic. [534b01e]
-- [ ] Task: Ensure that individual feed routes (`frontend/src/routes/feeds.$feedId.tsx`) and tag filters continue to default to `"all"` unless explicitly changed.
+- [x] Task: Ensure that individual feed routes (`frontend/src/routes/feeds.$feedId.tsx`) and tag filters continue to default to `"all"` unless explicitly changed. [18214aa]
 - [ ] Task: Conductor - User Manual Verification 'Default Value Configuration' (Protocol in workflow.md)
 
 ## Phase 3: Verification and Cleanup
