@@ -1,8 +1,0 @@
-{
-  "track_id": "filter_items_by_date_20260128",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-01-28T10:00:00Z",
-  "updated_at": "2026-01-28T10:00:00Z",
-  "description": "itemの一覧をpublished_atの日付でフィルタする機能を追加してください。ソート順と同じで、published_atが存在しない場合はcreated_atを代わりに使うロジックにしてください"
-}
