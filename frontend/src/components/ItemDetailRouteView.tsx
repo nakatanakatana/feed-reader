@@ -87,6 +87,7 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
   };
 
   const handlePrev = () => {
+    markCurrentAsRead();
     const prev = prevItem();
     if (prev) {
       const linkProps = getLinkProps(prev.id);
