@@ -1,14 +1,17 @@
 import { createFileRoute, Outlet } from "@tanstack/solid-router";
 import { ItemList } from "../components/ItemList";
+import type { DateFilterValue } from "../lib/item-utils";
 
 interface ItemsSearch {
   tagId?: string;
+  publishedSince?: DateFilterValue;
 }
 
 export const Route = createFileRoute("/_items")({
   validateSearch: (search: Record<string, unknown>): ItemsSearch => {
     return {
       tagId: search.tagId as string | undefined,
+      publishedSince: search.publishedSince as DateFilterValue | undefined,
     };
   },
   component: ItemsLayout,
