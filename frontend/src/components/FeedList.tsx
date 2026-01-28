@@ -153,7 +153,7 @@ export function FeedList() {
                 borderColor: "blue.200",
               })}
             >
-              Total Unread: {unreadCount()}
+              Total Unread: {totalUnreadCount()}
             </div>
           </div>
           <Show when={selectedFeedIds().length > 0}>
