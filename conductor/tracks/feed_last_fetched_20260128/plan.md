@@ -28,6 +28,6 @@ Display the timestamp in the Feed List UI.
 ## Phase 3: Verification & Finalization
 Final checks and cleanup.
 
-- [ ] Task: Run full suite of tests (Frontend & Backend).
+- [~] Task: Run full suite of tests (Frontend & Backend).
 - [ ] Task: Perform manual verification of the UI on desktop and mobile.
 - [ ] Task: Conductor - User Manual Verification 'Finalization' (Protocol in workflow.md)
