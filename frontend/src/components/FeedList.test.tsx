@@ -257,4 +257,49 @@ describe("FeedList", () => {
     const viewItemsLink = page.getByRole("link", { name: /View items/i });
     await expect.element(viewItemsLink).not.toBeInTheDocument();
   });
+
+  it("displays the last fetched date", async () => {
+    const lastFetchedAt = "2026-01-28T15:30:00Z";
+    const mockFeeds = [
+      {
+        id: "1",
+        title: "Fetched Feed",
+        url: "http://example.com/1",
+        lastFetchedAt: lastFetchedAt,
+        tags: [],
+      },
+      {
+        id: "2",
+        title: "Never Fetched Feed",
+        url: "http://example.com/2",
+        lastFetchedAt: null,
+        tags: [],
+      },
+    ];
+
+    vi.mocked(useLiveQuery).mockReturnValue({
+      data: mockFeeds,
+    } as unknown as ReturnType<typeof useLiveQuery>);
+
+    const history = createMemoryHistory({ initialEntries: ["/feeds"] });
+    const router = createRouter({ routeTree, history });
+
+    dispose = render(
+      () => (
+        <TestWrapper>
+          <RouterProvider router={router} />
+        </TestWrapper>
+      ),
+      document.body,
+    );
+
+    // Should display formatted date
+    await expect
+      .element(page.getByText("Last fetched: 2026-01-28 15:30"))
+      .toBeInTheDocument();
+    // Should display "Never" for null date
+    await expect
+      .element(page.getByText("Last fetched: Never"))
+      .toBeInTheDocument();
+  });
 });

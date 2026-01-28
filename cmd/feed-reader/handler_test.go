@@ -329,6 +329,33 @@ func TestFeedServer_ListFeeds_UnreadCounts(t *testing.T) {
 	assert.Equal(t, int64(1), feedsMap[f2.ID].UnreadCount, "Feed 2 should have 1 unread")
 }
 
+func TestFeedServer_ListFeeds_LastFetchedAt(t *testing.T) {
+	ctx := context.Background()
+	_, db := setupTestDB(t)
+	s := store.NewStore(db)
+	server := NewFeedServer(s, nil, &mockFetcher{}, &mockItemFetcher{})
+
+	lastFetched := "2026-01-28T15:30:00Z"
+	_, err := s.CreateFeed(ctx, store.CreateFeedParams{
+		ID:    "f1",
+		Url:   "u1",
+		Title: proto.String("Feed 1"),
+	})
+	require.NoError(t, err)
+
+	_, err = s.UpdateFeed(ctx, store.UpdateFeedParams{
+		ID:            "f1",
+		LastFetchedAt: &lastFetched,
+	})
+	require.NoError(t, err)
+
+	res, err := server.ListFeeds(ctx, connect.NewRequest(&feedv1.ListFeedsRequest{}))
+	require.NoError(t, err)
+	require.Len(t, res.Msg.Feeds, 1)
+
+	assert.Equal(t, &lastFetched, res.Msg.Feeds[0].LastFetchedAt)
+}
+
 func TestFeedServer_UpdateFeed(t *testing.T) {
 	ctx := context.Background()
 
