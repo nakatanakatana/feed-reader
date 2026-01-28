@@ -24,7 +24,9 @@ export function DateFilterSelector(props: DateFilterSelectorProps) {
       <select
         id="date-filter-select"
         value={props.value}
-        onChange={(e) => props.onSelect(e.currentTarget.value as DateFilterValue)}
+        onChange={(e) =>
+          props.onSelect(e.currentTarget.value as DateFilterValue)
+        }
         class={css({
           padding: "1",
           paddingInline: "2",

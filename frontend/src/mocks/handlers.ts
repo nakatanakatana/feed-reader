@@ -250,7 +250,9 @@ export const handlers = [
       }
 
       if (req.feedId) {
-        filteredItems = filteredItems.filter((item) => item.feedId === req.feedId);
+        filteredItems = filteredItems.filter(
+          (item) => item.feedId === req.feedId,
+        );
       }
 
       const totalCount = filteredItems.length;

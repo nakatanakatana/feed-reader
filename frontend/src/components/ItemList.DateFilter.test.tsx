@@ -104,13 +104,16 @@ describe("ItemList Date Filter", () => {
     await select.selectOptions("24h");
 
     // The latest call should have a publishedSince timestamp
-    const latestParams = vi.mocked(useItems).mock.calls[
+    const latestCallGetter = vi.mocked(useItems).mock.calls[
       vi.mocked(useItems).mock.calls.length - 1
     ][0] as () => Omit<FetchItemsParams, "limit" | "offset">;
-    
-    expect(latestParams().publishedSince).toBeDefined();
+    const params = latestCallGetter();
+
+    expect(params.publishedSince).toBeDefined();
     // We can check if it's approximately 24 hours ago
-    const since = latestParams().publishedSince!;
+    const since = params.publishedSince;
+    if (!since) throw new Error("publishedSince should be defined");
+
     const sinceDate = new Date(Number(since.seconds) * 1000);
     const now = new Date();
     const diffHours = (now.getTime() - sinceDate.getTime()) / (1000 * 60 * 60);

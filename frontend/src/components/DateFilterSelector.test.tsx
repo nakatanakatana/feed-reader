@@ -13,12 +13,15 @@ describe("DateFilterSelector", () => {
 
   it("renders all preset options", async () => {
     const onSelect = vi.fn();
-    dispose = render(() => <DateFilterSelector value="all" onSelect={onSelect} />, document.body);
+    dispose = render(
+      () => <DateFilterSelector value="all" onSelect={onSelect} />,
+      document.body,
+    );
 
     await expect.element(page.getByText("Date:")).toBeInTheDocument();
     const select = page.getByRole("combobox");
     await expect.element(select).toBeInTheDocument();
-    
+
     // Check options
     await expect.element(page.getByText("All Time")).toBeInTheDocument();
     await expect.element(page.getByText("Past 24 Hours")).toBeInTheDocument();
@@ -28,7 +31,10 @@ describe("DateFilterSelector", () => {
 
   it("calls onSelect when an option is chosen", async () => {
     const onSelect = vi.fn();
-    dispose = render(() => <DateFilterSelector value="all" onSelect={onSelect} />, document.body);
+    dispose = render(
+      () => <DateFilterSelector value="all" onSelect={onSelect} />,
+      document.body,
+    );
 
     const select = page.getByRole("combobox");
     await select.selectOptions("24h");
@@ -38,11 +44,15 @@ describe("DateFilterSelector", () => {
 
   it("reflects the current value", async () => {
     const onSelect = vi.fn();
-    dispose = render(() => <DateFilterSelector value="7d" onSelect={onSelect} />, document.body);
+    dispose = render(
+      () => <DateFilterSelector value="7d" onSelect={onSelect} />,
+      document.body,
+    );
 
-    const select = page.getByRole("combobox");
     // In vitest/browser, we can check the value of the element
-    const selectEl = document.getElementById("date-filter-select") as HTMLSelectElement;
+    const selectEl = document.getElementById(
+      "date-filter-select",
+    ) as HTMLSelectElement;
     expect(selectEl.value).toBe("7d");
   });
 });
