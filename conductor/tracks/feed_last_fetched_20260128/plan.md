@@ -13,16 +13,12 @@ Ensure `last_fetched_at` is correctly returned by the API and populated during f
 ## Phase 2: Frontend Implementation
 Display the timestamp in the Feed List UI.
 
-- [ ] Task: Update `FeedList` component to display `last_fetched_at`.
+- [x] Task: Update `FeedList` component to display `last_fetched_at`. f5fa1e1
     - [ ] Modify `frontend/src/components/FeedList.tsx` to include the timestamp near the feed title.
     - [ ] Format the timestamp to `YYYY-MM-DD HH:MM`.
     - [ ] Handle null/missing values by displaying "Never".
-- [ ] Task: Style the timestamp.
-    - [ ] Add Panda CSS styling to ensure it appears as a subtle subtext.
-    - [ ] Verify responsive behavior.
-- [ ] Task: Write tests for `FeedList` date display.
-    - [ ] Add/Update tests in `frontend/src/components/FeedList.test.tsx` to verify the date is rendered correctly.
-    - [ ] Test the "Never" placeholder case.
+- [x] Task: Style the timestamp. f5fa1e1
+- [x] Task: Write tests for `FeedList` date display. f5fa1e1
 - [ ] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md)
 
 ## Phase 3: Verification & Finalization
