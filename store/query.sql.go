@@ -24,17 +24,24 @@ WHERE
   (?2 IS NULL OR COALESCE(ir.is_read, 0) = ?2) AND
   (?3 IS NULL OR EXISTS (
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = ?3
-  ))
+  )) AND
+  (?4 IS NULL OR COALESCE(i.published_at, i.created_at) >= ?4)
 `
 
 type CountItemsParams struct {
-	FeedID interface{} `json:"feed_id"`
-	IsRead interface{} `json:"is_read"`
-	TagID  interface{} `json:"tag_id"`
+	FeedID         interface{} `json:"feed_id"`
+	IsRead         interface{} `json:"is_read"`
+	TagID          interface{} `json:"tag_id"`
+	PublishedSince interface{} `json:"published_since"`
 }
 
 func (q *Queries) CountItems(ctx context.Context, arg CountItemsParams) (int64, error) {
-	row := q.db.QueryRowContext(ctx, countItems, arg.FeedID, arg.IsRead, arg.TagID)
+	row := q.db.QueryRowContext(ctx, countItems,
+		arg.FeedID,
+		arg.IsRead,
+		arg.TagID,
+		arg.PublishedSince,
+	)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
@@ -655,18 +662,20 @@ WHERE
   (?2 IS NULL OR COALESCE(ir.is_read, 0) = ?2) AND
   (?3 IS NULL OR EXISTS (
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = ?3
-  ))
+  )) AND
+  (?4 IS NULL OR COALESCE(i.published_at, i.created_at) >= ?4)
 ORDER BY
   COALESCE(i.published_at, i.created_at) ASC
-LIMIT ?5 OFFSET ?4
+LIMIT ?6 OFFSET ?5
 `
 
 type ListItemsParams struct {
-	FeedID interface{} `json:"feed_id"`
-	IsRead interface{} `json:"is_read"`
-	TagID  interface{} `json:"tag_id"`
-	Offset int64       `json:"offset"`
-	Limit  int64       `json:"limit"`
+	FeedID         interface{} `json:"feed_id"`
+	IsRead         interface{} `json:"is_read"`
+	TagID          interface{} `json:"tag_id"`
+	PublishedSince interface{} `json:"published_since"`
+	Offset         int64       `json:"offset"`
+	Limit          int64       `json:"limit"`
 }
 
 type ListItemsRow struct {
@@ -690,6 +699,7 @@ func (q *Queries) ListItems(ctx context.Context, arg ListItemsParams) ([]ListIte
 		arg.FeedID,
 		arg.IsRead,
 		arg.TagID,
+		arg.PublishedSince,
 		arg.Offset,
 		arg.Limit,
 	)
@@ -754,18 +764,20 @@ WHERE
   (?2 IS NULL OR COALESCE(ir.is_read, 0) = ?2) AND
   (?3 IS NULL OR EXISTS (
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = ?3
-  ))
+  )) AND
+  (?4 IS NULL OR COALESCE(i.published_at, i.created_at) >= ?4)
 ORDER BY
   COALESCE(i.published_at, i.created_at) ASC
-LIMIT ?5 OFFSET ?4
+LIMIT ?6 OFFSET ?5
 `
 
 type ListItemsAscParams struct {
-	FeedID interface{} `json:"feed_id"`
-	IsRead interface{} `json:"is_read"`
-	TagID  interface{} `json:"tag_id"`
-	Offset int64       `json:"offset"`
-	Limit  int64       `json:"limit"`
+	FeedID         interface{} `json:"feed_id"`
+	IsRead         interface{} `json:"is_read"`
+	TagID          interface{} `json:"tag_id"`
+	PublishedSince interface{} `json:"published_since"`
+	Offset         int64       `json:"offset"`
+	Limit          int64       `json:"limit"`
 }
 
 type ListItemsAscRow struct {
@@ -789,6 +801,7 @@ func (q *Queries) ListItemsAsc(ctx context.Context, arg ListItemsAscParams) ([]L
 		arg.FeedID,
 		arg.IsRead,
 		arg.TagID,
+		arg.PublishedSince,
 		arg.Offset,
 		arg.Limit,
 	)
