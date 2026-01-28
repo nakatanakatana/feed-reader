@@ -19,17 +19,34 @@ describe("item-utils", () => {
       vi.setSystemTime(mockNow);
 
       const tests = [
-        { value: "24h", expected: new Date(mockNow.getTime() - 24 * 60 * 60 * 1000) },
-        { value: "7d", expected: new Date(mockNow.getTime() - 7 * 24 * 60 * 60 * 1000) },
-        { value: "30d", expected: new Date(mockNow.getTime() - 30 * 24 * 60 * 60 * 1000) },
-        { value: "90d", expected: new Date(mockNow.getTime() - 90 * 24 * 60 * 60 * 1000) },
-        { value: "365d", expected: new Date(mockNow.getTime() - 365 * 24 * 60 * 60 * 1000) },
+        {
+          value: "24h",
+          expected: new Date(mockNow.getTime() - 24 * 60 * 60 * 1000),
+        },
+        {
+          value: "7d",
+          expected: new Date(mockNow.getTime() - 7 * 24 * 60 * 60 * 1000),
+        },
+        {
+          value: "30d",
+          expected: new Date(mockNow.getTime() - 30 * 24 * 60 * 60 * 1000),
+        },
+        {
+          value: "90d",
+          expected: new Date(mockNow.getTime() - 90 * 24 * 60 * 60 * 1000),
+        },
+        {
+          value: "365d",
+          expected: new Date(mockNow.getTime() - 365 * 24 * 60 * 60 * 1000),
+        },
       ] as const;
 
       for (const { value, expected } of tests) {
         const result = getPublishedSince(value);
         expect(result).toBeDefined();
-        expect(result?.seconds).toBe(BigInt(Math.floor(expected.getTime() / 1000)));
+        expect(result?.seconds).toBe(
+          BigInt(Math.floor(expected.getTime() / 1000)),
+        );
       }
 
       vi.useRealTimers();

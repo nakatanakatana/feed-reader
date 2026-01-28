@@ -25,7 +25,9 @@ export interface ItemFilters {
   sortOrder?: SortOrder;
 }
 
-export const getPublishedSince = (value: DateFilterValue): Timestamp | undefined => {
+export const getPublishedSince = (
+  value: DateFilterValue,
+): Timestamp | undefined => {
   if (value === "all") return undefined;
   const now = new Date();
   let since: Date;
