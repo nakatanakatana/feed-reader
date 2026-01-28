@@ -5,12 +5,37 @@ import { flex, stack } from "../../styled-system/patterns";
 import { ListItemsRequest_SortOrder } from "../gen/item/v1/item_pb";
 import { useItems, useUpdateItemStatus } from "../lib/item-query";
 import { useTags } from "../lib/tag-query";
+import { DateFilterSelector, type DateFilterValue } from "./DateFilterSelector";
 import { ItemRow } from "./ItemRow";
+import type { Timestamp } from "@bufbuild/protobuf/wkt";
 
 interface ItemListProps {
   feedId?: string;
   tagId?: string;
 }
+
+const getPublishedSince = (value: DateFilterValue): Timestamp | undefined => {
+  if (value === "all") return undefined;
+  const now = new Date();
+  let since: Date;
+  switch (value) {
+    case "24h":
+      since = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      break;
+    case "7d":
+      since = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      break;
+    case "30d":
+      since = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      break;
+    default:
+      return undefined;
+  }
+  return {
+    seconds: BigInt(Math.floor(since.getTime() / 1000)),
+    nanos: (since.getTime() % 1000) * 1000000,
+  } as Timestamp;
+};
 
 export function ItemList(props: ItemListProps) {
   const navigate = useNavigate();
@@ -21,10 +46,13 @@ export function ItemList(props: ItemListProps) {
 
   const tagsQuery = useTags();
   const [showRead, setShowRead] = createSignal(false);
+  const [dateFilter, setDateFilter] = createSignal<DateFilterValue>("all");
+
   const itemsQuery = useItems(() => ({
     feedId: props.feedId,
     tagId: props.tagId,
     isRead: showRead() ? undefined : false,
+    publishedSince: getPublishedSince(dateFilter()),
     sortOrder: ListItemsRequest_SortOrder.ASC,
   }));
 
@@ -149,6 +177,11 @@ export function ItemList(props: ItemListProps) {
         </div>
 
         <div class={flex({ gap: "2", alignItems: "center" })}>
+          <div
+            class={flex({ gap: "2", alignItems: "center", marginRight: "4" })}
+          >
+            <DateFilterSelector value={dateFilter()} onSelect={setDateFilter} />
+          </div>
           <div
             class={flex({ gap: "2", alignItems: "center", marginRight: "4" })}
           >
