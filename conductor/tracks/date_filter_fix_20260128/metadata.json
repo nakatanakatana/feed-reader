@@ -1,8 +1,0 @@
-{
-  "track_id": "date_filter_fix_20260128",
-  "type": "bug_fix",
-  "status": "new",
-  "created_at": "2026-01-28T12:00:00Z",
-  "updated_at": "2026-01-28T12:00:00Z",
-  "description": "Fix BigInt serialization error in item list date filter and add 90/365 day options."
-}
