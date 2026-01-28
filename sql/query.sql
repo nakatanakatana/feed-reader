@@ -89,7 +89,18 @@ WHERE
 
 -- name: ListItemsByFeed :many
 SELECT
-  i.*
+  i.id,
+  i.url,
+  i.title,
+  i.description,
+  i.published_at,
+  i.author,
+  i.guid,
+  i.content,
+  i.image_url,
+  i.categories,
+  i.created_at,
+  i.updated_at
 FROM
   items i
 JOIN
@@ -107,9 +118,12 @@ INSERT INTO items (
   description,
   published_at,
   author,
-  guid
+  guid,
+  content,
+  image_url,
+  categories
 ) VALUES (
-  ?, ?, ?, ?, ?, ?, ?
+  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 )
 ON CONFLICT(url) DO UPDATE SET
   title = excluded.title,
@@ -117,6 +131,9 @@ ON CONFLICT(url) DO UPDATE SET
   published_at = excluded.published_at,
   author = excluded.author,
   guid = excluded.guid,
+  content = excluded.content,
+  image_url = excluded.image_url,
+  categories = excluded.categories,
   updated_at = CURRENT_TIMESTAMP
 RETURNING *;
 
@@ -154,6 +171,11 @@ SELECT
   i.description,
   i.published_at,
   i.author,
+  i.guid,
+  i.content,
+  i.image_url,
+  i.categories,
+  i.created_at,
   fi.feed_id,
   CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read
 FROM
@@ -173,6 +195,11 @@ SELECT
   i.description,
   i.published_at,
   i.author,
+  i.guid,
+  i.content,
+  i.image_url,
+  i.categories,
+  i.created_at,
   fi.feed_id,
   CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read
 FROM
@@ -199,6 +226,11 @@ SELECT
   i.description,
   i.published_at,
   i.author,
+  i.guid,
+  i.content,
+  i.image_url,
+  i.categories,
+  i.created_at,
   fi.feed_id,
   CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read
 FROM
@@ -216,6 +248,19 @@ WHERE
 ORDER BY
   i.published_at ASC
 LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
+
+-- name: CountUnreadItemsPerFeed :many
+SELECT
+  fi.feed_id,
+  COUNT(*) AS count
+FROM
+  feed_items fi
+LEFT JOIN
+  item_reads ir ON fi.item_id = ir.item_id
+WHERE
+  COALESCE(ir.is_read, 0) = 0
+GROUP BY
+  fi.feed_id;
 
 -- name: CountItems :one
 SELECT

@@ -22,6 +22,9 @@ CREATE TABLE IF NOT EXISTS items (
   published_at TEXT,
   author       TEXT,
   guid         TEXT,
+  content      TEXT,
+  image_url    TEXT,
+  categories   TEXT,
   created_at   TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at   TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

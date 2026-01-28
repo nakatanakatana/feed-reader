@@ -20,7 +20,7 @@ function ItemsLayout() {
   return (
     <div class="p-2">
       <h2 class="text-xl font-bold mb-4">All Items</h2>
-      <ItemList tagId={search().tagId} />
+      <ItemList tagId={search()?.tagId} />
       <Outlet />
     </div>
   );

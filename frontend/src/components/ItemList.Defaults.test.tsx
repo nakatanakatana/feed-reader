@@ -1,4 +1,3 @@
-import { createConnectTransport } from "@connectrpc/connect-web";
 import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
@@ -10,21 +9,24 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
+import { createConnectTransport } from "@connectrpc/connect-web";
 
 // Mock hooks
-const updateStatusMock = vi.fn().mockResolvedValue({});
 vi.mock("../lib/item-query", () => ({
   useItems: vi.fn(),
+  useUpdateItemStatus: vi.fn(),
   useItem: vi.fn(),
-  useUpdateItemStatus: () => ({
-    mutateAsync: updateStatusMock,
-    isPending: false,
-  }),
 }));
 
-import { useItems } from "../lib/item-query";
+vi.mock("../lib/tag-query", () => ({
+  useTags: vi.fn().mockReturnValue({ data: { tags: [] } }),
+  useCreateTag: vi.fn(),
+  useDeleteTag: vi.fn(),
+}));
 
-describe("ItemList Bulk Actions", () => {
+import { useItems, type FetchItemsParams } from "../lib/item-query";
+
+describe("ItemList Defaults", () => {
   let dispose: () => void;
   const queryClient = new QueryClient();
   const transport = createConnectTransport({ baseUrl: "http://localhost" });
@@ -35,21 +37,12 @@ describe("ItemList Bulk Actions", () => {
     vi.clearAllMocks();
   });
 
-  it("marks multiple items as read", async () => {
-    const mockItems = [
-      { id: "1", title: "Item 1", url: "http://example.com/1", isRead: false },
-      { id: "2", title: "Item 2", url: "http://example.com/2", isRead: false },
-    ];
-
+  it("calls useItems with default filters: isRead=false and sortOrder=ASC", async () => {
     vi.mocked(useItems).mockReturnValue({
-      data: {
-        pages: [{ items: mockItems }],
-      },
+      data: { pages: [] },
       isLoading: false,
-      hasNextPage: false,
-      fetchNextPage: vi.fn(),
-      isFetchingNextPage: false,
-    } as unknown as ReturnType<typeof useItems>);
+      // biome-ignore lint/suspicious/noExplicitAny: Mocking query result
+    } as any);
 
     const history = createMemoryHistory({ initialEntries: ["/"] });
     const router = createRouter({ routeTree, history });
@@ -65,22 +58,21 @@ describe("ItemList Bulk Actions", () => {
       document.body,
     );
 
-    const selectAll = page.getByLabelText(/Select All/i);
-    await selectAll.click();
+    // Wait for rendering
+    await expect.element(page.getByText("All Items")).toBeInTheDocument();
 
-    // The bulk bar appears when items are selected.
-    // It contains a "Mark as Read" button.
-    const bulkMarkBtn = page
-      .getByRole("button", { name: "Mark as Read" })
-      .nth(0);
-    await bulkMarkBtn.click();
-
-    expect(updateStatusMock).toHaveBeenCalledWith({
-      ids: ["1", "2"],
-      isRead: true,
-    });
-
-    // Selection should be cleared
-    await expect.element(selectAll).not.toBeChecked();
+    // Check if useItems was called with the correct defaults
+    // Note: ASC is 2 in ListItemsRequest_SortOrder
+    expect(useItems).toHaveBeenCalledWith(expect.any(Function));
+    const paramsGetter = vi.mocked(useItems).mock.calls[0][0] as () => Omit<
+      FetchItemsParams,
+      "limit" | "offset"
+    >;
+    expect(paramsGetter()).toEqual(
+      expect.objectContaining({
+        isRead: false,
+        sortOrder: 2,
+      }),
+    );
   });
 });

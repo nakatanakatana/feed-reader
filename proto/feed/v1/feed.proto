@@ -35,6 +35,7 @@ message Feed {
   string created_at = 12;
   string updated_at = 13;
   repeated tag.v1.Tag tags = 14;
+  int64 unread_count = 15;
 }
 
 message GetFeedRequest {

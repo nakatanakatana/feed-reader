@@ -16,7 +16,7 @@ function FeedItemsComponent() {
   const { data: feedsList } = useLiveQuery((q) =>
     q
       .from({ feed: feeds })
-      .where(({ feed }) => eq(feed.id, params().feedId))
+      .where(({ feed }) => eq(feed.id, params()?.feedId ?? ""))
       .select(({ feed }) => feed),
   );
 
@@ -25,7 +25,7 @@ function FeedItemsComponent() {
   return (
     <div class={stack({ padding: "4", gap: "4" })}>
       <h2 class={css({ fontSize: "xl", fontWeight: "bold" })}>{feedTitle()}</h2>
-      <ItemList feedId={params().feedId} />
+      <ItemList feedId={params()?.feedId} />
       <Outlet />
     </div>
   );

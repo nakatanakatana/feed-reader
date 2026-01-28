@@ -2,6 +2,7 @@ import { useNavigate } from "@tanstack/solid-router";
 import { createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
+import { ListItemsRequest_SortOrder } from "../gen/item/v1/item_pb";
 import { useItems, useUpdateItemStatus } from "../lib/item-query";
 import { useTags } from "../lib/tag-query";
 import { ItemRow } from "./ItemRow";
@@ -19,10 +20,13 @@ export function ItemList(props: ItemListProps) {
   );
 
   const tagsQuery = useTags();
-  const itemsQuery = useItems({
+  const [showRead, setShowRead] = createSignal(false);
+  const itemsQuery = useItems(() => ({
     feedId: props.feedId,
     tagId: props.tagId,
-  });
+    isRead: showRead() ? undefined : false,
+    sortOrder: ListItemsRequest_SortOrder.ASC,
+  }));
 
   const allItems = () =>
     itemsQuery.data?.pages.flatMap((page) => page.items) ?? [];
@@ -145,15 +149,44 @@ export function ItemList(props: ItemListProps) {
         </div>
 
         <div class={flex({ gap: "2", alignItems: "center" })}>
+          <div
+            class={flex({ gap: "2", alignItems: "center", marginRight: "4" })}
+          >
+            <input
+              id="show-read-toggle"
+              type="checkbox"
+              checked={showRead()}
+              onChange={(e) => setShowRead(e.currentTarget.checked)}
+              class={css({ cursor: "pointer" })}
+            />
+            <label
+              for="show-read-toggle"
+              class={css({
+                fontSize: "sm",
+                color: "gray.600",
+                cursor: "pointer",
+              })}
+            >
+              Show Read
+            </label>
+          </div>
           <input
+            id="select-all-checkbox"
             type="checkbox"
             checked={isAllSelected()}
             onChange={(e) => handleToggleAll(e.currentTarget.checked)}
             class={css({ cursor: "pointer" })}
           />
-          <span class={css({ fontSize: "sm", color: "gray.600" })}>
+          <label
+            for="select-all-checkbox"
+            class={css({
+              fontSize: "sm",
+              color: "gray.600",
+              cursor: "pointer",
+            })}
+          >
             Select All
-          </span>
+          </label>
         </div>
       </div>
 

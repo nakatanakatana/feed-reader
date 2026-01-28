@@ -10,6 +10,6 @@ function ItemDetailRoute() {
   const search = Route.useSearch();
 
   return (
-    <ItemDetailRouteView itemId={params().itemId} tagId={search().tagId} />
+    <ItemDetailRouteView itemId={params()?.itemId} tagId={search()?.tagId} />
   );
 }
