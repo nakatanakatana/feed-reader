@@ -20,12 +20,13 @@ export function ItemList(props: ItemListProps) {
   );
 
   const tagsQuery = useTags();
-  const itemsQuery = useItems({
+  const [showRead, setShowRead] = createSignal(false);
+  const itemsQuery = useItems(() => ({
     feedId: props.feedId,
     tagId: props.tagId,
-    isRead: false,
+    isRead: showRead() ? undefined : false,
     sortOrder: ListItemsRequest_SortOrder.ASC,
-  });
+  }));
 
   const allItems = () =>
     itemsQuery.data?.pages.flatMap((page) => page.items) ?? [];
@@ -148,6 +149,21 @@ export function ItemList(props: ItemListProps) {
         </div>
 
         <div class={flex({ gap: "2", alignItems: "center" })}>
+          <div class={flex({ gap: "2", alignItems: "center", marginRight: "4" })}>
+            <input
+              id="show-read-toggle"
+              type="checkbox"
+              checked={showRead()}
+              onChange={(e) => setShowRead(e.currentTarget.checked)}
+              class={css({ cursor: "pointer" })}
+            />
+            <label
+              for="show-read-toggle"
+              class={css({ fontSize: "sm", color: "gray.600", cursor: "pointer" })}
+            >
+              Show Read
+            </label>
+          </div>
           <input
             type="checkbox"
             checked={isAllSelected()}
