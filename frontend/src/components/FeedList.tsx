@@ -21,9 +21,13 @@ export function FeedList() {
     return query;
   });
 
+  const totalUnreadCount = () => {
+    const list = (feedList as unknown as Feed[]) ?? [];
+    return list.reduce((acc, feed) => acc + Number(feed.unreadCount || 0), 0);
+  };
+
   const filteredFeeds = () => {
-    // biome-ignore lint/suspicious/noExplicitAny: TanStack DB query results are complex to type precisely here
-    const list = (feedList as any[]) ?? [];
+    const list = (feedList as unknown as Feed[]) ?? [];
     const tagId = selectedTagId();
     if (tagId === undefined) return list;
     if (tagId === null)
@@ -95,6 +99,21 @@ export function FeedList() {
           <h2 class={css({ fontSize: "xl", fontWeight: "semibold" })}>
             Your Feeds
           </h2>
+          <Show when={totalUnreadCount() > 0}>
+            <span
+              class={css({
+                bg: "blue.100",
+                color: "blue.700",
+                px: "2.5",
+                py: "0.5",
+                rounded: "full",
+                fontSize: "sm",
+                fontWeight: "bold",
+              })}
+            >
+              Total Unread: {totalUnreadCount()}
+            </span>
+          </Show>
           <Show when={selectedFeedIds().length > 0}>
             <button
               type="button"
@@ -304,28 +323,45 @@ export function FeedList() {
                   </span>
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDelete(feed.id);
-                }}
-                class={css({
-                  color: "red.500",
-                  padding: "1",
-                  paddingInline: "2",
-                  borderRadius: "md",
-                  fontSize: "sm",
-                  cursor: "pointer",
-                  _hover: {
-                    backgroundColor: "red.50",
-                    textDecoration: "underline",
-                  },
-                  _disabled: { color: "gray.400", cursor: "not-allowed" },
-                })}
-              >
-                Delete
-              </button>
+              <div class={flex({ gap: "2", alignItems: "center" })}>
+                <Show when={Number(feed.unreadCount || 0) > 0}>
+                  <span
+                    class={css({
+                      bg: "blue.100",
+                      color: "blue.700",
+                      px: "2",
+                      py: "0.5",
+                      rounded: "full",
+                      fontSize: "xs",
+                      fontWeight: "bold",
+                    })}
+                  >
+                    {feed.unreadCount?.toString()}
+                  </span>
+                </Show>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(feed.id);
+                  }}
+                  class={css({
+                    color: "red.500",
+                    padding: "1",
+                    paddingInline: "2",
+                    borderRadius: "md",
+                    fontSize: "sm",
+                    cursor: "pointer",
+                    _hover: {
+                      backgroundColor: "red.50",
+                      textDecoration: "underline",
+                    },
+                    _disabled: { color: "gray.400", cursor: "not-allowed" },
+                  })}
+                >
+                  Delete
+                </button>
+              </div>
             </li>
           )}
         </For>

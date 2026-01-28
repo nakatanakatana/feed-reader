@@ -75,12 +75,23 @@ func (s *FeedServer) ListFeeds(ctx context.Context, req *connect.Request[feedv1.
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
+	// Fetch unread counts
+	counts, err := s.store.CountUnreadItemsPerFeed(ctx)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	countsMap := make(map[string]int64)
+	for _, c := range counts {
+		countsMap[c.FeedID] = c.Count
+	}
+
 	protoFeeds := make([]*feedv1.Feed, len(feeds))
 	for i, f := range feeds {
 		pf, err := s.toProtoFeed(ctx, f)
 		if err != nil {
 			return nil, connect.NewError(connect.CodeInternal, err)
 		}
+		pf.UnreadCount = countsMap[f.ID]
 		protoFeeds[i] = pf
 	}
 

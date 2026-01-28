@@ -23,6 +23,11 @@ func TestFetcherService_normalizeItem_PBT(t *testing.T) {
 			Link:        rapid.String().Draw(t, "link"),
 			Description: rapid.String().Draw(t, "description"),
 			GUID:        rapid.String().Draw(t, "guid"),
+			Content:     rapid.String().Draw(t, "content"),
+			Image: &gofeed.Image{
+				URL: rapid.String().Draw(t, "imageUrl"),
+			},
+			Categories: rapid.SliceOf(rapid.String()).Draw(t, "categories"),
 		}
 
 		hasPubDate := rapid.Bool().Draw(t, "hasPubDate")
@@ -38,6 +43,15 @@ func TestFetcherService_normalizeItem_PBT(t *testing.T) {
 		assert.Equal(t, item.Title, *params.Title)
 		assert.Equal(t, item.Description, *params.Description)
 		assert.Equal(t, item.GUID, *params.Guid)
+		assert.Equal(t, item.Content, *params.Content)
+		assert.Equal(t, item.Image.URL, *params.ImageUrl)
+
+		if len(item.Categories) > 0 {
+			assert.NotNil(t, params.Categories)
+			// Optional: verify JSON content
+		} else {
+			assert.Nil(t, params.Categories)
+		}
 
 		if hasPubDate {
 			assert.NotNil(t, params.PublishedAt)

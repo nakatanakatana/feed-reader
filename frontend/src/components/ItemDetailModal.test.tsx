@@ -66,9 +66,18 @@ describe("ItemDetailModal", () => {
     await expect.element(page.getByText("Test Item")).toBeInTheDocument();
     await expect.element(page.getByText("By Test Author")).toBeInTheDocument();
     await expect.element(page.getByText("Test Content")).toBeInTheDocument();
+
+    // Check for title link
+    const titleLink = page.getByRole("link", { name: "Test Item" });
+    await expect.element(titleLink).toBeInTheDocument();
+    await expect
+      .element(titleLink)
+      .toHaveAttribute("href", "http://example.com");
+
+    // The old button should NOT be present
     await expect
       .element(page.getByText("Open original article ↗"))
-      .toBeInTheDocument();
+      .not.toBeInTheDocument();
   });
 
   it("does NOT render a close button (✕)", async () => {

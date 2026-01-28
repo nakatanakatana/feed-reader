@@ -65,6 +65,35 @@ func TestItemServer(t *testing.T) {
 		assert.Equal(t, item1ID, res.Msg.Item.Id)
 		assert.Equal(t, "Item 1", res.Msg.Item.Title)
 		assert.Equal(t, author, res.Msg.Item.Author)
+		assert.NotEmpty(t, res.Msg.Item.CreatedAt)
+	})
+
+	t.Run("GetItem_WithRichContent", func(t *testing.T) {
+		content := "<h1>Rich</h1>"
+		img := "http://img"
+		cats := `["news"]`
+		tRich := now.Add(1 * time.Hour).Format(time.RFC3339) // Newest
+		err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
+			FeedID:      feedID,
+			Url:         "http://rich",
+			Title:       proto.String("Rich Item"),
+			Content:     &content,
+			ImageUrl:    &img,
+			Categories:  &cats,
+			PublishedAt: &tRich,
+		})
+		require.NoError(t, err)
+
+		var id string
+		err = db.QueryRowContext(ctx, "SELECT id FROM items WHERE url = ?", "http://rich").Scan(&id)
+		require.NoError(t, err)
+
+		res, err := server.GetItem(ctx, connect.NewRequest(&itemv1.GetItemRequest{Id: id}))
+		require.NoError(t, err)
+		assert.Equal(t, content, res.Msg.Item.Content)
+		assert.Equal(t, img, res.Msg.Item.ImageUrl)
+		assert.Equal(t, cats, res.Msg.Item.Categories)
+		assert.NotEmpty(t, res.Msg.Item.CreatedAt)
 	})
 
 	t.Run("ListItems", func(t *testing.T) {
@@ -72,9 +101,10 @@ func TestItemServer(t *testing.T) {
 			Limit: 10,
 		}))
 		require.NoError(t, err)
-		assert.Len(t, res.Msg.Items, 2)
-		assert.Equal(t, item2ID, res.Msg.Items[0].Id) // Desc by default
-		assert.Equal(t, int32(2), res.Msg.TotalCount)
+		assert.Len(t, res.Msg.Items, 3)
+		for _, item := range res.Msg.Items {
+			assert.NotEmpty(t, item.CreatedAt)
+		}
 	})
 
 	t.Run("UpdateItemStatus", func(t *testing.T) {

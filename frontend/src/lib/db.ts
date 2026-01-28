@@ -23,6 +23,7 @@ export interface Feed {
   createdAt: string;
   updatedAt: string;
   tags: Tag[];
+  unreadCount?: bigint;
 }
 
 export interface Item {
@@ -34,6 +35,7 @@ export interface Item {
   author: string;
   feedId: string;
   isRead: boolean;
+  createdAt: string;
   tags?: Tag[];
 }
 
@@ -95,6 +97,7 @@ export const items = createCollection(
         author: item.author,
         feedId: item.feedId,
         isRead: item.isRead,
+        createdAt: item.createdAt,
       }));
     },
     getKey: (item: Item) => item.id,

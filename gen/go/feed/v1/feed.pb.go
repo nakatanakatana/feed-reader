@@ -38,6 +38,7 @@ type Feed struct {
 	CreatedAt     string                 `protobuf:"bytes,12,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	UpdatedAt     string                 `protobuf:"bytes,13,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 	Tags          []*v1.Tag              `protobuf:"bytes,14,rep,name=tags,proto3" json:"tags,omitempty"`
+	UnreadCount   int64                  `protobuf:"varint,15,opt,name=unread_count,json=unreadCount,proto3" json:"unread_count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -168,6 +169,13 @@ func (x *Feed) GetTags() []*v1.Tag {
 		return x.Tags
 	}
 	return nil
+}
+
+func (x *Feed) GetUnreadCount() int64 {
+	if x != nil {
+		return x.UnreadCount
+	}
+	return 0
 }
 
 type GetFeedRequest struct {
@@ -1142,7 +1150,7 @@ var File_feed_v1_feed_proto protoreflect.FileDescriptor
 
 const file_feed_v1_feed_proto_rawDesc = "" +
 	"\n" +
-	"\x12feed/v1/feed.proto\x12\afeed.v1\x1a\x10tag/v1/tag.proto\"\xa3\x04\n" +
+	"\x12feed/v1/feed.proto\x12\afeed.v1\x1a\x10tag/v1/tag.proto\"\xc6\x04\n" +
 	"\x04Feed\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x10\n" +
 	"\x03url\x18\x02 \x01(\tR\x03url\x12\x17\n" +
@@ -1160,7 +1168,8 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"created_at\x18\f \x01(\tR\tcreatedAt\x12\x1d\n" +
 	"\n" +
 	"updated_at\x18\r \x01(\tR\tupdatedAt\x12\x1f\n" +
-	"\x04tags\x18\x0e \x03(\v2\v.tag.v1.TagR\x04tagsB\a\n" +
+	"\x04tags\x18\x0e \x03(\v2\v.tag.v1.TagR\x04tags\x12!\n" +
+	"\funread_count\x18\x0f \x01(\x03R\vunreadCountB\a\n" +
 	"\x05_linkB\x0e\n" +
 	"\f_descriptionB\a\n" +
 	"\x05_langB\f\n" +

@@ -59,6 +59,9 @@ type SaveFetchedItemParams struct {
 	PublishedAt *string
 	Author      *string
 	Guid        *string
+	Content     *string
+	ImageUrl    *string
+	Categories  *string
 }
 
 // SaveFetchedItem saves an item, links it to the feed, and initializes read status.
@@ -75,6 +78,9 @@ func (s *Store) SaveFetchedItem(ctx context.Context, params SaveFetchedItemParam
 			PublishedAt: params.PublishedAt,
 			Author:      params.Author,
 			Guid:        params.Guid,
+			Content:     params.Content,
+			ImageUrl:    params.ImageUrl,
+			Categories:  params.Categories,
 		})
 		if err != nil {
 			return fmt.Errorf("failed to create/update item: %w", err)
