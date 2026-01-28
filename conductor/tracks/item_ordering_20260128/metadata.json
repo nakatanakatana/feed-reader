@@ -1,8 +1,0 @@
-{
-  "track_id": "item_ordering_20260128",
-  "type": "improvement",
-  "status": "new",
-  "created_at": "2026-01-28T00:00:00Z",
-  "updated_at": "2026-01-28T00:00:00Z",
-  "description": "Standardize item ordering (ASC by published_at/created_at) and display labels."
-}
