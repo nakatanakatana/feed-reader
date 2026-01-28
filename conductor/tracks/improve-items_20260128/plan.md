@@ -25,7 +25,7 @@ Fix the broken navigation and add standard dismissal interactions to the modal.
     - [ ] Write tests to verify modal closes on ESC key and backdrop click.
     - [ ] Implement event listeners for the Escape key in `ItemDetailModal.tsx`.
     - [ ] Add backdrop click handler to the modal overlay.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Item Detail Modal Fixes and Improvements' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Item Detail Modal Fixes and Improvements' (Protocol in workflow.md) 5a8be57
 
 ## Phase 3: Final Verification and Cleanup
 Ensure everything works together and meets the definition of done.
