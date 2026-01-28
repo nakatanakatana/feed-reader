@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"connectrpc.com/connect"
-	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
+	_ "modernc.org/sqlite"
 
 	tagv1 "github.com/nakatanakatana/feed-reader/gen/go/tag/v1"
 	"github.com/nakatanakatana/feed-reader/store"

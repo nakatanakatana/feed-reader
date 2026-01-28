@@ -7,15 +7,15 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	_ "github.com/mattn/go-sqlite3"
 	"github.com/nakatanakatana/feed-reader/sql"
 	"github.com/nakatanakatana/feed-reader/store"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	_ "modernc.org/sqlite"
 )
 
 func setupStore(t *testing.T) *store.Store {
-	db, err := sql.Open("sqlite3", ":memory:")
+	db, err := sql.Open("sqlite", ":memory:")
 	require.NoError(t, err)
 
 	_, err = db.ExecContext(context.Background(), schema.Schema)
@@ -104,7 +104,7 @@ func TestStore_SaveFetchedItem(t *testing.T) {
 	})
 
 	t.Run("Error on Closed DB", func(t *testing.T) {
-		db, err := sql.Open("sqlite3", ":memory:")
+		db, err := sql.Open("sqlite", ":memory:")
 		require.NoError(t, err)
 		storeClosed := store.NewStore(db)
 		_ = db.Close()

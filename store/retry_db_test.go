@@ -6,10 +6,10 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/mattn/go-sqlite3"
 	"github.com/nakatanakatana/feed-reader/store"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	sqlite3 "modernc.org/sqlite/lib"
 )
 
 type mockDBTX struct {
@@ -40,7 +40,7 @@ func TestRetryingDB_ExecContext(t *testing.T) {
 	t.Run("retry on busy error", func(t *testing.T) {
 		m := new(mockDBTX)
 		rdb := store.NewRetryingDB(m)
-		busyErr := sqlite3.Error{Code: sqlite3.ErrBusy}
+		busyErr := mockSqliteError{code: sqlite3.SQLITE_BUSY}
 		mockResult := new(mockResult)
 
 		m.On("ExecContext", mock.Anything, "query", mock.Anything).Return(mockResult, busyErr).Once()
@@ -68,7 +68,7 @@ func TestRetryingDB_ExecContext(t *testing.T) {
 func TestRetryingDB_PrepareContext(t *testing.T) {
 	m := new(mockDBTX)
 	rdb := store.NewRetryingDB(m)
-	busyErr := sqlite3.Error{Code: sqlite3.ErrBusy}
+	busyErr := mockSqliteError{code: sqlite3.SQLITE_BUSY}
 	stmt := &sql.Stmt{}
 
 	m.On("PrepareContext", mock.Anything, "query").Return(stmt, busyErr).Once()

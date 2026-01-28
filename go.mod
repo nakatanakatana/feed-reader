@@ -7,12 +7,12 @@ require (
 	github.com/caarlos0/env/v11 v11.3.1
 	github.com/google/uuid v1.6.0
 	github.com/hashicorp/go-retryablehttp v0.7.8
-	github.com/mattn/go-sqlite3 v1.14.33
 	github.com/mmcdole/gofeed v1.3.0
 	github.com/sqldef/sqldef/v3 v3.9.4
 	github.com/stretchr/testify v1.11.1
 	golang.org/x/net v0.49.0
 	google.golang.org/protobuf v1.36.11
+	modernc.org/sqlite v1.41.0
 	pgregory.net/rapid v1.2.0
 )
 
@@ -41,5 +41,4 @@ require (
 	modernc.org/libc v1.67.1 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
-	modernc.org/sqlite v1.41.0 // indirect
 )
