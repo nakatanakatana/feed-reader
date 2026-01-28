@@ -1,6 +1,6 @@
 # Implementation Plan: Item List Date Filter Fix and Enhancement
 
-## Phase 1: Fix BigInt Serialization Error
+## Phase 1: Fix BigInt Serialization Error [checkpoint: 3ee18c3]
 Focus on identifying and fixing the BigInt serialization issue when applying date filters.
 
 - [x] Task: Reproduce the BigInt serialization error with a Vitest unit test in `frontend/src/lib/item-query.test.ts` or similar. [a3bb21a]
