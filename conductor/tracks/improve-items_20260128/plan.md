@@ -17,12 +17,12 @@
 - [x] Task: Conductor - User Manual Verification 'Frontend List & Unread Counts' (Protocol in workflow.md)
 
 ## Phase 3: Frontend Detail Modal & Navigation
-- [ ] Task: Modal UI Updates
-    - [ ] Update `frontend/src/components/ItemDetailModal.tsx` to make the title a link to `item.url`.
-    - [ ] Remove the "Open Original Article" button.
-    - [ ] Display `content` (as HTML), `image_url`, and `categories` if available.
-- [ ] Task: Seamless Navigation Logic
-    - [ ] Update `frontend/src/components/ItemDetailModal.tsx` and `frontend/src/routes/_items.items.$itemId.tsx` (or relevant route) to handle "Next" logic.
-    - [ ] Implement logic: When "Next" is clicked and no items are left in the current list, trigger a fetch for the next page of unread items.
-    - [ ] Ensure that marking as read in the modal updates the background list state (React Query invalidation or cache update).
-- [ ] Task: Conductor - User Manual Verification 'Frontend Detail Modal & Navigation' (Protocol in workflow.md)
+- [x] Task: Modal UI Updates e1e45fc
+    - [x] Update `frontend/src/components/ItemDetailModal.tsx` to make the title a link to `item.url`.
+    - [x] Remove the "Open Original Article" button.
+    - [x] Display `content` (as HTML), `image_url`, and `categories` if available.
+- [x] Task: Seamless Navigation Logic e1e45fc
+    - [x] Update `frontend/src/components/ItemDetailModal.tsx` and `frontend/src/routes/_items.items.$itemId.tsx` (or relevant route) to handle "Next" logic.
+    - [x] Implement logic: When "Next" is clicked and no items are left in the current list, trigger a fetch for the next page of unread items.
+    - [x] Ensure that marking as read in the modal updates the background list state (React Query invalidation or cache update).
+- [~] Task: Conductor - User Manual Verification 'Frontend Detail Modal & Navigation' (Protocol in workflow.md)
