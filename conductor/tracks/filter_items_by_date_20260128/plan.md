@@ -12,7 +12,7 @@ Adding a date-based "since" filter to the item list, falling back to `created_at
     - [ ] Update `sql/query.sql` to include `AND (COALESCE(published_at, created_at) >= ?1 OR ?1 IS NULL)` logic in `ListItems` and `ListItemsAsc`.
     - [ ] Run `sqlc generate` to update `store/query.sql.go`.
     - [ ] Implement the storage logic to pass the tests.
-- [ ] Task: Update Backend Handler (TDD)
+- [x] Task: Update Backend Handler (TDD) fe51b6d
     - [ ] Write a failing test in `cmd/feed-reader/item_handler_test.go`.
     - [ ] Update `cmd/feed-reader/item_handler.go` to pass the `published_since` from the request to the storage layer.
     - [ ] Verify all backend tests pass.
