@@ -19,9 +19,12 @@ const serializeForQueryKey = (obj: Record<string, unknown>) => {
       value &&
       typeof value === "object" &&
       "seconds" in value &&
-      typeof (value as any).seconds === "bigint"
+      typeof (value as { seconds: unknown }).seconds === "bigint"
     ) {
-      result[key] = { ...value, seconds: (value as any).seconds.toString() };
+      result[key] = {
+        ...value,
+        seconds: (value as { seconds: bigint }).seconds.toString(),
+      };
     } else {
       result[key] = value;
     }
