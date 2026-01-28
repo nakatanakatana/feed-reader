@@ -8,13 +8,13 @@
 - [x] Task: Feed Handler Update (Unread Counts) 48feaac
 - [x] Task: Conductor - User Manual Verification 'Backend Data & API Enhancements' (Protocol in workflow.md) 3a77154
 
-## Phase 2: Frontend List & Unread Counts
+## Phase 2: Frontend List & Unread Counts [checkpoint: 37222ba]
 - [x] Task: Display Unread Counts d2ea06c
     - [x] Update `frontend/src/components/FeedList.tsx` to display the `unread_count` for each feed.
     - [x] Implement a "Total Unread" counter in the sidebar/header.
 - [x] Task: Default Sort & Filter d2ea06c
     - [x] Update `frontend/src/lib/item-query.ts` or `frontend/src/components/ItemList.tsx` to set default `is_read` to `false` and `sort_order` to `ASC` (Oldest First).
-- [~] Task: Conductor - User Manual Verification 'Frontend List & Unread Counts' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Frontend List & Unread Counts' (Protocol in workflow.md)
 
 ## Phase 3: Frontend Detail Modal & Navigation
 - [ ] Task: Modal UI Updates
