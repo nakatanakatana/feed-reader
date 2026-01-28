@@ -1,5 +1,5 @@
 import { useNavigate } from "@tanstack/solid-router";
-import { createSignal, For, Show } from "solid-js";
+import { createEffect, createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { ListItemsRequest_SortOrder } from "../gen/item/v1/item_pb";
@@ -12,6 +12,7 @@ import { getPublishedSince, type DateFilterValue } from "../lib/item-utils";
 interface ItemListProps {
   feedId?: string;
   tagId?: string;
+  dateFilter?: DateFilterValue;
 }
 
 export function ItemList(props: ItemListProps) {
@@ -23,7 +24,25 @@ export function ItemList(props: ItemListProps) {
 
   const tagsQuery = useTags();
   const [showRead, setShowRead] = createSignal(false);
-  const [dateFilter, setDateFilter] = createSignal<DateFilterValue>("all");
+  const [dateFilter, setDateFilter] = createSignal<DateFilterValue>(
+    props.dateFilter ?? "all",
+  );
+
+  createEffect(() => {
+    if (props.dateFilter) {
+      setDateFilter(props.dateFilter);
+    }
+  });
+
+  const handleDateFilterSelect = (value: DateFilterValue) => {
+    setDateFilter(value);
+    navigate({
+      search: (prev) => ({
+        ...prev,
+        publishedSince: value === "all" ? undefined : value,
+      }),
+    });
+  };
 
   const itemsQuery = useItems(() => ({
     feedId: props.feedId,
@@ -157,7 +176,10 @@ export function ItemList(props: ItemListProps) {
           <div
             class={flex({ gap: "2", alignItems: "center", marginRight: "4" })}
           >
-            <DateFilterSelector value={dateFilter()} onSelect={setDateFilter} />
+            <DateFilterSelector
+              value={dateFilter()}
+              onSelect={handleDateFilterSelect}
+            />
           </div>
           <div
             class={flex({ gap: "2", alignItems: "center", marginRight: "4" })}

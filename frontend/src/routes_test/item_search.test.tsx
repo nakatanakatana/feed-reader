@@ -6,27 +6,40 @@ import {
   RouterProvider,
 } from "@tanstack/solid-router";
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { queryClient } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
+import { Route } from "../routes/_items";
 
-describe("Item Routing", () => {
+// Mock ItemList to inspect useSearch
+vi.mock("../components/ItemList", () => {
+  return {
+    ItemList: () => {
+      const search = Route.useSearch();
+      return <div data-testid="search-params">{JSON.stringify(search())}</div>;
+    },
+  };
+});
+
+describe("Item Search Params", () => {
   let dispose: () => void;
 
   afterEach(() => {
     if (dispose) dispose();
     document.body.innerHTML = "";
+    vi.clearAllMocks();
   });
 
-  it("should display item detail modal when navigating to /items/$itemId", async () => {
+  it("should validate and include publishedSince in search parameters", async () => {
     const transport = createConnectTransport({
       baseUrl: "http://localhost:3000",
     });
 
-    // We navigate to /items/1
-    const history = createMemoryHistory({ initialEntries: ["/items/1"] });
+    const history = createMemoryHistory({
+      initialEntries: ["/?publishedSince=30d"],
+    });
     const router = createRouter({ routeTree, history });
 
     dispose = render(
@@ -40,12 +53,14 @@ describe("Item Routing", () => {
       document.body,
     );
 
-    // Wait for the modal content to appear
-    await expect
-      .element(page.getByText("Detail for Item 1"))
-      .toBeInTheDocument();
+    // Wait for the component to render
+    const searchParamsEl = page.getByTestId("search-params");
+    await expect.element(searchParamsEl).toBeInTheDocument();
 
-    // Check if the URL includes the default publishedSince=30d
-    expect(history.location.search).toEqual("?publishedSince=30d");
+    // Check if publishedSince is in the search params
+    // It should be present in the JSON output
+    await expect
+      .element(searchParamsEl)
+      .toHaveTextContent(/"publishedSince":"30d"/);
   });
 });

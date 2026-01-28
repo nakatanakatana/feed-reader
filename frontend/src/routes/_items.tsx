@@ -1,14 +1,19 @@
 import { createFileRoute, Outlet } from "@tanstack/solid-router";
 import { ItemList } from "../components/ItemList";
+import type { DateFilterValue } from "../lib/item-utils";
 
 interface ItemsSearch {
   tagId?: string;
+  publishedSince?: DateFilterValue;
 }
 
 export const Route = createFileRoute("/_items")({
   validateSearch: (search: Record<string, unknown>): ItemsSearch => {
+    const publishedSince = search.publishedSince as DateFilterValue | undefined;
+    const tagId = search.tagId as string | undefined;
     return {
-      tagId: search.tagId as string | undefined,
+      tagId,
+      publishedSince: publishedSince ?? (tagId ? undefined : "30d"),
     };
   },
   component: ItemsLayout,
@@ -20,7 +25,7 @@ function ItemsLayout() {
   return (
     <div class="p-2">
       <h2 class="text-xl font-bold mb-4">All Items</h2>
-      <ItemList tagId={search()?.tagId} />
+      <ItemList tagId={search()?.tagId} dateFilter={search()?.publishedSince} />
       <Outlet />
     </div>
   );
