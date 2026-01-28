@@ -1,12 +1,15 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
-import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
+import {
+  createMemoryHistory,
+  createRouter,
+  RouterProvider,
+} from "@tanstack/solid-router";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
 import { createConnectTransport } from "@connectrpc/connect-web";
-import { ListItemsRequest_SortOrder } from "../gen/item/v1/item_pb";
 
 // Mock hooks
 vi.mock("../lib/item-query", () => ({
@@ -38,6 +41,7 @@ describe("ItemList Defaults", () => {
     vi.mocked(useItems).mockReturnValue({
       data: { pages: [] },
       isLoading: false,
+      // biome-ignore lint/suspicious/noExplicitAny: Mocking query result
     } as any);
 
     const history = createMemoryHistory({ initialEntries: ["/"] });
@@ -59,9 +63,11 @@ describe("ItemList Defaults", () => {
 
     // Check if useItems was called with the correct defaults
     // Note: ASC is 2 in ListItemsRequest_SortOrder
-    expect(useItems).toHaveBeenCalledWith(expect.objectContaining({
-      isRead: false,
-      sortOrder: 2 
-    }));
+    expect(useItems).toHaveBeenCalledWith(
+      expect.objectContaining({
+        isRead: false,
+        sortOrder: 2,
+      }),
+    );
   });
 });

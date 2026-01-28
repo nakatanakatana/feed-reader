@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/solid-router";
-import { createEffect, createSignal, on } from "solid-js";
+import { createEffect, createSignal } from "solid-js";
 import { css } from "../../styled-system/css";
 import { useItems, useUpdateItemStatus } from "../lib/item-query";
 import { ItemDetailModal } from "./ItemDetailModal";
@@ -35,8 +35,10 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
         const linkProps = getLinkProps(targetItem.id);
         navigate({
           to: linkProps.to,
-          params: linkProps.params,
-          search: linkProps.search,
+          // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
+          params: linkProps.params as any,
+          // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
+          search: linkProps.search as any,
         });
       }
     }
@@ -57,8 +59,10 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
       const linkProps = getLinkProps(next.id);
       navigate({
         to: linkProps.to,
-        params: linkProps.params,
-        search: linkProps.search,
+        // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
+        params: linkProps.params as any,
+        // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
+        search: linkProps.search as any,
       });
     } else if (itemsQuery.hasNextPage) {
       setIsWaitingForNextPage(true);
@@ -93,21 +97,16 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
   const getLinkProps = (targetItemId: string | undefined) => {
     const to = props.feedId ? "/feeds/$feedId/items/$itemId" : "/items/$itemId";
     // biome-ignore lint/style/noNonNullAssertion: router param fix
-    // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
-    const params = { feedId: props.feedId!, itemId: targetItemId } as any;
-    // biome-ignore lint/suspicious/noExplicitAny: router search fix
-    const search = ((prev: any) => ({ ...prev })) as any;
+    const params = { feedId: props.feedId!, itemId: targetItemId };
+    const search = (prev: Record<string, unknown>) => ({ ...prev });
     return { to, params, search };
   };
 
   const getCloseLinkProps = () => {
-    // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
-    const to = (props.feedId ? "/feeds/$feedId" : "/") as any;
+    const to = props.feedId ? "/feeds/$feedId" : "/";
     // biome-ignore lint/style/noNonNullAssertion: router param fix
-    // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
-    const params = { feedId: props.feedId! } as any;
-    // biome-ignore lint/suspicious/noExplicitAny: router search fix
-    const search = ((prev: any) => ({ ...prev })) as any;
+    const params = { feedId: props.feedId! };
+    const search = (prev: Record<string, unknown>) => ({ ...prev });
     return { to, params, search };
   };
 
@@ -195,7 +194,8 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
             </button>
 
             <Link
-              {...getCloseLinkProps()}
+              // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
+              {...(getCloseLinkProps() as any)}
               class={css({
                 fontSize: "sm",
                 color: "gray.500",

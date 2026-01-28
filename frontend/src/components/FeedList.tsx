@@ -22,13 +22,12 @@ export function FeedList() {
   });
 
   const totalUnreadCount = () => {
-    const list = (feedList as any[]) ?? [];
+    const list = (feedList as Feed[]) ?? [];
     return list.reduce((acc, feed) => acc + Number(feed.unreadCount || 0), 0);
   };
 
   const filteredFeeds = () => {
-    // biome-ignore lint/suspicious/noExplicitAny: TanStack DB query results are complex to type precisely here
-    const list = (feedList as any[]) ?? [];
+    const list = (feedList as Feed[]) ?? [];
     const tagId = selectedTagId();
     if (tagId === undefined) return list;
     if (tagId === null)

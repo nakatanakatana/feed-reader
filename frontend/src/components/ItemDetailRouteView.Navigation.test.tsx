@@ -5,6 +5,7 @@ import {
   createRouter,
   RouterProvider,
 } from "@tanstack/solid-router";
+import { createSignal } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
@@ -24,7 +25,8 @@ const navigate = vi.fn();
 
 // Mock useNavigate
 vi.mock("@tanstack/solid-router", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@tanstack/solid-router")>();
+  const actual =
+    await importOriginal<typeof import("@tanstack/solid-router")>();
   return {
     ...actual,
     useNavigate: () => navigate,
@@ -44,7 +46,7 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
 
   it("fetches next page when Next is clicked at the end of the list", async () => {
     const fetchNextPage = vi.fn();
-    
+
     // Setup itemsQuery mock
     vi.mocked(useItems).mockReturnValue({
       data: {
@@ -54,16 +56,19 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
       hasNextPage: true,
       fetchNextPage,
       isFetchingNextPage: false,
+      // biome-ignore lint/suspicious/noExplicitAny: Mocking query result
     } as any);
 
     vi.mocked(useUpdateItemStatus).mockReturnValue({
       mutate: vi.fn(),
       isPending: false,
+      // biome-ignore lint/suspicious/noExplicitAny: Mocking mutation result
     } as any);
 
     vi.mocked(useItem).mockReturnValue({
       data: { id: "item-1", title: "Item 1" },
       isLoading: false,
+      // biome-ignore lint/suspicious/noExplicitAny: Mocking query result
     } as any);
 
     const history = createMemoryHistory({ initialEntries: ["/items/item-1"] });
@@ -80,9 +85,11 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
       document.body,
     );
 
-    await expect.element(page.getByRole("heading", { name: "Item 1" })).toBeInTheDocument();
+    await expect
+      .element(page.getByRole("heading", { name: "Item 1" }))
+      .toBeInTheDocument();
 
-    // The Next button should be enabled because hasNextPage is true, 
+    // The Next button should be enabled because hasNextPage is true,
     // even if there is no next item in the current pages.
     const nextButton = page.getByText("Next →");
     await expect.element(nextButton).toBeInTheDocument();
@@ -95,35 +102,43 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
   });
 
   it("automatically navigates to the first item of the new page after fetching", async () => {
-    const fetchNextPage = vi.fn();
+    const [data, setData] = createSignal({
+      pages: [{ items: [{ id: "item-1", title: "Item 1" }] }],
+    });
 
     // Setup itemsQuery mock
     // Initial state: 1 item, hasNextPage: true
     const itemsQueryMock = {
-      data: {
-        pages: [{ items: [{ id: "item-1", title: "Item 1" }] }],
+      get data() {
+        return data();
       },
       isLoading: false,
       hasNextPage: true,
       fetchNextPage: vi.fn().mockImplementation(() => {
         // Update data to include second page
-        itemsQueryMock.data.pages.push({
-          items: [{ id: "item-2", title: "Item 2" }],
+        setData({
+          pages: [
+            ...data().pages,
+            { items: [{ id: "item-2", title: "Item 2" }] },
+          ],
         });
       }),
       isFetchingNextPage: false,
     };
 
+    // biome-ignore lint/suspicious/noExplicitAny: Mocking query result
     vi.mocked(useItems).mockReturnValue(itemsQueryMock as any);
 
     vi.mocked(useUpdateItemStatus).mockReturnValue({
       mutate: vi.fn(),
       isPending: false,
+      // biome-ignore lint/suspicious/noExplicitAny: Mocking mutation result
     } as any);
 
     vi.mocked(useItem).mockReturnValue({
       data: { id: "item-1", title: "Item 1" },
       isLoading: false,
+      // biome-ignore lint/suspicious/noExplicitAny: Mocking query result
     } as any);
 
     const history = createMemoryHistory({ initialEntries: ["/items/item-1"] });
@@ -140,7 +155,9 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
       document.body,
     );
 
-    await expect.element(page.getByRole("heading", { name: "Item 1" })).toBeInTheDocument();
+    await expect
+      .element(page.getByRole("heading", { name: "Item 1" }))
+      .toBeInTheDocument();
 
     const nextButton = page.getByText("Next →");
     await nextButton.click();
@@ -152,8 +169,10 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
     expect(itemsQueryMock.fetchNextPage).toHaveBeenCalled();
 
     // After fetching, it should navigate to item-2
-    expect(navigate).toHaveBeenCalledWith(expect.objectContaining({
-      params: expect.objectContaining({ itemId: "item-2" })
-    }));
+    expect(navigate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        params: expect.objectContaining({ itemId: "item-2" }),
+      }),
+    );
   });
 });
