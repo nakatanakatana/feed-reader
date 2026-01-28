@@ -11,11 +11,11 @@ Modify the database queries to use the standardized sorting logic (`COALESCE(pub
     - [x] Create/Update tests in `store/item_store_test.go` to ensure items are returned in the correct ascending order with fallback logic. fa6431a
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Refactoring' (Protocol in workflow.md) e422f70
 
-## Phase 2: Frontend Implementation (Display Logic)
+## Phase 2: Frontend Implementation (Display Logic) [checkpoint: 0cdd896]
 Update the UI components to display the correct date and label based on the availability of `published_at`.
 
 - [x] Task: Create a utility function for date display logic in `frontend/src/lib/item-utils.ts`. e59b78a
 - [x] Task: Update `ItemRow` component to use the new display logic. e59b78a
 - [x] Task: Update `ItemDetailModal` component to reflect the same date display logic. e59b78a
 - [x] Task: Update frontend tests to verify label changes. e59b78a
-- [~] Task: Conductor - User Manual Verification 'Phase 2: Frontend Implementation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Frontend Implementation' (Protocol in workflow.md) 0cdd896
