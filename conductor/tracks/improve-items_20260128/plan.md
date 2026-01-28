@@ -16,7 +16,7 @@
     - [x] Update `frontend/src/lib/item-query.ts` or `frontend/src/components/ItemList.tsx` to set default `is_read` to `false` and `sort_order` to `ASC` (Oldest First).
 - [x] Task: Conductor - User Manual Verification 'Frontend List & Unread Counts' (Protocol in workflow.md)
 
-## Phase 3: Frontend Detail Modal & Navigation
+## Phase 3: Frontend Detail Modal & Navigation [checkpoint: 87ef0b3]
 - [x] Task: Modal UI Updates e1e45fc
     - [x] Update `frontend/src/components/ItemDetailModal.tsx` to make the title a link to `item.url`.
     - [x] Remove the "Open Original Article" button.
@@ -25,4 +25,4 @@
     - [x] Update `frontend/src/components/ItemDetailModal.tsx` and `frontend/src/routes/_items.items.$itemId.tsx` (or relevant route) to handle "Next" logic.
     - [x] Implement logic: When "Next" is clicked and no items are left in the current list, trigger a fetch for the next page of unread items.
     - [x] Ensure that marking as read in the modal updates the background list state (React Query invalidation or cache update).
-- [~] Task: Conductor - User Manual Verification 'Frontend Detail Modal & Navigation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Frontend Detail Modal & Navigation' (Protocol in workflow.md)
