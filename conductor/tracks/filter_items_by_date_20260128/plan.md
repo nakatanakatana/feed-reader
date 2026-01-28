@@ -4,7 +4,7 @@ Adding a date-based "since" filter to the item list, falling back to `created_at
 
 ## Phase 1: Backend Implementation
 
-- [ ] Task: Update Protobuf definition
+- [x] Task: Update Protobuf definition db776c3
     - [ ] Add `google.protobuf.Timestamp published_since` to `ListItemsRequest` in `proto/item/v1/item.proto`.
     - [ ] Run `make generate` (or equivalent) to update Go and TypeScript generated code.
 - [ ] Task: Update SQL Queries (TDD)
