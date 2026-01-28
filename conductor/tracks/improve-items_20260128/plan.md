@@ -2,7 +2,7 @@
 
 This plan covers the enhancement of the item list UI, fixing navigation in the detail modal, and adding standard modal interaction behaviors.
 
-## Phase 1: Item List UI Enhancements & Filtering
+## Phase 1: Item List UI Enhancements & Filtering [checkpoint: 7f73091]
 Improve the information density of the item list and implement the ability to toggle read items.
 
 - [x] Task: Update `ItemRow` to display `created_at` and `description` 56ad0d4
