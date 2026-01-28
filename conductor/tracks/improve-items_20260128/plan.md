@@ -17,7 +17,7 @@ Improve the information density of the item list and implement the ability to to
 ## Phase 2: Item Detail Modal Fixes and Improvements
 Fix the broken navigation and add standard dismissal interactions to the modal.
 
-- [ ] Task: Fix Next/Prev navigation in `ItemDetailModal`
+- [x] Task: Fix Next/Prev navigation in `ItemDetailModal` 16af0f1
     - [ ] Write tests to reproduce the navigation failure in `ItemDetailModal`.
     - [ ] Debug and fix the navigation logic within `ItemDetailModal.tsx` or its parent context.
     - [ ] Verify that Next/Prev buttons correctly cycle through the current filtered list.
