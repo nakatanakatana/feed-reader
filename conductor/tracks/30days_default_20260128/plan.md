@@ -17,9 +17,9 @@ Configure the main item list to use "30 Days" as the default when no parameter i
 - [x] Task: Ensure that individual feed routes (`frontend/src/routes/feeds.$feedId.tsx`) and tag filters continue to default to `"all"` unless explicitly changed. [18214aa]
 - [x] Task: Conductor - User Manual Verification 'Default Value Configuration' (Protocol in workflow.md) [2e303c3]
 
-## Phase 3: Verification and Cleanup
+## Phase 3: Verification and Cleanup [checkpoint: 51beaff]
 Verify the behavior across different views and ensure TDD requirements are met.
 
 - [x] Task: Add/Update tests in `frontend/src/components/ItemList.test.tsx` and `frontend/src/routes_test/item_routing.test.tsx` to verify default behavior and URL synchronization. [39744b5]
 - [x] Task: Verify that browser back/forward buttons correctly update the UI filter state. [fda5d94]
-- [x] Task: Conductor - User Manual Verification 'Verification and Cleanup' (Protocol in workflow.md) [27b16b2]
+- [x] Task: Conductor - User Manual Verification 'Verification and Cleanup' (Protocol in workflow.md) [51beaff]
