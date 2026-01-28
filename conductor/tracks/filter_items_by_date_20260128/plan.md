@@ -18,17 +18,17 @@ Adding a date-based "since" filter to the item list, falling back to `created_at
     - [ ] Verify all backend tests pass.
 - [ ] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md)
 
-## Phase 2: Frontend Implementation
+## Phase 2: Frontend Implementation [checkpoint: 5ed7245]
 
 - [x] Task: Update API Mocks c5840a4
-    - [ ] Update `frontend/src/mocks/handlers.ts` to handle the `publishedSince` parameter in the `listItems` mock.
+    - [x] Update `frontend/src/mocks/handlers.ts` to handle the `publishedSince` parameter in the `listItems` mock.
 - [x] Task: Update Data Fetching Logic (TDD) a4b2539
-    - [ ] Write failing tests in `frontend/src/lib/item-query.test.ts`.
-    - [ ] Update `frontend/src/lib/item-query.ts` to include `publishedSince` in the request.
+    - [x] Write failing tests in `frontend/src/lib/item-query.test.ts`.
+    - [x] Update `frontend/src/lib/item-query.ts` to include `publishedSince` in the request.
 - [x] Task: Create Date Filter UI Component (TDD) a7bc3eb
     - [x] Write failing tests for a new `DateFilterSelector` component (or similar).
     - [x] Implement the component with presets: All Time, Past 24h, 7d, 30d.
 - [x] Task: Integrate Date Filter into ItemList (TDD) 8fa776e
     - [x] Write failing integration tests in `frontend/src/components/ItemList.test.tsx`.
     - [x] Update `ItemList.tsx` to include the date filter in the view and pass it to the query hook.
-- [ ] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md)
