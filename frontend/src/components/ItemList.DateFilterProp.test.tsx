@@ -61,7 +61,7 @@ describe("ItemList Date Filter Prop", () => {
       () => (
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>
-             <ItemList dateFilter="30d" />
+            <ItemList dateFilter="30d" />
           </QueryClientProvider>
         </TransportProvider>
       ),
@@ -76,7 +76,7 @@ describe("ItemList Date Filter Prop", () => {
     const params = latestCallGetter();
 
     expect(params.publishedSince).toBeDefined();
-    
+
     // Verify it's 30 days
     const since = params.publishedSince;
     if (!since) throw new Error("publishedSince should be defined");
@@ -84,7 +84,7 @@ describe("ItemList Date Filter Prop", () => {
     const sinceDate = new Date(Number(since.seconds) * 1000);
     const now = new Date();
     const diffHours = (now.getTime() - sinceDate.getTime()) / (1000 * 60 * 60);
-    
+
     // 30 days = 720 hours
     expect(diffHours).toBeGreaterThan(719.9);
     expect(diffHours).toBeLessThan(720.1);

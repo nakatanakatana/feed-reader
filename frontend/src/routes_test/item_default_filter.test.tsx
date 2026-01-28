@@ -18,11 +18,7 @@ vi.mock("../components/ItemList", () => {
   return {
     ItemList: () => {
       const search = Route.useSearch();
-      return (
-        <div data-testid="search-params">
-          {JSON.stringify(search())}
-        </div>
-      );
+      return <div data-testid="search-params">{JSON.stringify(search())}</div>;
     },
   };
 });
@@ -41,8 +37,8 @@ describe("Item Default Filter", () => {
       baseUrl: "http://localhost:3000",
     });
 
-    // Navigate to root without params. 
-    // This assumes _items layout is active at /. 
+    // Navigate to root without params.
+    // This assumes _items layout is active at /.
     // If not, we might need to check how routes are defined, but assuming item_search.test.tsx worked with /, this should too.
     const history = createMemoryHistory({
       initialEntries: ["/"],
@@ -65,7 +61,9 @@ describe("Item Default Filter", () => {
 
     // Expectation: publishedSince should be "30d" by default
     // Currently it will be missing or undefined
-    await expect.element(searchParamsEl).toHaveTextContent(/"publishedSince":"30d"/);
+    await expect
+      .element(searchParamsEl)
+      .toHaveTextContent(/"publishedSince":"30d"/);
   });
 
   it("should default publishedSince to 'all' (undefined) when tagId is present", async () => {
@@ -94,7 +92,9 @@ describe("Item Default Filter", () => {
 
     // Expectation: publishedSince should be undefined (missing from JSON or explicitly undefined)
     // validation logic currently forces "30d" so this should FAIL
-    await expect.element(searchParamsEl).not.toHaveTextContent(/"publishedSince":"30d"/);
+    await expect
+      .element(searchParamsEl)
+      .not.toHaveTextContent(/"publishedSince":"30d"/);
   });
 
   it("should sync UI filter state with browser back/forward navigation", async () => {
@@ -122,20 +122,28 @@ describe("Item Default Filter", () => {
     await expect.element(searchParamsEl).toBeInTheDocument();
 
     // 1. Initial state: 30d
-    await expect.element(searchParamsEl).toHaveTextContent(/"publishedSince":"30d"/);
+    await expect
+      .element(searchParamsEl)
+      .toHaveTextContent(/"publishedSince":"30d"/);
 
     // 2. Navigate to 7d
     await router.navigate({
       search: (prev) => ({ ...prev, publishedSince: "7d" }),
     });
-    await expect.element(searchParamsEl).toHaveTextContent(/"publishedSince":"7d"/);
+    await expect
+      .element(searchParamsEl)
+      .toHaveTextContent(/"publishedSince":"7d"/);
 
     // 3. Go back
     history.back();
-    await expect.element(searchParamsEl).toHaveTextContent(/"publishedSince":"30d"/);
+    await expect
+      .element(searchParamsEl)
+      .toHaveTextContent(/"publishedSince":"30d"/);
 
     // 4. Go forward
     history.forward();
-    await expect.element(searchParamsEl).toHaveTextContent(/"publishedSince":"7d"/);
+    await expect
+      .element(searchParamsEl)
+      .toHaveTextContent(/"publishedSince":"7d"/);
   });
 });

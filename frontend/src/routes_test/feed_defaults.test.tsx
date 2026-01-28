@@ -32,7 +32,9 @@ vi.mock("@tanstack/solid-db", () => {
       data: [{ id: "123", title: "Test Feed" }],
     }),
     eq: vi.fn(),
-    createCollection: vi.fn().mockReturnValue({ isReady: vi.fn().mockReturnValue(true) }),
+    createCollection: vi
+      .fn()
+      .mockReturnValue({ isReady: vi.fn().mockReturnValue(true) }),
   };
 });
 
@@ -69,7 +71,9 @@ describe("Feed Route Defaults", () => {
     );
 
     // Wait for feed title to appear (mocked as Test Feed)
-    await expect.element(page.getByRole("heading", { name: "Test Feed" })).toBeInTheDocument();
+    await expect
+      .element(page.getByRole("heading", { name: "Test Feed" }))
+      .toBeInTheDocument();
 
     expect(useItems).toHaveBeenCalled();
     const paramsGetter = vi.mocked(useItems).mock.calls[0][0] as () => Omit<

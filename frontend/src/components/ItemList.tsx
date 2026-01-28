@@ -177,9 +177,9 @@ export function ItemList(props: ItemListProps) {
             class={flex({ gap: "2", alignItems: "center", marginRight: "4" })}
           >
             <DateFilterSelector
-            value={dateFilter()}
-            onSelect={handleDateFilterSelect}
-          />
+              value={dateFilter()}
+              onSelect={handleDateFilterSelect}
+            />
           </div>
           <div
             class={flex({ gap: "2", alignItems: "center", marginRight: "4" })}

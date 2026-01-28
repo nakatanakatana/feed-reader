@@ -18,11 +18,7 @@ vi.mock("../components/ItemList", () => {
   return {
     ItemList: () => {
       const search = Route.useSearch();
-      return (
-        <div data-testid="search-params">
-          {JSON.stringify(search())}
-        </div>
-      );
+      return <div data-testid="search-params">{JSON.stringify(search())}</div>;
     },
   };
 });
@@ -63,6 +59,8 @@ describe("Item Search Params", () => {
 
     // Check if publishedSince is in the search params
     // It should be present in the JSON output
-    await expect.element(searchParamsEl).toHaveTextContent(/"publishedSince":"30d"/);
+    await expect
+      .element(searchParamsEl)
+      .toHaveTextContent(/"publishedSince":"30d"/);
   });
 });
