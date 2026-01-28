@@ -9,9 +9,11 @@ interface ItemsSearch {
 
 export const Route = createFileRoute("/_items")({
   validateSearch: (search: Record<string, unknown>): ItemsSearch => {
+    const publishedSince = search.publishedSince as DateFilterValue | undefined;
+    const tagId = search.tagId as string | undefined;
     return {
-      tagId: search.tagId as string | undefined,
-      publishedSince: (search.publishedSince as DateFilterValue | undefined) ?? "30d",
+      tagId,
+      publishedSince: publishedSince ?? (tagId ? undefined : "30d"),
     };
   },
   component: ItemsLayout,

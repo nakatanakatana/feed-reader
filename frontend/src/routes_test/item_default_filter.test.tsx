@@ -67,4 +67,33 @@ describe("Item Default Filter", () => {
     // Currently it will be missing or undefined
     await expect.element(searchParamsEl).toHaveTextContent(/"publishedSince":"30d"/);
   });
+
+  it("should default publishedSince to 'all' (undefined) when tagId is present", async () => {
+    const transport = createConnectTransport({
+      baseUrl: "http://localhost:3000",
+    });
+
+    const history = createMemoryHistory({
+      initialEntries: ["/?tagId=tag-123"],
+    });
+    const router = createRouter({ routeTree, history });
+
+    dispose = render(
+      () => (
+        <TransportProvider transport={transport}>
+          <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} />
+          </QueryClientProvider>
+        </TransportProvider>
+      ),
+      document.body,
+    );
+
+    const searchParamsEl = page.getByTestId("search-params");
+    await expect.element(searchParamsEl).toBeInTheDocument();
+
+    // Expectation: publishedSince should be undefined (missing from JSON or explicitly undefined)
+    // validation logic currently forces "30d" so this should FAIL
+    await expect.element(searchParamsEl).not.toHaveTextContent(/"publishedSince":"30d"/);
+  });
 });
