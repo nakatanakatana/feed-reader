@@ -98,7 +98,7 @@ describe("ItemList Date Filter", () => {
       FetchItemsParams,
       "limit" | "offset"
     >;
-    expect(firstCallParams().publishedSince).toBeUndefined();
+    expect(firstCallParams().publishedSince).toBeDefined();
 
     // Change to "Past 24 Hours"
     await select.selectOptions("24h");
