@@ -51,7 +51,7 @@ describe("ItemRow", () => {
 
     expect(page.getByText("Test Article Title")).toBeInTheDocument();
     // Use regex to be more flexible with formatting but check for label
-    expect(page.getByText(/公開日:/)).toBeInTheDocument();
+    expect(page.getByText(/Published:/)).toBeInTheDocument();
     expect(
       page.getByText(
         "This is a test description snippet that should be displayed.",

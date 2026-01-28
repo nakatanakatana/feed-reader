@@ -37,13 +37,11 @@ export const getItemDisplayDate = (
   if (item.publishedAt) {
     return {
       label: "Published",
-      labelJa: "公開日",
       date: item.publishedAt,
     };
   }
   return {
     label: "Received",
-    labelJa: "受信日",
     date: item.createdAt,
   };
 };
