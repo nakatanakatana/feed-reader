@@ -11,7 +11,7 @@ export const Route = createFileRoute("/_items")({
   validateSearch: (search: Record<string, unknown>): ItemsSearch => {
     return {
       tagId: search.tagId as string | undefined,
-      publishedSince: search.publishedSince as DateFilterValue | undefined,
+      publishedSince: (search.publishedSince as DateFilterValue | undefined) ?? "30d",
     };
   },
   component: ItemsLayout,
@@ -23,7 +23,10 @@ function ItemsLayout() {
   return (
     <div class="p-2">
       <h2 class="text-xl font-bold mb-4">All Items</h2>
-      <ItemList tagId={search()?.tagId} />
+      <ItemList
+        tagId={search()?.tagId}
+        dateFilter={search()?.publishedSince}
+      />
       <Outlet />
     </div>
   );
