@@ -26,6 +26,7 @@ type config struct {
 	DBPath        string        `env:"DB_PATH" envDefault:"feed-reader.db"`
 	FetchInterval time.Duration `env:"FETCH_INTERVAL" envDefault:"30m"`
 	MaxWorkers    int           `env:"MAX_WORKERS" envDefault:"10"`
+	SkipMigration bool          `env:"SKIP_MIGRATION" envDefault:"false"`
 }
 
 func main() {
@@ -41,6 +42,12 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Initialize schema
+	if err := schema.Migrate(ctx, cfg.DBPath, schema.Schema, cfg.SkipMigration); err != nil {
+		logger.ErrorContext(ctx, "failed to migrate database", "error", err)
+		os.Exit(1)
+	}
+
 	db, err := sql.Open("sqlite3", cfg.DBPath)
 	if err != nil {
 		logger.ErrorContext(ctx, "failed to open database", "error", err)
@@ -51,12 +58,6 @@ func main() {
 			logger.ErrorContext(ctx, "failed to close database", "error", err)
 		}
 	}()
-
-	// Initialize schema
-	if _, err := db.ExecContext(ctx, schema.Schema); err != nil {
-		logger.ErrorContext(ctx, "failed to create schema", "error", err)
-		os.Exit(1)
-	}
 
 	// 1. Initialize Storage
 	s := store.NewStore(db)
