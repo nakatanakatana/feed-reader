@@ -3,7 +3,6 @@ import { createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { type Feed, feeds, type Tag } from "../lib/db";
-import { useItems } from "../lib/item-query";
 import { useTags } from "../lib/tag-query";
 import { ManageTagsModal } from "./ManageTagsModal";
 
@@ -17,15 +16,6 @@ export function FeedList() {
   const [isManageModalOpen, setIsManageModalOpen] = createSignal(false);
 
   const tagsQuery = useTags();
-  const itemsQuery = useItems({});
-
-  const unreadCount = () => {
-    const pages = itemsQuery.data?.pages || [];
-    return pages.reduce(
-      (acc, page) => acc + page.items.filter((i) => !i.isRead).length,
-      0,
-    );
-  };
 
   const { data: feedList } = useLiveQuery((q) => {
     const query = q.from({ feed: feeds });
@@ -382,10 +372,19 @@ export function FeedList() {
                       ? (() => {
                           const date = new Date(feed.lastFetchedAt);
                           const y = date.getUTCFullYear();
-                          const m = String(date.getUTCMonth() + 1).padStart(2, "0");
+                          const m = String(date.getUTCMonth() + 1).padStart(
+                            2,
+                            "0",
+                          );
                           const d = String(date.getUTCDate()).padStart(2, "0");
-                          const hh = String(date.getUTCHours()).padStart(2, "0");
-                          const mm = String(date.getUTCMinutes()).padStart(2, "0");
+                          const hh = String(date.getUTCHours()).padStart(
+                            2,
+                            "0",
+                          );
+                          const mm = String(date.getUTCMinutes()).padStart(
+                            2,
+                            "0",
+                          );
                           return `${y}-${m}-${d} ${hh}:${mm}`;
                         })()
                       : "Never"}

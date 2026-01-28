@@ -294,8 +294,12 @@ describe("FeedList", () => {
     );
 
     // Should display formatted date
-    await expect.element(page.getByText("Last fetched: 2026-01-28 15:30")).toBeInTheDocument();
+    await expect
+      .element(page.getByText("Last fetched: 2026-01-28 15:30"))
+      .toBeInTheDocument();
     // Should display "Never" for null date
-    await expect.element(page.getByText("Last fetched: Never")).toBeInTheDocument();
+    await expect
+      .element(page.getByText("Last fetched: Never"))
+      .toBeInTheDocument();
   });
 });
