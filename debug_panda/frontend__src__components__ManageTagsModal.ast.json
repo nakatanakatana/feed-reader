@@ -1,0 +1,401 @@
+{
+  "css": [
+    {
+      "type": "css",
+      "name": "css",
+      "box": {
+        "type": "map",
+        "value": {},
+        "node": "CallExpression",
+        "line": 65,
+        "column": 16,
+        "endLineNumber": 76,
+        "endColumn": 11
+      },
+      "data": [
+        {
+          "position": "fixed",
+          "top": 0,
+          "left": 0,
+          "width": "full",
+          "height": "full",
+          "bg": "black/50",
+          "display": "flex",
+          "alignItems": "center",
+          "justifyContent": "center",
+          "zIndex": 1000
+        }
+      ]
+    },
+    {
+      "type": "css",
+      "name": "css",
+      "box": {
+        "type": "map",
+        "value": {},
+        "node": "CallExpression",
+        "line": 94,
+        "column": 24,
+        "endLineNumber": 94,
+        "endColumn": 67
+      },
+      "data": [
+        {
+          "fontSize": "xl",
+          "fontWeight": "bold"
+        }
+      ]
+    },
+    {
+      "type": "css",
+      "name": "css",
+      "box": {
+        "type": "map",
+        "value": {},
+        "node": "CallExpression",
+        "line": 97,
+        "column": 23,
+        "endLineNumber": 97,
+        "endColumn": 65
+      },
+      "data": [
+        {
+          "fontSize": "sm",
+          "color": "gray.500"
+        }
+      ]
+    },
+    {
+      "type": "css",
+      "name": "css",
+      "box": {
+        "type": "map",
+        "value": {},
+        "node": "CallExpression",
+        "line": 104,
+        "column": 26,
+        "endLineNumber": 104,
+        "endColumn": 73
+      },
+      "data": [
+        {
+          "fontSize": "md",
+          "fontWeight": "semibold"
+        }
+      ]
+    },
+    {
+      "type": "css",
+      "name": "css",
+      "box": {
+        "type": "map",
+        "value": {},
+        "node": "CallExpression",
+        "line": 108,
+        "column": 24,
+        "endLineNumber": 114,
+        "endColumn": 19
+      },
+      "data": [
+        {
+          "maxHeight": "60",
+          "overflowY": "auto",
+          "border": "1px solid",
+          "borderColor": "gray.200",
+          "rounded": "md"
+        }
+      ]
+    },
+    {
+      "type": "css",
+      "name": "css",
+      "box": {
+        "type": "map",
+        "value": {},
+        "node": "CallExpression",
+        "line": 128,
+        "column": 36,
+        "endLineNumber": 128,
+        "endColumn": 59
+      },
+      "data": [
+        {
+          "fontSize": "sm"
+        }
+      ]
+    },
+    {
+      "type": "css",
+      "name": "css",
+      "box": {
+        "type": "map",
+        "value": {},
+        "node": "CallExpression",
+        "line": 133,
+        "column": 34,
+        "endLineNumber": 151,
+        "endColumn": 29
+      },
+      "data": [
+        {
+          "px": "2",
+          "py": "1",
+          "rounded": "md",
+          "fontSize": "xs",
+          "cursor": "pointer",
+          "border": "1px solid"
+        },
+        {
+          "bg": "green.100",
+          "borderColor": "green.500",
+          "color": "green.700"
+        },
+        {
+          "bg": "gray.50",
+          "borderColor": "gray.300",
+          "color": "gray.600"
+        }
+      ]
+    },
+    {
+      "type": "css",
+      "name": "css",
+      "box": {
+        "type": "map",
+        "value": {},
+        "node": "CallExpression",
+        "line": 158,
+        "column": 34,
+        "endLineNumber": 176,
+        "endColumn": 29
+      },
+      "data": [
+        {
+          "px": "2",
+          "py": "1",
+          "rounded": "md",
+          "fontSize": "xs",
+          "cursor": "pointer",
+          "border": "1px solid"
+        },
+        {
+          "bg": "red.100",
+          "borderColor": "red.500",
+          "color": "red.700"
+        },
+        {
+          "bg": "gray.50",
+          "borderColor": "gray.300",
+          "color": "gray.600"
+        }
+      ]
+    },
+    {
+      "type": "css",
+      "name": "css",
+      "box": {
+        "type": "map",
+        "value": {},
+        "node": "CallExpression",
+        "line": 192,
+        "column": 22,
+        "endLineNumber": 200,
+        "endColumn": 17
+      },
+      "data": [
+        {
+          "px": "4",
+          "py": "2",
+          "rounded": "md",
+          "fontSize": "sm",
+          "cursor": "pointer",
+          "bg": "gray.100",
+          "_hover": {
+            "bg": "gray.200"
+          }
+        }
+      ]
+    },
+    {
+      "type": "css",
+      "name": "css",
+      "box": {
+        "type": "map",
+        "value": {},
+        "node": "CallExpression",
+        "line": 211,
+        "column": 22,
+        "endLineNumber": 221,
+        "endColumn": 17
+      },
+      "data": [
+        {
+          "px": "4",
+          "py": "2",
+          "rounded": "md",
+          "fontSize": "sm",
+          "cursor": "pointer",
+          "bg": "blue.600",
+          "color": "white",
+          "_hover": {
+            "bg": "blue.700"
+          },
+          "_disabled": {
+            "opacity": 0.5,
+            "cursor": "not-allowed"
+          }
+        }
+      ]
+    }
+  ],
+  "cva": [],
+  "sva": [],
+  "token": [],
+  "jsx": [],
+  "recipe": {},
+  "pattern": {
+    "stack": [
+      {
+        "type": "pattern",
+        "name": "stack",
+        "box": {
+          "type": "map",
+          "value": {},
+          "node": "CallExpression",
+          "line": 84,
+          "column": 18,
+          "endLineNumber": 91,
+          "endColumn": 13
+        },
+        "data": [
+          {
+            "bg": "white",
+            "padding": "6",
+            "rounded": "lg",
+            "width": "xl",
+            "maxWidth": "90%",
+            "gap": "6"
+          }
+        ]
+      },
+      {
+        "type": "pattern",
+        "name": "stack",
+        "box": {
+          "type": "map",
+          "value": {},
+          "node": "CallExpression",
+          "line": 93,
+          "column": 23,
+          "endLineNumber": 93,
+          "endColumn": 42
+        },
+        "data": [
+          {
+            "gap": "1"
+          }
+        ]
+      },
+      {
+        "type": "pattern",
+        "name": "stack",
+        "box": {
+          "type": "map",
+          "value": {},
+          "node": "CallExpression",
+          "line": 102,
+          "column": 23,
+          "endLineNumber": 102,
+          "endColumn": 42
+        },
+        "data": [
+          {
+            "gap": "4"
+          }
+        ]
+      },
+      {
+        "type": "pattern",
+        "name": "stack",
+        "box": {
+          "type": "map",
+          "value": {},
+          "node": "CallExpression",
+          "line": 103,
+          "column": 25,
+          "endLineNumber": 103,
+          "endColumn": 44
+        },
+        "data": [
+          {
+            "gap": "2"
+          }
+        ]
+      }
+    ],
+    "flex": [
+      {
+        "type": "pattern",
+        "name": "flex",
+        "box": {
+          "type": "map",
+          "value": {},
+          "node": "CallExpression",
+          "line": 119,
+          "column": 30,
+          "endLineNumber": 126,
+          "endColumn": 25
+        },
+        "data": [
+          {
+            "justifyContent": "space-between",
+            "alignItems": "center",
+            "padding": "2",
+            "borderBottom": "1px solid",
+            "borderColor": "gray.100",
+            "_last": {
+              "borderBottom": "none"
+            }
+          }
+        ]
+      },
+      {
+        "type": "pattern",
+        "name": "flex",
+        "box": {
+          "type": "map",
+          "value": {},
+          "node": "CallExpression",
+          "line": 129,
+          "column": 35,
+          "endLineNumber": 129,
+          "endColumn": 53
+        },
+        "data": [
+          {
+            "gap": "2"
+          }
+        ]
+      },
+      {
+        "type": "pattern",
+        "name": "flex",
+        "box": {
+          "type": "map",
+          "value": {},
+          "node": "CallExpression",
+          "line": 188,
+          "column": 23,
+          "endLineNumber": 188,
+          "endColumn": 69
+        },
+        "data": [
+          {
+            "justifyContent": "flex-end",
+            "gap": "3"
+          }
+        ]
+      }
+    ]
+  }
+}

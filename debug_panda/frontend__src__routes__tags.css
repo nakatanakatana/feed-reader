@@ -1,0 +1,25 @@
+@layer utilities {
+  .p_4 {
+    padding: var(--spacing-4);
+}
+
+  .gap_6 {
+    gap: var(--spacing-6);
+}
+
+  .d_flex {
+    display: flex;
+}
+
+  .flex-d_column {
+    flex-direction: column;
+}
+
+  .fs_2xl {
+    font-size: var(--font-sizes-2xl);
+}
+
+  .fw_bold {
+    font-weight: var(--font-weights-bold);
+}
+}

@@ -1,0 +1,429 @@
+{
+  "css": [
+    {
+      "type": "css",
+      "name": "css",
+      "box": {
+        "type": "map",
+        "value": {},
+        "node": "CallExpression",
+        "line": 90,
+        "column": 24,
+        "endLineNumber": 90,
+        "endColumn": 66
+      },
+      "data": [
+        {
+          "fontSize": "sm",
+          "color": "gray.600"
+        }
+      ]
+    },
+    {
+      "type": "css",
+      "name": "css",
+      "box": {
+        "type": "map",
+        "value": {},
+        "node": "CallExpression",
+        "line": 96,
+        "column": 20,
+        "endLineNumber": 111,
+        "endColumn": 15
+      },
+      "data": [
+        {
+          "px": "3",
+          "py": "1",
+          "rounded": "full",
+          "fontSize": "xs",
+          "cursor": "pointer",
+          "border": "1px solid",
+          "transition": "all 0.2s"
+        },
+        {
+          "bg": "blue.100",
+          "borderColor": "blue.500",
+          "color": "blue.700"
+        },
+        {
+          "bg": "gray.50",
+          "borderColor": "gray.300",
+          "color": "gray.600"
+        }
+      ]
+    },
+    {
+      "type": "css",
+      "name": "css",
+      "box": {
+        "type": "map",
+        "value": {},
+        "node": "CallExpression",
+        "line": 120,
+        "column": 24,
+        "endLineNumber": 139,
+        "endColumn": 19
+      },
+      "data": [
+        {
+          "px": "3",
+          "py": "1",
+          "rounded": "full",
+          "fontSize": "xs",
+          "cursor": "pointer",
+          "border": "1px solid",
+          "transition": "all 0.2s"
+        },
+        {
+          "bg": "blue.100",
+          "borderColor": "blue.500",
+          "color": "blue.700"
+        },
+        {
+          "bg": "gray.50",
+          "borderColor": "gray.300",
+          "color": "gray.600"
+        }
+      ]
+    },
+    {
+      "type": "css",
+      "name": "css",
+      "box": {
+        "type": "map",
+        "value": {},
+        "node": "CallExpression",
+        "line": 152,
+        "column": 20,
+        "endLineNumber": 152,
+        "endColumn": 46
+      },
+      "data": [
+        {
+          "cursor": "pointer"
+        }
+      ]
+    },
+    {
+      "type": "css",
+      "name": "css",
+      "box": {
+        "type": "map",
+        "value": {},
+        "node": "CallExpression",
+        "line": 154,
+        "column": 24,
+        "endLineNumber": 154,
+        "endColumn": 66
+      },
+      "data": [
+        {
+          "fontSize": "sm",
+          "color": "gray.600"
+        }
+      ]
+    },
+    {
+      "type": "css",
+      "name": "css",
+      "box": {
+        "type": "map",
+        "value": {},
+        "node": "CallExpression",
+        "line": 178,
+        "column": 20,
+        "endLineNumber": 182,
+        "endColumn": 15
+      },
+      "data": [
+        {
+          "fontSize": "sm",
+          "fontWeight": "medium",
+          "color": "blue.800"
+        }
+      ]
+    },
+    {
+      "type": "css",
+      "name": "css",
+      "box": {
+        "type": "map",
+        "value": {},
+        "node": "CallExpression",
+        "line": 190,
+        "column": 22,
+        "endLineNumber": 197,
+        "endColumn": 17
+      },
+      "data": [
+        {
+          "fontSize": "xs",
+          "padding": "1.5",
+          "paddingInline": "3",
+          "color": "gray.600",
+          "cursor": "pointer",
+          "_hover": {
+            "color": "gray.800"
+          }
+        }
+      ]
+    },
+    {
+      "type": "css",
+      "name": "css",
+      "box": {
+        "type": "map",
+        "value": {},
+        "node": "CallExpression",
+        "line": 205,
+        "column": 22,
+        "endLineNumber": 216,
+        "endColumn": 17
+      },
+      "data": [
+        {
+          "fontSize": "xs",
+          "fontWeight": "bold",
+          "padding": "1.5",
+          "paddingInline": "4",
+          "backgroundColor": "blue.600",
+          "color": "white",
+          "borderRadius": "md",
+          "cursor": "pointer",
+          "_hover": {
+            "backgroundColor": "blue.700"
+          },
+          "_disabled": {
+            "opacity": 0.5,
+            "cursor": "not-allowed"
+          }
+        }
+      ]
+    },
+    {
+      "type": "css",
+      "name": "css",
+      "box": {
+        "type": "map",
+        "value": {},
+        "node": "CallExpression",
+        "line": 243,
+        "column": 18,
+        "endLineNumber": 243,
+        "endColumn": 79
+      },
+      "data": [
+        {
+          "textAlign": "center",
+          "padding": "8",
+          "color": "gray.500"
+        }
+      ]
+    },
+    {
+      "type": "css",
+      "name": "css",
+      "box": {
+        "type": "map",
+        "value": {},
+        "node": "CallExpression",
+        "line": 251,
+        "column": 18,
+        "endLineNumber": 251,
+        "endColumn": 79
+      },
+      "data": [
+        {
+          "textAlign": "center",
+          "padding": "8",
+          "color": "gray.500"
+        }
+      ]
+    },
+    {
+      "type": "css",
+      "name": "css",
+      "box": {
+        "type": "map",
+        "value": {},
+        "node": "CallExpression",
+        "line": 262,
+        "column": 18,
+        "endLineNumber": 269,
+        "endColumn": 13
+      },
+      "data": [
+        {
+          "padding": "2",
+          "backgroundColor": "gray.100",
+          "borderRadius": "md",
+          "cursor": "pointer",
+          "_hover": {
+            "backgroundColor": "gray.200"
+          },
+          "_disabled": {
+            "opacity": 0.5,
+            "cursor": "not-allowed"
+          }
+        }
+      ]
+    }
+  ],
+  "cva": [],
+  "sva": [],
+  "token": [],
+  "jsx": [],
+  "recipe": {},
+  "pattern": {
+    "stack": [
+      {
+        "type": "pattern",
+        "name": "stack",
+        "box": {
+          "type": "map",
+          "value": {},
+          "node": "CallExpression",
+          "line": 80,
+          "column": 17,
+          "endLineNumber": 80,
+          "endColumn": 73
+        },
+        "data": [
+          {
+            "gap": "4",
+            "width": "full",
+            "position": "relative"
+          }
+        ]
+      },
+      {
+        "type": "pattern",
+        "name": "stack",
+        "box": {
+          "type": "map",
+          "value": {},
+          "node": "CallExpression",
+          "line": 226,
+          "column": 19,
+          "endLineNumber": 226,
+          "endColumn": 52
+        },
+        "data": [
+          {
+            "gap": "2",
+            "padding": "0"
+          }
+        ]
+      }
+    ],
+    "flex": [
+      {
+        "type": "pattern",
+        "name": "flex",
+        "box": {
+          "type": "map",
+          "value": {},
+          "node": "CallExpression",
+          "line": 82,
+          "column": 16,
+          "endLineNumber": 87,
+          "endColumn": 11
+        },
+        "data": [
+          {
+            "justifyContent": "space-between",
+            "alignItems": "center",
+            "flexWrap": "wrap",
+            "gap": "4"
+          }
+        ]
+      },
+      {
+        "type": "pattern",
+        "name": "flex",
+        "box": {
+          "type": "map",
+          "value": {},
+          "node": "CallExpression",
+          "line": 89,
+          "column": 21,
+          "endLineNumber": 89,
+          "endColumn": 79
+        },
+        "data": [
+          {
+            "gap": "2",
+            "flexWrap": "wrap",
+            "alignItems": "center"
+          }
+        ]
+      },
+      {
+        "type": "pattern",
+        "name": "flex",
+        "box": {
+          "type": "map",
+          "value": {},
+          "node": "CallExpression",
+          "line": 147,
+          "column": 21,
+          "endLineNumber": 147,
+          "endColumn": 61
+        },
+        "data": [
+          {
+            "gap": "2",
+            "alignItems": "center"
+          }
+        ]
+      },
+      {
+        "type": "pattern",
+        "name": "flex",
+        "box": {
+          "type": "map",
+          "value": {},
+          "node": "CallExpression",
+          "line": 163,
+          "column": 18,
+          "endLineNumber": 175,
+          "endColumn": 13
+        },
+        "data": [
+          {
+            "position": "sticky",
+            "top": "0",
+            "zIndex": 10,
+            "backgroundColor": "blue.50",
+            "border": "1px solid",
+            "borderColor": "blue.200",
+            "borderRadius": "md",
+            "padding": "3",
+            "justifyContent": "space-between",
+            "alignItems": "center",
+            "boxShadow": "sm"
+          }
+        ]
+      },
+      {
+        "type": "pattern",
+        "name": "flex",
+        "box": {
+          "type": "map",
+          "value": {},
+          "node": "CallExpression",
+          "line": 186,
+          "column": 23,
+          "endLineNumber": 186,
+          "endColumn": 41
+        },
+        "data": [
+          {
+            "gap": "2"
+          }
+        ]
+      }
+    ]
+  }
+}

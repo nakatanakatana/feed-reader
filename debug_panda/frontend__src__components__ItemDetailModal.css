@@ -1,0 +1,292 @@
+@layer utilities {
+  .p_0 {
+    padding: var(--spacing-0);
+}
+
+  .p_10 {
+    padding: var(--spacing-10);
+}
+
+  .p_6 {
+    padding: var(--spacing-6);
+}
+
+  .p_4 {
+    padding: var(--spacing-4);
+}
+
+  .p_2 {
+    padding: var(--spacing-2);
+}
+
+  .bd_1px_solid {
+    border: 1px solid;
+}
+
+  .gap_8px {
+    gap: 8px;
+}
+
+  .bdr_none {
+    border-radius: none;
+}
+
+  .ring_none {
+    outline: var(--borders-none);
+}
+
+  .ov_hidden {
+    overflow: hidden;
+}
+
+  .gap_4 {
+    gap: var(--spacing-4);
+}
+
+  .flex_1 {
+    flex: 1 1 0%;
+}
+
+  .bd-b_1px_solid {
+    border-bottom: 1px solid;
+}
+
+  .bd-c_gray\.100 {
+    border-color: var(--colors-gray-100);
+}
+
+  .bd-t_1px_solid {
+    border-top: 1px solid;
+}
+
+  .gap_2 {
+    gap: var(--spacing-2);
+}
+
+  .px_4 {
+    padding-inline: var(--spacing-4);
+}
+
+  .bdr_md {
+    border-radius: var(--radii-md);
+}
+
+  .td_none {
+    text-decoration: none;
+}
+
+  .bd-c_gray\.300 {
+    border-color: var(--colors-gray-300);
+}
+
+  .d_flex {
+    display: flex;
+}
+
+  .ai_center {
+    align-items: center;
+}
+
+  .jc_center {
+    justify-content: center;
+}
+
+  .pos_fixed {
+    position: fixed;
+}
+
+  .bg-c_rgba\(0\,_0\,_0\,_0\.5\) {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+  .z_1000 {
+    z-index: 1000;
+}
+
+  .c_gray\.500 {
+    color: var(--colors-gray-500);
+}
+
+  .flex-d_column {
+    flex-direction: column;
+}
+
+  .bg-c_white {
+    background-color: var(--colors-white);
+}
+
+  .bx-sh_xl {
+    box-shadow: var(--shadows-xl);
+}
+
+  .pos_relative {
+    position: relative;
+}
+
+  .ta_left {
+    text-align: left;
+}
+
+  .jc_space-between {
+    justify-content: space-between;
+}
+
+  .flex-wrap_wrap {
+    flex-wrap: wrap;
+}
+
+  .fs_sm {
+    font-size: var(--font-sizes-sm);
+}
+
+  .bg-c_gray\.50 {
+    background-color: var(--colors-gray-50);
+}
+
+  .fs_lg {
+    font-size: var(--font-sizes-lg);
+}
+
+  .fw_bold {
+    font-weight: var(--font-weights-bold);
+}
+
+  .trunc_true {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+  .lh_relaxed {
+    line-height: var(--line-heights-relaxed);
+}
+
+  .d_inline-flex {
+    display: inline-flex;
+}
+
+  .bg-c_blue\.600 {
+    background-color: var(--colors-blue-600);
+}
+
+  .c_white {
+    color: var(--colors-white);
+}
+
+  .fw_medium {
+    font-weight: var(--font-weights-medium);
+}
+
+  .cursor_pointer {
+    cursor: pointer;
+}
+
+  .bg-c_gray\.200 {
+    background-color: var(--colors-gray-200);
+}
+
+  .bg-c_blue\.50 {
+    background-color: var(--colors-blue-50);
+}
+
+  .c_gray\.700 {
+    color: var(--colors-gray-700);
+}
+
+  .c_blue\.700 {
+    color: var(--colors-blue-700);
+}
+
+  .top_0 {
+    top: var(--spacing-0);
+}
+
+  .left_0 {
+    left: var(--spacing-0);
+}
+
+  .w_screen {
+    width: 100vw;
+}
+
+  .h_screen {
+    height: 100vh;
+}
+
+  .w_full {
+    width: var(--sizes-full);
+}
+
+  .h_full {
+    height: var(--sizes-full);
+}
+
+  .max-w_full {
+    max-width: var(--sizes-full);
+}
+
+  .max-h_full {
+    max-height: var(--sizes-full);
+}
+
+  .ov-y_auto {
+    overflow-y: auto;
+}
+
+  .mt_4 {
+    margin-top: var(--spacing-4);
+}
+
+  .\[\&_a\]\:td_underline a {
+    text-decoration: underline;
+}
+
+  .\[\&_a\]\:c_blue\.600 a {
+    color: var(--colors-blue-600);
+}
+
+  .disabled\:op_0\.5:is(:disabled, [disabled], [data-disabled], [aria-disabled=true]) {
+    opacity: 0.5;
+}
+
+  .disabled\:cursor_not-allowed:is(:disabled, [disabled], [data-disabled], [aria-disabled=true]) {
+    cursor: not-allowed;
+}
+
+  .\[\&_p\]\:mb_4 p {
+    margin-bottom: var(--spacing-4);
+}
+
+  .hover\:bg-c_blue\.700:is(:hover, [data-hover]) {
+    background-color: var(--colors-blue-700);
+}
+
+  .hover\:bg-c_gray\.100:is(:hover, [data-hover]) {
+    background-color: var(--colors-gray-100);
+}
+
+  .hover\:op_0\.8:is(:hover, [data-hover]) {
+    opacity: 0.8;
+}
+
+  @media screen and (min-width: 48rem) {
+    .md\:p_4 {
+      padding: var(--spacing-4);
+}
+    .md\:bdr_lg {
+      border-radius: var(--radii-lg);
+}
+    .md\:w_90\% {
+      width: 90%;
+}
+    .md\:h_90\% {
+      height: 90%;
+}
+    .md\:max-w_none {
+      max-width: none;
+}
+    .md\:max-h_90vh {
+      max-height: 90vh;
+}
+}
+}

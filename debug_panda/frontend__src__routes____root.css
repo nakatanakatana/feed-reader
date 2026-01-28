@@ -1,0 +1,29 @@
+@layer utilities {
+  .p_2px {
+    padding: 2px;
+}
+
+  .gap_10px {
+    gap: 10px;
+}
+
+  .d_flex {
+    display: flex;
+}
+
+  .ai_center {
+    align-items: center;
+}
+
+  .fs_lg {
+    font-size: var(--font-sizes-lg);
+}
+
+  .fw_bold {
+    font-weight: var(--font-weights-bold);
+}
+
+  .bd-b-w_1px {
+    border-bottom-width: 1px;
+}
+}

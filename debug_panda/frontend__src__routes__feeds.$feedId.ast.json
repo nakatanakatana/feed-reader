@@ -1,0 +1,51 @@
+{
+  "css": [
+    {
+      "type": "css",
+      "name": "css",
+      "box": {
+        "type": "map",
+        "value": {},
+        "node": "CallExpression",
+        "line": 27,
+        "column": 18,
+        "endLineNumber": 27,
+        "endColumn": 61
+      },
+      "data": [
+        {
+          "fontSize": "xl",
+          "fontWeight": "bold"
+        }
+      ]
+    }
+  ],
+  "cva": [],
+  "sva": [],
+  "token": [],
+  "jsx": [],
+  "recipe": {},
+  "pattern": {
+    "stack": [
+      {
+        "type": "pattern",
+        "name": "stack",
+        "box": {
+          "type": "map",
+          "value": {},
+          "node": "CallExpression",
+          "line": 26,
+          "column": 17,
+          "endLineNumber": 26,
+          "endColumn": 50
+        },
+        "data": [
+          {
+            "padding": "4",
+            "gap": "4"
+          }
+        ]
+      }
+    ]
+  }
+}
