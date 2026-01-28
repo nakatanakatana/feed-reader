@@ -22,7 +22,9 @@ func Migrate(ctx context.Context, dbPath string, desiredSchema string, dryRun bo
 	if err != nil {
 		return fmt.Errorf("failed to open sqldef database: %w", err)
 	}
-	defer db.Close()
+	defer func() {
+		_ = db.Close()
+	}()
 
 	sqlParser := database.NewParser(parser.ParserModeSQLite3)
 
