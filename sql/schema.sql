@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS feeds (
+CREATE TABLE feeds (
   id              TEXT PRIMARY KEY,
   url             TEXT NOT NULL UNIQUE,
   link            TEXT,
@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS feeds (
   updated_at      TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS items (
+CREATE TABLE items (
   id           TEXT PRIMARY KEY,
   url          TEXT NOT NULL UNIQUE,
   title        TEXT,
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS items (
   updated_at   TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS feed_items (
+CREATE TABLE feed_items (
   feed_id    TEXT NOT NULL,
   item_id    TEXT NOT NULL,
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS feed_items (
   FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS item_reads (
+CREATE TABLE item_reads (
   item_id    TEXT NOT NULL,
   is_read    INTEGER NOT NULL DEFAULT 0, -- 0: false, 1: true
   read_at    TEXT,
@@ -49,14 +49,14 @@ CREATE TABLE IF NOT EXISTS item_reads (
   FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS tags (
+CREATE TABLE tags (
   id         TEXT PRIMARY KEY,
   name       TEXT NOT NULL UNIQUE,
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS feed_tags (
+CREATE TABLE feed_tags (
   feed_id    TEXT NOT NULL,
   tag_id     TEXT NOT NULL,
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -66,5 +66,5 @@ CREATE TABLE IF NOT EXISTS feed_tags (
   FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
 );
 
-CREATE INDEX IF NOT EXISTS idx_feeds_updated_at ON feeds(updated_at);
-CREATE INDEX IF NOT EXISTS idx_tags_updated_at ON tags(updated_at);
+CREATE INDEX idx_feeds_updated_at ON feeds(updated_at);
+CREATE INDEX idx_tags_updated_at ON tags(updated_at);
