@@ -376,6 +376,20 @@ export function FeedList() {
                   <span class={css({ fontSize: "xs", color: "gray.500" })}>
                     {feed.url}
                   </span>
+                  <span class={css({ fontSize: "xs", color: "gray.400" })}>
+                    Last fetched:{" "}
+                    {feed.lastFetchedAt
+                      ? (() => {
+                          const date = new Date(feed.lastFetchedAt);
+                          const y = date.getUTCFullYear();
+                          const m = String(date.getUTCMonth() + 1).padStart(2, "0");
+                          const d = String(date.getUTCDate()).padStart(2, "0");
+                          const hh = String(date.getUTCHours()).padStart(2, "0");
+                          const mm = String(date.getUTCMinutes()).padStart(2, "0");
+                          return `${y}-${m}-${d} ${hh}:${mm}`;
+                        })()
+                      : "Never"}
+                  </span>
                 </div>
               </div>
               <div class={flex({ gap: "2", alignItems: "center" })}>
