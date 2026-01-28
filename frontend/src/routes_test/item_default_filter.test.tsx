@@ -96,4 +96,46 @@ describe("Item Default Filter", () => {
     // validation logic currently forces "30d" so this should FAIL
     await expect.element(searchParamsEl).not.toHaveTextContent(/"publishedSince":"30d"/);
   });
+
+  it("should sync UI filter state with browser back/forward navigation", async () => {
+    const transport = createConnectTransport({
+      baseUrl: "http://localhost:3000",
+    });
+
+    const history = createMemoryHistory({
+      initialEntries: ["/"],
+    });
+    const router = createRouter({ routeTree, history });
+
+    dispose = render(
+      () => (
+        <TransportProvider transport={transport}>
+          <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} />
+          </QueryClientProvider>
+        </TransportProvider>
+      ),
+      document.body,
+    );
+
+    const searchParamsEl = page.getByTestId("search-params");
+    await expect.element(searchParamsEl).toBeInTheDocument();
+
+    // 1. Initial state: 30d
+    await expect.element(searchParamsEl).toHaveTextContent(/"publishedSince":"30d"/);
+
+    // 2. Navigate to 7d
+    await router.navigate({
+      search: (prev) => ({ ...prev, publishedSince: "7d" }),
+    });
+    await expect.element(searchParamsEl).toHaveTextContent(/"publishedSince":"7d"/);
+
+    // 3. Go back
+    history.back();
+    await expect.element(searchParamsEl).toHaveTextContent(/"publishedSince":"30d"/);
+
+    // 4. Go forward
+    history.forward();
+    await expect.element(searchParamsEl).toHaveTextContent(/"publishedSince":"7d"/);
+  });
 });
