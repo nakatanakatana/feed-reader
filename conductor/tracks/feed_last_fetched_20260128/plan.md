@@ -1,0 +1,33 @@
+# Implementation Plan: Display Last Fetched Date in Feed List
+
+Based on the specification, this plan covers displaying the `last_fetched_at` timestamp in the feed list UI.
+
+## Phase 1: Backend Verification & Data Integrity
+Ensure `last_fetched_at` is correctly returned by the API and populated during fetching.
+
+- [ ] Task: Verify Backend returns `last_fetched_at` in `ListFeeds`.
+    - [ ] Check `cmd/feed-reader/handler.go` and `store/feed_store.go` to ensure `last_fetched_at` is mapped from DB to Proto.
+    - [ ] Run backend tests to verify data mapping.
+- [ ] Task: Conductor - User Manual Verification 'Backend Verification' (Protocol in workflow.md)
+
+## Phase 2: Frontend Implementation
+Display the timestamp in the Feed List UI.
+
+- [ ] Task: Update `FeedList` component to display `last_fetched_at`.
+    - [ ] Modify `frontend/src/components/FeedList.tsx` to include the timestamp near the feed title.
+    - [ ] Format the timestamp to `YYYY-MM-DD HH:MM`.
+    - [ ] Handle null/missing values by displaying "Never".
+- [ ] Task: Style the timestamp.
+    - [ ] Add Panda CSS styling to ensure it appears as a subtle subtext.
+    - [ ] Verify responsive behavior.
+- [ ] Task: Write tests for `FeedList` date display.
+    - [ ] Add/Update tests in `frontend/src/components/FeedList.test.tsx` to verify the date is rendered correctly.
+    - [ ] Test the "Never" placeholder case.
+- [ ] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md)
+
+## Phase 3: Verification & Finalization
+Final checks and cleanup.
+
+- [ ] Task: Run full suite of tests (Frontend & Backend).
+- [ ] Task: Perform manual verification of the UI on desktop and mobile.
+- [ ] Task: Conductor - User Manual Verification 'Finalization' (Protocol in workflow.md)
