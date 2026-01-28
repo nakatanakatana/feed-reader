@@ -1,0 +1,8 @@
+{
+  "track_id": "item_dedup_20260128",
+  "type": "bug",
+  "status": "new",
+  "created_at": "2026-01-28T00:00:00Z",
+  "updated_at": "2026-01-28T00:00:00Z",
+  "description": "itemの一覧で同じものが重複して出ていることがあるので1つになるようにしてください"
+}
