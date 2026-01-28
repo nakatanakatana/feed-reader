@@ -1,3 +1,7 @@
+import type { Timestamp } from "@bufbuild/protobuf";
+
+export type DateFilterValue = "all" | "24h" | "7d" | "30d" | "90d" | "365d";
+
 export interface Item {
   id: string;
   url: string;
@@ -20,6 +24,35 @@ export interface ItemFilters {
   isRead?: boolean;
   sortOrder?: SortOrder;
 }
+
+export const getPublishedSince = (value: DateFilterValue): Timestamp | undefined => {
+  if (value === "all") return undefined;
+  const now = new Date();
+  let since: Date;
+  switch (value) {
+    case "24h":
+      since = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      break;
+    case "7d":
+      since = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      break;
+    case "30d":
+      since = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      break;
+    case "90d":
+      since = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+      break;
+    case "365d":
+      since = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+      break;
+    default:
+      return undefined;
+  }
+  return {
+    seconds: BigInt(Math.floor(since.getTime() / 1000)),
+    nanos: (since.getTime() % 1000) * 1000000,
+  } as Timestamp;
+};
 
 export const formatDate = (dateString: string) => {
   if (!dateString) return "";
