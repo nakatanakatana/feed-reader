@@ -11,11 +11,11 @@ Focus on identifying and fixing the BigInt serialization issue when applying dat
 ## Phase 2: Expand Date Filter Options
 Add "90 days" and "365 days" options to the date filter.
 
-- [ ] Task: Update the type definitions and constants for date filters in the frontend.
-- [ ] Task: Write tests in `frontend/src/components/DateFilterSelector.test.tsx` to verify the new options are rendered.
-- [ ] Task: Implement the "90 days" and "365 days" options in `frontend/src/components/DateFilterSelector.tsx`.
-- [ ] Task: Write tests in `frontend/src/lib/item-utils.test.ts` to ensure the correct timestamps are calculated for the new durations.
-- [ ] Task: Update the filtering logic to handle the new durations.
+- [x] Task: Update the type definitions and constants for date filters in the frontend. [929f4e7]
+- [x] Task: Write tests in `frontend/src/components/DateFilterSelector.test.tsx` to verify the new options are rendered. [929f4e7]
+- [x] Task: Implement the "90 days" and "365 days" options in `frontend/src/components/DateFilterSelector.tsx`. [929f4e7]
+- [x] Task: Write tests in `frontend/src/lib/item-utils.test.ts` to ensure the correct timestamps are calculated for the new durations. [929f4e7]
+- [x] Task: Update the filtering logic to handle the new durations. [929f4e7]
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Expand Date Filter Options' (Protocol in workflow.md)
 
 ## Phase 3: Verification and Quality Assurance
