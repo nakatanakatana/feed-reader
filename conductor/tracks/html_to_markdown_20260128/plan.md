@@ -6,7 +6,7 @@ This plan outlines the steps to implement HTML-to-Markdown conversion on the bac
 
 Implement the conversion logic using `html-to-markdown` and prepare the data migration.
 
-- [ ] Task: Backend - Add `github.com/JohannesKaufmann/html-to-markdown` dependency
+- [x] Task: Backend - Add `github.com/JohannesKaufmann/html-to-markdown` dependency ff29872
     - [ ] Run `go get github.com/JohannesKaufmann/html-to-markdown`
 - [ ] Task: Backend - Implement HTML to Markdown utility function
     - [ ] Create a utility in `cmd/feed-reader/` to handle the conversion logic.
