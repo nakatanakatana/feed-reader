@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"log/slog"
+	"time"
 
 	"github.com/nakatanakatana/feed-reader/store"
 )
@@ -9,6 +11,35 @@ import (
 // WriteQueueJob defines the interface for jobs processed by the write queue.
 type WriteQueueJob interface {
 	Execute(ctx context.Context, q *store.Queries) error
+}
+
+// WriteQueueConfig defines the configuration for the write queue service.
+type WriteQueueConfig struct {
+	MaxBatchSize  int
+	FlushInterval time.Duration
+}
+
+// WriteQueueService manages a queue of write operations for SQLite.
+type WriteQueueService struct {
+	store  *store.Store
+	config WriteQueueConfig
+	logger *slog.Logger
+	jobs   chan WriteQueueJob
+}
+
+// NewWriteQueueService creates a new WriteQueueService.
+func NewWriteQueueService(s *store.Store, cfg WriteQueueConfig, l *slog.Logger) *WriteQueueService {
+	return &WriteQueueService{
+		store:  s,
+		config: cfg,
+		logger: l,
+		jobs:   make(chan WriteQueueJob, cfg.MaxBatchSize*2),
+	}
+}
+
+// Submit adds a job to the queue.
+func (s *WriteQueueService) Submit(job WriteQueueJob) {
+	s.jobs <- job
 }
 
 // SaveItemsJob represents a job to save multiple items for a feed.
