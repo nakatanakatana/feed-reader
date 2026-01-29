@@ -8,7 +8,7 @@ Implement the conversion logic using `html-to-markdown` and prepare the data mig
 
 - [x] Task: Backend - Add `github.com/JohannesKaufmann/html-to-markdown` dependency ff29872
     - [ ] Run `go get github.com/JohannesKaufmann/html-to-markdown`
-- [ ] Task: Backend - Implement HTML to Markdown utility function
+- [x] Task: Backend - Implement HTML to Markdown utility function be04afc
     - [ ] Create a utility in `cmd/feed-reader/` to handle the conversion logic.
     - [ ] Write tests to verify various HTML structures (links, images, lists) convert correctly to Markdown.
 - [ ] Task: Backend - Integrate conversion into Fetcher service
