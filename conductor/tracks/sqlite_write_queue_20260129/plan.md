@@ -4,8 +4,8 @@
 Define the core structures and the background worker logic for batching write operations.
 
 - [x] Task: Define `WriteQueueJob` interface and specific job structs (e.g., `SaveItemsJob`). 1932589
-- [~] Task: Implement `WriteQueueService` struct with internal channel and configuration (batch size, interval).
-- [ ] Task: Implement the background worker loop handling both timer and count-based triggers.
+- [x] Task: Implement `WriteQueueService` struct with internal channel and configuration (batch size, interval). 832a60b
+- [~] Task: Implement the background worker loop handling both timer and count-based triggers.
 - [ ] Task: Implement graceful shutdown logic to flush the queue.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Service Definition and Core Logic' (Protocol in workflow.md)
 
