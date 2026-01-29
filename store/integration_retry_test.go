@@ -8,10 +8,10 @@ import (
 	"testing"
 	"time"
 
-	_ "github.com/mattn/go-sqlite3"
 	"github.com/nakatanakatana/feed-reader/sql"
 	"github.com/nakatanakatana/feed-reader/store"
 	"github.com/stretchr/testify/require"
+	_ "modernc.org/sqlite"
 )
 
 func TestStore_RetryIntegration(t *testing.T) {
@@ -24,7 +24,7 @@ func TestStore_RetryIntegration(t *testing.T) {
 
 	// Helper to open connection
 	openDB := func() *sql.DB {
-		db, err := sql.Open("sqlite3", dbPath+"?_busy_timeout=1")
+		db, err := sql.Open("sqlite", dbPath+"?_busy_timeout=1")
 		require.NoError(t, err)
 		return db
 	}

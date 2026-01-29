@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/caarlos0/env/v11"
-	_ "github.com/mattn/go-sqlite3"
 	"github.com/nakatanakatana/feed-reader/gen/go/feed/v1/feedv1connect"
 	"github.com/nakatanakatana/feed-reader/gen/go/item/v1/itemv1connect"
 	"github.com/nakatanakatana/feed-reader/gen/go/tag/v1/tagv1connect"
@@ -19,6 +18,7 @@ import (
 	"github.com/nakatanakatana/feed-reader/store"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
+	_ "modernc.org/sqlite"
 )
 
 type config struct {
@@ -27,6 +27,7 @@ type config struct {
 	FetchInterval          time.Duration `env:"FETCH_INTERVAL" envDefault:"30m"`
 	MaxWorkers             int           `env:"MAX_WORKERS" envDefault:"10"`
 	MigrateContentMarkdown bool          `env:"MIGRATE_CONTENT_MARKDOWN" envDefault:"false"`
+	SkipMigration          bool          `env:"SKIP_MIGRATION" envDefault:"false"`
 }
 
 func main() {
@@ -42,7 +43,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	db, err := sql.Open("sqlite3", cfg.DBPath)
+	// Initialize schema
+	if err := schema.Migrate(ctx, cfg.DBPath, schema.Schema, cfg.SkipMigration); err != nil {
+		logger.ErrorContext(ctx, "failed to migrate database", "error", err)
+		os.Exit(1)
+	}
+
+	db, err := sql.Open("sqlite", cfg.DBPath)
 	if err != nil {
 		logger.ErrorContext(ctx, "failed to open database", "error", err)
 		os.Exit(1)
@@ -52,12 +59,6 @@ func main() {
 			logger.ErrorContext(ctx, "failed to close database", "error", err)
 		}
 	}()
-
-	// Initialize schema
-	if _, err := db.ExecContext(ctx, schema.Schema); err != nil {
-		logger.ErrorContext(ctx, "failed to create schema", "error", err)
-		os.Exit(1)
-	}
 
 	// 1. Initialize Storage
 	s := store.NewStore(db)

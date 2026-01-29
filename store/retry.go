@@ -5,7 +5,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/mattn/go-sqlite3"
+	sqlite3 "modernc.org/sqlite/lib"
 )
 
 const (
@@ -16,9 +16,12 @@ const (
 
 // IsBusyError returns true if the error is a SQLite busy or locked error.
 func IsBusyError(err error) bool {
-	var sqliteErr sqlite3.Error
+	type coder interface {
+		Code() int
+	}
+	var sqliteErr coder
 	if errors.As(err, &sqliteErr) {
-		return sqliteErr.Code == sqlite3.ErrBusy || sqliteErr.Code == sqlite3.ErrLocked
+		return sqliteErr.Code() == sqlite3.SQLITE_BUSY || sqliteErr.Code() == sqlite3.SQLITE_LOCKED
 	}
 	return false
 }

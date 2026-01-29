@@ -32,7 +32,7 @@ func TestStore_ItemDeduplication(t *testing.T) {
 	// 2. Save the same item to both feeds
 	itemURL := "http://example.com/item1"
 	itemTitle := "Duplicate Item"
-	
+
 	err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
 		FeedID: feed1ID,
 		Url:    itemURL,
@@ -51,7 +51,7 @@ func TestStore_ItemDeduplication(t *testing.T) {
 	t.Run("ListItems should not have duplicates", func(t *testing.T) {
 		items, err := s.ListItems(ctx, store.ListItemsParams{Limit: 10, Offset: 0})
 		require.NoError(t, err)
-		
+
 		// If deduplication is NOT working, this will likely be 2
 		assert.Equal(t, 1, len(items), "Should return only 1 item even if it belongs to multiple feeds")
 	})
@@ -59,7 +59,7 @@ func TestStore_ItemDeduplication(t *testing.T) {
 	t.Run("CountItems should not count duplicates", func(t *testing.T) {
 		count, err := s.CountItems(ctx, store.CountItemsParams{})
 		require.NoError(t, err)
-		
+
 		// If deduplication is NOT working, this will likely be 2
 		assert.Equal(t, int64(1), count, "Should count only unique items")
 	})

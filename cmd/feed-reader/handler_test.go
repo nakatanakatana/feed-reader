@@ -9,8 +9,8 @@ import (
 
 	"connectrpc.com/connect"
 	"github.com/google/uuid"
-	_ "github.com/mattn/go-sqlite3"
 	"google.golang.org/protobuf/proto"
+	_ "modernc.org/sqlite"
 
 	"github.com/mmcdole/gofeed"
 	"github.com/nakatanakatana/feed-reader/gen/go/feed/v1"
@@ -23,7 +23,7 @@ import (
 
 func setupTestDB(t *testing.T) (*store.Queries, *sql.DB) {
 	t.Helper()
-	db, err := sql.Open("sqlite3", ":memory:")
+	db, err := sql.Open("sqlite", ":memory:")
 	if err != nil {
 		t.Fatalf("failed to open db: %v", err)
 	}
