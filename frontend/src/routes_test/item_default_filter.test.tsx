@@ -128,7 +128,7 @@ describe("Item Default Filter", () => {
 
     // 2. Navigate to 7d
     await router.navigate({
-      // @ts-ignore
+      // @ts-expect-error
       search: (prev) => ({ ...prev, publishedSince: "7d" }),
     });
     await expect

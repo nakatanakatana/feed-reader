@@ -50,7 +50,7 @@ func (h *assetsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	stat, err := f.Stat()
 	if err != nil {
@@ -60,7 +60,7 @@ func (h *assetsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if stat.IsDir() {
 		// Fallback to index.html in the SAME directory
-		f.Close()
+		_ = f.Close()
 		name = path.Join(name, "index.html")
 		f, err = h.fs.Open(name)
 		if err != nil {
@@ -72,7 +72,7 @@ func (h *assetsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 		}
-		defer f.Close()
+		defer func() { _ = f.Close() }()
 		stat, _ = f.Stat()
 	}
 
