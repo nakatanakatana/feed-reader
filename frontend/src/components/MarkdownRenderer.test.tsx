@@ -13,15 +13,23 @@ describe("MarkdownRenderer", () => {
 
   it("renders basic markdown", () => {
     const content = "# Hello World\nThis is **bold** text.";
-    dispose = render(() => <MarkdownRenderer content={content} />, document.body);
+    dispose = render(
+      () => <MarkdownRenderer content={content} />,
+      document.body,
+    );
 
-    expect(page.getByRole("heading", { name: "Hello World" })).toBeInTheDocument();
+    expect(
+      page.getByRole("heading", { name: "Hello World" }),
+    ).toBeInTheDocument();
     expect(page.getByText("bold")).toBeInTheDocument();
   });
 
   it("renders links correctly", () => {
     const content = "[Example](https://example.com)";
-    dispose = render(() => <MarkdownRenderer content={content} />, document.body);
+    dispose = render(
+      () => <MarkdownRenderer content={content} />,
+      document.body,
+    );
 
     const link = page.getByRole("link", { name: "Example" });
     expect(link).toBeInTheDocument();
