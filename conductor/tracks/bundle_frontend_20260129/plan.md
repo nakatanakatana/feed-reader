@@ -30,7 +30,7 @@ This phase implements the embedding and serving logic in the Go backend.
 ## Phase 3: Verification & Cleanup
 This phase verifies the final artifact and cleans up.
 
-- [ ] Task: Verify Single Binary
+- [~] Task: Verify Single Binary
     - [ ] Run `make build`.
     - [ ] Start the binary from `dist/`.
     - [ ] Verify UI loads at root.
@@ -38,4 +38,4 @@ This phase verifies the final artifact and cleans up.
     - [ ] Verify refresh on a sub-route works.
 - [ ] Task: Documentation
     - [ ] Update `README.md` (if applicable) to mention the single binary distribution.
-- [ ] Task: Conductor - User Manual Verification 'Verification & Cleanup' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Verification & Cleanup' (Protocol in workflow.md)
