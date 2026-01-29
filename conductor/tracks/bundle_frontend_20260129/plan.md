@@ -13,7 +13,7 @@ This phase focuses on ensuring the frontend can be built correctly and the build
 ## Phase 2: Go Backend Implementation (TDD)
 This phase implements the embedding and serving logic in the Go backend.
 
-- [ ] Task: Create Static Assets Handler (TDD)
+- [x] Task: Create Static Assets Handler (TDD) 2987198
     - [ ] Create `cmd/feed-reader/assets_test.go` to test the file server logic (mocking `embed.FS`).
         - [ ] Test serving an existing file.
         - [ ] Test SPA fallback (requesting non-existent file returns `index.html`).
