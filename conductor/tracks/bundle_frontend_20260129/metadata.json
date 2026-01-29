@@ -1,8 +1,0 @@
-{
-  "track_id": "bundle_frontend_20260129",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-01-29T00:00:00Z",
-  "updated_at": "2026-01-29T00:00:00Z",
-  "description": "Bundle the frontend build artifacts into the Go backend binary for single binary distribution."
-}
