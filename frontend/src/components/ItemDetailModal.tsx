@@ -3,6 +3,7 @@ import { css } from "../../styled-system/css";
 import { center, flex, stack } from "../../styled-system/patterns";
 import { useItem, useUpdateItemStatus } from "../lib/item-query";
 import { formatDate, getItemDisplayDate } from "../lib/item-utils";
+import { MarkdownRenderer } from "./MarkdownRenderer";
 
 interface ItemDetailModalProps {
   itemId: string | undefined;
@@ -213,8 +214,11 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                       "& p": { marginBottom: "4" },
                       "& img": { maxWidth: "full", height: "auto", my: "4" },
                     })}
-                    innerHTML={item().content || item().description}
-                  />
+                  >
+                    <MarkdownRenderer
+                      content={item().content || item().description || ""}
+                    />
+                  </div>
                 </>
               )}
             </Show>
