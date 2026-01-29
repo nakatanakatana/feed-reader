@@ -1,8 +1,0 @@
-{
-  "track_id": "html_to_markdown_20260128",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-01-28T10:00:00Z",
-  "updated_at": "2026-01-28T10:00:00Z",
-  "description": "Convert feed description and content from HTML to Markdown on the backend and render it in the frontend."
-}
