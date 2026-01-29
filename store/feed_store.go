@@ -32,8 +32,16 @@ func (s *Store) ListFeeds(ctx context.Context, params ListFeedsParams) ([]Feed, 
 	return s.Queries.ListFeeds(ctx, params.TagID)
 }
 
+type txKey struct{}
+
 // WithTransaction executes the given function within a transaction, retrying on SQLite busy errors.
-func (s *Store) WithTransaction(ctx context.Context, fn func(q *Queries) error) error {
+// If a transaction is already present in the context, it reuses it.
+func (s *Store) WithTransaction(ctx context.Context, fn func(ctx context.Context, q *Queries) error) error {
+	if tx, ok := ctx.Value(txKey{}).(*sql.Tx); ok {
+		qtx := New(tx)
+		return fn(ctx, qtx)
+	}
+
 	return WithRetry(ctx, func() error {
 		tx, err := s.DB.BeginTx(ctx, nil)
 		if err != nil {
@@ -44,7 +52,8 @@ func (s *Store) WithTransaction(ctx context.Context, fn func(q *Queries) error) 
 		}()
 
 		qtx := New(tx)
-		if err := fn(qtx); err != nil {
+		ctxWithTx := context.WithValue(ctx, txKey{}, tx)
+		if err := fn(ctxWithTx, qtx); err != nil {
 			return err
 		}
 		return tx.Commit()
@@ -67,7 +76,7 @@ type SaveFetchedItemParams struct {
 // SaveFetchedItem saves an item, links it to the feed, and initializes read status.
 // It handles deduplication and ensures atomicity.
 func (s *Store) SaveFetchedItem(ctx context.Context, params SaveFetchedItemParams) error {
-	return s.WithTransaction(ctx, func(qtx *Queries) error {
+	return s.WithTransaction(ctx, func(ctx context.Context, qtx *Queries) error {
 		// 1. Upsert Item
 		newID := uuid.NewString()
 		item, err := qtx.CreateItem(ctx, CreateItemParams{

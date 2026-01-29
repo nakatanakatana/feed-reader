@@ -116,7 +116,7 @@ func (s *ItemServer) ListItems(ctx context.Context, req *connect.Request[itemv1.
 }
 
 func (s *ItemServer) UpdateItemStatus(ctx context.Context, req *connect.Request[itemv1.UpdateItemStatusRequest]) (*connect.Response[itemv1.UpdateItemStatusResponse], error) {
-	err := s.store.WithTransaction(ctx, func(qtx *store.Queries) error {
+	err := s.store.WithTransaction(ctx, func(ctx context.Context, qtx *store.Queries) error {
 		now := time.Now().Format(time.RFC3339)
 
 		for _, id := range req.Msg.Ids {
