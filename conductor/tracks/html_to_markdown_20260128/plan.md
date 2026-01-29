@@ -36,7 +36,7 @@ Create the Markdown rendering component and integrate it into the UI.
 
 ## Phase 3: Final Verification & Cleanup
 
-- [ ] Task: System - Run end-to-end manual verification
+- [x] Task: System - Run end-to-end manual verification 757a988
     - [ ] Add a new feed and verify its content is stored as Markdown.
     - [ ] Check existing feeds to ensure migration worked.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Final Verification & Cleanup' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Final Verification & Cleanup' (Protocol in workflow.md) 757a988
