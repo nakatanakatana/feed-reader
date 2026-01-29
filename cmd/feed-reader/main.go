@@ -27,7 +27,7 @@ type config struct {
 	FetchInterval          time.Duration `env:"FETCH_INTERVAL" envDefault:"30m"`
 	MaxWorkers             int           `env:"MAX_WORKERS" envDefault:"10"`
 	MigrateContentMarkdown bool          `env:"MIGRATE_CONTENT_MARKDOWN" envDefault:"false"`
-	SkipMigration          bool          `env:"SKIP_MIGRATION" envDefault:"false"`
+	SkipDBMigration        bool          `env:"SKIP_DB_MIGRATION" envDefault:"false"`
 }
 
 func main() {
@@ -44,7 +44,7 @@ func main() {
 	}
 
 	// Initialize schema
-	if err := schema.Migrate(ctx, cfg.DBPath, schema.Schema, cfg.SkipMigration); err != nil {
+	if err := schema.Migrate(ctx, cfg.DBPath, schema.Schema, cfg.SkipDBMigration); err != nil {
 		logger.ErrorContext(ctx, "failed to migrate database", "error", err)
 		os.Exit(1)
 	}
