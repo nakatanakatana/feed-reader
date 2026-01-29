@@ -20,7 +20,7 @@ Implement the logic to execute batched jobs within a single transaction using th
 ## Phase 3: Refactoring and Integration
 Integrate the `WriteQueueService` into the existing application components (e.g., `FetcherService`).
 
-- [~] Task: Initialize `WriteQueueService` in `main.go` and provide it to relevant services.
-- [ ] Task: Refactor `FetcherService` to use `WriteQueueService` for saving items.
-- [ ] Task: Verify overall system behavior and performance improvements.
+- [x] Task: Initialize `WriteQueueService` in `main.go` and provide it to relevant services. d42c38f
+- [x] Task: Refactor `FetcherService` to use `WriteQueueService` for saving items. e93a1be
+- [~] Task: Verify overall system behavior and performance improvements.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Refactoring and Integration' (Protocol in workflow.md)

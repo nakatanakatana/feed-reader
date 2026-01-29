@@ -27,6 +27,10 @@ type config struct {
 	FetchInterval time.Duration `env:"FETCH_INTERVAL" envDefault:"30m"`
 	MaxWorkers    int           `env:"MAX_WORKERS" envDefault:"10"`
 	SkipMigration bool          `env:"SKIP_MIGRATION" envDefault:"false"`
+
+	// Write Queue settings
+	WriteQueueMaxBatchSize  int           `env:"WRITE_QUEUE_MAX_BATCH_SIZE" envDefault:"50"`
+	WriteQueueFlushInterval time.Duration `env:"WRITE_QUEUE_FLUSH_INTERVAL" envDefault:"100ms"`
 }
 
 func main() {
@@ -66,9 +70,16 @@ func main() {
 	pool := NewWorkerPool(cfg.MaxWorkers)
 	pool.Start(ctx)
 
-	// 3. Initialize Fetcher components
+	// 3. Initialize Write Queue
+	writeQueue := NewWriteQueueService(s, WriteQueueConfig{
+		MaxBatchSize:  cfg.WriteQueueMaxBatchSize,
+		FlushInterval: cfg.WriteQueueFlushInterval,
+	}, logger)
+	go writeQueue.Start(ctx)
+
+	// 4. Initialize Fetcher components
 	fetcher := NewGofeedFetcher()
-	fetchService := NewFetcherService(s, fetcher, pool, logger, cfg.FetchInterval)
+	fetchService := NewFetcherService(s, fetcher, pool, writeQueue, logger, cfg.FetchInterval)
 
 	// 4. Initialize Scheduler
 	// Add random jitter up to 10% of interval

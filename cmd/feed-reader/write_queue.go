@@ -165,3 +165,13 @@ func (j *UpdateFeedJob) Execute(ctx context.Context, q *store.Queries) error {
 	_, err := q.UpdateFeed(ctx, j.Params)
 	return err
 }
+
+// MarkFetchedJob represents a job to update only the last_fetched_at field.
+type MarkFetchedJob struct {
+	Params store.MarkFeedFetchedParams
+}
+
+// Execute performs the mark fetched operation.
+func (j *MarkFetchedJob) Execute(ctx context.Context, q *store.Queries) error {
+	return q.MarkFeedFetched(ctx, j.Params)
+}

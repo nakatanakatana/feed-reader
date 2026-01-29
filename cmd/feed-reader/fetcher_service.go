@@ -15,16 +15,18 @@ type FetcherService struct {
 	store         *store.Store
 	fetcher       FeedFetcher
 	pool          *WorkerPool
+	writeQueue    *WriteQueueService
 	logger        *slog.Logger
 	fetchInterval time.Duration
 }
 
 // NewFetcherService creates a new FetcherService.
-func NewFetcherService(s *store.Store, f FeedFetcher, p *WorkerPool, l *slog.Logger, fetchInterval time.Duration) *FetcherService {
+func NewFetcherService(s *store.Store, f FeedFetcher, p *WorkerPool, wq *WriteQueueService, l *slog.Logger, fetchInterval time.Duration) *FetcherService {
 	return &FetcherService{
 		store:         s,
 		fetcher:       f,
 		pool:          p,
+		writeQueue:    wq,
 		logger:        l,
 		fetchInterval: fetchInterval,
 	}
@@ -97,27 +99,26 @@ func (s *FetcherService) FetchAndSave(ctx context.Context, f store.Feed) error {
 		return err
 	}
 
-	for _, item := range parsedFeed.Items {
-		params := s.normalizeItem(f.ID, item)
-
-		if err := s.store.SaveFetchedItem(ctx, params); err != nil {
-			s.logger.ErrorContext(ctx, "failed to save item", "url", item.Link, "error", err)
-			// Continue with next item
-			continue
+	if len(parsedFeed.Items) > 0 {
+		job := &SaveItemsJob{
+			Items: make([]store.SaveFetchedItemParams, 0, len(parsedFeed.Items)),
 		}
+		for _, item := range parsedFeed.Items {
+			job.Items = append(job.Items, s.normalizeItem(f.ID, item))
+		}
+		s.writeQueue.Submit(job)
 	}
 
-	// Update last_fetched_at
+	// Update last_fetched_at asynchronously
 	now := time.Now().Format(time.RFC3339)
-	if err := s.store.MarkFeedFetched(ctx, store.MarkFeedFetchedParams{
-		LastFetchedAt: &now,
-		ID:            f.ID,
-	}); err != nil {
-		s.logger.ErrorContext(ctx, "failed to update last_fetched_at", "id", f.ID, "error", err)
-		// Not a critical error, so we don't return it
-	}
+	s.writeQueue.Submit(&MarkFetchedJob{
+		Params: store.MarkFeedFetchedParams{
+			LastFetchedAt: &now,
+			ID:            f.ID,
+		},
+	})
 
-	s.logger.InfoContext(ctx, "successfully fetched and updated feed", "url", f.Url, "items", len(parsedFeed.Items))
+	s.logger.InfoContext(ctx, "enqueued updates for feed", "url", f.Url, "items", len(parsedFeed.Items))
 	return nil
 }
 
