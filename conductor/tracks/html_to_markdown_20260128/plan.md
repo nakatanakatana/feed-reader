@@ -14,7 +14,7 @@ Implement the conversion logic using `html-to-markdown` and prepare the data mig
 - [x] Task: Backend - Integrate conversion into Fetcher service 39d1830
     - [ ] Update `cmd/feed-reader/fetcher.go` to convert `Item` description and content before storage.
     - [ ] Write/Update tests in `cmd/feed-reader/fetcher_test.go` to verify Markdown is stored.
-- [ ] Task: Backend - Create Data Migration
+- [x] Task: Backend - Create Data Migration bbcff80
     - [ ] Create a one-time migration logic (possibly in `main.go` or a separate utility) to iterate through all existing items and convert their content.
     - [ ] Test the migration logic on a sample dataset.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend Implementation & Migration' (Protocol in workflow.md)
