@@ -19,7 +19,7 @@ Implement the conversion logic using `html-to-markdown` and prepare the data mig
     - [ ] Test the migration logic on a sample dataset.
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Implementation & Migration' (Protocol in workflow.md) 3f0af2b
 
-## Phase 2: Frontend Implementation
+## Phase 2: Frontend Implementation [checkpoint: 3838537]
 
 Create the Markdown rendering component and integrate it into the UI.
 
@@ -32,7 +32,7 @@ Create the Markdown rendering component and integrate it into the UI.
 - [x] Task: Frontend - Integrate `MarkdownRenderer` into Item Detail 35182f9
     - [ ] Update `frontend/src/components/ItemDetailModal.tsx` to use `MarkdownRenderer` instead of direct HTML rendering.
     - [ ] Verify that existing tests for `ItemDetailModal` still pass or update them as needed.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Frontend Implementation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Frontend Implementation' (Protocol in workflow.md) 3838537
 
 ## Phase 3: Final Verification & Cleanup
 
