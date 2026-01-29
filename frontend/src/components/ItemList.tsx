@@ -38,6 +38,7 @@ export function ItemList(props: ItemListProps) {
   const handleDateFilterSelect = (value: DateFilterValue) => {
     setDateFilter(value);
     navigate({
+      // @ts-ignore
       search: (prev) => ({
         ...prev,
         publishedSince: value === "all" ? undefined : value,

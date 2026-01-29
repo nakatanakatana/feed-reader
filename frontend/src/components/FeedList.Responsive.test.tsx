@@ -74,7 +74,6 @@ describe("FeedList Responsive", () => {
 
   it("stacks elements vertically on narrow viewports", async () => {
     // Set a narrow viewport
-    // @ts-expect-error
     await page.viewport?.(375, 667);
 
     const mockFeeds = [
@@ -146,7 +145,6 @@ describe("FeedList Responsive", () => {
 
   it("hides action buttons from the header on mobile", async () => {
     // Set a narrow viewport
-    // @ts-expect-error
     await page.viewport?.(375, 667);
 
     const mockFeeds = [
@@ -190,7 +188,6 @@ describe("FeedList Responsive", () => {
 
   it("shows a floating action button on mobile when feeds are selected", async () => {
     // Set a narrow viewport
-    // @ts-expect-error
     await page.viewport?.(375, 667);
 
     const mockFeeds = [
@@ -239,7 +236,6 @@ describe("FeedList Responsive", () => {
 
   it("does not show a floating action button on desktop", async () => {
     // Set a wide viewport
-    // @ts-expect-error
     await page.viewport?.(1024, 768);
 
     const mockFeeds = [
