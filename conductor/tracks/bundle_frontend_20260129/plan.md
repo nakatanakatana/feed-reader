@@ -8,7 +8,7 @@ This phase focuses on ensuring the frontend can be built correctly and the build
 - [x] Task: Update Makefile to coordinate builds 248d25c
     - [ ] Modify `Makefile` to ensure `build-frontend` runs before `build-backend` in the `build` target.
     - [ ] Add `clean` target to remove `frontend/dist` and `dist/`.
-- [ ] Task: Conductor - User Manual Verification 'Preparation & Build Config' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Preparation & Build Config' (Protocol in workflow.md)
 
 ## Phase 2: Go Backend Implementation (TDD)
 This phase implements the embedding and serving logic in the Go backend.
