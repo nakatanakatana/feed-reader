@@ -81,48 +81,35 @@ func TestWriteQueueServiceLoopCountTrigger(t *testing.T) {
 	}
 }
 
-func TestSaveItemsJobExecute(t *testing.T) {
-	st := setupTestStore(t)
-	ctx := context.Background()
-
-	// Setup a feed
-	feed, err := st.CreateFeed(ctx, store.CreateFeedParams{
-		ID:  "feed-1",
-		Url: "http://example.com/feed",
-	})
-	if err != nil {
-		t.Fatalf("failed to create feed: %v", err)
+func TestWriteQueueServiceIntegration(t *testing.T) {
+	cfg := WriteQueueConfig{
+		MaxBatchSize:  5,
+		FlushInterval: 100 * time.Millisecond,
 	}
+	st := setupTestStore(t)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
+	s := NewWriteQueueService(st, cfg, slog.Default())
+	go s.Start(ctx)
+
+	// Setup feed
+	feed, _ := st.CreateFeed(ctx, store.CreateFeedParams{ID: "f1", Url: "url1"})
+
+	// Submit jobs
 	job := &SaveItemsJob{
 		Items: []store.SaveFetchedItemParams{
-			{
-				FeedID: feed.ID,
-				Url:    "http://example.com/item1",
-				Title:  stringPtr("Item 1"),
-			},
-			{
-				FeedID: feed.ID,
-				Url:    "http://example.com/item2",
-				Title:  stringPtr("Item 2"),
-			},
+			{FeedID: feed.ID, Url: "item1", Title: stringPtr("T1")},
+			{FeedID: feed.ID, Url: "item2", Title: stringPtr("T2")},
 		},
 	}
+	s.Submit(job)
 
-	err = job.Execute(ctx, st.Queries)
-	if err != nil {
-		t.Fatalf("failed to execute job: %v", err)
-	}
+	// Wait for processing
+	time.Sleep(150 * time.Millisecond)
 
-	// Verify items are saved
-	items, err := st.ListItems(ctx, store.ListItemsParams{
-		FeedID: feed.ID,
-		Limit:  10,
-	})
-	if err != nil {
-		t.Fatalf("failed to list items: %v", err)
-	}
-
+	// Verify
+	items, _ := st.ListItems(ctx, store.ListItemsParams{FeedID: feed.ID, Limit: 10})
 	if len(items) != 2 {
 		t.Errorf("expected 2 items, got %d", len(items))
 	}
