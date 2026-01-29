@@ -25,7 +25,7 @@ This phase implements the embedding and serving logic in the Go backend.
     - [ ] Modify `cmd/feed-reader/main.go` to mount the static assets handler.
         - [ ] Ensure it's mounted at `/` but does not conflict with `/api`.
         - [ ] Use a build tag or configuration to allow disabling it during dev if necessary (though simple coexistence is preferred).
-- [ ] Task: Conductor - User Manual Verification 'Go Backend Implementation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Go Backend Implementation' (Protocol in workflow.md)
 
 ## Phase 3: Verification & Cleanup
 This phase verifies the final artifact and cleans up.
