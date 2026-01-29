@@ -47,4 +47,7 @@ build-backend:
 build-frontend:
 	npm run build
 
-build: build-backend build-frontend
+build: build-frontend build-backend
+
+clean:
+	rm -rf frontend/dist dist/
