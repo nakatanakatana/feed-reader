@@ -42,6 +42,63 @@ func (s *WriteQueueService) Submit(job WriteQueueJob) {
 	s.jobs <- job
 }
 
+// Start runs the background worker loop.
+func (s *WriteQueueService) Start(ctx context.Context) {
+	s.logger.InfoContext(ctx, "starting write queue service",
+		"max_batch_size", s.config.MaxBatchSize,
+		"flush_interval", s.config.FlushInterval)
+
+	batch := make([]WriteQueueJob, 0, s.config.MaxBatchSize)
+	ticker := time.NewTicker(s.config.FlushInterval)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ctx.Done():
+			s.logger.InfoContext(ctx, "shutting down write queue service, flushing remaining jobs", "count", len(batch))
+			s.flush(context.Background(), batch)
+			return
+		case job := <-s.jobs:
+			batch = append(batch, job)
+			if len(batch) >= s.config.MaxBatchSize {
+				s.flush(ctx, batch)
+				batch = make([]WriteQueueJob, 0, s.config.MaxBatchSize)
+				ticker.Reset(s.config.FlushInterval)
+			}
+		case <-ticker.C:
+			if len(batch) > 0 {
+				s.flush(ctx, batch)
+				batch = make([]WriteQueueJob, 0, s.config.MaxBatchSize)
+			}
+		}
+	}
+}
+
+func (s *WriteQueueService) flush(ctx context.Context, batch []WriteQueueJob) {
+	if len(batch) == 0 {
+		return
+	}
+
+	s.logger.DebugContext(ctx, "flushing batch", "count", len(batch))
+
+	err := s.store.WithTransaction(ctx, func(qtx *store.Queries) error {
+		for _, job := range batch {
+			if err := job.Execute(ctx, qtx); err != nil {
+				s.logger.ErrorContext(ctx, "failed to execute job in batch", "error", err)
+				// We continue with other jobs in the same transaction for now,
+				// or should we rollback the whole batch?
+				// SQLite transactions are all or nothing, so returning err here rollbacks.
+				return err
+			}
+		}
+		return nil
+	})
+
+	if err != nil {
+		s.logger.ErrorContext(ctx, "batch transaction failed", "error", err)
+	}
+}
+
 // SaveItemsJob represents a job to save multiple items for a feed.
 type SaveItemsJob struct {
 	Items []store.SaveFetchedItemParams
