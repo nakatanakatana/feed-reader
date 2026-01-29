@@ -10,7 +10,7 @@ This phase focuses on ensuring the frontend can be built correctly and the build
     - [ ] Add `clean` target to remove `frontend/dist` and `dist/`.
 - [x] Task: Conductor - User Manual Verification 'Preparation & Build Config' (Protocol in workflow.md)
 
-## Phase 2: Go Backend Implementation (TDD)
+## Phase 2: Go Backend Implementation (TDD) [checkpoint: 4b2e026]
 This phase implements the embedding and serving logic in the Go backend.
 
 - [x] Task: Create Static Assets Handler (TDD) 2987198
