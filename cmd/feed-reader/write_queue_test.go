@@ -81,25 +81,46 @@ func TestWriteQueueServiceLoopCountTrigger(t *testing.T) {
 	}
 }
 
-func TestWriteQueueServiceLoopTimeTrigger(t *testing.T) {
+func TestWriteQueueServiceGracefulShutdownDrain(t *testing.T) {
 	cfg := WriteQueueConfig{
 		MaxBatchSize:  10,
-		FlushInterval: 50 * time.Millisecond,
+		FlushInterval: 1 * time.Hour,
 	}
 	st := setupTestStore(t)
 	s := NewWriteQueueService(st, cfg, slog.Default())
 	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
 
-	go s.Start(ctx)
+	done := make(chan struct{})
+	go func() {
+		s.Start(ctx)
+		close(done)
+	}()
 
-	job := &MockJob{}
-	s.Submit(job)
+	job1 := &MockJob{}
+	job2 := &MockJob{}
+	job3 := &MockJob{}
 
-	// Wait for processing (longer than FlushInterval)
-	time.Sleep(100 * time.Millisecond)
+	// We don't submit yet, to ensure Start is running
+	time.Sleep(10 * time.Millisecond)
 
-	if !job.executed {
-		t.Error("expected job to be executed when FlushInterval expires")
+	// Submit multiple jobs
+	s.Submit(job1)
+	s.Submit(job2)
+	s.Submit(job3)
+
+	// Cancel context to trigger shutdown
+	cancel()
+
+	// Wait for Start to return
+	select {
+	case <-done:
+		// OK
+	case <-time.After(1 * time.Second):
+		t.Fatal("Start did not return after context cancellation")
+	}
+
+	if !job1.executed || !job2.executed || !job3.executed {
+		t.Errorf("expected all remaining jobs to be executed during shutdown, got: job1=%v, job2=%v, job3=%v",
+			job1.executed, job2.executed, job3.executed)
 	}
 }

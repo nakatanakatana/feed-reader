@@ -55,6 +55,16 @@ func (s *WriteQueueService) Start(ctx context.Context) {
 	for {
 		select {
 		case <-ctx.Done():
+			// Drain remaining jobs from the channel
+			drain := true
+			for drain {
+				select {
+				case job := <-s.jobs:
+					batch = append(batch, job)
+				default:
+					drain = false
+				}
+			}
 			s.logger.InfoContext(ctx, "shutting down write queue service, flushing remaining jobs", "count", len(batch))
 			s.flush(context.Background(), batch)
 			return
