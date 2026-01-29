@@ -29,7 +29,7 @@ Create the Markdown rendering component and integrate it into the UI.
     - [ ] Create `frontend/src/components/MarkdownRenderer.tsx`.
     - [ ] Configure `markdown-it` with `{ html: false, linkify: true }`.
     - [ ] Write Vitest tests in `frontend/src/components/MarkdownRenderer.test.tsx` to verify rendering and XSS protection.
-- [ ] Task: Frontend - Integrate `MarkdownRenderer` into Item Detail
+- [x] Task: Frontend - Integrate `MarkdownRenderer` into Item Detail 35182f9
     - [ ] Update `frontend/src/components/ItemDetailModal.tsx` to use `MarkdownRenderer` instead of direct HTML rendering.
     - [ ] Verify that existing tests for `ItemDetailModal` still pass or update them as needed.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Frontend Implementation' (Protocol in workflow.md)
