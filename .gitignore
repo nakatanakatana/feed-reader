@@ -36,3 +36,4 @@ styled-system-studio
 coverage.out
 frontend/coverage/
 .agentfs/
+cmd/feed-reader/dist/

@@ -111,6 +111,9 @@ func main() {
 	mux.Handle("/api"+itemPath, http.StripPrefix("/api", itemHandler))
 	mux.Handle("/api"+tagPath, http.StripPrefix("/api", tagHandler))
 
+	// Mount static assets at root
+	mux.Handle("/", NewAssetsHandler(frontendAssets))
+
 	server := &http.Server{
 		Addr:    ":" + cfg.Port,
 		Handler: h2c.NewHandler(mux, &http2.Server{}),
