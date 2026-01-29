@@ -21,7 +21,7 @@ This phase implements the embedding and serving logic in the Go backend.
     - [ ] Create `cmd/feed-reader/assets.go` to implement the handler using `embed` and `http.FileServer`.
         - [ ] Define `//go:embed frontend/dist/*` directive.
         - [ ] Implement a wrapper handler for SPA fallback logic.
-- [ ] Task: Integrate Handler into Main Server
+- [x] Task: Integrate Handler into Main Server 012d1b6
     - [ ] Modify `cmd/feed-reader/main.go` to mount the static assets handler.
         - [ ] Ensure it's mounted at `/` but does not conflict with `/api`.
         - [ ] Use a build tag or configuration to allow disabling it during dev if necessary (though simple coexistence is preferred).
