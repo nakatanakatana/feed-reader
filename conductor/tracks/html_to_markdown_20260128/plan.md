@@ -25,7 +25,7 @@ Create the Markdown rendering component and integrate it into the UI.
 
 - [x] Task: Frontend - Add `markdown-it` and types cf299f1
     - [ ] Run `npm install markdown-it` and `npm install -D @types/markdown-it`
-- [ ] Task: Frontend - Create `MarkdownRenderer` component
+- [x] Task: Frontend - Create `MarkdownRenderer` component 743fc85
     - [ ] Create `frontend/src/components/MarkdownRenderer.tsx`.
     - [ ] Configure `markdown-it` with `{ html: false, linkify: true }`.
     - [ ] Write Vitest tests in `frontend/src/components/MarkdownRenderer.test.tsx` to verify rendering and XSS protection.
