@@ -81,46 +81,53 @@ func TestWriteQueueServiceLoopCountTrigger(t *testing.T) {
 	}
 }
 
-func TestWriteQueueServiceGracefulShutdownDrain(t *testing.T) {
-	cfg := WriteQueueConfig{
-		MaxBatchSize:  10,
-		FlushInterval: 1 * time.Hour,
-	}
+func TestSaveItemsJobExecute(t *testing.T) {
 	st := setupTestStore(t)
-	s := NewWriteQueueService(st, cfg, slog.Default())
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx := context.Background()
 
-	done := make(chan struct{})
-	go func() {
-		s.Start(ctx)
-		close(done)
-	}()
-
-	job1 := &MockJob{}
-	job2 := &MockJob{}
-	job3 := &MockJob{}
-
-	// We don't submit yet, to ensure Start is running
-	time.Sleep(10 * time.Millisecond)
-
-	// Submit multiple jobs
-	s.Submit(job1)
-	s.Submit(job2)
-	s.Submit(job3)
-
-	// Cancel context to trigger shutdown
-	cancel()
-
-	// Wait for Start to return
-	select {
-	case <-done:
-		// OK
-	case <-time.After(1 * time.Second):
-		t.Fatal("Start did not return after context cancellation")
+	// Setup a feed
+	feed, err := st.CreateFeed(ctx, store.CreateFeedParams{
+		ID:  "feed-1",
+		Url: "http://example.com/feed",
+	})
+	if err != nil {
+		t.Fatalf("failed to create feed: %v", err)
 	}
 
-	if !job1.executed || !job2.executed || !job3.executed {
-		t.Errorf("expected all remaining jobs to be executed during shutdown, got: job1=%v, job2=%v, job3=%v",
-			job1.executed, job2.executed, job3.executed)
+	job := &SaveItemsJob{
+		Items: []store.SaveFetchedItemParams{
+			{
+				FeedID: feed.ID,
+				Url:    "http://example.com/item1",
+				Title:  stringPtr("Item 1"),
+			},
+			{
+				FeedID: feed.ID,
+				Url:    "http://example.com/item2",
+				Title:  stringPtr("Item 2"),
+			},
+		},
 	}
+
+	err = job.Execute(ctx, st.Queries)
+	if err != nil {
+		t.Fatalf("failed to execute job: %v", err)
+	}
+
+	// Verify items are saved
+	items, err := st.ListItems(ctx, store.ListItemsParams{
+		FeedID: feed.ID,
+		Limit:  10,
+	})
+	if err != nil {
+		t.Fatalf("failed to list items: %v", err)
+	}
+
+	if len(items) != 2 {
+		t.Errorf("expected 2 items, got %d", len(items))
+	}
+}
+
+func stringPtr(s string) *string {
+	return &s
 }

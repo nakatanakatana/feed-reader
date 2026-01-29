@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/nakatanakatana/feed-reader/store"
 )
 
@@ -116,7 +118,40 @@ type SaveItemsJob struct {
 
 // Execute performs the save operations.
 func (j *SaveItemsJob) Execute(ctx context.Context, q *store.Queries) error {
-	// Implementation will be added in Phase 2.
+	for _, params := range j.Items {
+		// 1. Upsert Item
+		newID := uuid.NewString()
+		item, err := q.CreateItem(ctx, store.CreateItemParams{
+			ID:          newID,
+			Url:         params.Url,
+			Title:       params.Title,
+			Description: params.Description,
+			PublishedAt: params.PublishedAt,
+			Author:      params.Author,
+			Guid:        params.Guid,
+			Content:     params.Content,
+			ImageUrl:    params.ImageUrl,
+			Categories:  params.Categories,
+		})
+		if err != nil {
+			return fmt.Errorf("failed to create/update item: %w", err)
+		}
+
+		// 2. Link to Feed
+		err = q.CreateFeedItem(ctx, store.CreateFeedItemParams{
+			FeedID: params.FeedID,
+			ItemID: item.ID,
+		})
+		if err != nil {
+			return fmt.Errorf("failed to link feed and item: %w", err)
+		}
+
+		// 3. Initialize Read Status
+		err = q.CreateItemRead(ctx, item.ID)
+		if err != nil {
+			return fmt.Errorf("failed to initialize read status: %w", err)
+		}
+	}
 	return nil
 }
 
@@ -127,7 +162,6 @@ type UpdateFeedJob struct {
 
 // Execute performs the update operation.
 func (j *UpdateFeedJob) Execute(ctx context.Context, q *store.Queries) error {
-	// Implementation will be added in Phase 2.
 	_, err := q.UpdateFeed(ctx, j.Params)
 	return err
 }
