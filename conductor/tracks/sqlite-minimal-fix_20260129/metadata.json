@@ -1,8 +1,0 @@
-{
-  "track_id": "sqlite-minimal-fix_20260129",
-  "type": "other",
-  "status": "new",
-  "created_at": "2026-01-29T21:55:00Z",
-  "updated_at": "2026-01-29T21:55:00Z",
-  "description": "Identify minimal changes for SQLite transaction error using fail.db"
-}
