@@ -2,7 +2,7 @@
 
 This plan outlines the steps to implement HTML-to-Markdown conversion on the backend, a migration for existing data, and a Markdown rendering component on the frontend.
 
-## Phase 1: Backend Implementation & Migration
+## Phase 1: Backend Implementation & Migration [checkpoint: 3f0af2b]
 
 Implement the conversion logic using `html-to-markdown` and prepare the data migration.
 
@@ -17,7 +17,7 @@ Implement the conversion logic using `html-to-markdown` and prepare the data mig
 - [x] Task: Backend - Create Data Migration bbcff80
     - [ ] Create a one-time migration logic (possibly in `main.go` or a separate utility) to iterate through all existing items and convert their content.
     - [ ] Test the migration logic on a sample dataset.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend Implementation & Migration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Implementation & Migration' (Protocol in workflow.md) 3f0af2b
 
 ## Phase 2: Frontend Implementation
 
