@@ -1,6 +1,6 @@
 # Implementation Plan: SQLite Write Queue Service
 
-## Phase 1: Service Definition and Core Logic
+## Phase 1: Service Definition and Core Logic [checkpoint: a4f3146]
 Define the core structures and the background worker logic for batching write operations.
 
 - [x] Task: Define `WriteQueueJob` interface and specific job structs (e.g., `SaveItemsJob`). 1932589
