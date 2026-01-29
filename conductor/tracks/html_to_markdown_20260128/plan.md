@@ -11,7 +11,7 @@ Implement the conversion logic using `html-to-markdown` and prepare the data mig
 - [x] Task: Backend - Implement HTML to Markdown utility function be04afc
     - [ ] Create a utility in `cmd/feed-reader/` to handle the conversion logic.
     - [ ] Write tests to verify various HTML structures (links, images, lists) convert correctly to Markdown.
-- [ ] Task: Backend - Integrate conversion into Fetcher service
+- [x] Task: Backend - Integrate conversion into Fetcher service 39d1830
     - [ ] Update `cmd/feed-reader/fetcher.go` to convert `Item` description and content before storage.
     - [ ] Write/Update tests in `cmd/feed-reader/fetcher_test.go` to verify Markdown is stored.
 - [ ] Task: Backend - Create Data Migration
