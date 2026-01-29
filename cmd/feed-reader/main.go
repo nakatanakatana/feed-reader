@@ -43,16 +43,23 @@ func main() {
 	}
 
 	// Initialize schema
-	if err := schema.Migrate(ctx, cfg.DBPath, schema.Schema, cfg.SkipMigration); err != nil {
-		logger.ErrorContext(ctx, "failed to migrate database", "error", err)
-		os.Exit(1)
+	if !cfg.SkipMigration {
+		if err := schema.Migrate(ctx, cfg.DBPath, schema.Schema, false); err != nil {
+			logger.ErrorContext(ctx, "failed to migrate database", "error", err)
+			os.Exit(1)
+		}
 	}
 
-	db, err := sql.Open("sqlite", cfg.DBPath)
+	// Use WAL mode and set a busy timeout to reduce locking errors.
+	// Set MaxOpenConns to 1 to prevent "cannot start a transaction within a transaction" errors
+	// caused by connection pooling issues with the sqlite driver under high concurrency.
+	dsn := cfg.DBPath + "?_pragma=journal_mode(WAL)&_pragma=busy_timeout(5000)"
+	db, err := sql.Open("sqlite", dsn)
 	if err != nil {
 		logger.ErrorContext(ctx, "failed to open database", "error", err)
 		os.Exit(1)
 	}
+	db.SetMaxOpenConns(1)
 	defer func() {
 		if err := db.Close(); err != nil {
 			logger.ErrorContext(ctx, "failed to close database", "error", err)
