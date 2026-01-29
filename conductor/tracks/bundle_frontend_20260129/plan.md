@@ -3,7 +3,7 @@
 ## Phase 1: Preparation & Build Config
 This phase focuses on ensuring the frontend can be built correctly and the build process is integrated.
 
-- [ ] Task: Ensure frontend build produces expected output
+- [x] Task: Ensure frontend build produces expected output e9a1a42
     - [ ] Create a `frontend_build_test.sh` script to run `npm run build` and verify `frontend/dist/index.html` exists.
 - [ ] Task: Update Makefile to coordinate builds
     - [ ] Modify `Makefile` to ensure `build-frontend` runs before `build-backend` in the `build` target.
