@@ -1,0 +1,8 @@
+{
+  "track_id": "sqlite-tx-fix_20260129",
+  "type": "bug",
+  "status": "new",
+  "created_at": "2026-01-29T21:20:00Z",
+  "updated_at": "2026-01-29T21:20:00Z",
+  "description": "Fix 'cannot start a transaction within a transaction' error after migrating to modernc.org/sqlite driver."
+}
