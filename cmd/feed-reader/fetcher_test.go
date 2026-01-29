@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/mmcdole/gofeed"
@@ -45,6 +46,39 @@ func TestGofeedFetcher_Fetch(t *testing.T) {
 			contentType: "application/xml",
 			wantErr:     true,
 			check:       nil,
+		},
+		{
+			name: "HTML Content to Markdown",
+			feedContent: `<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+<channel>
+  <title>Markdown Test</title>
+  <item>
+    <title>HTML Item</title>
+    <description>&lt;p&gt;This is &lt;strong&gt;HTML&lt;/strong&gt;&lt;/p&gt;</description>
+    <content:encoded>&lt;ul&gt;&lt;li&gt;List Item&lt;/li&gt;&lt;/ul&gt;</content:encoded>
+  </item>
+</channel>
+</rss>`,
+			contentType: "application/xml",
+			wantErr:     false,
+			check: func(t *testing.T, f *gofeed.Feed) {
+				if f == nil {
+					t.Fatal("expected feed, got nil")
+				}
+				if len(f.Items) != 1 {
+					t.Fatalf("expected 1 item, got %d", len(f.Items))
+				}
+				item := f.Items[0]
+				expectedDesc := "This is **HTML**"
+				if strings.TrimSpace(item.Description) != expectedDesc {
+					t.Errorf("expected description '%s', got '%s'", expectedDesc, item.Description)
+				}
+				expectedContent := "- List Item"
+				if strings.TrimSpace(item.Content) != expectedContent {
+					t.Errorf("expected content '%s', got '%s'", expectedContent, item.Content)
+				}
+			},
 		},
 	}
 

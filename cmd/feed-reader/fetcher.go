@@ -36,5 +36,25 @@ func NewGofeedFetcher() *GofeedFetcher {
 func (f *GofeedFetcher) Fetch(ctx context.Context, url string) (*gofeed.Feed, error) {
 	fp := gofeed.NewParser()
 	fp.Client = f.client
-	return fp.ParseURLWithContext(url, ctx)
+	feed, err := fp.ParseURLWithContext(url, ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, item := range feed.Items {
+		if item.Description != "" {
+			desc, err := ConvertHTMLToMarkdown(item.Description)
+			if err == nil {
+				item.Description = desc
+			}
+		}
+		if item.Content != "" {
+			content, err := ConvertHTMLToMarkdown(item.Content)
+			if err == nil {
+				item.Content = content
+			}
+		}
+	}
+
+	return feed, nil
 }
