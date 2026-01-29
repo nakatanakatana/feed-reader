@@ -27,7 +27,7 @@ This phase implements the embedding and serving logic in the Go backend.
         - [ ] Use a build tag or configuration to allow disabling it during dev if necessary (though simple coexistence is preferred).
 - [x] Task: Conductor - User Manual Verification 'Go Backend Implementation' (Protocol in workflow.md)
 
-## Phase 3: Verification & Cleanup
+## Phase 3: Verification & Cleanup [checkpoint: 58e712d]
 This phase verifies the final artifact and cleans up.
 
 - [~] Task: Verify Single Binary
