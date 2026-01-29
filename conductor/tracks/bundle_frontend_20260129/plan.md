@@ -1,6 +1,6 @@
 # Implementation Plan - Bundle Frontend
 
-## Phase 1: Preparation & Build Config
+## Phase 1: Preparation & Build Config [checkpoint: eb20ef6]
 This phase focuses on ensuring the frontend can be built correctly and the build process is integrated.
 
 - [x] Task: Ensure frontend build produces expected output e9a1a42
