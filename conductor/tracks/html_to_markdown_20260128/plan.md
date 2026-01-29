@@ -23,7 +23,7 @@ Implement the conversion logic using `html-to-markdown` and prepare the data mig
 
 Create the Markdown rendering component and integrate it into the UI.
 
-- [ ] Task: Frontend - Add `markdown-it` and types
+- [x] Task: Frontend - Add `markdown-it` and types cf299f1
     - [ ] Run `npm install markdown-it` and `npm install -D @types/markdown-it`
 - [ ] Task: Frontend - Create `MarkdownRenderer` component
     - [ ] Create `frontend/src/components/MarkdownRenderer.tsx`.
