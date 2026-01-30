@@ -148,4 +148,41 @@ describe("ItemList", () => {
     await expect.element(newsTag).toBeInTheDocument();
     await expect.element(page.getByText("News (0)")).not.toBeInTheDocument();
   });
+
+  it("formats unread counts of 1000 or more as '999+'", async () => {
+    vi.mocked(useItems).mockReturnValue({
+      data: { pages: [{ items: [] }] },
+      isLoading: false,
+    } as unknown as ReturnType<typeof useItems>);
+
+    vi.mocked(useTags).mockReturnValue({
+      data: {
+        tags: [{ id: "tag-1", name: "HighCount", unreadCount: 1500n }],
+        totalUnreadCount: 1500n,
+      },
+      isLoading: false,
+    } as unknown as ReturnType<typeof useTags>);
+
+    const history = createMemoryHistory({ initialEntries: ["/"] });
+    const router = createRouter({ routeTree, history });
+
+    dispose = render(
+      () => (
+        <TransportProvider transport={transport}>
+          <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} />
+          </QueryClientProvider>
+        </TransportProvider>
+      ),
+      document.body,
+    );
+
+    // Check All button unread count (1500 -> 999+)
+    const allButton = page.getByRole("button", { name: /All/ });
+    await expect.element(allButton).toHaveTextContent("999+");
+
+    // Check HighCount tag unread count (1500 -> 999+)
+    const highCountButton = page.getByRole("button", { name: /HighCount/ });
+    await expect.element(highCountButton).toHaveTextContent("999+");
+  });
 });
