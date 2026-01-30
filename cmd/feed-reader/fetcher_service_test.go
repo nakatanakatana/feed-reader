@@ -96,12 +96,17 @@ func TestFetcherService_FetchAndSave(t *testing.T) {
 
 	fetcher := &mockFetcher{feed: mockFeed}
 	logger := slog.New(slog.NewJSONHandler(&bytes.Buffer{}, nil))
-	service := NewFetcherService(s, fetcher, nil, logger, 30*time.Minute)
+	wq := NewWriteQueueService(s, WriteQueueConfig{MaxBatchSize: 1, FlushInterval: 10 * time.Millisecond}, logger)
+	go wq.Start(ctx)
+	service := NewFetcherService(s, fetcher, nil, wq, logger, 30*time.Minute)
 
 	err = service.FetchAndSave(ctx, feed)
 	if err != nil {
 		t.Errorf("FetchAndSave() error = %v", err)
 	}
+
+	// Wait for WriteQueue to process jobs
+	time.Sleep(50 * time.Millisecond)
 
 	// Verify items are saved
 	items, err := queries.ListItemsByFeed(ctx, feed.ID)
@@ -138,7 +143,9 @@ func TestFetcherService_FetchAllFeeds_Interval(t *testing.T) {
 
 	logger := slog.New(slog.NewJSONHandler(&bytes.Buffer{}, nil))
 	interval := 30 * time.Minute
-	service := NewFetcherService(s, fetcher, pool, logger, interval)
+	wq := NewWriteQueueService(s, WriteQueueConfig{MaxBatchSize: 1, FlushInterval: 10 * time.Millisecond}, logger)
+	go wq.Start(ctx)
+	service := NewFetcherService(s, fetcher, pool, wq, logger, interval)
 
 	// Case 1: Feed fetched recently (should NOT fetch)
 	recentTime := time.Now().Add(-5 * time.Minute).Format(time.RFC3339)
@@ -161,6 +168,8 @@ func TestFetcherService_FetchAllFeeds_Interval(t *testing.T) {
 
 	// Wait for workers to finish
 	pool.Wait()
+	// Wait for WriteQueue to process jobs
+	time.Sleep(50 * time.Millisecond)
 
 	// Verify results
 	// Recent feed should NOT have changed timestamp (or very minimally if we were unlucky, but we check if it is > recentTime + small delta? No, simpler: check if it was updated to NOW)
@@ -194,7 +203,9 @@ func TestFetcherService_FetchFeedsByIDs(t *testing.T) {
 
 	logger := slog.New(slog.NewJSONHandler(&bytes.Buffer{}, nil))
 	interval := 30 * time.Minute
-	service := NewFetcherService(s, fetcher, pool, logger, interval)
+	wq := NewWriteQueueService(s, WriteQueueConfig{MaxBatchSize: 1, FlushInterval: 10 * time.Millisecond}, logger)
+	go wq.Start(ctx)
+	service := NewFetcherService(s, fetcher, pool, wq, logger, interval)
 
 	// Create a feed that was fetched recently (so normally wouldn't be fetched)
 	recentTime := time.Now().Add(-1 * time.Minute).Format(time.RFC3339)
@@ -208,6 +219,8 @@ func TestFetcherService_FetchFeedsByIDs(t *testing.T) {
 	}
 
 	pool.Wait()
+	// Wait for WriteQueue
+	time.Sleep(50 * time.Millisecond)
 
 	// Verify it was fetched (last_fetched_at updated to NOW)
 	updatedFeed, _ := queries.GetFeed(ctx, feed.ID)
