@@ -139,6 +139,10 @@ export function ItemList(props: ItemListProps) {
             })}
           >
             All
+            <Show when={(tagsQuery.data?.totalUnreadCount ?? 0n) > 0n}>
+              {" "}
+              ({tagsQuery.data?.totalUnreadCount.toString()})
+            </Show>
           </button>
           <For each={tagsQuery.data?.tags}>
             {(tag) => (
@@ -167,6 +171,10 @@ export function ItemList(props: ItemListProps) {
                 })}
               >
                 {tag.name}
+                <Show when={(tag.unreadCount ?? 0n) > 0n}>
+                  {" "}
+                  ({tag.unreadCount.toString()})
+                </Show>
               </button>
             )}
           </For>
