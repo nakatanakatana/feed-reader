@@ -20,13 +20,13 @@ Update the query logic to handle the new collection structure and implement incr
 - [x] Task: Implement: Create a utility or query to provide a merged view of both collections, sorted by `createdAt` ascending. 58fae78
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Logic Layer - Query and Mutation Updates' (Protocol in workflow.md)
 
-## Phase 3: Frontend Component Integration
+## Phase 3: Frontend Component Integration [checkpoint: 87085d6]
 Update UI components to use the new incremental fetching logic and the "Load More" button.
 
-- [x] Task: Write Tests: Update `ItemList.test.tsx` to verify the "Load More" button at the top and the auto-appending of new items.
-- [x] Task: Implement: Modify `ItemList.tsx` to include the "Load More" button at the top of the list.
-- [x] Task: Implement: Update the item list view to use the merged `LiveQuery` and apply filters (date, tags) locally.
-- [x] Task: Implement: Ensure the list scrolls or maintains position correctly when items are prepended to the top.
+- [x] Task: Write Tests: Update `ItemList.test.tsx` to verify the "Load More" button at the top and the auto-appending of new items. 87085d6
+- [x] Task: Implement: Modify `ItemList.tsx` to include the "Load More" button at the top of the list. 87085d6
+- [x] Task: Implement: Update the item list view to use the merged `LiveQuery` and apply filters (date, tags) locally. 87085d6
+- [x] Task: Implement: Ensure the list scrolls or maintains position correctly when items are prepended to the top. 87085d6
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Frontend Component Integration' (Protocol in workflow.md)
 
 ## Phase 4: Optimistic Updates and State Sync
