@@ -22,11 +22,11 @@ This plan outlines the steps to add unread item counts to the tag filter list in
     - [x] Update `cmd/feed-reader/tag_service.go` to fetch unread counts and populate the response.
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Backend Implementation' (Protocol in workflow.md) 1f0281a
 
-## Phase 3: Frontend Implementation (TDD)
-- [ ] Task: Update ItemList component to display unread counts
-    - [ ] Write failing tests in `frontend/src/components/ItemList.test.tsx` for unread count display.
-    - [ ] Update `frontend/src/components/ItemList.tsx` to show `(count)` next to tag names.
-- [ ] Task: Update FeedList component to display unread counts
-    - [ ] Write failing tests in `frontend/src/components/FeedList.test.tsx` (if not already covered) for tag unread counts.
-    - [ ] Update `frontend/src/components/FeedList.tsx` to show `(count)` next to tag names in the filter bar.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Frontend Implementation' (Protocol in workflow.md)
+## Phase 3: Frontend Implementation (TDD) [checkpoint: 93d502d]
+- [x] Task: Update ItemList component to display unread counts 156c3dc
+    - [x] Write failing tests in `frontend/src/components/ItemList.test.tsx` for unread count display.
+    - [x] Update `frontend/src/components/ItemList.tsx` to show `(count)` next to tag names.
+- [x] Task: Update FeedList component to display unread counts 7f3b849
+    - [x] Write failing tests in `frontend/src/components/FeedList.test.tsx` (if not already covered) for tag unread counts.
+    - [x] Update `frontend/src/components/FeedList.tsx` to show `(count)` next to tag names in the filter bar.
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Frontend Implementation' (Protocol in workflow.md) 93d502d
