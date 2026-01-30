@@ -5,7 +5,7 @@
 - [x] Task: Update the `RootComponent` layout styles (container) in `frontend/src/routes/__root.tsx`. 2d5b0b3
     -   Optimize padding to be modern yet compact.
     -   Refresh border and background colors.
-- [~] Task: Implement the new "Active" and "Inactive" link styles using Panda CSS in `frontend/src/routes/__root.tsx`.
+- [x] Task: Implement the new "Active" and "Inactive" link styles using Panda CSS in `frontend/src/routes/__root.tsx`. 06a9738
     -   Add background highlight for active links.
     -   Add bottom border indicator for active links.
-- [ ] Task: Conductor - User Manual Verification 'Implementation & Styling' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Implementation & Styling' (Protocol in workflow.md)
