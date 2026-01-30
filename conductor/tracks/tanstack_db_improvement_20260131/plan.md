@@ -13,11 +13,11 @@ Refactor the database schema to support separate collections and the necessary i
 ## Phase 2: Logic Layer - Query and Mutation Updates
 Update the query logic to handle the new collection structure and implement incremental fetching.
 
-- [x] Task: Write Tests: Create unit tests in `src/lib/item-query.test.ts` for `fetchNewItems` (future direction) and `fetchOlderItems` (past direction) logic.
-- [x] Task: Implement: Update `src/lib/item-query.ts` to implement `fetchNewItems` using a `lastFetchedAt` timestamp.
-- [x] Task: Implement: Update `src/lib/item-query.ts` to implement `fetchOlderItems` for "Load More" functionality at the top of the list.
-- [x] Task: Write Tests: Create unit tests for merging `unreadItems` and `readItems` collections via `LiveQuery`.
-- [x] Task: Implement: Create a utility or query to provide a merged view of both collections, sorted by `createdAt` ascending.
+- [x] Task: Write Tests: Create unit tests in `src/lib/item-query.test.ts` for `fetchNewItems` (future direction) and `fetchOlderItems` (past direction) logic. 58fae78
+- [x] Task: Implement: Update `src/lib/item-query.ts` to implement `fetchNewItems` using a `lastFetchedAt` timestamp. 58fae78
+- [x] Task: Implement: Update `src/lib/item-query.ts` to implement `fetchOlderItems` for "Load More" functionality at the top of the list. 58fae78
+- [x] Task: Write Tests: Create unit tests for merging `unreadItems` and `readItems` collections via `LiveQuery`. 58fae78
+- [x] Task: Implement: Create a utility or query to provide a merged view of both collections, sorted by `createdAt` ascending. 58fae78
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Logic Layer - Query and Mutation Updates' (Protocol in workflow.md)
 
 ## Phase 3: Frontend Component Integration
