@@ -11,7 +11,7 @@ import (
 )
 
 func TestTags(t *testing.T) {
-	q, _ := setupDB(t)
+	q, s := setupDB(t)
 	ctx := context.Background()
 
 	// 1. Create Tag
@@ -30,7 +30,7 @@ func TestTags(t *testing.T) {
 	require.NoError(t, err)
 
 	// 2. List Tags
-	tags, err := q.ListTags(ctx)
+	tags, err := s.ListTags(ctx, store.ListTagsParams{})
 	require.NoError(t, err)
 	assert.Len(t, tags, 2)
 	assert.Equal(t, "Tech", tags[0].Name) // Ordered by UpdatedAt ASC (Default)
@@ -113,7 +113,7 @@ func TestTags(t *testing.T) {
 	err = q.DeleteTag(ctx, "tag-1")
 	require.NoError(t, err)
 
-	tags, err = q.ListTags(ctx)
+	tags, err = s.ListTags(ctx, store.ListTagsParams{})
 	require.NoError(t, err)
 	assert.Len(t, tags, 1)
 	assert.Equal(t, "News", tags[0].Name)

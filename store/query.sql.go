@@ -47,6 +47,24 @@ func (q *Queries) CountItems(ctx context.Context, arg CountItemsParams) (int64, 
 	return count, err
 }
 
+const countTotalUnreadItems = `-- name: CountTotalUnreadItems :one
+SELECT
+  COUNT(DISTINCT fi.item_id) AS count
+FROM
+  feed_items fi
+LEFT JOIN
+  item_reads ir ON fi.item_id = ir.item_id
+WHERE
+  COALESCE(ir.is_read, 0) = 0
+`
+
+func (q *Queries) CountTotalUnreadItems(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countTotalUnreadItems)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const countUnreadItemsPerFeed = `-- name: CountUnreadItemsPerFeed :many
 SELECT
   fi.feed_id,
@@ -76,6 +94,50 @@ func (q *Queries) CountUnreadItemsPerFeed(ctx context.Context) ([]CountUnreadIte
 	for rows.Next() {
 		var i CountUnreadItemsPerFeedRow
 		if err := rows.Scan(&i.FeedID, &i.Count); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const countUnreadItemsPerTag = `-- name: CountUnreadItemsPerTag :many
+SELECT
+  ft.tag_id,
+  COUNT(DISTINCT fi.item_id) AS count
+FROM
+  feed_tags ft
+JOIN
+  feed_items fi ON ft.feed_id = fi.feed_id
+LEFT JOIN
+  item_reads ir ON fi.item_id = ir.item_id
+WHERE
+  COALESCE(ir.is_read, 0) = 0
+GROUP BY
+  ft.tag_id
+`
+
+type CountUnreadItemsPerTagRow struct {
+	TagID string `json:"tag_id"`
+	Count int64  `json:"count"`
+}
+
+func (q *Queries) CountUnreadItemsPerTag(ctx context.Context) ([]CountUnreadItemsPerTagRow, error) {
+	rows, err := q.db.QueryContext(ctx, countUnreadItemsPerTag)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []CountUnreadItemsPerTagRow
+	for rows.Next() {
+		var i CountUnreadItemsPerTagRow
+		if err := rows.Scan(&i.TagID, &i.Count); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

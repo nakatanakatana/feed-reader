@@ -11,6 +11,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
+import { useTags } from "../lib/tag-query";
 import { routeTree } from "../routeTree.gen";
 
 // Mock the db module
@@ -35,6 +36,15 @@ vi.mock("@tanstack/solid-db", async (importOriginal) => {
   };
 });
 
+// Mock useTags
+vi.mock("../lib/tag-query", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../lib/tag-query")>();
+  return {
+    ...actual,
+    useTags: vi.fn(),
+  };
+});
+
 describe("FeedList Unread Counts", () => {
   let dispose: () => void;
 
@@ -55,6 +65,13 @@ describe("FeedList Unread Counts", () => {
       </QueryClientProvider>
     </TransportProvider>
   );
+
+  beforeEach(() => {
+    vi.mocked(useTags).mockReturnValue({
+      data: { tags: [], totalUnreadCount: 0n },
+      isLoading: false,
+    } as unknown as ReturnType<typeof useTags>);
+  });
 
   it("displays unread count for each feed", async () => {
     const mockFeeds = [
@@ -148,5 +165,51 @@ describe("FeedList Unread Counts", () => {
 
     // I'll expect "Total Unread: 8" for clarity in the test, then implement it.
     await expect.element(page.getByText(/Total Unread: 8/)).toBeInTheDocument();
+  });
+
+  it("displays unread counts for tags in filter bar", async () => {
+    vi.mocked(useLiveQuery).mockReturnValue({
+      data: [],
+    } as unknown as ReturnType<typeof useLiveQuery>);
+
+    vi.mocked(useTags).mockReturnValue({
+      data: {
+        tags: [
+          { id: "t1", name: "Tech", unreadCount: 5n },
+          { id: "t2", name: "News", unreadCount: 0n },
+        ],
+        totalUnreadCount: 5n,
+      },
+      isLoading: false,
+    } as unknown as ReturnType<typeof useTags>);
+
+    const history = createMemoryHistory({ initialEntries: ["/feeds"] });
+    const router = createRouter({ routeTree, history });
+
+    dispose = render(
+      () => (
+        <TestWrapper>
+          <RouterProvider router={router} />
+        </TestWrapper>
+      ),
+      document.body,
+    );
+
+    // Check All button unread count
+    const allButton = page.getByRole("button", { name: /All/ });
+    await expect.element(allButton).toBeInTheDocument();
+    await expect.element(allButton).toHaveTextContent("5");
+
+    // Check Tech tag unread count
+    const techButton = page.getByRole("button", { name: /Tech.*5/ });
+    await expect.element(techButton).toBeInTheDocument();
+
+    // Check News tag unread count (should be hidden if 0)
+    // Find the one that specifically says "News" without count, and ignore the form one
+    const newsTag = page
+      .getByRole("button", { name: "News", exact: true })
+      .nth(1); // The second one should be in the filter list
+    await expect.element(newsTag).toBeInTheDocument();
+    await expect.element(page.getByText("News (0)")).not.toBeInTheDocument();
   });
 });

@@ -31,12 +31,19 @@ func (s *TagServer) CreateTag(ctx context.Context, req *connect.Request[tagv1.Cr
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to generate UUID: %w", err))
 	}
 
-	tag, err := s.store.CreateTag(ctx, store.CreateTagParams{
+	dbTag, err := s.store.CreateTag(ctx, store.CreateTagParams{
 		ID:   newUUID.String(),
 		Name: req.Msg.Name,
 	})
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	tag := store.TagWithCount{
+		ID:        dbTag.ID,
+		Name:      dbTag.Name,
+		CreatedAt: dbTag.CreatedAt,
+		UpdatedAt: dbTag.UpdatedAt,
 	}
 
 	return connect.NewResponse(&tagv1.CreateTagResponse{
@@ -57,13 +64,19 @@ func (s *TagServer) ListTags(ctx context.Context, req *connect.Request[tagv1.Lis
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
+	totalUnread, err := s.store.CountTotalUnreadItems(ctx)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
 	protoTags := make([]*tagv1.Tag, len(tags))
 	for i, t := range tags {
 		protoTags[i] = toProtoTagV1(t)
 	}
 
 	return connect.NewResponse(&tagv1.ListTagsResponse{
-		Tags: protoTags,
+		Tags:             protoTags,
+		TotalUnreadCount: totalUnread,
 	}), nil
 }
 
@@ -75,11 +88,12 @@ func (s *TagServer) DeleteTag(ctx context.Context, req *connect.Request[tagv1.De
 	return connect.NewResponse(&tagv1.DeleteTagResponse{}), nil
 }
 
-func toProtoTagV1(t store.Tag) *tagv1.Tag {
+func toProtoTagV1(t store.TagWithCount) *tagv1.Tag {
 	return &tagv1.Tag{
-		Id:        t.ID,
-		Name:      t.Name,
-		CreatedAt: t.CreatedAt,
-		UpdatedAt: t.UpdatedAt,
+		Id:          t.ID,
+		Name:        t.Name,
+		CreatedAt:   t.CreatedAt,
+		UpdatedAt:   t.UpdatedAt,
+		UnreadCount: t.UnreadCount,
 	}
 }

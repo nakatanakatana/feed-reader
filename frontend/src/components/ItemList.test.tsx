@@ -19,6 +19,15 @@ vi.mock("../lib/item-query", () => ({
 }));
 
 import { useItem, useItems, useUpdateItemStatus } from "../lib/item-query";
+import { useTags } from "../lib/tag-query";
+
+vi.mock("../lib/tag-query", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../lib/tag-query")>();
+  return {
+    ...actual,
+    useTags: vi.fn(),
+  };
+});
 
 describe("ItemList", () => {
   let dispose: () => void;
@@ -45,6 +54,11 @@ describe("ItemList", () => {
       fetchNextPage: vi.fn(),
       isFetchingNextPage: false,
     } as unknown as ReturnType<typeof useItems>);
+
+    vi.mocked(useTags).mockReturnValue({
+      data: { tags: [] },
+      isLoading: false,
+    } as unknown as ReturnType<typeof useTags>);
 
     vi.mocked(useItem).mockReturnValue({
       data: {
@@ -85,5 +99,53 @@ describe("ItemList", () => {
     await expect
       .element(page.getByRole("heading", { name: "Item 1" }))
       .toBeInTheDocument();
+  });
+
+  it("displays unread counts for tags", async () => {
+    vi.mocked(useItems).mockReturnValue({
+      data: { pages: [{ items: [] }] },
+      isLoading: false,
+    } as unknown as ReturnType<typeof useItems>);
+
+    vi.mocked(useTags).mockReturnValue({
+      data: {
+        tags: [
+          { id: "tag-1", name: "Tech", unreadCount: 5n },
+          { id: "tag-2", name: "News", unreadCount: 0n },
+        ],
+        totalUnreadCount: 5n,
+      },
+      isLoading: false,
+    } as unknown as ReturnType<typeof useTags>);
+
+    const history = createMemoryHistory({ initialEntries: ["/"] });
+    const router = createRouter({ routeTree, history });
+
+    dispose = render(
+      () => (
+        <TransportProvider transport={transport}>
+          <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} />
+          </QueryClientProvider>
+        </TransportProvider>
+      ),
+      document.body,
+    );
+
+    // Check All button unread count
+    const allButton = page.getByRole("button", { name: /All/ });
+    await expect.element(allButton).toBeInTheDocument();
+    await expect.element(allButton).toHaveTextContent("5");
+
+    // Check Tech tag unread count
+    const techButton = page.getByRole("button", { name: /Tech/ });
+    await expect.element(techButton).toBeInTheDocument();
+    await expect.element(techButton).toHaveTextContent("5");
+
+    // Check News tag unread count (should be hidden or show 0, spec says hide if 0)
+    // Actually, let's check it doesn't have (0) if we want to hide it
+    const newsTag = page.getByRole("button", { name: "News" });
+    await expect.element(newsTag).toBeInTheDocument();
+    await expect.element(page.getByText("News (0)")).not.toBeInTheDocument();
   });
 });

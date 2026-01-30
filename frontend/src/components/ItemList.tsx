@@ -128,6 +128,8 @@ export function ItemList(props: ItemListProps) {
               fontSize: "xs",
               cursor: "pointer",
               border: "1px solid",
+              display: "inline-flex",
+              alignItems: "center",
               transition: "all 0.2s",
               ...(props.tagId === undefined
                 ? { bg: "blue.100", borderColor: "blue.500", color: "blue.700" }
@@ -139,6 +141,24 @@ export function ItemList(props: ItemListProps) {
             })}
           >
             All
+            <Show when={(tagsQuery.data?.totalUnreadCount ?? 0n) > 0n}>
+              <span
+                class={css({
+                  ml: "1.5",
+                  bg: props.tagId === undefined ? "blue.600" : "gray.200",
+                  color: props.tagId === undefined ? "white" : "gray.700",
+                  px: "1.5",
+                  py: "0.5",
+                  rounded: "full",
+                  fontSize: "xs",
+                  fontWeight: "bold",
+                  minWidth: "1.5rem",
+                  textAlign: "center",
+                })}
+              >
+                {tagsQuery.data?.totalUnreadCount.toString()}
+              </span>
+            </Show>
           </button>
           <For each={tagsQuery.data?.tags}>
             {(tag) => (
@@ -152,6 +172,8 @@ export function ItemList(props: ItemListProps) {
                   fontSize: "xs",
                   cursor: "pointer",
                   border: "1px solid",
+                  display: "inline-flex",
+                  alignItems: "center",
                   transition: "all 0.2s",
                   ...(props.tagId === tag.id
                     ? {
@@ -167,6 +189,24 @@ export function ItemList(props: ItemListProps) {
                 })}
               >
                 {tag.name}
+                <Show when={(tag.unreadCount ?? 0n) > 0n}>
+                  <span
+                    class={css({
+                      ml: "1.5",
+                      bg: props.tagId === tag.id ? "blue.600" : "gray.200",
+                      color: props.tagId === tag.id ? "white" : "gray.700",
+                      px: "1.5",
+                      py: "0.5",
+                      rounded: "full",
+                      fontSize: "xs",
+                      fontWeight: "bold",
+                      minWidth: "1.5rem",
+                      textAlign: "center",
+                    })}
+                  >
+                    {tag.unreadCount.toString()}
+                  </span>
+                </Show>
               </button>
             )}
           </For>

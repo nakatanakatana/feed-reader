@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file tag/v1/tag.proto.
  */
 export const file_tag_v1_tag: GenFile = /*@__PURE__*/
-  fileDesc("ChB0YWcvdjEvdGFnLnByb3RvEgZ0YWcudjEiRwoDVGFnEgoKAmlkGAEgASgJEgwKBG5hbWUYAiABKAkSEgoKY3JlYXRlZF9hdBgDIAEoCRISCgp1cGRhdGVkX2F0GAQgASgJIiAKEENyZWF0ZVRhZ1JlcXVlc3QSDAoEbmFtZRgBIAEoCSItChFDcmVhdGVUYWdSZXNwb25zZRIYCgN0YWcYASABKAsyCy50YWcudjEuVGFnIkMKD0xpc3RUYWdzUmVxdWVzdBIcCg9zb3J0X2Rlc2NlbmRpbmcYASABKAhIAIgBAUISChBfc29ydF9kZXNjZW5kaW5nIi0KEExpc3RUYWdzUmVzcG9uc2USGQoEdGFncxgBIAMoCzILLnRhZy52MS5UYWciHgoQRGVsZXRlVGFnUmVxdWVzdBIKCgJpZBgBIAEoCSITChFEZWxldGVUYWdSZXNwb25zZTLPAQoKVGFnU2VydmljZRJACglDcmVhdGVUYWcSGC50YWcudjEuQ3JlYXRlVGFnUmVxdWVzdBoZLnRhZy52MS5DcmVhdGVUYWdSZXNwb25zZRI9CghMaXN0VGFncxIXLnRhZy52MS5MaXN0VGFnc1JlcXVlc3QaGC50YWcudjEuTGlzdFRhZ3NSZXNwb25zZRJACglEZWxldGVUYWcSGC50YWcudjEuRGVsZXRlVGFnUmVxdWVzdBoZLnRhZy52MS5EZWxldGVUYWdSZXNwb25zZUI7WjlnaXRodWIuY29tL25ha2F0YW5ha2F0YW5hL2ZlZWQtcmVhZGVyL2dlbi9nby90YWcvdjE7dGFndjFiBnByb3RvMw");
+  fileDesc("ChB0YWcvdjEvdGFnLnByb3RvEgZ0YWcudjEiXQoDVGFnEgoKAmlkGAEgASgJEgwKBG5hbWUYAiABKAkSEgoKY3JlYXRlZF9hdBgDIAEoCRISCgp1cGRhdGVkX2F0GAQgASgJEhQKDHVucmVhZF9jb3VudBgFIAEoAyIgChBDcmVhdGVUYWdSZXF1ZXN0EgwKBG5hbWUYASABKAkiLQoRQ3JlYXRlVGFnUmVzcG9uc2USGAoDdGFnGAEgASgLMgsudGFnLnYxLlRhZyJDCg9MaXN0VGFnc1JlcXVlc3QSHAoPc29ydF9kZXNjZW5kaW5nGAEgASgISACIAQFCEgoQX3NvcnRfZGVzY2VuZGluZyJJChBMaXN0VGFnc1Jlc3BvbnNlEhkKBHRhZ3MYASADKAsyCy50YWcudjEuVGFnEhoKEnRvdGFsX3VucmVhZF9jb3VudBgCIAEoAyIeChBEZWxldGVUYWdSZXF1ZXN0EgoKAmlkGAEgASgJIhMKEURlbGV0ZVRhZ1Jlc3BvbnNlMs8BCgpUYWdTZXJ2aWNlEkAKCUNyZWF0ZVRhZxIYLnRhZy52MS5DcmVhdGVUYWdSZXF1ZXN0GhkudGFnLnYxLkNyZWF0ZVRhZ1Jlc3BvbnNlEj0KCExpc3RUYWdzEhcudGFnLnYxLkxpc3RUYWdzUmVxdWVzdBoYLnRhZy52MS5MaXN0VGFnc1Jlc3BvbnNlEkAKCURlbGV0ZVRhZxIYLnRhZy52MS5EZWxldGVUYWdSZXF1ZXN0GhkudGFnLnYxLkRlbGV0ZVRhZ1Jlc3BvbnNlQjtaOWdpdGh1Yi5jb20vbmFrYXRhbmFrYXRhbmEvZmVlZC1yZWFkZXIvZ2VuL2dvL3RhZy92MTt0YWd2MWIGcHJvdG8z");
 
 /**
  * @generated from message tag.v1.Tag
@@ -35,6 +35,11 @@ export type Tag = Message<"tag.v1.Tag"> & {
    * @generated from field: string updated_at = 4;
    */
   updatedAt: string;
+
+  /**
+   * @generated from field: int64 unread_count = 5;
+   */
+  unreadCount: bigint;
 };
 
 /**
@@ -103,6 +108,11 @@ export type ListTagsResponse = Message<"tag.v1.ListTagsResponse"> & {
    * @generated from field: repeated tag.v1.Tag tags = 1;
    */
   tags: Tag[];
+
+  /**
+   * @generated from field: int64 total_unread_count = 2;
+   */
+  totalUnreadCount: bigint;
 };
 
 /**
