@@ -196,10 +196,13 @@ describe("FeedList Unread Counts", () => {
     );
 
     // Check All button unread count
-    await expect.element(page.getByText("All (5)")).toBeInTheDocument();
+    const allButton = page.getByRole("button", { name: /All/ });
+    await expect.element(allButton).toBeInTheDocument();
+    await expect.element(allButton).toHaveTextContent("5");
 
     // Check Tech tag unread count
-    await expect.element(page.getByText("Tech (5)")).toBeInTheDocument();
+    const techButton = page.getByRole("button", { name: /Tech.*5/ });
+    await expect.element(techButton).toBeInTheDocument();
 
     // Check News tag unread count (should be hidden if 0)
     // Find the one that specifically says "News" without count, and ignore the form one

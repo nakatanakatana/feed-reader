@@ -219,6 +219,8 @@ export function FeedList() {
               fontSize: "xs",
               cursor: "pointer",
               border: "1px solid",
+              display: "inline-flex",
+              alignItems: "center",
               ...(selectedTagId() === undefined
                 ? { bg: "blue.100", borderColor: "blue.500", color: "blue.700" }
                 : {
@@ -230,8 +232,22 @@ export function FeedList() {
           >
             All
             <Show when={(tagsQuery.data?.totalUnreadCount ?? 0n) > 0n}>
-              {" "}
-              ({tagsQuery.data?.totalUnreadCount.toString()})
+              <span
+                class={css({
+                  ml: "1.5",
+                  bg: selectedTagId() === undefined ? "blue.600" : "gray.200",
+                  color: selectedTagId() === undefined ? "white" : "gray.700",
+                  px: "1.5",
+                  py: "0.5",
+                  rounded: "full",
+                  fontSize: "xs",
+                  fontWeight: "bold",
+                  minWidth: "1.5rem",
+                  textAlign: "center",
+                })}
+              >
+                {tagsQuery.data?.totalUnreadCount.toString()}
+              </span>
             </Show>
           </button>
           <button
@@ -267,6 +283,8 @@ export function FeedList() {
                   fontSize: "xs",
                   cursor: "pointer",
                   border: "1px solid",
+                  display: "inline-flex",
+                  alignItems: "center",
                   ...(selectedTagId() === tag.id
                     ? {
                         bg: "blue.100",
@@ -282,8 +300,22 @@ export function FeedList() {
               >
                 {tag.name}
                 <Show when={(tag.unreadCount ?? 0n) > 0n}>
-                  {" "}
-                  ({tag.unreadCount.toString()})
+                  <span
+                    class={css({
+                      ml: "1.5",
+                      bg: selectedTagId() === tag.id ? "blue.600" : "gray.200",
+                      color: selectedTagId() === tag.id ? "white" : "gray.700",
+                      px: "1.5",
+                      py: "0.5",
+                      rounded: "full",
+                      fontSize: "xs",
+                      fontWeight: "bold",
+                      minWidth: "1.5rem",
+                      textAlign: "center",
+                    })}
+                  >
+                    {tag.unreadCount.toString()}
+                  </span>
                 </Show>
               </button>
             )}

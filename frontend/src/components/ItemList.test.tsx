@@ -133,10 +133,14 @@ describe("ItemList", () => {
     );
 
     // Check All button unread count
-    await expect.element(page.getByText("All (5)")).toBeInTheDocument();
+    const allButton = page.getByRole("button", { name: /All/ });
+    await expect.element(allButton).toBeInTheDocument();
+    await expect.element(allButton).toHaveTextContent("5");
 
     // Check Tech tag unread count
-    await expect.element(page.getByText("Tech (5)")).toBeInTheDocument();
+    const techButton = page.getByRole("button", { name: /Tech/ });
+    await expect.element(techButton).toBeInTheDocument();
+    await expect.element(techButton).toHaveTextContent("5");
 
     // Check News tag unread count (should be hidden or show 0, spec says hide if 0)
     // Actually, let's check it doesn't have (0) if we want to hide it
