@@ -6,7 +6,7 @@
     - [x] Add unit tests for `formatUnreadCount` in `frontend/src/lib/item-utils.test.ts`.
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Setup & Helpers' (Protocol in workflow.md)
 
-## Phase 2: FeedList Component Refactoring
+## Phase 2: FeedList Component Refactoring [checkpoint: 4fffbcf]
 - [x] Task: Implement consistent height and formatted counts for Tag and "All" buttons in `FeedList`. [eb455d7]
     - [x] Update `FeedList.tsx` to use `formatUnreadCount`.
     - [x] Update CSS in `FeedList.tsx` to ensure consistent button height (e.g., using `min-height` or fixed height).
