@@ -363,3 +363,19 @@ WHERE
   ft.feed_id = ?
 ORDER BY
   t.name ASC;
+
+-- name: ListAllItems :many
+SELECT
+  *
+FROM
+  items;
+
+-- name: UpdateItemContent :exec
+UPDATE
+  items
+SET
+  description = ?,
+  content = ?,
+  updated_at = CURRENT_TIMESTAMP
+WHERE
+  id = ?;

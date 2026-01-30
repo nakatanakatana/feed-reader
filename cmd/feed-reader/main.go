@@ -22,12 +22,13 @@ import (
 )
 
 type config struct {
-	Port          string        `env:"PORT" envDefault:"8080"`
-	DBPath        string        `env:"DB_PATH" envDefault:"feed-reader.db"`
-	FetchInterval time.Duration `env:"FETCH_INTERVAL" envDefault:"30m"`
-	MaxWorkers    int           `env:"MAX_WORKERS" envDefault:"10"`
-	SkipMigration bool          `env:"SKIP_MIGRATION" envDefault:"false"`
-
+	Port                   string        `env:"PORT" envDefault:"8080"`
+	DBPath                 string        `env:"DB_PATH" envDefault:"feed-reader.db"`
+	FetchInterval          time.Duration `env:"FETCH_INTERVAL" envDefault:"30m"`
+	MaxWorkers             int           `env:"MAX_WORKERS" envDefault:"10"`
+	MigrateContentMarkdown bool          `env:"MIGRATE_CONTENT_MARKDOWN" envDefault:"false"`
+	SkipDBMigration        bool          `env:"SKIP_DB_MIGRATION" envDefault:"false"`
+  
 	// Write Queue settings
 	WriteQueueMaxBatchSize  int           `env:"WRITE_QUEUE_MAX_BATCH_SIZE" envDefault:"50"`
 	WriteQueueFlushInterval time.Duration `env:"WRITE_QUEUE_FLUSH_INTERVAL" envDefault:"100ms"`
@@ -47,7 +48,7 @@ func main() {
 	}
 
 	// Initialize schema
-	if err := schema.Migrate(ctx, cfg.DBPath, schema.Schema, cfg.SkipMigration); err != nil {
+	if err := schema.Migrate(ctx, cfg.DBPath, schema.Schema, cfg.SkipDBMigration); err != nil {
 		logger.ErrorContext(ctx, "failed to migrate database", "error", err)
 		os.Exit(1)
 	}
@@ -65,6 +66,14 @@ func main() {
 
 	// 1. Initialize Storage
 	s := store.NewStore(db)
+
+	if cfg.MigrateContentMarkdown {
+		if err := migrateHTMLToMarkdown(ctx, s, logger); err != nil {
+			logger.ErrorContext(ctx, "migration failed", "error", err)
+			os.Exit(1)
+		}
+		os.Exit(0)
+	}
 
 	// 2. Initialize Worker Pool
 	pool := NewWorkerPool(cfg.MaxWorkers)

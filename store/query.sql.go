@@ -480,6 +480,49 @@ func (q *Queries) GetItem(ctx context.Context, id string) (GetItemRow, error) {
 	return i, err
 }
 
+const listAllItems = `-- name: ListAllItems :many
+SELECT
+  id, url, title, description, published_at, author, guid, content, image_url, categories, created_at, updated_at
+FROM
+  items
+`
+
+func (q *Queries) ListAllItems(ctx context.Context) ([]Item, error) {
+	rows, err := q.db.QueryContext(ctx, listAllItems)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Item
+	for rows.Next() {
+		var i Item
+		if err := rows.Scan(
+			&i.ID,
+			&i.Url,
+			&i.Title,
+			&i.Description,
+			&i.PublishedAt,
+			&i.Author,
+			&i.Guid,
+			&i.Content,
+			&i.ImageUrl,
+			&i.Categories,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listFeeds = `-- name: ListFeeds :many
 SELECT
   f.id, f.url, f.link, f.title, f.description, f.lang, f.image_url, f.copyright, f.feed_type, f.feed_version, f.last_fetched_at, f.created_at, f.updated_at
@@ -1135,4 +1178,26 @@ func (q *Queries) UpdateFeed(ctx context.Context, arg UpdateFeedParams) (Feed, e
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const updateItemContent = `-- name: UpdateItemContent :exec
+UPDATE
+  items
+SET
+  description = ?,
+  content = ?,
+  updated_at = CURRENT_TIMESTAMP
+WHERE
+  id = ?
+`
+
+type UpdateItemContentParams struct {
+	Description *string `json:"description"`
+	Content     *string `json:"content"`
+	ID          string  `json:"id"`
+}
+
+func (q *Queries) UpdateItemContent(ctx context.Context, arg UpdateItemContentParams) error {
+	_, err := q.db.ExecContext(ctx, updateItemContent, arg.Description, arg.Content, arg.ID)
+	return err
 }

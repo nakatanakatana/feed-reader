@@ -29,6 +29,8 @@ The primary target audience is individuals and organizations seeking control ove
 
 - **Content Reading:** Clean, distraction-free modal interface for reading full article content. Supports rich HTML rendering, images, and categories. Features robust, keyboard-centric navigation between items with automatic pagination and read-status management. Implements standard modal interactions including Escape key and backdrop dismissal. Full URL synchronization (deep linking) for direct access and browser history support.
 
+- **Markdown Rendering:** Automatically converts article content and descriptions from HTML to Markdown during ingestion. Renders this Markdown back to safe HTML in the frontend, ensuring a consistent and secure reading experience while preserving links, images, and basic formatting.
+
 
 
 - **Tagging System:** Create and manage custom tags to categorize feeds. Features a robust bulk tagging UI to efficiently organize multiple subscriptions at once. Filter both the feed list and article stream by selected tags for organized content discovery.
