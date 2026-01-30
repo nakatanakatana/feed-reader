@@ -243,7 +243,9 @@ describe("FeedList Unread Counts", () => {
     await expect.element(allButton).toHaveTextContent("999+");
 
     // Check HighCount tag unread count (1500 -> 999+)
-    const highCountButton = page.getByRole("button", { name: /HighCount.*999\+/ });
+    const highCountButton = page.getByRole("button", {
+      name: /HighCount.*999\+/,
+    });
     await expect.element(highCountButton).toBeInTheDocument();
   });
 });
