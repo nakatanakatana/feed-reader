@@ -2,7 +2,7 @@
 
 This plan outlines the refactoring of frontend state management to support incremental fetching, separate read/unread collections, and optimistic updates using TanStack DB.
 
-## Phase 1: Core Database Schema Refactoring
+## Phase 1: Core Database Schema Refactoring [checkpoint: 964c691]
 Refactor the database schema to support separate collections and the necessary indices for incremental fetching.
 
 - [x] Task: Refactor `src/lib/db.ts` to define `unreadItems` and `readItems` collections. 5dc83fc
