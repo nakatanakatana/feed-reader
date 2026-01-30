@@ -33,7 +33,7 @@ func setupTestStore(t *testing.T) *store.Store {
 	}
 
 	t.Cleanup(func() {
-		db.Close()
+		_ = db.Close()
 	})
 
 	return store.NewStore(db)
