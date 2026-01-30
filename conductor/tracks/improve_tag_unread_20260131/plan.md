@@ -20,7 +20,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 3: ItemList Component Refactoring' (Protocol in workflow.md)
 
 ## Phase 4: Final Verification
-- [ ] Task: Run all tests and verify mobile responsiveness.
-    - [ ] Execute `npm test`.
-    - [ ] Manually verify UI behavior on simulated mobile and desktop views.
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Final Verification' (Protocol in workflow.md)
+- [x] Task: Run all tests and verify mobile responsiveness.
+    - [x] Execute `npm test`.
+    - [x] Manually verify UI behavior on simulated mobile and desktop views.
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Final Verification' (Protocol in workflow.md)
