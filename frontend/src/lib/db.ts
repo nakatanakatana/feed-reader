@@ -36,6 +36,7 @@ export interface Item {
   feedId: string;
   isRead: boolean;
   createdAt: string;
+  updatedAt: string;
   tags?: Tag[];
 }
 
@@ -52,9 +53,52 @@ export const updateItemStatus = async (params: {
   ids: string[];
   isRead?: boolean;
 }) => {
-  await itemClient.updateItemStatus(params);
-  queryClient.invalidateQueries({ queryKey: ["items"] });
+  // Optimistic update
+  for (const id of params.ids) {
+    const item = items.get(id) || unreadItems.get(id) || readItems.get(id);
+    if (item) {
+      const updatedItem = { ...item, isRead: !!params.isRead };
+      
+      // Update items collection
+      if (items.has(id)) {
+        items.update(id, (draft) => { draft.isRead = !!params.isRead; });
+      } else {
+        items.insert(updatedItem);
+      }
+
+      if (params.isRead) {
+        unreadItems.delete(id);
+        if (!readItems.has(id)) {
+          readItems.insert(updatedItem);
+        }
+      } else {
+        readItems.delete(id);
+        if (!unreadItems.has(id)) {
+          unreadItems.insert(updatedItem);
+        }
+      }
+    }
+  }
+
+  try {
+    await itemClient.updateItemStatus(params);
+  } finally {
+    queryClient.invalidateQueries({ queryKey: ["items"] });
+  }
 };
+
+const mapItem = (item: any): Item => ({
+  id: item.id,
+  url: item.url,
+  title: item.title,
+  description: item.description,
+  publishedAt: item.publishedAt,
+  author: item.author,
+  feedId: item.feedId,
+  isRead: item.isRead,
+  createdAt: item.createdAt,
+  updatedAt: item.updatedAt || item.createdAt,
+});
 
 export const feeds = createCollection(
   queryCollectionOptions({
@@ -66,11 +110,7 @@ export const feeds = createCollection(
       return response.feeds;
     },
     getKey: (feed: Feed) => feed.id,
-    onInsert: async () => {
-      // In a real app, we might want to call the API here.
-      // But the spec says "Minimal UX regression: Synchronization behavior should remain reliable."
-      // For now we just sync with the query.
-    },
+    onInsert: async () => {},
     onDelete: async ({ transaction }) => {
       for (const mutation of transaction.mutations) {
         if (mutation.type === "delete") {
@@ -81,6 +121,40 @@ export const feeds = createCollection(
   }),
 );
 
+export const unreadItems = createCollection(
+  queryCollectionOptions({
+    id: "unreadItems",
+    queryClient,
+    queryKey: ["items", "list", { isRead: false }],
+    queryFn: async () => {
+      const response = await itemClient.listItems({ isRead: false });
+      return response.items.map(mapItem);
+    },
+    getKey: (item: Item) => item.id,
+    indices: ["createdAt", "updatedAt", "id"],
+    onInsert: async () => {},
+    onUpdate: async () => {},
+    onDelete: async () => {},
+  }),
+);
+
+export const readItems = createCollection(
+  queryCollectionOptions({
+    id: "readItems",
+    queryClient,
+    queryKey: ["items", "list", { isRead: true }],
+    queryFn: async () => {
+      const response = await itemClient.listItems({ isRead: true });
+      return response.items.map(mapItem);
+    },
+    getKey: (item: Item) => item.id,
+    indices: ["createdAt", "updatedAt", "id"],
+    onInsert: async () => {},
+    onUpdate: async () => {},
+    onDelete: async () => {},
+  }),
+);
+
 export const items = createCollection(
   queryCollectionOptions({
     id: "items",
@@ -88,25 +162,19 @@ export const items = createCollection(
     queryKey: ["items"],
     queryFn: async () => {
       const response = await itemClient.listItems({});
-      return response.items.map((item) => ({
-        id: item.id,
-        url: item.url,
-        title: item.title,
-        description: item.description,
-        publishedAt: item.publishedAt,
-        author: item.author,
-        feedId: item.feedId,
-        isRead: item.isRead,
-        createdAt: item.createdAt,
-      }));
+      return response.items.map(mapItem);
     },
     getKey: (item: Item) => item.id,
+    indices: ["createdAt", "updatedAt", "id"],
+    onInsert: async () => {},
+    onUpdate: async () => {},
+    onDelete: async () => {},
   }),
 );
 
-// We still export a "db" object if we want to follow the spec's "Initialize the TanStack DB instance"
-// even if it's just a collection of collections.
 export const db = {
   feeds,
   items,
+  unreadItems,
+  readItems,
 };
