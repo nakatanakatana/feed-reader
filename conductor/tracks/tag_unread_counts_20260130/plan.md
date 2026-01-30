@@ -13,14 +13,14 @@ This plan outlines the steps to add unread item counts to the tag filter list in
     - [x] Run `make gen` to update Go and TypeScript generated files.
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Infrastructure' (Protocol in workflow.md) 4a0dfab
 
-## Phase 2: Backend Implementation (TDD)
-- [ ] Task: Update Store to fetch unread counts
-    - [ ] Write failing tests in `store/tags_test.go` that verify unread counts for tags.
-    - [ ] (Generated `sqlc` code will be used to implement the queries).
-- [ ] Task: Update TagService to return unread counts
-    - [ ] Write failing tests in `cmd/feed-reader/tag_service_test.go` to verify `ListTags` returns unread counts.
-    - [ ] Update `cmd/feed-reader/tag_service.go` to fetch unread counts and populate the response.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Backend Implementation' (Protocol in workflow.md)
+## Phase 2: Backend Implementation (TDD) [checkpoint: 1f0281a]
+- [x] Task: Update Store to fetch unread counts b015c09
+    - [x] Write failing tests in `store/tags_test.go` that verify unread counts for tags.
+    - [x] (Generated `sqlc` code will be used to implement the queries).
+- [x] Task: Update TagService to return unread counts f6bf51f
+    - [x] Write failing tests in `cmd/feed-reader/tag_service_test.go` to verify `ListTags` returns unread counts.
+    - [x] Update `cmd/feed-reader/tag_service.go` to fetch unread counts and populate the response.
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Backend Implementation' (Protocol in workflow.md) 1f0281a
 
 ## Phase 3: Frontend Implementation (TDD)
 - [ ] Task: Update ItemList component to display unread counts
