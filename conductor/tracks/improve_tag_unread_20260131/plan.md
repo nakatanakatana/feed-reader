@@ -4,7 +4,7 @@
 - [x] Task: Create unread count formatting helper and unit tests. [37d655b]
     - [x] Define `formatUnreadCount` helper in `frontend/src/lib/item-utils.ts`.
     - [x] Add unit tests for `formatUnreadCount` in `frontend/src/lib/item-utils.test.ts`.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Setup & Helpers' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Setup & Helpers' (Protocol in workflow.md)
 
 ## Phase 2: FeedList Component Refactoring
 - [ ] Task: Implement consistent height and formatted counts for Tag and "All" buttons in `FeedList`.
