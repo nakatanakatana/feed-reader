@@ -21,7 +21,7 @@ func (s *Store) ListTags(ctx context.Context, params ListTagsParams) ([]TagWithC
 		return nil, err
 	}
 
-	unreadCounts, err := s.Queries.CountUnreadItemsPerTag(ctx)
+	unreadCounts, err := s.CountUnreadItemsPerTag(ctx)
 	if err != nil {
 		return nil, err
 	}
