@@ -1,0 +1,8 @@
+{
+  "track_id": "tanstack_db_improvement_20260131",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-01-31T12:00:00Z",
+  "updated_at": "2026-01-31T12:00:00Z",
+  "description": "Improve TanStack DB state management by implementing incremental fetching, separate read/unread collections, and optimistic updates."
+}
