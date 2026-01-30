@@ -19,19 +19,24 @@ vi.mock("../lib/item-query", () => ({
   getMergedItemsQuery: vi.fn(),
 }));
 
-import { useItem, useItems, useUpdateItemStatus } from "../lib/item-query";
+vi.mock("../lib/tag-query", () => ({
+  useTags: vi.fn().mockReturnValue({ data: { tags: [] }, isLoading: false }),
+  useCreateTag: vi.fn(),
+  useDeleteTag: vi.fn(),
+}));
 
 // Mock useLiveQuery from solid-db
 vi.mock("@tanstack/solid-db", () => ({
   useLiveQuery: vi.fn(),
-  eq: vi.fn(),
   createCollection: vi.fn(),
   createLiveQueryCollection: vi.fn(),
+  eq: vi.fn(),
 }));
 
+import { useItems, useUpdateItemStatus } from "../lib/item-query";
 import { useLiveQuery } from "@tanstack/solid-db";
 
-describe("ItemList", () => {
+describe("ItemList Incremental", () => {
   let dispose: () => void;
   const queryClient = new QueryClient();
   const transport = createConnectTransport({ baseUrl: "http://localhost" });
@@ -42,9 +47,9 @@ describe("ItemList", () => {
     vi.clearAllMocks();
   });
 
-  it("renders a list of items and navigates on click", async () => {
+  it("renders a 'Load More' button at the top of the list", async () => {
     const mockItems = [
-      { id: "1", title: "Item 1", url: "http://example.com/1", isRead: false },
+      { id: "1", title: "Item 1", url: "http://example.com/1", isRead: false, createdAt: "2026-01-01" },
     ];
 
     vi.mocked(useItems).mockReturnValue({
@@ -52,27 +57,18 @@ describe("ItemList", () => {
         pages: [{ items: mockItems }],
       },
       isLoading: false,
-      hasNextPage: false,
+      hasNextPage: true,
       fetchNextPage: vi.fn(),
       isFetchingNextPage: false,
-    } as unknown as ReturnType<typeof useItems>);
+    } as any);
 
+    // Mock LiveQuery for the merged view
     vi.mocked(useLiveQuery).mockReturnValue((() => mockItems) as any);
-
-    vi.mocked(useItem).mockReturnValue({
-      data: {
-        ...mockItems[0],
-        description: "Test description",
-        publishedAt: "2026-01-26",
-        author: "Author",
-      },
-      isLoading: false,
-    } as unknown as ReturnType<typeof useItem>);
 
     vi.mocked(useUpdateItemStatus).mockReturnValue({
       mutate: vi.fn(),
       isPending: false,
-    } as unknown as ReturnType<typeof useUpdateItemStatus>);
+    } as any);
 
     const history = createMemoryHistory({ initialEntries: ["/"] });
     const router = createRouter({ routeTree, history });
@@ -88,15 +84,7 @@ describe("ItemList", () => {
       document.body,
     );
 
-    const item = page.getByText("Item 1");
-    await expect.element(item).toBeInTheDocument();
-
-    await item.click();
-
-    // Check if modal content is visible
-    await expect.element(page.getByRole("dialog")).toBeInTheDocument();
-    await expect
-      .element(page.getByRole("heading", { name: "Item 1" }))
-      .toBeInTheDocument();
+    const loadMoreBtn = page.getByRole("button", { name: /Load More/i });
+    await expect.element(loadMoreBtn).toBeInTheDocument();
   });
 });

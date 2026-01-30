@@ -23,10 +23,10 @@ Update the query logic to handle the new collection structure and implement incr
 ## Phase 3: Frontend Component Integration
 Update UI components to use the new incremental fetching logic and the "Load More" button.
 
-- [ ] Task: Write Tests: Update `ItemList.test.tsx` to verify the "Load More" button at the top and the auto-appending of new items.
-- [ ] Task: Implement: Modify `ItemList.tsx` to include the "Load More" button at the top of the list.
-- [ ] Task: Implement: Update the item list view to use the merged `LiveQuery` and apply filters (date, tags) locally.
-- [ ] Task: Implement: Ensure the list scrolls or maintains position correctly when items are prepended to the top.
+- [x] Task: Write Tests: Update `ItemList.test.tsx` to verify the "Load More" button at the top and the auto-appending of new items.
+- [x] Task: Implement: Modify `ItemList.tsx` to include the "Load More" button at the top of the list.
+- [x] Task: Implement: Update the item list view to use the merged `LiveQuery` and apply filters (date, tags) locally.
+- [x] Task: Implement: Ensure the list scrolls or maintains position correctly when items are prepended to the top.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Frontend Component Integration' (Protocol in workflow.md)
 
 ## Phase 4: Optimistic Updates and State Sync

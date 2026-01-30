@@ -3,11 +3,12 @@ import { createEffect, createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { ListItemsRequest_SortOrder } from "../gen/item/v1/item_pb";
-import { useItems, useUpdateItemStatus } from "../lib/item-query";
+import { useItems, useUpdateItemStatus, getMergedItemsQuery } from "../lib/item-query";
 import { useTags } from "../lib/tag-query";
 import { DateFilterSelector } from "./DateFilterSelector";
 import { ItemRow } from "./ItemRow";
-import { getPublishedSince, type DateFilterValue } from "../lib/item-utils";
+import { getPublishedSince, type DateFilterValue, filterAndSortItems, SortOrder } from "../lib/item-utils";
+import { useLiveQuery } from "@tanstack/solid-db";
 
 interface ItemListProps {
   feedId?: string;
@@ -21,6 +22,7 @@ export function ItemList(props: ItemListProps) {
   const [selectedItemIds, setSelectedItemIds] = createSignal<Set<string>>(
     new Set(),
   );
+  let listContainerRef: HTMLDivElement | undefined;
 
   const tagsQuery = useTags();
   const [showRead, setShowRead] = createSignal(false);
@@ -28,9 +30,26 @@ export function ItemList(props: ItemListProps) {
     props.dateFilter ?? "all",
   );
 
+  const mergedItemsQuery = getMergedItemsQuery();
+  const itemsLiveQuery = useLiveQuery(() => mergedItemsQuery);
+
   createEffect(() => {
     if (props.dateFilter) {
       setDateFilter(props.dateFilter);
+    }
+  });
+
+  // Scroll position maintenance when prepending items
+  let lastScrollHeight = 0;
+  createEffect(() => {
+    const items = allItems();
+    if (listContainerRef && items.length > 0) {
+      const currentScrollHeight = listContainerRef.scrollHeight;
+      if (lastScrollHeight > 0 && currentScrollHeight > lastScrollHeight) {
+        const diff = currentScrollHeight - lastScrollHeight;
+        listContainerRef.scrollTop += diff;
+      }
+      lastScrollHeight = currentScrollHeight;
     }
   });
 
@@ -52,10 +71,16 @@ export function ItemList(props: ItemListProps) {
     sortOrder: ListItemsRequest_SortOrder.ASC,
   }));
 
-  const allItems = () =>
-    itemsQuery.data?.pages.flatMap((page) => page.items) ?? [];
+  const allItems = () => {
+    const rawItems = itemsLiveQuery() || [];
+    return filterAndSortItems(rawItems as any, {
+      feedId: props.feedId,
+      isRead: showRead() ? undefined : false,
+      sortOrder: SortOrder.ASC,
+    });
+  };
 
-  const isLoading = () => itemsQuery.isLoading;
+  const isLoading = () => itemsQuery.isLoading || itemsLiveQuery.isLoading;
 
   const isAllSelected = () =>
     allItems().length > 0 && selectedItemIds().size === allItems().length;
@@ -105,7 +130,10 @@ export function ItemList(props: ItemListProps) {
   };
 
   return (
-    <div class={stack({ gap: "4", width: "full", position: "relative" })}>
+    <div 
+      ref={listContainerRef}
+      class={stack({ gap: "4", width: "full", position: "relative" })}
+    >
       <div
         class={flex({
           justifyContent: "space-between",
@@ -288,6 +316,24 @@ export function ItemList(props: ItemListProps) {
         </div>
       </Show>
 
+      <Show when={itemsQuery.hasNextPage}>
+        <button
+          type="button"
+          onClick={() => itemsQuery.fetchNextPage()}
+          disabled={itemsQuery.isFetchingNextPage}
+          class={css({
+            padding: "2",
+            backgroundColor: "gray.100",
+            borderRadius: "md",
+            cursor: "pointer",
+            _hover: { backgroundColor: "gray.200" },
+            _disabled: { opacity: 0.5, cursor: "not-allowed" },
+          })}
+        >
+          {itemsQuery.isFetchingNextPage ? "Loading more..." : "Load More"}
+        </button>
+      </Show>
+
       <div class={stack({ gap: "2", padding: "0" })}>
         <For each={allItems()}>
           {(item) => (
@@ -317,24 +363,6 @@ export function ItemList(props: ItemListProps) {
         >
           No items found.
         </div>
-      </Show>
-
-      <Show when={itemsQuery.hasNextPage}>
-        <button
-          type="button"
-          onClick={() => itemsQuery.fetchNextPage()}
-          disabled={itemsQuery.isFetchingNextPage}
-          class={css({
-            padding: "2",
-            backgroundColor: "gray.100",
-            borderRadius: "md",
-            cursor: "pointer",
-            _hover: { backgroundColor: "gray.200" },
-            _disabled: { opacity: 0.5, cursor: "not-allowed" },
-          })}
-        >
-          {itemsQuery.isFetchingNextPage ? "Loading more..." : "Load More"}
-        </button>
       </Show>
     </div>
   );
