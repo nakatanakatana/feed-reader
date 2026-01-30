@@ -19,7 +19,7 @@
     - [x] Update CSS for consistency with `FeedList`.
 - [x] Task: Conductor - User Manual Verification 'Phase 3: ItemList Component Refactoring' (Protocol in workflow.md)
 
-## Phase 4: Final Verification
+## Phase 4: Final Verification [checkpoint: a23856e]
 - [x] Task: Run all tests and verify mobile responsiveness.
     - [x] Execute `npm test`.
     - [x] Manually verify UI behavior on simulated mobile and desktop views.
