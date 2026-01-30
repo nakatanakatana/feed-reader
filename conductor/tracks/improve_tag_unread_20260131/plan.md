@@ -1,6 +1,6 @@
 # Implementation Plan: Improved Tag Unread Count Display
 
-## Phase 1: Setup & Helpers
+## Phase 1: Setup & Helpers [checkpoint: bf9a832]
 - [x] Task: Create unread count formatting helper and unit tests. [37d655b]
     - [x] Define `formatUnreadCount` helper in `frontend/src/lib/item-utils.ts`.
     - [x] Add unit tests for `formatUnreadCount` in `frontend/src/lib/item-utils.test.ts`.
