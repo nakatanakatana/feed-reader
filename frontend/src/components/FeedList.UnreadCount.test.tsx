@@ -203,7 +203,9 @@ describe("FeedList Unread Counts", () => {
 
     // Check News tag unread count (should be hidden if 0)
     // Find the one that specifically says "News" without count, and ignore the form one
-    const newsTag = page.getByRole("button", { name: "News", exact: true }).nth(1); // The second one should be in the filter list
+    const newsTag = page
+      .getByRole("button", { name: "News", exact: true })
+      .nth(1); // The second one should be in the filter list
     await expect.element(newsTag).toBeInTheDocument();
     await expect.element(page.getByText("News (0)")).not.toBeInTheDocument();
   });
