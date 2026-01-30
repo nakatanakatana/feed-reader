@@ -1,8 +1,0 @@
-{
-  "track_id": "improve_tag_unread_20260131",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-01-31T00:00:00Z",
-  "updated_at": "2026-01-31T00:00:00Z",
-  "description": "タグごとの未読件数の表示の改善を行います。バッジによる高さ変動の抑制と、999+形式の表示制限を実装します。"
-}
