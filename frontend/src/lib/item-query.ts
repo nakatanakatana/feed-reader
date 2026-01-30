@@ -12,6 +12,9 @@ import { ListItemsRequest_SortOrder } from "../gen/item/v1/item_pb";
 import { useTransport } from "./transport-context";
 import type { Timestamp } from "@bufbuild/protobuf";
 
+import { createLiveQueryCollection } from "@tanstack/db";
+import { db } from "./db";
+
 const serializeForQueryKey = (obj: Record<string, unknown>) => {
   const result: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(obj)) {
@@ -69,6 +72,55 @@ export const fetchItem = async (transport: Transport, id: string) => {
   const client = createClient(ItemService, transport);
   const response = await client.getItem({ id });
   return response.item;
+};
+
+export const fetchNewItems = async (
+  transport: Transport,
+  params: {
+    feedId?: string;
+    lastFetchedAt: string;
+    tagId?: string;
+  },
+) => {
+  const lastFetchedDate = new Date(params.lastFetchedAt);
+  const publishedSince = {
+    seconds: BigInt(Math.floor(lastFetchedDate.getTime() / 1000)),
+    nanos: (lastFetchedDate.getTime() % 1000) * 1000000,
+  } as Timestamp;
+
+  return fetchItems(transport, {
+    feedId: params.feedId,
+    tagId: params.tagId,
+    publishedSince,
+    sortOrder: ListItemsRequest_SortOrder.ASC,
+  });
+};
+
+export const fetchOlderItems = async (
+  transport: Transport,
+  params: {
+    feedId?: string;
+    tagId?: string;
+    isRead?: boolean;
+    offset: number;
+    limit?: number;
+  },
+) => {
+  return fetchItems(transport, {
+    feedId: params.feedId,
+    tagId: params.tagId,
+    isRead: params.isRead,
+    offset: params.offset,
+    limit: params.limit ?? 20,
+    sortOrder: ListItemsRequest_SortOrder.ASC,
+  });
+};
+
+export const getMergedItemsQuery = () => {
+  return createLiveQueryCollection((q) =>
+    q.from({ items: db.items })
+      .orderBy(({ items }) => items.createdAt, "asc")
+  );
 };
 
 export const itemsInfiniteQueryOptions = (

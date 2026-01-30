@@ -1,6 +1,6 @@
 import { createClient } from "@connectrpc/connect";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
-import { createCollection } from "@tanstack/solid-db";
+import { createCollection, createLiveQueryCollection, eq } from "@tanstack/solid-db";
 import { FeedService } from "../gen/feed/v1/feed_pb";
 import { ItemService } from "../gen/item/v1/item_pb";
 import type { Tag } from "../gen/tag/v1/tag_pb";
@@ -55,28 +55,10 @@ export const updateItemStatus = async (params: {
 }) => {
   // Optimistic update
   for (const id of params.ids) {
-    const item = items.get(id) || unreadItems.get(id) || readItems.get(id);
-    if (item) {
-      const updatedItem = { ...item, isRead: !!params.isRead };
-      
-      // Update items collection
-      if (items.has(id)) {
-        items.update(id, (draft) => { draft.isRead = !!params.isRead; });
-      } else {
-        items.insert(updatedItem);
-      }
-
-      if (params.isRead) {
-        unreadItems.delete(id);
-        if (!readItems.has(id)) {
-          readItems.insert(updatedItem);
-        }
-      } else {
-        readItems.delete(id);
-        if (!unreadItems.has(id)) {
-          unreadItems.insert(updatedItem);
-        }
-      }
+    if (items.has(id)) {
+      items.update(id, (draft) => {
+        draft.isRead = !!params.isRead;
+      });
     }
   }
 
@@ -121,40 +103,6 @@ export const feeds = createCollection(
   }),
 );
 
-export const unreadItems = createCollection(
-  queryCollectionOptions({
-    id: "unreadItems",
-    queryClient,
-    queryKey: ["items", "list", { isRead: false }],
-    queryFn: async () => {
-      const response = await itemClient.listItems({ isRead: false });
-      return response.items.map(mapItem);
-    },
-    getKey: (item: Item) => item.id,
-    indices: ["createdAt", "updatedAt", "id"],
-    onInsert: async () => {},
-    onUpdate: async () => {},
-    onDelete: async () => {},
-  }),
-);
-
-export const readItems = createCollection(
-  queryCollectionOptions({
-    id: "readItems",
-    queryClient,
-    queryKey: ["items", "list", { isRead: true }],
-    queryFn: async () => {
-      const response = await itemClient.listItems({ isRead: true });
-      return response.items.map(mapItem);
-    },
-    getKey: (item: Item) => item.id,
-    indices: ["createdAt", "updatedAt", "id"],
-    onInsert: async () => {},
-    onUpdate: async () => {},
-    onDelete: async () => {},
-  }),
-);
-
 export const items = createCollection(
   queryCollectionOptions({
     id: "items",
@@ -165,11 +113,21 @@ export const items = createCollection(
       return response.items.map(mapItem);
     },
     getKey: (item: Item) => item.id,
-    indices: ["createdAt", "updatedAt", "id"],
+    indices: ["createdAt", "updatedAt", "id", "isRead"],
     onInsert: async () => {},
     onUpdate: async () => {},
     onDelete: async () => {},
   }),
+);
+
+export const unreadItems = createLiveQueryCollection(
+  (q) => q.from({ items }).where(({ items }) => eq(items.isRead, false)),
+  { onInsert: async () => {} }
+);
+
+export const readItems = createLiveQueryCollection(
+  (q) => q.from({ items }).where(({ items }) => eq(items.isRead, true)),
+  { onInsert: async () => {} }
 );
 
 export const db = {

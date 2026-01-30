@@ -12,10 +12,12 @@ import {
 } from "./item-query";
 
 // Mock the transport and client
-const mockClient = {
-  listItems: vi.fn(),
-  updateItemStatus: vi.fn(),
-};
+const { mockClient } = vi.hoisted(() => ({
+  mockClient: {
+    listItems: vi.fn(),
+    updateItemStatus: vi.fn(),
+  }
+}));
 
 vi.mock("@connectrpc/connect", () => ({
   createClient: vi.fn(() => mockClient),
