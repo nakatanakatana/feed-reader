@@ -4,6 +4,7 @@ import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { ListItemsRequest_SortOrder } from "../gen/item/v1/item_pb";
 import { useItems, useUpdateItemStatus } from "../lib/item-query";
+import { formatUnreadCount } from "../lib/item-utils";
 import { useTags } from "../lib/tag-query";
 import { DateFilterSelector } from "./DateFilterSelector";
 import { ItemRow } from "./ItemRow";
@@ -124,6 +125,7 @@ export function ItemList(props: ItemListProps) {
             class={css({
               px: "3",
               py: "1",
+              minH: "8",
               rounded: "full",
               fontSize: "xs",
               cursor: "pointer",
@@ -156,7 +158,7 @@ export function ItemList(props: ItemListProps) {
                   textAlign: "center",
                 })}
               >
-                {tagsQuery.data?.totalUnreadCount.toString()}
+                {formatUnreadCount(Number(tagsQuery.data?.totalUnreadCount))}
               </span>
             </Show>
           </button>
@@ -168,6 +170,7 @@ export function ItemList(props: ItemListProps) {
                 class={css({
                   px: "3",
                   py: "1",
+                  minH: "8",
                   rounded: "full",
                   fontSize: "xs",
                   cursor: "pointer",
@@ -204,7 +207,7 @@ export function ItemList(props: ItemListProps) {
                       textAlign: "center",
                     })}
                   >
-                    {tag.unreadCount.toString()}
+                    {formatUnreadCount(Number(tag.unreadCount))}
                   </span>
                 </Show>
               </button>

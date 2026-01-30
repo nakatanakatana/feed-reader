@@ -56,6 +56,13 @@ export const getPublishedSince = (
   } as Timestamp;
 };
 
+export const formatUnreadCount = (count: number): string => {
+  if (count >= 1000) {
+    return "999+";
+  }
+  return count.toString();
+};
+
 export const formatDate = (dateString: string) => {
   if (!dateString) return "";
   try {
