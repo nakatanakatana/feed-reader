@@ -15,48 +15,77 @@ export const Route = createRootRoute({
 
 function RootComponent() {
   const headerStyle = css({
-    padding: "2px",
+    paddingX: "4",
+    paddingY: "2",
     display: "flex",
     alignItems: "center",
     borderBottomWidth: "1px",
-    gap: "10px",
-    fontSize: "lg",
+    borderBottomStyle: "solid",
+    borderBottomColor: "gray.100",
+    gap: "6",
+    fontSize: "md",
+    backgroundColor: "white",
+    position: "sticky",
+    top: 0,
+    zIndex: 10,
   });
 
-  const selectedRouteStyle = css({
+  const linkStyle = css({
+    position: "relative",
+    paddingX: "3",
+    paddingY: "2",
+    borderRadius: "md",
+    color: "gray.600",
+    transition: "all 0.2s",
+    fontWeight: "medium",
+    _hover: {
+      backgroundColor: "gray.50",
+      color: "gray.900",
+    },
+  });
+
+  const activeLinkStyle = css({
     fontWeight: "bold",
+    color: "blue.600",
+    backgroundColor: "blue.50",
+    borderBottomWidth: "2px",
+    borderBottomStyle: "solid",
+    borderBottomColor: "blue.600",
+    borderBottomRadius: "none", // Sharp bottom for the border effect
   });
 
   return (
     <>
-      <div class={headerStyle}>
+      <div class={headerStyle} role="banner">
         <Link
           to="/"
+          class={linkStyle}
           activeProps={{
-            class: selectedRouteStyle,
+            class: activeLinkStyle,
           }}
           activeOptions={{ exact: true }}
         >
           Home
-        </Link>{" "}
+        </Link>
         <Link
           to="/feeds"
+          class={linkStyle}
           activeProps={{
-            class: selectedRouteStyle,
+            class: activeLinkStyle,
           }}
         >
           Feeds
-        </Link>{" "}
+        </Link>
         <Link
           to="/tags"
+          class={linkStyle}
           activeProps={{
-            class: selectedRouteStyle,
+            class: activeLinkStyle,
           }}
         >
           Tags
-        </Link>{" "}
+        </Link>
       </div>
-      <hr />
       <Outlet />
       {/* Start rendering router matches */}
     </>

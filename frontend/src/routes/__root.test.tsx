@@ -8,8 +8,8 @@ import {
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import "../styles.css";
 import { Route as RootRoute } from "./__root";
+import "../styles.css";
 
 // Unmock solid-router to test active link logic
 vi.unmock("@tanstack/solid-router");
@@ -52,15 +52,27 @@ describe("RootComponent Navigation", () => {
     await expect.element(homeLink).toBeInTheDocument();
     await expect.element(feedsLink).toBeInTheDocument();
 
-    // 6. Verify Active State
-    // Current implementation uses fontWeight: "bold"
+    // Verify Header Container Style
+    const headerContainer = page.getByRole("banner");
+    await expect.element(headerContainer).toHaveStyle({
+      "padding-top": "8px",
+    });
+    await expect.element(headerContainer).toHaveStyle({
+      "border-bottom-color": "rgb(243, 244, 246)",
+    });
+
+    // 6. Verify Active State - RED PHASE
+    // Expecting a bottom border and background color for active links.
     await expect.element(homeLink).toHaveStyle({
-      fontWeight: "700", // "bold" is often 700
+      borderBottomWidth: "2px",
+      borderBottomStyle: "solid",
+      // We don't know the exact color yet, but we expect *some* background color change
+      // or at least that it's not transparent/initial if we use a pill shape.
     });
 
     // Verify inactive link does NOT have it
     await expect.element(feedsLink).not.toHaveStyle({
-      fontWeight: "700",
+      borderBottomWidth: "2px",
     });
   });
 });
