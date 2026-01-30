@@ -70,7 +70,7 @@ describe("FeedList Unread Counts", () => {
     vi.mocked(useTags).mockReturnValue({
       data: { tags: [], totalUnreadCount: 0n },
       isLoading: false,
-    } as any);
+    } as unknown as ReturnType<typeof useTags>);
   });
 
   it("displays unread count for each feed", async () => {
@@ -170,7 +170,7 @@ describe("FeedList Unread Counts", () => {
   it("displays unread counts for tags in filter bar", async () => {
     vi.mocked(useLiveQuery).mockReturnValue({
       data: [],
-    } as any);
+    } as unknown as ReturnType<typeof useLiveQuery>);
 
     vi.mocked(useTags).mockReturnValue({
       data: {
@@ -181,7 +181,7 @@ describe("FeedList Unread Counts", () => {
         totalUnreadCount: 5n,
       },
       isLoading: false,
-    } as any);
+    } as unknown as ReturnType<typeof useTags>);
 
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
     const router = createRouter({ routeTree, history });

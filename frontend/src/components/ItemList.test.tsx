@@ -53,12 +53,12 @@ describe("ItemList", () => {
       hasNextPage: false,
       fetchNextPage: vi.fn(),
       isFetchingNextPage: false,
-    } as any);
+    } as unknown as ReturnType<typeof useItems>);
 
     vi.mocked(useTags).mockReturnValue({
       data: { tags: [] },
       isLoading: false,
-    } as any);
+    } as unknown as ReturnType<typeof useTags>);
 
     vi.mocked(useItem).mockReturnValue({
       data: {
@@ -105,7 +105,7 @@ describe("ItemList", () => {
     vi.mocked(useItems).mockReturnValue({
       data: { pages: [{ items: [] }] },
       isLoading: false,
-    } as any);
+    } as unknown as ReturnType<typeof useItems>);
 
     vi.mocked(useTags).mockReturnValue({
       data: {
@@ -116,7 +116,7 @@ describe("ItemList", () => {
         totalUnreadCount: 5n,
       },
       isLoading: false,
-    } as any);
+    } as unknown as ReturnType<typeof useTags>);
 
     const history = createMemoryHistory({ initialEntries: ["/"] });
     const router = createRouter({ routeTree, history });
