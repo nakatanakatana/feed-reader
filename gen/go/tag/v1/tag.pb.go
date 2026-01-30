@@ -27,6 +27,7 @@ type Tag struct {
 	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	CreatedAt     string                 `protobuf:"bytes,3,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	UpdatedAt     string                 `protobuf:"bytes,4,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	UnreadCount   int64                  `protobuf:"varint,5,opt,name=unread_count,json=unreadCount,proto3" json:"unread_count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -87,6 +88,13 @@ func (x *Tag) GetUpdatedAt() string {
 		return x.UpdatedAt
 	}
 	return ""
+}
+
+func (x *Tag) GetUnreadCount() int64 {
+	if x != nil {
+		return x.UnreadCount
+	}
+	return 0
 }
 
 type CreateTagRequest struct {
@@ -222,10 +230,11 @@ func (x *ListTagsRequest) GetSortDescending() bool {
 }
 
 type ListTagsResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Tags          []*Tag                 `protobuf:"bytes,1,rep,name=tags,proto3" json:"tags,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	Tags             []*Tag                 `protobuf:"bytes,1,rep,name=tags,proto3" json:"tags,omitempty"`
+	TotalUnreadCount int64                  `protobuf:"varint,2,opt,name=total_unread_count,json=totalUnreadCount,proto3" json:"total_unread_count,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *ListTagsResponse) Reset() {
@@ -263,6 +272,13 @@ func (x *ListTagsResponse) GetTags() []*Tag {
 		return x.Tags
 	}
 	return nil
+}
+
+func (x *ListTagsResponse) GetTotalUnreadCount() int64 {
+	if x != nil {
+		return x.TotalUnreadCount
+	}
+	return 0
 }
 
 type DeleteTagRequest struct {
@@ -349,23 +365,25 @@ var File_tag_v1_tag_proto protoreflect.FileDescriptor
 
 const file_tag_v1_tag_proto_rawDesc = "" +
 	"\n" +
-	"\x10tag/v1/tag.proto\x12\x06tag.v1\"g\n" +
+	"\x10tag/v1/tag.proto\x12\x06tag.v1\"\x8a\x01\n" +
 	"\x03Tag\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x1d\n" +
 	"\n" +
 	"created_at\x18\x03 \x01(\tR\tcreatedAt\x12\x1d\n" +
 	"\n" +
-	"updated_at\x18\x04 \x01(\tR\tupdatedAt\"&\n" +
+	"updated_at\x18\x04 \x01(\tR\tupdatedAt\x12!\n" +
+	"\funread_count\x18\x05 \x01(\x03R\vunreadCount\"&\n" +
 	"\x10CreateTagRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\"2\n" +
 	"\x11CreateTagResponse\x12\x1d\n" +
 	"\x03tag\x18\x01 \x01(\v2\v.tag.v1.TagR\x03tag\"S\n" +
 	"\x0fListTagsRequest\x12,\n" +
 	"\x0fsort_descending\x18\x01 \x01(\bH\x00R\x0esortDescending\x88\x01\x01B\x12\n" +
-	"\x10_sort_descending\"3\n" +
+	"\x10_sort_descending\"a\n" +
 	"\x10ListTagsResponse\x12\x1f\n" +
-	"\x04tags\x18\x01 \x03(\v2\v.tag.v1.TagR\x04tags\"\"\n" +
+	"\x04tags\x18\x01 \x03(\v2\v.tag.v1.TagR\x04tags\x12,\n" +
+	"\x12total_unread_count\x18\x02 \x01(\x03R\x10totalUnreadCount\"\"\n" +
 	"\x10DeleteTagRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"\x13\n" +
 	"\x11DeleteTagResponse2\xcf\x01\n" +

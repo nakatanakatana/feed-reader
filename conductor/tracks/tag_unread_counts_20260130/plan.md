@@ -3,13 +3,13 @@
 This plan outlines the steps to add unread item counts to the tag filter list in the item list view.
 
 ## Phase 1: Backend Infrastructure
-- [ ] Task: Update Tag Proto definition
-    - [ ] Add `int64 unread_count = 5;` to the `Tag` message in `proto/tag/v1/tag.proto`.
-    - [ ] Add `int64 total_unread_count = 2;` to the `ListTagsResponse` message in `proto/tag/v1/tag.proto`.
-- [ ] Task: Update SQL queries for unread counts
-    - [ ] Add `CountUnreadItemsPerTag` to `sql/query.sql`.
-    - [ ] Add `CountTotalUnreadItems` to `sql/query.sql`.
-- [ ] Task: Regenerate code
+- [x] Task: Update Tag Proto definition 58db2d5
+    - [x] Add `int64 unread_count = 5;` to the `Tag` message in `proto/tag/v1/tag.proto`.
+    - [x] Add `int64 total_unread_count = 2;` to the `ListTagsResponse` message in `proto/tag/v1/tag.proto`.
+- [x] Task: Update SQL queries for unread counts 1f5f90c
+    - [x] Add `CountUnreadItemsPerTag` to `sql/query.sql`.
+    - [x] Add `CountTotalUnreadItems` to `sql/query.sql`.
+- [~] Task: Regenerate code
     - [ ] Run `make gen` to update Go and TypeScript generated files.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend Infrastructure' (Protocol in workflow.md)
 
