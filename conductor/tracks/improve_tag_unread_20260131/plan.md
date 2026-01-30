@@ -14,9 +14,9 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: FeedList Component Refactoring' (Protocol in workflow.md)
 
 ## Phase 3: ItemList Component Refactoring
-- [ ] Task: Apply consistent height and formatted counts to `ItemList` tag filters.
-    - [ ] Update `ItemList.tsx` to use `formatUnreadCount`.
-    - [ ] Update CSS for consistency with `FeedList`.
+- [x] Task: Apply consistent height and formatted counts to `ItemList` tag filters. [33a9204]
+    - [x] Update `ItemList.tsx` to use `formatUnreadCount`.
+    - [x] Update CSS for consistency with `FeedList`.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: ItemList Component Refactoring' (Protocol in workflow.md)
 
 ## Phase 4: Final Verification
