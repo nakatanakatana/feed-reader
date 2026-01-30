@@ -9,11 +9,40 @@ type ListTagsParams struct {
 	SortDescending bool
 }
 
-func (s *Store) ListTags(ctx context.Context, params ListTagsParams) ([]Tag, error) {
+func (s *Store) ListTags(ctx context.Context, params ListTagsParams) ([]TagWithCount, error) {
+	var dbTags []Tag
+	var err error
 	if params.SortDescending {
-		return s.ListTagsDesc(ctx)
+		dbTags, err = s.ListTagsDesc(ctx)
+	} else {
+		dbTags, err = s.Queries.ListTags(ctx)
 	}
-	return s.Queries.ListTags(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	unreadCounts, err := s.Queries.CountUnreadItemsPerTag(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	countMap := make(map[string]int64)
+	for _, c := range unreadCounts {
+		countMap[c.TagID] = c.Count
+	}
+
+	tags := make([]TagWithCount, len(dbTags))
+	for i, t := range dbTags {
+		tags[i] = TagWithCount{
+			ID:          t.ID,
+			Name:        t.Name,
+			CreatedAt:   t.CreatedAt,
+			UpdatedAt:   t.UpdatedAt,
+			UnreadCount: countMap[t.ID],
+		}
+	}
+
+	return tags, nil
 }
 
 // SetFeedTags updates the tags associated with a feed.
