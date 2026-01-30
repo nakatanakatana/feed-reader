@@ -11,7 +11,7 @@
     - [x] Update `FeedList.tsx` to use `formatUnreadCount`.
     - [x] Update CSS in `FeedList.tsx` to ensure consistent button height (e.g., using `min-height` or fixed height).
     - [x] Adjust badge alignment and padding to ensure visual stability.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: FeedList Component Refactoring' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: FeedList Component Refactoring' (Protocol in workflow.md)
 
 ## Phase 3: ItemList Component Refactoring
 - [ ] Task: Apply consistent height and formatted counts to `ItemList` tag filters.
