@@ -15,6 +15,7 @@ message Tag {
   string name = 2;
   string created_at = 3;
   string updated_at = 4;
+  int64 unread_count = 5;
 }
 
 message CreateTagRequest {
@@ -31,6 +32,7 @@ message ListTagsRequest {
 
 message ListTagsResponse {
   repeated Tag tags = 1;
+  int64 total_unread_count = 2;
 }
 
 message DeleteTagRequest {
