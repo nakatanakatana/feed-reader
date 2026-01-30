@@ -229,6 +229,10 @@ export function FeedList() {
             })}
           >
             All
+            <Show when={(tagsQuery.data?.totalUnreadCount ?? 0n) > 0n}>
+              {" "}
+              ({tagsQuery.data?.totalUnreadCount.toString()})
+            </Show>
           </button>
           <button
             type="button"
@@ -277,6 +281,10 @@ export function FeedList() {
                 })}
               >
                 {tag.name}
+                <Show when={(tag.unreadCount ?? 0n) > 0n}>
+                  {" "}
+                  ({tag.unreadCount.toString()})
+                </Show>
               </button>
             )}
           </For>
