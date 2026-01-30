@@ -5,9 +5,9 @@ This plan outlines the refactoring of frontend state management to support incre
 ## Phase 1: Core Database Schema Refactoring
 Refactor the database schema to support separate collections and the necessary indices for incremental fetching.
 
-- [x] Task: Refactor `src/lib/db.ts` to define `unreadItems` and `readItems` collections.
-- [x] Task: Add indices for `createdAt`, `updatedAt`, and `id` to both collections for efficient querying and merging.
-- [x] Task: Implement a synchronization mechanism (handlers) in `db.ts` to trigger API calls when items move between collections.
+- [x] Task: Refactor `src/lib/db.ts` to define `unreadItems` and `readItems` collections. 5dc83fc
+- [x] Task: Add indices for `createdAt`, `updatedAt`, and `id` to both collections for efficient querying and merging. 5dc83fc
+- [x] Task: Implement a synchronization mechanism (handlers) in `db.ts` to trigger API calls when items move between collections. 5dc83fc
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Core Database Schema Refactoring' (Protocol in workflow.md)
 
 ## Phase 2: Logic Layer - Query and Mutation Updates
