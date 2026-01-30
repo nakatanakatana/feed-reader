@@ -33,11 +33,12 @@ function RootComponent() {
   const linkStyle = css({
     position: "relative",
     paddingX: "3",
-    paddingY: "2",
+    paddingY: "1.5",
     borderRadius: "md",
-    color: "gray.600",
+    color: "gray.500",
     transition: "all 0.2s",
     fontWeight: "medium",
+    fontSize: "sm",
     _hover: {
       backgroundColor: "gray.50",
       color: "gray.900",
@@ -45,13 +46,13 @@ function RootComponent() {
   });
 
   const activeLinkStyle = css({
-    fontWeight: "bold",
-    color: "blue.600",
-    backgroundColor: "blue.50",
+    fontWeight: "semibold",
+    color: "blue.700 !important",
+    backgroundColor: "blue.50 !important",
     borderBottomWidth: "2px",
     borderBottomStyle: "solid",
     borderBottomColor: "blue.600",
-    borderBottomRadius: "none", // Sharp bottom for the border effect
+    borderBottomRadius: "0",
   });
 
   return (

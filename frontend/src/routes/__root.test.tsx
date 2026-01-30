@@ -61,18 +61,22 @@ describe("RootComponent Navigation", () => {
       "border-bottom-color": "rgb(243, 244, 246)",
     });
 
-    // 6. Verify Active State - RED PHASE
+    // 6. Verify Active State
     // Expecting a bottom border and background color for active links.
     await expect.element(homeLink).toHaveStyle({
-      borderBottomWidth: "2px",
-      borderBottomStyle: "solid",
-      // We don't know the exact color yet, but we expect *some* background color change
-      // or at least that it's not transparent/initial if we use a pill shape.
+      "border-bottom-width": "2px",
+      "border-bottom-style": "solid",
+      "border-bottom-color": "rgb(37, 99, 235)", // blue.600
+      "color": "rgb(29, 78, 216)", // blue.700
+      "background-color": "rgb(239, 246, 255)", // blue.50
     });
 
     // Verify inactive link does NOT have it
     await expect.element(feedsLink).not.toHaveStyle({
-      borderBottomWidth: "2px",
+      "border-bottom-width": "2px",
+    });
+    await expect.element(feedsLink).toHaveStyle({
+      "color": "rgb(107, 114, 128)", // gray.500
     });
   });
 });
