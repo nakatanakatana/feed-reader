@@ -268,6 +268,31 @@ WHERE
 GROUP BY
   fi.feed_id;
 
+-- name: CountUnreadItemsPerTag :many
+SELECT
+  ft.tag_id,
+  COUNT(DISTINCT fi.item_id) AS count
+FROM
+  feed_tags ft
+JOIN
+  feed_items fi ON ft.feed_id = fi.feed_id
+LEFT JOIN
+  item_reads ir ON fi.item_id = ir.item_id
+WHERE
+  COALESCE(ir.is_read, 0) = 0
+GROUP BY
+  ft.tag_id;
+
+-- name: CountTotalUnreadItems :one
+SELECT
+  COUNT(DISTINCT fi.item_id) AS count
+FROM
+  feed_items fi
+LEFT JOIN
+  item_reads ir ON fi.item_id = ir.item_id
+WHERE
+  COALESCE(ir.is_read, 0) = 0;
+
 -- name: CountItems :one
 SELECT
   COUNT(DISTINCT i.id)
