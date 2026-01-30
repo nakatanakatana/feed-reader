@@ -57,7 +57,7 @@ function RootComponent() {
 
   return (
     <>
-      <div class={headerStyle} role="banner">
+      <header class={headerStyle}>
         <Link
           to="/"
           class={linkStyle}
@@ -86,7 +86,7 @@ function RootComponent() {
         >
           Tags
         </Link>
-      </div>
+      </header>
       <Outlet />
       {/* Start rendering router matches */}
     </>

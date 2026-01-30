@@ -1,6 +1,5 @@
 import {
   createMemoryHistory,
-  createRootRoute,
   createRoute,
   createRouter,
   RouterProvider,
@@ -26,7 +25,7 @@ describe("RootComponent Navigation", () => {
   it("applies active styles to the current route link", async () => {
     // Define a dummy index component
     const IndexComponent = () => <div>Index Page Content</div>;
-    
+
     const indexRoute = createRoute({
       getParentRoute: () => RootRoute,
       path: "/",
@@ -43,7 +42,9 @@ describe("RootComponent Navigation", () => {
     dispose = render(() => <RouterProvider router={router} />, document.body);
 
     // 4. Verify Content
-    await expect.element(page.getByText("Index Page Content")).toBeInTheDocument();
+    await expect
+      .element(page.getByText("Index Page Content"))
+      .toBeInTheDocument();
 
     // 5. Verify Navigation Links
     const homeLink = page.getByRole("link", { name: "Home" });
@@ -67,7 +68,7 @@ describe("RootComponent Navigation", () => {
       "border-bottom-width": "2px",
       "border-bottom-style": "solid",
       "border-bottom-color": "rgb(37, 99, 235)", // blue.600
-      "color": "rgb(29, 78, 216)", // blue.700
+      color: "rgb(29, 78, 216)", // blue.700
       "background-color": "rgb(239, 246, 255)", // blue.50
     });
 
@@ -76,7 +77,7 @@ describe("RootComponent Navigation", () => {
       "border-bottom-width": "2px",
     });
     await expect.element(feedsLink).toHaveStyle({
-      "color": "rgb(107, 114, 128)", // gray.500
+      color: "rgb(107, 114, 128)", // gray.500
     });
   });
 });
