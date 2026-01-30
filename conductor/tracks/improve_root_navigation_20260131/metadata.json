@@ -1,8 +1,0 @@
-{
-  "track_id": "improve_root_navigation_20260131",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-01-31T00:00:00Z",
-  "updated_at": "2026-01-31T00:00:00Z",
-  "description": "Improve RootComponent's appearance to make the current route more obvious."
-}
