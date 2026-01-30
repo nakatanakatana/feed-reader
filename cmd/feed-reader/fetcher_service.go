@@ -118,7 +118,7 @@ func (s *FetcherService) FetchAndSave(ctx context.Context, f store.Feed) error {
 		},
 	})
 
-	s.logger.InfoContext(ctx, "enqueued updates for feed", "url", f.Url, "items", len(parsedFeed.Items))
+	s.logger.DebugContext(ctx, "enqueued updates for feed", "url", f.Url, "items", len(parsedFeed.Items))
 	return nil
 }
 
