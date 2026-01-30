@@ -10,7 +10,7 @@ Refactor the database schema to support separate collections and the necessary i
 - [x] Task: Implement a synchronization mechanism (handlers) in `db.ts` to trigger API calls when items move between collections. 5dc83fc
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Core Database Schema Refactoring' (Protocol in workflow.md)
 
-## Phase 2: Logic Layer - Query and Mutation Updates
+## Phase 2: Logic Layer - Query and Mutation Updates [checkpoint: fae3e91]
 Update the query logic to handle the new collection structure and implement incremental fetching.
 
 - [x] Task: Write Tests: Create unit tests in `src/lib/item-query.test.ts` for `fetchNewItems` (future direction) and `fetchOlderItems` (past direction) logic. 58fae78
