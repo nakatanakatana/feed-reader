@@ -13,7 +13,7 @@
     - [x] Adjust badge alignment and padding to ensure visual stability.
 - [x] Task: Conductor - User Manual Verification 'Phase 2: FeedList Component Refactoring' (Protocol in workflow.md)
 
-## Phase 3: ItemList Component Refactoring
+## Phase 3: ItemList Component Refactoring [checkpoint: 930ed01]
 - [x] Task: Apply consistent height and formatted counts to `ItemList` tag filters. [33a9204]
     - [x] Update `ItemList.tsx` to use `formatUnreadCount`.
     - [x] Update CSS for consistency with `FeedList`.
