@@ -7,10 +7,10 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Setup & Helpers' (Protocol in workflow.md)
 
 ## Phase 2: FeedList Component Refactoring
-- [ ] Task: Implement consistent height and formatted counts for Tag and "All" buttons in `FeedList`.
-    - [ ] Update `FeedList.tsx` to use `formatUnreadCount`.
-    - [ ] Update CSS in `FeedList.tsx` to ensure consistent button height (e.g., using `min-height` or fixed height).
-    - [ ] Adjust badge alignment and padding to ensure visual stability.
+- [x] Task: Implement consistent height and formatted counts for Tag and "All" buttons in `FeedList`. [eb455d7]
+    - [x] Update `FeedList.tsx` to use `formatUnreadCount`.
+    - [x] Update CSS in `FeedList.tsx` to ensure consistent button height (e.g., using `min-height` or fixed height).
+    - [x] Adjust badge alignment and padding to ensure visual stability.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: FeedList Component Refactoring' (Protocol in workflow.md)
 
 ## Phase 3: ItemList Component Refactoring
