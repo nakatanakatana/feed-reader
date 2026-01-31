@@ -4,6 +4,7 @@ import {
   getItemDisplayDate,
   getPublishedSince,
   type Item,
+  normalizeCategories,
 } from "./item-utils";
 
 describe("item-utils", () => {
@@ -84,6 +85,47 @@ describe("item-utils", () => {
       expect(formatUnreadCount(1000)).toBe("999+");
       expect(formatUnreadCount(1001)).toBe("999+");
       expect(formatUnreadCount(10000)).toBe("999+");
+    });
+  });
+
+  describe("normalizeCategories", () => {
+    it("returns an empty array for empty or whitespace values", () => {
+      expect(normalizeCategories("")).toEqual([]);
+      expect(normalizeCategories("   ")).toEqual([]);
+    });
+
+    it("parses JSON arrays with mixed types", () => {
+      expect(normalizeCategories('["Tech", 42, true]')).toEqual([
+        "Tech",
+        "42",
+        "true",
+      ]);
+    });
+
+    it("filters out nullish and empty values from JSON arrays", () => {
+      expect(normalizeCategories('["Tech", null, "", "  "]')).toEqual(["Tech"]);
+    });
+
+    it("falls back to CSV parsing when JSON is malformed", () => {
+      expect(normalizeCategories('["Tech","SolidJS"')).toEqual([
+        "Tech",
+        "SolidJS",
+      ]);
+    });
+
+    it("strips surrounding quotes in CSV values", () => {
+      expect(normalizeCategories('"Tech", "SolidJS"')).toEqual([
+        "Tech",
+        "SolidJS",
+      ]);
+    });
+
+    it("preserves special characters", () => {
+      expect(normalizeCategories('["C++","Foo/Bar","R&D"]')).toEqual([
+        "C++",
+        "Foo/Bar",
+        "R&D",
+      ]);
     });
   });
 });

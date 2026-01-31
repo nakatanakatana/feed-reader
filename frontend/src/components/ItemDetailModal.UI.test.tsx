@@ -86,7 +86,7 @@ describe("ItemDetailModal UI Updates", () => {
     await expect.element(page.getByText("SolidJS")).toBeInTheDocument();
   });
 
-  it("falls back to comma-separated categories when JSON parsing fails", async () => {
+  it("renders comma-separated categories when JSON format is absent", async () => {
     const mockItem = {
       id: "2",
       title: "Fallback Item",
@@ -117,6 +117,47 @@ describe("ItemDetailModal UI Updates", () => {
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>
             <ItemDetailModal itemId="2" onClose={() => {}} />
+          </QueryClientProvider>
+        </TransportProvider>
+      ),
+      document.body,
+    );
+
+    await expect.element(page.getByText("Tech")).toBeInTheDocument();
+    await expect.element(page.getByText("SolidJS")).toBeInTheDocument();
+  });
+
+  it("falls back to CSV parsing when JSON is malformed", async () => {
+    const mockItem = {
+      id: "3",
+      title: "Malformed JSON Item",
+      url: "http://example.com/malformed",
+      description: "Short description",
+      content: "<div>Malformed JSON content</div>",
+      imageUrl: "http://example.com/malformed.jpg",
+      categories: '["Tech","SolidJS"',
+      publishedAt: "2026-01-30",
+      author: "Author Name",
+      isRead: false,
+    };
+
+    vi.mocked(useItem).mockReturnValue({
+      data: mockItem,
+      isLoading: false,
+      // biome-ignore lint/suspicious/noExplicitAny: Mocking query result
+    } as any);
+
+    vi.mocked(useUpdateItemStatus).mockReturnValue({
+      mutate: vi.fn(),
+      isPending: false,
+      // biome-ignore lint/suspicious/noExplicitAny: Mocking mutation result
+    } as any);
+
+    dispose = render(
+      () => (
+        <TransportProvider transport={transport}>
+          <QueryClientProvider client={queryClient}>
+            <ItemDetailModal itemId="3" onClose={() => {}} />
           </QueryClientProvider>
         </TransportProvider>
       ),
