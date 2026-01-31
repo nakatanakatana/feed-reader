@@ -1,0 +1,8 @@
+{
+  "track_id": "immediate_fetch_20260131",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-01-31T00:00:00Z",
+  "updated_at": "2026-01-31T00:00:00Z",
+  "description": "Feed一覧のページでフィードを指定して即座にfetchしてItemを取得する操作をできるようにしてください"
+}
