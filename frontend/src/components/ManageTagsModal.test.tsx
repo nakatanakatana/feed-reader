@@ -29,8 +29,8 @@ describe("ManageTagsModal", () => {
         async listTags() {
           return create(ListTagsResponseSchema, {
             tags: [
-              create(ListTagSchema, { id: "t1", name: "Tech" }),
-              create(ListTagSchema, { id: "t2", name: "News" }),
+              create(ListTagSchema, { id: "t1", name: "Tech", feedCount: 1n }),
+              create(ListTagSchema, { id: "t2", name: "News", feedCount: 2n }),
             ],
           });
         },

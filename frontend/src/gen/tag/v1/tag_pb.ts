@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file tag/v1/tag.proto.
  */
 export const file_tag_v1_tag: GenFile = /*@__PURE__*/
-  fileDesc("ChB0YWcvdjEvdGFnLnByb3RvEgZ0YWcudjEiXQoDVGFnEgoKAmlkGAEgASgJEgwKBG5hbWUYAiABKAkSEgoKY3JlYXRlZF9hdBgDIAEoCRISCgp1cGRhdGVkX2F0GAQgASgJEhQKDHVucmVhZF9jb3VudBgFIAEoAyI5CgdMaXN0VGFnEgoKAmlkGAEgASgJEgwKBG5hbWUYAiABKAkSFAoMdW5yZWFkX2NvdW50GAMgASgDIiAKEENyZWF0ZVRhZ1JlcXVlc3QSDAoEbmFtZRgBIAEoCSItChFDcmVhdGVUYWdSZXNwb25zZRIYCgN0YWcYASABKAsyCy50YWcudjEuVGFnIhEKD0xpc3RUYWdzUmVxdWVzdCJNChBMaXN0VGFnc1Jlc3BvbnNlEh0KBHRhZ3MYASADKAsyDy50YWcudjEuTGlzdFRhZxIaChJ0b3RhbF91bnJlYWRfY291bnQYAiABKAMiHgoQRGVsZXRlVGFnUmVxdWVzdBIKCgJpZBgBIAEoCSITChFEZWxldGVUYWdSZXNwb25zZTLPAQoKVGFnU2VydmljZRJACglDcmVhdGVUYWcSGC50YWcudjEuQ3JlYXRlVGFnUmVxdWVzdBoZLnRhZy52MS5DcmVhdGVUYWdSZXNwb25zZRI9CghMaXN0VGFncxIXLnRhZy52MS5MaXN0VGFnc1JlcXVlc3QaGC50YWcudjEuTGlzdFRhZ3NSZXNwb25zZRJACglEZWxldGVUYWcSGC50YWcudjEuRGVsZXRlVGFnUmVxdWVzdBoZLnRhZy52MS5EZWxldGVUYWdSZXNwb25zZUI7WjlnaXRodWIuY29tL25ha2F0YW5ha2F0YW5hL2ZlZWQtcmVhZGVyL2dlbi9nby90YWcvdjE7dGFndjFiBnByb3RvMw");
+  fileDesc("ChB0YWcvdjEvdGFnLnByb3RvEgZ0YWcudjEicQoDVGFnEgoKAmlkGAEgASgJEgwKBG5hbWUYAiABKAkSEgoKY3JlYXRlZF9hdBgDIAEoCRISCgp1cGRhdGVkX2F0GAQgASgJEhQKDHVucmVhZF9jb3VudBgFIAEoAxISCgpmZWVkX2NvdW50GAYgASgDIk0KB0xpc3RUYWcSCgoCaWQYASABKAkSDAoEbmFtZRgCIAEoCRIUCgx1bnJlYWRfY291bnQYAyABKAMSEgoKZmVlZF9jb3VudBgEIAEoAyIgChBDcmVhdGVUYWdSZXF1ZXN0EgwKBG5hbWUYASABKAkiLQoRQ3JlYXRlVGFnUmVzcG9uc2USGAoDdGFnGAEgASgLMgsudGFnLnYxLlRhZyIRCg9MaXN0VGFnc1JlcXVlc3QiTQoQTGlzdFRhZ3NSZXNwb25zZRIdCgR0YWdzGAEgAygLMg8udGFnLnYxLkxpc3RUYWcSGgoSdG90YWxfdW5yZWFkX2NvdW50GAIgASgDIh4KEERlbGV0ZVRhZ1JlcXVlc3QSCgoCaWQYASABKAkiEwoRRGVsZXRlVGFnUmVzcG9uc2UyzwEKClRhZ1NlcnZpY2USQAoJQ3JlYXRlVGFnEhgudGFnLnYxLkNyZWF0ZVRhZ1JlcXVlc3QaGS50YWcudjEuQ3JlYXRlVGFnUmVzcG9uc2USPQoITGlzdFRhZ3MSFy50YWcudjEuTGlzdFRhZ3NSZXF1ZXN0GhgudGFnLnYxLkxpc3RUYWdzUmVzcG9uc2USQAoJRGVsZXRlVGFnEhgudGFnLnYxLkRlbGV0ZVRhZ1JlcXVlc3QaGS50YWcudjEuRGVsZXRlVGFnUmVzcG9uc2VCO1o5Z2l0aHViLmNvbS9uYWthdGFuYWthdGFuYS9mZWVkLXJlYWRlci9nZW4vZ28vdGFnL3YxO3RhZ3YxYgZwcm90bzM");
 
 /**
  * @generated from message tag.v1.Tag
@@ -40,6 +40,11 @@ export type Tag = Message<"tag.v1.Tag"> & {
    * @generated from field: int64 unread_count = 5;
    */
   unreadCount: bigint;
+
+  /**
+   * @generated from field: int64 feed_count = 6;
+   */
+  feedCount: bigint;
 };
 
 /**
@@ -67,6 +72,11 @@ export type ListTag = Message<"tag.v1.ListTag"> & {
    * @generated from field: int64 unread_count = 3;
    */
   unreadCount: bigint;
+
+  /**
+   * @generated from field: int64 feed_count = 4;
+   */
+  feedCount: bigint;
 };
 
 /**

@@ -11,7 +11,6 @@ describe("TagManagement", () => {
 
   beforeEach(() => {
     queryClient.clear();
-    vi.spyOn(window, "confirm").mockReturnValue(true);
   });
 
   afterEach(() => {
@@ -31,7 +30,7 @@ describe("TagManagement", () => {
   it("renders tag list and add form", async () => {
     dispose = render(() => <TestWrapper />, document.body);
 
-    await expect.element(page.getByText("Tag Management")).toBeInTheDocument();
+    await expect.element(page.getByText("Manage Tags")).toBeInTheDocument();
     await expect
       .element(page.getByPlaceholder("New tag name"))
       .toBeInTheDocument();
@@ -53,15 +52,36 @@ describe("TagManagement", () => {
     await expect.element(page.getByText("NewTag")).toBeInTheDocument();
   });
 
-  it("deletes a tag", async () => {
+  it("deletes a tag after confirmation when tag has feeds", async () => {
     dispose = render(() => <TestWrapper />, document.body);
 
+    const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(true);
     const techTag = page.getByText("Tech");
     await expect.element(techTag).toBeInTheDocument();
 
     const deleteButton = page.getByRole("button", { name: "Delete Tech" });
     await deleteButton.click();
 
+    expect(confirmSpy).toHaveBeenCalled();
     await expect.element(techTag).not.toBeInTheDocument();
+  });
+
+  it("skips confirmation when tag has no feeds", async () => {
+    dispose = render(() => <TestWrapper />, document.body);
+
+    const confirmSpy = vi.spyOn(window, "confirm");
+
+    const input = page.getByPlaceholder("New tag name");
+    const addButton = page.getByText("Add Tag");
+    await input.fill("EmptyTag");
+    await addButton.click();
+
+    const emptyTag = page.getByText("EmptyTag");
+    await expect.element(emptyTag).toBeInTheDocument();
+
+    const deleteButton = page.getByRole("button", { name: "Delete EmptyTag" });
+    await deleteButton.click();
+
+    expect(confirmSpy).not.toHaveBeenCalled();
   });
 });

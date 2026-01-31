@@ -120,6 +120,7 @@ func TestStore_ListTags_WithUnreadCount(t *testing.T) {
 		// Check unread counts
 		assert.Equal(t, int64(1), tagMap["tag-1"].UnreadCount)
 		assert.Equal(t, int64(1), tagMap["tag-2"].UnreadCount)
+		assert.Equal(t, int64(1), tagMap["tag-1"].FeedCount)
+		assert.Equal(t, int64(1), tagMap["tag-2"].FeedCount)
 	})
 }
-

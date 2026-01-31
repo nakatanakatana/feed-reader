@@ -237,6 +237,15 @@ WHERE
 GROUP BY
   ft.tag_id;
 
+-- name: CountFeedsPerTag :many
+SELECT
+  ft.tag_id,
+  COUNT(DISTINCT ft.feed_id) AS count
+FROM
+  feed_tags ft
+GROUP BY
+  ft.tag_id;
+
 -- name: CountTotalUnreadItems :one
 SELECT
   COUNT(DISTINCT fi.item_id) AS count

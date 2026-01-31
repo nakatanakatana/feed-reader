@@ -28,6 +28,7 @@ type Tag struct {
 	CreatedAt     string                 `protobuf:"bytes,3,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	UpdatedAt     string                 `protobuf:"bytes,4,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 	UnreadCount   int64                  `protobuf:"varint,5,opt,name=unread_count,json=unreadCount,proto3" json:"unread_count,omitempty"`
+	FeedCount     int64                  `protobuf:"varint,6,opt,name=feed_count,json=feedCount,proto3" json:"feed_count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -97,11 +98,19 @@ func (x *Tag) GetUnreadCount() int64 {
 	return 0
 }
 
+func (x *Tag) GetFeedCount() int64 {
+	if x != nil {
+		return x.FeedCount
+	}
+	return 0
+}
+
 type ListTag struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	UnreadCount   int64                  `protobuf:"varint,3,opt,name=unread_count,json=unreadCount,proto3" json:"unread_count,omitempty"`
+	FeedCount     int64                  `protobuf:"varint,4,opt,name=feed_count,json=feedCount,proto3" json:"feed_count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -153,6 +162,13 @@ func (x *ListTag) GetName() string {
 func (x *ListTag) GetUnreadCount() int64 {
 	if x != nil {
 		return x.UnreadCount
+	}
+	return 0
+}
+
+func (x *ListTag) GetFeedCount() int64 {
+	if x != nil {
+		return x.FeedCount
 	}
 	return 0
 }
@@ -417,7 +433,7 @@ var File_tag_v1_tag_proto protoreflect.FileDescriptor
 
 const file_tag_v1_tag_proto_rawDesc = "" +
 	"\n" +
-	"\x10tag/v1/tag.proto\x12\x06tag.v1\"\x8a\x01\n" +
+	"\x10tag/v1/tag.proto\x12\x06tag.v1\"\xa9\x01\n" +
 	"\x03Tag\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x1d\n" +
@@ -425,11 +441,15 @@ const file_tag_v1_tag_proto_rawDesc = "" +
 	"created_at\x18\x03 \x01(\tR\tcreatedAt\x12\x1d\n" +
 	"\n" +
 	"updated_at\x18\x04 \x01(\tR\tupdatedAt\x12!\n" +
-	"\funread_count\x18\x05 \x01(\x03R\vunreadCount\"P\n" +
+	"\funread_count\x18\x05 \x01(\x03R\vunreadCount\x12\x1d\n" +
+	"\n" +
+	"feed_count\x18\x06 \x01(\x03R\tfeedCount\"o\n" +
 	"\aListTag\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12!\n" +
-	"\funread_count\x18\x03 \x01(\x03R\vunreadCount\"&\n" +
+	"\funread_count\x18\x03 \x01(\x03R\vunreadCount\x12\x1d\n" +
+	"\n" +
+	"feed_count\x18\x04 \x01(\x03R\tfeedCount\"&\n" +
 	"\x10CreateTagRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\"2\n" +
 	"\x11CreateTagResponse\x12\x1d\n" +
