@@ -45,6 +45,8 @@ message ListFeed {
   string title = 3;
   int64 unread_count = 4;
   repeated tag.v1.Tag tags = 5;
+  optional string link = 6;
+  optional string last_fetched_at = 7;
 }
 
 message GetFeedRequest {

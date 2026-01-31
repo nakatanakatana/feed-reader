@@ -12,8 +12,10 @@ export type { Tag };
 export interface Feed {
   id: string;
   url: string;
+  link?: string;
   title: string;
   unreadCount?: bigint;
+  lastFetchedAt?: string;
   tags?: Tag[];
 }
 
@@ -53,8 +55,10 @@ export const feeds = createCollection(
       return response.feeds.map((feed: ListFeed) => ({
         id: feed.id,
         url: feed.url,
+        link: feed.link,
         title: feed.title,
         unreadCount: feed.unreadCount,
+        lastFetchedAt: feed.lastFetchedAt,
         tags: feed.tags,
       }));
     },

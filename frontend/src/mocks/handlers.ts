@@ -49,7 +49,9 @@ const feeds = [
   create(FeedSchema, {
     id: "1",
     url: "https://example.com/feed1.xml",
+    link: "https://example.com/",
     title: "Example Feed 1",
+    lastFetchedAt: new Date().toISOString(),
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     tags: [tags[0]],
@@ -57,7 +59,9 @@ const feeds = [
   create(FeedSchema, {
     id: "2",
     url: "https://example.com/feed2.xml",
+    link: "https://example.com/news",
     title: "Example Feed 2",
+    lastFetchedAt: new Date().toISOString(),
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     tags: [tags[1]],
@@ -80,7 +84,8 @@ export const handlers = [
           url: feed.url,
           title: feed.title,
           unreadCount: feed.unreadCount ?? 0n,
-          tags: feed.tags,
+          link: feed.link,
+          lastFetchedAt: feed.lastFetchedAt,
         }),
       );
       return create(ListFeedsResponseSchema, { feeds: listFeeds });
