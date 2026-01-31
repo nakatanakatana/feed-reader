@@ -21,6 +21,9 @@ The primary target audience is individuals and organizations seeking control ove
 - **Feed Management:** Add, organize, and manage RSS/Atom feeds via the UI. Supports sorting by update time and bulk operations like tagging multiple feeds simultaneously.
 
 
+- **Manual Feed Refresh:** Trigger immediate updates for one or more feeds directly from the UI, bypassing the background scheduler. Includes real-time feedback with loading indicators and error reporting at the individual feed level.
+
+
 - **OPML Import:** Bulk import existing subscriptions from other RSS readers using the standard OPML format, with automatic deduplication.
 
 
