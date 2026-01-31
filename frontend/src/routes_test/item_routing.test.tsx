@@ -42,7 +42,7 @@ describe("Item Routing", () => {
 
     // Wait for the modal content to appear
     await expect
-      .element(page.getByText("Detail for Item 1"))
+      .element(page.getByRole("link", { name: "Item 1" }))
       .toBeInTheDocument();
 
     // Check if the URL includes the default publishedSince=30d

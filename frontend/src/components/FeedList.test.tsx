@@ -249,7 +249,9 @@ describe("FeedList", () => {
       throw new Error("Checkbox not found");
     }
 
-    const manageTagsBtn = page.getByText("Manage Tags");
+    const manageTagsBtn = page
+      .getByRole("button", { name: /Manage Tags|Tags \(/i })
+      .first();
     await manageTagsBtn.click();
 
     await expect.element(page.getByRole("dialog")).toBeInTheDocument();

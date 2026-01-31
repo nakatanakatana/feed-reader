@@ -149,6 +149,21 @@ export function FeedList() {
             >
               Total Unread: {totalUnreadCount()}
             </div>
+            <Show when={selectedFeedIds().length > 0}>
+              <div
+                class={css({
+                  bg: "blue.100",
+                  color: "blue.800",
+                  px: "3",
+                  py: "1.5",
+                  rounded: "md",
+                  fontSize: "sm",
+                  fontWeight: "bold",
+                })}
+              >
+                {selectedFeedIds().length} feeds selected
+              </div>
+            </Show>
           </div>
           <Show when={selectedFeedIds().length > 0}>
             <div class={flex({ gap: "2", alignItems: "center" })}>
@@ -191,7 +206,10 @@ export function FeedList() {
                   _hover: { bg: "blue.700" },
                 })}
               >
-                Manage Tags ({selectedFeedIds().length})
+                Manage Tags
+                <Show when={selectedFeedIds().length > 0}>
+                  <span> ({selectedFeedIds().length})</span>
+                </Show>
               </button>
             </div>
           </Show>
@@ -363,6 +381,47 @@ export function FeedList() {
           Delete Error: {deleteError()?.message}
         </p>
       </Show>
+
+      <Show when={sortedFeeds().length > 0}>
+        <div class={flex({ gap: "3", alignItems: "center", px: "3" })}>
+          <input
+            type="checkbox"
+            id="select-all"
+            aria-label="Select All"
+            checked={
+              selectedFeedIds().length > 0 &&
+              selectedFeedIds().length === sortedFeeds().length
+            }
+            ref={(el) => {
+              // Indeterminate state
+              if (el) {
+                el.indeterminate =
+                  selectedFeedIds().length > 0 &&
+                  selectedFeedIds().length < sortedFeeds().length;
+              }
+            }}
+            onChange={() => {
+              if (selectedFeedIds().length === sortedFeeds().length) {
+                setSelectedFeedIds([]);
+              } else {
+                setSelectedFeedIds(sortedFeeds().map((f) => f.id));
+              }
+            }}
+            class={css({ cursor: "pointer" })}
+          />
+          <label
+            for="select-all"
+            class={css({
+              fontSize: "sm",
+              fontWeight: "medium",
+              cursor: "pointer",
+            })}
+          >
+            Select All
+          </label>
+        </div>
+      </Show>
+
       <ul class={stack({ gap: "2" })}>
         <For each={sortedFeeds()}>
           {(feed: Feed) => (

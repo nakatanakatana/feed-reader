@@ -91,7 +91,7 @@ export function ItemList(props: ItemListProps) {
   }));
 
   const allItems = () => {
-    const rawItems = itemsLiveQuery() || [];
+    const rawItems = (itemsLiveQuery.data as unknown as Item[]) || [];
     if (rawItems.length === 0 && itemsQuery.data) {
       // Fallback to query data if live query is still empty but we have data from query
       return itemsQuery.data.pages.flatMap((p) => p.items) as unknown as Item[];

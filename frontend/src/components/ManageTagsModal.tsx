@@ -81,6 +81,8 @@ export function ManageTagsModal(props: ManageTagsModalProps) {
         }}
       >
         <div
+          role="dialog"
+          aria-modal="true"
           class={stack({
             bg: "white",
             padding: "6",

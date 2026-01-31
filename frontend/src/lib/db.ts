@@ -53,7 +53,7 @@ export const addFeed = async (url: string, tagIds?: string[]) => {
   return response.feed;
 };
 
-const mapItem = (item: {
+export const mapItem = (item: {
   id: string;
   url: string;
   title: string;

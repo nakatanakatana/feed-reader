@@ -30,7 +30,7 @@ vi.mock("@tanstack/solid-db", () => {
   return {
     useLiveQuery: vi
       .fn()
-      .mockReturnValue(() => [{ id: "123", title: "Test Feed" }]),
+      .mockReturnValue({ data: [{ id: "123", title: "Test Feed" }] }),
     eq: vi.fn(),
     createCollection: vi
       .fn()
