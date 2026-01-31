@@ -270,9 +270,9 @@ export const handlers = [
       const totalCount = filteredItems.length;
       const items = filteredItems.slice(offset, offset + limit);
 
-      return create(ListItemsResponseSchema, { 
-        items: items.map(i => create(ItemSchema, i)),
-        totalCount 
+      return create(ListItemsResponseSchema, {
+        items: items.map((i) => create(ItemSchema, i)),
+        totalCount,
       });
     },
   }),
@@ -303,7 +303,7 @@ export const handlers = [
           }),
         });
       }
-      
+
       return create(GetItemResponseSchema, {
         item: create(ItemSchema, {
           id: req.id,

@@ -1,4 +1,3 @@
-import { useLiveQuery } from "@tanstack/solid-db";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
@@ -16,25 +15,43 @@ import { routeTree } from "../routeTree.gen";
 
 // Mock the db module
 vi.mock("../lib/db", () => ({
+  db: {
+    feeds: {
+      delete: vi.fn(),
+      isReady: vi.fn().mockReturnValue(true),
+    },
+    items: {
+      isReady: vi.fn().mockReturnValue(true),
+      preload: vi.fn(),
+    },
+    getMergedItemsQuery: vi.fn().mockReturnValue(() => []),
+    addFeed: vi.fn(),
+    updateItemStatus: vi.fn(),
+  },
   feeds: {
     delete: vi.fn(),
     isReady: vi.fn().mockReturnValue(true),
   },
   items: {
     isReady: vi.fn().mockReturnValue(true),
+    preload: vi.fn(),
   },
+  getMergedItemsQuery: vi.fn().mockReturnValue(() => []),
   addFeed: vi.fn(),
   updateItemStatus: vi.fn(),
 }));
 
 // Mock useLiveQuery
-vi.mock("@tanstack/solid-db", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@tanstack/solid-db")>();
-  return {
-    ...actual,
-    useLiveQuery: vi.fn(),
-  };
-});
+vi.mock("@tanstack/solid-db", () => ({
+  useLiveQuery: vi.fn(),
+  createCollection: vi.fn().mockReturnValue({
+    isReady: vi.fn().mockReturnValue(true),
+  }),
+  createLiveQueryCollection: vi.fn().mockReturnValue({
+    isReady: vi.fn().mockReturnValue(true),
+  }),
+  eq: vi.fn(),
+}));
 
 // Mock Link from solid-router
 vi.mock("@tanstack/solid-router", async (importOriginal) => {
@@ -59,6 +76,8 @@ vi.mock("../lib/tag-query", () => ({
   tagKeys: { all: ["tags"] },
 }));
 
+import { useLiveQuery } from "@tanstack/solid-db";
+
 describe("FeedList Uncategorized Filter", () => {
   let dispose: () => void;
 
@@ -81,7 +100,6 @@ describe("FeedList Uncategorized Filter", () => {
   );
 
   it("filters feeds with no tags when 'Uncategorized' is selected", async () => {
-    // Setup mock return for useLiveQuery
     const mockFeeds = [
       {
         id: "1",
@@ -101,11 +119,9 @@ describe("FeedList Uncategorized Filter", () => {
       data: mockFeeds,
     } as unknown as ReturnType<typeof useLiveQuery>);
 
-    // Setup mock for useTags
     vi.mocked(useTags).mockReturnValue({
       data: { tags: [{ id: "t1", name: "Tech" }] },
-      // biome-ignore lint/suspicious/noExplicitAny: Test mock for simplicity
-    } as any);
+    } as unknown as ReturnType<typeof useTags>);
 
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
     const router = createRouter({ routeTree, history });
@@ -119,7 +135,6 @@ describe("FeedList Uncategorized Filter", () => {
       document.body,
     );
 
-    // Initial state: All feeds visible
     await expect
       .element(page.getByText("Tagged Feed", { exact: true }))
       .toBeInTheDocument();
@@ -127,12 +142,10 @@ describe("FeedList Uncategorized Filter", () => {
       .element(page.getByText("Untagged Feed", { exact: true }))
       .toBeInTheDocument();
 
-    // Find and click "Uncategorized" filter button
     const uncategorizedBtn = page.getByText("Uncategorized", { exact: true });
     await expect.element(uncategorizedBtn).toBeInTheDocument();
     await uncategorizedBtn.click();
 
-    // Expect only Untagged Feed to be visible
     await expect
       .element(page.getByText("Untagged Feed", { exact: true }))
       .toBeInTheDocument();

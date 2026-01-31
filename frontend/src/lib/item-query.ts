@@ -84,7 +84,10 @@ export const fetchNewItems = async (
     tagId?: string;
   },
 ) => {
-  const lastFetchedAt = params.lastFetchedAt || localStorage.getItem(LAST_FETCHED_AT_KEY) || new Date(0).toISOString();
+  const lastFetchedAt =
+    params.lastFetchedAt ||
+    localStorage.getItem(LAST_FETCHED_AT_KEY) ||
+    new Date(0).toISOString();
   const lastFetchedDate = new Date(lastFetchedAt);
   const publishedSince = {
     seconds: BigInt(Math.floor(lastFetchedDate.getTime() / 1000)),
@@ -127,8 +130,7 @@ export const fetchOlderItems = async (
 
 export const getMergedItemsQuery = () => {
   return createLiveQueryCollection((q) =>
-    q.from({ items: db.items })
-      .orderBy(({ items }) => items.createdAt, "asc")
+    q.from({ items: db.items }).orderBy(({ items }) => items.createdAt, "asc"),
   );
 };
 

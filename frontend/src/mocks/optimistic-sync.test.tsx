@@ -6,7 +6,7 @@ import {
   RouterProvider,
 } from "@tanstack/solid-router";
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { page } from "vitest/browser";
 import { queryClient } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
@@ -57,7 +57,9 @@ describe("Optimistic Updates Integration", () => {
 
     await expect.element(item1).toBeInTheDocument({ timeout: 15000 });
 
-    const markAsReadBtn = page.getByRole("button", { name: "Mark as Read" }).first();
+    const markAsReadBtn = page
+      .getByRole("button", { name: "Mark as Read" })
+      .first();
     await expect.element(markAsReadBtn).toBeInTheDocument();
 
     // Click "Mark as Read"
@@ -65,10 +67,14 @@ describe("Optimistic Updates Integration", () => {
 
     // Optimistic check: UI should update immediately to "Mark as Unread"
     // Using getByText instead of getByRole to be less restrictive
-    const markAsUnreadBtn = page.getByText("Mark as Unread", { exact: true }).first();
+    const markAsUnreadBtn = page
+      .getByText("Mark as Unread", { exact: true })
+      .first();
     await expect.element(markAsUnreadBtn).toBeInTheDocument({ timeout: 10000 });
-    
+
     // Also check if it's marked as "Read" in the list
-    await expect.element(page.getByText("Read", { exact: true }).first()).toBeInTheDocument();
+    await expect
+      .element(page.getByText("Read", { exact: true }).first())
+      .toBeInTheDocument();
   });
 });

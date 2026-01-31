@@ -1,4 +1,3 @@
-import { useLiveQuery } from "@tanstack/solid-db";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
@@ -16,25 +15,43 @@ import { routeTree } from "../routeTree.gen";
 
 // Mock the db module
 vi.mock("../lib/db", () => ({
+  db: {
+    feeds: {
+      delete: vi.fn(),
+      isReady: vi.fn().mockReturnValue(true),
+    },
+    items: {
+      isReady: vi.fn().mockReturnValue(true),
+      preload: vi.fn(),
+    },
+    getMergedItemsQuery: vi.fn().mockReturnValue(() => []),
+    addFeed: vi.fn(),
+    updateItemStatus: vi.fn(),
+  },
   feeds: {
     delete: vi.fn(),
     isReady: vi.fn().mockReturnValue(true),
   },
   items: {
     isReady: vi.fn().mockReturnValue(true),
+    preload: vi.fn(),
   },
+  getMergedItemsQuery: vi.fn().mockReturnValue(() => []),
   addFeed: vi.fn(),
   updateItemStatus: vi.fn(),
 }));
 
 // Mock useLiveQuery
-vi.mock("@tanstack/solid-db", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@tanstack/solid-db")>();
-  return {
-    ...actual,
-    useLiveQuery: vi.fn(),
-  };
-});
+vi.mock("@tanstack/solid-db", () => ({
+  useLiveQuery: vi.fn(),
+  createCollection: vi.fn().mockReturnValue({
+    isReady: vi.fn().mockReturnValue(true),
+  }),
+  createLiveQueryCollection: vi.fn().mockReturnValue({
+    isReady: vi.fn().mockReturnValue(true),
+  }),
+  eq: vi.fn(),
+}));
 
 // Mock Link from solid-router
 vi.mock("@tanstack/solid-router", async (importOriginal) => {
@@ -58,6 +75,8 @@ vi.mock("../lib/tag-query", () => ({
   useDeleteTag: vi.fn(),
   tagKeys: { all: ["tags"] },
 }));
+
+import { useLiveQuery } from "@tanstack/solid-db";
 
 describe("FeedList Card Click Selection", () => {
   let dispose: () => void;
@@ -89,8 +108,7 @@ describe("FeedList Card Click Selection", () => {
 
     vi.mocked(useTags).mockReturnValue({
       data: { tags: [] },
-      // biome-ignore lint/suspicious/noExplicitAny: Test mock for simplicity
-    } as any);
+    } as unknown as ReturnType<typeof useTags>);
 
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
     const router = createRouter({ routeTree, history });
@@ -117,7 +135,7 @@ describe("FeedList Card Click Selection", () => {
     // Click the card background (li element)
     card.click();
 
-    // Checkbox should be checked (This will fail initially)
+    // Checkbox should be checked
     expect(checkbox.checked).toBe(true);
 
     // Click again to untoggle

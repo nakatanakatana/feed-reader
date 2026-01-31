@@ -1,9 +1,19 @@
 import { describe, expect, it, beforeEach, vi } from "vitest";
-import { unreadItems, readItems, items, Item, updateItemStatus } from "./db";
+import {
+  unreadItems,
+  readItems,
+  items,
+  type Item,
+  updateItemStatus,
+} from "./db";
 import { queryClient } from "./query";
 import { worker } from "../mocks/browser";
 import { mockConnectWeb } from "../mocks/connect";
-import { ItemService, ListItemsResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
+import {
+  ItemService,
+  ListItemsResponseSchema,
+  ItemSchema,
+} from "../gen/item/v1/item_pb";
 import { create } from "@bufbuild/protobuf";
 
 describe("db refactoring", () => {
@@ -16,7 +26,7 @@ describe("db refactoring", () => {
     const k3 = [...readItems.keys()];
     if (k3.length) readItems.delete(k3);
   });
-  
+
   it("should have unreadItems collection", () => {
     expect(unreadItems).toBeDefined();
   });
@@ -46,16 +56,17 @@ describe("db refactoring", () => {
         handler: (req) => {
           return create(ListItemsResponseSchema, {
             items: [
-              create(ItemSchema, { ...testItem, isRead: req.isRead ?? false })
+              create(ItemSchema, { ...testItem, isRead: req.isRead ?? false }),
             ],
             totalCount: 1,
           });
         },
-      })
+      }),
     );
 
-    // Manually populate both main and derived collections for the test
+    // Manually populate main collection for the test
     items.insert(testItem);
+    // Explicitly insert into unreadItems as well for initial state
     unreadItems.insert(testItem);
 
     expect(items.get("test-1")).toBeDefined();
@@ -63,14 +74,29 @@ describe("db refactoring", () => {
     expect(readItems.get("test-1")).toBeUndefined();
 
     // Mock invalidateQueries to avoid refetch wiping out optimistic state
-    const invalidateSpy = vi.spyOn(queryClient, "invalidateQueries").mockImplementation(() => Promise.resolve());
+    const invalidateSpy = vi
+      .spyOn(queryClient, "invalidateQueries")
+      .mockImplementation(() => Promise.resolve());
 
     // Call updateItemStatus
     await updateItemStatus({ ids: ["test-1"], isRead: true });
 
-    // Wait a bit for everything to settle
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    // Wait for the state to settle
+    let success = false;
+    for (let i = 0; i < 20; i++) {
+      const item = items.get("test-1");
+      if (
+        item?.isRead === true &&
+        !unreadItems.has("test-1") &&
+        readItems.has("test-1")
+      ) {
+        success = true;
+        break;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
 
+    expect(success).toBe(true);
     expect(items.get("test-1")?.isRead).toBe(true);
     expect(unreadItems.get("test-1")).toBeUndefined();
     expect(readItems.get("test-1")).toBeDefined();

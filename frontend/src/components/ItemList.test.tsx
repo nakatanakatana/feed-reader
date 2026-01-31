@@ -6,46 +6,61 @@ import {
   RouterProvider,
 } from "@tanstack/solid-router";
 import { render } from "solid-js/web";
+import type { Accessor } from "solid-js";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
+import type { Item } from "../lib/db";
 
-// Mock hooks
+// Mock hooks - MUST BE ABOVE ANY IMPORTS THAT USE THEM
 vi.mock("../lib/item-query", () => ({
   useItems: vi.fn(),
   useItem: vi.fn(),
   useUpdateItemStatus: vi.fn(),
-  getMergedItemsQuery: vi.fn(),
 }));
 
 vi.mock("../lib/db", () => ({
   db: {
     items: {
       preload: vi.fn(),
+      isReady: vi.fn().mockReturnValue(true),
     },
-    feeds: {},
+    feeds: {
+      isReady: vi.fn().mockReturnValue(true),
+    },
+    getMergedItemsQuery: vi.fn().mockReturnValue(() => []),
+    addFeed: vi.fn(),
+    updateItemStatus: vi.fn(),
   },
   items: {
     preload: vi.fn(),
+    isReady: vi.fn().mockReturnValue(true),
   },
-  feeds: {},
+  feeds: {
+    isReady: vi.fn().mockReturnValue(true),
+  },
   unreadItems: {},
   readItems: {},
+  getMergedItemsQuery: vi.fn().mockReturnValue(() => []),
   addFeed: vi.fn(),
   updateItemStatus: vi.fn(),
 }));
-
-import { useItem, useItems, useUpdateItemStatus } from "../lib/item-query";
 
 // Mock useLiveQuery from solid-db
 vi.mock("@tanstack/solid-db", () => ({
   useLiveQuery: vi.fn(),
   eq: vi.fn(),
-  createCollection: vi.fn(),
-  createLiveQueryCollection: vi.fn(),
+  createCollection: vi.fn().mockReturnValue({
+    isReady: vi.fn().mockReturnValue(true),
+  }),
+  createLiveQueryCollection: vi.fn().mockReturnValue({
+    isReady: vi.fn().mockReturnValue(true),
+  }),
 }));
 
+// Now import the functions we want to mock further in tests
+import { useItem, useItems, useUpdateItemStatus } from "../lib/item-query";
 import { useLiveQuery } from "@tanstack/solid-db";
 
 describe("ItemList", () => {
@@ -74,7 +89,9 @@ describe("ItemList", () => {
       isFetchingNextPage: false,
     } as unknown as ReturnType<typeof useItems>);
 
-    vi.mocked(useLiveQuery).mockReturnValue((() => mockItems) as any);
+    vi.mocked(useLiveQuery).mockReturnValue(
+      (() => mockItems) as unknown as Accessor<Item[]>,
+    );
 
     vi.mocked(useItem).mockReturnValue({
       data: {

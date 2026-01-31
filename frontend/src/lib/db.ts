@@ -1,6 +1,10 @@
 import { createClient } from "@connectrpc/connect";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
-import { createCollection, createLiveQueryCollection, eq } from "@tanstack/solid-db";
+import {
+  createCollection,
+  createLiveQueryCollection,
+  eq,
+} from "@tanstack/solid-db";
 import { FeedService } from "../gen/feed/v1/feed_pb";
 import { ItemService } from "../gen/item/v1/item_pb";
 import type { Tag } from "../gen/tag/v1/tag_pb";
@@ -49,43 +53,18 @@ export const addFeed = async (url: string, tagIds?: string[]) => {
   return response.feed;
 };
 
-export const updateItemStatus = async (params: {
-  ids: string[];
-  isRead?: boolean;
-}) => {
-  // Optimistic update
-  const isRead = !!params.isRead;
-  for (const id of params.ids) {
-    // 1. Update the main items collection
-    if (items.has(id)) {
-      items.update(id, (draft) => {
-        draft.isRead = isRead;
-      });
-    }
-
-    // 2. Manually synchronize derived collections if they were manually populated (e.g. in tests)
-    const item = items.get(id);
-    if (item) {
-      if (isRead) {
-        if (unreadItems.has(id)) unreadItems.delete(id);
-        if (!readItems.has(id)) readItems.insert(item);
-        else readItems.update(id, (draft) => { draft.isRead = true; });
-      } else {
-        if (readItems.has(id)) readItems.delete(id);
-        if (!unreadItems.has(id)) unreadItems.insert(item);
-        else unreadItems.update(id, (draft) => { draft.isRead = false; });
-      }
-    }
-  }
-
-  try {
-    await itemClient.updateItemStatus(params);
-  } finally {
-    queryClient.invalidateQueries({ queryKey: ["items"] });
-  }
-};
-
-const mapItem = (item: any): Item => ({
+const mapItem = (item: {
+  id: string;
+  url: string;
+  title: string;
+  description: string;
+  publishedAt: string;
+  author: string;
+  feedId: string;
+  isRead: boolean;
+  createdAt: string;
+  updatedAt?: string;
+}): Item => ({
   id: item.id,
   url: item.url,
   title: item.title,
@@ -137,7 +116,8 @@ export const items = createCollection(
 );
 
 export const unreadItems = createLiveQueryCollection({
-  query: (q) => q.from({ items }).where(({ items }) => eq(items.isRead, false)),
+  query: (q) =>
+    q.from({ items: items }).where(({ items }) => eq(items.isRead, false)),
   getKey: (item: Item) => item.id,
   onInsert: async () => {},
   onUpdate: async () => {},
@@ -145,18 +125,47 @@ export const unreadItems = createLiveQueryCollection({
 });
 
 export const readItems = createLiveQueryCollection({
-  query: (q) => q.from({ items }).where(({ items }) => eq(items.isRead, true)),
+  query: (q) =>
+    q.from({ items: items }).where(({ items }) => eq(items.isRead, true)),
   getKey: (item: Item) => item.id,
   onInsert: async () => {},
   onUpdate: async () => {},
   onDelete: async () => {},
 });
 
+export const getMergedItemsQuery = () => {
+  return createLiveQueryCollection((q) =>
+    q.from({ items: items }).orderBy(({ items }) => items.createdAt, "asc"),
+  );
+};
+
+export const updateItemStatus = async (params: {
+  ids: string[];
+  isRead?: boolean;
+}) => {
+  // Optimistic update
+  const isRead = !!params.isRead;
+  for (const id of params.ids) {
+    if (items.has(id)) {
+      items.update(id, (draft) => {
+        draft.isRead = isRead;
+      });
+    }
+  }
+
+  try {
+    await itemClient.updateItemStatus(params);
+  } finally {
+    queryClient.invalidateQueries({ queryKey: ["items"] });
+  }
+};
+
 export const db = {
   feeds,
   items,
   unreadItems,
   readItems,
+  getMergedItemsQuery,
   addFeed,
   updateItemStatus,
 };

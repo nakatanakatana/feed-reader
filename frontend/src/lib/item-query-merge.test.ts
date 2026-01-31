@@ -1,6 +1,11 @@
 import { describe, expect, it, beforeEach } from "vitest";
-import { items, unreadItems, readItems, Item } from "./db";
-import { getMergedItemsQuery } from "./item-query";
+import {
+  items,
+  unreadItems,
+  readItems,
+  type Item,
+  getMergedItemsQuery,
+} from "./db";
 import { queryClient } from "./query";
 
 describe("Item Collection Filtering", () => {

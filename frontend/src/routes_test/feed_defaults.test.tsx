@@ -28,15 +28,43 @@ vi.mock("../lib/tag-query", () => ({
 // Mock LiveQuery for feed
 vi.mock("@tanstack/solid-db", () => {
   return {
-    useLiveQuery: vi.fn().mockReturnValue({
-      data: [{ id: "123", title: "Test Feed" }],
-    }),
+    useLiveQuery: vi
+      .fn()
+      .mockReturnValue(() => [{ id: "123", title: "Test Feed" }]),
     eq: vi.fn(),
     createCollection: vi
       .fn()
       .mockReturnValue({ isReady: vi.fn().mockReturnValue(true) }),
+    createLiveQueryCollection: vi
+      .fn()
+      .mockReturnValue({ isReady: vi.fn().mockReturnValue(true) }),
   };
 });
+
+vi.mock("../lib/db", () => ({
+  db: {
+    items: {
+      preload: vi.fn(),
+      isReady: vi.fn().mockReturnValue(true),
+    },
+    feeds: {
+      isReady: vi.fn().mockReturnValue(true),
+    },
+    getMergedItemsQuery: vi.fn().mockReturnValue(() => []),
+    addFeed: vi.fn(),
+    updateItemStatus: vi.fn(),
+  },
+  items: {
+    preload: vi.fn(),
+    isReady: vi.fn().mockReturnValue(true),
+  },
+  feeds: {
+    isReady: vi.fn().mockReturnValue(true),
+  },
+  getMergedItemsQuery: vi.fn().mockReturnValue(() => []),
+  addFeed: vi.fn(),
+  updateItemStatus: vi.fn(),
+}));
 
 describe("Feed Route Defaults", () => {
   let dispose: () => void;
@@ -53,8 +81,7 @@ describe("Feed Route Defaults", () => {
     vi.mocked(useItems).mockReturnValue({
       data: { pages: [] },
       isLoading: false,
-      // biome-ignore lint/suspicious/noExplicitAny: Mocking query result
-    } as any);
+    } as unknown as ReturnType<typeof useItems>);
 
     const history = createMemoryHistory({ initialEntries: ["/feeds/123"] });
     const router = createRouter({ routeTree, history });

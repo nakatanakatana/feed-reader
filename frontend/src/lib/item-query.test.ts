@@ -16,7 +16,7 @@ const { mockClient } = vi.hoisted(() => ({
   mockClient: {
     listItems: vi.fn(),
     updateItemStatus: vi.fn(),
-  }
+  },
 }));
 
 vi.mock("@connectrpc/connect", () => ({

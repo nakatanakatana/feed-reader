@@ -1,4 +1,3 @@
-import { useLiveQuery } from "@tanstack/solid-db";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
@@ -16,25 +15,43 @@ import { routeTree } from "../routeTree.gen";
 
 // Mock the db module
 vi.mock("../lib/db", () => ({
+  db: {
+    feeds: {
+      delete: vi.fn(),
+      isReady: vi.fn().mockReturnValue(true),
+    },
+    items: {
+      isReady: vi.fn().mockReturnValue(true),
+      preload: vi.fn(),
+    },
+    getMergedItemsQuery: vi.fn().mockReturnValue(() => []),
+    addFeed: vi.fn(),
+    updateItemStatus: vi.fn(),
+  },
   feeds: {
     delete: vi.fn(),
     isReady: vi.fn().mockReturnValue(true),
   },
   items: {
     isReady: vi.fn().mockReturnValue(true),
+    preload: vi.fn(),
   },
+  getMergedItemsQuery: vi.fn().mockReturnValue(() => []),
   addFeed: vi.fn(),
   updateItemStatus: vi.fn(),
 }));
 
 // Mock useLiveQuery
-vi.mock("@tanstack/solid-db", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@tanstack/solid-db")>();
-  return {
-    ...actual,
-    useLiveQuery: vi.fn(),
-  };
-});
+vi.mock("@tanstack/solid-db", () => ({
+  useLiveQuery: vi.fn(),
+  createCollection: vi.fn().mockReturnValue({
+    isReady: vi.fn().mockReturnValue(true),
+  }),
+  createLiveQueryCollection: vi.fn().mockReturnValue({
+    isReady: vi.fn().mockReturnValue(true),
+  }),
+  eq: vi.fn(),
+}));
 
 // Mock Link from solid-router
 vi.mock("@tanstack/solid-router", async (importOriginal) => {
@@ -58,6 +75,8 @@ vi.mock("../lib/tag-query", () => ({
   useDeleteTag: vi.fn(),
   tagKeys: { all: ["tags"] },
 }));
+
+import { useLiveQuery } from "@tanstack/solid-db";
 
 describe("FeedList Sorting", () => {
   let dispose: () => void;
@@ -114,8 +133,7 @@ describe("FeedList Sorting", () => {
 
     vi.mocked(useTags).mockReturnValue({
       data: { tags: [] },
-      // biome-ignore lint/suspicious/noExplicitAny: Test mock for simplicity
-    } as any);
+    } as unknown as ReturnType<typeof useTags>);
 
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
     const router = createRouter({ routeTree, history });
@@ -128,9 +146,6 @@ describe("FeedList Sorting", () => {
       ),
       document.body,
     );
-
-    // Default sorting (should be Title A-Z if implemented as default, or unsorted)
-    // Let's assume we implement Title A-Z as default.
 
     const sortSelect = page.getByRole("combobox", { name: /sort by/i });
     await expect.element(sortSelect).toBeInTheDocument();
@@ -146,15 +161,15 @@ describe("FeedList Sorting", () => {
     // 2. Sort by Date Added (Newest first)
     await sortSelect.selectOptions("created_at_desc");
     feedItems = document.querySelectorAll("li");
-    expect(feedItems[0].textContent).toContain("A Feed"); // Jan 25
-    expect(feedItems[1].textContent).toContain("C Feed"); // Jan 22
-    expect(feedItems[2].textContent).toContain("B Feed"); // Jan 20
+    expect(feedItems[0].textContent).toContain("A Feed");
+    expect(feedItems[1].textContent).toContain("C Feed");
+    expect(feedItems[2].textContent).toContain("B Feed");
 
     // 3. Sort by Last Fetched (Newest first)
     await sortSelect.selectOptions("last_fetched_at_desc");
     feedItems = document.querySelectorAll("li");
-    expect(feedItems[0].textContent).toContain("A Feed"); // Jan 22
-    expect(feedItems[1].textContent).toContain("B Feed"); // Jan 21
-    expect(feedItems[2].textContent).toContain("C Feed"); // Jan 20
+    expect(feedItems[0].textContent).toContain("A Feed");
+    expect(feedItems[1].textContent).toContain("B Feed");
+    expect(feedItems[2].textContent).toContain("C Feed");
   });
 });

@@ -1,13 +1,12 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import type { Transport } from "@connectrpc/connect";
 import { fetchNewItems, fetchOlderItems } from "./item-query";
-import { ItemService } from "../gen/item/v1/item_pb";
 
 // Mock the transport and client
 const { mockClient } = vi.hoisted(() => ({
   mockClient: {
     listItems: vi.fn(),
-  }
+  },
 }));
 
 vi.mock("@connectrpc/connect", () => ({
