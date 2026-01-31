@@ -1,16 +1,12 @@
 package main
 
 import (
-	"embed"
 	"io"
 	"io/fs"
 	"net/http"
 	"path"
 	"strings"
 )
-
-//go:embed all:dist
-var frontendAssets embed.FS
 
 type assetsHandler struct {
 	fs fs.FS
