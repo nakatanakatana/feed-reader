@@ -64,9 +64,15 @@ func (m mockUUIDGenerator) NewRandom() (uuid.UUID, error) {
 type mockFetcher struct {
 	feed *gofeed.Feed
 	err  error
+	errs map[string]error
 }
 
 func (m *mockFetcher) Fetch(ctx context.Context, url string) (*gofeed.Feed, error) {
+	if m.errs != nil {
+		if err, ok := m.errs[url]; ok {
+			return nil, err
+		}
+	}
 	if m.err != nil {
 		return nil, m.err
 	}
@@ -75,6 +81,7 @@ func (m *mockFetcher) Fetch(ctx context.Context, url string) (*gofeed.Feed, erro
 	}
 	return m.feed, nil
 }
+
 
 type mockItemFetcher struct {
 	called bool
