@@ -187,9 +187,6 @@ func (s *FeedServer) createFeedFromURL(ctx context.Context, url string, titleOve
 		}
 	}
 
-	// Trigger immediate fetch of items
-	_ = s.itemFetcher.FetchAndSave(ctx, feed)
-
 	return &feed, nil
 }
 

@@ -145,7 +145,7 @@ func TestFeedServer_CreateFeed(t *testing.T) {
 			mockFeed:  &gofeed.Feed{Title: "Fetched Title"},
 			wantTitle: "Test Feed",
 			wantErr:   false,
-			wantFetch: true,
+			wantFetch: false,
 		},
 		{
 			name: "UUID Generation Error",
@@ -206,6 +206,9 @@ func TestFeedServer_CreateFeed(t *testing.T) {
 
 			if tt.wantFetch && !itemFetcher.called {
 				t.Error("expected FetchAndSave to be called")
+			}
+			if !tt.wantFetch && itemFetcher.called {
+				t.Error("expected FetchAndSave NOT to be called")
 			}
 		})
 	}
