@@ -5,7 +5,6 @@ import { ItemDetailModal } from "./ItemDetailModal";
 
 interface ItemDetailRouteViewProps {
   itemId: string | undefined;
-  feedId?: string;
   tagId?: string;
 }
 
@@ -16,23 +15,12 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
 
   const getLinkProps = (targetItemId: string | undefined) => {
     if (!targetItemId) return undefined;
-    const to = props.feedId ? "/feeds/$feedId/items/$itemId" : "/items/$itemId";
-    // biome-ignore lint/style/noNonNullAssertion: router param fix
-    const params = { feedId: props.feedId!, itemId: targetItemId };
-    const search = (prev: Record<string, unknown>) => ({ ...prev });
-    return { to, params, search };
-  };
-
-  const getCloseLinkProps = () => {
-    const to = props.feedId ? "/feeds/$feedId" : "/";
-    // biome-ignore lint/style/noNonNullAssertion: router param fix
-    const params = { feedId: props.feedId! };
-    const search = (prev: Record<string, unknown>) => ({ ...prev });
-    return { to, params, search };
+    const to = "/items/$itemId";
+    const params = { itemId: targetItemId };
+    return { to, params };
   };
 
   const itemsQuery = useItems({
-    feedId: props.feedId,
     tagId: props.tagId,
   });
 
@@ -54,8 +42,6 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
             to: linkProps.to,
             // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
             params: linkProps.params as any,
-            // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
-            search: linkProps.search as any,
           });
         }
       }
@@ -81,8 +67,6 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
           to: linkProps.to,
           // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
           params: linkProps.params as any,
-          // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
-          search: linkProps.search as any,
         });
       }
     } else if (itemsQuery.hasNextPage) {
@@ -101,8 +85,6 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
           to: linkProps.to,
           // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
           params: linkProps.params as any,
-          // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
-          search: linkProps.search as any,
         });
       }
     }
@@ -120,13 +102,8 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
     <ItemDetailModal
       itemId={props.itemId}
       onClose={() => {
-        const linkProps = getCloseLinkProps();
         navigate({
-          to: linkProps.to,
-          // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
-          params: linkProps.params as any,
-          // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
-          search: linkProps.search as any,
+          to: "/",
         });
       }}
       prevItemId={prevItem()?.id}

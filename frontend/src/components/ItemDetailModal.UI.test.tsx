@@ -1,10 +1,10 @@
+import { createConnectTransport } from "@connectrpc/connect-web";
 import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { ItemDetailModal } from "./ItemDetailModal";
 import { TransportProvider } from "../lib/transport-context";
-import { createConnectTransport } from "@connectrpc/connect-web";
+import { ItemDetailModal } from "./ItemDetailModal";
 
 // Mock hooks
 vi.mock("../lib/item-query", () => ({

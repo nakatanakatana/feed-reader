@@ -1,6 +1,6 @@
-import { describe, it, expect } from "vitest";
-import { itemKeys } from "./item-query";
 import type { Timestamp } from "@bufbuild/protobuf/wkt";
+import { describe, expect, it } from "vitest";
+import { itemKeys } from "./item-query";
 
 describe("Item Query Serialization", () => {
   it("should be able to serialize query keys with BigInt", () => {

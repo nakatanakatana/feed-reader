@@ -28,10 +28,10 @@ describe("Item Queries", () => {
 
   it("should generate correct query keys", () => {
     expect(itemKeys.all).toEqual(["items"]);
-    expect(itemKeys.list({ feedId: "123" })).toEqual([
+    expect(itemKeys.list({ tagId: "tag-1" })).toEqual([
       "items",
       "list",
-      { feedId: "123" },
+      { tagId: "tag-1" },
     ]);
     expect(itemKeys.list({})).toEqual(["items", "list", {}]);
   });
@@ -44,13 +44,13 @@ describe("Item Queries", () => {
     mockClient.listItems.mockResolvedValue(mockResponse);
 
     const transport = {} as unknown as Transport; // Mock transport
-    const params = { feedId: "123", limit: 10, offset: 0 };
+    const params = { tagId: "tag-1", limit: 10, offset: 0 };
 
     const result = await fetchItems(transport, params);
 
     expect(createClient).toHaveBeenCalledWith(ItemService, transport);
     expect(mockClient.listItems).toHaveBeenCalledWith({
-      feedId: "123",
+      tagId: "tag-1",
       limit: 10,
       offset: 0,
     });
@@ -76,9 +76,9 @@ describe("Item Queries", () => {
 
   it("should generate correct infinite query options", () => {
     const transport = {} as unknown as Transport;
-    const options = itemsInfiniteQueryOptions(transport, { feedId: "123" });
+    const options = itemsInfiniteQueryOptions(transport, { tagId: "tag-1" });
 
-    expect(options.queryKey).toEqual(["items", "list", { feedId: "123" }]);
+    expect(options.queryKey).toEqual(["items", "list", { tagId: "tag-1" }]);
     expect(options.initialPageParam).toBe(0);
 
     // Test getNextPageParam

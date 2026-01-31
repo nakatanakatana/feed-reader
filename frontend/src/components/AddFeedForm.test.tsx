@@ -1,5 +1,5 @@
-import { QueryClientProvider } from "@tanstack/solid-query";
 import { create } from "@bufbuild/protobuf";
+import { QueryClientProvider } from "@tanstack/solid-query";
 import { render } from "solid-js/web";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";

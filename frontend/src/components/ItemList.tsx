@@ -13,7 +13,6 @@ import { DateFilterSelector } from "./DateFilterSelector";
 import { ItemRow } from "./ItemRow";
 
 interface ItemListProps {
-  feedId?: string;
   tagId?: string;
   dateFilter?: DateFilterValue;
 }
@@ -49,7 +48,6 @@ export function ItemList(props: ItemListProps) {
   };
 
   const itemsQuery = useItems(() => ({
-    feedId: props.feedId,
     tagId: props.tagId,
     isRead: showRead() ? undefined : false,
     publishedSince: getPublishedSince(dateFilter()),

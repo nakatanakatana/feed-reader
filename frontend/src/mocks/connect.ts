@@ -1,4 +1,4 @@
-import { fromJson, toJson, type JsonValue } from "@bufbuild/protobuf";
+import { fromJson, type JsonValue, toJson } from "@bufbuild/protobuf";
 import type { GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
 import { type HttpHandler, HttpResponse, http } from "msw";
 

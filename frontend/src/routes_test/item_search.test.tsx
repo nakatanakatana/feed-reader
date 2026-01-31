@@ -10,8 +10,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { queryClient } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
-import { routeTree } from "../routeTree.gen";
 import { Route } from "../routes/_items";
+import { routeTree } from "../routeTree.gen";
 
 // Mock ItemList to inspect useSearch
 vi.mock("../components/ItemList", () => {
