@@ -37,10 +37,8 @@ export function ItemList(props: ItemListProps) {
   const handleDateFilterSelect = (value: DateFilterValue) => {
     setDateFilter(value);
     navigate({
-      search: (prev) => ({
-        ...prev,
-        publishedSince: value === "all" ? undefined : value,
-      }),
+      // @ts-ignore
+      search: { publishedSince: value === "all" ? undefined : value },
     });
   };
 
@@ -82,14 +80,14 @@ export function ItemList(props: ItemListProps) {
     navigate({
       to: "/items/$itemId",
       params: { itemId },
-      search: (prev) => ({ ...prev }),
     });
   };
 
   const handleTagClick = (tagId: string | undefined) => {
     navigate({
       to: ".",
-      search: (prev) => ({ ...prev, tagId }),
+      // @ts-ignore
+      search: { tagId },
     });
   };
 
