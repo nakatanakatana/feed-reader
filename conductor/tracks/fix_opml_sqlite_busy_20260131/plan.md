@@ -18,7 +18,7 @@ This phase focuses on defining the necessary data structures and API contracts.
 ## Phase 2: Import Job Service & Write Queue Integration
 This phase implements the backend logic for managing jobs and integrating with the write queue.
 
-- [ ] Task: Implement Import Job Repository
+- [x] Task: Implement Import Job Repository (35fd0a6)
     - [ ] Create tests for `CreateImportJob`, `UpdateImportJob`, `GetImportJob` in `store/import_job_test.go`.
     - [ ] Implement the store methods in `store/import_job.go` (or via `sqlc`).
 - [ ] Task: Refactor OPML Import Logic (Async)
