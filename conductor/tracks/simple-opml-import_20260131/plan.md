@@ -14,8 +14,8 @@ In this phase, we will remove the asynchronous job infrastructure and redefine t
 Implement the synchronous logic for processing OPML files and returning results.
 
 - [x] Task: Implement synchronous OPML parsing and feed registration in `cmd/feed-reader/opml.go` <!-- id: 7a96901 -->
-- [~] Task: Update API handler to process OPML uploads synchronously and return a summary of successes/failures
-- [ ] Task: Ensure deduplication logic remains robust during synchronous import
+- [x] Task: Update API handler to process OPML uploads synchronously and return a summary of successes/failures <!-- id: 6479540 -->
+- [~] Task: Ensure deduplication logic remains robust during synchronous import
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Synchronous Import Implementation' (Protocol in workflow.md)
 
 ## Phase 3: Frontend Update and Cleanup
