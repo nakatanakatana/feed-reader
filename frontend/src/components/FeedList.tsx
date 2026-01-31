@@ -111,12 +111,12 @@ export function FeedList() {
           justifyContent: "space-between",
           alignItems: "stretch",
           flexDirection: "column",
-          gap: "4",
+          gap: "2",
           position: "sticky",
           top: 0,
           zIndex: 2,
           backgroundColor: "white",
-          paddingBottom: "3",
+          paddingBottom: "1",
           md: {
             alignItems: "center",
             flexDirection: "row",
@@ -136,51 +136,56 @@ export function FeedList() {
             },
           })}
         >
-          <Show when={selectedFeedIds().length > 0}>
-            <div class={flex({ gap: "2", alignItems: "center" })}>
-              <button
-                type="button"
-                onClick={() =>
-                  refreshMutation.mutate({ ids: selectedFeedIds() })
-                }
-                disabled={refreshMutation.isPending}
-                class={css({
-                  display: "none",
-                  sm: { display: "block" },
-                  px: "3",
-                  py: "1.5",
-                  bg: "blue.100",
-                  color: "blue.700",
-                  rounded: "md",
-                  fontSize: "sm",
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                  _hover: { bg: "blue.200" },
-                  _disabled: { opacity: 0.5, cursor: "not-allowed" },
-                })}
-              >
-                {refreshMutation.isPending ? "Fetching..." : "Fetch Selected"}
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsManageModalOpen(true)}
-                class={css({
-                  display: "none",
-                  sm: { display: "block" },
-                  px: "3",
-                  py: "1.5",
-                  bg: "blue.600",
-                  color: "white",
-                  rounded: "md",
-                  fontSize: "sm",
-                  cursor: "pointer",
-                  _hover: { bg: "blue.700" },
-                })}
-              >
-                Manage Tags ({selectedFeedIds().length})
-              </button>
-            </div>
-          </Show>
+          <div
+            class={flex({ gap: "2", alignItems: "center" })}
+            style={{
+              "min-height": "2rem",
+              visibility: selectedFeedIds().length > 0 ? "visible" : "hidden",
+              "pointer-events": selectedFeedIds().length > 0 ? "auto" : "none",
+            }}
+          >
+            <button
+              type="button"
+              onClick={() => refreshMutation.mutate({ ids: selectedFeedIds() })}
+              disabled={refreshMutation.isPending}
+              class={css({
+                display: "none",
+                sm: { display: "block" },
+                px: "2.5",
+                py: "1",
+                bg: "blue.100",
+                color: "blue.700",
+                rounded: "md",
+                fontSize: "sm",
+                fontWeight: "bold",
+                cursor: "pointer",
+                whiteSpace: "nowrap",
+                _hover: { bg: "blue.200" },
+                _disabled: { opacity: 0.5, cursor: "not-allowed" },
+              })}
+            >
+              {refreshMutation.isPending ? "Fetching..." : "Fetch Selected"}
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsManageModalOpen(true)}
+              class={css({
+                display: "none",
+                sm: { display: "block" },
+                px: "2.5",
+                py: "1",
+                bg: "blue.600",
+                color: "white",
+                rounded: "md",
+                fontSize: "sm",
+                cursor: "pointer",
+                whiteSpace: "nowrap",
+                _hover: { bg: "blue.700" },
+              })}
+            >
+              Manage Tags ({selectedFeedIds().length})
+            </button>
+          </div>
         </div>
         <div
           class={css({
