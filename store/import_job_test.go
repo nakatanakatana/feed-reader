@@ -16,7 +16,9 @@ func TestImportJob(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to open database: %v", err)
 	}
-	defer db.Close()
+	defer func() {
+		_ = db.Close()
+	}()
 
 	if _, err := db.ExecContext(context.Background(), schema.Schema); err != nil {
 		t.Fatalf("failed to create schema: %v", err)
