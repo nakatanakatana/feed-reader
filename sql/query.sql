@@ -75,29 +75,6 @@ DELETE FROM
 WHERE
   id = ?;
 
--- name: ListItemsByFeed :many
-SELECT
-  i.id,
-  i.url,
-  i.title,
-  i.description,
-  i.published_at,
-  i.author,
-  i.guid,
-  i.content,
-  i.image_url,
-  i.categories,
-  i.created_at,
-  i.updated_at
-FROM
-  items i
-JOIN
-  feed_items fi ON i.id = fi.item_id
-WHERE
-  fi.feed_id = ?
-ORDER BY
-  COALESCE(i.published_at, i.created_at) ASC;
-
 -- name: CreateItem :one
 INSERT INTO items (
   id,
@@ -343,19 +320,3 @@ WHERE
   ft.feed_id = ?
 ORDER BY
   t.name ASC;
-
--- name: ListAllItems :many
-SELECT
-  *
-FROM
-  items;
-
--- name: UpdateItemContent :exec
-UPDATE
-  items
-SET
-  description = ?,
-  content = ?,
-  updated_at = CURRENT_TIMESTAMP
-WHERE
-  id = ?;

@@ -109,7 +109,7 @@ func TestFetcherService_FetchAndSave(t *testing.T) {
 	time.Sleep(50 * time.Millisecond)
 
 	// Verify items are saved
-	items, err := queries.ListItemsByFeed(ctx, feed.ID)
+	items, err := queries.ListItems(ctx, store.ListItemsParams{FeedID: feed.ID, Limit: 10})
 	if err != nil {
 		t.Fatalf("failed to get items: %v", err)
 	}
