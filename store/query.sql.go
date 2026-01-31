@@ -734,7 +734,7 @@ SELECT
   i.id,
   i.url,
   i.title,
-  i.description,
+  CAST(COALESCE(SUBSTR(i.description, 1, 140), '') AS TEXT) AS description,
   i.published_at,
   i.author,
   i.guid,
@@ -777,7 +777,7 @@ type ListItemsRow struct {
 	ID          string  `json:"id"`
 	Url         string  `json:"url"`
 	Title       *string `json:"title"`
-	Description *string `json:"description"`
+	Description string  `json:"description"`
 	PublishedAt *string `json:"published_at"`
 	Author      *string `json:"author"`
 	Guid        *string `json:"guid"`

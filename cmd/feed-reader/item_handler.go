@@ -129,7 +129,21 @@ func (s *ItemServer) UpdateItemStatus(ctx context.Context, req *connect.Request[
 }
 
 func GetItemRowFromListItemsRow(row store.ListItemsRow) store.GetItemRow {
-	return store.GetItemRow(row)
+	return store.GetItemRow{
+		ID:          row.ID,
+		Url:         row.Url,
+		Title:       row.Title,
+		Description: &row.Description,
+		PublishedAt: row.PublishedAt,
+		Author:      row.Author,
+		Guid:        row.Guid,
+		Content:     row.Content,
+		ImageUrl:    row.ImageUrl,
+		Categories:  row.Categories,
+		CreatedAt:   row.CreatedAt,
+		FeedID:      row.FeedID,
+		IsRead:      row.IsRead,
+	}
 }
 
 func toProtoItem(row store.GetItemRow) *itemv1.Item {
