@@ -4,7 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"log/slog"
+	"strings"
 	"testing"
 	"time"
 
@@ -612,6 +614,55 @@ func TestFeedServer_ImportOpml(t *testing.T) {
 
 		_, err := server.ImportOpml(ctx, connect.NewRequest(req))
 		assert.Error(t, err)
+	})
+
+	t.Run("Import large OPML", func(t *testing.T) {
+		_, db := setupTestDB(t)
+		
+		// 50 feeds
+		var sb strings.Builder
+		sb.WriteString(`<?xml version="1.0" encoding="UTF-8"?><opml version="1.0"><body>`)
+		for i := 0; i < 50; i++ {
+			fmt.Fprintf(&sb, `<outline text="Feed %d" xmlUrl="https://example.com/feed/%d" />`, i, i)
+		}
+		sb.WriteString(`</body></opml>`)
+
+		fetcher := &mockFetcher{
+			feed: &gofeed.Feed{Title: "Fetched Title"},
+		}
+
+		server, _ := setupServer(t, db, nil, fetcher, &mockItemFetcher{})
+
+		req := &feedv1.ImportOpmlRequest{
+			OpmlContent: []byte(sb.String()),
+		}
+
+		res, err := server.ImportOpml(ctx, connect.NewRequest(req))
+		if err != nil {
+			t.Fatalf("ImportOpml() error = %v", err)
+		}
+
+		jobID := res.Msg.JobId
+		
+		// Poll for completion
+		var lastJob *feedv1.ImportJob
+		require.Eventually(t, func() bool {
+			jobRes, err := server.GetImportJob(ctx, connect.NewRequest(&feedv1.GetImportJobRequest{Id: jobID}))
+			if err != nil {
+				return false
+			}
+			lastJob = jobRes.Msg.Job
+			return jobRes.Msg.Job.Status == feedv1.ImportJobStatus_IMPORT_JOB_STATUS_COMPLETED
+		}, 5*time.Second, 100*time.Millisecond)
+
+		assert.Equal(t, int32(50), lastJob.TotalFeeds)
+		assert.Equal(t, int32(50), lastJob.ProcessedFeeds)
+
+		// Verify DB count
+		var count int
+		err = db.QueryRow("SELECT COUNT(*) FROM feeds").Scan(&count)
+		require.NoError(t, err)
+		assert.Equal(t, 50, count)
 	})
 }
 
