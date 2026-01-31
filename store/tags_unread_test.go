@@ -2,11 +2,16 @@ package store_test
 
 import (
 	"context"
+	"database/sql"
+	"fmt"
 	"testing"
 
+	"github.com/nakatanakatana/feed-reader/sql"
 	"github.com/nakatanakatana/feed-reader/store"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	_ "modernc.org/sqlite"
+	"pgregory.net/rapid"
 )
 
 func TestTags_UnreadCounts(t *testing.T) {
@@ -123,4 +128,87 @@ func TestStore_ListTags_WithUnreadCount(t *testing.T) {
 		assert.Equal(t, int64(1), tagMap["tag-1"].FeedCount)
 		assert.Equal(t, int64(1), tagMap["tag-2"].FeedCount)
 	})
+}
+
+func TestTags_UnreadCounts_PBT(t *testing.T) {
+	rapid.Check(t, func(t *rapid.T) {
+		q, db := setupQueriesForRapid(t)
+		ctx := context.Background()
+		defer func() {
+			_ = db.Close()
+		}()
+
+		tagCount := rapid.IntRange(1, 5).Draw(t, "tagCount")
+		feedIDs := make([]string, tagCount)
+		tagIDs := make([]string, tagCount)
+		for i := 0; i < tagCount; i++ {
+			tagID := fmt.Sprintf("tag-%d", i)
+			feedID := fmt.Sprintf("feed-%d", i)
+			feedIDs[i] = feedID
+			tagIDs[i] = tagID
+			_, err := q.CreateTag(ctx, store.CreateTagParams{ID: tagID, Name: tagID})
+			require.NoError(t, err)
+			_, err = q.CreateFeed(ctx, store.CreateFeedParams{ID: feedID, Url: "url-" + feedID})
+			require.NoError(t, err)
+			err = q.CreateFeedTag(ctx, store.CreateFeedTagParams{FeedID: feedID, TagID: tagID})
+			require.NoError(t, err)
+		}
+
+		itemCount := rapid.IntRange(1, 20).Draw(t, "itemCount")
+		unreadPerFeed := make(map[string]int64, tagCount)
+		for i := 0; i < itemCount; i++ {
+			feedIndex := rapid.IntRange(0, tagCount-1).Draw(t, fmt.Sprintf("feedIndex-%d", i))
+			feedID := feedIDs[feedIndex]
+			itemID := fmt.Sprintf("item-%d", i)
+			_, err := q.CreateItem(ctx, store.CreateItemParams{ID: itemID, Url: "item-url-" + itemID})
+			require.NoError(t, err)
+			err = q.CreateFeedItem(ctx, store.CreateFeedItemParams{FeedID: feedID, ItemID: itemID})
+			require.NoError(t, err)
+
+			if rapid.Bool().Draw(t, fmt.Sprintf("isRead-%d", i)) {
+				_, err = q.SetItemRead(ctx, store.SetItemReadParams{ItemID: itemID, IsRead: 1})
+				require.NoError(t, err)
+			} else {
+				unreadPerFeed[feedID]++
+			}
+		}
+
+		perFeed, err := q.CountUnreadItemsPerFeed(ctx)
+		require.NoError(t, err)
+		perFeedMap := make(map[string]int64, len(perFeed))
+		for _, row := range perFeed {
+			perFeedMap[row.FeedID] = row.Count
+		}
+
+		perTag, err := q.CountUnreadItemsPerTag(ctx)
+		require.NoError(t, err)
+		perTagMap := make(map[string]int64, len(perTag))
+		for _, row := range perTag {
+			perTagMap[row.TagID] = row.Count
+		}
+
+		for i, feedID := range feedIDs {
+			if got := perFeedMap[feedID]; got != unreadPerFeed[feedID] {
+				t.Fatalf("expected unread count to match: feed=%s got=%d expected=%d", feedID, got, unreadPerFeed[feedID])
+			}
+			if got := perTagMap[tagIDs[i]]; got != unreadPerFeed[feedID] {
+				t.Fatalf("expected tag count to match feed count: tag=%s got=%d expected=%d", tagIDs[i], got, unreadPerFeed[feedID])
+			}
+		}
+	})
+}
+
+func setupQueriesForRapid(t *rapid.T) (*store.Queries, *sql.DB) {
+	db, err := sql.Open("sqlite", ":memory:")
+	if err != nil {
+		t.Fatalf("failed to open sqlite db: %v", err)
+	}
+
+	_, err = db.ExecContext(context.Background(), schema.Schema)
+	if err != nil {
+		_ = db.Close()
+		t.Fatalf("failed to apply schema: %v", err)
+	}
+
+	return store.New(db), db
 }
