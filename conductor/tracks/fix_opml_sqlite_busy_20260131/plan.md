@@ -15,7 +15,7 @@ This phase focuses on defining the necessary data structures and API contracts.
     - [ ] Run `buf generate` (or project specific command) to regenerate Go and TypeScript code.
 - [x] Task: Conductor - User Manual Verification 'Database Schema & API Definition' (Protocol in workflow.md) (70e3923)
 
-## Phase 2: Import Job Service & Write Queue Integration
+## Phase 2: Import Job Service & Write Queue Integration [checkpoint: 0ee7486]
 This phase implements the backend logic for managing jobs and integrating with the write queue.
 
 - [x] Task: Implement Import Job Repository (35fd0a6)
@@ -32,7 +32,7 @@ This phase implements the backend logic for managing jobs and integrating with t
 - [x] Task: Update Feed Handler (fe3278f)
     - [x] Update `ImportOpml` in `cmd/feed-reader/handler.go` to call `StartImportJob` and return the `job_id`.
     - [x] Implement `GetImportJob` in `cmd/feed-reader/handler.go`.
-- [ ] Task: Conductor - User Manual Verification 'Import Job Service & Write Queue Integration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Import Job Service & Write Queue Integration' (Protocol in workflow.md) (0ee7486)
 
 ## Phase 3: Testing & Cleanup
 - [ ] Task: Write Integration Tests
