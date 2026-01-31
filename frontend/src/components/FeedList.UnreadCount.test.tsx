@@ -130,7 +130,11 @@ describe("FeedList Unread Counts", () => {
     expect(feed3Row?.textContent).toContain("10");
   });
 
-  it("displays total unread count in header", async () => {
+  it("displays total unread count in filter select", async () => {
+    vi.mocked(useTags).mockReturnValue({
+      data: { tags: [], totalUnreadCount: 8n },
+      isLoading: false,
+    } as unknown as ReturnType<typeof useTags>);
     const mockFeeds = [
       { id: "1", unreadCount: 5n, tags: [] },
       { id: "2", unreadCount: 3n, tags: [] },
@@ -152,19 +156,15 @@ describe("FeedList Unread Counts", () => {
       document.body,
     );
 
-    // Total should be 8
-    // Assuming the header says "Your Feeds (8 unread)" or similar, or just a badge.
-    // I'll look for the number 8 in the document for now, specifically near the header.
-    // Or I can be more specific if I define where it should be.
-    // The spec says: "Display the total unread count (across all feeds) in the header or sidebar."
-
-    // Let's search for text containing "Total Unread: 8" or just "8" in a badge context.
-    // For the failing test, I'll expect a specific element or text.
-    // Let's go with "All (8)" or similar on the "All" filter, or a separate indicator.
-    // The spec says "sidebar/header". "Your Feeds" is the header.
-
-    // I'll expect "Total Unread: 8" for clarity in the test, then implement it.
-    await expect.element(page.getByText(/Total Unread: 8/)).toBeInTheDocument();
+    const filterSelect = page.getByRole("combobox", { name: "Filter by tag" });
+    await expect.element(filterSelect).toBeInTheDocument();
+    await page
+      .getByRole("combobox", { name: "Filter by tag" })
+      .selectOptions("all");
+    const filterOption = filterSelect.element() as HTMLSelectElement;
+    const selectedText =
+      filterOption.options[filterOption.selectedIndex]?.textContent ?? "";
+    expect(selectedText).toContain("All (8)");
   });
 
   it("displays unread counts for tags in filter bar", async () => {
@@ -195,21 +195,17 @@ describe("FeedList Unread Counts", () => {
       document.body,
     );
 
-    // Check All button unread count
-    const allButton = page.getByRole("button", { name: /All/ });
-    await expect.element(allButton).toBeInTheDocument();
-    await expect.element(allButton).toHaveTextContent("5");
+    // Check All filter unread count
+    const filterSelect = page.getByRole("combobox", { name: "Filter by tag" });
+    await expect.element(filterSelect).toBeInTheDocument();
+    await expect.element(filterSelect).toHaveTextContent("All (5)");
 
     // Check Tech tag unread count
-    const techButton = page.getByRole("button", { name: /Tech.*5/ });
-    await expect.element(techButton).toBeInTheDocument();
+    await expect.element(filterSelect).toHaveTextContent("Tech (5)");
 
     // Check News tag unread count (should be hidden if 0)
     // Find the one that specifically says "News" without count, and ignore the form one
-    const newsTag = page
-      .getByRole("button", { name: "News", exact: true })
-      .nth(1); // The second one should be in the filter list
-    await expect.element(newsTag).toBeInTheDocument();
+    await expect.element(filterSelect).toHaveTextContent("News");
     await expect.element(page.getByText("News (0)")).not.toBeInTheDocument();
   });
 
@@ -238,14 +234,9 @@ describe("FeedList Unread Counts", () => {
       document.body,
     );
 
-    // Check All button unread count (1500 -> 999+)
-    const allButton = page.getByRole("button", { name: /All/ });
-    await expect.element(allButton).toHaveTextContent("999+");
-
-    // Check HighCount tag unread count (1500 -> 999+)
-    const highCountButton = page.getByRole("button", {
-      name: /HighCount.*999\+/,
-    });
-    await expect.element(highCountButton).toBeInTheDocument();
+    // Check All filter unread count (1500 -> 999+)
+    const filterSelect = page.getByRole("combobox", { name: "Filter by tag" });
+    await expect.element(filterSelect).toHaveTextContent("All (999+)");
+    await expect.element(filterSelect).toHaveTextContent("HighCount (999+)");
   });
 });

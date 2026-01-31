@@ -128,7 +128,9 @@ describe("FeedList Tag Filters", () => {
       .toBeInTheDocument();
 
     // Switch to Untagged filter
-    await page.getByRole("button", { name: "Untagged" }).click();
+    await page
+      .getByRole("combobox", { name: "Filter by tag" })
+      .selectOptions("untagged");
 
     // Expect only untagged feeds
     await expect
