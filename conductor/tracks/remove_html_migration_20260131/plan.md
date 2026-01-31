@@ -13,9 +13,9 @@
 - [x] Task: Delete migration files c1124d2
     - [x] Delete `cmd/feed-reader/migrate_md.go`
     - [x] Delete `cmd/feed-reader/migrate_md_test.go`
-- [ ] Task: Verify build and tests
-    - [ ] Run `go build ./cmd/feed-reader` to ensure no lingering references prevent compilation
-    - [ ] Run `go test ./cmd/feed-reader/...` to ensure no regressions
+- [x] Task: Verify build and tests
+    - [x] Run `go build ./cmd/feed-reader` to ensure no lingering references prevent compilation
+    - [x] Run `go test ./cmd/feed-reader/...` to ensure no regressions
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Remove Migration Logic' (Protocol in workflow.md)
 
 ## Phase 3: Final Cleanup & Review
