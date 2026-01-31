@@ -19,6 +19,23 @@ vi.mock("../lib/item-query", () => ({
   getMergedItemsQuery: vi.fn(),
 }));
 
+vi.mock("../lib/db", () => ({
+  db: {
+    items: {
+      preload: vi.fn(),
+    },
+    feeds: {},
+  },
+  items: {
+    preload: vi.fn(),
+  },
+  feeds: {},
+  unreadItems: {},
+  readItems: {},
+  addFeed: vi.fn(),
+  updateItemStatus: vi.fn(),
+}));
+
 vi.mock("../lib/tag-query", () => ({
   useTags: vi.fn().mockReturnValue({ data: { tags: [] }, isLoading: false }),
   useCreateTag: vi.fn(),

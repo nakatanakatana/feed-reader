@@ -74,26 +74,35 @@ export const fetchItem = async (transport: Transport, id: string) => {
   return response.item;
 };
 
+const LAST_FETCHED_AT_KEY = "feed-reader-last-fetched-at";
+
 export const fetchNewItems = async (
   transport: Transport,
   params: {
     feedId?: string;
-    lastFetchedAt: string;
+    lastFetchedAt?: string;
     tagId?: string;
   },
 ) => {
-  const lastFetchedDate = new Date(params.lastFetchedAt);
+  const lastFetchedAt = params.lastFetchedAt || localStorage.getItem(LAST_FETCHED_AT_KEY) || new Date(0).toISOString();
+  const lastFetchedDate = new Date(lastFetchedAt);
   const publishedSince = {
     seconds: BigInt(Math.floor(lastFetchedDate.getTime() / 1000)),
     nanos: (lastFetchedDate.getTime() % 1000) * 1000000,
   } as Timestamp;
 
-  return fetchItems(transport, {
+  const result = await fetchItems(transport, {
     feedId: params.feedId,
     tagId: params.tagId,
     publishedSince,
     sortOrder: ListItemsRequest_SortOrder.ASC,
   });
+
+  if (result.items.length > 0) {
+    localStorage.setItem(LAST_FETCHED_AT_KEY, new Date().toISOString());
+  }
+
+  return result;
 };
 
 export const fetchOlderItems = async (
@@ -130,11 +139,36 @@ export const itemsInfiniteQueryOptions = (
   return infiniteQueryOptions({
     queryKey: itemKeys.list(params),
     queryFn: async ({ pageParam }) => {
-      return fetchItems(transport, {
+      const result = await fetchItems(transport, {
         ...params,
         limit: 20,
         offset: pageParam as number,
       });
+
+      // Side effect: populate the central items collection for LiveQueries
+      for (const item of result.items) {
+        const mapped = {
+          id: item.id,
+          url: item.url,
+          title: item.title,
+          description: item.description,
+          publishedAt: item.publishedAt,
+          author: item.author,
+          feedId: item.feedId,
+          isRead: item.isRead,
+          createdAt: item.createdAt,
+          updatedAt: item.createdAt, // Fallback
+        };
+        if (db.items.has(item.id)) {
+          db.items.update(item.id, (draft) => {
+            Object.assign(draft, mapped);
+          });
+        } else {
+          db.items.insert(mapped);
+        }
+      }
+
+      return result;
     },
     initialPageParam: 0,
     getNextPageParam: (lastPage, _allPages, lastPageParam) => {
@@ -198,6 +232,7 @@ export const useUpdateItemStatus = () => {
     mutationFn: (params: UpdateItemStatusParams) =>
       updateItemStatus(transport, params),
     onSuccess: () => {
+      // Invalidate both items and merged list
       queryClient.invalidateQueries({ queryKey: itemKeys.all });
     },
   }));

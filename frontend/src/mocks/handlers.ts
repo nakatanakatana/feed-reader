@@ -22,6 +22,8 @@ import {
   UpdateItemStatusResponseSchema,
 } from "../gen/item/v1/item_pb";
 
+import type { Item } from "../gen/item/v1/item_pb";
+
 import { TagService } from "../gen/tag/v1/tag_pb";
 
 import {
@@ -67,6 +69,33 @@ const feeds: Feed[] = [
     tags: [tags[1]],
   }),
 ];
+
+// Mock items with persistent state
+const mockItems: Item[] = Array.from({ length: 40 }, (_, i) => {
+  const id = (i + 1).toString();
+  const date = new Date();
+  // Item 1-10: past 24h
+  // Item 11-20: 2 days ago
+  // Item 21-30: 10 days ago
+  // Item 31-40: 40 days ago
+  if (i < 10) date.setHours(date.getHours() - i);
+  else if (i < 20) date.setDate(date.getDate() - 2);
+  else if (i < 30) date.setDate(date.getDate() - 10);
+  else date.setDate(date.getDate() - 40);
+
+  return create(ItemSchema, {
+    id,
+    title: `Item ${id}`,
+    url: `https://example.com/item/${id}`,
+    publishedAt: date.toISOString(),
+    isRead: false,
+    feedId: "1",
+    description: `Description for Item ${id}`,
+    author: "Mock Author",
+    createdAt: date.toISOString(),
+    updatedAt: date.toISOString(),
+  });
+});
 
 export const handlers = [
   mockConnectWeb(FeedService)({
@@ -214,37 +243,14 @@ export const handlers = [
       const offset = req.offset ?? 0;
       const limit = req.limit ?? 20;
 
-      // Mock items with different dates for testing the filter
-      const allMockItems = Array.from({ length: 40 }, (_, i) => {
-        const id = (i + 1).toString();
-        const date = new Date();
-        // Item 1-10: past 24h
-        // Item 11-20: 2 days ago
-        // Item 21-30: 10 days ago
-        // Item 31-40: 40 days ago
-        if (i < 10) date.setHours(date.getHours() - i);
-        else if (i < 20) date.setDate(date.getDate() - 2);
-        else if (i < 30) date.setDate(date.getDate() - 10);
-        else date.setDate(date.getDate() - 40);
-
-        return create(ItemSchema, {
-          id,
-          title: `Item ${id}`,
-          url: `https://example.com/item/${id}`,
-          publishedAt: date.toISOString(),
-          isRead: false,
-          feedId: req.feedId || "1",
-        });
-      });
-
-      let filteredItems = allMockItems;
+      let filteredItems = mockItems;
 
       if (req.publishedSince) {
         const sinceDate = new Date(
           Number(req.publishedSince.seconds) * 1000 +
             req.publishedSince.nanos / 1000000,
         );
-        filteredItems = allMockItems.filter(
+        filteredItems = filteredItems.filter(
           (item) => new Date(item.publishedAt) >= sinceDate,
         );
       }
@@ -255,16 +261,32 @@ export const handlers = [
         );
       }
 
+      if (req.isRead !== undefined) {
+        filteredItems = filteredItems.filter(
+          (item) => item.isRead === req.isRead,
+        );
+      }
+
       const totalCount = filteredItems.length;
       const items = filteredItems.slice(offset, offset + limit);
 
-      return create(ListItemsResponseSchema, { items, totalCount });
+      return create(ListItemsResponseSchema, { 
+        items: items.map(i => create(ItemSchema, i)),
+        totalCount 
+      });
     },
   }),
 
   mockConnectWeb(ItemService)({
     method: "updateItemStatus",
-    handler: () => {
+    handler: (req) => {
+      const isRead = req.isRead;
+      for (const id of req.ids) {
+        const item = mockItems.find((i) => i.id === id);
+        if (item) {
+          item.isRead = isRead;
+        }
+      }
       return create(UpdateItemStatusResponseSchema, {});
     },
   }),
@@ -272,6 +294,16 @@ export const handlers = [
   mockConnectWeb(ItemService)({
     method: "getItem",
     handler: (req) => {
+      const item = mockItems.find((i) => i.id === req.id);
+      if (item) {
+        return create(GetItemResponseSchema, {
+          item: create(ItemSchema, {
+            ...item,
+            description: `<p>This is the full content for item ${req.id}. It includes <strong>HTML</strong> formatting.</p>`,
+          }),
+        });
+      }
+      
       return create(GetItemResponseSchema, {
         item: create(ItemSchema, {
           id: req.id,

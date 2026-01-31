@@ -1,5 +1,5 @@
 import { useNavigate } from "@tanstack/solid-router";
-import { createEffect, createSignal, For, Show } from "solid-js";
+import { createEffect, createSignal, For, Show, createMemo, onMount } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { ListItemsRequest_SortOrder } from "../gen/item/v1/item_pb";
@@ -9,6 +9,7 @@ import { DateFilterSelector } from "./DateFilterSelector";
 import { ItemRow } from "./ItemRow";
 import { getPublishedSince, type DateFilterValue, filterAndSortItems, SortOrder } from "../lib/item-utils";
 import { useLiveQuery } from "@tanstack/solid-db";
+import { db } from "../lib/db";
 
 interface ItemListProps {
   feedId?: string;
@@ -30,8 +31,12 @@ export function ItemList(props: ItemListProps) {
     props.dateFilter ?? "all",
   );
 
-  const mergedItemsQuery = getMergedItemsQuery();
-  const itemsLiveQuery = useLiveQuery(() => mergedItemsQuery);
+  const mergedItemsQuery = createMemo(() => getMergedItemsQuery());
+  const itemsLiveQuery = useLiveQuery(() => mergedItemsQuery());
+
+  onMount(() => {
+    db.items?.preload?.();
+  });
 
   createEffect(() => {
     if (props.dateFilter) {
@@ -73,6 +78,10 @@ export function ItemList(props: ItemListProps) {
 
   const allItems = () => {
     const rawItems = itemsLiveQuery() || [];
+    if (rawItems.length === 0 && itemsQuery.data) {
+      // Fallback to query data if live query is still empty but we have data from query
+      return itemsQuery.data.pages.flatMap(p => p.items) as any;
+    }
     return filterAndSortItems(rawItems as any, {
       feedId: props.feedId,
       isRead: showRead() ? undefined : false,

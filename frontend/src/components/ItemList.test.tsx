@@ -19,6 +19,23 @@ vi.mock("../lib/item-query", () => ({
   getMergedItemsQuery: vi.fn(),
 }));
 
+vi.mock("../lib/db", () => ({
+  db: {
+    items: {
+      preload: vi.fn(),
+    },
+    feeds: {},
+  },
+  items: {
+    preload: vi.fn(),
+  },
+  feeds: {},
+  unreadItems: {},
+  readItems: {},
+  addFeed: vi.fn(),
+  updateItemStatus: vi.fn(),
+}));
+
 import { useItem, useItems, useUpdateItemStatus } from "../lib/item-query";
 
 // Mock useLiveQuery from solid-db

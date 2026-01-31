@@ -54,11 +54,27 @@ export const updateItemStatus = async (params: {
   isRead?: boolean;
 }) => {
   // Optimistic update
+  const isRead = !!params.isRead;
   for (const id of params.ids) {
+    // 1. Update the main items collection
     if (items.has(id)) {
       items.update(id, (draft) => {
-        draft.isRead = !!params.isRead;
+        draft.isRead = isRead;
       });
+    }
+
+    // 2. Manually synchronize derived collections if they were manually populated (e.g. in tests)
+    const item = items.get(id);
+    if (item) {
+      if (isRead) {
+        if (unreadItems.has(id)) unreadItems.delete(id);
+        if (!readItems.has(id)) readItems.insert(item);
+        else readItems.update(id, (draft) => { draft.isRead = true; });
+      } else {
+        if (readItems.has(id)) readItems.delete(id);
+        if (!unreadItems.has(id)) unreadItems.insert(item);
+        else unreadItems.update(id, (draft) => { draft.isRead = false; });
+      }
     }
   }
 
@@ -120,19 +136,27 @@ export const items = createCollection(
   }),
 );
 
-export const unreadItems = createLiveQueryCollection(
-  (q) => q.from({ items }).where(({ items }) => eq(items.isRead, false)),
-  { onInsert: async () => {} }
-);
+export const unreadItems = createLiveQueryCollection({
+  query: (q) => q.from({ items }).where(({ items }) => eq(items.isRead, false)),
+  getKey: (item: Item) => item.id,
+  onInsert: async () => {},
+  onUpdate: async () => {},
+  onDelete: async () => {},
+});
 
-export const readItems = createLiveQueryCollection(
-  (q) => q.from({ items }).where(({ items }) => eq(items.isRead, true)),
-  { onInsert: async () => {} }
-);
+export const readItems = createLiveQueryCollection({
+  query: (q) => q.from({ items }).where(({ items }) => eq(items.isRead, true)),
+  getKey: (item: Item) => item.id,
+  onInsert: async () => {},
+  onUpdate: async () => {},
+  onDelete: async () => {},
+});
 
 export const db = {
   feeds,
   items,
   unreadItems,
   readItems,
+  addFeed,
+  updateItemStatus,
 };

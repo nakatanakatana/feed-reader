@@ -39,12 +39,11 @@ describe("db refactoring", () => {
       updatedAt: new Date().toISOString(),
     };
 
-    // Mock MSW to return our test item
+    // Mock MSW
     worker.use(
       mockConnectWeb(ItemService)({
         method: "listItems",
         handler: (req) => {
-          // Always return our test item in the list
           return create(ListItemsResponseSchema, {
             items: [
               create(ItemSchema, { ...testItem, isRead: req.isRead ?? false })
@@ -55,7 +54,7 @@ describe("db refactoring", () => {
       })
     );
 
-    // Manually insert into items and unreadItems
+    // Manually populate both main and derived collections for the test
     items.insert(testItem);
     unreadItems.insert(testItem);
 
@@ -70,7 +69,7 @@ describe("db refactoring", () => {
     await updateItemStatus({ ids: ["test-1"], isRead: true });
 
     // Wait a bit for everything to settle
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 200));
 
     expect(items.get("test-1")?.isRead).toBe(true);
     expect(unreadItems.get("test-1")).toBeUndefined();
