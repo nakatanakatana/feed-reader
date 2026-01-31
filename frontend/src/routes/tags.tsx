@@ -9,7 +9,15 @@ export const Route = createFileRoute("/tags")({
 
 function TagsComponent() {
   return (
-    <div class={stack({ padding: "4", gap: "6" })}>
+    <div
+      class={stack({
+        padding: "4",
+        gap: "6",
+        height: "calc(100vh - 56px)",
+        minHeight: 0,
+        overflow: "hidden",
+      })}
+    >
       <div
         class={flex({ justifyContent: "space-between", alignItems: "center" })}
       >
@@ -17,7 +25,9 @@ function TagsComponent() {
           Tag Management
         </h1>
       </div>
-      <TagManagement />
+      <div class={css({ flex: "1", minHeight: 0, overflow: "auto" })}>
+        <TagManagement />
+      </div>
     </div>
   );
 }

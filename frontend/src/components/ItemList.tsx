@@ -16,6 +16,7 @@ interface ItemListProps {
   feedId?: string;
   tagId?: string;
   dateFilter?: DateFilterValue;
+  fixedControls?: boolean;
 }
 
 export function ItemList(props: ItemListProps) {
@@ -106,8 +107,8 @@ export function ItemList(props: ItemListProps) {
     setSelectedItemIds(new Set<string>());
   };
 
-  return (
-    <div class={stack({ gap: "4", width: "full", position: "relative" })}>
+  const controls = (
+    <>
       <div
         class={flex({
           justifyContent: "space-between",
@@ -266,7 +267,6 @@ export function ItemList(props: ItemListProps) {
         </div>
       </div>
 
-      {/* Bulk Action Bar */}
       <Show when={selectedItemIds().size > 0}>
         <div
           class={flex({
@@ -331,7 +331,11 @@ export function ItemList(props: ItemListProps) {
           </div>
         </div>
       </Show>
+    </>
+  );
 
+  const listBody = (
+    <div class={stack({ gap: "4", padding: "0" })}>
       <div class={stack({ gap: "2", padding: "0" })}>
         <For each={allItems()}>
           {(item) => (
@@ -379,6 +383,34 @@ export function ItemList(props: ItemListProps) {
         >
           {itemsQuery.isFetchingNextPage ? "Loading more..." : "Load More"}
         </button>
+      </Show>
+    </div>
+  );
+
+  return (
+    <div
+      class={stack({
+        gap: "4",
+        width: "full",
+        position: "relative",
+        minHeight: 0,
+        flex: "1",
+        height: "full",
+      })}
+    >
+      {controls}
+      <Show when={props.fixedControls} fallback={listBody}>
+        <div
+          class={css({
+            flex: "1",
+            minHeight: 0,
+            overflow: "auto",
+            display: "flex",
+            flexDirection: "column",
+          })}
+        >
+          {listBody}
+        </div>
       </Show>
     </div>
   );
