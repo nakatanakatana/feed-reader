@@ -4,5 +4,5 @@ This file tracks all active and completed development tracks (features, bugs, ch
 
 ---
 
-- [ ] **Track: Simple OPML Import and Feed Registration**
+- [x] **Track: Simple OPML Import and Feed Registration**
 *Link: [./tracks/simple-opml-import_20260131/](./tracks/simple-opml-import_20260131/)*
