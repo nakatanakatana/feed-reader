@@ -18,7 +18,7 @@ This plan implements the "Fetch Now" feature, allowing users to manually trigger
     - [ ] Ensure the mutation handles the new response format and updates the cache (e.g., invalidating feed queries) upon completion.
 - [x] Task: Implement fetching state management [9df6cd5]
     - [ ] Add a mechanism (e.g., a simple reactive set of IDs) to track which feeds are currently being fetched across the application.
-- [ ] Task: Conductor - User Manual Verification 'Frontend Data Layer' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Frontend Data Layer' (Protocol in workflow.md) [9df6cd5]
 
 ## Phase 3: Frontend UI Implementation
 - [ ] Task: Implement row-level indicators in `FeedList`
