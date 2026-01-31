@@ -11,7 +11,7 @@ This plan implements the "Fetch Now" feature, allowing users to manually trigger
     - [ ] Implement a method that waits for the fetch operation to complete and returns the result (success/failure, count).
 - [x] Task: Update `FeedServer.RefreshFeeds` handler [145427e]
     - [ ] Update `cmd/feed-reader/handler.go` to use the enhanced fetch logic and return the detailed status in the RPC response.
-- [ ] Task: Conductor - User Manual Verification 'Backend API Enhancement' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Backend API Enhancement' (Protocol in workflow.md) [4d56108]
 
 ## Phase 2: Frontend Data Layer
 - [ ] Task: Update TanStack Query mutation for `RefreshFeeds`
