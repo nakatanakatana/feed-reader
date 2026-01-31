@@ -4,11 +4,13 @@ import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { type Feed, feeds, type Tag } from "../lib/db";
 import { useTags } from "../lib/tag-query";
+import { useRefreshFeeds } from "../lib/feed-query";
 import { ManageTagsModal } from "./ManageTagsModal";
 import { fetchingState } from "../lib/fetching-state";
 
 export function FeedList() {
   console.log("DEBUG: Rendering FeedList component");
+  const refreshMutation = useRefreshFeeds();
   const [selectedTagId, setSelectedTagId] = createSignal<
     string | undefined | null
   >();
@@ -489,6 +491,33 @@ export function FeedList() {
                     {feed.unreadCount?.toString()}
                   </span>
                 </Show>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    refreshMutation.mutate({ ids: [feed.id] });
+                  }}
+                  disabled={fetchingState.isFetching(feed.id)}
+                  class={css({
+                    color: "blue.600",
+                    padding: "1",
+                    paddingInline: "2",
+                    borderRadius: "md",
+                    fontSize: "sm",
+                    cursor: "pointer",
+                    _hover: {
+                      backgroundColor: "blue.50",
+                      textDecoration: "underline",
+                    },
+                    _disabled: {
+                      color: "gray.400",
+                      cursor: "not-allowed",
+                      textDecoration: "none",
+                    },
+                  })}
+                >
+                  {fetchingState.isFetching(feed.id) ? "Fetching..." : "Fetch"}
+                </button>
                 <button
                   type="button"
                   onClick={(e) => {
