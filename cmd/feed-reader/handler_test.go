@@ -537,6 +537,53 @@ func TestFeedServer_RefreshFeeds(t *testing.T) {
 
 
 
+func TestFeedServer_ImportOpml_Sync(t *testing.T) {
+	ctx := context.Background()
+
+	opmlContent := `<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+    <body>
+        <outline text="Existing" xmlUrl="https://example.com/existing" />
+        <outline text="New" xmlUrl="https://example.com/new" />
+        <outline text="Fail" xmlUrl="https://example.com/fail" />
+    </body>
+</opml>`
+
+	queries, db := setupTestDB(t)
+	// Pre-create existing feed
+	_, _ = queries.CreateFeed(ctx, store.CreateFeedParams{
+		ID:    "existing-id",
+		Url:   "https://example.com/existing",
+		Title: func() *string { s := "Existing"; return &s }(),
+	})
+
+	fetcher := &mockFetcher{
+		feed: &gofeed.Feed{Title: "Fetched Title"},
+		errs: map[string]error{
+			"https://example.com/fail": errors.New("fetch error"),
+		},
+	}
+
+	server, _ := setupServer(t, db, nil, fetcher, &mockItemFetcher{})
+
+	req := &feedv1.ImportOpmlRequest{
+		OpmlContent: []byte(opmlContent),
+	}
+
+	res, err := server.ImportOpml(ctx, connect.NewRequest(req))
+	require.NoError(t, err)
+
+	assert.Equal(t, int32(3), res.Msg.Total)
+	assert.Equal(t, int32(1), res.Msg.Success)
+	assert.Equal(t, int32(1), res.Msg.Skipped)
+	assert.Len(t, res.Msg.FailedFeeds, 1)
+	assert.Equal(t, "https://example.com/fail", res.Msg.FailedFeeds[0])
+
+	// Verify DB
+	feeds, _ := queries.ListFeeds(ctx, nil)
+	assert.Len(t, feeds, 2)
+}
+
 func TestFeedServer_ManageFeedTags(t *testing.T) {
 	ctx := context.Background()
 	_, db := setupTestDB(t)

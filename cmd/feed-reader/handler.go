@@ -263,8 +263,17 @@ func (s *FeedServer) RefreshFeeds(ctx context.Context, req *connect.Request[feed
 }
 
 func (s *FeedServer) ImportOpml(ctx context.Context, req *connect.Request[feedv1.ImportOpmlRequest]) (*connect.Response[feedv1.ImportOpmlResponse], error) {
-	// TODO: Implement synchronous import
-	return connect.NewResponse(&feedv1.ImportOpmlResponse{}), nil
+	results, err := s.opmlImporter.ImportSync(ctx, req.Msg.OpmlContent)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	return connect.NewResponse(&feedv1.ImportOpmlResponse{
+		Total:       results.Total,
+		Success:     results.Success,
+		Skipped:     results.Skipped,
+		FailedFeeds: results.FailedFeeds,
+	}), nil
 }
 
 
