@@ -18,13 +18,13 @@ Implement the synchronous logic for processing OPML files and returning results.
 - [x] Task: Ensure deduplication logic remains robust during synchronous import <!-- id: 7a96901 -->
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Synchronous Import Implementation' (Protocol in workflow.md)
 
-## Phase 3: Frontend Update and Cleanup
+## Phase 3: Frontend Update and Cleanup [checkpoint: 4ceefc5]
 Update the UI to handle the synchronous flow and remove obsolete job-tracking components.
 
-- [ ] Task: Update `ImportOpmlModal.tsx` to handle the synchronous response and show a loading state
-- [ ] Task: Display the summary of failed feed URLs after import completion
-- [ ] Task: Remove job monitoring UI components and related state/queries
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Frontend Update and Cleanup' (Protocol in workflow.md)
+- [x] Task: Update `ImportOpmlModal.tsx` to handle the synchronous response and show a loading state <!-- id: existing -->
+- [x] Task: Display the summary of failed feed URLs after import completion <!-- id: existing -->
+- [x] Task: Remove job monitoring UI components and related state/queries <!-- id: existing -->
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Frontend Update and Cleanup' (Protocol in workflow.md)
 
 ## Phase 4: Verification and Refinement
 Final checks to ensure everything works as expected and coverage is maintained.
