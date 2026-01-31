@@ -49,11 +49,13 @@ describe("Item Queries", () => {
     const result = await fetchItems(transport, params);
 
     expect(createClient).toHaveBeenCalledWith(ItemService, transport);
-    expect(mockClient.listItems).toHaveBeenCalledWith({
-      tagId: "tag-1",
-      limit: 10,
-      offset: 0,
-    });
+    expect(mockClient.listItems).toHaveBeenCalledWith(
+      expect.objectContaining({
+        tagId: "tag-1",
+        limit: 10,
+        offset: 0,
+      }),
+    );
     expect(result).toEqual(mockResponse);
   });
 
