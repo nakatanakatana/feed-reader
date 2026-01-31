@@ -86,16 +86,19 @@ describe("FeedList Sorting", () => {
         id: "1",
         title: "B Feed",
         url: "url1",
+        tags: [],
       },
       {
         id: "2",
         title: "A Feed",
         url: "url2",
+        tags: [],
       },
       {
         id: "3",
         title: "C Feed",
         url: "url3",
+        tags: [],
       },
     ];
 

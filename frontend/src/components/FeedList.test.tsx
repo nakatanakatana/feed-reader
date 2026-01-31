@@ -79,8 +79,9 @@ describe("FeedList", () => {
         id: "1",
         title: "Feed 1",
         url: "http://example.com/1",
+        tags: [],
       },
-      { id: "2", title: "Feed 2", url: "http://example.com/2" },
+      { id: "2", title: "Feed 2", url: "http://example.com/2", tags: [] },
     ];
 
     vi.mocked(useLiveQuery).mockReturnValue({
@@ -105,7 +106,7 @@ describe("FeedList", () => {
 
   it("deletes a feed", async () => {
     const mockFeeds = [
-      { id: "1", title: "Feed 1", url: "http://example.com/1" },
+      { id: "1", title: "Feed 1", url: "http://example.com/1", tags: [] },
     ];
     vi.mocked(useLiveQuery).mockReturnValue({
       data: mockFeeds,
@@ -133,8 +134,8 @@ describe("FeedList", () => {
 
   it("supports bulk selection", async () => {
     const mockFeeds = [
-      { id: "1", title: "Feed 1", url: "u1" },
-      { id: "2", title: "Feed 2", url: "u2" },
+      { id: "1", title: "Feed 1", url: "u1", tags: [] },
+      { id: "2", title: "Feed 2", url: "u2", tags: [] },
     ];
     vi.mocked(useLiveQuery).mockReturnValue({
       data: mockFeeds,
@@ -167,7 +168,7 @@ describe("FeedList", () => {
   });
 
   it("manages tags for selected feeds", async () => {
-    const mockFeeds = [{ id: "1", title: "Feed 1", url: "u1" }];
+    const mockFeeds = [{ id: "1", title: "Feed 1", url: "u1", tags: [] }];
     vi.mocked(useLiveQuery).mockReturnValue({
       data: mockFeeds,
     } as unknown as ReturnType<typeof useLiveQuery>);

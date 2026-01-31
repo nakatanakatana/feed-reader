@@ -10,7 +10,6 @@ import { useTags } from "../lib/tag-query";
 import { ManageTagsModal } from "./ManageTagsModal";
 
 export function FeedList() {
-  console.log("DEBUG: Rendering FeedList component");
   const refreshMutation = useRefreshFeeds();
   const [selectedTagId, setSelectedTagId] = createSignal<
     string | undefined | null
@@ -22,7 +21,28 @@ export function FeedList() {
   const tagsQuery = useTags();
 
   const { data: feedList } = useLiveQuery((q) => {
-    const query = q.from({ feed: feeds });
+    const tagId = selectedTagId();
+    const currentSort = sortBy();
+    let query = q.from({ feed: feeds });
+
+    if (tagId === null) {
+      query = query.fn.where(
+        (row) => !row.feed.tags || row.feed.tags.length === 0,
+      );
+    }
+
+    if (tagId && tagId !== null) {
+      query = query.fn.where(
+        (row) => row.feed.tags?.some((tag) => tag.id === tagId) ?? false,
+      );
+    }
+
+    if (currentSort === "title_desc") {
+      query = query.orderBy(({ feed }) => feed.title, "desc");
+    } else {
+      query = query.orderBy(({ feed }) => feed.title, "asc");
+    }
+
     return query;
   });
 
@@ -35,8 +55,12 @@ export function FeedList() {
     const list = (feedList as unknown as Feed[]) ?? [];
     const tagId = selectedTagId();
     if (tagId === undefined) return list;
-    if (tagId === null) return list;
-    return list;
+    if (tagId === null) {
+      return list.filter((feed) => !feed.tags || feed.tags.length === 0);
+    }
+    return list.filter(
+      (feed) => feed.tags?.some((tag) => tag.id === tagId) ?? false,
+    );
   };
 
   const sortedFeeds = () => {
@@ -44,14 +68,10 @@ export function FeedList() {
     const sort = sortBy();
 
     return list.sort((a, b) => {
-      switch (sort) {
-        case "title_asc":
-          return (a.title || "").localeCompare(b.title || "");
-        case "title_desc":
-          return (b.title || "").localeCompare(a.title || "");
-        default:
-          return 0;
+      if (sort === "title_desc") {
+        return (b.title || "").localeCompare(a.title || "");
       }
+      return (a.title || "").localeCompare(b.title || "");
     });
   };
 
@@ -260,6 +280,30 @@ export function FeedList() {
                 {formatUnreadCount(Number(tagsQuery.data?.totalUnreadCount))}
               </span>
             </Show>
+          </button>
+          <button
+            type="button"
+            onClick={() => setSelectedTagId(null)}
+            class={css({
+              px: "3",
+              py: "1.5",
+              minH: "10",
+              rounded: "md",
+              fontSize: "xs",
+              cursor: "pointer",
+              border: "1px solid",
+              display: "inline-flex",
+              alignItems: "center",
+              ...(selectedTagId() === null
+                ? { bg: "blue.100", borderColor: "blue.500", color: "blue.700" }
+                : {
+                    bg: "gray.50",
+                    borderColor: "gray.300",
+                    color: "gray.600",
+                  }),
+            })}
+          >
+            Untagged
           </button>
           <For each={tagsQuery.data?.tags}>
             {(tag) => (

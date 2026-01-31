@@ -239,6 +239,7 @@ type ListFeed struct {
 	Url           string                 `protobuf:"bytes,2,opt,name=url,proto3" json:"url,omitempty"`
 	Title         string                 `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
 	UnreadCount   int64                  `protobuf:"varint,4,opt,name=unread_count,json=unreadCount,proto3" json:"unread_count,omitempty"`
+	Tags          []*v1.Tag              `protobuf:"bytes,5,rep,name=tags,proto3" json:"tags,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -299,6 +300,13 @@ func (x *ListFeed) GetUnreadCount() int64 {
 		return x.UnreadCount
 	}
 	return 0
+}
+
+func (x *ListFeed) GetTags() []*v1.Tag {
+	if x != nil {
+		return x.Tags
+	}
+	return nil
 }
 
 type GetFeedRequest struct {
@@ -1559,12 +1567,13 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"\n" +
 	"_feed_typeB\x0f\n" +
 	"\r_feed_versionB\x12\n" +
-	"\x10_last_fetched_at\"e\n" +
+	"\x10_last_fetched_at\"\x86\x01\n" +
 	"\bListFeed\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x10\n" +
 	"\x03url\x18\x02 \x01(\tR\x03url\x12\x14\n" +
 	"\x05title\x18\x03 \x01(\tR\x05title\x12!\n" +
-	"\funread_count\x18\x04 \x01(\x03R\vunreadCount\" \n" +
+	"\funread_count\x18\x04 \x01(\x03R\vunreadCount\x12\x1f\n" +
+	"\x04tags\x18\x05 \x03(\v2\v.tag.v1.TagR\x04tags\" \n" +
 	"\x0eGetFeedRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"4\n" +
 	"\x0fGetFeedResponse\x12!\n" +
@@ -1737,38 +1746,39 @@ var file_feed_v1_feed_proto_goTypes = []any{
 }
 var file_feed_v1_feed_proto_depIdxs = []int32{
 	25, // 0: feed.v1.Feed.tags:type_name -> tag.v1.Tag
-	1,  // 1: feed.v1.GetFeedResponse.feed:type_name -> feed.v1.Feed
-	2,  // 2: feed.v1.ListFeedsResponse.feeds:type_name -> feed.v1.ListFeed
-	1,  // 3: feed.v1.CreateFeedResponse.feed:type_name -> feed.v1.Feed
-	1,  // 4: feed.v1.UpdateFeedResponse.feed:type_name -> feed.v1.Feed
-	14, // 5: feed.v1.RefreshFeedsResponse.results:type_name -> feed.v1.FeedFetchStatus
-	0,  // 6: feed.v1.ImportJob.status:type_name -> feed.v1.ImportJobStatus
-	18, // 7: feed.v1.GetImportJobResponse.job:type_name -> feed.v1.ImportJob
-	3,  // 8: feed.v1.FeedService.GetFeed:input_type -> feed.v1.GetFeedRequest
-	5,  // 9: feed.v1.FeedService.ListFeeds:input_type -> feed.v1.ListFeedsRequest
-	7,  // 10: feed.v1.FeedService.CreateFeed:input_type -> feed.v1.CreateFeedRequest
-	9,  // 11: feed.v1.FeedService.UpdateFeed:input_type -> feed.v1.UpdateFeedRequest
-	11, // 12: feed.v1.FeedService.DeleteFeed:input_type -> feed.v1.DeleteFeedRequest
-	13, // 13: feed.v1.FeedService.RefreshFeeds:input_type -> feed.v1.RefreshFeedsRequest
-	16, // 14: feed.v1.FeedService.ImportOpml:input_type -> feed.v1.ImportOpmlRequest
-	19, // 15: feed.v1.FeedService.GetImportJob:input_type -> feed.v1.GetImportJobRequest
-	21, // 16: feed.v1.FeedService.SetFeedTags:input_type -> feed.v1.SetFeedTagsRequest
-	23, // 17: feed.v1.FeedService.ManageFeedTags:input_type -> feed.v1.ManageFeedTagsRequest
-	4,  // 18: feed.v1.FeedService.GetFeed:output_type -> feed.v1.GetFeedResponse
-	6,  // 19: feed.v1.FeedService.ListFeeds:output_type -> feed.v1.ListFeedsResponse
-	8,  // 20: feed.v1.FeedService.CreateFeed:output_type -> feed.v1.CreateFeedResponse
-	10, // 21: feed.v1.FeedService.UpdateFeed:output_type -> feed.v1.UpdateFeedResponse
-	12, // 22: feed.v1.FeedService.DeleteFeed:output_type -> feed.v1.DeleteFeedResponse
-	15, // 23: feed.v1.FeedService.RefreshFeeds:output_type -> feed.v1.RefreshFeedsResponse
-	17, // 24: feed.v1.FeedService.ImportOpml:output_type -> feed.v1.ImportOpmlResponse
-	20, // 25: feed.v1.FeedService.GetImportJob:output_type -> feed.v1.GetImportJobResponse
-	22, // 26: feed.v1.FeedService.SetFeedTags:output_type -> feed.v1.SetFeedTagsResponse
-	24, // 27: feed.v1.FeedService.ManageFeedTags:output_type -> feed.v1.ManageFeedTagsResponse
-	18, // [18:28] is the sub-list for method output_type
-	8,  // [8:18] is the sub-list for method input_type
-	8,  // [8:8] is the sub-list for extension type_name
-	8,  // [8:8] is the sub-list for extension extendee
-	0,  // [0:8] is the sub-list for field type_name
+	25, // 1: feed.v1.ListFeed.tags:type_name -> tag.v1.Tag
+	1,  // 2: feed.v1.GetFeedResponse.feed:type_name -> feed.v1.Feed
+	2,  // 3: feed.v1.ListFeedsResponse.feeds:type_name -> feed.v1.ListFeed
+	1,  // 4: feed.v1.CreateFeedResponse.feed:type_name -> feed.v1.Feed
+	1,  // 5: feed.v1.UpdateFeedResponse.feed:type_name -> feed.v1.Feed
+	14, // 6: feed.v1.RefreshFeedsResponse.results:type_name -> feed.v1.FeedFetchStatus
+	0,  // 7: feed.v1.ImportJob.status:type_name -> feed.v1.ImportJobStatus
+	18, // 8: feed.v1.GetImportJobResponse.job:type_name -> feed.v1.ImportJob
+	3,  // 9: feed.v1.FeedService.GetFeed:input_type -> feed.v1.GetFeedRequest
+	5,  // 10: feed.v1.FeedService.ListFeeds:input_type -> feed.v1.ListFeedsRequest
+	7,  // 11: feed.v1.FeedService.CreateFeed:input_type -> feed.v1.CreateFeedRequest
+	9,  // 12: feed.v1.FeedService.UpdateFeed:input_type -> feed.v1.UpdateFeedRequest
+	11, // 13: feed.v1.FeedService.DeleteFeed:input_type -> feed.v1.DeleteFeedRequest
+	13, // 14: feed.v1.FeedService.RefreshFeeds:input_type -> feed.v1.RefreshFeedsRequest
+	16, // 15: feed.v1.FeedService.ImportOpml:input_type -> feed.v1.ImportOpmlRequest
+	19, // 16: feed.v1.FeedService.GetImportJob:input_type -> feed.v1.GetImportJobRequest
+	21, // 17: feed.v1.FeedService.SetFeedTags:input_type -> feed.v1.SetFeedTagsRequest
+	23, // 18: feed.v1.FeedService.ManageFeedTags:input_type -> feed.v1.ManageFeedTagsRequest
+	4,  // 19: feed.v1.FeedService.GetFeed:output_type -> feed.v1.GetFeedResponse
+	6,  // 20: feed.v1.FeedService.ListFeeds:output_type -> feed.v1.ListFeedsResponse
+	8,  // 21: feed.v1.FeedService.CreateFeed:output_type -> feed.v1.CreateFeedResponse
+	10, // 22: feed.v1.FeedService.UpdateFeed:output_type -> feed.v1.UpdateFeedResponse
+	12, // 23: feed.v1.FeedService.DeleteFeed:output_type -> feed.v1.DeleteFeedResponse
+	15, // 24: feed.v1.FeedService.RefreshFeeds:output_type -> feed.v1.RefreshFeedsResponse
+	17, // 25: feed.v1.FeedService.ImportOpml:output_type -> feed.v1.ImportOpmlResponse
+	20, // 26: feed.v1.FeedService.GetImportJob:output_type -> feed.v1.GetImportJobResponse
+	22, // 27: feed.v1.FeedService.SetFeedTags:output_type -> feed.v1.SetFeedTagsResponse
+	24, // 28: feed.v1.FeedService.ManageFeedTags:output_type -> feed.v1.ManageFeedTagsResponse
+	19, // [19:29] is the sub-list for method output_type
+	9,  // [9:19] is the sub-list for method input_type
+	9,  // [9:9] is the sub-list for extension type_name
+	9,  // [9:9] is the sub-list for extension extendee
+	0,  // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_feed_v1_feed_proto_init() }
