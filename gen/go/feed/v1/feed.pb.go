@@ -869,15 +869,84 @@ func (x *RefreshFeedsRequest) GetIds() []string {
 	return nil
 }
 
+type FeedFetchStatus struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	FeedId        string                 `protobuf:"bytes,1,opt,name=feed_id,json=feedId,proto3" json:"feed_id,omitempty"`
+	Success       bool                   `protobuf:"varint,2,opt,name=success,proto3" json:"success,omitempty"`
+	NewItemsCount int32                  `protobuf:"varint,3,opt,name=new_items_count,json=newItemsCount,proto3" json:"new_items_count,omitempty"`
+	ErrorMessage  *string                `protobuf:"bytes,4,opt,name=error_message,json=errorMessage,proto3,oneof" json:"error_message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FeedFetchStatus) Reset() {
+	*x = FeedFetchStatus{}
+	mi := &file_feed_v1_feed_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FeedFetchStatus) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FeedFetchStatus) ProtoMessage() {}
+
+func (x *FeedFetchStatus) ProtoReflect() protoreflect.Message {
+	mi := &file_feed_v1_feed_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FeedFetchStatus.ProtoReflect.Descriptor instead.
+func (*FeedFetchStatus) Descriptor() ([]byte, []int) {
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *FeedFetchStatus) GetFeedId() string {
+	if x != nil {
+		return x.FeedId
+	}
+	return ""
+}
+
+func (x *FeedFetchStatus) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *FeedFetchStatus) GetNewItemsCount() int32 {
+	if x != nil {
+		return x.NewItemsCount
+	}
+	return 0
+}
+
+func (x *FeedFetchStatus) GetErrorMessage() string {
+	if x != nil && x.ErrorMessage != nil {
+		return *x.ErrorMessage
+	}
+	return ""
+}
+
 type RefreshFeedsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	Results       []*FeedFetchStatus     `protobuf:"bytes,1,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *RefreshFeedsResponse) Reset() {
 	*x = RefreshFeedsResponse{}
-	mi := &file_feed_v1_feed_proto_msgTypes[12]
+	mi := &file_feed_v1_feed_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -889,7 +958,7 @@ func (x *RefreshFeedsResponse) String() string {
 func (*RefreshFeedsResponse) ProtoMessage() {}
 
 func (x *RefreshFeedsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_feed_v1_feed_proto_msgTypes[12]
+	mi := &file_feed_v1_feed_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -902,7 +971,14 @@ func (x *RefreshFeedsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RefreshFeedsResponse.ProtoReflect.Descriptor instead.
 func (*RefreshFeedsResponse) Descriptor() ([]byte, []int) {
-	return file_feed_v1_feed_proto_rawDescGZIP(), []int{12}
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *RefreshFeedsResponse) GetResults() []*FeedFetchStatus {
+	if x != nil {
+		return x.Results
+	}
+	return nil
 }
 
 type ImportOpmlRequest struct {
@@ -914,7 +990,7 @@ type ImportOpmlRequest struct {
 
 func (x *ImportOpmlRequest) Reset() {
 	*x = ImportOpmlRequest{}
-	mi := &file_feed_v1_feed_proto_msgTypes[13]
+	mi := &file_feed_v1_feed_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -926,7 +1002,7 @@ func (x *ImportOpmlRequest) String() string {
 func (*ImportOpmlRequest) ProtoMessage() {}
 
 func (x *ImportOpmlRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_feed_v1_feed_proto_msgTypes[13]
+	mi := &file_feed_v1_feed_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -939,7 +1015,7 @@ func (x *ImportOpmlRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ImportOpmlRequest.ProtoReflect.Descriptor instead.
 func (*ImportOpmlRequest) Descriptor() ([]byte, []int) {
-	return file_feed_v1_feed_proto_rawDescGZIP(), []int{13}
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *ImportOpmlRequest) GetOpmlContent() []byte {
@@ -962,7 +1038,7 @@ type ImportOpmlResponse struct {
 
 func (x *ImportOpmlResponse) Reset() {
 	*x = ImportOpmlResponse{}
-	mi := &file_feed_v1_feed_proto_msgTypes[14]
+	mi := &file_feed_v1_feed_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -974,7 +1050,7 @@ func (x *ImportOpmlResponse) String() string {
 func (*ImportOpmlResponse) ProtoMessage() {}
 
 func (x *ImportOpmlResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_feed_v1_feed_proto_msgTypes[14]
+	mi := &file_feed_v1_feed_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -987,7 +1063,7 @@ func (x *ImportOpmlResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ImportOpmlResponse.ProtoReflect.Descriptor instead.
 func (*ImportOpmlResponse) Descriptor() ([]byte, []int) {
-	return file_feed_v1_feed_proto_rawDescGZIP(), []int{14}
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *ImportOpmlResponse) GetTotal() int32 {
@@ -1040,7 +1116,7 @@ type ImportJob struct {
 
 func (x *ImportJob) Reset() {
 	*x = ImportJob{}
-	mi := &file_feed_v1_feed_proto_msgTypes[15]
+	mi := &file_feed_v1_feed_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1052,7 +1128,7 @@ func (x *ImportJob) String() string {
 func (*ImportJob) ProtoMessage() {}
 
 func (x *ImportJob) ProtoReflect() protoreflect.Message {
-	mi := &file_feed_v1_feed_proto_msgTypes[15]
+	mi := &file_feed_v1_feed_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1065,7 +1141,7 @@ func (x *ImportJob) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ImportJob.ProtoReflect.Descriptor instead.
 func (*ImportJob) Descriptor() ([]byte, []int) {
-	return file_feed_v1_feed_proto_rawDescGZIP(), []int{15}
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *ImportJob) GetId() string {
@@ -1126,7 +1202,7 @@ type GetImportJobRequest struct {
 
 func (x *GetImportJobRequest) Reset() {
 	*x = GetImportJobRequest{}
-	mi := &file_feed_v1_feed_proto_msgTypes[16]
+	mi := &file_feed_v1_feed_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1138,7 +1214,7 @@ func (x *GetImportJobRequest) String() string {
 func (*GetImportJobRequest) ProtoMessage() {}
 
 func (x *GetImportJobRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_feed_v1_feed_proto_msgTypes[16]
+	mi := &file_feed_v1_feed_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1151,7 +1227,7 @@ func (x *GetImportJobRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetImportJobRequest.ProtoReflect.Descriptor instead.
 func (*GetImportJobRequest) Descriptor() ([]byte, []int) {
-	return file_feed_v1_feed_proto_rawDescGZIP(), []int{16}
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *GetImportJobRequest) GetId() string {
@@ -1170,7 +1246,7 @@ type GetImportJobResponse struct {
 
 func (x *GetImportJobResponse) Reset() {
 	*x = GetImportJobResponse{}
-	mi := &file_feed_v1_feed_proto_msgTypes[17]
+	mi := &file_feed_v1_feed_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1182,7 +1258,7 @@ func (x *GetImportJobResponse) String() string {
 func (*GetImportJobResponse) ProtoMessage() {}
 
 func (x *GetImportJobResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_feed_v1_feed_proto_msgTypes[17]
+	mi := &file_feed_v1_feed_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1195,7 +1271,7 @@ func (x *GetImportJobResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetImportJobResponse.ProtoReflect.Descriptor instead.
 func (*GetImportJobResponse) Descriptor() ([]byte, []int) {
-	return file_feed_v1_feed_proto_rawDescGZIP(), []int{17}
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *GetImportJobResponse) GetJob() *ImportJob {
@@ -1215,7 +1291,7 @@ type SetFeedTagsRequest struct {
 
 func (x *SetFeedTagsRequest) Reset() {
 	*x = SetFeedTagsRequest{}
-	mi := &file_feed_v1_feed_proto_msgTypes[18]
+	mi := &file_feed_v1_feed_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1227,7 +1303,7 @@ func (x *SetFeedTagsRequest) String() string {
 func (*SetFeedTagsRequest) ProtoMessage() {}
 
 func (x *SetFeedTagsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_feed_v1_feed_proto_msgTypes[18]
+	mi := &file_feed_v1_feed_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1240,7 +1316,7 @@ func (x *SetFeedTagsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetFeedTagsRequest.ProtoReflect.Descriptor instead.
 func (*SetFeedTagsRequest) Descriptor() ([]byte, []int) {
-	return file_feed_v1_feed_proto_rawDescGZIP(), []int{18}
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *SetFeedTagsRequest) GetFeedId() string {
@@ -1265,7 +1341,7 @@ type SetFeedTagsResponse struct {
 
 func (x *SetFeedTagsResponse) Reset() {
 	*x = SetFeedTagsResponse{}
-	mi := &file_feed_v1_feed_proto_msgTypes[19]
+	mi := &file_feed_v1_feed_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1277,7 +1353,7 @@ func (x *SetFeedTagsResponse) String() string {
 func (*SetFeedTagsResponse) ProtoMessage() {}
 
 func (x *SetFeedTagsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_feed_v1_feed_proto_msgTypes[19]
+	mi := &file_feed_v1_feed_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1290,7 +1366,7 @@ func (x *SetFeedTagsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetFeedTagsResponse.ProtoReflect.Descriptor instead.
 func (*SetFeedTagsResponse) Descriptor() ([]byte, []int) {
-	return file_feed_v1_feed_proto_rawDescGZIP(), []int{19}
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{20}
 }
 
 type ManageFeedTagsRequest struct {
@@ -1304,7 +1380,7 @@ type ManageFeedTagsRequest struct {
 
 func (x *ManageFeedTagsRequest) Reset() {
 	*x = ManageFeedTagsRequest{}
-	mi := &file_feed_v1_feed_proto_msgTypes[20]
+	mi := &file_feed_v1_feed_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1316,7 +1392,7 @@ func (x *ManageFeedTagsRequest) String() string {
 func (*ManageFeedTagsRequest) ProtoMessage() {}
 
 func (x *ManageFeedTagsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_feed_v1_feed_proto_msgTypes[20]
+	mi := &file_feed_v1_feed_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1329,7 +1405,7 @@ func (x *ManageFeedTagsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ManageFeedTagsRequest.ProtoReflect.Descriptor instead.
 func (*ManageFeedTagsRequest) Descriptor() ([]byte, []int) {
-	return file_feed_v1_feed_proto_rawDescGZIP(), []int{20}
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *ManageFeedTagsRequest) GetFeedIds() []string {
@@ -1361,7 +1437,7 @@ type ManageFeedTagsResponse struct {
 
 func (x *ManageFeedTagsResponse) Reset() {
 	*x = ManageFeedTagsResponse{}
-	mi := &file_feed_v1_feed_proto_msgTypes[21]
+	mi := &file_feed_v1_feed_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1373,7 +1449,7 @@ func (x *ManageFeedTagsResponse) String() string {
 func (*ManageFeedTagsResponse) ProtoMessage() {}
 
 func (x *ManageFeedTagsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_feed_v1_feed_proto_msgTypes[21]
+	mi := &file_feed_v1_feed_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1386,7 +1462,7 @@ func (x *ManageFeedTagsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ManageFeedTagsResponse.ProtoReflect.Descriptor instead.
 func (*ManageFeedTagsResponse) Descriptor() ([]byte, []int) {
-	return file_feed_v1_feed_proto_rawDescGZIP(), []int{21}
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{22}
 }
 
 var File_feed_v1_feed_proto protoreflect.FileDescriptor
@@ -1491,8 +1567,15 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"\x14\n" +
 	"\x12DeleteFeedResponse\"'\n" +
 	"\x13RefreshFeedsRequest\x12\x10\n" +
-	"\x03ids\x18\x01 \x03(\tR\x03ids\"\x16\n" +
-	"\x14RefreshFeedsResponse\"6\n" +
+	"\x03ids\x18\x01 \x03(\tR\x03ids\"\xa8\x01\n" +
+	"\x0fFeedFetchStatus\x12\x17\n" +
+	"\afeed_id\x18\x01 \x01(\tR\x06feedId\x12\x18\n" +
+	"\asuccess\x18\x02 \x01(\bR\asuccess\x12&\n" +
+	"\x0fnew_items_count\x18\x03 \x01(\x05R\rnewItemsCount\x12(\n" +
+	"\rerror_message\x18\x04 \x01(\tH\x00R\ferrorMessage\x88\x01\x01B\x10\n" +
+	"\x0e_error_message\"J\n" +
+	"\x14RefreshFeedsResponse\x122\n" +
+	"\aresults\x18\x01 \x03(\v2\x18.feed.v1.FeedFetchStatusR\aresults\"6\n" +
 	"\x11ImportOpmlRequest\x12!\n" +
 	"\fopml_content\x18\x01 \x01(\fR\vopmlContent\"\x98\x01\n" +
 	"\x12ImportOpmlResponse\x12\x14\n" +
@@ -1560,7 +1643,7 @@ func file_feed_v1_feed_proto_rawDescGZIP() []byte {
 }
 
 var file_feed_v1_feed_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_feed_v1_feed_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
+var file_feed_v1_feed_proto_msgTypes = make([]protoimpl.MessageInfo, 23)
 var file_feed_v1_feed_proto_goTypes = []any{
 	(ImportJobStatus)(0),           // 0: feed.v1.ImportJobStatus
 	(*Feed)(nil),                   // 1: feed.v1.Feed
@@ -1575,51 +1658,53 @@ var file_feed_v1_feed_proto_goTypes = []any{
 	(*DeleteFeedRequest)(nil),      // 10: feed.v1.DeleteFeedRequest
 	(*DeleteFeedResponse)(nil),     // 11: feed.v1.DeleteFeedResponse
 	(*RefreshFeedsRequest)(nil),    // 12: feed.v1.RefreshFeedsRequest
-	(*RefreshFeedsResponse)(nil),   // 13: feed.v1.RefreshFeedsResponse
-	(*ImportOpmlRequest)(nil),      // 14: feed.v1.ImportOpmlRequest
-	(*ImportOpmlResponse)(nil),     // 15: feed.v1.ImportOpmlResponse
-	(*ImportJob)(nil),              // 16: feed.v1.ImportJob
-	(*GetImportJobRequest)(nil),    // 17: feed.v1.GetImportJobRequest
-	(*GetImportJobResponse)(nil),   // 18: feed.v1.GetImportJobResponse
-	(*SetFeedTagsRequest)(nil),     // 19: feed.v1.SetFeedTagsRequest
-	(*SetFeedTagsResponse)(nil),    // 20: feed.v1.SetFeedTagsResponse
-	(*ManageFeedTagsRequest)(nil),  // 21: feed.v1.ManageFeedTagsRequest
-	(*ManageFeedTagsResponse)(nil), // 22: feed.v1.ManageFeedTagsResponse
-	(*v1.Tag)(nil),                 // 23: tag.v1.Tag
+	(*FeedFetchStatus)(nil),        // 13: feed.v1.FeedFetchStatus
+	(*RefreshFeedsResponse)(nil),   // 14: feed.v1.RefreshFeedsResponse
+	(*ImportOpmlRequest)(nil),      // 15: feed.v1.ImportOpmlRequest
+	(*ImportOpmlResponse)(nil),     // 16: feed.v1.ImportOpmlResponse
+	(*ImportJob)(nil),              // 17: feed.v1.ImportJob
+	(*GetImportJobRequest)(nil),    // 18: feed.v1.GetImportJobRequest
+	(*GetImportJobResponse)(nil),   // 19: feed.v1.GetImportJobResponse
+	(*SetFeedTagsRequest)(nil),     // 20: feed.v1.SetFeedTagsRequest
+	(*SetFeedTagsResponse)(nil),    // 21: feed.v1.SetFeedTagsResponse
+	(*ManageFeedTagsRequest)(nil),  // 22: feed.v1.ManageFeedTagsRequest
+	(*ManageFeedTagsResponse)(nil), // 23: feed.v1.ManageFeedTagsResponse
+	(*v1.Tag)(nil),                 // 24: tag.v1.Tag
 }
 var file_feed_v1_feed_proto_depIdxs = []int32{
-	23, // 0: feed.v1.Feed.tags:type_name -> tag.v1.Tag
+	24, // 0: feed.v1.Feed.tags:type_name -> tag.v1.Tag
 	1,  // 1: feed.v1.GetFeedResponse.feed:type_name -> feed.v1.Feed
 	1,  // 2: feed.v1.ListFeedsResponse.feeds:type_name -> feed.v1.Feed
 	1,  // 3: feed.v1.CreateFeedResponse.feed:type_name -> feed.v1.Feed
 	1,  // 4: feed.v1.UpdateFeedResponse.feed:type_name -> feed.v1.Feed
-	0,  // 5: feed.v1.ImportJob.status:type_name -> feed.v1.ImportJobStatus
-	16, // 6: feed.v1.GetImportJobResponse.job:type_name -> feed.v1.ImportJob
-	2,  // 7: feed.v1.FeedService.GetFeed:input_type -> feed.v1.GetFeedRequest
-	4,  // 8: feed.v1.FeedService.ListFeeds:input_type -> feed.v1.ListFeedsRequest
-	6,  // 9: feed.v1.FeedService.CreateFeed:input_type -> feed.v1.CreateFeedRequest
-	8,  // 10: feed.v1.FeedService.UpdateFeed:input_type -> feed.v1.UpdateFeedRequest
-	10, // 11: feed.v1.FeedService.DeleteFeed:input_type -> feed.v1.DeleteFeedRequest
-	12, // 12: feed.v1.FeedService.RefreshFeeds:input_type -> feed.v1.RefreshFeedsRequest
-	14, // 13: feed.v1.FeedService.ImportOpml:input_type -> feed.v1.ImportOpmlRequest
-	17, // 14: feed.v1.FeedService.GetImportJob:input_type -> feed.v1.GetImportJobRequest
-	19, // 15: feed.v1.FeedService.SetFeedTags:input_type -> feed.v1.SetFeedTagsRequest
-	21, // 16: feed.v1.FeedService.ManageFeedTags:input_type -> feed.v1.ManageFeedTagsRequest
-	3,  // 17: feed.v1.FeedService.GetFeed:output_type -> feed.v1.GetFeedResponse
-	5,  // 18: feed.v1.FeedService.ListFeeds:output_type -> feed.v1.ListFeedsResponse
-	7,  // 19: feed.v1.FeedService.CreateFeed:output_type -> feed.v1.CreateFeedResponse
-	9,  // 20: feed.v1.FeedService.UpdateFeed:output_type -> feed.v1.UpdateFeedResponse
-	11, // 21: feed.v1.FeedService.DeleteFeed:output_type -> feed.v1.DeleteFeedResponse
-	13, // 22: feed.v1.FeedService.RefreshFeeds:output_type -> feed.v1.RefreshFeedsResponse
-	15, // 23: feed.v1.FeedService.ImportOpml:output_type -> feed.v1.ImportOpmlResponse
-	18, // 24: feed.v1.FeedService.GetImportJob:output_type -> feed.v1.GetImportJobResponse
-	20, // 25: feed.v1.FeedService.SetFeedTags:output_type -> feed.v1.SetFeedTagsResponse
-	22, // 26: feed.v1.FeedService.ManageFeedTags:output_type -> feed.v1.ManageFeedTagsResponse
-	17, // [17:27] is the sub-list for method output_type
-	7,  // [7:17] is the sub-list for method input_type
-	7,  // [7:7] is the sub-list for extension type_name
-	7,  // [7:7] is the sub-list for extension extendee
-	0,  // [0:7] is the sub-list for field type_name
+	13, // 5: feed.v1.RefreshFeedsResponse.results:type_name -> feed.v1.FeedFetchStatus
+	0,  // 6: feed.v1.ImportJob.status:type_name -> feed.v1.ImportJobStatus
+	17, // 7: feed.v1.GetImportJobResponse.job:type_name -> feed.v1.ImportJob
+	2,  // 8: feed.v1.FeedService.GetFeed:input_type -> feed.v1.GetFeedRequest
+	4,  // 9: feed.v1.FeedService.ListFeeds:input_type -> feed.v1.ListFeedsRequest
+	6,  // 10: feed.v1.FeedService.CreateFeed:input_type -> feed.v1.CreateFeedRequest
+	8,  // 11: feed.v1.FeedService.UpdateFeed:input_type -> feed.v1.UpdateFeedRequest
+	10, // 12: feed.v1.FeedService.DeleteFeed:input_type -> feed.v1.DeleteFeedRequest
+	12, // 13: feed.v1.FeedService.RefreshFeeds:input_type -> feed.v1.RefreshFeedsRequest
+	15, // 14: feed.v1.FeedService.ImportOpml:input_type -> feed.v1.ImportOpmlRequest
+	18, // 15: feed.v1.FeedService.GetImportJob:input_type -> feed.v1.GetImportJobRequest
+	20, // 16: feed.v1.FeedService.SetFeedTags:input_type -> feed.v1.SetFeedTagsRequest
+	22, // 17: feed.v1.FeedService.ManageFeedTags:input_type -> feed.v1.ManageFeedTagsRequest
+	3,  // 18: feed.v1.FeedService.GetFeed:output_type -> feed.v1.GetFeedResponse
+	5,  // 19: feed.v1.FeedService.ListFeeds:output_type -> feed.v1.ListFeedsResponse
+	7,  // 20: feed.v1.FeedService.CreateFeed:output_type -> feed.v1.CreateFeedResponse
+	9,  // 21: feed.v1.FeedService.UpdateFeed:output_type -> feed.v1.UpdateFeedResponse
+	11, // 22: feed.v1.FeedService.DeleteFeed:output_type -> feed.v1.DeleteFeedResponse
+	14, // 23: feed.v1.FeedService.RefreshFeeds:output_type -> feed.v1.RefreshFeedsResponse
+	16, // 24: feed.v1.FeedService.ImportOpml:output_type -> feed.v1.ImportOpmlResponse
+	19, // 25: feed.v1.FeedService.GetImportJob:output_type -> feed.v1.GetImportJobResponse
+	21, // 26: feed.v1.FeedService.SetFeedTags:output_type -> feed.v1.SetFeedTagsResponse
+	23, // 27: feed.v1.FeedService.ManageFeedTags:output_type -> feed.v1.ManageFeedTagsResponse
+	18, // [18:28] is the sub-list for method output_type
+	8,  // [8:18] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_feed_v1_feed_proto_init() }
@@ -1631,13 +1716,14 @@ func file_feed_v1_feed_proto_init() {
 	file_feed_v1_feed_proto_msgTypes[3].OneofWrappers = []any{}
 	file_feed_v1_feed_proto_msgTypes[5].OneofWrappers = []any{}
 	file_feed_v1_feed_proto_msgTypes[7].OneofWrappers = []any{}
+	file_feed_v1_feed_proto_msgTypes[12].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_feed_v1_feed_proto_rawDesc), len(file_feed_v1_feed_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   22,
+			NumMessages:   23,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

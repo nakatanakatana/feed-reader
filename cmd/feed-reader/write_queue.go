@@ -113,11 +113,18 @@ func (s *WriteQueueService) flush(ctx context.Context, batch []WriteQueueJob) {
 
 // SaveItemsJob represents a job to save multiple items for a feed.
 type SaveItemsJob struct {
-	Items []store.SaveFetchedItemParams
+	Items      []store.SaveFetchedItemParams
+	ResultChan chan SaveItemsResult
+}
+
+type SaveItemsResult struct {
+	NewItemsCount int32
+	Error         error
 }
 
 // Execute performs the save operations.
 func (j *SaveItemsJob) Execute(ctx context.Context, q *store.Queries) error {
+	var newItems int32
 	for _, params := range j.Items {
 		// 1. Upsert Item
 		newID := uuid.NewString()
@@ -134,7 +141,11 @@ func (j *SaveItemsJob) Execute(ctx context.Context, q *store.Queries) error {
 			Categories:  params.Categories,
 		})
 		if err != nil {
-			return fmt.Errorf("failed to create/update item: %w", err)
+			err = fmt.Errorf("failed to create/update item: %w", err)
+			if j.ResultChan != nil {
+				j.ResultChan <- SaveItemsResult{Error: err}
+			}
+			return err
 		}
 
 		// 2. Link to Feed
@@ -143,14 +154,27 @@ func (j *SaveItemsJob) Execute(ctx context.Context, q *store.Queries) error {
 			ItemID: item.ID,
 		})
 		if err != nil {
-			return fmt.Errorf("failed to link feed and item: %w", err)
+			err = fmt.Errorf("failed to link feed and item: %w", err)
+			if j.ResultChan != nil {
+				j.ResultChan <- SaveItemsResult{Error: err}
+			}
+			return err
 		}
 
 		// 3. Initialize Read Status
 		err = q.CreateItemRead(ctx, item.ID)
 		if err != nil {
-			return fmt.Errorf("failed to initialize read status: %w", err)
+			err = fmt.Errorf("failed to initialize read status: %w", err)
+			if j.ResultChan != nil {
+				j.ResultChan <- SaveItemsResult{Error: err}
+			}
+			return err
 		}
+		newItems++
+	}
+
+	if j.ResultChan != nil {
+		j.ResultChan <- SaveItemsResult{NewItemsCount: newItems}
 	}
 	return nil
 }

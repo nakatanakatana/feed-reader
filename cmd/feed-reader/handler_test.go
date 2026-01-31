@@ -94,6 +94,19 @@ func (m *mockItemFetcher) FetchFeedsByIDs(ctx context.Context, ids []string) err
 	return m.err
 }
 
+func (m *mockItemFetcher) FetchFeedsByIDsSync(ctx context.Context, ids []string) ([]FeedFetchResult, error) {
+	m.called = true
+	m.ids = ids
+	if m.err != nil {
+		return nil, m.err
+	}
+	results := make([]FeedFetchResult, len(ids))
+	for i, id := range ids {
+		results[i] = FeedFetchResult{FeedID: id, Success: true}
+	}
+	return results, nil
+}
+
 func setupServer(t *testing.T, db *sql.DB, uuidErr error, fetcher FeedFetcher, itemFetcher ItemFetcher) (feedv1connect.FeedServiceHandler, *OPMLImporter) {
 	s := store.NewStore(db)
 	pool := NewWorkerPool(1)

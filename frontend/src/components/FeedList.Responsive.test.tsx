@@ -227,11 +227,13 @@ describe("FeedList Responsive", () => {
     const fab = page.getByRole("button", { name: /Manage Tags/i });
     await expect.element(fab).toBeInTheDocument();
 
-    const fabStyles = window.getComputedStyle(fab.element());
-    expect(fabStyles.position).toBe("fixed");
-    expect(fabStyles.bottom).not.toBe("auto");
-    expect(fabStyles.right).not.toBe("auto");
-    expect(fabStyles.display).not.toBe("none");
+    const fabContainer = fab.element().parentElement?.parentElement;
+    if (!fabContainer) throw new Error("FAB container not found");
+    const containerStyles = window.getComputedStyle(fabContainer);
+    expect(containerStyles.position).toBe("fixed");
+    expect(containerStyles.bottom).not.toBe("auto");
+    expect(containerStyles.right).not.toBe("auto");
+    expect(containerStyles.display).not.toBe("none");
   });
 
   it("does not show a floating action button on desktop", async () => {

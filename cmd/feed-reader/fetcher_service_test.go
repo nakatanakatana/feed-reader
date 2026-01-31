@@ -228,3 +228,29 @@ func TestFetcherService_FetchFeedsByIDs(t *testing.T) {
 		t.Error("Feed should have been force refreshed")
 	}
 }
+
+func TestFetcherService_FetchFeedsByIDsSync(t *testing.T) {
+	ctx := context.Background()
+	queries, db := setupTestDB(t)
+	s := store.NewStore(db)
+
+	mockFeed := &gofeed.Feed{
+		Items: []*gofeed.Item{
+			{Title: "New Item", Link: "http://new-item"},
+		},
+	}
+	fetcher := &mockFetcher{feed: mockFeed}
+	logger := slog.New(slog.NewJSONHandler(&bytes.Buffer{}, nil))
+	wq := NewWriteQueueService(s, WriteQueueConfig{MaxBatchSize: 1, FlushInterval: 10 * time.Millisecond}, logger)
+	go wq.Start(ctx)
+	service := NewFetcherService(s, fetcher, nil, wq, logger, 30*time.Minute)
+
+	feed, _ := queries.CreateFeed(ctx, store.CreateFeedParams{ID: "sync-fetch", Url: "http://sync-fetch"})
+
+	results, err := service.FetchFeedsByIDsSync(ctx, []string{feed.ID})
+	assert.NoError(t, err)
+	assert.Len(t, results, 1)
+	assert.Equal(t, feed.ID, results[0].FeedID)
+	assert.True(t, results[0].Success)
+	// assert.Equal(t, int32(1), results[0].NewItemsCount) // We'll see if we can implement this easily
+}

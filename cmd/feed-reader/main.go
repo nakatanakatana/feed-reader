@@ -27,7 +27,6 @@ type config struct {
 	DBPath                 string        `env:"DB_PATH" envDefault:"feed-reader.db"`
 	FetchInterval          time.Duration `env:"FETCH_INTERVAL" envDefault:"30m"`
 	MaxWorkers             int           `env:"MAX_WORKERS" envDefault:"10"`
-	MigrateContentMarkdown bool          `env:"MIGRATE_CONTENT_MARKDOWN" envDefault:"false"`
 	SkipDBMigration        bool          `env:"SKIP_DB_MIGRATION" envDefault:"false"`
 
 	// Write Queue settings
@@ -67,14 +66,6 @@ func main() {
 
 	// 1. Initialize Storage
 	s := store.NewStore(db)
-
-	if cfg.MigrateContentMarkdown {
-		if err := migrateHTMLToMarkdown(ctx, s, logger); err != nil {
-			logger.ErrorContext(ctx, "migration failed", "error", err)
-			os.Exit(1)
-		}
-		os.Exit(0)
-	}
 
 	// 2. Initialize Worker Pool
 	pool := NewWorkerPool(cfg.MaxWorkers)

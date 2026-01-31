@@ -5,10 +5,13 @@ import { flex, stack } from "../../styled-system/patterns";
 import { type Feed, feeds, type Tag } from "../lib/db";
 import { formatUnreadCount } from "../lib/item-utils";
 import { useTags } from "../lib/tag-query";
+import { useRefreshFeeds } from "../lib/feed-query";
 import { ManageTagsModal } from "./ManageTagsModal";
+import { fetchingState } from "../lib/fetching-state";
 
 export function FeedList() {
   console.log("DEBUG: Rendering FeedList component");
+  const refreshMutation = useRefreshFeeds();
   const [selectedTagId, setSelectedTagId] = createSignal<
     string | undefined | null
   >();
@@ -148,24 +151,49 @@ export function FeedList() {
             </div>
           </div>
           <Show when={selectedFeedIds().length > 0}>
-            <button
-              type="button"
-              onClick={() => setIsManageModalOpen(true)}
-              class={css({
-                display: "none",
-                sm: { display: "block" },
-                px: "3",
-                py: "1.5",
-                bg: "blue.600",
-                color: "white",
-                rounded: "md",
-                fontSize: "sm",
-                cursor: "pointer",
-                _hover: { bg: "blue.700" },
-              })}
-            >
-              Manage Tags ({selectedFeedIds().length})
-            </button>
+            <div class={flex({ gap: "2", alignItems: "center" })}>
+              <button
+                type="button"
+                onClick={() =>
+                  refreshMutation.mutate({ ids: selectedFeedIds() })
+                }
+                disabled={refreshMutation.isPending}
+                class={css({
+                  display: "none",
+                  sm: { display: "block" },
+                  px: "3",
+                  py: "1.5",
+                  bg: "blue.100",
+                  color: "blue.700",
+                  rounded: "md",
+                  fontSize: "sm",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                  _hover: { bg: "blue.200" },
+                  _disabled: { opacity: 0.5, cursor: "not-allowed" },
+                })}
+              >
+                {refreshMutation.isPending ? "Fetching..." : "Fetch Selected"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsManageModalOpen(true)}
+                class={css({
+                  display: "none",
+                  sm: { display: "block" },
+                  px: "3",
+                  py: "1.5",
+                  bg: "blue.600",
+                  color: "white",
+                  rounded: "md",
+                  fontSize: "sm",
+                  cursor: "pointer",
+                  _hover: { bg: "blue.700" },
+                })}
+              >
+                Manage Tags ({selectedFeedIds().length})
+              </button>
+            </div>
           </Show>
         </div>
         <div
@@ -386,6 +414,48 @@ export function FeedList() {
                     >
                       {feed.title || "Untitled Feed"}
                     </a>
+                    <Show when={fetchingState.isFetching(feed.id)}>
+                      <div
+                        class={css({
+                          width: "4",
+                          height: "4",
+                          border: "2px solid",
+                          borderColor: "blue.200",
+                          borderTopColor: "blue.600",
+                          borderRadius: "full",
+                          animation: "spin 1s linear infinite",
+                        })}
+                        title="Fetching..."
+                      />
+                    </Show>
+                    <Show when={fetchingState.error(feed.id)}>
+                      <div
+                        class={css({
+                          color: "red.500",
+                          cursor: "help",
+                          display: "flex",
+                          alignItems: "center",
+                        })}
+                        title={fetchingState.error(feed.id)}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <title>Error fetching feed</title>
+                          <circle cx="12" cy="12" r="10" />
+                          <line x1="12" y1="8" x2="12" y2="12" />
+                          <line x1="12" y1="16" x2="12.01" y2="16" />
+                        </svg>
+                      </div>
+                    </Show>
                     <div class={flex({ gap: "1" })}>
                       <For each={feed.tags}>
                         {(tag) => (
@@ -455,6 +525,33 @@ export function FeedList() {
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
+                    refreshMutation.mutate({ ids: [feed.id] });
+                  }}
+                  disabled={fetchingState.isFetching(feed.id)}
+                  class={css({
+                    color: "blue.600",
+                    padding: "1",
+                    paddingInline: "2",
+                    borderRadius: "md",
+                    fontSize: "sm",
+                    cursor: "pointer",
+                    _hover: {
+                      backgroundColor: "blue.50",
+                      textDecoration: "underline",
+                    },
+                    _disabled: {
+                      color: "gray.400",
+                      cursor: "not-allowed",
+                      textDecoration: "none",
+                    },
+                  })}
+                >
+                  {fetchingState.isFetching(feed.id) ? "Fetching..." : "Fetch"}
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
                     handleDelete(feed.id);
                   }}
                   class={css({
@@ -489,49 +586,98 @@ export function FeedList() {
       />
 
       <Show when={selectedFeedIds().length > 0}>
-        <button
-          type="button"
-          onClick={() => setIsManageModalOpen(true)}
+        <div
           class={css({
             display: "block",
             sm: { display: "none" },
             position: "fixed",
             bottom: "6",
             right: "6",
-            px: "4",
-            py: "4",
-            bg: "blue.600",
-            color: "white",
-            rounded: "full",
-            fontSize: "sm",
-            fontWeight: "bold",
-            cursor: "pointer",
-            boxShadow: "lg",
             zIndex: 100,
-            _hover: { bg: "blue.700" },
-            _active: { transform: "scale(0.95)" },
           })}
-          aria-label="Manage Tags"
+          style={{ position: "fixed" }}
         >
-          <div class={flex({ gap: "2", alignItems: "center" })}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              aria-hidden="true"
+          <div class={stack({ gap: "2", alignItems: "flex-end" })}>
+            <button
+              type="button"
+              onClick={() => refreshMutation.mutate({ ids: selectedFeedIds() })}
+              disabled={refreshMutation.isPending}
+              class={css({
+                px: "4",
+                py: "4",
+                bg: "blue.100",
+                color: "blue.700",
+                rounded: "full",
+                fontSize: "sm",
+                fontWeight: "bold",
+                cursor: "pointer",
+                boxShadow: "lg",
+                _hover: { bg: "blue.200" },
+                _active: { transform: "scale(0.95)" },
+                _disabled: { opacity: 0.5, cursor: "not-allowed" },
+              })}
+              aria-label="Fetch Selected"
             >
-              <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z" />
-              <path d="M7 7h.01" />
-            </svg>
-            <span>Tags ({selectedFeedIds().length})</span>
+              <div class={flex({ gap: "2", alignItems: "center" })}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <title>Manual refresh</title>
+                  <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
+                  <path d="M21 3v5h-5" />
+                </svg>
+                <span>
+                  {refreshMutation.isPending ? "Fetching..." : "Fetch"}
+                </span>
+              </div>
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsManageModalOpen(true)}
+              class={css({
+                px: "4",
+                py: "4",
+                bg: "blue.600",
+                color: "white",
+                rounded: "full",
+                fontSize: "sm",
+                fontWeight: "bold",
+                cursor: "pointer",
+                boxShadow: "lg",
+                _hover: { bg: "blue.700" },
+                _active: { transform: "scale(0.95)" },
+              })}
+              aria-label="Manage Tags"
+            >
+              <div class={flex({ gap: "2", alignItems: "center" })}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z" />
+                  <path d="M7 7h.01" />
+                </svg>
+                <span>Tags ({selectedFeedIds().length})</span>
+              </div>
+            </button>
           </div>
-        </button>
+        </div>
       </Show>
     </div>
   );
