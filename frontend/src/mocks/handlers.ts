@@ -34,12 +34,14 @@ const tags = [
     name: "Tech",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+    feedCount: 1n,
   }),
   create(TagSchema, {
     id: "tag-2",
     name: "News",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+    feedCount: 2n,
   }),
 ];
 
@@ -101,6 +103,12 @@ export const handlers = [
       });
       // In-memory update for the session
       feeds.push(newFeed);
+      tags.forEach((t) => {
+        const count = feeds.filter((f) =>
+          f.tags.some((ft) => ft.id === t.id),
+        ).length;
+        t.feedCount = BigInt(count);
+      });
       return create(CreateFeedResponseSchema, { feed: newFeed });
     },
   }),
@@ -118,6 +126,12 @@ export const handlers = [
               create(TagSchema, { id, name: "Unknown" }),
           );
         }
+        tags.forEach((t) => {
+          const count = feeds.filter((f) =>
+            f.tags.some((ft) => ft.id === t.id),
+          ).length;
+          t.feedCount = BigInt(count);
+        });
         feeds[index].updatedAt = new Date().toISOString();
         return create(UpdateFeedResponseSchema, { feed: feeds[index] });
       }
@@ -131,6 +145,12 @@ export const handlers = [
       const index = feeds.findIndex((f) => f.id === req.id);
       if (index !== -1) {
         feeds.splice(index, 1);
+        tags.forEach((t) => {
+          const count = feeds.filter((f) =>
+            f.tags.some((ft) => ft.id === t.id),
+          ).length;
+          t.feedCount = BigInt(count);
+        });
       }
       return create(DeleteFeedResponseSchema, {});
     },
@@ -144,6 +164,7 @@ export const handlers = [
           id: tag.id,
           name: tag.name,
           unreadCount: tag.unreadCount ?? 0n,
+          feedCount: tag.feedCount ?? 0n,
         }),
       );
       return create(ListTagsResponseSchema, { tags: listTags });
@@ -158,6 +179,7 @@ export const handlers = [
         name: req.name,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        feedCount: 0n,
       });
       tags.push(newTag);
       return create(CreateTagResponseSchema, { tag: newTag });
@@ -174,6 +196,12 @@ export const handlers = [
         feeds.forEach((f) => {
           f.tags = f.tags.filter((t) => t.id !== req.id);
         });
+        tags.forEach((t) => {
+          const count = feeds.filter((f) =>
+            f.tags.some((ft) => ft.id === t.id),
+          ).length;
+          t.feedCount = BigInt(count);
+        });
       }
       return create(DeleteTagResponseSchema, {});
     },
@@ -189,6 +217,12 @@ export const handlers = [
             tags.find((t) => t.id === id) ||
             create(TagSchema, { id, name: "Unknown" }),
         );
+        tags.forEach((t) => {
+          const count = feeds.filter((f) =>
+            f.tags.some((ft) => ft.id === t.id),
+          ).length;
+          t.feedCount = BigInt(count);
+        });
       }
       return create(SetFeedTagsResponseSchema, {});
     },
@@ -213,6 +247,12 @@ export const handlers = [
           }
         }
       }
+      tags.forEach((t) => {
+        const count = feeds.filter((f) =>
+          f.tags.some((ft) => ft.id === t.id),
+        ).length;
+        t.feedCount = BigInt(count);
+      });
       return create(ManageFeedTagsResponseSchema, {});
     },
   }),

@@ -68,6 +68,7 @@ func (s *TagServer) ListTags(ctx context.Context, req *connect.Request[tagv1.Lis
 			Id:          t.ID,
 			Name:        t.Name,
 			UnreadCount: t.UnreadCount,
+			FeedCount:   t.FeedCount,
 		}
 	}
 
@@ -92,5 +93,6 @@ func toProtoTagV1(t store.TagWithCount) *tagv1.Tag {
 		CreatedAt:   t.CreatedAt,
 		UpdatedAt:   t.UpdatedAt,
 		UnreadCount: t.UnreadCount,
+		FeedCount:   t.FeedCount,
 	}
 }

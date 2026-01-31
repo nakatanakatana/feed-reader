@@ -16,12 +16,14 @@ message Tag {
   string created_at = 3;
   string updated_at = 4;
   int64 unread_count = 5;
+  int64 feed_count = 6;
 }
 
 message ListTag {
   string id = 1;
   string name = 2;
   int64 unread_count = 3;
+  int64 feed_count = 4;
 }
 
 message CreateTagRequest {

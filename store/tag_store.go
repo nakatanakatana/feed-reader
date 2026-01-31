@@ -19,9 +19,19 @@ func (s *Store) ListTags(ctx context.Context, params ListTagsParams) ([]TagWithC
 		return nil, err
 	}
 
+	feedCounts, err := s.CountFeedsPerTag(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	countMap := make(map[string]int64)
 	for _, c := range unreadCounts {
 		countMap[c.TagID] = c.Count
+	}
+
+	feedCountMap := make(map[string]int64)
+	for _, c := range feedCounts {
+		feedCountMap[c.TagID] = c.Count
 	}
 
 	tags := make([]TagWithCount, len(dbTags))
@@ -32,6 +42,7 @@ func (s *Store) ListTags(ctx context.Context, params ListTagsParams) ([]TagWithC
 			CreatedAt:   t.CreatedAt,
 			UpdatedAt:   t.UpdatedAt,
 			UnreadCount: countMap[t.ID],
+			FeedCount:   feedCountMap[t.ID],
 		}
 	}
 
