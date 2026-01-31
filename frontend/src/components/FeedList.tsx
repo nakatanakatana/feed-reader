@@ -3,6 +3,7 @@ import { createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { type Feed, feeds, type Tag } from "../lib/db";
+import { formatUnreadCount } from "../lib/item-utils";
 import { useTags } from "../lib/tag-query";
 import { useRefreshFeeds } from "../lib/feed-query";
 import { ManageTagsModal } from "./ManageTagsModal";
@@ -243,6 +244,7 @@ export function FeedList() {
             class={css({
               px: "3",
               py: "1.5",
+              minH: "10",
               rounded: "md",
               fontSize: "xs",
               cursor: "pointer",
@@ -274,7 +276,7 @@ export function FeedList() {
                   textAlign: "center",
                 })}
               >
-                {tagsQuery.data?.totalUnreadCount.toString()}
+                {formatUnreadCount(Number(tagsQuery.data?.totalUnreadCount))}
               </span>
             </Show>
           </button>
@@ -284,6 +286,7 @@ export function FeedList() {
             class={css({
               px: "3",
               py: "1.5",
+              minH: "10",
               rounded: "md",
               fontSize: "xs",
               cursor: "pointer",
@@ -307,6 +310,7 @@ export function FeedList() {
                 class={css({
                   px: "3",
                   py: "1.5",
+                  minH: "10",
                   rounded: "md",
                   fontSize: "xs",
                   cursor: "pointer",
@@ -342,7 +346,7 @@ export function FeedList() {
                       textAlign: "center",
                     })}
                   >
-                    {tag.unreadCount.toString()}
+                    {formatUnreadCount(Number(tag.unreadCount))}
                   </span>
                 </Show>
               </button>

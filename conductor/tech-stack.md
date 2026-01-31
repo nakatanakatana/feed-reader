@@ -16,6 +16,7 @@ The backend is responsible for feed management, article fetching, and providing 
 -   **HTTP Client:** `hashicorp/go-retryablehttp` (Resilient network requests)
 -   **Protocol Management:** `buf` (Protobuf management and generation)
 -   **CLI Manager:** `aqua` (Declarative tool management)
+-   **Asset Bundling:** Go `embed` (For packaging frontend artifacts into the binary)
 -   **Property-Based Testing:** `rapid` (For automated edge-case discovery)
 -   **Task Runner:** `GNU Make` (Unified command interface)
 
@@ -35,6 +36,6 @@ The frontend is a modern Single Page Application (SPA) designed for speed and re
 -   **Linting & Formatting:** BiomeJS (Fast all-in-one toolchain)
 
 ## 3. Infrastructure & Deployment
--   **Architecture:** Self-contained full-stack application.
+-   **Architecture:** Self-contained full-stack application with single binary distribution.
 -   **Containerization:** Docker (For consistent environments and easy self-hosting).
 -   **Version Control:** Git.

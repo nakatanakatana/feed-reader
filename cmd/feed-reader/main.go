@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/caarlos0/env/v11"
+	"github.com/nakatanakatana/feed-reader/frontend"
 	"github.com/nakatanakatana/feed-reader/gen/go/feed/v1/feedv1connect"
 	"github.com/nakatanakatana/feed-reader/gen/go/item/v1/itemv1connect"
 	"github.com/nakatanakatana/feed-reader/gen/go/tag/v1/tagv1connect"
@@ -28,7 +29,7 @@ type config struct {
 	MaxWorkers             int           `env:"MAX_WORKERS" envDefault:"10"`
 	MigrateContentMarkdown bool          `env:"MIGRATE_CONTENT_MARKDOWN" envDefault:"false"`
 	SkipDBMigration        bool          `env:"SKIP_DB_MIGRATION" envDefault:"false"`
-  
+
 	// Write Queue settings
 	WriteQueueMaxBatchSize  int           `env:"WRITE_QUEUE_MAX_BATCH_SIZE" envDefault:"50"`
 	WriteQueueFlushInterval time.Duration `env:"WRITE_QUEUE_FLUSH_INTERVAL" envDefault:"100ms"`
@@ -110,6 +111,9 @@ func main() {
 	mux.Handle("/api"+feedPath, http.StripPrefix("/api", feedHandler))
 	mux.Handle("/api"+itemPath, http.StripPrefix("/api", itemHandler))
 	mux.Handle("/api"+tagPath, http.StripPrefix("/api", tagHandler))
+
+	// Mount static assets at root
+	mux.Handle("/", NewAssetsHandler(frontend.Assets))
 
 	server := &http.Server{
 		Addr:    ":" + cfg.Port,

@@ -15,48 +15,78 @@ export const Route = createRootRoute({
 
 function RootComponent() {
   const headerStyle = css({
-    padding: "2px",
+    paddingX: "4",
+    paddingY: "2",
     display: "flex",
     alignItems: "center",
     borderBottomWidth: "1px",
-    gap: "10px",
-    fontSize: "lg",
+    borderBottomStyle: "solid",
+    borderBottomColor: "gray.100",
+    gap: "6",
+    fontSize: "md",
+    backgroundColor: "white",
+    position: "sticky",
+    top: 0,
+    zIndex: 10,
   });
 
-  const selectedRouteStyle = css({
-    fontWeight: "bold",
+  const linkStyle = css({
+    position: "relative",
+    paddingX: "3",
+    paddingY: "1.5",
+    borderRadius: "md",
+    color: "gray.500",
+    transition: "all 0.2s",
+    fontWeight: "medium",
+    fontSize: "sm",
+    _hover: {
+      backgroundColor: "gray.50",
+      color: "gray.900",
+    },
+  });
+
+  const activeLinkStyle = css({
+    fontWeight: "semibold",
+    color: "blue.700 !important",
+    backgroundColor: "blue.50 !important",
+    borderBottomWidth: "2px",
+    borderBottomStyle: "solid",
+    borderBottomColor: "blue.600",
+    borderBottomRadius: "0",
   });
 
   return (
     <>
-      <div class={headerStyle}>
+      <header class={headerStyle}>
         <Link
           to="/"
+          class={linkStyle}
           activeProps={{
-            class: selectedRouteStyle,
+            class: activeLinkStyle,
           }}
           activeOptions={{ exact: true }}
         >
           Home
-        </Link>{" "}
+        </Link>
         <Link
           to="/feeds"
+          class={linkStyle}
           activeProps={{
-            class: selectedRouteStyle,
+            class: activeLinkStyle,
           }}
         >
           Feeds
-        </Link>{" "}
+        </Link>
         <Link
           to="/tags"
+          class={linkStyle}
           activeProps={{
-            class: selectedRouteStyle,
+            class: activeLinkStyle,
           }}
         >
           Tags
-        </Link>{" "}
-      </div>
-      <hr />
+        </Link>
+      </header>
       <Outlet />
       {/* Start rendering router matches */}
     </>

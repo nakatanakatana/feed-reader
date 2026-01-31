@@ -2,6 +2,7 @@ import * as fc from "fast-check";
 import { describe, expect, it, vi } from "vitest";
 import {
   filterAndSortItems,
+  formatUnreadCount,
   getItemDisplayDate,
   getPublishedSince,
   type Item,
@@ -72,6 +73,20 @@ describe("item-utils", () => {
       const result = getItemDisplayDate(item);
       expect(result.label).toBe("Received");
       expect(result.date).toBe("2026-01-02T00:00:00Z");
+    });
+  });
+
+  describe("formatUnreadCount", () => {
+    it("should return exact count for values up to 999", () => {
+      expect(formatUnreadCount(0)).toBe("0");
+      expect(formatUnreadCount(1)).toBe("1");
+      expect(formatUnreadCount(999)).toBe("999");
+    });
+
+    it("should return '999+' for values 1000 or more", () => {
+      expect(formatUnreadCount(1000)).toBe("999+");
+      expect(formatUnreadCount(1001)).toBe("999+");
+      expect(formatUnreadCount(10000)).toBe("999+");
     });
   });
 });
