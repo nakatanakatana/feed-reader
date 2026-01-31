@@ -12,13 +12,18 @@ The primary target audience is individuals and organizations seeking control ove
 ### Core Value Proposition
 -   **Privacy & Control:** Complete ownership of data and subscription lists with no third-party tracking.
 -   **Unified Experience:** A seamless integration between the high-performance backend and a responsive, user-friendly frontend.
--   **Portability:** Easy to deploy and maintain as a single container or lightweight service set.
+-   **Portability:** Easy to deploy and maintain as a single container or a single executable binary.
 
 ### Key Features
 
 - **Full-Stack Application:** Includes both a backend API and a web frontend.
 
+- **Single Binary Distribution:** Both the backend API and the frontend Web UI are bundled into a single executable for simplified deployment and distribution.
+
 - **Feed Management:** Add, organize, and manage RSS/Atom feeds via the UI. Supports sorting by update time and bulk operations like tagging multiple feeds simultaneously.
+
+
+- **Manual Feed Refresh:** Trigger immediate updates for one or more feeds directly from the UI, bypassing the background scheduler. Includes real-time feedback with loading indicators and error reporting at the individual feed level.
 
 
 - **OPML Import:** Bulk import existing subscriptions from other RSS readers using the standard OPML format, with automatic deduplication.
@@ -33,7 +38,7 @@ The primary target audience is individuals and organizations seeking control ove
 
 
 
-- **Tagging System:** Create and manage custom tags to categorize feeds. Features a robust bulk tagging UI to efficiently organize multiple subscriptions at once. Filter both the feed list and article stream by selected tags for organized content discovery.
+- **Tagging System:** Create and manage custom tags to categorize feeds. Features a robust bulk tagging UI to efficiently organize multiple subscriptions at once. Filter both the feed list and article stream by selected tags for organized content discovery, with unread counts displayed per tag to prioritize reading.
 
 
 

@@ -27,7 +27,7 @@ dev-frontend-mock:
 
 dev: dev-backend dev-frontend
 
-test-backend:
+test-backend: sync-assets
 	go test ./...
 
 test-frontend:
@@ -47,4 +47,8 @@ build-backend:
 build-frontend:
 	npm run build
 
-build: build-backend build-frontend
+build: build-frontend
+	go build -o dist/ ./cmd/...
+
+clean:
+	rm -rf frontend/dist dist/ cmd/feed-reader/dist/

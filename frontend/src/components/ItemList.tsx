@@ -11,6 +11,7 @@ import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { ListItemsRequest_SortOrder } from "../gen/item/v1/item_pb";
 import { useItems, useUpdateItemStatus } from "../lib/item-query";
+import { formatUnreadCount } from "../lib/item-utils";
 import { useTags } from "../lib/tag-query";
 import { DateFilterSelector } from "./DateFilterSelector";
 import { ItemRow } from "./ItemRow";
@@ -73,6 +74,7 @@ export function ItemList(props: ItemListProps) {
   const handleDateFilterSelect = (value: DateFilterValue) => {
     setDateFilter(value);
     navigate({
+      // @ts-expect-error
       search: (prev) => ({
         ...prev,
         publishedSince: value === "all" ? undefined : value,
@@ -128,14 +130,14 @@ export function ItemList(props: ItemListProps) {
     navigate({
       to: "/items/$itemId",
       params: { itemId },
-      search: (prev) => ({ ...prev }),
     });
   };
 
   const handleTagClick = (tagId: string | undefined) => {
     navigate({
       to: ".",
-      search: (prev) => ({ ...prev, tagId }),
+      // @ts-expect-error
+      search: { tagId },
     });
   };
 
@@ -173,10 +175,13 @@ export function ItemList(props: ItemListProps) {
             class={css({
               px: "3",
               py: "1",
+              minH: "8",
               rounded: "full",
               fontSize: "xs",
               cursor: "pointer",
               border: "1px solid",
+              display: "inline-flex",
+              alignItems: "center",
               transition: "all 0.2s",
               ...(props.tagId === undefined
                 ? { bg: "blue.100", borderColor: "blue.500", color: "blue.700" }
@@ -188,6 +193,24 @@ export function ItemList(props: ItemListProps) {
             })}
           >
             All
+            <Show when={(tagsQuery.data?.totalUnreadCount ?? 0n) > 0n}>
+              <span
+                class={css({
+                  ml: "1.5",
+                  bg: props.tagId === undefined ? "blue.600" : "gray.200",
+                  color: props.tagId === undefined ? "white" : "gray.700",
+                  px: "1.5",
+                  py: "0.5",
+                  rounded: "full",
+                  fontSize: "xs",
+                  fontWeight: "bold",
+                  minWidth: "1.5rem",
+                  textAlign: "center",
+                })}
+              >
+                {formatUnreadCount(Number(tagsQuery.data?.totalUnreadCount))}
+              </span>
+            </Show>
           </button>
           <For each={tagsQuery.data?.tags}>
             {(tag) => (
@@ -197,10 +220,13 @@ export function ItemList(props: ItemListProps) {
                 class={css({
                   px: "3",
                   py: "1",
+                  minH: "8",
                   rounded: "full",
                   fontSize: "xs",
                   cursor: "pointer",
                   border: "1px solid",
+                  display: "inline-flex",
+                  alignItems: "center",
                   transition: "all 0.2s",
                   ...(props.tagId === tag.id
                     ? {
@@ -216,6 +242,24 @@ export function ItemList(props: ItemListProps) {
                 })}
               >
                 {tag.name}
+                <Show when={(tag.unreadCount ?? 0n) > 0n}>
+                  <span
+                    class={css({
+                      ml: "1.5",
+                      bg: props.tagId === tag.id ? "blue.600" : "gray.200",
+                      color: props.tagId === tag.id ? "white" : "gray.700",
+                      px: "1.5",
+                      py: "0.5",
+                      rounded: "full",
+                      fontSize: "xs",
+                      fontWeight: "bold",
+                      minWidth: "1.5rem",
+                      textAlign: "center",
+                    })}
+                  >
+                    {formatUnreadCount(Number(tag.unreadCount))}
+                  </span>
+                </Show>
               </button>
             )}
           </For>

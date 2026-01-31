@@ -10,7 +10,7 @@ import {
 import { ItemService } from "../gen/item/v1/item_pb";
 import { ListItemsRequest_SortOrder } from "../gen/item/v1/item_pb";
 import { useTransport } from "./transport-context";
-import type { Timestamp } from "@bufbuild/protobuf";
+import type { Timestamp } from "@bufbuild/protobuf/wkt";
 
 import { createLiveQueryCollection } from "@tanstack/db";
 import { db } from "./db";

@@ -1,3 +1,4 @@
+import { useLiveQuery } from "@tanstack/solid-db";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
@@ -14,44 +15,42 @@ import { routeTree } from "../routeTree.gen";
 import "../styles.css";
 
 // Mock the db module
-vi.mock("../lib/db", () => ({
-  db: {
-    feeds: {
-      delete: vi.fn(),
-      isReady: vi.fn().mockReturnValue(true),
-    },
-    items: {
-      isReady: vi.fn().mockReturnValue(true),
-      preload: vi.fn(),
-    },
-    getMergedItemsQuery: vi.fn().mockReturnValue(() => []),
-    addFeed: vi.fn(),
-    updateItemStatus: vi.fn(),
-  },
-  feeds: {
+vi.mock("../lib/db", () => {
+  const mockFeeds = {
     delete: vi.fn(),
     isReady: vi.fn().mockReturnValue(true),
-  },
-  items: {
+  };
+  const mockItems = {
     isReady: vi.fn().mockReturnValue(true),
-    preload: vi.fn(),
-  },
-  getMergedItemsQuery: vi.fn().mockReturnValue(() => []),
-  addFeed: vi.fn(),
-  updateItemStatus: vi.fn(),
-}));
+  };
+  const mockAddFeed = vi.fn();
+  const mockUpdateItemStatus = vi.fn();
+  const mockGetMergedItemsQuery = vi.fn().mockReturnValue(() => []);
+
+  return {
+    feeds: mockFeeds,
+    items: mockItems,
+    addFeed: mockAddFeed,
+    updateItemStatus: mockUpdateItemStatus,
+    getMergedItemsQuery: mockGetMergedItemsQuery,
+    db: {
+      feeds: mockFeeds,
+      items: mockItems,
+      addFeed: mockAddFeed,
+      updateItemStatus: mockUpdateItemStatus,
+      getMergedItemsQuery: mockGetMergedItemsQuery,
+    },
+  };
+});
 
 // Mock useLiveQuery
-vi.mock("@tanstack/solid-db", () => ({
-  useLiveQuery: vi.fn(),
-  createCollection: vi.fn().mockReturnValue({
-    isReady: vi.fn().mockReturnValue(true),
-  }),
-  createLiveQueryCollection: vi.fn().mockReturnValue({
-    isReady: vi.fn().mockReturnValue(true),
-  }),
-  eq: vi.fn(),
-}));
+vi.mock("@tanstack/solid-db", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@tanstack/solid-db")>();
+  return {
+    ...actual,
+    useLiveQuery: vi.fn(),
+  };
+});
 
 // Mock Link from solid-router
 vi.mock("@tanstack/solid-router", async (importOriginal) => {
@@ -67,8 +66,6 @@ vi.mock("@tanstack/solid-router", async (importOriginal) => {
     ),
   };
 });
-
-import { useLiveQuery } from "@tanstack/solid-db";
 
 describe("FeedList Responsive", () => {
   let dispose: () => void;
@@ -93,7 +90,6 @@ describe("FeedList Responsive", () => {
 
   it("stacks elements vertically on narrow viewports", async () => {
     // Set a narrow viewport
-    // @ts-expect-error
     await page.viewport?.(375, 667);
 
     const mockFeeds = [
@@ -126,11 +122,18 @@ describe("FeedList Responsive", () => {
     await expect.element(totalUnread).toBeInTheDocument();
 
     // 2. Assert inner header container is now vertical (column)
+    // We find h2, then its parent (title div), then its parent (the responsive inner container)
+    // Note: title might be hidden but it's still in the DOM
     const headerTitle = page.getByText("Your Feeds");
     const headerContainer = headerTitle.element().parentElement?.parentElement;
     if (!headerContainer) throw new Error("Header container not found");
 
+    console.log("Header classes:", headerContainer.className);
     const styles = window.getComputedStyle(headerContainer);
+    console.log("Header display:", styles.display);
+    console.log("Header flex-direction:", styles.flexDirection);
+    console.log("Header align-items:", styles.alignItems);
+
     expect(styles.flexDirection).toBe("column");
     expect(styles.alignItems).toBe("stretch");
 
@@ -140,15 +143,24 @@ describe("FeedList Responsive", () => {
     if (!controlsContainer) throw new Error("Controls container not found");
     const controlsStyles = window.getComputedStyle(controlsContainer);
 
+    // We expect it to wrap or be a column
     expect(["column", "row"]).toContain(controlsStyles.flexDirection);
     if (controlsStyles.flexDirection === "row") {
       expect(controlsStyles.flexWrap).toBe("wrap");
     }
+
+    // 4. Assert that the "Manage Tags" button is NOT visible in the header on mobile
+    // First, we need to make some feeds selected to trigger the button visibility
+    // But since we are testing layout, we can just check if it's hidden if it were there,
+    // or better, actually mock the selection.
+
+    // For now, let's just assert it's not there by default,
+    // but the task says "assert that action buttons are hidden from the header on mobile".
+    // If I add selection, I can test it.
   });
 
   it("hides action buttons from the header on mobile", async () => {
     // Set a narrow viewport
-    // @ts-expect-error
     await page.viewport?.(375, 667);
 
     const mockFeeds = [
@@ -177,6 +189,7 @@ describe("FeedList Responsive", () => {
     );
 
     // Select a feed to make the "Manage Tags" button appear
+    // We'll use the first checkbox
     const checkbox = page.getByRole("checkbox").first();
     await checkbox.click();
 
@@ -191,7 +204,6 @@ describe("FeedList Responsive", () => {
 
   it("shows a floating action button on mobile when feeds are selected", async () => {
     // Set a narrow viewport
-    // @ts-expect-error
     await page.viewport?.(375, 667);
 
     const mockFeeds = [
@@ -219,22 +231,29 @@ describe("FeedList Responsive", () => {
       document.body,
     );
 
+    // Initially, FAB should not be visible (or not have the action)
+    // We'll look for a button with a fixed/absolute position
+
     // Select a feed
     const checkbox = page.getByRole("checkbox").first();
     await checkbox.click();
 
     // Now a FAB should be visible
+    // We expect a button with "Manage Tags" text or similar, but styled as a FAB
     const fab = page.getByRole("button", { name: /Manage Tags/i });
     await expect.element(fab).toBeInTheDocument();
 
-    const fabStyles = window.getComputedStyle(fab.element());
-    expect(fabStyles.position).toBe("fixed");
-    expect(fabStyles.display).not.toBe("none");
+    const fabContainer = fab.element().parentElement?.parentElement;
+    if (!fabContainer) throw new Error("FAB container not found");
+    const containerStyles = window.getComputedStyle(fabContainer);
+    expect(containerStyles.position).toBe("fixed");
+    expect(containerStyles.bottom).not.toBe("auto");
+    expect(containerStyles.right).not.toBe("auto");
+    expect(containerStyles.display).not.toBe("none");
   });
 
   it("does not show a floating action button on desktop", async () => {
     // Set a wide viewport
-    // @ts-expect-error
     await page.viewport?.(1024, 768);
 
     const mockFeeds = [
@@ -271,6 +290,7 @@ describe("FeedList Responsive", () => {
     await expect.element(manageButton).toBeInTheDocument();
 
     const styles = window.getComputedStyle(manageButton.element());
+    // On desktop, it should be part of the flow (not fixed) and visible
     expect(styles.position).not.toBe("fixed");
     expect(styles.display).toBe("block");
   });

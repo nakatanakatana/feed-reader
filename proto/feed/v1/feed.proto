@@ -100,7 +100,16 @@ message RefreshFeedsRequest {
   repeated string ids = 1;
 }
 
-message RefreshFeedsResponse {}
+message FeedFetchStatus {
+  string feed_id = 1;
+  bool success = 2;
+  int32 new_items_count = 3;
+  optional string error_message = 4;
+}
+
+message RefreshFeedsResponse {
+  repeated FeedFetchStatus results = 1;
+}
 
 message ImportOpmlRequest {
   bytes opml_content = 1;

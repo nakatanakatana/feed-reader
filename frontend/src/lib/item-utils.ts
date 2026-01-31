@@ -1,4 +1,4 @@
-import type { Timestamp } from "@bufbuild/protobuf";
+import type { Timestamp } from "@bufbuild/protobuf/wkt";
 
 export type DateFilterValue = "all" | "24h" | "7d" | "30d" | "90d" | "365d";
 
@@ -54,6 +54,13 @@ export const getPublishedSince = (
     seconds: BigInt(Math.floor(since.getTime() / 1000)),
     nanos: (since.getTime() % 1000) * 1000000,
   } as Timestamp;
+};
+
+export const formatUnreadCount = (count: number): string => {
+  if (count >= 1000) {
+    return "999+";
+  }
+  return count.toString();
 };
 
 export const formatDate = (dateString: string) => {

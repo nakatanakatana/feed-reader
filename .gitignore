@@ -1,4 +1,5 @@
-dist/
+/dist/
+/feed-reader
 *.db
 
 .wrangler
@@ -36,3 +37,4 @@ styled-system-studio
 coverage.out
 frontend/coverage/
 .agentfs/
+cmd/feed-reader/dist/

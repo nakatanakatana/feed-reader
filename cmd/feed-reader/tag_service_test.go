@@ -115,3 +115,47 @@ func TestTagServer_ListTags_Sorting(t *testing.T) {
 		assert.Equal(t, res2.Msg.Tag.Id, res.Msg.Tags[1].Id)
 	})
 }
+
+func TestTagServer_ListTags_UnreadCounts(t *testing.T) {
+	ctx := context.Background()
+	_, db := setupTestDB(t)
+	s := store.NewStore(db)
+	handler := NewTagServer(s, nil)
+
+	// Setup: 2 Tags
+	tag1, err := s.CreateTag(ctx, store.CreateTagParams{ID: "tag-1", Name: "Tech"})
+	require.NoError(t, err)
+	_, err = s.CreateTag(ctx, store.CreateTagParams{ID: "tag-2", Name: "News"})
+	require.NoError(t, err)
+
+	// Setup: Feed
+	_, err = s.CreateFeed(ctx, store.CreateFeedParams{ID: "feed-1", Url: "url-1"})
+	require.NoError(t, err)
+	err = s.CreateFeedTag(ctx, store.CreateFeedTagParams{FeedID: "feed-1", TagID: tag1.ID})
+	require.NoError(t, err)
+
+	// Item 1 - Unread
+	_, err = s.CreateItem(ctx, store.CreateItemParams{ID: "item-1", Url: "u-1"})
+	require.NoError(t, err)
+	err = s.CreateFeedItem(ctx, store.CreateFeedItemParams{FeedID: "feed-1", ItemID: "item-1"})
+	require.NoError(t, err)
+
+	// Item 2 - Unread
+	_, err = s.CreateItem(ctx, store.CreateItemParams{ID: "item-2", Url: "u-2"})
+	require.NoError(t, err)
+	err = s.CreateFeedItem(ctx, store.CreateFeedItemParams{FeedID: "feed-1", ItemID: "item-2"})
+	require.NoError(t, err)
+
+	res, err := handler.ListTags(ctx, connect.NewRequest(&tagv1.ListTagsRequest{}))
+	require.NoError(t, err)
+
+	tagMap := make(map[string]*tagv1.Tag)
+	for _, tag := range res.Msg.Tags {
+		tagMap[tag.Id] = tag
+	}
+
+	assert.Equal(t, int64(2), tagMap["tag-1"].UnreadCount)
+	assert.Equal(t, int64(0), tagMap["tag-2"].UnreadCount)
+	assert.Equal(t, int64(2), res.Msg.TotalUnreadCount)
+}
+
