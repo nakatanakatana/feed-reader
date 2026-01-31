@@ -220,9 +220,13 @@ export function FeedList() {
             flexWrap: "nowrap",
             justifyContent: "flex-start",
             overflowX: "auto",
+            width: "100%",
+            minWidth: 0,
             whiteSpace: "nowrap",
             maxWidth: "100%",
             pr: "1",
+            pb: "1",
+            WebkitOverflowScrolling: "touch",
             md: {
               justifyContent: "flex-end",
             },
