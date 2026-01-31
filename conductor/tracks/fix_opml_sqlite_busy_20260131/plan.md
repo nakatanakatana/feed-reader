@@ -21,17 +21,17 @@ This phase implements the backend logic for managing jobs and integrating with t
 - [x] Task: Implement Import Job Repository (35fd0a6)
     - [ ] Create tests for `CreateImportJob`, `UpdateImportJob`, `GetImportJob` in `store/import_job_test.go`.
     - [ ] Implement the store methods in `store/import_job.go` (or via `sqlc`).
-- [ ] Task: Refactor OPML Import Logic (Async)
-    - [ ] Create `cmd/feed-reader/opml_worker.go` (or similar) to handle background processing.
-    - [ ] Implement `StartImportJob` function that:
+- [x] Task: Refactor OPML Import Logic (Async) (fe3278f)
+    - [x] Create `cmd/feed-reader/opml_worker.go` (or similar) to handle background processing.
+    - [x] Implement `StartImportJob` function that:
         - Creates a job record in DB.
         - Parses OPML.
         - Updates `total_feeds`.
         - Iterates feeds and uses `write-queue` to create them.
         - Updates `processed_feeds` and status as it progresses.
-- [ ] Task: Update Feed Handler
-    - [ ] Update `ImportOpml` in `cmd/feed-reader/handler.go` to call `StartImportJob` and return the `job_id`.
-    - [ ] Implement `GetImportJob` in `cmd/feed-reader/handler.go`.
+- [x] Task: Update Feed Handler (fe3278f)
+    - [x] Update `ImportOpml` in `cmd/feed-reader/handler.go` to call `StartImportJob` and return the `job_id`.
+    - [x] Implement `GetImportJob` in `cmd/feed-reader/handler.go`.
 - [ ] Task: Conductor - User Manual Verification 'Import Job Service & Write Queue Integration' (Protocol in workflow.md)
 
 ## Phase 3: Testing & Cleanup
