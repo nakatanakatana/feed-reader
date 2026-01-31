@@ -1,9 +1,9 @@
 # Implementation Plan - Remove Deprecated HTML-to-Markdown Migration
 
 ## Phase 1: Preparation & Verification
-- [ ] Task: Verify current state of tests
-    - [ ] Run all tests to ensure a clean starting point (`go test ./cmd/feed-reader/...`)
-    - [ ] Confirm `MIGRATE_CONTENT_MARKDOWN` usage in `main.go` and `migrate_md.go`
+- [x] Task: Verify current state of tests
+    - [x] Run all tests to ensure a clean starting point (`go test ./cmd/feed-reader/...`)
+    - [x] Confirm `MIGRATE_CONTENT_MARKDOWN` usage in `main.go` and `migrate_md.go`
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Preparation & Verification' (Protocol in workflow.md)
 
 ## Phase 2: Remove Migration Logic
