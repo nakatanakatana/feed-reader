@@ -17,7 +17,7 @@ gen-sqlc:
 gen: gen-buf gen-sqlc
 
 dev-backend:
-	go run .
+	go run ./cmd/feed-reader
 
 dev-frontend:
 	npm run dev
@@ -41,17 +41,14 @@ lint-backend:
 lint-frontend:
 	npm run lint
 
-sync-assets:
-	mkdir -p cmd/feed-reader/dist
-	cp -r frontend/dist/* cmd/feed-reader/dist/
-
-build-backend: sync-assets
+build-backend:
 	go build -o dist/ ./cmd/...
 
 build-frontend:
 	npm run build
 
-build: build-frontend build-backend
+build: build-frontend
+	go build -o dist/ ./cmd/...
 
 clean:
 	rm -rf frontend/dist dist/ cmd/feed-reader/dist/
