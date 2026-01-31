@@ -1,0 +1,8 @@
+{
+  "track_id": "fix_opml_sqlite_busy_20260131",
+  "type": "bug",
+  "status": "new",
+  "created_at": "2026-01-31T00:00:00Z",
+  "updated_at": "2026-01-31T00:00:00Z",
+  "description": "OPMLインポート時にCreateFeedの処理でSQLite busyで失敗して登録できないことが起きます write-queueを使うなど書き込みが失敗しないように修正をおこなってください"
+}
