@@ -7,9 +7,9 @@
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Preparation & Verification' (Protocol in workflow.md)
 
 ## Phase 2: Remove Migration Logic
-- [ ] Task: Remove configuration flag from `main.go`
-    - [ ] Remove `MigrateContentMarkdown` field from configuration struct
-    - [ ] Remove usage of `cfg.MigrateContentMarkdown` in `main.go`
+- [x] Task: Remove configuration flag from `main.go`
+    - [x] Remove `MigrateContentMarkdown` field from configuration struct
+    - [x] Remove usage of `cfg.MigrateContentMarkdown` in `main.go`
 - [ ] Task: Delete migration files
     - [ ] Delete `cmd/feed-reader/migrate_md.go`
     - [ ] Delete `cmd/feed-reader/migrate_md_test.go`
