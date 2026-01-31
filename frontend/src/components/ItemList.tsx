@@ -396,8 +396,6 @@ export function ItemList(props: ItemListProps) {
         minHeight: 0,
         flex: "1",
         height: "full",
-        display: "flex",
-        flexDirection: "column",
       })}
     >
       {controls}
