@@ -26,6 +26,6 @@ This plan implements the "Fetch Now" feature, allowing users to manually trigger
     - [ ] Implement error display (icon + tooltip) when a fetch fails.
 - [x] Task: Add "Fetch Now" to Feed Context Menu [d014060]
     - [ ] Integrate the fetch action into the existing "..." menu for individual feeds.
-- [ ] Task: Implement Bulk "Fetch Selected" action
+- [x] Task: Implement Bulk "Fetch Selected" action [8797ecf]
     - [ ] Add a "Fetch Selected" button to the bulk actions toolbar.
 - [ ] Task: Conductor - User Manual Verification 'Frontend UI Implementation' (Protocol in workflow.md)
