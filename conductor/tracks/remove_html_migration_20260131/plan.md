@@ -19,6 +19,6 @@
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Remove Migration Logic' (Protocol in workflow.md)
 
 ## Phase 3: Final Cleanup & Review
-- [ ] Task: Final Codebase Scan
-    - [ ] Search for any remaining references to `MIGRATE_CONTENT_MARKDOWN` or `migrateHTMLToMarkdown`
+- [x] Task: Final Codebase Scan
+    - [x] Search for any remaining references to `MIGRATE_CONTENT_MARKDOWN` or `migrateHTMLToMarkdown`
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Final Cleanup & Review' (Protocol in workflow.md)
