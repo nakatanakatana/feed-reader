@@ -81,7 +81,6 @@ describe("FeedList Responsive", () => {
         id: "1",
         title: "Feed 1",
         url: "http://example.com/1",
-        tags: [{ id: "t1", name: "Tag 1" }],
       },
     ];
 
@@ -152,7 +151,6 @@ describe("FeedList Responsive", () => {
         id: "1",
         title: "Feed 1",
         url: "http://example.com/1",
-        tags: [{ id: "t1", name: "Tag 1" }],
       },
     ];
 
@@ -195,7 +193,6 @@ describe("FeedList Responsive", () => {
         id: "1",
         title: "Feed 1",
         url: "http://example.com/1",
-        tags: [{ id: "t1", name: "Tag 1" }],
       },
     ];
 
@@ -245,7 +242,6 @@ describe("FeedList Responsive", () => {
         id: "1",
         title: "Feed 1",
         url: "http://example.com/1",
-        tags: [{ id: "t1", name: "Tag 1" }],
       },
     ];
 

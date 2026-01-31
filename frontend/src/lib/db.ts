@@ -11,32 +11,17 @@ export type { Tag };
 export interface Feed {
   id: string;
   url: string;
-  link?: string;
   title: string;
-  description?: string;
-  lang?: string;
-  imageUrl?: string;
-  copyright?: string;
-  feedType?: string;
-  feedVersion?: string;
-  lastFetchedAt?: string;
-  createdAt: string;
-  updatedAt: string;
-  tags: Tag[];
   unreadCount?: bigint;
 }
 
 export interface Item {
   id: string;
-  url: string;
   title: string;
-  description: string;
+  description?: string;
   publishedAt: string;
-  author: string;
-  feedId: string;
   isRead: boolean;
   createdAt: string;
-  tags?: Tag[];
 }
 
 const feedClient = createClient(FeedService, transport);
@@ -90,12 +75,9 @@ export const items = createCollection(
       const response = await itemClient.listItems({});
       return response.items.map((item) => ({
         id: item.id,
-        url: item.url,
         title: item.title,
         description: item.description,
         publishedAt: item.publishedAt,
-        author: item.author,
-        feedId: item.feedId,
         isRead: item.isRead,
         createdAt: item.createdAt,
       }));

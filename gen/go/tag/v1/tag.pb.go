@@ -97,6 +97,66 @@ func (x *Tag) GetUnreadCount() int64 {
 	return 0
 }
 
+type ListTag struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	UnreadCount   int64                  `protobuf:"varint,3,opt,name=unread_count,json=unreadCount,proto3" json:"unread_count,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListTag) Reset() {
+	*x = ListTag{}
+	mi := &file_tag_v1_tag_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListTag) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListTag) ProtoMessage() {}
+
+func (x *ListTag) ProtoReflect() protoreflect.Message {
+	mi := &file_tag_v1_tag_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListTag.ProtoReflect.Descriptor instead.
+func (*ListTag) Descriptor() ([]byte, []int) {
+	return file_tag_v1_tag_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *ListTag) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *ListTag) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *ListTag) GetUnreadCount() int64 {
+	if x != nil {
+		return x.UnreadCount
+	}
+	return 0
+}
+
 type CreateTagRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -106,7 +166,7 @@ type CreateTagRequest struct {
 
 func (x *CreateTagRequest) Reset() {
 	*x = CreateTagRequest{}
-	mi := &file_tag_v1_tag_proto_msgTypes[1]
+	mi := &file_tag_v1_tag_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -118,7 +178,7 @@ func (x *CreateTagRequest) String() string {
 func (*CreateTagRequest) ProtoMessage() {}
 
 func (x *CreateTagRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tag_v1_tag_proto_msgTypes[1]
+	mi := &file_tag_v1_tag_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -131,7 +191,7 @@ func (x *CreateTagRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateTagRequest.ProtoReflect.Descriptor instead.
 func (*CreateTagRequest) Descriptor() ([]byte, []int) {
-	return file_tag_v1_tag_proto_rawDescGZIP(), []int{1}
+	return file_tag_v1_tag_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *CreateTagRequest) GetName() string {
@@ -150,7 +210,7 @@ type CreateTagResponse struct {
 
 func (x *CreateTagResponse) Reset() {
 	*x = CreateTagResponse{}
-	mi := &file_tag_v1_tag_proto_msgTypes[2]
+	mi := &file_tag_v1_tag_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -162,7 +222,7 @@ func (x *CreateTagResponse) String() string {
 func (*CreateTagResponse) ProtoMessage() {}
 
 func (x *CreateTagResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tag_v1_tag_proto_msgTypes[2]
+	mi := &file_tag_v1_tag_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -175,7 +235,7 @@ func (x *CreateTagResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateTagResponse.ProtoReflect.Descriptor instead.
 func (*CreateTagResponse) Descriptor() ([]byte, []int) {
-	return file_tag_v1_tag_proto_rawDescGZIP(), []int{2}
+	return file_tag_v1_tag_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *CreateTagResponse) GetTag() *Tag {
@@ -194,7 +254,7 @@ type ListTagsRequest struct {
 
 func (x *ListTagsRequest) Reset() {
 	*x = ListTagsRequest{}
-	mi := &file_tag_v1_tag_proto_msgTypes[3]
+	mi := &file_tag_v1_tag_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -206,7 +266,7 @@ func (x *ListTagsRequest) String() string {
 func (*ListTagsRequest) ProtoMessage() {}
 
 func (x *ListTagsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tag_v1_tag_proto_msgTypes[3]
+	mi := &file_tag_v1_tag_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -219,7 +279,7 @@ func (x *ListTagsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListTagsRequest.ProtoReflect.Descriptor instead.
 func (*ListTagsRequest) Descriptor() ([]byte, []int) {
-	return file_tag_v1_tag_proto_rawDescGZIP(), []int{3}
+	return file_tag_v1_tag_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *ListTagsRequest) GetSortDescending() bool {
@@ -231,7 +291,7 @@ func (x *ListTagsRequest) GetSortDescending() bool {
 
 type ListTagsResponse struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
-	Tags             []*Tag                 `protobuf:"bytes,1,rep,name=tags,proto3" json:"tags,omitempty"`
+	Tags             []*ListTag             `protobuf:"bytes,1,rep,name=tags,proto3" json:"tags,omitempty"`
 	TotalUnreadCount int64                  `protobuf:"varint,2,opt,name=total_unread_count,json=totalUnreadCount,proto3" json:"total_unread_count,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
@@ -239,7 +299,7 @@ type ListTagsResponse struct {
 
 func (x *ListTagsResponse) Reset() {
 	*x = ListTagsResponse{}
-	mi := &file_tag_v1_tag_proto_msgTypes[4]
+	mi := &file_tag_v1_tag_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -251,7 +311,7 @@ func (x *ListTagsResponse) String() string {
 func (*ListTagsResponse) ProtoMessage() {}
 
 func (x *ListTagsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tag_v1_tag_proto_msgTypes[4]
+	mi := &file_tag_v1_tag_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -264,10 +324,10 @@ func (x *ListTagsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListTagsResponse.ProtoReflect.Descriptor instead.
 func (*ListTagsResponse) Descriptor() ([]byte, []int) {
-	return file_tag_v1_tag_proto_rawDescGZIP(), []int{4}
+	return file_tag_v1_tag_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *ListTagsResponse) GetTags() []*Tag {
+func (x *ListTagsResponse) GetTags() []*ListTag {
 	if x != nil {
 		return x.Tags
 	}
@@ -290,7 +350,7 @@ type DeleteTagRequest struct {
 
 func (x *DeleteTagRequest) Reset() {
 	*x = DeleteTagRequest{}
-	mi := &file_tag_v1_tag_proto_msgTypes[5]
+	mi := &file_tag_v1_tag_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -302,7 +362,7 @@ func (x *DeleteTagRequest) String() string {
 func (*DeleteTagRequest) ProtoMessage() {}
 
 func (x *DeleteTagRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_tag_v1_tag_proto_msgTypes[5]
+	mi := &file_tag_v1_tag_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -315,7 +375,7 @@ func (x *DeleteTagRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteTagRequest.ProtoReflect.Descriptor instead.
 func (*DeleteTagRequest) Descriptor() ([]byte, []int) {
-	return file_tag_v1_tag_proto_rawDescGZIP(), []int{5}
+	return file_tag_v1_tag_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *DeleteTagRequest) GetId() string {
@@ -333,7 +393,7 @@ type DeleteTagResponse struct {
 
 func (x *DeleteTagResponse) Reset() {
 	*x = DeleteTagResponse{}
-	mi := &file_tag_v1_tag_proto_msgTypes[6]
+	mi := &file_tag_v1_tag_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -345,7 +405,7 @@ func (x *DeleteTagResponse) String() string {
 func (*DeleteTagResponse) ProtoMessage() {}
 
 func (x *DeleteTagResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_tag_v1_tag_proto_msgTypes[6]
+	mi := &file_tag_v1_tag_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -358,7 +418,7 @@ func (x *DeleteTagResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteTagResponse.ProtoReflect.Descriptor instead.
 func (*DeleteTagResponse) Descriptor() ([]byte, []int) {
-	return file_tag_v1_tag_proto_rawDescGZIP(), []int{6}
+	return file_tag_v1_tag_proto_rawDescGZIP(), []int{7}
 }
 
 var File_tag_v1_tag_proto protoreflect.FileDescriptor
@@ -373,16 +433,20 @@ const file_tag_v1_tag_proto_rawDesc = "" +
 	"created_at\x18\x03 \x01(\tR\tcreatedAt\x12\x1d\n" +
 	"\n" +
 	"updated_at\x18\x04 \x01(\tR\tupdatedAt\x12!\n" +
-	"\funread_count\x18\x05 \x01(\x03R\vunreadCount\"&\n" +
+	"\funread_count\x18\x05 \x01(\x03R\vunreadCount\"P\n" +
+	"\aListTag\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12!\n" +
+	"\funread_count\x18\x03 \x01(\x03R\vunreadCount\"&\n" +
 	"\x10CreateTagRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\"2\n" +
 	"\x11CreateTagResponse\x12\x1d\n" +
 	"\x03tag\x18\x01 \x01(\v2\v.tag.v1.TagR\x03tag\"S\n" +
 	"\x0fListTagsRequest\x12,\n" +
 	"\x0fsort_descending\x18\x01 \x01(\bH\x00R\x0esortDescending\x88\x01\x01B\x12\n" +
-	"\x10_sort_descending\"a\n" +
-	"\x10ListTagsResponse\x12\x1f\n" +
-	"\x04tags\x18\x01 \x03(\v2\v.tag.v1.TagR\x04tags\x12,\n" +
+	"\x10_sort_descending\"e\n" +
+	"\x10ListTagsResponse\x12#\n" +
+	"\x04tags\x18\x01 \x03(\v2\x0f.tag.v1.ListTagR\x04tags\x12,\n" +
 	"\x12total_unread_count\x18\x02 \x01(\x03R\x10totalUnreadCount\"\"\n" +
 	"\x10DeleteTagRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"\x13\n" +
@@ -405,25 +469,26 @@ func file_tag_v1_tag_proto_rawDescGZIP() []byte {
 	return file_tag_v1_tag_proto_rawDescData
 }
 
-var file_tag_v1_tag_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_tag_v1_tag_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_tag_v1_tag_proto_goTypes = []any{
 	(*Tag)(nil),               // 0: tag.v1.Tag
-	(*CreateTagRequest)(nil),  // 1: tag.v1.CreateTagRequest
-	(*CreateTagResponse)(nil), // 2: tag.v1.CreateTagResponse
-	(*ListTagsRequest)(nil),   // 3: tag.v1.ListTagsRequest
-	(*ListTagsResponse)(nil),  // 4: tag.v1.ListTagsResponse
-	(*DeleteTagRequest)(nil),  // 5: tag.v1.DeleteTagRequest
-	(*DeleteTagResponse)(nil), // 6: tag.v1.DeleteTagResponse
+	(*ListTag)(nil),           // 1: tag.v1.ListTag
+	(*CreateTagRequest)(nil),  // 2: tag.v1.CreateTagRequest
+	(*CreateTagResponse)(nil), // 3: tag.v1.CreateTagResponse
+	(*ListTagsRequest)(nil),   // 4: tag.v1.ListTagsRequest
+	(*ListTagsResponse)(nil),  // 5: tag.v1.ListTagsResponse
+	(*DeleteTagRequest)(nil),  // 6: tag.v1.DeleteTagRequest
+	(*DeleteTagResponse)(nil), // 7: tag.v1.DeleteTagResponse
 }
 var file_tag_v1_tag_proto_depIdxs = []int32{
 	0, // 0: tag.v1.CreateTagResponse.tag:type_name -> tag.v1.Tag
-	0, // 1: tag.v1.ListTagsResponse.tags:type_name -> tag.v1.Tag
-	1, // 2: tag.v1.TagService.CreateTag:input_type -> tag.v1.CreateTagRequest
-	3, // 3: tag.v1.TagService.ListTags:input_type -> tag.v1.ListTagsRequest
-	5, // 4: tag.v1.TagService.DeleteTag:input_type -> tag.v1.DeleteTagRequest
-	2, // 5: tag.v1.TagService.CreateTag:output_type -> tag.v1.CreateTagResponse
-	4, // 6: tag.v1.TagService.ListTags:output_type -> tag.v1.ListTagsResponse
-	6, // 7: tag.v1.TagService.DeleteTag:output_type -> tag.v1.DeleteTagResponse
+	1, // 1: tag.v1.ListTagsResponse.tags:type_name -> tag.v1.ListTag
+	2, // 2: tag.v1.TagService.CreateTag:input_type -> tag.v1.CreateTagRequest
+	4, // 3: tag.v1.TagService.ListTags:input_type -> tag.v1.ListTagsRequest
+	6, // 4: tag.v1.TagService.DeleteTag:input_type -> tag.v1.DeleteTagRequest
+	3, // 5: tag.v1.TagService.CreateTag:output_type -> tag.v1.CreateTagResponse
+	5, // 6: tag.v1.TagService.ListTags:output_type -> tag.v1.ListTagsResponse
+	7, // 7: tag.v1.TagService.DeleteTag:output_type -> tag.v1.DeleteTagResponse
 	5, // [5:8] is the sub-list for method output_type
 	2, // [2:5] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name
@@ -436,14 +501,14 @@ func file_tag_v1_tag_proto_init() {
 	if File_tag_v1_tag_proto != nil {
 		return
 	}
-	file_tag_v1_tag_proto_msgTypes[3].OneofWrappers = []any{}
+	file_tag_v1_tag_proto_msgTypes[4].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_tag_v1_tag_proto_rawDesc), len(file_tag_v1_tag_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   7,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

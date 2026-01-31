@@ -4,12 +4,10 @@ export type DateFilterValue = "all" | "24h" | "7d" | "30d" | "90d" | "365d";
 
 export interface Item {
   id: string;
-  url: string;
   title: string;
   description: string;
   publishedAt: string;
   createdAt: string;
-  feedId: string;
   isRead: boolean;
 }
 
@@ -20,7 +18,6 @@ export enum SortOrder {
 }
 
 export interface ItemFilters {
-  feedId?: string;
   isRead?: boolean;
   sortOrder?: SortOrder;
 }
@@ -94,9 +91,6 @@ export const filterAndSortItems = (
 ): Item[] => {
   let result = [...items];
 
-  if (filters.feedId) {
-    result = result.filter((item) => item.feedId === filters.feedId);
-  }
   if (filters.isRead !== undefined) {
     result = result.filter((item) => item.isRead === filters.isRead);
   }

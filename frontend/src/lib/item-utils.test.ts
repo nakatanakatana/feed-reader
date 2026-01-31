@@ -94,7 +94,6 @@ describe("item-utils", () => {
 describe("item-utils PBT", () => {
   const itemArbitrary = fc.record({
     id: fc.uuid(),
-    url: fc.webUrl(),
     title: fc.string(),
     description: fc.string(),
     publishedAt: fc
@@ -111,12 +110,10 @@ describe("item-utils PBT", () => {
         noInvalidDate: true,
       })
       .map((d) => d.toISOString()),
-    feedId: fc.uuid(),
     isRead: fc.boolean(),
   });
 
   const filtersArbitrary = fc.record({
-    feedId: fc.option(fc.uuid(), { nil: undefined }),
     isRead: fc.option(fc.boolean(), { nil: undefined }),
     sortOrder: fc.constantFrom(
       SortOrder.UNSPECIFIED,
@@ -139,11 +136,6 @@ describe("item-utils PBT", () => {
           ).toBe(true);
 
           // 2. Result should not contain items that don't match the filters
-          if (filters.feedId) {
-            expect(result.every((item) => item.feedId === filters.feedId)).toBe(
-              true,
-            );
-          }
           if (filters.isRead !== undefined) {
             expect(result.every((item) => item.isRead === filters.isRead)).toBe(
               true,

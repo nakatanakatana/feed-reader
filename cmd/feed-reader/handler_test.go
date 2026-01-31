@@ -350,40 +350,13 @@ func TestFeedServer_ListFeeds_UnreadCounts(t *testing.T) {
 	require.Len(t, res.Msg.Feeds, 2)
 
 	// Check counts
-	feedsMap := make(map[string]*feedv1.Feed)
+	feedsMap := make(map[string]int64)
 	for _, f := range res.Msg.Feeds {
-		feedsMap[f.Id] = f
+		feedsMap[f.Id] = f.UnreadCount
 	}
 
-	assert.Equal(t, int64(1), feedsMap[f1.ID].UnreadCount, "Feed 1 should have 1 unread")
-	assert.Equal(t, int64(1), feedsMap[f2.ID].UnreadCount, "Feed 2 should have 1 unread")
-}
-
-func TestFeedServer_ListFeeds_LastFetchedAt(t *testing.T) {
-	ctx := context.Background()
-	_, db := setupTestDB(t)
-	s := store.NewStore(db)
-	server, _ := setupServer(t, db, nil, &mockFetcher{}, &mockItemFetcher{})
-
-	lastFetched := "2026-01-28T15:30:00Z"
-	_, err := s.CreateFeed(ctx, store.CreateFeedParams{
-		ID:    "f1",
-		Url:   "u1",
-		Title: proto.String("Feed 1"),
-	})
-	require.NoError(t, err)
-
-	_, err = s.UpdateFeed(ctx, store.UpdateFeedParams{
-		ID:            "f1",
-		LastFetchedAt: &lastFetched,
-	})
-	require.NoError(t, err)
-
-	res, err := server.ListFeeds(ctx, connect.NewRequest(&feedv1.ListFeedsRequest{}))
-	require.NoError(t, err)
-	require.Len(t, res.Msg.Feeds, 1)
-
-	assert.Equal(t, &lastFetched, res.Msg.Feeds[0].LastFetchedAt)
+	assert.Equal(t, int64(1), feedsMap[f1.ID], "Feed 1 should have 1 unread")
+	assert.Equal(t, int64(1), feedsMap[f2.ID], "Feed 2 should have 1 unread")
 }
 
 func TestFeedServer_UpdateFeed(t *testing.T) {
@@ -631,7 +604,7 @@ func TestFeedServer_ImportOpml(t *testing.T) {
 
 	t.Run("Import large OPML", func(t *testing.T) {
 		_, db := setupTestDB(t)
-		
+
 		// 50 feeds
 		var sb strings.Builder
 		sb.WriteString(`<?xml version="1.0" encoding="UTF-8"?><opml version="1.0"><body>`)
@@ -656,7 +629,7 @@ func TestFeedServer_ImportOpml(t *testing.T) {
 		}
 
 		jobID := res.Msg.JobId
-		
+
 		// Poll for completion
 		var lastJob *feedv1.ImportJob
 		require.Eventually(t, func() bool {

@@ -149,13 +149,12 @@ func TestTagServer_ListTags_UnreadCounts(t *testing.T) {
 	res, err := handler.ListTags(ctx, connect.NewRequest(&tagv1.ListTagsRequest{}))
 	require.NoError(t, err)
 
-	tagMap := make(map[string]*tagv1.Tag)
+	tagMap := make(map[string]int64)
 	for _, tag := range res.Msg.Tags {
-		tagMap[tag.Id] = tag
+		tagMap[tag.Id] = tag.UnreadCount
 	}
 
-	assert.Equal(t, int64(2), tagMap["tag-1"].UnreadCount)
-	assert.Equal(t, int64(0), tagMap["tag-2"].UnreadCount)
+	assert.Equal(t, int64(2), tagMap["tag-1"])
+	assert.Equal(t, int64(0), tagMap["tag-2"])
 	assert.Equal(t, int64(2), res.Msg.TotalUnreadCount)
 }
-

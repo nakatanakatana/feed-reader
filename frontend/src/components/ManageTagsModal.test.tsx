@@ -1,11 +1,14 @@
-import { createRouterTransport } from "@connectrpc/connect";
 import { create } from "@bufbuild/protobuf";
+import { createRouterTransport } from "@connectrpc/connect";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { TagService } from "../gen/tag/v1/tag_pb";
-import { ListTagsResponseSchema, TagSchema } from "../gen/tag/v1/tag_pb";
+import {
+  ListTagSchema,
+  ListTagsResponseSchema,
+  TagService,
+} from "../gen/tag/v1/tag_pb";
 import { queryClient } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { ManageTagsModal } from "./ManageTagsModal";
@@ -26,8 +29,8 @@ describe("ManageTagsModal", () => {
         async listTags() {
           return create(ListTagsResponseSchema, {
             tags: [
-              create(TagSchema, { id: "t1", name: "Tech" }),
-              create(TagSchema, { id: "t2", name: "News" }),
+              create(ListTagSchema, { id: "t1", name: "Tech" }),
+              create(ListTagSchema, { id: "t2", name: "News" }),
             ],
           });
         },

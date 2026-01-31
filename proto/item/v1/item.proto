@@ -27,6 +27,15 @@ message Item {
   string created_at = 13;
 }
 
+message ListItem {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  string published_at = 4;
+  string created_at = 5;
+  bool is_read = 6;
+}
+
 message GetItemRequest {
   string id = 1;
 }
@@ -53,7 +62,7 @@ message ListItemsRequest {
 }
 
 message ListItemsResponse {
-  repeated Item items = 1;
+  repeated ListItem items = 1;
   int32 total_count = 2;
 }
 

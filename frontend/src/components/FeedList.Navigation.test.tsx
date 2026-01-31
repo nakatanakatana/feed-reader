@@ -94,8 +94,6 @@ describe("FeedList Navigation", () => {
         id: "1",
         title: "Feed 1",
         url: "url1",
-        link: "http://external.site",
-        tags: [],
       },
     ];
 
@@ -124,13 +122,10 @@ describe("FeedList Navigation", () => {
     // biome-ignore lint/suspicious/noExplicitAny: Vitest browser element type handling
     const titleLink = page.getByText("Feed 1") as any;
     await expect.element(titleLink).toBeInTheDocument();
-    expect(titleLink.element().getAttribute("href")).toBe(
-      "http://external.site",
-    );
-    expect(titleLink.element().getAttribute("target")).toBe("_blank");
+    expect(titleLink.element().getAttribute("href")).toBe("url1");
 
     // 2. Internal detail link icon should NOT exist
-    const detailLink = page.getByRole("link", { name: /view items/i });
-    await expect.element(detailLink).not.toBeInTheDocument();
+    const detailLinks = page.getByRole("link", { name: /view items/i });
+    await expect.element(detailLinks).not.toBeInTheDocument();
   });
 });

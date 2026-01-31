@@ -39,6 +39,13 @@ message Feed {
   int64 unread_count = 15;
 }
 
+message ListFeed {
+  string id = 1;
+  string url = 2;
+  string title = 3;
+  int64 unread_count = 4;
+}
+
 message GetFeedRequest {
   string id = 1;
 }
@@ -53,7 +60,7 @@ message ListFeedsRequest {
 }
 
 message ListFeedsResponse {
-  repeated Feed feeds = 1;
+  repeated ListFeed feeds = 1;
 }
 
 message CreateFeedRequest {

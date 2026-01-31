@@ -75,7 +75,7 @@ func (s *ItemServer) ListItems(ctx context.Context, req *connect.Request[itemv1.
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	protoItems := []*itemv1.Item{}
+	protoItems := []*itemv1.ListItem{}
 
 	if req.Msg.SortOrder == itemv1.ListItemsRequest_SORT_ORDER_ASC {
 		rows, err := s.store.ListItemsAsc(ctx, store.ListItemsAscParams{
@@ -90,7 +90,7 @@ func (s *ItemServer) ListItems(ctx context.Context, req *connect.Request[itemv1.
 			return nil, connect.NewError(connect.CodeInternal, err)
 		}
 		for _, row := range rows {
-			protoItems = append(protoItems, toProtoItem(GetItemRowFromListItemsAscRow(row)))
+			protoItems = append(protoItems, toProtoListItem(GetItemRowFromListItemsAscRow(row)))
 		}
 	} else {
 		rows, err := s.store.ListItems(ctx, store.ListItemsParams{
@@ -105,7 +105,7 @@ func (s *ItemServer) ListItems(ctx context.Context, req *connect.Request[itemv1.
 			return nil, connect.NewError(connect.CodeInternal, err)
 		}
 		for _, row := range rows {
-			protoItems = append(protoItems, toProtoItem(GetItemRowFromListItemsRow(row)))
+			protoItems = append(protoItems, toProtoListItem(GetItemRowFromListItemsRow(row)))
 		}
 	}
 
@@ -196,5 +196,29 @@ func toProtoItem(row store.GetItemRow) *itemv1.Item {
 		ImageUrl:    img,
 		Categories:  cats,
 		CreatedAt:   row.CreatedAt,
+	}
+}
+
+func toProtoListItem(row store.GetItemRow) *itemv1.ListItem {
+	var title string
+	if row.Title != nil {
+		title = *row.Title
+	}
+	var desc string
+	if row.Description != nil {
+		desc = *row.Description
+	}
+	var pubAt string
+	if row.PublishedAt != nil {
+		pubAt = *row.PublishedAt
+	}
+
+	return &itemv1.ListItem{
+		Id:          row.ID,
+		Title:       title,
+		Description: desc,
+		PublishedAt: pubAt,
+		CreatedAt:   row.CreatedAt,
+		IsRead:      row.IsRead == 1,
 	}
 }

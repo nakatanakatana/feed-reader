@@ -104,6 +104,7 @@ func TestItemServer(t *testing.T) {
 		require.NoError(t, err)
 		assert.Len(t, res.Msg.Items, 3)
 		for _, item := range res.Msg.Items {
+			assert.NotEmpty(t, item.Title)
 			assert.NotEmpty(t, item.CreatedAt)
 		}
 	})
