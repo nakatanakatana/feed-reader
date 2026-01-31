@@ -14,7 +14,7 @@ This plan implements the "Fetch Now" feature, allowing users to manually trigger
 - [x] Task: Conductor - User Manual Verification 'Backend API Enhancement' (Protocol in workflow.md) [4d56108]
 
 ## Phase 2: Frontend Data Layer
-- [ ] Task: Update TanStack Query mutation for `RefreshFeeds`
+- [x] Task: Update TanStack Query mutation for `RefreshFeeds` [42c4986]
     - [ ] Ensure the mutation handles the new response format and updates the cache (e.g., invalidating feed queries) upon completion.
 - [ ] Task: Implement fetching state management
     - [ ] Add a mechanism (e.g., a simple reactive set of IDs) to track which feeds are currently being fetched across the application.
