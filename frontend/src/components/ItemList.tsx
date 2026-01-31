@@ -84,14 +84,14 @@ export function ItemList(props: ItemListProps) {
     navigate({
       to: "/items/$itemId",
       params: { itemId },
-      search: (prev) => ({ ...prev }),
     });
   };
 
   const handleTagClick = (tagId: string | undefined) => {
     navigate({
       to: ".",
-      search: (prev) => ({ ...prev, tagId }),
+      // @ts-expect-error
+      search: { tagId },
     });
   };
 
