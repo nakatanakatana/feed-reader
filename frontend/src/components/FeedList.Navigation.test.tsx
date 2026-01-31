@@ -94,6 +94,7 @@ describe("FeedList Navigation", () => {
         id: "1",
         title: "Feed 1",
         url: "url1",
+        link: "link1",
       },
     ];
 
@@ -122,7 +123,7 @@ describe("FeedList Navigation", () => {
     // biome-ignore lint/suspicious/noExplicitAny: Vitest browser element type handling
     const titleLink = page.getByText("Feed 1") as any;
     await expect.element(titleLink).toBeInTheDocument();
-    expect(titleLink.element().getAttribute("href")).toBe("url1");
+    expect(titleLink.element().getAttribute("href")).toBe("link1");
 
     // 2. Internal detail link icon should NOT exist
     const detailLinks = page.getByRole("link", { name: /view items/i });

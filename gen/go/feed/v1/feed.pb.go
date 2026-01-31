@@ -239,6 +239,8 @@ type ListFeed struct {
 	Url           string                 `protobuf:"bytes,2,opt,name=url,proto3" json:"url,omitempty"`
 	Title         string                 `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
 	UnreadCount   int64                  `protobuf:"varint,4,opt,name=unread_count,json=unreadCount,proto3" json:"unread_count,omitempty"`
+	Link          *string                `protobuf:"bytes,5,opt,name=link,proto3,oneof" json:"link,omitempty"`
+	LastFetchedAt *string                `protobuf:"bytes,6,opt,name=last_fetched_at,json=lastFetchedAt,proto3,oneof" json:"last_fetched_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -299,6 +301,20 @@ func (x *ListFeed) GetUnreadCount() int64 {
 		return x.UnreadCount
 	}
 	return 0
+}
+
+func (x *ListFeed) GetLink() string {
+	if x != nil && x.Link != nil {
+		return *x.Link
+	}
+	return ""
+}
+
+func (x *ListFeed) GetLastFetchedAt() string {
+	if x != nil && x.LastFetchedAt != nil {
+		return *x.LastFetchedAt
+	}
+	return ""
 }
 
 type GetFeedRequest struct {
@@ -1559,12 +1575,16 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"\n" +
 	"_feed_typeB\x0f\n" +
 	"\r_feed_versionB\x12\n" +
-	"\x10_last_fetched_at\"e\n" +
+	"\x10_last_fetched_at\"\xc8\x01\n" +
 	"\bListFeed\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x10\n" +
 	"\x03url\x18\x02 \x01(\tR\x03url\x12\x14\n" +
 	"\x05title\x18\x03 \x01(\tR\x05title\x12!\n" +
-	"\funread_count\x18\x04 \x01(\x03R\vunreadCount\" \n" +
+	"\funread_count\x18\x04 \x01(\x03R\vunreadCount\x12\x17\n" +
+	"\x04link\x18\x05 \x01(\tH\x00R\x04link\x88\x01\x01\x12+\n" +
+	"\x0flast_fetched_at\x18\x06 \x01(\tH\x01R\rlastFetchedAt\x88\x01\x01B\a\n" +
+	"\x05_linkB\x12\n" +
+	"\x10_last_fetched_at\" \n" +
 	"\x0eGetFeedRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"4\n" +
 	"\x0fGetFeedResponse\x12!\n" +
@@ -1777,6 +1797,7 @@ func file_feed_v1_feed_proto_init() {
 		return
 	}
 	file_feed_v1_feed_proto_msgTypes[0].OneofWrappers = []any{}
+	file_feed_v1_feed_proto_msgTypes[1].OneofWrappers = []any{}
 	file_feed_v1_feed_proto_msgTypes[4].OneofWrappers = []any{}
 	file_feed_v1_feed_proto_msgTypes[6].OneofWrappers = []any{}
 	file_feed_v1_feed_proto_msgTypes[8].OneofWrappers = []any{}

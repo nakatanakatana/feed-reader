@@ -11,8 +11,10 @@ export type { Tag };
 export interface Feed {
   id: string;
   url: string;
+  link?: string;
   title: string;
   unreadCount?: bigint;
+  lastFetchedAt?: string;
 }
 
 export interface Item {

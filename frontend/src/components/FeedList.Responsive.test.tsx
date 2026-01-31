@@ -120,17 +120,15 @@ describe("FeedList Responsive", () => {
     expect(styles.flexDirection).toBe("column");
     expect(styles.alignItems).toBe("stretch");
 
-    // 3. Assert Filter/Sort controls are wrapped or stacked
+    // 3. Assert Filter/Sort controls are horizontal on mobile
     const sortLabel = page.getByText("Sort by:");
     const controlsContainer = sortLabel.element().parentElement;
     if (!controlsContainer) throw new Error("Controls container not found");
     const controlsStyles = window.getComputedStyle(controlsContainer);
 
-    // We expect it to wrap or be a column
-    expect(["column", "row"]).toContain(controlsStyles.flexDirection);
-    if (controlsStyles.flexDirection === "row") {
-      expect(controlsStyles.flexWrap).toBe("wrap");
-    }
+    expect(controlsStyles.flexDirection).toBe("row");
+    expect(controlsStyles.flexWrap).toBe("nowrap");
+    expect(controlsStyles.overflowX).toBe("auto");
 
     // 4. Assert that the "Manage Tags" button is NOT visible in the header on mobile
     // First, we need to make some feeds selected to trigger the button visibility

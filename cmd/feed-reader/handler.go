@@ -89,10 +89,12 @@ func (s *FeedServer) ListFeeds(ctx context.Context, req *connect.Request[feedv1.
 			title = *f.Title
 		}
 		protoFeeds[i] = &feedv1.ListFeed{
-			Id:          f.ID,
-			Url:         f.Url,
-			Title:       title,
-			UnreadCount: countsMap[f.ID],
+			Id:            f.ID,
+			Url:           f.Url,
+			Title:         title,
+			UnreadCount:   countsMap[f.ID],
+			Link:          f.Link,
+			LastFetchedAt: f.LastFetchedAt,
 		}
 	}
 

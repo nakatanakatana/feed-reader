@@ -5,7 +5,7 @@ import { flex, stack } from "../../styled-system/patterns";
 import { type Feed, feeds } from "../lib/db";
 import { useRefreshFeeds } from "../lib/feed-query";
 import { fetchingState } from "../lib/fetching-state";
-import { formatUnreadCount } from "../lib/item-utils";
+import { formatDate, formatUnreadCount } from "../lib/item-utils";
 import { useTags } from "../lib/tag-query";
 import { ManageTagsModal } from "./ManageTagsModal";
 
@@ -76,11 +76,18 @@ export function FeedList() {
     }
   };
 
-  // Loading state approximation
-  const isLoading = () => !feeds.isReady();
+  const isLoading = () => feedList === undefined;
 
   return (
-    <div class={stack({ gap: "4" })}>
+    <div
+      class={css({
+        display: "flex",
+        flexDirection: "column",
+        gap: "4",
+        height: "100%",
+        minHeight: 0,
+      })}
+    >
       <div
         class={css({
           display: "flex",
@@ -88,6 +95,11 @@ export function FeedList() {
           alignItems: "stretch",
           flexDirection: "column",
           gap: "4",
+          position: "sticky",
+          top: 0,
+          zIndex: 2,
+          backgroundColor: "white",
+          paddingBottom: "3",
           md: {
             alignItems: "center",
             flexDirection: "row",
@@ -185,8 +197,12 @@ export function FeedList() {
             display: "flex",
             gap: "2",
             alignItems: "center",
-            flexWrap: "wrap",
+            flexWrap: "nowrap",
             justifyContent: "flex-start",
+            overflowX: "auto",
+            whiteSpace: "nowrap",
+            maxWidth: "100%",
+            pr: "1",
             md: {
               justifyContent: "flex-end",
             },
@@ -314,183 +330,214 @@ export function FeedList() {
         </div>
       </div>
 
-      <Show when={isLoading()}>
-        <p>Loading...</p>
-      </Show>
-      <Show when={deleteError()}>
-        <p class={css({ color: "red.500" })}>
-          Delete Error: {deleteError()?.message}
-        </p>
-      </Show>
-      <ul class={stack({ gap: "2" })}>
-        <For each={sortedFeeds()}>
-          {(feed: Feed) => (
-            <li
-              onClick={() => toggleFeedSelection(feed.id)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  toggleFeedSelection(feed.id);
-                }
-              }}
-              class={flex({
-                justifyContent: "space-between",
-                alignItems: "center",
-                padding: "3",
-                border: "1px solid",
-                borderColor: "gray.100",
-                borderRadius: "md",
-                gap: "3",
-                cursor: "pointer",
-                _hover: { backgroundColor: "gray.50" },
-              })}
-            >
-              <div class={flex({ gap: "3", alignItems: "center", flex: 1 })}>
-                <input
-                  type="checkbox"
-                  checked={selectedFeedIds().includes(feed.id)}
-                  onChange={(e) => {
-                    e.stopPropagation();
-                    toggleFeedSelection(feed.id);
+      <div
+        class={css({
+          display: "flex",
+          flexDirection: "column",
+          gap: "2",
+          flex: "1",
+          minHeight: 0,
+        })}
+      >
+        <Show when={isLoading()}>
+          <p>Loading...</p>
+        </Show>
+        <Show when={deleteError()}>
+          <p class={css({ color: "red.500" })}>
+            Delete Error: {deleteError()?.message}
+          </p>
+        </Show>
+        <div
+          class={css({
+            flex: "1",
+            minHeight: 0,
+            overflowY: "auto",
+            pr: "1",
+          })}
+        >
+          <ul class={stack({ gap: "2" })}>
+            <For each={sortedFeeds()}>
+              {(feed: Feed) => (
+                <li
+                  onClick={() => toggleFeedSelection(feed.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      toggleFeedSelection(feed.id);
+                    }
                   }}
-                  onClick={(e) => e.stopPropagation()}
-                  class={css({ cursor: "pointer" })}
-                />
-                <div class={stack({ gap: "1" })}>
-                  <div class={flex({ gap: "2", alignItems: "center" })}>
-                    <a
-                      href={feed.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                  class={flex({
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    padding: "3",
+                    border: "1px solid",
+                    borderColor: "gray.100",
+                    borderRadius: "md",
+                    gap: "3",
+                    cursor: "pointer",
+                    _hover: { backgroundColor: "gray.50" },
+                  })}
+                >
+                  <div
+                    class={flex({ gap: "3", alignItems: "center", flex: 1 })}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={selectedFeedIds().includes(feed.id)}
+                      onChange={(e) => {
+                        e.stopPropagation();
+                        toggleFeedSelection(feed.id);
+                      }}
                       onClick={(e) => e.stopPropagation()}
+                      class={css({ cursor: "pointer" })}
+                    />
+                    <div class={stack({ gap: "1" })}>
+                      <div class={flex({ gap: "2", alignItems: "center" })}>
+                        <a
+                          href={feed.link || feed.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          class={css({
+                            fontWeight: "medium",
+                            _hover: {
+                              textDecoration: "underline",
+                              color: "blue.600",
+                            },
+                          })}
+                        >
+                          {feed.title || "Untitled Feed"}
+                        </a>
+                        <div class={flex({ gap: "2", alignItems: "center" })}>
+                          <Show when={fetchingState.isFetching(feed.id)}>
+                            <div
+                              class={css({
+                                width: "4",
+                                height: "4",
+                                border: "2px solid",
+                                borderColor: "blue.200",
+                                borderTopColor: "blue.600",
+                                borderRadius: "full",
+                                animation: "spin 1s linear infinite",
+                              })}
+                              title="Fetching..."
+                            />
+                          </Show>
+                          <Show when={fetchingState.error(feed.id)}>
+                            <div
+                              class={css({
+                                color: "red.500",
+                                cursor: "help",
+                                display: "flex",
+                                alignItems: "center",
+                              })}
+                              title={fetchingState.error(feed.id)}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                              >
+                                <title>Error fetching feed</title>
+                                <circle cx="12" cy="12" r="10" />
+                                <line x1="12" y1="8" x2="12" y2="12" />
+                                <line x1="12" y1="16" x2="12.01" y2="16" />
+                              </svg>
+                            </div>
+                          </Show>
+                        </div>
+                      </div>
+                      <span class={css({ fontSize: "xs", color: "gray.500" })}>
+                        {feed.url}
+                      </span>
+                      <span class={css({ fontSize: "xs", color: "gray.500" })}>
+                        Last fetched:{" "}
+                        {feed.lastFetchedAt
+                          ? formatDate(feed.lastFetchedAt)
+                          : "Not fetched yet"}
+                      </span>
+                    </div>
+                  </div>
+                  <div class={flex({ gap: "2", alignItems: "center" })}>
+                    <Show when={Number(feed.unreadCount || 0) > 0}>
+                      <span
+                        class={css({
+                          bg: "blue.100",
+                          color: "blue.700",
+                          px: "2",
+                          py: "0.5",
+                          rounded: "full",
+                          fontSize: "xs",
+                          fontWeight: "bold",
+                        })}
+                      >
+                        {feed.unreadCount?.toString()}
+                      </span>
+                    </Show>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        refreshMutation.mutate({ ids: [feed.id] });
+                      }}
+                      disabled={fetchingState.isFetching(feed.id)}
                       class={css({
-                        fontWeight: "medium",
+                        color: "blue.600",
+                        padding: "1",
+                        paddingInline: "2",
+                        borderRadius: "md",
+                        fontSize: "sm",
+                        cursor: "pointer",
                         _hover: {
+                          backgroundColor: "blue.50",
                           textDecoration: "underline",
-                          color: "blue.600",
+                        },
+                        _disabled: {
+                          color: "gray.400",
+                          cursor: "not-allowed",
+                          textDecoration: "none",
                         },
                       })}
                     >
-                      {feed.title || "Untitled Feed"}
-                    </a>
-                    <Show when={fetchingState.isFetching(feed.id)}>
-                      <div
-                        class={css({
-                          width: "4",
-                          height: "4",
-                          border: "2px solid",
-                          borderColor: "blue.200",
-                          borderTopColor: "blue.600",
-                          borderRadius: "full",
-                          animation: "spin 1s linear infinite",
-                        })}
-                        title="Fetching..."
-                      />
-                    </Show>
-                    <Show when={fetchingState.error(feed.id)}>
-                      <div
-                        class={css({
-                          color: "red.500",
-                          cursor: "help",
-                          display: "flex",
-                          alignItems: "center",
-                        })}
-                        title={fetchingState.error(feed.id)}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        >
-                          <title>Error fetching feed</title>
-                          <circle cx="12" cy="12" r="10" />
-                          <line x1="12" y1="8" x2="12" y2="12" />
-                          <line x1="12" y1="16" x2="12.01" y2="16" />
-                        </svg>
-                      </div>
-                    </Show>
+                      {fetchingState.isFetching(feed.id)
+                        ? "Fetching..."
+                        : "Fetch"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(feed.id);
+                      }}
+                      class={css({
+                        color: "red.500",
+                        padding: "1",
+                        paddingInline: "2",
+                        borderRadius: "md",
+                        fontSize: "sm",
+                        cursor: "pointer",
+                        _hover: {
+                          backgroundColor: "red.50",
+                          textDecoration: "underline",
+                        },
+                        _disabled: { color: "gray.400", cursor: "not-allowed" },
+                      })}
+                    >
+                      Delete
+                    </button>
                   </div>
-                  <span class={css({ fontSize: "xs", color: "gray.500" })}>
-                    {feed.url}
-                  </span>
-                </div>
-              </div>
-              <div class={flex({ gap: "2", alignItems: "center" })}>
-                <Show when={Number(feed.unreadCount || 0) > 0}>
-                  <span
-                    class={css({
-                      bg: "blue.100",
-                      color: "blue.700",
-                      px: "2",
-                      py: "0.5",
-                      rounded: "full",
-                      fontSize: "xs",
-                      fontWeight: "bold",
-                    })}
-                  >
-                    {feed.unreadCount?.toString()}
-                  </span>
-                </Show>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    refreshMutation.mutate({ ids: [feed.id] });
-                  }}
-                  disabled={fetchingState.isFetching(feed.id)}
-                  class={css({
-                    color: "blue.600",
-                    padding: "1",
-                    paddingInline: "2",
-                    borderRadius: "md",
-                    fontSize: "sm",
-                    cursor: "pointer",
-                    _hover: {
-                      backgroundColor: "blue.50",
-                      textDecoration: "underline",
-                    },
-                    _disabled: {
-                      color: "gray.400",
-                      cursor: "not-allowed",
-                      textDecoration: "none",
-                    },
-                  })}
-                >
-                  {fetchingState.isFetching(feed.id) ? "Fetching..." : "Fetch"}
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDelete(feed.id);
-                  }}
-                  class={css({
-                    color: "red.500",
-                    padding: "1",
-                    paddingInline: "2",
-                    borderRadius: "md",
-                    fontSize: "sm",
-                    cursor: "pointer",
-                    _hover: {
-                      backgroundColor: "red.50",
-                      textDecoration: "underline",
-                    },
-                    _disabled: { color: "gray.400", cursor: "not-allowed" },
-                  })}
-                >
-                  Delete
-                </button>
-              </div>
-            </li>
-          )}
-        </For>
-      </ul>
+                </li>
+              )}
+            </For>
+          </ul>
+        </div>
+      </div>
 
       <ManageTagsModal
         isOpen={isManageModalOpen()}

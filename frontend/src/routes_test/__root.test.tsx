@@ -7,7 +7,7 @@ import {
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { Route as RootRoute } from "./__root";
+import { Route as RootRoute } from "../routes/__root";
 import "../styles.css";
 
 // Unmock solid-router to test active link logic

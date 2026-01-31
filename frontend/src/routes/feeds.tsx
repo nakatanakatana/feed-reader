@@ -14,7 +14,15 @@ function FeedsComponent() {
   const [isImportModalOpen, setIsImportModalOpen] = createSignal(false);
 
   return (
-    <div class={stack({ padding: "4", gap: "6" })}>
+    <div
+      class={stack({
+        padding: "4",
+        gap: "6",
+        height: "calc(100vh - 56px)",
+        minHeight: 0,
+        overflow: "hidden",
+      })}
+    >
       <div
         class={flex({ justifyContent: "space-between", alignItems: "center" })}
       >
@@ -36,7 +44,9 @@ function FeedsComponent() {
       </div>
       <AddFeedForm />
       <hr class={css({ borderColor: "gray.200" })} />
-      <FeedList />
+      <div class={css({ flex: "1", minHeight: 0, display: "flex" })}>
+        <FeedList />
+      </div>
       <Outlet />
       <ImportOpmlModal
         isOpen={isImportModalOpen()}
