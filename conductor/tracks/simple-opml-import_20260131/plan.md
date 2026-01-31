@@ -5,7 +5,7 @@ This plan focuses on simplifying the OPML import process by making it synchronou
 ## Phase 1: Backend Cleanup and Redefinition
 In this phase, we will remove the asynchronous job infrastructure and redefine the feed registration logic.
 
-- [ ] Task: Remove `ImportJob` and related storage logic in `store/`
+- [x] Task: Remove `ImportJob` and related storage logic in `store/` <!-- id: 83367b9 -->
 - [ ] Task: Update `FeedStore.CreateFeed` (or equivalent) to only fetch metadata and not items
 - [ ] Task: Remove background worker pool and write queue related to OPML imports if redundant
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend Cleanup and Redefinition' (Protocol in workflow.md)
