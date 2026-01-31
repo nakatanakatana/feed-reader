@@ -34,7 +34,10 @@ export const fetchingState = {
       return next;
     });
   },
-  finishFetching(ids: string[], results?: { feedId: string; errorMessage?: string }[]) {
+  finishFetching(
+    ids: string[],
+    results?: { feedId: string; errorMessage?: string }[],
+  ) {
     setState("fetchingFeedIds", (prev) => {
       const next = new Set(prev);
       for (const id of ids) {

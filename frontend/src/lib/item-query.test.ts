@@ -3,7 +3,7 @@ import { createClient } from "@connectrpc/connect";
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { ItemService } from "../gen/item/v1/item_pb";
 import type { ListItemsResponse } from "../gen/item/v1/item_pb";
-import { Timestamp } from "@bufbuild/protobuf/wkt";
+import type { Timestamp } from "@bufbuild/protobuf/wkt";
 import {
   fetchItems,
   itemKeys,

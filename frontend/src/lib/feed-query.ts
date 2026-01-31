@@ -1,7 +1,10 @@
 import { createClient } from "@connectrpc/connect";
 import { useMutation, useQueryClient } from "@tanstack/solid-query";
 import { FeedService } from "../gen/feed/v1/feed_pb";
-import type { ManageFeedTagsRequest, RefreshFeedsRequest } from "../gen/feed/v1/feed_pb";
+import type {
+  ManageFeedTagsRequest,
+  RefreshFeedsRequest,
+} from "../gen/feed/v1/feed_pb";
 import { transport } from "./query";
 import { fetchingState } from "./fetching-state";
 
@@ -28,10 +31,13 @@ export function useRefreshFeeds() {
         fetchingState.finishFetching(req.ids, res.results);
         return res;
       } catch (err) {
-        fetchingState.finishFetching(req.ids, req.ids.map(id => ({
-          feedId: id,
-          errorMessage: err instanceof Error ? err.message : String(err)
-        })));
+        fetchingState.finishFetching(
+          req.ids,
+          req.ids.map((id) => ({
+            feedId: id,
+            errorMessage: err instanceof Error ? err.message : String(err),
+          })),
+        );
         throw err;
       }
     },

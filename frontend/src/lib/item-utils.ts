@@ -1,4 +1,4 @@
-import { Timestamp } from "@bufbuild/protobuf/wkt";
+import type { Timestamp } from "@bufbuild/protobuf/wkt";
 
 export type DateFilterValue = "all" | "24h" | "7d" | "30d" | "90d" | "365d";
 

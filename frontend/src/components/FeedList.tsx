@@ -153,7 +153,9 @@ export function FeedList() {
             <div class={flex({ gap: "2", alignItems: "center" })}>
               <button
                 type="button"
-                onClick={() => refreshMutation.mutate({ ids: selectedFeedIds() })}
+                onClick={() =>
+                  refreshMutation.mutate({ ids: selectedFeedIds() })
+                }
                 disabled={refreshMutation.isPending}
                 class={css({
                   display: "none",
@@ -443,6 +445,7 @@ export function FeedList() {
                           stroke-linecap="round"
                           stroke-linejoin="round"
                         >
+                          <title>Error fetching feed</title>
                           <circle cx="12" cy="12" r="10" />
                           <line x1="12" y1="8" x2="12" y2="12" />
                           <line x1="12" y1="16" x2="12.01" y2="16" />
@@ -623,10 +626,13 @@ export function FeedList() {
                   stroke-linecap="round"
                   stroke-linejoin="round"
                 >
+                  <title>Manual refresh</title>
                   <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
                   <path d="M21 3v5h-5" />
                 </svg>
-                <span>{refreshMutation.isPending ? "Fetching..." : "Fetch"}</span>
+                <span>
+                  {refreshMutation.isPending ? "Fetching..." : "Fetch"}
+                </span>
               </div>
             </button>
             <button
