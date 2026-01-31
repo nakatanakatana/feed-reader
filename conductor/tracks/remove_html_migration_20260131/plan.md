@@ -18,7 +18,7 @@
     - [x] Run `go test ./cmd/feed-reader/...` to ensure no regressions
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Remove Migration Logic' (Protocol in workflow.md)
 
-## Phase 3: Final Cleanup & Review
+## Phase 3: Final Cleanup & Review [checkpoint: 034ef23]
 - [x] Task: Final Codebase Scan b089a83
     - [x] Search for any remaining references to `MIGRATE_CONTENT_MARKDOWN` or `migrateHTMLToMarkdown`
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Final Cleanup & Review' (Protocol in workflow.md)
