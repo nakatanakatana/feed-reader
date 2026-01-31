@@ -3,7 +3,7 @@
 This plan implements the "Fetch Now" feature, allowing users to manually trigger feed updates from the UI with real-time feedback.
 
 ## Phase 1: Backend API Enhancement
-- [ ] Task: Update Protobuf for `RefreshFeeds` response
+- [x] Task: Update Protobuf for `RefreshFeeds` response [6b6f200]
     - [ ] Modify `proto/feed/v1/feed.proto` to add `FeedFetchStatus` and update `RefreshFeedsResponse` to return status and new item counts.
     - [ ] Run `buf generate` to update generated Go and TypeScript code.
 - [ ] Task: Implement synchronous fetch logic in `FetcherService`
