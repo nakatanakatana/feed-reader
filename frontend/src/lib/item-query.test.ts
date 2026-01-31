@@ -90,14 +90,14 @@ describe("Item Queries", () => {
     } as unknown as ListItemsResponse;
     const allPages = [lastPage];
     const allPageParams = [0];
-    // offset 0, limit 20 (default) -> next offset 20
+    // offset 0, limit 100 (default) -> next offset 100
     const nextParam = options.getNextPageParam(
       lastPage,
       allPages,
       0,
       allPageParams,
     );
-    expect(nextParam).toBe(20);
+    expect(nextParam).toBe(100);
 
     // Test end of list
     const emptyPage = {

@@ -267,7 +267,7 @@ export const handlers = [
     method: "listItems",
     handler: (req) => {
       const offset = req.offset ?? 0;
-      const limit = req.limit ?? 20;
+      const limit = req.limit ?? 100;
 
       // Mock items with different dates for testing the filter
       const allMockItems = Array.from({ length: 40 }, (_, i) => {
