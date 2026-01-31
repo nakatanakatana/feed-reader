@@ -6,7 +6,7 @@
     - [x] Confirm `MIGRATE_CONTENT_MARKDOWN` usage in `main.go` and `migrate_md.go`
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Preparation & Verification' (Protocol in workflow.md)
 
-## Phase 2: Remove Migration Logic
+## Phase 2: Remove Migration Logic [checkpoint: 5b2e2ac]
 - [x] Task: Remove configuration flag from `main.go` d31a6ea
     - [x] Remove `MigrateContentMarkdown` field from configuration struct
     - [x] Remove usage of `cfg.MigrateContentMarkdown` in `main.go`
