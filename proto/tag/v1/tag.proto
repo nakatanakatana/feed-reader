@@ -18,6 +18,12 @@ message Tag {
   int64 unread_count = 5;
 }
 
+message ListTag {
+  string id = 1;
+  string name = 2;
+  int64 unread_count = 3;
+}
+
 message CreateTagRequest {
   string name = 1;
 }
@@ -26,12 +32,10 @@ message CreateTagResponse {
   Tag tag = 1;
 }
 
-message ListTagsRequest {
-  optional bool sort_descending = 1;
-}
+message ListTagsRequest {}
 
 message ListTagsResponse {
-  repeated Tag tags = 1;
+  repeated ListTag tags = 1;
   int64 total_unread_count = 2;
 }
 

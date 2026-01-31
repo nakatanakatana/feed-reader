@@ -42,7 +42,14 @@ describe("ItemList", () => {
 
   it("renders a list of items and navigates on click", async () => {
     const mockItems = [
-      { id: "1", title: "Item 1", url: "http://example.com/1", isRead: false },
+      {
+        id: "1",
+        title: "Item 1",
+        description: "Test description",
+        publishedAt: "2026-01-26",
+        createdAt: "2026-01-26",
+        isRead: false,
+      },
     ];
 
     vi.mocked(useItems).mockReturnValue({
@@ -62,10 +69,12 @@ describe("ItemList", () => {
 
     vi.mocked(useItem).mockReturnValue({
       data: {
-        ...mockItems[0],
+        id: "1",
+        title: "Item 1",
         description: "Test description",
         publishedAt: "2026-01-26",
         author: "Author",
+        isRead: false,
       },
       isLoading: false,
     } as unknown as ReturnType<typeof useItem>);

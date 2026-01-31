@@ -143,25 +143,10 @@ func TestStore_ListFeeds_Sorting(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	// 3. List Feeds ASC (Default/Explicit)
-	t.Run("List Feeds ASC", func(t *testing.T) {
-		feeds, err := s.ListFeeds(ctx, store.ListFeedsParams{
-			SortDescending: false,
-		})
-		require.NoError(t, err)
-		require.Len(t, feeds, 2)
-		assert.Equal(t, feed1ID, feeds[0].ID)
-		assert.Equal(t, feed2ID, feeds[1].ID)
-	})
-
-	// 4. List Feeds DESC
-	t.Run("List Feeds DESC", func(t *testing.T) {
-		feeds, err := s.ListFeeds(ctx, store.ListFeedsParams{
-			SortDescending: true,
-		})
-		require.NoError(t, err)
-		require.Len(t, feeds, 2)
-		assert.Equal(t, feed2ID, feeds[0].ID)
-		assert.Equal(t, feed1ID, feeds[1].ID)
-	})
+	// 3. List Feeds in created order
+	feeds, err := s.ListFeeds(ctx, store.ListFeedsParams{})
+	require.NoError(t, err)
+	require.Len(t, feeds, 2)
+	assert.Equal(t, feed1ID, feeds[0].ID)
+	assert.Equal(t, feed2ID, feeds[1].ID)
 }

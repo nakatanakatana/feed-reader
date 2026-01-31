@@ -10,8 +10,8 @@ import { render } from "solid-js/web";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { queryClient, transport } from "../lib/query";
-import { TransportProvider } from "../lib/transport-context";
 import { useTags } from "../lib/tag-query";
+import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
 
 // Mock the db module
@@ -79,21 +79,18 @@ describe("FeedList Unread Counts", () => {
         id: "1",
         title: "Feed 1",
         url: "http://example.com/1",
-        tags: [],
         unreadCount: 5n,
       },
       {
         id: "2",
         title: "Feed 2",
         url: "http://example.com/2",
-        tags: [],
         unreadCount: 0n,
       },
       {
         id: "3",
         title: "Feed 3",
         url: "http://example.com/3",
-        tags: [],
         unreadCount: 10n,
       },
     ];
@@ -132,8 +129,8 @@ describe("FeedList Unread Counts", () => {
 
   it("displays total unread count in header", async () => {
     const mockFeeds = [
-      { id: "1", unreadCount: 5n, tags: [] },
-      { id: "2", unreadCount: 3n, tags: [] },
+      { id: "1", unreadCount: 5n },
+      { id: "2", unreadCount: 3n },
     ];
 
     vi.mocked(useLiveQuery).mockReturnValue({

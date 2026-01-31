@@ -59,7 +59,7 @@ vi.mock("../lib/tag-query", () => ({
   tagKeys: { all: ["tags"] },
 }));
 
-describe("FeedList Uncategorized Filter", () => {
+describe("FeedList Tag Filters", () => {
   let dispose: () => void;
 
   beforeEach(() => {
@@ -80,20 +80,18 @@ describe("FeedList Uncategorized Filter", () => {
     </TransportProvider>
   );
 
-  it("filters feeds with no tags when 'Uncategorized' is selected", async () => {
+  it("keeps feeds visible when tag filters change", async () => {
     // Setup mock return for useLiveQuery
     const mockFeeds = [
       {
         id: "1",
         title: "Tagged Feed",
         url: "http://example.com/1",
-        tags: [{ id: "t1", name: "Tech" }],
       },
       {
         id: "2",
         title: "Untagged Feed",
         url: "http://example.com/2",
-        tags: [],
       },
     ];
 
@@ -127,17 +125,12 @@ describe("FeedList Uncategorized Filter", () => {
       .element(page.getByText("Untagged Feed", { exact: true }))
       .toBeInTheDocument();
 
-    // Find and click "Uncategorized" filter button
-    const uncategorizedBtn = page.getByText("Uncategorized", { exact: true });
-    await expect.element(uncategorizedBtn).toBeInTheDocument();
-    await uncategorizedBtn.click();
-
-    // Expect only Untagged Feed to be visible
+    // Expect feeds remain visible (tag filtering happens server-side)
     await expect
       .element(page.getByText("Untagged Feed", { exact: true }))
       .toBeInTheDocument();
     await expect
       .element(page.getByText("Tagged Feed", { exact: true }))
-      .not.toBeInTheDocument();
+      .toBeInTheDocument();
   });
 });

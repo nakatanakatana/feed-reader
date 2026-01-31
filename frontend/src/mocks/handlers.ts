@@ -1,40 +1,34 @@
-import { FeedService } from "../gen/feed/v1/feed_pb";
 import { create } from "@bufbuild/protobuf";
-
 import {
   CreateFeedResponseSchema,
   DeleteFeedResponseSchema,
   FeedSchema,
+  FeedService,
+  ListFeedSchema,
   ListFeedsResponseSchema,
   ManageFeedTagsResponseSchema,
   SetFeedTagsResponseSchema,
   UpdateFeedResponseSchema,
 } from "../gen/feed/v1/feed_pb";
-
-import type { Feed } from "../gen/feed/v1/feed_pb";
-
-import { ItemService } from "../gen/item/v1/item_pb";
-
 import {
   GetItemResponseSchema,
   ItemSchema,
+  ItemService,
+  ListItemSchema,
   ListItemsResponseSchema,
   UpdateItemStatusResponseSchema,
 } from "../gen/item/v1/item_pb";
-
-import { TagService } from "../gen/tag/v1/tag_pb";
-
 import {
   CreateTagResponseSchema,
   DeleteTagResponseSchema,
+  ListTagSchema,
   ListTagsResponseSchema,
   TagSchema,
+  TagService,
 } from "../gen/tag/v1/tag_pb";
-
-import type { Tag } from "../gen/tag/v1/tag_pb";
 import { mockConnectWeb } from "./connect";
 
-const tags: Tag[] = [
+const tags = [
   create(TagSchema, {
     id: "tag-1",
     name: "Tech",
@@ -49,7 +43,7 @@ const tags: Tag[] = [
   }),
 ];
 
-const feeds: Feed[] = [
+const feeds = [
   create(FeedSchema, {
     id: "1",
     url: "https://example.com/feed1.xml",
@@ -78,7 +72,15 @@ export const handlers = [
           f.tags.some((t) => t.id === req.tagId),
         );
       }
-      return create(ListFeedsResponseSchema, { feeds: filteredFeeds });
+      const listFeeds = filteredFeeds.map((feed) =>
+        create(ListFeedSchema, {
+          id: feed.id,
+          url: feed.url,
+          title: feed.title,
+          unreadCount: feed.unreadCount ?? 0n,
+        }),
+      );
+      return create(ListFeedsResponseSchema, { feeds: listFeeds });
     },
   }),
 
@@ -137,7 +139,14 @@ export const handlers = [
   mockConnectWeb(TagService)({
     method: "listTags",
     handler: () => {
-      return create(ListTagsResponseSchema, { tags });
+      const listTags = tags.map((tag) =>
+        create(ListTagSchema, {
+          id: tag.id,
+          name: tag.name,
+          unreadCount: tag.unreadCount ?? 0n,
+        }),
+      );
+      return create(ListTagsResponseSchema, { tags: listTags });
     },
   }),
 
@@ -227,13 +236,12 @@ export const handlers = [
         else if (i < 30) date.setDate(date.getDate() - 10);
         else date.setDate(date.getDate() - 40);
 
-        return create(ItemSchema, {
+        return create(ListItemSchema, {
           id,
           title: `Item ${id}`,
-          url: `https://example.com/item/${id}`,
           publishedAt: date.toISOString(),
+          createdAt: date.toISOString(),
           isRead: false,
-          feedId: req.feedId || "1",
         });
       });
 
@@ -246,12 +254,6 @@ export const handlers = [
         );
         filteredItems = allMockItems.filter(
           (item) => new Date(item.publishedAt) >= sinceDate,
-        );
-      }
-
-      if (req.feedId) {
-        filteredItems = filteredItems.filter(
-          (item) => item.feedId === req.feedId,
         );
       }
 

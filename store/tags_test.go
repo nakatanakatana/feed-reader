@@ -249,25 +249,10 @@ func TestStore_ListTags_Sorting(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	// 3. List Tags ASC
-	t.Run("List Tags ASC", func(t *testing.T) {
-		tags, err := s.ListTags(ctx, store.ListTagsParams{
-			SortDescending: false,
-		})
-		require.NoError(t, err)
-		require.Len(t, tags, 2)
-		assert.Equal(t, "Tag 1", tags[0].Name)
-		assert.Equal(t, "Tag 2", tags[1].Name)
-	})
-
-	// 4. List Tags DESC
-	t.Run("List Tags DESC", func(t *testing.T) {
-		tags, err := s.ListTags(ctx, store.ListTagsParams{
-			SortDescending: true,
-		})
-		require.NoError(t, err)
-		require.Len(t, tags, 2)
-		assert.Equal(t, "Tag 2", tags[0].Name)
-		assert.Equal(t, "Tag 1", tags[1].Name)
-	})
+	// 3. List Tags in created order
+	tags, err := s.ListTags(ctx, store.ListTagsParams{})
+	require.NoError(t, err)
+	require.Len(t, tags, 2)
+	assert.Equal(t, "Tag 1", tags[0].Name)
+	assert.Equal(t, "Tag 2", tags[1].Name)
 }

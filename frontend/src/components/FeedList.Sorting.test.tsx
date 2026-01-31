@@ -86,25 +86,16 @@ describe("FeedList Sorting", () => {
         id: "1",
         title: "B Feed",
         url: "url1",
-        createdAt: "2026-01-20T10:00:00Z",
-        lastFetchedAt: "2026-01-21T10:00:00Z",
-        tags: [],
       },
       {
         id: "2",
         title: "A Feed",
         url: "url2",
-        createdAt: "2026-01-25T10:00:00Z",
-        lastFetchedAt: "2026-01-22T10:00:00Z",
-        tags: [],
       },
       {
         id: "3",
         title: "C Feed",
         url: "url3",
-        createdAt: "2026-01-22T10:00:00Z",
-        lastFetchedAt: "2026-01-20T10:00:00Z",
-        tags: [],
       },
     ];
 
@@ -143,18 +134,11 @@ describe("FeedList Sorting", () => {
     expect(feedItems[1].textContent).toContain("B Feed");
     expect(feedItems[2].textContent).toContain("A Feed");
 
-    // 2. Sort by Date Added (Newest first)
-    await sortSelect.selectOptions("created_at_desc");
+    // 2. Sort by Title (A-Z)
+    await sortSelect.selectOptions("title_asc");
     feedItems = document.querySelectorAll("li");
-    expect(feedItems[0].textContent).toContain("A Feed"); // Jan 25
-    expect(feedItems[1].textContent).toContain("C Feed"); // Jan 22
-    expect(feedItems[2].textContent).toContain("B Feed"); // Jan 20
-
-    // 3. Sort by Last Fetched (Newest first)
-    await sortSelect.selectOptions("last_fetched_at_desc");
-    feedItems = document.querySelectorAll("li");
-    expect(feedItems[0].textContent).toContain("A Feed"); // Jan 22
-    expect(feedItems[1].textContent).toContain("B Feed"); // Jan 21
-    expect(feedItems[2].textContent).toContain("C Feed"); // Jan 20
+    expect(feedItems[0].textContent).toContain("A Feed");
+    expect(feedItems[1].textContent).toContain("B Feed");
+    expect(feedItems[2].textContent).toContain("C Feed");
   });
 });

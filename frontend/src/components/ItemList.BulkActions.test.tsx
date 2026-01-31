@@ -37,8 +37,20 @@ describe("ItemList Bulk Actions", () => {
 
   it("marks multiple items as read", async () => {
     const mockItems = [
-      { id: "1", title: "Item 1", url: "http://example.com/1", isRead: false },
-      { id: "2", title: "Item 2", url: "http://example.com/2", isRead: false },
+      {
+        id: "1",
+        title: "Item 1",
+        publishedAt: "2026-01-26",
+        createdAt: "2026-01-26",
+        isRead: false,
+      },
+      {
+        id: "2",
+        title: "Item 2",
+        publishedAt: "2026-01-26",
+        createdAt: "2026-01-26",
+        isRead: false,
+      },
     ];
 
     vi.mocked(useItems).mockReturnValue({

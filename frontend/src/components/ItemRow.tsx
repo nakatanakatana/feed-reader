@@ -95,16 +95,18 @@ export function ItemRow(props: ItemRowProps) {
           >
             {props.item.title || "Untitled Article"}
           </div>
-          <div
-            class={css({
-              fontSize: "sm",
-              color: "gray.600",
-              lineClamp: 1,
-              marginTop: "0.5",
-            })}
-          >
-            {props.item.description}
-          </div>
+          <Show when={props.item.description}>
+            <div
+              class={css({
+                fontSize: "sm",
+                color: "gray.600",
+                lineClamp: 1,
+                marginTop: "0.5",
+              })}
+            >
+              {props.item.description}
+            </div>
+          </Show>
           <div class={flex({ gap: "2", alignItems: "center", marginTop: "1" })}>
             <span class={css({ fontSize: "xs", color: "gray.500" })}>
               {displayDate().label}: {formatDate(displayDate().date)}

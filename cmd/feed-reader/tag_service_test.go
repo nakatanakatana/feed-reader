@@ -3,12 +3,10 @@ package main
 import (
 	"context"
 	"testing"
-	"time"
 
 	"connectrpc.com/connect"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/proto"
 	_ "modernc.org/sqlite"
 
 	tagv1 "github.com/nakatanakatana/feed-reader/gen/go/tag/v1"
@@ -79,43 +77,6 @@ func TestTagServer(t *testing.T) {
 	})
 }
 
-func TestTagServer_ListTags_Sorting(t *testing.T) {
-	ctx := context.Background()
-	_, db := setupTestDB(t)
-	s := store.NewStore(db)
-	handler := NewTagServer(s, nil)
-
-	// Create Tag 1
-	res1, err := handler.CreateTag(ctx, connect.NewRequest(&tagv1.CreateTagRequest{Name: "Tag 1"}))
-	require.NoError(t, err)
-
-	time.Sleep(1100 * time.Millisecond)
-
-	// Create Tag 2
-	res2, err := handler.CreateTag(ctx, connect.NewRequest(&tagv1.CreateTagRequest{Name: "Tag 2"}))
-	require.NoError(t, err)
-
-	t.Run("Sort Descending True", func(t *testing.T) {
-		req := &tagv1.ListTagsRequest{SortDescending: proto.Bool(true)}
-		res, err := handler.ListTags(ctx, connect.NewRequest(req))
-		require.NoError(t, err)
-
-		require.Len(t, res.Msg.Tags, 2)
-		assert.Equal(t, res2.Msg.Tag.Id, res.Msg.Tags[0].Id)
-		assert.Equal(t, res1.Msg.Tag.Id, res.Msg.Tags[1].Id)
-	})
-
-	t.Run("Sort Descending False", func(t *testing.T) {
-		req := &tagv1.ListTagsRequest{SortDescending: proto.Bool(false)}
-		res, err := handler.ListTags(ctx, connect.NewRequest(req))
-		require.NoError(t, err)
-
-		require.Len(t, res.Msg.Tags, 2)
-		assert.Equal(t, res1.Msg.Tag.Id, res.Msg.Tags[0].Id)
-		assert.Equal(t, res2.Msg.Tag.Id, res.Msg.Tags[1].Id)
-	})
-}
-
 func TestTagServer_ListTags_UnreadCounts(t *testing.T) {
 	ctx := context.Background()
 	_, db := setupTestDB(t)
@@ -149,13 +110,12 @@ func TestTagServer_ListTags_UnreadCounts(t *testing.T) {
 	res, err := handler.ListTags(ctx, connect.NewRequest(&tagv1.ListTagsRequest{}))
 	require.NoError(t, err)
 
-	tagMap := make(map[string]*tagv1.Tag)
+	tagMap := make(map[string]int64)
 	for _, tag := range res.Msg.Tags {
-		tagMap[tag.Id] = tag
+		tagMap[tag.Id] = tag.UnreadCount
 	}
 
-	assert.Equal(t, int64(2), tagMap["tag-1"].UnreadCount)
-	assert.Equal(t, int64(0), tagMap["tag-2"].UnreadCount)
+	assert.Equal(t, int64(2), tagMap["tag-1"])
+	assert.Equal(t, int64(0), tagMap["tag-2"])
 	assert.Equal(t, int64(2), res.Msg.TotalUnreadCount)
 }
-

@@ -2,12 +2,12 @@ import { useLiveQuery } from "@tanstack/solid-db";
 import { createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
-import { type Feed, feeds, type Tag } from "../lib/db";
+import { type Feed, feeds } from "../lib/db";
+import { useRefreshFeeds } from "../lib/feed-query";
+import { fetchingState } from "../lib/fetching-state";
 import { formatUnreadCount } from "../lib/item-utils";
 import { useTags } from "../lib/tag-query";
-import { useRefreshFeeds } from "../lib/feed-query";
 import { ManageTagsModal } from "./ManageTagsModal";
-import { fetchingState } from "../lib/fetching-state";
 
 export function FeedList() {
   console.log("DEBUG: Rendering FeedList component");
@@ -35,9 +35,8 @@ export function FeedList() {
     const list = (feedList as unknown as Feed[]) ?? [];
     const tagId = selectedTagId();
     if (tagId === undefined) return list;
-    if (tagId === null)
-      return list.filter((f) => !f.tags || f.tags.length === 0);
-    return list.filter((f) => f.tags?.some((t: Tag) => t.id === tagId));
+    if (tagId === null) return list;
+    return list;
   };
 
   const sortedFeeds = () => {
@@ -50,21 +49,6 @@ export function FeedList() {
           return (a.title || "").localeCompare(b.title || "");
         case "title_desc":
           return (b.title || "").localeCompare(a.title || "");
-        case "created_at_desc":
-          return (
-            new Date(b.createdAt as string).getTime() -
-            new Date(a.createdAt as string).getTime()
-          );
-        case "created_at_asc":
-          return (
-            new Date(a.createdAt as string).getTime() -
-            new Date(b.createdAt as string).getTime()
-          );
-        case "last_fetched_at_desc":
-          return (
-            new Date((b.lastFetchedAt as string) || 0).getTime() -
-            new Date((a.lastFetchedAt as string) || 0).getTime()
-          );
         default:
           return 0;
       }
@@ -231,9 +215,6 @@ export function FeedList() {
           >
             <option value="title_asc">Title (A-Z)</option>
             <option value="title_desc">Title (Z-A)</option>
-            <option value="created_at_desc">Date Added (Newest)</option>
-            <option value="created_at_asc">Date Added (Oldest)</option>
-            <option value="last_fetched_at_desc">Last Fetched (Newest)</option>
           </select>
           <span class={css({ fontSize: "sm", color: "gray.600", ml: "2" })}>
             Filter:
@@ -279,28 +260,6 @@ export function FeedList() {
                 {formatUnreadCount(Number(tagsQuery.data?.totalUnreadCount))}
               </span>
             </Show>
-          </button>
-          <button
-            type="button"
-            onClick={() => setSelectedTagId(null)}
-            class={css({
-              px: "3",
-              py: "1.5",
-              minH: "10",
-              rounded: "md",
-              fontSize: "xs",
-              cursor: "pointer",
-              border: "1px solid",
-              ...(selectedTagId() === null
-                ? { bg: "blue.100", borderColor: "blue.500", color: "blue.700" }
-                : {
-                    bg: "gray.50",
-                    borderColor: "gray.300",
-                    color: "gray.600",
-                  }),
-            })}
-          >
-            Uncategorized
           </button>
           <For each={tagsQuery.data?.tags}>
             {(tag) => (
@@ -400,7 +359,7 @@ export function FeedList() {
                 <div class={stack({ gap: "1" })}>
                   <div class={flex({ gap: "2", alignItems: "center" })}>
                     <a
-                      href={feed.link || feed.url}
+                      href={feed.url}
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
@@ -456,52 +415,9 @@ export function FeedList() {
                         </svg>
                       </div>
                     </Show>
-                    <div class={flex({ gap: "1" })}>
-                      <For each={feed.tags}>
-                        {(tag) => (
-                          <span
-                            class={css({
-                              px: "2",
-                              py: "0.5",
-                              bg: "gray.100",
-                              rounded: "full",
-                              fontSize: "10px",
-                              color: "gray.600",
-                              border: "1px solid",
-                              borderColor: "gray.200",
-                            })}
-                          >
-                            {tag.name}
-                          </span>
-                        )}
-                      </For>
-                    </div>
                   </div>
                   <span class={css({ fontSize: "xs", color: "gray.500" })}>
                     {feed.url}
-                  </span>
-                  <span class={css({ fontSize: "xs", color: "gray.400" })}>
-                    Last fetched:{" "}
-                    {feed.lastFetchedAt
-                      ? (() => {
-                          const date = new Date(feed.lastFetchedAt);
-                          const y = date.getUTCFullYear();
-                          const m = String(date.getUTCMonth() + 1).padStart(
-                            2,
-                            "0",
-                          );
-                          const d = String(date.getUTCDate()).padStart(2, "0");
-                          const hh = String(date.getUTCHours()).padStart(
-                            2,
-                            "0",
-                          );
-                          const mm = String(date.getUTCMinutes()).padStart(
-                            2,
-                            "0",
-                          );
-                          return `${y}-${m}-${d} ${hh}:${mm}`;
-                        })()
-                      : "Never"}
                   </span>
                 </div>
               </div>

@@ -2,8 +2,8 @@
 // @generated from file item/v1/item.proto (package item.v1, syntax proto3)
 /* eslint-disable */
 
-import type { GenEnum, GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
-import { enumDesc, fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
+import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
+import { fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
 import type { Timestamp } from "@bufbuild/protobuf/wkt";
 import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
 import type { Message } from "@bufbuild/protobuf";
@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file item/v1/item.proto.
  */
 export const file_item_v1_item: GenFile = /*@__PURE__*/
-  fileDesc("ChJpdGVtL3YxL2l0ZW0ucHJvdG8SB2l0ZW0udjEi1wEKBEl0ZW0SCgoCaWQYASABKAkSCwoDdXJsGAIgASgJEg0KBXRpdGxlGAMgASgJEhMKC2Rlc2NyaXB0aW9uGAQgASgJEhQKDHB1Ymxpc2hlZF9hdBgFIAEoCRIPCgdmZWVkX2lkGAYgASgJEg8KB2lzX3JlYWQYByABKAgSDgoGYXV0aG9yGAkgASgJEg8KB2NvbnRlbnQYCiABKAkSEQoJaW1hZ2VfdXJsGAsgASgJEhIKCmNhdGVnb3JpZXMYDCABKAkSEgoKY3JlYXRlZF9hdBgNIAEoCSIcCg5HZXRJdGVtUmVxdWVzdBIKCgJpZBgBIAEoCSIuCg9HZXRJdGVtUmVzcG9uc2USGwoEaXRlbRgBIAEoCzINLml0ZW0udjEuSXRlbSLuAgoQTGlzdEl0ZW1zUmVxdWVzdBIUCgdmZWVkX2lkGAEgASgJSACIAQESFAoHaXNfcmVhZBgCIAEoCEgBiAEBEhMKBnRhZ19pZBgHIAEoCUgCiAEBEjgKD3B1Ymxpc2hlZF9zaW5jZRgIIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIA4gBARI3Cgpzb3J0X29yZGVyGAQgASgOMiMuaXRlbS52MS5MaXN0SXRlbXNSZXF1ZXN0LlNvcnRPcmRlchINCgVsaW1pdBgFIAEoBRIOCgZvZmZzZXQYBiABKAUiUAoJU29ydE9yZGVyEhoKFlNPUlRfT1JERVJfVU5TUEVDSUZJRUQQABITCg9TT1JUX09SREVSX0RFU0MQARISCg5TT1JUX09SREVSX0FTQxACQgoKCF9mZWVkX2lkQgoKCF9pc19yZWFkQgkKB190YWdfaWRCEgoQX3B1Ymxpc2hlZF9zaW5jZSJGChFMaXN0SXRlbXNSZXNwb25zZRIcCgVpdGVtcxgBIAMoCzINLml0ZW0udjEuSXRlbRITCgt0b3RhbF9jb3VudBgCIAEoBSJIChdVcGRhdGVJdGVtU3RhdHVzUmVxdWVzdBILCgNpZHMYASADKAkSFAoHaXNfcmVhZBgCIAEoCEgAiAEBQgoKCF9pc19yZWFkIhoKGFVwZGF0ZUl0ZW1TdGF0dXNSZXNwb25zZTLoAQoLSXRlbVNlcnZpY2USPAoHR2V0SXRlbRIXLml0ZW0udjEuR2V0SXRlbVJlcXVlc3QaGC5pdGVtLnYxLkdldEl0ZW1SZXNwb25zZRJCCglMaXN0SXRlbXMSGS5pdGVtLnYxLkxpc3RJdGVtc1JlcXVlc3QaGi5pdGVtLnYxLkxpc3RJdGVtc1Jlc3BvbnNlElcKEFVwZGF0ZUl0ZW1TdGF0dXMSIC5pdGVtLnYxLlVwZGF0ZUl0ZW1TdGF0dXNSZXF1ZXN0GiEuaXRlbS52MS5VcGRhdGVJdGVtU3RhdHVzUmVzcG9uc2VCPVo7Z2l0aHViLmNvbS9uYWthdGFuYWthdGFuYS9mZWVkLXJlYWRlci9nZW4vZ28vaXRlbS92MTtpdGVtdjFiBnByb3RvMw", [file_google_protobuf_timestamp]);
+  fileDesc("ChJpdGVtL3YxL2l0ZW0ucHJvdG8SB2l0ZW0udjEi1wEKBEl0ZW0SCgoCaWQYASABKAkSCwoDdXJsGAIgASgJEg0KBXRpdGxlGAMgASgJEhMKC2Rlc2NyaXB0aW9uGAQgASgJEhQKDHB1Ymxpc2hlZF9hdBgFIAEoCRIPCgdmZWVkX2lkGAYgASgJEg8KB2lzX3JlYWQYByABKAgSDgoGYXV0aG9yGAkgASgJEg8KB2NvbnRlbnQYCiABKAkSEQoJaW1hZ2VfdXJsGAsgASgJEhIKCmNhdGVnb3JpZXMYDCABKAkSEgoKY3JlYXRlZF9hdBgNIAEoCSJ1CghMaXN0SXRlbRIKCgJpZBgBIAEoCRINCgV0aXRsZRgCIAEoCRITCgtkZXNjcmlwdGlvbhgDIAEoCRIUCgxwdWJsaXNoZWRfYXQYBCABKAkSEgoKY3JlYXRlZF9hdBgFIAEoCRIPCgdpc19yZWFkGAYgASgIIhwKDkdldEl0ZW1SZXF1ZXN0EgoKAmlkGAEgASgJIi4KD0dldEl0ZW1SZXNwb25zZRIbCgRpdGVtGAEgASgLMg0uaXRlbS52MS5JdGVtIuMBChBMaXN0SXRlbXNSZXF1ZXN0EhQKB2ZlZWRfaWQYASABKAlIAIgBARIUCgdpc19yZWFkGAIgASgISAGIAQESEwoGdGFnX2lkGAcgASgJSAKIAQESOAoPcHVibGlzaGVkX3NpbmNlGAggASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgDiAEBEg0KBWxpbWl0GAUgASgFEg4KBm9mZnNldBgGIAEoBUIKCghfZmVlZF9pZEIKCghfaXNfcmVhZEIJCgdfdGFnX2lkQhIKEF9wdWJsaXNoZWRfc2luY2UiSgoRTGlzdEl0ZW1zUmVzcG9uc2USIAoFaXRlbXMYASADKAsyES5pdGVtLnYxLkxpc3RJdGVtEhMKC3RvdGFsX2NvdW50GAIgASgFIkgKF1VwZGF0ZUl0ZW1TdGF0dXNSZXF1ZXN0EgsKA2lkcxgBIAMoCRIUCgdpc19yZWFkGAIgASgISACIAQFCCgoIX2lzX3JlYWQiGgoYVXBkYXRlSXRlbVN0YXR1c1Jlc3BvbnNlMugBCgtJdGVtU2VydmljZRI8CgdHZXRJdGVtEhcuaXRlbS52MS5HZXRJdGVtUmVxdWVzdBoYLml0ZW0udjEuR2V0SXRlbVJlc3BvbnNlEkIKCUxpc3RJdGVtcxIZLml0ZW0udjEuTGlzdEl0ZW1zUmVxdWVzdBoaLml0ZW0udjEuTGlzdEl0ZW1zUmVzcG9uc2USVwoQVXBkYXRlSXRlbVN0YXR1cxIgLml0ZW0udjEuVXBkYXRlSXRlbVN0YXR1c1JlcXVlc3QaIS5pdGVtLnYxLlVwZGF0ZUl0ZW1TdGF0dXNSZXNwb25zZUI9WjtnaXRodWIuY29tL25ha2F0YW5ha2F0YW5hL2ZlZWQtcmVhZGVyL2dlbi9nby9pdGVtL3YxO2l0ZW12MWIGcHJvdG8z", [file_google_protobuf_timestamp]);
 
 /**
  * @generated from message item.v1.Item
@@ -87,6 +87,48 @@ export const ItemSchema: GenMessage<Item> = /*@__PURE__*/
   messageDesc(file_item_v1_item, 0);
 
 /**
+ * @generated from message item.v1.ListItem
+ */
+export type ListItem = Message<"item.v1.ListItem"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * @generated from field: string title = 2;
+   */
+  title: string;
+
+  /**
+   * @generated from field: string description = 3;
+   */
+  description: string;
+
+  /**
+   * @generated from field: string published_at = 4;
+   */
+  publishedAt: string;
+
+  /**
+   * @generated from field: string created_at = 5;
+   */
+  createdAt: string;
+
+  /**
+   * @generated from field: bool is_read = 6;
+   */
+  isRead: boolean;
+};
+
+/**
+ * Describes the message item.v1.ListItem.
+ * Use `create(ListItemSchema)` to create a new message.
+ */
+export const ListItemSchema: GenMessage<ListItem> = /*@__PURE__*/
+  messageDesc(file_item_v1_item, 1);
+
+/**
  * @generated from message item.v1.GetItemRequest
  */
 export type GetItemRequest = Message<"item.v1.GetItemRequest"> & {
@@ -101,7 +143,7 @@ export type GetItemRequest = Message<"item.v1.GetItemRequest"> & {
  * Use `create(GetItemRequestSchema)` to create a new message.
  */
 export const GetItemRequestSchema: GenMessage<GetItemRequest> = /*@__PURE__*/
-  messageDesc(file_item_v1_item, 1);
+  messageDesc(file_item_v1_item, 2);
 
 /**
  * @generated from message item.v1.GetItemResponse
@@ -118,7 +160,7 @@ export type GetItemResponse = Message<"item.v1.GetItemResponse"> & {
  * Use `create(GetItemResponseSchema)` to create a new message.
  */
 export const GetItemResponseSchema: GenMessage<GetItemResponse> = /*@__PURE__*/
-  messageDesc(file_item_v1_item, 2);
+  messageDesc(file_item_v1_item, 3);
 
 /**
  * @generated from message item.v1.ListItemsRequest
@@ -145,11 +187,6 @@ export type ListItemsRequest = Message<"item.v1.ListItemsRequest"> & {
   publishedSince?: Timestamp;
 
   /**
-   * @generated from field: item.v1.ListItemsRequest.SortOrder sort_order = 4;
-   */
-  sortOrder: ListItemsRequest_SortOrder;
-
-  /**
    * @generated from field: int32 limit = 5;
    */
   limit: number;
@@ -165,42 +202,16 @@ export type ListItemsRequest = Message<"item.v1.ListItemsRequest"> & {
  * Use `create(ListItemsRequestSchema)` to create a new message.
  */
 export const ListItemsRequestSchema: GenMessage<ListItemsRequest> = /*@__PURE__*/
-  messageDesc(file_item_v1_item, 3);
-
-/**
- * @generated from enum item.v1.ListItemsRequest.SortOrder
- */
-export enum ListItemsRequest_SortOrder {
-  /**
-   * @generated from enum value: SORT_ORDER_UNSPECIFIED = 0;
-   */
-  UNSPECIFIED = 0,
-
-  /**
-   * @generated from enum value: SORT_ORDER_DESC = 1;
-   */
-  DESC = 1,
-
-  /**
-   * @generated from enum value: SORT_ORDER_ASC = 2;
-   */
-  ASC = 2,
-}
-
-/**
- * Describes the enum item.v1.ListItemsRequest.SortOrder.
- */
-export const ListItemsRequest_SortOrderSchema: GenEnum<ListItemsRequest_SortOrder> = /*@__PURE__*/
-  enumDesc(file_item_v1_item, 3, 0);
+  messageDesc(file_item_v1_item, 4);
 
 /**
  * @generated from message item.v1.ListItemsResponse
  */
 export type ListItemsResponse = Message<"item.v1.ListItemsResponse"> & {
   /**
-   * @generated from field: repeated item.v1.Item items = 1;
+   * @generated from field: repeated item.v1.ListItem items = 1;
    */
-  items: Item[];
+  items: ListItem[];
 
   /**
    * @generated from field: int32 total_count = 2;
@@ -213,7 +224,7 @@ export type ListItemsResponse = Message<"item.v1.ListItemsResponse"> & {
  * Use `create(ListItemsResponseSchema)` to create a new message.
  */
 export const ListItemsResponseSchema: GenMessage<ListItemsResponse> = /*@__PURE__*/
-  messageDesc(file_item_v1_item, 4);
+  messageDesc(file_item_v1_item, 5);
 
 /**
  * @generated from message item.v1.UpdateItemStatusRequest
@@ -235,7 +246,7 @@ export type UpdateItemStatusRequest = Message<"item.v1.UpdateItemStatusRequest">
  * Use `create(UpdateItemStatusRequestSchema)` to create a new message.
  */
 export const UpdateItemStatusRequestSchema: GenMessage<UpdateItemStatusRequest> = /*@__PURE__*/
-  messageDesc(file_item_v1_item, 5);
+  messageDesc(file_item_v1_item, 6);
 
 /**
  * @generated from message item.v1.UpdateItemStatusResponse
@@ -248,7 +259,7 @@ export type UpdateItemStatusResponse = Message<"item.v1.UpdateItemStatusResponse
  * Use `create(UpdateItemStatusResponseSchema)` to create a new message.
  */
 export const UpdateItemStatusResponseSchema: GenMessage<UpdateItemStatusResponse> = /*@__PURE__*/
-  messageDesc(file_item_v1_item, 6);
+  messageDesc(file_item_v1_item, 7);
 
 /**
  * @generated from service item.v1.ItemService

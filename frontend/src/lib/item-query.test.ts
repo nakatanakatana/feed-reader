@@ -1,9 +1,9 @@
+import type { Timestamp } from "@bufbuild/protobuf/wkt";
 import type { Transport } from "@connectrpc/connect";
 import { createClient } from "@connectrpc/connect";
-import { describe, expect, it, vi, beforeEach } from "vitest";
-import { ItemService } from "../gen/item/v1/item_pb";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ListItemsResponse } from "../gen/item/v1/item_pb";
-import type { Timestamp } from "@bufbuild/protobuf/wkt";
+import { ItemService } from "../gen/item/v1/item_pb";
 import {
   fetchItems,
   itemKeys,
@@ -53,7 +53,6 @@ describe("Item Queries", () => {
       feedId: "123",
       limit: 10,
       offset: 0,
-      sortOrder: 0, // UNSPECIFIED
     });
     expect(result).toEqual(mockResponse);
   });

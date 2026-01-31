@@ -78,15 +78,6 @@ func TestStore_ItemOperations(t *testing.T) {
 		assert.Len(t, feedItems, 3)
 	})
 
-	// Test ListItemsAsc
-	t.Run("ListItemsAsc", func(t *testing.T) {
-		all, err := s.ListItemsAsc(ctx, store.ListItemsAscParams{Limit: 10, Offset: 0})
-		require.NoError(t, err)
-		assert.Len(t, all, 3)
-		assert.Equal(t, item1ID, all[0].ID) // Oldest first
-		assert.Equal(t, item3ID, all[2].ID) // Newest last
-	})
-
 	// Test CountItems
 	t.Run("CountItems", func(t *testing.T) {
 		count, err := s.CountItems(ctx, store.CountItemsParams{})

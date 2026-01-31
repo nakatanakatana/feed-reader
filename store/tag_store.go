@@ -5,18 +5,11 @@ import (
 	"fmt"
 )
 
-type ListTagsParams struct {
-	SortDescending bool
-}
+type ListTagsParams struct{}
 
 func (s *Store) ListTags(ctx context.Context, params ListTagsParams) ([]TagWithCount, error) {
-	var dbTags []Tag
-	var err error
-	if params.SortDescending {
-		dbTags, err = s.ListTagsDesc(ctx)
-	} else {
-		dbTags, err = s.Queries.ListTags(ctx)
-	}
+	_ = params
+	dbTags, err := s.Queries.ListTags(ctx)
 	if err != nil {
 		return nil, err
 	}

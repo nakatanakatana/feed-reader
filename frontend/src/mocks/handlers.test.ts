@@ -1,11 +1,11 @@
+import { toJson } from "@bufbuild/protobuf";
 import { createClient } from "@connectrpc/connect";
 import { describe, expect, it } from "vitest";
-import { toJson } from "@bufbuild/protobuf";
 import {
-  FeedService,
-  ListFeedsResponseSchema,
   CreateFeedResponseSchema,
   DeleteFeedResponseSchema,
+  FeedService,
+  ListFeedsResponseSchema,
 } from "../gen/feed/v1/feed_pb";
 import { transport } from "../lib/query";
 

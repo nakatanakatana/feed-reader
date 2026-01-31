@@ -26,18 +26,6 @@ WHERE
 ORDER BY
   updated_at ASC;
 
--- name: ListFeedsDesc :many
-SELECT
-  f.*
-FROM
-  feeds f
-WHERE
-  (sqlc.narg('tag_id') IS NULL OR EXISTS (
-    SELECT 1 FROM feed_tags ft WHERE ft.feed_id = f.id AND ft.tag_id = sqlc.narg('tag_id')
-  ))
-ORDER BY
-  updated_at DESC;
-
 -- name: ListFeedsByIDs :many
 SELECT
   *
@@ -221,40 +209,6 @@ ORDER BY
   COALESCE(i.published_at, i.created_at) ASC
 LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
 
--- name: ListItemsAsc :many
-SELECT
-  i.id,
-  i.url,
-  i.title,
-  i.description,
-  i.published_at,
-  i.author,
-  i.guid,
-  i.content,
-  i.image_url,
-  i.categories,
-  i.created_at,
-  CAST(MIN(fi.feed_id) AS TEXT) AS feed_id,
-  CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read
-FROM
-  items i
-JOIN
-  feed_items fi ON i.id = fi.item_id
-LEFT JOIN
-  item_reads ir ON i.id = ir.item_id
-WHERE
-  (sqlc.narg('feed_id') IS NULL OR fi.feed_id = sqlc.narg('feed_id')) AND
-  (sqlc.narg('is_read') IS NULL OR COALESCE(ir.is_read, 0) = sqlc.narg('is_read')) AND
-  (sqlc.narg('tag_id') IS NULL OR EXISTS (
-    SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = sqlc.narg('tag_id')
-  )) AND
-  (sqlc.narg('published_since') IS NULL OR COALESCE(i.published_at, i.created_at) >= sqlc.narg('published_since'))
-GROUP BY
-  i.id
-ORDER BY
-  COALESCE(i.published_at, i.created_at) ASC
-LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
-
 -- name: CountUnreadItemsPerFeed :many
 SELECT
   fi.feed_id,
@@ -341,14 +295,6 @@ FROM
   tags
 ORDER BY
   updated_at ASC;
-
--- name: ListTagsDesc :many
-SELECT
-  *
-FROM
-  tags
-ORDER BY
-  updated_at DESC;
 
 -- name: DeleteTag :exec
 DELETE FROM

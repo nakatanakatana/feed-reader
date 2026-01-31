@@ -1,10 +1,10 @@
-import { createConnectTransport } from "@connectrpc/connect-web";
 import { create } from "@bufbuild/protobuf";
+import { createConnectTransport } from "@connectrpc/connect-web";
 import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it } from "vitest";
 import { page } from "vitest/browser";
-import { ItemSchema } from "../gen/item/v1/item_pb";
+import { ListItemSchema } from "../gen/item/v1/item_pb";
 import { TransportProvider } from "../lib/transport-context";
 import { ItemRow } from "./ItemRow";
 
@@ -27,10 +27,9 @@ describe("ItemRow", () => {
     },
   });
 
-  const mockItem = create(ItemSchema, {
+  const mockItem = create(ListItemSchema, {
     id: "1",
     title: "Test Article Title",
-    url: "https://example.com/article",
     publishedAt: "2026-01-21T10:00:00Z",
     createdAt: "2026-01-20T10:00:00Z",
     description: "This is a test description snippet that should be displayed.",
@@ -60,7 +59,7 @@ describe("ItemRow", () => {
   });
 
   it("renders read status correctly", () => {
-    const readItem = create(ItemSchema, { ...mockItem, isRead: true });
+    const readItem = create(ListItemSchema, { ...mockItem, isRead: true });
 
     dispose = render(
       () => (

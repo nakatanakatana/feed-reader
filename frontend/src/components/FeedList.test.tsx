@@ -79,9 +79,8 @@ describe("FeedList", () => {
         id: "1",
         title: "Feed 1",
         url: "http://example.com/1",
-        tags: [{ id: "t1", name: "Tag 1" }],
       },
-      { id: "2", title: "Feed 2", url: "http://example.com/2", tags: [] },
+      { id: "2", title: "Feed 2", url: "http://example.com/2" },
     ];
 
     vi.mocked(useLiveQuery).mockReturnValue({
@@ -101,13 +100,12 @@ describe("FeedList", () => {
     );
 
     await expect.element(page.getByText("Feed 1")).toBeInTheDocument();
-    await expect.element(page.getByText("Tag 1")).toBeInTheDocument();
     await expect.element(page.getByText("Feed 2")).toBeInTheDocument();
   });
 
   it("deletes a feed", async () => {
     const mockFeeds = [
-      { id: "1", title: "Feed 1", url: "http://example.com/1", tags: [] },
+      { id: "1", title: "Feed 1", url: "http://example.com/1" },
     ];
     vi.mocked(useLiveQuery).mockReturnValue({
       data: mockFeeds,
@@ -135,8 +133,8 @@ describe("FeedList", () => {
 
   it("supports bulk selection", async () => {
     const mockFeeds = [
-      { id: "1", title: "Feed 1", url: "u1", tags: [] },
-      { id: "2", title: "Feed 2", url: "u2", tags: [] },
+      { id: "1", title: "Feed 1", url: "u1" },
+      { id: "2", title: "Feed 2", url: "u2" },
     ];
     vi.mocked(useLiveQuery).mockReturnValue({
       data: mockFeeds,
@@ -169,7 +167,7 @@ describe("FeedList", () => {
   });
 
   it("manages tags for selected feeds", async () => {
-    const mockFeeds = [{ id: "1", title: "Feed 1", url: "u1", tags: [] }];
+    const mockFeeds = [{ id: "1", title: "Feed 1", url: "u1" }];
     vi.mocked(useLiveQuery).mockReturnValue({
       data: mockFeeds,
     } as unknown as ReturnType<typeof useLiveQuery>);
@@ -236,7 +234,7 @@ describe("FeedList", () => {
   });
 
   it("does NOT have a navigation link to feed details", async () => {
-    const mockFeeds = [{ uuid: "1", title: "Feed 1", url: "u1", tags: [] }];
+    const mockFeeds = [{ uuid: "1", title: "Feed 1", url: "u1" }];
     vi.mocked(useLiveQuery).mockReturnValue({
       data: mockFeeds,
     } as unknown as ReturnType<typeof useLiveQuery>);
@@ -256,50 +254,5 @@ describe("FeedList", () => {
     // Ensure the navigation icon link is not present
     const viewItemsLink = page.getByRole("link", { name: /View items/i });
     await expect.element(viewItemsLink).not.toBeInTheDocument();
-  });
-
-  it("displays the last fetched date", async () => {
-    const lastFetchedAt = "2026-01-28T15:30:00Z";
-    const mockFeeds = [
-      {
-        id: "1",
-        title: "Fetched Feed",
-        url: "http://example.com/1",
-        lastFetchedAt: lastFetchedAt,
-        tags: [],
-      },
-      {
-        id: "2",
-        title: "Never Fetched Feed",
-        url: "http://example.com/2",
-        lastFetchedAt: null,
-        tags: [],
-      },
-    ];
-
-    vi.mocked(useLiveQuery).mockReturnValue({
-      data: mockFeeds,
-    } as unknown as ReturnType<typeof useLiveQuery>);
-
-    const history = createMemoryHistory({ initialEntries: ["/feeds"] });
-    const router = createRouter({ routeTree, history });
-
-    dispose = render(
-      () => (
-        <TestWrapper>
-          <RouterProvider router={router} />
-        </TestWrapper>
-      ),
-      document.body,
-    );
-
-    // Should display formatted date
-    await expect
-      .element(page.getByText("Last fetched: 2026-01-28 15:30"))
-      .toBeInTheDocument();
-    // Should display "Never" for null date
-    await expect
-      .element(page.getByText("Last fetched: Never"))
-      .toBeInTheDocument();
   });
 });

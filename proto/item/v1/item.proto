@@ -27,6 +27,15 @@ message Item {
   string created_at = 13;
 }
 
+message ListItem {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  string published_at = 4;
+  string created_at = 5;
+  bool is_read = 6;
+}
+
 message GetItemRequest {
   string id = 1;
 }
@@ -41,19 +50,12 @@ message ListItemsRequest {
   optional string tag_id = 7;
   optional google.protobuf.Timestamp published_since = 8;
 
-  enum SortOrder {
-    SORT_ORDER_UNSPECIFIED = 0;
-    SORT_ORDER_DESC = 1;
-    SORT_ORDER_ASC = 2;
-  }
-  SortOrder sort_order = 4;
-
   int32 limit = 5;
   int32 offset = 6;
 }
 
 message ListItemsResponse {
-  repeated Item items = 1;
+  repeated ListItem items = 1;
   int32 total_count = 2;
 }
 
