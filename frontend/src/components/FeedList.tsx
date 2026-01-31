@@ -5,6 +5,7 @@ import { flex, stack } from "../../styled-system/patterns";
 import { type Feed, feeds, type Tag } from "../lib/db";
 import { useTags } from "../lib/tag-query";
 import { ManageTagsModal } from "./ManageTagsModal";
+import { fetchingState } from "../lib/fetching-state";
 
 export function FeedList() {
   console.log("DEBUG: Rendering FeedList component");
@@ -382,6 +383,47 @@ export function FeedList() {
                     >
                       {feed.title || "Untitled Feed"}
                     </a>
+                    <Show when={fetchingState.isFetching(feed.id)}>
+                      <div
+                        class={css({
+                          width: "4",
+                          height: "4",
+                          border: "2px solid",
+                          borderColor: "blue.200",
+                          borderTopColor: "blue.600",
+                          borderRadius: "full",
+                          animation: "spin 1s linear infinite",
+                        })}
+                        title="Fetching..."
+                      />
+                    </Show>
+                    <Show when={fetchingState.error(feed.id)}>
+                      <div
+                        class={css({
+                          color: "red.500",
+                          cursor: "help",
+                          display: "flex",
+                          alignItems: "center",
+                        })}
+                        title={fetchingState.error(feed.id)}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <circle cx="12" cy="12" r="10" />
+                          <line x1="12" y1="8" x2="12" y2="12" />
+                          <line x1="12" y1="16" x2="12.01" y2="16" />
+                        </svg>
+                      </div>
+                    </Show>
                     <div class={flex({ gap: "1" })}>
                       <For each={feed.tags}>
                         {(tag) => (
