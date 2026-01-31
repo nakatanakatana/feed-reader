@@ -28,4 +28,4 @@ This plan implements the "Fetch Now" feature, allowing users to manually trigger
     - [ ] Integrate the fetch action into the existing "..." menu for individual feeds.
 - [x] Task: Implement Bulk "Fetch Selected" action [8797ecf]
     - [ ] Add a "Fetch Selected" button to the bulk actions toolbar.
-- [ ] Task: Conductor - User Manual Verification 'Frontend UI Implementation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Frontend UI Implementation' (Protocol in workflow.md) [8797ecf]
