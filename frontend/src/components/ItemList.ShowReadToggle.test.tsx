@@ -19,10 +19,10 @@ vi.mock("../lib/item-query", () => ({
 }));
 
 import {
-  useItems,
-  useItem,
-  useUpdateItemStatus,
   type FetchItemsParams,
+  useItem,
+  useItems,
+  useUpdateItemStatus,
 } from "../lib/item-query";
 
 describe("ItemList Show Read Toggle", () => {

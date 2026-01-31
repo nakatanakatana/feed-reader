@@ -1,10 +1,9 @@
-import { createRouterTransport } from "@connectrpc/connect";
 import { create } from "@bufbuild/protobuf";
+import { createRouterTransport } from "@connectrpc/connect";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { FeedService } from "../gen/feed/v1/feed_pb";
-import { ImportOpmlResponseSchema } from "../gen/feed/v1/feed_pb";
+import { FeedService, ImportOpmlResponseSchema } from "../gen/feed/v1/feed_pb";
 import { TransportProvider } from "../lib/transport-context";
 import { ImportOpmlModal } from "./ImportOpmlModal";
 

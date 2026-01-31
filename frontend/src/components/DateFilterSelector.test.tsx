@@ -1,5 +1,5 @@
 import { render } from "solid-js/web";
-import { describe, expect, it, vi, afterEach } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { DateFilterSelector } from "./DateFilterSelector";
 
