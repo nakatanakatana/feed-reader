@@ -11,17 +11,6 @@ export interface Item {
   isRead: boolean;
 }
 
-export enum SortOrder {
-  UNSPECIFIED = 0,
-  DESC = 1,
-  ASC = 2,
-}
-
-export interface ItemFilters {
-  isRead?: boolean;
-  sortOrder?: SortOrder;
-}
-
 export const getPublishedSince = (
   value: DateFilterValue,
 ): Timestamp | undefined => {
@@ -83,29 +72,4 @@ export const getItemDisplayDate = (
     label: "Received",
     date: item.createdAt,
   };
-};
-
-export const filterAndSortItems = (
-  items: Item[],
-  filters: ItemFilters,
-): Item[] => {
-  let result = [...items];
-
-  if (filters.isRead !== undefined) {
-    result = result.filter((item) => item.isRead === filters.isRead);
-  }
-
-  const getSortKey = (item: Item) => item.publishedAt || item.createdAt;
-
-  if (filters.sortOrder === SortOrder.ASC) {
-    result.sort((a, b) => getSortKey(a).localeCompare(getSortKey(b)));
-  } else if (
-    filters.sortOrder === SortOrder.DESC ||
-    filters.sortOrder === SortOrder.UNSPECIFIED
-  ) {
-    // Default to DESC
-    result.sort((a, b) => getSortKey(b).localeCompare(getSortKey(a)));
-  }
-
-  return result;
 };

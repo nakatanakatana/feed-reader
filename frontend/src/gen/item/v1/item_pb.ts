@@ -2,8 +2,8 @@
 // @generated from file item/v1/item.proto (package item.v1, syntax proto3)
 /* eslint-disable */
 
-import type { GenEnum, GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
-import { enumDesc, fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
+import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
+import { fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
 import type { Timestamp } from "@bufbuild/protobuf/wkt";
 import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
 import type { Message } from "@bufbuild/protobuf";
@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file item/v1/item.proto.
  */
 export const file_item_v1_item: GenFile = /*@__PURE__*/
-  fileDesc("ChJpdGVtL3YxL2l0ZW0ucHJvdG8SB2l0ZW0udjEi1wEKBEl0ZW0SCgoCaWQYASABKAkSCwoDdXJsGAIgASgJEg0KBXRpdGxlGAMgASgJEhMKC2Rlc2NyaXB0aW9uGAQgASgJEhQKDHB1Ymxpc2hlZF9hdBgFIAEoCRIPCgdmZWVkX2lkGAYgASgJEg8KB2lzX3JlYWQYByABKAgSDgoGYXV0aG9yGAkgASgJEg8KB2NvbnRlbnQYCiABKAkSEQoJaW1hZ2VfdXJsGAsgASgJEhIKCmNhdGVnb3JpZXMYDCABKAkSEgoKY3JlYXRlZF9hdBgNIAEoCSJ1CghMaXN0SXRlbRIKCgJpZBgBIAEoCRINCgV0aXRsZRgCIAEoCRITCgtkZXNjcmlwdGlvbhgDIAEoCRIUCgxwdWJsaXNoZWRfYXQYBCABKAkSEgoKY3JlYXRlZF9hdBgFIAEoCRIPCgdpc19yZWFkGAYgASgIIhwKDkdldEl0ZW1SZXF1ZXN0EgoKAmlkGAEgASgJIi4KD0dldEl0ZW1SZXNwb25zZRIbCgRpdGVtGAEgASgLMg0uaXRlbS52MS5JdGVtIu4CChBMaXN0SXRlbXNSZXF1ZXN0EhQKB2ZlZWRfaWQYASABKAlIAIgBARIUCgdpc19yZWFkGAIgASgISAGIAQESEwoGdGFnX2lkGAcgASgJSAKIAQESOAoPcHVibGlzaGVkX3NpbmNlGAggASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgDiAEBEjcKCnNvcnRfb3JkZXIYBCABKA4yIy5pdGVtLnYxLkxpc3RJdGVtc1JlcXVlc3QuU29ydE9yZGVyEg0KBWxpbWl0GAUgASgFEg4KBm9mZnNldBgGIAEoBSJQCglTb3J0T3JkZXISGgoWU09SVF9PUkRFUl9VTlNQRUNJRklFRBAAEhMKD1NPUlRfT1JERVJfREVTQxABEhIKDlNPUlRfT1JERVJfQVNDEAJCCgoIX2ZlZWRfaWRCCgoIX2lzX3JlYWRCCQoHX3RhZ19pZEISChBfcHVibGlzaGVkX3NpbmNlIkoKEUxpc3RJdGVtc1Jlc3BvbnNlEiAKBWl0ZW1zGAEgAygLMhEuaXRlbS52MS5MaXN0SXRlbRITCgt0b3RhbF9jb3VudBgCIAEoBSJIChdVcGRhdGVJdGVtU3RhdHVzUmVxdWVzdBILCgNpZHMYASADKAkSFAoHaXNfcmVhZBgCIAEoCEgAiAEBQgoKCF9pc19yZWFkIhoKGFVwZGF0ZUl0ZW1TdGF0dXNSZXNwb25zZTLoAQoLSXRlbVNlcnZpY2USPAoHR2V0SXRlbRIXLml0ZW0udjEuR2V0SXRlbVJlcXVlc3QaGC5pdGVtLnYxLkdldEl0ZW1SZXNwb25zZRJCCglMaXN0SXRlbXMSGS5pdGVtLnYxLkxpc3RJdGVtc1JlcXVlc3QaGi5pdGVtLnYxLkxpc3RJdGVtc1Jlc3BvbnNlElcKEFVwZGF0ZUl0ZW1TdGF0dXMSIC5pdGVtLnYxLlVwZGF0ZUl0ZW1TdGF0dXNSZXF1ZXN0GiEuaXRlbS52MS5VcGRhdGVJdGVtU3RhdHVzUmVzcG9uc2VCPVo7Z2l0aHViLmNvbS9uYWthdGFuYWthdGFuYS9mZWVkLXJlYWRlci9nZW4vZ28vaXRlbS92MTtpdGVtdjFiBnByb3RvMw", [file_google_protobuf_timestamp]);
+  fileDesc("ChJpdGVtL3YxL2l0ZW0ucHJvdG8SB2l0ZW0udjEi1wEKBEl0ZW0SCgoCaWQYASABKAkSCwoDdXJsGAIgASgJEg0KBXRpdGxlGAMgASgJEhMKC2Rlc2NyaXB0aW9uGAQgASgJEhQKDHB1Ymxpc2hlZF9hdBgFIAEoCRIPCgdmZWVkX2lkGAYgASgJEg8KB2lzX3JlYWQYByABKAgSDgoGYXV0aG9yGAkgASgJEg8KB2NvbnRlbnQYCiABKAkSEQoJaW1hZ2VfdXJsGAsgASgJEhIKCmNhdGVnb3JpZXMYDCABKAkSEgoKY3JlYXRlZF9hdBgNIAEoCSJ1CghMaXN0SXRlbRIKCgJpZBgBIAEoCRINCgV0aXRsZRgCIAEoCRITCgtkZXNjcmlwdGlvbhgDIAEoCRIUCgxwdWJsaXNoZWRfYXQYBCABKAkSEgoKY3JlYXRlZF9hdBgFIAEoCRIPCgdpc19yZWFkGAYgASgIIhwKDkdldEl0ZW1SZXF1ZXN0EgoKAmlkGAEgASgJIi4KD0dldEl0ZW1SZXNwb25zZRIbCgRpdGVtGAEgASgLMg0uaXRlbS52MS5JdGVtIuMBChBMaXN0SXRlbXNSZXF1ZXN0EhQKB2ZlZWRfaWQYASABKAlIAIgBARIUCgdpc19yZWFkGAIgASgISAGIAQESEwoGdGFnX2lkGAcgASgJSAKIAQESOAoPcHVibGlzaGVkX3NpbmNlGAggASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgDiAEBEg0KBWxpbWl0GAUgASgFEg4KBm9mZnNldBgGIAEoBUIKCghfZmVlZF9pZEIKCghfaXNfcmVhZEIJCgdfdGFnX2lkQhIKEF9wdWJsaXNoZWRfc2luY2UiSgoRTGlzdEl0ZW1zUmVzcG9uc2USIAoFaXRlbXMYASADKAsyES5pdGVtLnYxLkxpc3RJdGVtEhMKC3RvdGFsX2NvdW50GAIgASgFIkgKF1VwZGF0ZUl0ZW1TdGF0dXNSZXF1ZXN0EgsKA2lkcxgBIAMoCRIUCgdpc19yZWFkGAIgASgISACIAQFCCgoIX2lzX3JlYWQiGgoYVXBkYXRlSXRlbVN0YXR1c1Jlc3BvbnNlMugBCgtJdGVtU2VydmljZRI8CgdHZXRJdGVtEhcuaXRlbS52MS5HZXRJdGVtUmVxdWVzdBoYLml0ZW0udjEuR2V0SXRlbVJlc3BvbnNlEkIKCUxpc3RJdGVtcxIZLml0ZW0udjEuTGlzdEl0ZW1zUmVxdWVzdBoaLml0ZW0udjEuTGlzdEl0ZW1zUmVzcG9uc2USVwoQVXBkYXRlSXRlbVN0YXR1cxIgLml0ZW0udjEuVXBkYXRlSXRlbVN0YXR1c1JlcXVlc3QaIS5pdGVtLnYxLlVwZGF0ZUl0ZW1TdGF0dXNSZXNwb25zZUI9WjtnaXRodWIuY29tL25ha2F0YW5ha2F0YW5hL2ZlZWQtcmVhZGVyL2dlbi9nby9pdGVtL3YxO2l0ZW12MWIGcHJvdG8z", [file_google_protobuf_timestamp]);
 
 /**
  * @generated from message item.v1.Item
@@ -187,11 +187,6 @@ export type ListItemsRequest = Message<"item.v1.ListItemsRequest"> & {
   publishedSince?: Timestamp;
 
   /**
-   * @generated from field: item.v1.ListItemsRequest.SortOrder sort_order = 4;
-   */
-  sortOrder: ListItemsRequest_SortOrder;
-
-  /**
    * @generated from field: int32 limit = 5;
    */
   limit: number;
@@ -208,32 +203,6 @@ export type ListItemsRequest = Message<"item.v1.ListItemsRequest"> & {
  */
 export const ListItemsRequestSchema: GenMessage<ListItemsRequest> = /*@__PURE__*/
   messageDesc(file_item_v1_item, 4);
-
-/**
- * @generated from enum item.v1.ListItemsRequest.SortOrder
- */
-export enum ListItemsRequest_SortOrder {
-  /**
-   * @generated from enum value: SORT_ORDER_UNSPECIFIED = 0;
-   */
-  UNSPECIFIED = 0,
-
-  /**
-   * @generated from enum value: SORT_ORDER_DESC = 1;
-   */
-  DESC = 1,
-
-  /**
-   * @generated from enum value: SORT_ORDER_ASC = 2;
-   */
-  ASC = 2,
-}
-
-/**
- * Describes the enum item.v1.ListItemsRequest.SortOrder.
- */
-export const ListItemsRequest_SortOrderSchema: GenEnum<ListItemsRequest_SortOrder> = /*@__PURE__*/
-  enumDesc(file_item_v1_item, 4, 0);
 
 /**
  * @generated from message item.v1.ListItemsResponse

@@ -56,7 +56,6 @@ message GetFeedResponse {
 
 message ListFeedsRequest {
   optional string tag_id = 1;
-  optional bool sort_descending = 2;
 }
 
 message ListFeedsResponse {

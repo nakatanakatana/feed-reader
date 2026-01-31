@@ -67,17 +67,6 @@ func TestStore_ItemOrdering(t *testing.T) {
 	createItemWithDates(itemC, "http://ex.com/c", "Item C", nil, c3)
 	createItemWithDates(itemD, "http://ex.com/d", "Item D", nil, c4)
 
-	t.Run("ListItemsAsc should sort by COALESCE(published_at, created_at) ASC", func(t *testing.T) {
-		items, err := s.ListItemsAsc(ctx, store.ListItemsAscParams{Limit: 10})
-		require.NoError(t, err)
-		require.Len(t, items, 4)
-
-		assert.Equal(t, itemA, items[0].ID, "Item A should be first (Oldest Published)")
-		assert.Equal(t, itemB, items[1].ID, "Item B should be second")
-		assert.Equal(t, itemC, items[2].ID, "Item C should be third (Fallback to Created)")
-		assert.Equal(t, itemD, items[3].ID, "Item D should be fourth (Fallback to Created)")
-	})
-
 	t.Run("ListItems should also sort by COALESCE(published_at, created_at) ASC", func(t *testing.T) {
 		// Based on spec: "Update the item listing queries to sort items in ascending order (oldest first)"
 		items, err := s.ListItems(ctx, store.ListItemsParams{Limit: 10})

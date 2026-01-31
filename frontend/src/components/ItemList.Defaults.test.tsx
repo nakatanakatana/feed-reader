@@ -1,3 +1,4 @@
+import { createConnectTransport } from "@connectrpc/connect-web";
 import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
@@ -9,7 +10,6 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
-import { createConnectTransport } from "@connectrpc/connect-web";
 
 // Mock hooks
 vi.mock("../lib/item-query", () => ({
@@ -24,7 +24,7 @@ vi.mock("../lib/tag-query", () => ({
   useDeleteTag: vi.fn(),
 }));
 
-import { useItems, type FetchItemsParams } from "../lib/item-query";
+import { type FetchItemsParams, useItems } from "../lib/item-query";
 
 describe("ItemList Defaults", () => {
   let dispose: () => void;
@@ -37,7 +37,7 @@ describe("ItemList Defaults", () => {
     vi.clearAllMocks();
   });
 
-  it("calls useItems with default filters: isRead=false and sortOrder=ASC", async () => {
+  it("calls useItems with default filters: isRead=false", async () => {
     vi.mocked(useItems).mockReturnValue({
       data: { pages: [] },
       isLoading: false,
@@ -62,7 +62,6 @@ describe("ItemList Defaults", () => {
     await expect.element(page.getByText("All Items")).toBeInTheDocument();
 
     // Check if useItems was called with the correct defaults
-    // Note: ASC is 2 in ListItemsRequest_SortOrder
     expect(useItems).toHaveBeenCalledWith(expect.any(Function));
     const paramsGetter = vi.mocked(useItems).mock.calls[0][0] as () => Omit<
       FetchItemsParams,
@@ -71,7 +70,6 @@ describe("ItemList Defaults", () => {
     expect(paramsGetter()).toEqual(
       expect.objectContaining({
         isRead: false,
-        sortOrder: 2,
         publishedSince: expect.objectContaining({
           seconds: expect.any(BigInt),
         }),

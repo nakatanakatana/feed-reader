@@ -390,11 +390,10 @@ func (x *GetFeedResponse) GetFeed() *Feed {
 }
 
 type ListFeedsRequest struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	TagId          *string                `protobuf:"bytes,1,opt,name=tag_id,json=tagId,proto3,oneof" json:"tag_id,omitempty"`
-	SortDescending *bool                  `protobuf:"varint,2,opt,name=sort_descending,json=sortDescending,proto3,oneof" json:"sort_descending,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TagId         *string                `protobuf:"bytes,1,opt,name=tag_id,json=tagId,proto3,oneof" json:"tag_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ListFeedsRequest) Reset() {
@@ -432,13 +431,6 @@ func (x *ListFeedsRequest) GetTagId() string {
 		return *x.TagId
 	}
 	return ""
-}
-
-func (x *ListFeedsRequest) GetSortDescending() bool {
-	if x != nil && x.SortDescending != nil {
-		return *x.SortDescending
-	}
-	return false
 }
 
 type ListFeedsResponse struct {
@@ -1576,12 +1568,10 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"\x0eGetFeedRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"4\n" +
 	"\x0fGetFeedResponse\x12!\n" +
-	"\x04feed\x18\x01 \x01(\v2\r.feed.v1.FeedR\x04feed\"{\n" +
+	"\x04feed\x18\x01 \x01(\v2\r.feed.v1.FeedR\x04feed\"9\n" +
 	"\x10ListFeedsRequest\x12\x1a\n" +
-	"\x06tag_id\x18\x01 \x01(\tH\x00R\x05tagId\x88\x01\x01\x12,\n" +
-	"\x0fsort_descending\x18\x02 \x01(\bH\x01R\x0esortDescending\x88\x01\x01B\t\n" +
-	"\a_tag_idB\x12\n" +
-	"\x10_sort_descending\"<\n" +
+	"\x06tag_id\x18\x01 \x01(\tH\x00R\x05tagId\x88\x01\x01B\t\n" +
+	"\a_tag_id\"<\n" +
 	"\x11ListFeedsResponse\x12'\n" +
 	"\x05feeds\x18\x01 \x03(\v2\x11.feed.v1.ListFeedR\x05feeds\"\xa8\x03\n" +
 	"\x11CreateFeedRequest\x12\x10\n" +

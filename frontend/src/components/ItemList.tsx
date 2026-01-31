@@ -2,13 +2,15 @@ import { useNavigate } from "@tanstack/solid-router";
 import { createEffect, createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
-import { ListItemsRequest_SortOrder } from "../gen/item/v1/item_pb";
 import { useItems, useUpdateItemStatus } from "../lib/item-query";
-import { formatUnreadCount } from "../lib/item-utils";
+import {
+  type DateFilterValue,
+  formatUnreadCount,
+  getPublishedSince,
+} from "../lib/item-utils";
 import { useTags } from "../lib/tag-query";
 import { DateFilterSelector } from "./DateFilterSelector";
 import { ItemRow } from "./ItemRow";
-import { getPublishedSince, type DateFilterValue } from "../lib/item-utils";
 
 interface ItemListProps {
   feedId?: string;
@@ -51,7 +53,6 @@ export function ItemList(props: ItemListProps) {
     tagId: props.tagId,
     isRead: showRead() ? undefined : false,
     publishedSince: getPublishedSince(dateFilter()),
-    sortOrder: ListItemsRequest_SortOrder.ASC,
   }));
 
   const allItems = () =>
@@ -90,7 +91,6 @@ export function ItemList(props: ItemListProps) {
   const handleTagClick = (tagId: string | undefined) => {
     navigate({
       to: ".",
-      // @ts-expect-error
       search: { tagId },
     });
   };

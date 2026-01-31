@@ -1,3 +1,4 @@
+import type { Timestamp } from "@bufbuild/protobuf/wkt";
 import type { Transport } from "@connectrpc/connect";
 import { createClient } from "@connectrpc/connect";
 import {
@@ -8,9 +9,7 @@ import {
   useQueryClient,
 } from "@tanstack/solid-query";
 import { ItemService } from "../gen/item/v1/item_pb";
-import { ListItemsRequest_SortOrder } from "../gen/item/v1/item_pb";
 import { useTransport } from "./transport-context";
-import type { Timestamp } from "@bufbuild/protobuf/wkt";
 
 const serializeForQueryKey = (obj: Record<string, unknown>) => {
   const result: Record<string, unknown> = {};
@@ -46,7 +45,6 @@ export interface FetchItemsParams {
   publishedSince?: Timestamp;
   limit?: number;
   offset?: number;
-  sortOrder?: ListItemsRequest_SortOrder;
 }
 
 export const fetchItems = async (
@@ -61,7 +59,6 @@ export const fetchItems = async (
     publishedSince: params.publishedSince,
     limit: params.limit,
     offset: params.offset,
-    sortOrder: params.sortOrder ?? ListItemsRequest_SortOrder.UNSPECIFIED,
   });
 };
 

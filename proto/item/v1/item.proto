@@ -50,13 +50,6 @@ message ListItemsRequest {
   optional string tag_id = 7;
   optional google.protobuf.Timestamp published_since = 8;
 
-  enum SortOrder {
-    SORT_ORDER_UNSPECIFIED = 0;
-    SORT_ORDER_DESC = 1;
-    SORT_ORDER_ASC = 2;
-  }
-  SortOrder sort_order = 4;
-
   int32 limit = 5;
   int32 offset = 6;
 }

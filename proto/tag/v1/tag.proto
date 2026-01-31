@@ -32,9 +32,7 @@ message CreateTagResponse {
   Tag tag = 1;
 }
 
-message ListTagsRequest {
-  optional bool sort_descending = 1;
-}
+message ListTagsRequest {}
 
 message ListTagsResponse {
   repeated ListTag tags = 1;
