@@ -227,11 +227,9 @@ describe("FeedList", () => {
     // Give time for mutation and close
     await new Promise((resolve) => setTimeout(resolve, 500));
 
-    // 6. Modal should close (button should disappear)
-    const manageButtonAfter = Array.from(
-      document.querySelectorAll("button"),
-    ).find((b) => b.textContent?.includes("Manage Tags"));
-    expect(manageButtonAfter).toBeUndefined();
+    // 6. Modal should close (manage button hidden)
+    const manageButtonAfter = page.getByText(/Manage Tags/);
+    await expect.element(manageButtonAfter).not.toBeVisible();
   });
 
   it("does NOT have a navigation link to feed details", async () => {

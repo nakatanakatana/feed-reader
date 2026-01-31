@@ -46,11 +46,6 @@ export function FeedList() {
     return query;
   });
 
-  const totalUnreadCount = () => {
-    const list = (feedList as unknown as Feed[]) ?? [];
-    return list.reduce((acc, feed) => acc + Number(feed.unreadCount || 0), 0);
-  };
-
   const filteredFeeds = () => {
     const list = (feedList as unknown as Feed[]) ?? [];
     const tagId = selectedTagId();
@@ -104,8 +99,10 @@ export function FeedList() {
         display: "flex",
         flexDirection: "column",
         gap: "4",
-        height: "100%",
+        flex: "1",
         minHeight: 0,
+        width: "100%",
+        minWidth: 0,
       })}
     >
       <div
@@ -114,12 +111,12 @@ export function FeedList() {
           justifyContent: "space-between",
           alignItems: "stretch",
           flexDirection: "column",
-          gap: "4",
+          gap: "2",
           position: "sticky",
           top: 0,
           zIndex: 2,
           backgroundColor: "white",
-          paddingBottom: "3",
+          paddingBottom: "1",
           md: {
             alignItems: "center",
             flexDirection: "row",
@@ -131,7 +128,7 @@ export function FeedList() {
             display: "flex",
             gap: "4",
             alignItems: "stretch",
-            justifyContent: "space-between",
+            justifyContent: "flex-end",
             flexDirection: "column",
             sm: {
               alignItems: "center",
@@ -139,78 +136,56 @@ export function FeedList() {
             },
           })}
         >
-          <div class={flex({ gap: "4", alignItems: "center" })}>
-            <h2
+          <div
+            class={flex({ gap: "2", alignItems: "center" })}
+            style={{
+              "min-height": "2rem",
+              visibility: selectedFeedIds().length > 0 ? "visible" : "hidden",
+              "pointer-events": selectedFeedIds().length > 0 ? "auto" : "none",
+            }}
+          >
+            <button
+              type="button"
+              onClick={() => refreshMutation.mutate({ ids: selectedFeedIds() })}
+              disabled={refreshMutation.isPending}
               class={css({
-                fontSize: "xl",
-                fontWeight: "semibold",
                 display: "none",
                 sm: { display: "block" },
-              })}
-            >
-              Your Feeds
-            </h2>
-            <div
-              class={css({
-                bg: "blue.50",
+                px: "2.5",
+                py: "1",
+                bg: "blue.100",
                 color: "blue.700",
-                px: "3",
-                py: "1.5",
                 rounded: "md",
                 fontSize: "sm",
                 fontWeight: "bold",
-                border: "1px solid",
-                borderColor: "blue.200",
+                cursor: "pointer",
+                whiteSpace: "nowrap",
+                _hover: { bg: "blue.200" },
+                _disabled: { opacity: 0.5, cursor: "not-allowed" },
               })}
             >
-              Total Unread: {totalUnreadCount()}
-            </div>
+              {refreshMutation.isPending ? "Fetching..." : "Fetch Selected"}
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsManageModalOpen(true)}
+              class={css({
+                display: "none",
+                sm: { display: "block" },
+                px: "2.5",
+                py: "1",
+                bg: "blue.600",
+                color: "white",
+                rounded: "md",
+                fontSize: "sm",
+                cursor: "pointer",
+                whiteSpace: "nowrap",
+                _hover: { bg: "blue.700" },
+              })}
+            >
+              Manage Tags ({selectedFeedIds().length})
+            </button>
           </div>
-          <Show when={selectedFeedIds().length > 0}>
-            <div class={flex({ gap: "2", alignItems: "center" })}>
-              <button
-                type="button"
-                onClick={() =>
-                  refreshMutation.mutate({ ids: selectedFeedIds() })
-                }
-                disabled={refreshMutation.isPending}
-                class={css({
-                  display: "none",
-                  sm: { display: "block" },
-                  px: "3",
-                  py: "1.5",
-                  bg: "blue.100",
-                  color: "blue.700",
-                  rounded: "md",
-                  fontSize: "sm",
-                  fontWeight: "bold",
-                  cursor: "pointer",
-                  _hover: { bg: "blue.200" },
-                  _disabled: { opacity: 0.5, cursor: "not-allowed" },
-                })}
-              >
-                {refreshMutation.isPending ? "Fetching..." : "Fetch Selected"}
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsManageModalOpen(true)}
-                class={css({
-                  display: "none",
-                  sm: { display: "block" },
-                  px: "3",
-                  py: "1.5",
-                  bg: "blue.600",
-                  color: "white",
-                  rounded: "md",
-                  fontSize: "sm",
-                  cursor: "pointer",
-                  _hover: { bg: "blue.700" },
-                })}
-              >
-                Manage Tags ({selectedFeedIds().length})
-              </button>
-            </div>
-          </Show>
         </div>
         <div
           class={css({
@@ -219,10 +194,8 @@ export function FeedList() {
             alignItems: "center",
             flexWrap: "nowrap",
             justifyContent: "flex-start",
-            overflowX: "auto",
-            whiteSpace: "nowrap",
-            maxWidth: "100%",
-            pr: "1",
+            width: "100%",
+            minWidth: 0,
             md: {
               justifyContent: "flex-end",
             },
@@ -255,122 +228,48 @@ export function FeedList() {
           <span class={css({ fontSize: "sm", color: "gray.600", ml: "2" })}>
             Filter:
           </span>
-          <button
-            type="button"
-            onClick={() => setSelectedTagId(undefined)}
+          <select
+            aria-label="Filter by tag"
+            value={selectedTagId() ?? "all"}
+            onInput={(e) => {
+              const value = e.currentTarget.value;
+              if (value === "all") {
+                setSelectedTagId(undefined);
+              } else if (value === "untagged") {
+                setSelectedTagId(null);
+              } else {
+                setSelectedTagId(value);
+              }
+            }}
             class={css({
-              px: "3",
-              py: "1.5",
-              minH: "10",
-              rounded: "md",
               fontSize: "xs",
-              cursor: "pointer",
+              px: "2",
+              py: "1.5",
+              rounded: "md",
               border: "1px solid",
-              display: "inline-flex",
-              alignItems: "center",
-              ...(selectedTagId() === undefined
-                ? { bg: "blue.100", borderColor: "blue.500", color: "blue.700" }
-                : {
-                    bg: "gray.50",
-                    borderColor: "gray.300",
-                    color: "gray.600",
-                  }),
+              borderColor: "gray.300",
+              bg: "white",
+              minW: "10rem",
             })}
           >
-            All
-            <Show when={(tagsQuery.data?.totalUnreadCount ?? 0n) > 0n}>
-              <span
-                class={css({
-                  ml: "1.5",
-                  bg: selectedTagId() === undefined ? "blue.600" : "gray.200",
-                  color: selectedTagId() === undefined ? "white" : "gray.700",
-                  px: "1.5",
-                  py: "0.5",
-                  rounded: "full",
-                  fontSize: "xs",
-                  fontWeight: "bold",
-                  minWidth: "1.5rem",
-                  textAlign: "center",
-                })}
-              >
-                {formatUnreadCount(Number(tagsQuery.data?.totalUnreadCount))}
-              </span>
-            </Show>
-          </button>
-          <button
-            type="button"
-            onClick={() => setSelectedTagId(null)}
-            class={css({
-              px: "3",
-              py: "1.5",
-              minH: "10",
-              rounded: "md",
-              fontSize: "xs",
-              cursor: "pointer",
-              border: "1px solid",
-              display: "inline-flex",
-              alignItems: "center",
-              ...(selectedTagId() === null
-                ? { bg: "blue.100", borderColor: "blue.500", color: "blue.700" }
-                : {
-                    bg: "gray.50",
-                    borderColor: "gray.300",
-                    color: "gray.600",
-                  }),
-            })}
-          >
-            Untagged
-          </button>
-          <For each={tagsQuery.data?.tags}>
-            {(tag) => (
-              <button
-                type="button"
-                onClick={() => setSelectedTagId(tag.id)}
-                class={css({
-                  px: "3",
-                  py: "1.5",
-                  minH: "10",
-                  rounded: "md",
-                  fontSize: "xs",
-                  cursor: "pointer",
-                  border: "1px solid",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  ...(selectedTagId() === tag.id
-                    ? {
-                        bg: "blue.100",
-                        borderColor: "blue.500",
-                        color: "blue.700",
-                      }
-                    : {
-                        bg: "gray.50",
-                        borderColor: "gray.300",
-                        color: "gray.600",
-                      }),
-                })}
-              >
-                {tag.name}
-                <Show when={(tag.unreadCount ?? 0n) > 0n}>
-                  <span
-                    class={css({
-                      ml: "1.5",
-                      bg: selectedTagId() === tag.id ? "blue.600" : "gray.200",
-                      color: selectedTagId() === tag.id ? "white" : "gray.700",
-                      px: "1.5",
-                      py: "0.5",
-                      rounded: "full",
-                      fontSize: "xs",
-                      fontWeight: "bold",
-                      minWidth: "1.5rem",
-                      textAlign: "center",
-                    })}
-                  >
-                    {formatUnreadCount(Number(tag.unreadCount))}
-                  </span>
-                </Show>
-              </button>
-            )}
-          </For>
+            <option value="all">
+              All
+              {tagsQuery.data?.totalUnreadCount
+                ? ` (${formatUnreadCount(Number(tagsQuery.data.totalUnreadCount))})`
+                : ""}
+            </option>
+            <option value="untagged">Untagged</option>
+            <For each={tagsQuery.data?.tags}>
+              {(tag) => (
+                <option value={tag.id}>
+                  {tag.name}
+                  {tag.unreadCount && tag.unreadCount > 0n
+                    ? ` (${formatUnreadCount(Number(tag.unreadCount))})`
+                    : ""}
+                </option>
+              )}
+            </For>
+          </select>
         </div>
       </div>
 
@@ -397,9 +296,10 @@ export function FeedList() {
             minHeight: 0,
             overflowY: "auto",
             pr: "1",
+            width: "100%",
           })}
         >
-          <ul class={stack({ gap: "2" })}>
+          <ul class={stack({ gap: "2", width: "full" })}>
             <For each={sortedFeeds()}>
               {(feed: Feed) => (
                 <li
