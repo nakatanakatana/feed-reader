@@ -175,3 +175,14 @@ type MarkFetchedJob struct {
 func (j *MarkFetchedJob) Execute(ctx context.Context, q *store.Queries) error {
 	return q.MarkFeedFetched(ctx, j.Params)
 }
+
+// CreateFeedJob represents a job to create a new feed.
+type CreateFeedJob struct {
+	Params store.CreateFeedParams
+}
+
+// Execute performs the create feed operation.
+func (j *CreateFeedJob) Execute(ctx context.Context, q *store.Queries) error {
+	_, err := q.CreateFeed(ctx, j.Params)
+	return err
+}

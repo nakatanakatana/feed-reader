@@ -18,6 +18,7 @@ type FeedServer struct {
 	uuidGenerator UUIDGenerator
 	fetcher       FeedFetcher
 	itemFetcher   ItemFetcher
+	opmlImporter  *OPMLImporter
 }
 
 type ItemFetcher interface {
@@ -25,7 +26,7 @@ type ItemFetcher interface {
 	FetchFeedsByIDs(ctx context.Context, ids []string) error
 }
 
-func NewFeedServer(s *store.Store, uuidGen UUIDGenerator, fetcher FeedFetcher, itemFetcher ItemFetcher) feedv1connect.FeedServiceHandler {
+func NewFeedServer(s *store.Store, uuidGen UUIDGenerator, fetcher FeedFetcher, itemFetcher ItemFetcher, opmlImporter *OPMLImporter) feedv1connect.FeedServiceHandler {
 	if uuidGen == nil {
 		uuidGen = realUUIDGenerator{}
 	}
@@ -34,6 +35,7 @@ func NewFeedServer(s *store.Store, uuidGen UUIDGenerator, fetcher FeedFetcher, i
 		uuidGenerator: uuidGen,
 		fetcher:       fetcher,
 		itemFetcher:   itemFetcher,
+		opmlImporter:  opmlImporter,
 	}
 }
 
@@ -231,39 +233,28 @@ func (s *FeedServer) RefreshFeeds(ctx context.Context, req *connect.Request[feed
 }
 
 func (s *FeedServer) ImportOpml(ctx context.Context, req *connect.Request[feedv1.ImportOpmlRequest]) (*connect.Response[feedv1.ImportOpmlResponse], error) {
-	opmlFeeds, err := ParseOPML(req.Msg.OpmlContent)
+	jobID, err := s.opmlImporter.StartImportJob(ctx, req.Msg.OpmlContent)
 	if err != nil {
-		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("failed to parse OPML: %w", err))
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	response := &feedv1.ImportOpmlResponse{
-		Total: int32(len(opmlFeeds)),
+	return connect.NewResponse(&feedv1.ImportOpmlResponse{
+		JobId: jobID,
+	}), nil
+}
+
+func (s *FeedServer) GetImportJob(ctx context.Context, req *connect.Request[feedv1.GetImportJobRequest]) (*connect.Response[feedv1.GetImportJobResponse], error) {
+	job, err := s.opmlImporter.GetImportJob(ctx, req.Msg.Id)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, connect.NewError(connect.CodeNotFound, err)
+		}
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	for _, opmlFeed := range opmlFeeds {
-		// Deduplication
-		_, err := s.store.GetFeedByURL(ctx, opmlFeed.URL)
-		if err == nil {
-			// Found
-			response.Skipped++
-			continue
-		}
-		if !errors.Is(err, sql.ErrNoRows) {
-			// DB Error (unexpected)
-			response.FailedFeeds = append(response.FailedFeeds, opmlFeed.URL)
-			continue
-		}
-
-		// Not found, create
-		_, err = s.createFeedFromURL(ctx, opmlFeed.URL, &opmlFeed.Title, []string{})
-		if err != nil {
-			response.FailedFeeds = append(response.FailedFeeds, opmlFeed.URL)
-			continue
-		}
-		response.Success++
-	}
-
-	return connect.NewResponse(response), nil
+	return connect.NewResponse(&feedv1.GetImportJobResponse{
+		Job: job,
+	}), nil
 }
 
 func (s *FeedServer) SetFeedTags(ctx context.Context, req *connect.Request[feedv1.SetFeedTagsRequest]) (*connect.Response[feedv1.SetFeedTagsResponse], error) {

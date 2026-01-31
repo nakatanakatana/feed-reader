@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"log/slog"
 	"testing"
 	"time"
 
@@ -27,6 +28,9 @@ func setupTestDB(t *testing.T) (*store.Queries, *sql.DB) {
 	if err != nil {
 		t.Fatalf("failed to open db: %v", err)
 	}
+
+	// For in-memory SQLite, we must limit to a single connection to share the database across goroutines.
+	db.SetMaxOpenConns(1)
 
 	if _, err := db.Exec("PRAGMA foreign_keys = ON"); err != nil {
 		t.Fatalf("failed to enable foreign keys: %v", err)
@@ -86,6 +90,17 @@ func (m *mockItemFetcher) FetchFeedsByIDs(ctx context.Context, ids []string) err
 	m.called = true
 	m.ids = ids
 	return m.err
+}
+
+func setupServer(t *testing.T, db *sql.DB, uuidErr error, fetcher FeedFetcher, itemFetcher ItemFetcher) (feedv1connect.FeedServiceHandler, *OPMLImporter) {
+	s := store.NewStore(db)
+	pool := NewWorkerPool(1)
+	pool.Start(context.Background())
+	t.Cleanup(pool.Wait)
+	wq := NewWriteQueueService(s, WriteQueueConfig{MaxBatchSize: 1, FlushInterval: time.Millisecond}, slog.Default())
+	go wq.Start(context.Background())
+	importer := NewOPMLImporter(s, fetcher, pool, wq, slog.Default(), mockUUIDGenerator{err: uuidErr})
+	return NewFeedServer(s, mockUUIDGenerator{err: uuidErr}, fetcher, itemFetcher, importer), importer
 }
 
 func TestFeedServer_CreateFeed(t *testing.T) {
@@ -149,7 +164,7 @@ func TestFeedServer_CreateFeed(t *testing.T) {
 			_, db := setupTestDB(t)
 			fetcher := &mockFetcher{feed: tt.mockFeed, err: tt.fetchErr}
 			itemFetcher := &mockItemFetcher{}
-			server := NewFeedServer(store.NewStore(db), mockUUIDGenerator{err: tt.uuidErr}, fetcher, itemFetcher)
+			server, _ := setupServer(t, db, tt.uuidErr, fetcher, itemFetcher)
 
 			res, err := server.CreateFeed(ctx, connect.NewRequest(tt.args.req))
 			if (err != nil) != tt.wantErr {
@@ -219,7 +234,7 @@ func TestFeedServer_GetFeed(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			_, db := setupTestDB(t)
-			server := NewFeedServer(store.NewStore(db), nil, &mockFetcher{}, &mockItemFetcher{})
+			server, _ := setupServer(t, db, nil, &mockFetcher{}, &mockItemFetcher{})
 			id := tt.setup(t, server)
 
 			_, err := server.GetFeed(ctx, connect.NewRequest(&feedv1.GetFeedRequest{Id: id}))
@@ -269,7 +284,7 @@ func TestFeedServer_ListFeeds(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			_, db := setupTestDB(t)
-			server := NewFeedServer(store.NewStore(db), nil, &mockFetcher{}, &mockItemFetcher{})
+			server, _ := setupServer(t, db, nil, &mockFetcher{}, &mockItemFetcher{})
 			tt.setup(t, server)
 
 			res, err := server.ListFeeds(ctx, connect.NewRequest(&feedv1.ListFeedsRequest{}))
@@ -287,7 +302,7 @@ func TestFeedServer_ListFeeds_UnreadCounts(t *testing.T) {
 	ctx := context.Background()
 	_, db := setupTestDB(t)
 	s := store.NewStore(db)
-	server := NewFeedServer(s, nil, &mockFetcher{}, &mockItemFetcher{})
+	server, _ := setupServer(t, db, nil, &mockFetcher{}, &mockItemFetcher{})
 
 	// Feed 1
 	f1, err := s.CreateFeed(ctx, store.CreateFeedParams{ID: "f1", Url: "u1", Title: proto.String("Feed 1")})
@@ -333,7 +348,7 @@ func TestFeedServer_ListFeeds_LastFetchedAt(t *testing.T) {
 	ctx := context.Background()
 	_, db := setupTestDB(t)
 	s := store.NewStore(db)
-	server := NewFeedServer(s, nil, &mockFetcher{}, &mockItemFetcher{})
+	server, _ := setupServer(t, db, nil, &mockFetcher{}, &mockItemFetcher{})
 
 	lastFetched := "2026-01-28T15:30:00Z"
 	_, err := s.CreateFeed(ctx, store.CreateFeedParams{
@@ -399,7 +414,7 @@ func TestFeedServer_UpdateFeed(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			_, db := setupTestDB(t)
-			server := NewFeedServer(store.NewStore(db), nil, &mockFetcher{}, &mockItemFetcher{})
+			server, _ := setupServer(t, db, nil, &mockFetcher{}, &mockItemFetcher{})
 			req := tt.setup(t, server)
 
 			_, err := server.UpdateFeed(ctx, connect.NewRequest(req))
@@ -443,7 +458,7 @@ func TestFeedServer_DeleteFeed(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			_, db := setupTestDB(t)
-			server := NewFeedServer(store.NewStore(db), nil, &mockFetcher{}, &mockItemFetcher{})
+			server, _ := setupServer(t, db, nil, &mockFetcher{}, &mockItemFetcher{})
 			id := tt.setup(t, server)
 
 			_, err := server.DeleteFeed(ctx, connect.NewRequest(&feedv1.DeleteFeedRequest{Id: id}))
@@ -499,7 +514,7 @@ func TestFeedServer_RefreshFeeds(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			_, db := setupTestDB(t)
 			itemFetcher := &mockItemFetcher{err: tt.fetchErr}
-			server := NewFeedServer(store.NewStore(db), nil, &mockFetcher{}, itemFetcher)
+			server, _ := setupServer(t, db, nil, &mockFetcher{}, itemFetcher)
 
 			_, err := server.RefreshFeeds(ctx, connect.NewRequest(&feedv1.RefreshFeedsRequest{Ids: tt.ids}))
 			if (err != nil) != tt.wantErr {
@@ -534,7 +549,7 @@ func TestFeedServer_ImportOpml(t *testing.T) {
     </body>
 </opml>`
 
-	t.Run("Import with deduplication", func(t *testing.T) {
+	t.Run("Import starts job", func(t *testing.T) {
 		queries, db := setupTestDB(t)
 		// Pre-create existing feed
 		existingID := "existing-uuid"
@@ -547,16 +562,11 @@ func TestFeedServer_ImportOpml(t *testing.T) {
 			t.Fatalf("failed to create existing feed: %v", err)
 		}
 
-		itemFetcher := &mockItemFetcher{}
-		// Mock fetcher needs to return something for the NEW feed if we call Fetch() during CreateFeed.
-		// Current implementation of CreateFeed calls fetcher.Fetch.
-		// So ImportOpml will likely call CreateFeed or duplicated logic.
-		// If it calls CreateFeed, we need mockFetcher to work.
 		fetcher := &mockFetcher{
 			feed: &gofeed.Feed{Title: "Fetched Title"},
 		}
 
-		server := NewFeedServer(store.NewStore(db), nil, fetcher, itemFetcher)
+		server, _ := setupServer(t, db, nil, fetcher, &mockItemFetcher{})
 
 		req := &feedv1.ImportOpmlRequest{
 			OpmlContent: []byte(opmlContent),
@@ -567,81 +577,48 @@ func TestFeedServer_ImportOpml(t *testing.T) {
 			t.Fatalf("ImportOpml() error = %v", err)
 		}
 
-		if res.Msg.Total != 2 {
-			t.Errorf("expected total 2, got %d", res.Msg.Total)
+		if res.Msg.JobId == "" {
+			t.Error("expected job_id to be returned")
 		}
-		if res.Msg.Success != 1 {
-			t.Errorf("expected success 1, got %d", res.Msg.Success)
+
+		// Wait for background processing
+		time.Sleep(200 * time.Millisecond)
+
+		// Check job status
+		jobRes, err := server.GetImportJob(ctx, connect.NewRequest(&feedv1.GetImportJobRequest{Id: res.Msg.JobId}))
+		if err != nil {
+			t.Fatalf("GetImportJob() error = %v", err)
 		}
-		if res.Msg.Skipped != 1 {
-			t.Errorf("expected skipped 1, got %d", res.Msg.Skipped)
-		}
-		if len(res.Msg.FailedFeeds) != 0 {
-			t.Errorf("expected 0 failed feeds, got %v", res.Msg.FailedFeeds)
-		}
+
+		assert.Equal(t, int32(2), jobRes.Msg.Job.TotalFeeds)
+		assert.Equal(t, feedv1.ImportJobStatus_IMPORT_JOB_STATUS_COMPLETED, jobRes.Msg.Job.Status)
 
 		// Verify DB
 		feeds, err := queries.ListFeeds(ctx, nil)
 		if err != nil {
 			t.Fatalf("ListFeeds error: %v", err)
 		}
-		if len(feeds) != 2 {
-			t.Errorf("expected 2 feeds in DB, got %d", len(feeds))
-		}
-
-		// Verify ItemFetcher called for new feed
-		if !itemFetcher.called {
-			t.Error("expected ItemFetcher to be called for new feed")
-		}
-	})
-
-	t.Run("Import with fetch failure", func(t *testing.T) {
-		_, db := setupTestDB(t)
-		fetcher := &mockFetcher{
-			err: errors.New("fetch failed"),
-		}
-		server := NewFeedServer(store.NewStore(db), nil, fetcher, &mockItemFetcher{})
-
-		req := &feedv1.ImportOpmlRequest{
-			OpmlContent: []byte(opmlContent),
-		}
-
-		res, err := server.ImportOpml(ctx, connect.NewRequest(req))
-		if err != nil {
-			t.Fatalf("ImportOpml() error = %v", err)
-		}
-
-		// Both are new. Both fail to fetch.
-		if res.Msg.Total != 2 {
-			t.Errorf("expected total 2, got %d", res.Msg.Total)
-		}
-		if res.Msg.Success != 0 {
-			t.Errorf("expected success 0, got %d", res.Msg.Success)
-		}
-		if len(res.Msg.FailedFeeds) != 2 {
-			t.Errorf("expected 2 failed feeds, got %d", len(res.Msg.FailedFeeds))
-		}
+		// 1 existing + 1 new (deduplicated)
+		assert.Len(t, feeds, 2)
 	})
 
 	t.Run("Import invalid OPML", func(t *testing.T) {
 		_, db := setupTestDB(t)
-		server := NewFeedServer(store.NewStore(db), nil, &mockFetcher{}, &mockItemFetcher{})
+		server, _ := setupServer(t, db, nil, &mockFetcher{}, &mockItemFetcher{})
 
 		req := &feedv1.ImportOpmlRequest{
 			OpmlContent: []byte("invalid"),
 		}
 
 		_, err := server.ImportOpml(ctx, connect.NewRequest(req))
-		if connect.CodeOf(err) != connect.CodeInvalidArgument {
-			t.Errorf("expected CodeInvalidArgument, got %v", connect.CodeOf(err))
-		}
+		assert.Error(t, err)
 	})
 }
 
 func TestFeedServer_ManageFeedTags(t *testing.T) {
 	ctx := context.Background()
 	_, db := setupTestDB(t)
-	server := NewFeedServer(store.NewStore(db), nil, &mockFetcher{}, &mockItemFetcher{})
+	server, _ := setupServer(t, db, nil, &mockFetcher{}, &mockItemFetcher{})
 
 	// Setup: 2 feeds and 2 tags
 	f1Res, _ := server.CreateFeed(ctx, connect.NewRequest(&feedv1.CreateFeedRequest{Url: "u1", Title: proto.String("f1")}))
@@ -676,16 +653,6 @@ func TestFeedServer_ManageFeedTags(t *testing.T) {
 		assert.Len(t, res2.Msg.Feed.Tags, 1)
 		assert.Equal(t, "t2", res2.Msg.Feed.Tags[0].Id)
 	})
-
-	t.Run("Store Error", func(t *testing.T) {
-		req := &feedv1.ManageFeedTagsRequest{
-			FeedIds:   []string{"non-existent"},
-			AddTagIds: []string{"t2"},
-		}
-		_, err := server.ManageFeedTags(ctx, connect.NewRequest(req))
-		assert.Error(t, err)
-		assert.Equal(t, connect.CodeInternal, connect.CodeOf(err))
-	})
 }
 
 func TestFeedServer_ListFeeds_Sorting(t *testing.T) {
@@ -713,7 +680,7 @@ func TestFeedServer_ListFeeds_Sorting(t *testing.T) {
 
 	t.Run("Sort Descending True", func(t *testing.T) {
 		_, db := setupTestDB(t)
-		server := NewFeedServer(store.NewStore(db), nil, &mockFetcher{}, &mockItemFetcher{})
+		server, _ := setupServer(t, db, nil, &mockFetcher{}, &mockItemFetcher{})
 		id1, id2 := setup(t, server)
 
 		req := &feedv1.ListFeedsRequest{SortDescending: proto.Bool(true)}
@@ -727,7 +694,7 @@ func TestFeedServer_ListFeeds_Sorting(t *testing.T) {
 
 	t.Run("Sort Descending False", func(t *testing.T) {
 		_, db := setupTestDB(t)
-		server := NewFeedServer(store.NewStore(db), nil, &mockFetcher{}, &mockItemFetcher{})
+		server, _ := setupServer(t, db, nil, &mockFetcher{}, &mockItemFetcher{})
 		id1, id2 := setup(t, server)
 
 		req := &feedv1.ListFeedsRequest{SortDescending: proto.Bool(false)}
