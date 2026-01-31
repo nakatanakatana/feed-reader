@@ -180,7 +180,7 @@ SELECT
   i.id,
   i.url,
   i.title,
-  i.description,
+  CAST(COALESCE(SUBSTR(i.description, 1, 140), '') AS TEXT) AS description,
   i.published_at,
   i.author,
   i.guid,
@@ -359,5 +359,3 @@ SET
   updated_at = CURRENT_TIMESTAMP
 WHERE
   id = ?;
-
-

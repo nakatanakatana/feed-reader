@@ -98,15 +98,38 @@ func TestItemServer(t *testing.T) {
 	})
 
 	t.Run("ListItems", func(t *testing.T) {
+		longDesc := make([]byte, 150)
+		for i := range longDesc {
+			longDesc[i] = 'a'
+		}
+		desc := string(longDesc)
+		err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
+			FeedID:      feedID,
+			Url:         "http://example.com/item-with-desc",
+			Title:       proto.String("Item with desc"),
+			Description: &desc,
+			PublishedAt: &t2,
+		})
+		require.NoError(t, err)
+
 		res, err := server.ListItems(ctx, connect.NewRequest(&itemv1.ListItemsRequest{
 			Limit: 10,
 		}))
 		require.NoError(t, err)
-		assert.Len(t, res.Msg.Items, 3)
+		assert.Len(t, res.Msg.Items, 4)
 		for _, item := range res.Msg.Items {
 			assert.NotEmpty(t, item.Title)
 			assert.NotEmpty(t, item.CreatedAt)
 		}
+
+		var found bool
+		for _, item := range res.Msg.Items {
+			if item.Title == "Item with desc" {
+				found = true
+				assert.Len(t, item.Description, 140)
+			}
+		}
+		assert.True(t, found)
 	})
 
 	t.Run("UpdateItemStatus", func(t *testing.T) {
@@ -129,6 +152,6 @@ func TestItemServer(t *testing.T) {
 		}))
 		require.NoError(t, err)
 		// Should include item2 and rich item, but not item1 (2h ago)
-		assert.Len(t, res.Msg.Items, 2)
+		assert.Len(t, res.Msg.Items, 3)
 	})
 }
