@@ -1,10 +1,10 @@
+import { createConnectTransport } from "@connectrpc/connect-web";
 import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { ItemDetailModal } from "./ItemDetailModal";
 import { TransportProvider } from "../lib/transport-context";
-import { createConnectTransport } from "@connectrpc/connect-web";
+import { ItemDetailModal } from "./ItemDetailModal";
 
 // Mock hooks
 vi.mock("../lib/item-query", () => ({
@@ -33,7 +33,7 @@ describe("ItemDetailModal UI Updates", () => {
       description: "Short description",
       content: "<div>Full body content</div>",
       imageUrl: "http://example.com/image.jpg",
-      categories: "Tech, SolidJS",
+      categories: '["Tech","SolidJS"]',
       publishedAt: "2026-01-28",
       author: "Author Name",
       isRead: false,
@@ -81,6 +81,47 @@ describe("ItemDetailModal UI Updates", () => {
     const img = document.body.querySelector("img");
     expect(img).not.toBeNull();
     expect(img).toHaveAttribute("src", "http://example.com/image.jpg");
+
+    await expect.element(page.getByText("Tech")).toBeInTheDocument();
+    await expect.element(page.getByText("SolidJS")).toBeInTheDocument();
+  });
+
+  it("falls back to comma-separated categories when JSON parsing fails", async () => {
+    const mockItem = {
+      id: "2",
+      title: "Fallback Item",
+      url: "http://example.com/fallback",
+      description: "Short description",
+      content: "<div>Fallback content</div>",
+      imageUrl: "http://example.com/fallback.jpg",
+      categories: "Tech, SolidJS",
+      publishedAt: "2026-01-29",
+      author: "Author Name",
+      isRead: false,
+    };
+
+    vi.mocked(useItem).mockReturnValue({
+      data: mockItem,
+      isLoading: false,
+      // biome-ignore lint/suspicious/noExplicitAny: Mocking query result
+    } as any);
+
+    vi.mocked(useUpdateItemStatus).mockReturnValue({
+      mutate: vi.fn(),
+      isPending: false,
+      // biome-ignore lint/suspicious/noExplicitAny: Mocking mutation result
+    } as any);
+
+    dispose = render(
+      () => (
+        <TransportProvider transport={transport}>
+          <QueryClientProvider client={queryClient}>
+            <ItemDetailModal itemId="2" onClose={() => {}} />
+          </QueryClientProvider>
+        </TransportProvider>
+      ),
+      document.body,
+    );
 
     await expect.element(page.getByText("Tech")).toBeInTheDocument();
     await expect.element(page.getByText("SolidJS")).toBeInTheDocument();

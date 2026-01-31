@@ -73,3 +73,24 @@ export const getItemDisplayDate = (
     date: item.createdAt,
   };
 };
+
+export const normalizeCategories = (categories: string): string[] => {
+  if (!categories) return [];
+  const trimmed = categories.trim();
+  if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
+    try {
+      const parsed = JSON.parse(trimmed);
+      if (Array.isArray(parsed)) {
+        return parsed
+          .map((value) => String(value).trim())
+          .filter((value) => value.length > 0);
+      }
+    } catch (_error) {
+      // Fall back to comma-splitting below.
+    }
+  }
+  return trimmed
+    .split(",")
+    .map((value) => value.trim())
+    .filter((value) => value.length > 0);
+};
