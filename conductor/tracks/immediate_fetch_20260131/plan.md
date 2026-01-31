@@ -6,7 +6,7 @@ This plan implements the "Fetch Now" feature, allowing users to manually trigger
 - [x] Task: Update Protobuf for `RefreshFeeds` response [6b6f200]
     - [ ] Modify `proto/feed/v1/feed.proto` to add `FeedFetchStatus` and update `RefreshFeedsResponse` to return status and new item counts.
     - [ ] Run `buf generate` to update generated Go and TypeScript code.
-- [ ] Task: Implement synchronous fetch logic in `FetcherService`
+- [x] Task: Implement synchronous fetch logic in `FetcherService` [2f47bec]
     - [ ] Add tracking for in-progress fetches to `FetcherService` to prevent redundant operations.
     - [ ] Implement a method that waits for the fetch operation to complete and returns the result (success/failure, count).
 - [ ] Task: Update `FeedServer.RefreshFeeds` handler
