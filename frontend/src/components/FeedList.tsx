@@ -588,6 +588,7 @@ export function FeedList() {
             right: "6",
             zIndex: 100,
           })}
+          style={{ position: "fixed" }}
         >
           <div class={stack({ gap: "2", alignItems: "flex-end" })}>
             <button
