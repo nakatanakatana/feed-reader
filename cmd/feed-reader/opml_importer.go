@@ -3,174 +3,78 @@ package main
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"log/slog"
 
-	feedv1 "github.com/nakatanakatana/feed-reader/gen/go/feed/v1"
 	"github.com/nakatanakatana/feed-reader/store"
 )
 
-type OPMLImporter struct {
-	store      *store.Store
-	fetcher    FeedFetcher
-	pool       *WorkerPool
-	writeQueue *WriteQueueService
-	logger     *slog.Logger
-	uuidGen    UUIDGenerator
+type ImportResults struct {
+	Total       int32
+	Success     int32
+	Skipped     int32
+	FailedFeeds []string
 }
 
-func NewOPMLImporter(s *store.Store, f FeedFetcher, p *WorkerPool, wq *WriteQueueService, l *slog.Logger, uuidGen UUIDGenerator) *OPMLImporter {
-	if uuidGen == nil {
-		uuidGen = realUUIDGenerator{}
-	}
-	return &OPMLImporter{
-		store:      s,
-		fetcher:    f,
-		pool:       p,
-		writeQueue: wq,
-		logger:     l,
-		uuidGen:    uuidGen,
-	}
-}
-
-func (i *OPMLImporter) StartImportJob(ctx context.Context, opmlContent []byte) (string, error) {
+func (i *OPMLImporter) ImportSync(ctx context.Context, opmlContent []byte) (*ImportResults, error) {
 	opmlFeeds, err := ParseOPML(opmlContent)
 	if err != nil {
-		return "", fmt.Errorf("failed to parse OPML: %w", err)
+		return nil, fmt.Errorf("failed to parse OPML: %w", err)
 	}
 
-	newUUID, err := i.uuidGen.NewRandom()
-	if err != nil {
-		return "", fmt.Errorf("failed to generate UUID: %w", err)
-	}
-	jobID := newUUID.String()
-
-	// Create job record
-	_, err = i.store.CreateImportJob(ctx, store.CreateImportJobParams{
-		ID:         jobID,
-		Status:     "queued",
-		TotalFeeds: int64(len(opmlFeeds)),
-	})
-	if err != nil {
-		return "", fmt.Errorf("failed to create import job record: %w", err)
+	results := &ImportResults{
+		Total: int32(len(opmlFeeds)),
 	}
 
-	// Start background task
-	i.pool.AddTask(func(ctx context.Context) error {
-		i.processJob(ctx, jobID, opmlFeeds)
-		return nil
-	})
+	for _, f := range opmlFeeds {
+		// Deduplication
+		_, err := i.store.GetFeedByURL(ctx, f.URL)
+		if err == nil {
+			// Already exists
+			results.Skipped++
+			continue
+		}
+		if !errors.Is(err, sql.ErrNoRows) {
+			i.logger.ErrorContext(ctx, "db error checking feed existence", "url", f.URL, "error", err)
+			results.FailedFeeds = append(results.FailedFeeds, f.URL)
+			continue
+		}
 
-	return jobID, nil
-}
-
-func (i *OPMLImporter) processJob(ctx context.Context, jobID string, feeds []OpmlFeed) {
-	i.logger.InfoContext(ctx, "starting OPML import job", "job_id", jobID, "count", len(feeds))
-
-	// Update status to processing
-	_, _ = i.store.UpdateImportJob(ctx, store.UpdateImportJobParams{
-		ID:     jobID,
-		Status: "processing",
-	})
-
-	processed := 0
-	failedURLs := []string{}
-
-	for _, f := range feeds {
-		err := i.importOne(ctx, f)
+		// Fetch metadata
+		fetchedFeed, err := i.fetcher.Fetch(ctx, f.URL)
 		if err != nil {
-			i.logger.ErrorContext(ctx, "failed to import feed from OPML", "url", f.URL, "error", err)
-			failedURLs = append(failedURLs, f.URL)
+			i.logger.ErrorContext(ctx, "failed to fetch feed metadata", "url", f.URL, "error", err)
+			results.FailedFeeds = append(results.FailedFeeds, f.URL)
+			continue
 		}
-		processed++
 
-		// Periodic update? For now every feed.
-		var failedFeedsJSON *string
-		if len(failedURLs) > 0 {
-			if b, err := json.Marshal(failedURLs); err == nil {
-				s := string(b)
-				failedFeedsJSON = &s
+		newUUID, err := i.uuidGen.NewRandom()
+		if err != nil {
+			return nil, fmt.Errorf("failed to generate UUID: %w", err)
+		}
+		feedID := newUUID.String()
+
+		strPtr := func(s string) *string {
+			if s == "" {
+				return nil
 			}
+			return &s
 		}
 
-		_, _ = i.store.UpdateImportJob(ctx, store.UpdateImportJobParams{
-			ID:             jobID,
-			Status:         "processing",
-			ProcessedFeeds: int64(processed),
-			FailedFeeds:    failedFeedsJSON,
-		})
-	}
-
-	status := "completed"
-	if len(failedURLs) == len(feeds) && len(feeds) > 0 {
-		status = "failed"
-	}
-
-	var failedFeedsJSON *string
-	if len(failedURLs) > 0 {
-		if b, err := json.Marshal(failedURLs); err == nil {
-			s := string(b)
-			failedFeedsJSON = &s
+		var imageUrl *string
+		if fetchedFeed.Image != nil {
+			imageUrl = strPtr(fetchedFeed.Image.URL)
 		}
-	}
 
-	_, _ = i.store.UpdateImportJob(ctx, store.UpdateImportJobParams{
-		ID:             jobID,
-		Status:         status,
-		ProcessedFeeds: int64(processed),
-		FailedFeeds:    failedFeedsJSON,
-	})
-
-	i.logger.InfoContext(ctx, "finished OPML import job", "job_id", jobID, "status", status)
-}
-
-func (i *OPMLImporter) importOne(ctx context.Context, opmlFeed OpmlFeed) error {
-	// Deduplication
-	_, err := i.store.GetFeedByURL(ctx, opmlFeed.URL)
-	if err == nil {
-		// Already exists
-		return nil
-	}
-	if !errors.Is(err, sql.ErrNoRows) {
-		return fmt.Errorf("db error checking feed existence: %w", err)
-	}
-
-	// Fetch
-	fetchedFeed, err := i.fetcher.Fetch(ctx, opmlFeed.URL)
-	if err != nil {
-		return fmt.Errorf("failed to fetch feed: %w", err)
-	}
-
-	newUUID, err := i.uuidGen.NewRandom()
-	if err != nil {
-		return fmt.Errorf("failed to generate UUID: %w", err)
-	}
-	feedID := newUUID.String()
-
-	strPtr := func(s string) *string {
-		if s == "" {
-			return nil
+		title := fetchedFeed.Title
+		if f.Title != "" {
+			title = f.Title
 		}
-		return &s
-	}
 
-	var imageUrl *string
-	if fetchedFeed.Image != nil {
-		imageUrl = strPtr(fetchedFeed.Image.URL)
-	}
-
-	title := fetchedFeed.Title
-	if opmlFeed.Title != "" {
-		title = opmlFeed.Title
-	}
-
-	// Submit to write queue
-	i.writeQueue.Submit(&CreateFeedJob{
-		Params: store.CreateFeedParams{
+		_, err = i.store.CreateFeed(ctx, store.CreateFeedParams{
 			ID:          feedID,
-			Url:         opmlFeed.URL,
+			Url:         f.URL,
 			Title:       strPtr(title),
 			Description: strPtr(fetchedFeed.Description),
 			Link:        strPtr(fetchedFeed.Link),
@@ -179,44 +83,37 @@ func (i *OPMLImporter) importOne(ctx context.Context, opmlFeed OpmlFeed) error {
 			Copyright:   strPtr(fetchedFeed.Copyright),
 			FeedType:    strPtr(fetchedFeed.FeedType),
 			FeedVersion: strPtr(fetchedFeed.FeedVersion),
-		},
-	})
+		})
+		if err != nil {
+			i.logger.ErrorContext(ctx, "failed to create feed in db", "url", f.URL, "error", err)
+			results.FailedFeeds = append(results.FailedFeeds, f.URL)
+			continue
+		}
 
-	return nil
+		results.Success++
+	}
+
+	return results, nil
 }
 
-func (i *OPMLImporter) GetImportJob(ctx context.Context, id string) (*feedv1.ImportJob, error) {
-	job, err := i.store.GetImportJob(ctx, id)
-	if err != nil {
-		return nil, err
-	}
 
-	var status feedv1.ImportJobStatus
-	switch job.Status {
-	case "queued":
-		status = feedv1.ImportJobStatus_IMPORT_JOB_STATUS_QUEUED
-	case "processing":
-		status = feedv1.ImportJobStatus_IMPORT_JOB_STATUS_PROCESSING
-	case "completed":
-		status = feedv1.ImportJobStatus_IMPORT_JOB_STATUS_COMPLETED
-	case "failed":
-		status = feedv1.ImportJobStatus_IMPORT_JOB_STATUS_FAILED
-	default:
-		status = feedv1.ImportJobStatus_IMPORT_JOB_STATUS_UNSPECIFIED
-	}
-
-	var failedFeeds []string
-	if job.FailedFeeds != nil {
-		_ = json.Unmarshal([]byte(*job.FailedFeeds), &failedFeeds)
-	}
-
-	return &feedv1.ImportJob{
-		Id:             job.ID,
-		Status:         status,
-		TotalFeeds:     int32(job.TotalFeeds),
-		ProcessedFeeds: int32(job.ProcessedFeeds),
-		FailedFeeds:    failedFeeds,
-		CreatedAt:      job.CreatedAt,
-		UpdatedAt:      job.UpdatedAt,
-	}, nil
+type OPMLImporter struct {
+	store   *store.Store
+	fetcher FeedFetcher
+	logger  *slog.Logger
+	uuidGen UUIDGenerator
 }
+
+func NewOPMLImporter(s *store.Store, f FeedFetcher, l *slog.Logger, uuidGen UUIDGenerator) *OPMLImporter {
+	if uuidGen == nil {
+		uuidGen = realUUIDGenerator{}
+	}
+	return &OPMLImporter{
+		store:   s,
+		fetcher: f,
+		logger:  l,
+		uuidGen: uuidGen,
+	}
+}
+
+

@@ -14,7 +14,7 @@ service FeedService {
   rpc DeleteFeed(DeleteFeedRequest) returns (DeleteFeedResponse);
   rpc RefreshFeeds(RefreshFeedsRequest) returns (RefreshFeedsResponse);
   rpc ImportOpml(ImportOpmlRequest) returns (ImportOpmlResponse);
-  rpc GetImportJob(GetImportJobRequest) returns (GetImportJobResponse);
+
 
   // Tag management
   rpc SetFeedTags(SetFeedTagsRequest) returns (SetFeedTagsResponse);
@@ -130,34 +130,10 @@ message ImportOpmlResponse {
   int32 success = 2;
   int32 skipped = 3;
   repeated string failed_feeds = 4;
-  string job_id = 5;
+
 }
 
-enum ImportJobStatus {
-  IMPORT_JOB_STATUS_UNSPECIFIED = 0;
-  IMPORT_JOB_STATUS_QUEUED = 1;
-  IMPORT_JOB_STATUS_PROCESSING = 2;
-  IMPORT_JOB_STATUS_COMPLETED = 3;
-  IMPORT_JOB_STATUS_FAILED = 4;
-}
 
-message ImportJob {
-  string id = 1;
-  ImportJobStatus status = 2;
-  int32 total_feeds = 3;
-  int32 processed_feeds = 4;
-  repeated string failed_feeds = 5;
-  string created_at = 6;
-  string updated_at = 7;
-}
-
-message GetImportJobRequest {
-  string id = 1;
-}
-
-message GetImportJobResponse {
-  ImportJob job = 1;
-}
 
 message SetFeedTagsRequest {
   string feed_id = 1;

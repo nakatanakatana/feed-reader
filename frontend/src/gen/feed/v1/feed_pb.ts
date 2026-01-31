@@ -2,8 +2,8 @@
 // @generated from file feed/v1/feed.proto (package feed.v1, syntax proto3)
 /* eslint-disable */
 
-import type { GenEnum, GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
-import { enumDesc, fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
+import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
+import { fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
 import type { Tag } from "../../tag/v1/tag_pb";
 import { file_tag_v1_tag } from "../../tag/v1/tag_pb";
 import type { Message } from "@bufbuild/protobuf";
@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file feed/v1/feed.proto.
  */
 export const file_feed_v1_feed: GenFile = /*@__PURE__*/
-  fileDesc("ChJmZWVkL3YxL2ZlZWQucHJvdG8SB2ZlZWQudjEiuQMKBEZlZWQSCgoCaWQYASABKAkSCwoDdXJsGAIgASgJEhEKBGxpbmsYAyABKAlIAIgBARINCgV0aXRsZRgEIAEoCRIYCgtkZXNjcmlwdGlvbhgFIAEoCUgBiAEBEhEKBGxhbmcYBiABKAlIAogBARIWCglpbWFnZV91cmwYByABKAlIA4gBARIWCgljb3B5cmlnaHQYCCABKAlIBIgBARIWCglmZWVkX3R5cGUYCSABKAlIBYgBARIZCgxmZWVkX3ZlcnNpb24YCiABKAlIBogBARIcCg9sYXN0X2ZldGNoZWRfYXQYCyABKAlIB4gBARISCgpjcmVhdGVkX2F0GAwgASgJEhIKCnVwZGF0ZWRfYXQYDSABKAkSGQoEdGFncxgOIAMoCzILLnRhZy52MS5UYWcSFAoMdW5yZWFkX2NvdW50GA8gASgDQgcKBV9saW5rQg4KDF9kZXNjcmlwdGlvbkIHCgVfbGFuZ0IMCgpfaW1hZ2VfdXJsQgwKCl9jb3B5cmlnaHRCDAoKX2ZlZWRfdHlwZUIPCg1fZmVlZF92ZXJzaW9uQhIKEF9sYXN0X2ZldGNoZWRfYXQisQEKCExpc3RGZWVkEgoKAmlkGAEgASgJEgsKA3VybBgCIAEoCRINCgV0aXRsZRgDIAEoCRIUCgx1bnJlYWRfY291bnQYBCABKAMSGQoEdGFncxgFIAMoCzILLnRhZy52MS5UYWcSEQoEbGluaxgGIAEoCUgAiAEBEhwKD2xhc3RfZmV0Y2hlZF9hdBgHIAEoCUgBiAEBQgcKBV9saW5rQhIKEF9sYXN0X2ZldGNoZWRfYXQiHAoOR2V0RmVlZFJlcXVlc3QSCgoCaWQYASABKAkiLgoPR2V0RmVlZFJlc3BvbnNlEhsKBGZlZWQYASABKAsyDS5mZWVkLnYxLkZlZWQiMgoQTGlzdEZlZWRzUmVxdWVzdBITCgZ0YWdfaWQYASABKAlIAIgBAUIJCgdfdGFnX2lkIjUKEUxpc3RGZWVkc1Jlc3BvbnNlEiAKBWZlZWRzGAEgAygLMhEuZmVlZC52MS5MaXN0RmVlZCLPAgoRQ3JlYXRlRmVlZFJlcXVlc3QSCwoDdXJsGAEgASgJEhIKBXRpdGxlGAIgASgJSACIAQESEQoEbGluaxgDIAEoCUgBiAEBEhgKC2Rlc2NyaXB0aW9uGAQgASgJSAKIAQESEQoEbGFuZxgFIAEoCUgDiAEBEhYKCWltYWdlX3VybBgGIAEoCUgEiAEBEhYKCWNvcHlyaWdodBgHIAEoCUgFiAEBEhYKCWZlZWRfdHlwZRgIIAEoCUgGiAEBEhkKDGZlZWRfdmVyc2lvbhgJIAEoCUgHiAEBEg8KB3RhZ19pZHMYCiADKAlCCAoGX3RpdGxlQgcKBV9saW5rQg4KDF9kZXNjcmlwdGlvbkIHCgVfbGFuZ0IMCgpfaW1hZ2VfdXJsQgwKCl9jb3B5cmlnaHRCDAoKX2ZlZWRfdHlwZUIPCg1fZmVlZF92ZXJzaW9uIjEKEkNyZWF0ZUZlZWRSZXNwb25zZRIbCgRmZWVkGAEgASgLMg0uZmVlZC52MS5GZWVkIoADChFVcGRhdGVGZWVkUmVxdWVzdBIKCgJpZBgBIAEoCRISCgV0aXRsZRgDIAEoCUgAiAEBEhEKBGxpbmsYBCABKAlIAYgBARIYCgtkZXNjcmlwdGlvbhgFIAEoCUgCiAEBEhEKBGxhbmcYBiABKAlIA4gBARIWCglpbWFnZV91cmwYByABKAlIBIgBARIWCgljb3B5cmlnaHQYCCABKAlIBYgBARIWCglmZWVkX3R5cGUYCSABKAlIBogBARIZCgxmZWVkX3ZlcnNpb24YCiABKAlIB4gBARIcCg9sYXN0X2ZldGNoZWRfYXQYCyABKAlICIgBARIPCgd0YWdfaWRzGAwgAygJQggKBl90aXRsZUIHCgVfbGlua0IOCgxfZGVzY3JpcHRpb25CBwoFX2xhbmdCDAoKX2ltYWdlX3VybEIMCgpfY29weXJpZ2h0QgwKCl9mZWVkX3R5cGVCDwoNX2ZlZWRfdmVyc2lvbkISChBfbGFzdF9mZXRjaGVkX2F0IjEKElVwZGF0ZUZlZWRSZXNwb25zZRIbCgRmZWVkGAEgASgLMg0uZmVlZC52MS5GZWVkIh8KEURlbGV0ZUZlZWRSZXF1ZXN0EgoKAmlkGAEgASgJIhQKEkRlbGV0ZUZlZWRSZXNwb25zZSIiChNSZWZyZXNoRmVlZHNSZXF1ZXN0EgsKA2lkcxgBIAMoCSJ6Cg9GZWVkRmV0Y2hTdGF0dXMSDwoHZmVlZF9pZBgBIAEoCRIPCgdzdWNjZXNzGAIgASgIEhcKD25ld19pdGVtc19jb3VudBgDIAEoBRIaCg1lcnJvcl9tZXNzYWdlGAQgASgJSACIAQFCEAoOX2Vycm9yX21lc3NhZ2UiQQoUUmVmcmVzaEZlZWRzUmVzcG9uc2USKQoHcmVzdWx0cxgBIAMoCzIYLmZlZWQudjEuRmVlZEZldGNoU3RhdHVzIikKEUltcG9ydE9wbWxSZXF1ZXN0EhQKDG9wbWxfY29udGVudBgBIAEoDCJrChJJbXBvcnRPcG1sUmVzcG9uc2USDQoFdG90YWwYASABKAUSDwoHc3VjY2VzcxgCIAEoBRIPCgdza2lwcGVkGAMgASgFEhQKDGZhaWxlZF9mZWVkcxgEIAMoCRIOCgZqb2JfaWQYBSABKAkirQEKCUltcG9ydEpvYhIKCgJpZBgBIAEoCRIoCgZzdGF0dXMYAiABKA4yGC5mZWVkLnYxLkltcG9ydEpvYlN0YXR1cxITCgt0b3RhbF9mZWVkcxgDIAEoBRIXCg9wcm9jZXNzZWRfZmVlZHMYBCABKAUSFAoMZmFpbGVkX2ZlZWRzGAUgAygJEhIKCmNyZWF0ZWRfYXQYBiABKAkSEgoKdXBkYXRlZF9hdBgHIAEoCSIhChNHZXRJbXBvcnRKb2JSZXF1ZXN0EgoKAmlkGAEgASgJIjcKFEdldEltcG9ydEpvYlJlc3BvbnNlEh8KA2pvYhgBIAEoCzISLmZlZWQudjEuSW1wb3J0Sm9iIjYKElNldEZlZWRUYWdzUmVxdWVzdBIPCgdmZWVkX2lkGAEgASgJEg8KB3RhZ19pZHMYAiADKAkiFQoTU2V0RmVlZFRhZ3NSZXNwb25zZSJWChVNYW5hZ2VGZWVkVGFnc1JlcXVlc3QSEAoIZmVlZF9pZHMYASADKAkSEwoLYWRkX3RhZ19pZHMYAiADKAkSFgoOcmVtb3ZlX3RhZ19pZHMYAyADKAkiGAoWTWFuYWdlRmVlZFRhZ3NSZXNwb25zZSqzAQoPSW1wb3J0Sm9iU3RhdHVzEiEKHUlNUE9SVF9KT0JfU1RBVFVTX1VOU1BFQ0lGSUVEEAASHAoYSU1QT1JUX0pPQl9TVEFUVVNfUVVFVUVEEAESIAocSU1QT1JUX0pPQl9TVEFUVVNfUFJPQ0VTU0lORxACEh8KG0lNUE9SVF9KT0JfU1RBVFVTX0NPTVBMRVRFRBADEhwKGElNUE9SVF9KT0JfU1RBVFVTX0ZBSUxFRBAEMuIFCgtGZWVkU2VydmljZRI8CgdHZXRGZWVkEhcuZmVlZC52MS5HZXRGZWVkUmVxdWVzdBoYLmZlZWQudjEuR2V0RmVlZFJlc3BvbnNlEkIKCUxpc3RGZWVkcxIZLmZlZWQudjEuTGlzdEZlZWRzUmVxdWVzdBoaLmZlZWQudjEuTGlzdEZlZWRzUmVzcG9uc2USRQoKQ3JlYXRlRmVlZBIaLmZlZWQudjEuQ3JlYXRlRmVlZFJlcXVlc3QaGy5mZWVkLnYxLkNyZWF0ZUZlZWRSZXNwb25zZRJFCgpVcGRhdGVGZWVkEhouZmVlZC52MS5VcGRhdGVGZWVkUmVxdWVzdBobLmZlZWQudjEuVXBkYXRlRmVlZFJlc3BvbnNlEkUKCkRlbGV0ZUZlZWQSGi5mZWVkLnYxLkRlbGV0ZUZlZWRSZXF1ZXN0GhsuZmVlZC52MS5EZWxldGVGZWVkUmVzcG9uc2USSwoMUmVmcmVzaEZlZWRzEhwuZmVlZC52MS5SZWZyZXNoRmVlZHNSZXF1ZXN0Gh0uZmVlZC52MS5SZWZyZXNoRmVlZHNSZXNwb25zZRJFCgpJbXBvcnRPcG1sEhouZmVlZC52MS5JbXBvcnRPcG1sUmVxdWVzdBobLmZlZWQudjEuSW1wb3J0T3BtbFJlc3BvbnNlEksKDEdldEltcG9ydEpvYhIcLmZlZWQudjEuR2V0SW1wb3J0Sm9iUmVxdWVzdBodLmZlZWQudjEuR2V0SW1wb3J0Sm9iUmVzcG9uc2USSAoLU2V0RmVlZFRhZ3MSGy5mZWVkLnYxLlNldEZlZWRUYWdzUmVxdWVzdBocLmZlZWQudjEuU2V0RmVlZFRhZ3NSZXNwb25zZRJRCg5NYW5hZ2VGZWVkVGFncxIeLmZlZWQudjEuTWFuYWdlRmVlZFRhZ3NSZXF1ZXN0Gh8uZmVlZC52MS5NYW5hZ2VGZWVkVGFnc1Jlc3BvbnNlQj1aO2dpdGh1Yi5jb20vbmFrYXRhbmFrYXRhbmEvZmVlZC1yZWFkZXIvZ2VuL2dvL2ZlZWQvdjE7ZmVlZHYxYgZwcm90bzM", [file_tag_v1_tag]);
+  fileDesc("ChJmZWVkL3YxL2ZlZWQucHJvdG8SB2ZlZWQudjEiuQMKBEZlZWQSCgoCaWQYASABKAkSCwoDdXJsGAIgASgJEhEKBGxpbmsYAyABKAlIAIgBARINCgV0aXRsZRgEIAEoCRIYCgtkZXNjcmlwdGlvbhgFIAEoCUgBiAEBEhEKBGxhbmcYBiABKAlIAogBARIWCglpbWFnZV91cmwYByABKAlIA4gBARIWCgljb3B5cmlnaHQYCCABKAlIBIgBARIWCglmZWVkX3R5cGUYCSABKAlIBYgBARIZCgxmZWVkX3ZlcnNpb24YCiABKAlIBogBARIcCg9sYXN0X2ZldGNoZWRfYXQYCyABKAlIB4gBARISCgpjcmVhdGVkX2F0GAwgASgJEhIKCnVwZGF0ZWRfYXQYDSABKAkSGQoEdGFncxgOIAMoCzILLnRhZy52MS5UYWcSFAoMdW5yZWFkX2NvdW50GA8gASgDQgcKBV9saW5rQg4KDF9kZXNjcmlwdGlvbkIHCgVfbGFuZ0IMCgpfaW1hZ2VfdXJsQgwKCl9jb3B5cmlnaHRCDAoKX2ZlZWRfdHlwZUIPCg1fZmVlZF92ZXJzaW9uQhIKEF9sYXN0X2ZldGNoZWRfYXQisQEKCExpc3RGZWVkEgoKAmlkGAEgASgJEgsKA3VybBgCIAEoCRINCgV0aXRsZRgDIAEoCRIUCgx1bnJlYWRfY291bnQYBCABKAMSGQoEdGFncxgFIAMoCzILLnRhZy52MS5UYWcSEQoEbGluaxgGIAEoCUgAiAEBEhwKD2xhc3RfZmV0Y2hlZF9hdBgHIAEoCUgBiAEBQgcKBV9saW5rQhIKEF9sYXN0X2ZldGNoZWRfYXQiHAoOR2V0RmVlZFJlcXVlc3QSCgoCaWQYASABKAkiLgoPR2V0RmVlZFJlc3BvbnNlEhsKBGZlZWQYASABKAsyDS5mZWVkLnYxLkZlZWQiMgoQTGlzdEZlZWRzUmVxdWVzdBITCgZ0YWdfaWQYASABKAlIAIgBAUIJCgdfdGFnX2lkIjUKEUxpc3RGZWVkc1Jlc3BvbnNlEiAKBWZlZWRzGAEgAygLMhEuZmVlZC52MS5MaXN0RmVlZCLPAgoRQ3JlYXRlRmVlZFJlcXVlc3QSCwoDdXJsGAEgASgJEhIKBXRpdGxlGAIgASgJSACIAQESEQoEbGluaxgDIAEoCUgBiAEBEhgKC2Rlc2NyaXB0aW9uGAQgASgJSAKIAQESEQoEbGFuZxgFIAEoCUgDiAEBEhYKCWltYWdlX3VybBgGIAEoCUgEiAEBEhYKCWNvcHlyaWdodBgHIAEoCUgFiAEBEhYKCWZlZWRfdHlwZRgIIAEoCUgGiAEBEhkKDGZlZWRfdmVyc2lvbhgJIAEoCUgHiAEBEg8KB3RhZ19pZHMYCiADKAlCCAoGX3RpdGxlQgcKBV9saW5rQg4KDF9kZXNjcmlwdGlvbkIHCgVfbGFuZ0IMCgpfaW1hZ2VfdXJsQgwKCl9jb3B5cmlnaHRCDAoKX2ZlZWRfdHlwZUIPCg1fZmVlZF92ZXJzaW9uIjEKEkNyZWF0ZUZlZWRSZXNwb25zZRIbCgRmZWVkGAEgASgLMg0uZmVlZC52MS5GZWVkIoADChFVcGRhdGVGZWVkUmVxdWVzdBIKCgJpZBgBIAEoCRISCgV0aXRsZRgDIAEoCUgAiAEBEhEKBGxpbmsYBCABKAlIAYgBARIYCgtkZXNjcmlwdGlvbhgFIAEoCUgCiAEBEhEKBGxhbmcYBiABKAlIA4gBARIWCglpbWFnZV91cmwYByABKAlIBIgBARIWCgljb3B5cmlnaHQYCCABKAlIBYgBARIWCglmZWVkX3R5cGUYCSABKAlIBogBARIZCgxmZWVkX3ZlcnNpb24YCiABKAlIB4gBARIcCg9sYXN0X2ZldGNoZWRfYXQYCyABKAlICIgBARIPCgd0YWdfaWRzGAwgAygJQggKBl90aXRsZUIHCgVfbGlua0IOCgxfZGVzY3JpcHRpb25CBwoFX2xhbmdCDAoKX2ltYWdlX3VybEIMCgpfY29weXJpZ2h0QgwKCl9mZWVkX3R5cGVCDwoNX2ZlZWRfdmVyc2lvbkISChBfbGFzdF9mZXRjaGVkX2F0IjEKElVwZGF0ZUZlZWRSZXNwb25zZRIbCgRmZWVkGAEgASgLMg0uZmVlZC52MS5GZWVkIh8KEURlbGV0ZUZlZWRSZXF1ZXN0EgoKAmlkGAEgASgJIhQKEkRlbGV0ZUZlZWRSZXNwb25zZSIiChNSZWZyZXNoRmVlZHNSZXF1ZXN0EgsKA2lkcxgBIAMoCSJ6Cg9GZWVkRmV0Y2hTdGF0dXMSDwoHZmVlZF9pZBgBIAEoCRIPCgdzdWNjZXNzGAIgASgIEhcKD25ld19pdGVtc19jb3VudBgDIAEoBRIaCg1lcnJvcl9tZXNzYWdlGAQgASgJSACIAQFCEAoOX2Vycm9yX21lc3NhZ2UiQQoUUmVmcmVzaEZlZWRzUmVzcG9uc2USKQoHcmVzdWx0cxgBIAMoCzIYLmZlZWQudjEuRmVlZEZldGNoU3RhdHVzIikKEUltcG9ydE9wbWxSZXF1ZXN0EhQKDG9wbWxfY29udGVudBgBIAEoDCJbChJJbXBvcnRPcG1sUmVzcG9uc2USDQoFdG90YWwYASABKAUSDwoHc3VjY2VzcxgCIAEoBRIPCgdza2lwcGVkGAMgASgFEhQKDGZhaWxlZF9mZWVkcxgEIAMoCSI2ChJTZXRGZWVkVGFnc1JlcXVlc3QSDwoHZmVlZF9pZBgBIAEoCRIPCgd0YWdfaWRzGAIgAygJIhUKE1NldEZlZWRUYWdzUmVzcG9uc2UiVgoVTWFuYWdlRmVlZFRhZ3NSZXF1ZXN0EhAKCGZlZWRfaWRzGAEgAygJEhMKC2FkZF90YWdfaWRzGAIgAygJEhYKDnJlbW92ZV90YWdfaWRzGAMgAygJIhgKFk1hbmFnZUZlZWRUYWdzUmVzcG9uc2UylQUKC0ZlZWRTZXJ2aWNlEjwKB0dldEZlZWQSFy5mZWVkLnYxLkdldEZlZWRSZXF1ZXN0GhguZmVlZC52MS5HZXRGZWVkUmVzcG9uc2USQgoJTGlzdEZlZWRzEhkuZmVlZC52MS5MaXN0RmVlZHNSZXF1ZXN0GhouZmVlZC52MS5MaXN0RmVlZHNSZXNwb25zZRJFCgpDcmVhdGVGZWVkEhouZmVlZC52MS5DcmVhdGVGZWVkUmVxdWVzdBobLmZlZWQudjEuQ3JlYXRlRmVlZFJlc3BvbnNlEkUKClVwZGF0ZUZlZWQSGi5mZWVkLnYxLlVwZGF0ZUZlZWRSZXF1ZXN0GhsuZmVlZC52MS5VcGRhdGVGZWVkUmVzcG9uc2USRQoKRGVsZXRlRmVlZBIaLmZlZWQudjEuRGVsZXRlRmVlZFJlcXVlc3QaGy5mZWVkLnYxLkRlbGV0ZUZlZWRSZXNwb25zZRJLCgxSZWZyZXNoRmVlZHMSHC5mZWVkLnYxLlJlZnJlc2hGZWVkc1JlcXVlc3QaHS5mZWVkLnYxLlJlZnJlc2hGZWVkc1Jlc3BvbnNlEkUKCkltcG9ydE9wbWwSGi5mZWVkLnYxLkltcG9ydE9wbWxSZXF1ZXN0GhsuZmVlZC52MS5JbXBvcnRPcG1sUmVzcG9uc2USSAoLU2V0RmVlZFRhZ3MSGy5mZWVkLnYxLlNldEZlZWRUYWdzUmVxdWVzdBocLmZlZWQudjEuU2V0RmVlZFRhZ3NSZXNwb25zZRJRCg5NYW5hZ2VGZWVkVGFncxIeLmZlZWQudjEuTWFuYWdlRmVlZFRhZ3NSZXF1ZXN0Gh8uZmVlZC52MS5NYW5hZ2VGZWVkVGFnc1Jlc3BvbnNlQj1aO2dpdGh1Yi5jb20vbmFrYXRhbmFrYXRhbmEvZmVlZC1yZWFkZXIvZ2VuL2dvL2ZlZWQvdjE7ZmVlZHYxYgZwcm90bzM", [file_tag_v1_tag]);
 
 /**
  * @generated from message feed.v1.Feed
@@ -515,11 +515,6 @@ export type ImportOpmlResponse = Message<"feed.v1.ImportOpmlResponse"> & {
    * @generated from field: repeated string failed_feeds = 4;
    */
   failedFeeds: string[];
-
-  /**
-   * @generated from field: string job_id = 5;
-   */
-  jobId: string;
 };
 
 /**
@@ -528,87 +523,6 @@ export type ImportOpmlResponse = Message<"feed.v1.ImportOpmlResponse"> & {
  */
 export const ImportOpmlResponseSchema: GenMessage<ImportOpmlResponse> = /*@__PURE__*/
   messageDesc(file_feed_v1_feed, 16);
-
-/**
- * @generated from message feed.v1.ImportJob
- */
-export type ImportJob = Message<"feed.v1.ImportJob"> & {
-  /**
-   * @generated from field: string id = 1;
-   */
-  id: string;
-
-  /**
-   * @generated from field: feed.v1.ImportJobStatus status = 2;
-   */
-  status: ImportJobStatus;
-
-  /**
-   * @generated from field: int32 total_feeds = 3;
-   */
-  totalFeeds: number;
-
-  /**
-   * @generated from field: int32 processed_feeds = 4;
-   */
-  processedFeeds: number;
-
-  /**
-   * @generated from field: repeated string failed_feeds = 5;
-   */
-  failedFeeds: string[];
-
-  /**
-   * @generated from field: string created_at = 6;
-   */
-  createdAt: string;
-
-  /**
-   * @generated from field: string updated_at = 7;
-   */
-  updatedAt: string;
-};
-
-/**
- * Describes the message feed.v1.ImportJob.
- * Use `create(ImportJobSchema)` to create a new message.
- */
-export const ImportJobSchema: GenMessage<ImportJob> = /*@__PURE__*/
-  messageDesc(file_feed_v1_feed, 17);
-
-/**
- * @generated from message feed.v1.GetImportJobRequest
- */
-export type GetImportJobRequest = Message<"feed.v1.GetImportJobRequest"> & {
-  /**
-   * @generated from field: string id = 1;
-   */
-  id: string;
-};
-
-/**
- * Describes the message feed.v1.GetImportJobRequest.
- * Use `create(GetImportJobRequestSchema)` to create a new message.
- */
-export const GetImportJobRequestSchema: GenMessage<GetImportJobRequest> = /*@__PURE__*/
-  messageDesc(file_feed_v1_feed, 18);
-
-/**
- * @generated from message feed.v1.GetImportJobResponse
- */
-export type GetImportJobResponse = Message<"feed.v1.GetImportJobResponse"> & {
-  /**
-   * @generated from field: feed.v1.ImportJob job = 1;
-   */
-  job?: ImportJob;
-};
-
-/**
- * Describes the message feed.v1.GetImportJobResponse.
- * Use `create(GetImportJobResponseSchema)` to create a new message.
- */
-export const GetImportJobResponseSchema: GenMessage<GetImportJobResponse> = /*@__PURE__*/
-  messageDesc(file_feed_v1_feed, 19);
 
 /**
  * @generated from message feed.v1.SetFeedTagsRequest
@@ -630,7 +544,7 @@ export type SetFeedTagsRequest = Message<"feed.v1.SetFeedTagsRequest"> & {
  * Use `create(SetFeedTagsRequestSchema)` to create a new message.
  */
 export const SetFeedTagsRequestSchema: GenMessage<SetFeedTagsRequest> = /*@__PURE__*/
-  messageDesc(file_feed_v1_feed, 20);
+  messageDesc(file_feed_v1_feed, 17);
 
 /**
  * @generated from message feed.v1.SetFeedTagsResponse
@@ -643,7 +557,7 @@ export type SetFeedTagsResponse = Message<"feed.v1.SetFeedTagsResponse"> & {
  * Use `create(SetFeedTagsResponseSchema)` to create a new message.
  */
 export const SetFeedTagsResponseSchema: GenMessage<SetFeedTagsResponse> = /*@__PURE__*/
-  messageDesc(file_feed_v1_feed, 21);
+  messageDesc(file_feed_v1_feed, 18);
 
 /**
  * @generated from message feed.v1.ManageFeedTagsRequest
@@ -670,7 +584,7 @@ export type ManageFeedTagsRequest = Message<"feed.v1.ManageFeedTagsRequest"> & {
  * Use `create(ManageFeedTagsRequestSchema)` to create a new message.
  */
 export const ManageFeedTagsRequestSchema: GenMessage<ManageFeedTagsRequest> = /*@__PURE__*/
-  messageDesc(file_feed_v1_feed, 22);
+  messageDesc(file_feed_v1_feed, 19);
 
 /**
  * @generated from message feed.v1.ManageFeedTagsResponse
@@ -683,43 +597,7 @@ export type ManageFeedTagsResponse = Message<"feed.v1.ManageFeedTagsResponse"> &
  * Use `create(ManageFeedTagsResponseSchema)` to create a new message.
  */
 export const ManageFeedTagsResponseSchema: GenMessage<ManageFeedTagsResponse> = /*@__PURE__*/
-  messageDesc(file_feed_v1_feed, 23);
-
-/**
- * @generated from enum feed.v1.ImportJobStatus
- */
-export enum ImportJobStatus {
-  /**
-   * @generated from enum value: IMPORT_JOB_STATUS_UNSPECIFIED = 0;
-   */
-  UNSPECIFIED = 0,
-
-  /**
-   * @generated from enum value: IMPORT_JOB_STATUS_QUEUED = 1;
-   */
-  QUEUED = 1,
-
-  /**
-   * @generated from enum value: IMPORT_JOB_STATUS_PROCESSING = 2;
-   */
-  PROCESSING = 2,
-
-  /**
-   * @generated from enum value: IMPORT_JOB_STATUS_COMPLETED = 3;
-   */
-  COMPLETED = 3,
-
-  /**
-   * @generated from enum value: IMPORT_JOB_STATUS_FAILED = 4;
-   */
-  FAILED = 4,
-}
-
-/**
- * Describes the enum feed.v1.ImportJobStatus.
- */
-export const ImportJobStatusSchema: GenEnum<ImportJobStatus> = /*@__PURE__*/
-  enumDesc(file_feed_v1_feed, 0);
+  messageDesc(file_feed_v1_feed, 20);
 
 /**
  * @generated from service feed.v1.FeedService
@@ -780,14 +658,6 @@ export const FeedService: GenService<{
     methodKind: "unary";
     input: typeof ImportOpmlRequestSchema;
     output: typeof ImportOpmlResponseSchema;
-  },
-  /**
-   * @generated from rpc feed.v1.FeedService.GetImportJob
-   */
-  getImportJob: {
-    methodKind: "unary";
-    input: typeof GetImportJobRequestSchema;
-    output: typeof GetImportJobResponseSchema;
   },
   /**
    * Tag management

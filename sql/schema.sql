@@ -66,15 +66,7 @@ CREATE TABLE feed_tags (
   FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
 );
 
-CREATE TABLE import_jobs (
-  id              TEXT PRIMARY KEY,
-  status          TEXT NOT NULL, -- 'queued', 'processing', 'completed', 'failed'
-  total_feeds     INTEGER NOT NULL DEFAULT 0,
-  processed_feeds INTEGER NOT NULL DEFAULT 0,
-  failed_feeds    TEXT, -- JSON array of failed feed URLs
-  created_at      TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at      TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
+
 
 CREATE INDEX idx_feeds_updated_at ON feeds(updated_at);
 CREATE INDEX idx_tags_updated_at ON tags(updated_at);

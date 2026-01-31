@@ -34,16 +34,6 @@ type FeedTag struct {
 	UpdatedAt string `json:"updated_at"`
 }
 
-type ImportJob struct {
-	ID             string  `json:"id"`
-	Status         string  `json:"status"`
-	TotalFeeds     int64   `json:"total_feeds"`
-	ProcessedFeeds int64   `json:"processed_feeds"`
-	FailedFeeds    *string `json:"failed_feeds"`
-	CreatedAt      string  `json:"created_at"`
-	UpdatedAt      string  `json:"updated_at"`
-}
-
 type Item struct {
 	ID          string  `json:"id"`
 	Url         string  `json:"url"`

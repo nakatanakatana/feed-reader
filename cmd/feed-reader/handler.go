@@ -187,9 +187,6 @@ func (s *FeedServer) createFeedFromURL(ctx context.Context, url string, titleOve
 		}
 	}
 
-	// Trigger immediate fetch of items
-	_ = s.itemFetcher.FetchAndSave(ctx, feed)
-
 	return &feed, nil
 }
 
@@ -266,29 +263,19 @@ func (s *FeedServer) RefreshFeeds(ctx context.Context, req *connect.Request[feed
 }
 
 func (s *FeedServer) ImportOpml(ctx context.Context, req *connect.Request[feedv1.ImportOpmlRequest]) (*connect.Response[feedv1.ImportOpmlResponse], error) {
-	jobID, err := s.opmlImporter.StartImportJob(ctx, req.Msg.OpmlContent)
+	results, err := s.opmlImporter.ImportSync(ctx, req.Msg.OpmlContent)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
 	return connect.NewResponse(&feedv1.ImportOpmlResponse{
-		JobId: jobID,
+		Total:       results.Total,
+		Success:     results.Success,
+		Skipped:     results.Skipped,
+		FailedFeeds: results.FailedFeeds,
 	}), nil
 }
 
-func (s *FeedServer) GetImportJob(ctx context.Context, req *connect.Request[feedv1.GetImportJobRequest]) (*connect.Response[feedv1.GetImportJobResponse], error) {
-	job, err := s.opmlImporter.GetImportJob(ctx, req.Msg.Id)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, connect.NewError(connect.CodeNotFound, err)
-		}
-		return nil, connect.NewError(connect.CodeInternal, err)
-	}
-
-	return connect.NewResponse(&feedv1.GetImportJobResponse{
-		Job: job,
-	}), nil
-}
 
 func (s *FeedServer) SetFeedTags(ctx context.Context, req *connect.Request[feedv1.SetFeedTagsRequest]) (*connect.Response[feedv1.SetFeedTagsResponse], error) {
 	if err := s.store.SetFeedTags(ctx, req.Msg.FeedId, req.Msg.TagIds); err != nil {

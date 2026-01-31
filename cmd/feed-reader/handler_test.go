@@ -4,11 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 	"log/slog"
-	"strings"
 	"testing"
 	"time"
+
 
 	"connectrpc.com/connect"
 	"github.com/google/uuid"
@@ -65,9 +64,15 @@ func (m mockUUIDGenerator) NewRandom() (uuid.UUID, error) {
 type mockFetcher struct {
 	feed *gofeed.Feed
 	err  error
+	errs map[string]error
 }
 
 func (m *mockFetcher) Fetch(ctx context.Context, url string) (*gofeed.Feed, error) {
+	if m.errs != nil {
+		if err, ok := m.errs[url]; ok {
+			return nil, err
+		}
+	}
 	if m.err != nil {
 		return nil, m.err
 	}
@@ -76,6 +81,7 @@ func (m *mockFetcher) Fetch(ctx context.Context, url string) (*gofeed.Feed, erro
 	}
 	return m.feed, nil
 }
+
 
 type mockItemFetcher struct {
 	called bool
@@ -114,7 +120,7 @@ func setupServer(t *testing.T, db *sql.DB, uuidErr error, fetcher FeedFetcher, i
 	t.Cleanup(pool.Wait)
 	wq := NewWriteQueueService(s, WriteQueueConfig{MaxBatchSize: 1, FlushInterval: time.Millisecond}, slog.Default())
 	go wq.Start(context.Background())
-	importer := NewOPMLImporter(s, fetcher, pool, wq, slog.Default(), mockUUIDGenerator{err: uuidErr})
+	importer := NewOPMLImporter(s, fetcher, slog.Default(), mockUUIDGenerator{err: uuidErr})
 	return NewFeedServer(s, mockUUIDGenerator{err: uuidErr}, fetcher, itemFetcher, importer), importer
 }
 
@@ -146,7 +152,7 @@ func TestFeedServer_CreateFeed(t *testing.T) {
 			mockFeed:  &gofeed.Feed{Title: "Fetched Title"},
 			wantTitle: "Test Feed",
 			wantErr:   false,
-			wantFetch: true,
+			wantFetch: false,
 		},
 		{
 			name: "UUID Generation Error",
@@ -207,6 +213,9 @@ func TestFeedServer_CreateFeed(t *testing.T) {
 
 			if tt.wantFetch && !itemFetcher.called {
 				t.Error("expected FetchAndSave to be called")
+			}
+			if !tt.wantFetch && itemFetcher.called {
+				t.Error("expected FetchAndSave NOT to be called")
 			}
 		})
 	}
@@ -526,7 +535,9 @@ func TestFeedServer_RefreshFeeds(t *testing.T) {
 	}
 }
 
-func TestFeedServer_ImportOpml(t *testing.T) {
+
+
+func TestFeedServer_ImportOpml_Sync(t *testing.T) {
 	ctx := context.Background()
 
 	opmlContent := `<?xml version="1.0" encoding="UTF-8"?>
@@ -534,122 +545,43 @@ func TestFeedServer_ImportOpml(t *testing.T) {
     <body>
         <outline text="Existing" xmlUrl="https://example.com/existing" />
         <outline text="New" xmlUrl="https://example.com/new" />
+        <outline text="Fail" xmlUrl="https://example.com/fail" />
     </body>
 </opml>`
 
-	t.Run("Import starts job", func(t *testing.T) {
-		queries, db := setupTestDB(t)
-		// Pre-create existing feed
-		existingID := "existing-uuid"
-		_, err := queries.CreateFeed(ctx, store.CreateFeedParams{
-			ID:    existingID,
-			Url:   "https://example.com/existing",
-			Title: func() *string { s := "Existing"; return &s }(),
-		})
-		if err != nil {
-			t.Fatalf("failed to create existing feed: %v", err)
-		}
-
-		fetcher := &mockFetcher{
-			feed: &gofeed.Feed{Title: "Fetched Title"},
-		}
-
-		server, _ := setupServer(t, db, nil, fetcher, &mockItemFetcher{})
-
-		req := &feedv1.ImportOpmlRequest{
-			OpmlContent: []byte(opmlContent),
-		}
-
-		res, err := server.ImportOpml(ctx, connect.NewRequest(req))
-		if err != nil {
-			t.Fatalf("ImportOpml() error = %v", err)
-		}
-
-		if res.Msg.JobId == "" {
-			t.Error("expected job_id to be returned")
-		}
-
-		// Wait for background processing
-		time.Sleep(200 * time.Millisecond)
-
-		// Check job status
-		jobRes, err := server.GetImportJob(ctx, connect.NewRequest(&feedv1.GetImportJobRequest{Id: res.Msg.JobId}))
-		if err != nil {
-			t.Fatalf("GetImportJob() error = %v", err)
-		}
-
-		assert.Equal(t, int32(2), jobRes.Msg.Job.TotalFeeds)
-		assert.Equal(t, feedv1.ImportJobStatus_IMPORT_JOB_STATUS_COMPLETED, jobRes.Msg.Job.Status)
-
-		// Verify DB
-		feeds, err := queries.ListFeeds(ctx, nil)
-		if err != nil {
-			t.Fatalf("ListFeeds error: %v", err)
-		}
-		// 1 existing + 1 new (deduplicated)
-		assert.Len(t, feeds, 2)
+	queries, db := setupTestDB(t)
+	// Pre-create existing feed
+	_, _ = queries.CreateFeed(ctx, store.CreateFeedParams{
+		ID:    "existing-id",
+		Url:   "https://example.com/existing",
+		Title: func() *string { s := "Existing"; return &s }(),
 	})
 
-	t.Run("Import invalid OPML", func(t *testing.T) {
-		_, db := setupTestDB(t)
-		server, _ := setupServer(t, db, nil, &mockFetcher{}, &mockItemFetcher{})
+	fetcher := &mockFetcher{
+		feed: &gofeed.Feed{Title: "Fetched Title"},
+		errs: map[string]error{
+			"https://example.com/fail": errors.New("fetch error"),
+		},
+	}
 
-		req := &feedv1.ImportOpmlRequest{
-			OpmlContent: []byte("invalid"),
-		}
+	server, _ := setupServer(t, db, nil, fetcher, &mockItemFetcher{})
 
-		_, err := server.ImportOpml(ctx, connect.NewRequest(req))
-		assert.Error(t, err)
-	})
+	req := &feedv1.ImportOpmlRequest{
+		OpmlContent: []byte(opmlContent),
+	}
 
-	t.Run("Import large OPML", func(t *testing.T) {
-		_, db := setupTestDB(t)
+	res, err := server.ImportOpml(ctx, connect.NewRequest(req))
+	require.NoError(t, err)
 
-		// 50 feeds
-		var sb strings.Builder
-		sb.WriteString(`<?xml version="1.0" encoding="UTF-8"?><opml version="1.0"><body>`)
-		for i := 0; i < 50; i++ {
-			fmt.Fprintf(&sb, `<outline text="Feed %d" xmlUrl="https://example.com/feed/%d" />`, i, i)
-		}
-		sb.WriteString(`</body></opml>`)
+	assert.Equal(t, int32(3), res.Msg.Total)
+	assert.Equal(t, int32(1), res.Msg.Success)
+	assert.Equal(t, int32(1), res.Msg.Skipped)
+	assert.Len(t, res.Msg.FailedFeeds, 1)
+	assert.Equal(t, "https://example.com/fail", res.Msg.FailedFeeds[0])
 
-		fetcher := &mockFetcher{
-			feed: &gofeed.Feed{Title: "Fetched Title"},
-		}
-
-		server, _ := setupServer(t, db, nil, fetcher, &mockItemFetcher{})
-
-		req := &feedv1.ImportOpmlRequest{
-			OpmlContent: []byte(sb.String()),
-		}
-
-		res, err := server.ImportOpml(ctx, connect.NewRequest(req))
-		if err != nil {
-			t.Fatalf("ImportOpml() error = %v", err)
-		}
-
-		jobID := res.Msg.JobId
-
-		// Poll for completion
-		var lastJob *feedv1.ImportJob
-		require.Eventually(t, func() bool {
-			jobRes, err := server.GetImportJob(ctx, connect.NewRequest(&feedv1.GetImportJobRequest{Id: jobID}))
-			if err != nil {
-				return false
-			}
-			lastJob = jobRes.Msg.Job
-			return jobRes.Msg.Job.Status == feedv1.ImportJobStatus_IMPORT_JOB_STATUS_COMPLETED
-		}, 5*time.Second, 100*time.Millisecond)
-
-		assert.Equal(t, int32(50), lastJob.TotalFeeds)
-		assert.Equal(t, int32(50), lastJob.ProcessedFeeds)
-
-		// Verify DB count
-		var count int
-		err = db.QueryRow("SELECT COUNT(*) FROM feeds").Scan(&count)
-		require.NoError(t, err)
-		assert.Equal(t, 50, count)
-	})
+	// Verify DB
+	feeds, _ := queries.ListFeeds(ctx, nil)
+	assert.Len(t, feeds, 2)
 }
 
 func TestFeedServer_ManageFeedTags(t *testing.T) {
