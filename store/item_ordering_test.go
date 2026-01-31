@@ -80,7 +80,7 @@ func TestStore_ItemOrdering(t *testing.T) {
 	})
 
 	t.Run("ListItemsByFeed should also sort by COALESCE(published_at, created_at) ASC", func(t *testing.T) {
-		items, err := s.ListItemsByFeed(ctx, feedID)
+		items, err := s.ListItems(ctx, store.ListItemsParams{FeedID: feedID, Limit: 10})
 		require.NoError(t, err)
 		require.Len(t, items, 4)
 
