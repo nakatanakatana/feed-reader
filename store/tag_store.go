@@ -19,7 +19,7 @@ func (s *Store) ListTags(ctx context.Context, params ListTagsParams) ([]TagWithC
 		return nil, err
 	}
 
-	feedCounts, err := s.Queries.CountFeedsPerTag(ctx)
+	feedCounts, err := s.CountFeedsPerTag(ctx)
 	if err != nil {
 		return nil, err
 	}
