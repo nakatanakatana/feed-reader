@@ -2,13 +2,13 @@
 
 This plan focuses on simplifying the OPML import process by making it synchronous, removing background job infrastructure for imports, and unifying feed registration to defer item fetching.
 
-## Phase 1: Backend Cleanup and Redefinition
+## Phase 1: Backend Cleanup and Redefinition [checkpoint: 992ba7f]
 In this phase, we will remove the asynchronous job infrastructure and redefine the feed registration logic.
 
 - [x] Task: Remove `ImportJob` and related storage logic in `store/` <!-- id: 83367b9 -->
 - [x] Task: Update `FeedStore.CreateFeed` (or equivalent) to only fetch metadata and not items <!-- id: 3567454 -->
 - [x] Task: Remove background worker pool and write queue related to OPML imports if redundant <!-- id: 4b9f6f8 -->
-- [~] Task: Conductor - User Manual Verification 'Phase 1: Backend Cleanup and Redefinition' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Cleanup and Redefinition' (Protocol in workflow.md)
 
 ## Phase 2: Synchronous Import Implementation
 Implement the synchronous logic for processing OPML files and returning results.
