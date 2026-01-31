@@ -1,8 +1,0 @@
-{
-  "track_id": "remove_html_migration_20260131",
-  "type": "chore",
-  "status": "new",
-  "created_at": "2026-01-31T00:00:00Z",
-  "updated_at": "2026-01-31T00:00:00Z",
-  "description": "DBのcontentに入っているHTMLのデータをmarkdownに書き換えるバッチを実行するオプションを削除してください"
-}
