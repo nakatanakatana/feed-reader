@@ -3,7 +3,7 @@
 ## Phase 1: Database Schema & API Definition
 This phase focuses on defining the necessary data structures and API contracts.
 
-- [ ] Task: Create DB Schema for Import Jobs
+- [x] Task: Create DB Schema for Import Jobs (5d81de8)
     - [ ] Create a migration file `sql/schema.sql` (or new migration) to add `import_jobs` table.
     - [ ] Define columns: `id`, `status`, `total_feeds`, `processed_feeds`, `failed_feeds` (JSON), `created_at`, `updated_at`.
     - [ ] Run `sqlc generate` to generate Go code for the new schema.
