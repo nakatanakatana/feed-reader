@@ -82,7 +82,7 @@ func main() {
 	fetcher := NewGofeedFetcher()
 	fetchService := NewFetcherService(s, fetcher, pool, writeQueue, logger, cfg.FetchInterval)
 
-	opmlImporter := NewOPMLImporter(s, fetcher, pool, writeQueue, logger, nil)
+	opmlImporter := NewOPMLImporter(s, fetcher, logger, nil)
 
 	// 4. Initialize Scheduler
 	// Add random jitter up to 10% of interval

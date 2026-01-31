@@ -113,7 +113,7 @@ func setupServer(t *testing.T, db *sql.DB, uuidErr error, fetcher FeedFetcher, i
 	t.Cleanup(pool.Wait)
 	wq := NewWriteQueueService(s, WriteQueueConfig{MaxBatchSize: 1, FlushInterval: time.Millisecond}, slog.Default())
 	go wq.Start(context.Background())
-	importer := NewOPMLImporter(s, fetcher, pool, wq, slog.Default(), mockUUIDGenerator{err: uuidErr})
+	importer := NewOPMLImporter(s, fetcher, slog.Default(), mockUUIDGenerator{err: uuidErr})
 	return NewFeedServer(s, mockUUIDGenerator{err: uuidErr}, fetcher, itemFetcher, importer), importer
 }
 
