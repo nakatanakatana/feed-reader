@@ -254,6 +254,38 @@ func (q *Queries) CreateFeedTag(ctx context.Context, arg CreateFeedTagParams) er
 	return err
 }
 
+const createImportJob = `-- name: CreateImportJob :one
+INSERT INTO import_jobs (
+  id,
+  status,
+  total_feeds
+) VALUES (
+  ?, ?, ?
+)
+RETURNING id, status, total_feeds, processed_feeds, failed_feeds, created_at, updated_at
+`
+
+type CreateImportJobParams struct {
+	ID         string `json:"id"`
+	Status     string `json:"status"`
+	TotalFeeds int64  `json:"total_feeds"`
+}
+
+func (q *Queries) CreateImportJob(ctx context.Context, arg CreateImportJobParams) (ImportJob, error) {
+	row := q.db.QueryRowContext(ctx, createImportJob, arg.ID, arg.Status, arg.TotalFeeds)
+	var i ImportJob
+	err := row.Scan(
+		&i.ID,
+		&i.Status,
+		&i.TotalFeeds,
+		&i.ProcessedFeeds,
+		&i.FailedFeeds,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const createItem = `-- name: CreateItem :one
 INSERT INTO items (
   id,
@@ -474,6 +506,30 @@ func (q *Queries) GetFeedByURL(ctx context.Context, url string) (Feed, error) {
 		&i.FeedType,
 		&i.FeedVersion,
 		&i.LastFetchedAt,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getImportJob = `-- name: GetImportJob :one
+SELECT
+  id, status, total_feeds, processed_feeds, failed_feeds, created_at, updated_at
+FROM
+  import_jobs
+WHERE
+  id = ?
+`
+
+func (q *Queries) GetImportJob(ctx context.Context, id string) (ImportJob, error) {
+	row := q.db.QueryRowContext(ctx, getImportJob, id)
+	var i ImportJob
+	err := row.Scan(
+		&i.ID,
+		&i.Status,
+		&i.TotalFeeds,
+		&i.ProcessedFeeds,
+		&i.FailedFeeds,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -1236,6 +1292,46 @@ func (q *Queries) UpdateFeed(ctx context.Context, arg UpdateFeedParams) (Feed, e
 		&i.FeedType,
 		&i.FeedVersion,
 		&i.LastFetchedAt,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateImportJob = `-- name: UpdateImportJob :one
+UPDATE
+  import_jobs
+SET
+  status = ?,
+  processed_feeds = ?,
+  failed_feeds = ?,
+  updated_at = CURRENT_TIMESTAMP
+WHERE
+  id = ?
+RETURNING id, status, total_feeds, processed_feeds, failed_feeds, created_at, updated_at
+`
+
+type UpdateImportJobParams struct {
+	Status         string  `json:"status"`
+	ProcessedFeeds int64   `json:"processed_feeds"`
+	FailedFeeds    *string `json:"failed_feeds"`
+	ID             string  `json:"id"`
+}
+
+func (q *Queries) UpdateImportJob(ctx context.Context, arg UpdateImportJobParams) (ImportJob, error) {
+	row := q.db.QueryRowContext(ctx, updateImportJob,
+		arg.Status,
+		arg.ProcessedFeeds,
+		arg.FailedFeeds,
+		arg.ID,
+	)
+	var i ImportJob
+	err := row.Scan(
+		&i.ID,
+		&i.Status,
+		&i.TotalFeeds,
+		&i.ProcessedFeeds,
+		&i.FailedFeeds,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

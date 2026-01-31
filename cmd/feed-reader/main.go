@@ -82,6 +82,8 @@ func main() {
 	fetcher := NewGofeedFetcher()
 	fetchService := NewFetcherService(s, fetcher, pool, writeQueue, logger, cfg.FetchInterval)
 
+	opmlImporter := NewOPMLImporter(s, fetcher, pool, writeQueue, logger, nil)
+
 	// 4. Initialize Scheduler
 	// Add random jitter up to 10% of interval
 	jitter := time.Duration(float64(cfg.FetchInterval) * 0.1)
@@ -89,7 +91,7 @@ func main() {
 	go scheduler.Start(ctx)
 
 	// 5. Initialize API Server
-	feedServer := NewFeedServer(s, nil, fetcher, fetchService)
+	feedServer := NewFeedServer(s, nil, fetcher, fetchService, opmlImporter)
 	feedPath, feedHandler := feedv1connect.NewFeedServiceHandler(feedServer)
 
 	itemServer := NewItemServer(s)
