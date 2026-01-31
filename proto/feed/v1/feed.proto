@@ -44,8 +44,9 @@ message ListFeed {
   string url = 2;
   string title = 3;
   int64 unread_count = 4;
-  optional string link = 5;
-  optional string last_fetched_at = 6;
+  repeated tag.v1.Tag tags = 5;
+  optional string link = 6;
+  optional string last_fetched_at = 7;
 }
 
 message GetFeedRequest {

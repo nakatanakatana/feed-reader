@@ -87,11 +87,13 @@ describe("FeedList Tag Filters", () => {
         id: "1",
         title: "Tagged Feed",
         url: "http://example.com/1",
+        tags: [{ id: "t1", name: "Tech" }],
       },
       {
         id: "2",
         title: "Untagged Feed",
         url: "http://example.com/2",
+        tags: [],
       },
     ];
 
@@ -125,12 +127,15 @@ describe("FeedList Tag Filters", () => {
       .element(page.getByText("Untagged Feed", { exact: true }))
       .toBeInTheDocument();
 
-    // Expect feeds remain visible (tag filtering happens server-side)
+    // Switch to Untagged filter
+    await page.getByRole("button", { name: "Untagged" }).click();
+
+    // Expect only untagged feeds
     await expect
       .element(page.getByText("Untagged Feed", { exact: true }))
       .toBeInTheDocument();
     await expect
       .element(page.getByText("Tagged Feed", { exact: true }))
-      .toBeInTheDocument();
+      .not.toBeInTheDocument();
   });
 });

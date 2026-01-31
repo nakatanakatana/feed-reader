@@ -1,6 +1,7 @@
 import { createClient } from "@connectrpc/connect";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { createCollection } from "@tanstack/solid-db";
+import type { ListFeed } from "../gen/feed/v1/feed_pb";
 import { FeedService } from "../gen/feed/v1/feed_pb";
 import { ItemService } from "../gen/item/v1/item_pb";
 import type { Tag } from "../gen/tag/v1/tag_pb";
@@ -15,6 +16,7 @@ export interface Feed {
   title: string;
   unreadCount?: bigint;
   lastFetchedAt?: string;
+  tags?: Tag[];
 }
 
 export interface Item {
@@ -50,7 +52,15 @@ export const feeds = createCollection(
     queryKey: ["feeds"],
     queryFn: async () => {
       const response = await feedClient.listFeeds({});
-      return response.feeds;
+      return response.feeds.map((feed: ListFeed) => ({
+        id: feed.id,
+        url: feed.url,
+        link: feed.link,
+        title: feed.title,
+        unreadCount: feed.unreadCount,
+        lastFetchedAt: feed.lastFetchedAt,
+        tags: feed.tags,
+      }));
     },
     getKey: (feed: Feed) => feed.id,
     onInsert: async () => {

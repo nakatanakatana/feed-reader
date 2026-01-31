@@ -95,6 +95,7 @@ describe("FeedList Navigation", () => {
         title: "Feed 1",
         url: "url1",
         link: "link1",
+        tags: [],
       },
     ];
 

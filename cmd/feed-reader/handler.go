@@ -88,11 +88,27 @@ func (s *FeedServer) ListFeeds(ctx context.Context, req *connect.Request[feedv1.
 		if f.Title != nil {
 			title = *f.Title
 		}
+
+		tags, err := s.store.ListTagsByFeedId(ctx, f.ID)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, err)
+		}
+
+		protoTags := make([]*tagv1.Tag, len(tags))
+		for i, t := range tags {
+			protoTags[i] = &tagv1.Tag{
+				Id:        t.ID,
+				Name:      t.Name,
+				CreatedAt: t.CreatedAt,
+				UpdatedAt: t.UpdatedAt,
+			}
+		}
 		protoFeeds[i] = &feedv1.ListFeed{
 			Id:            f.ID,
 			Url:           f.Url,
 			Title:         title,
 			UnreadCount:   countsMap[f.ID],
+			Tags:          protoTags,
 			Link:          f.Link,
 			LastFetchedAt: f.LastFetchedAt,
 		}
