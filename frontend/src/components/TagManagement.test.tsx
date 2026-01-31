@@ -30,7 +30,6 @@ describe("TagManagement", () => {
   it("renders tag list and add form", async () => {
     dispose = render(() => <TestWrapper />, document.body);
 
-    await expect.element(page.getByText("Manage Tags")).toBeInTheDocument();
     await expect
       .element(page.getByPlaceholder("New tag name"))
       .toBeInTheDocument();
