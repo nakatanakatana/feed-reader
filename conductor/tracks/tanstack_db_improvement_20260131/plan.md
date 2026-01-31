@@ -32,7 +32,7 @@ Update UI components to use the new incremental fetching logic and the "Load Mor
 ## Phase 4: Optimistic Updates and State Sync
 Finalize the optimistic update logic and ensure backend synchronization is robust.
 
-- [x] Task: Write Tests: Create integration tests in `src/mocks/integration.test.tsx` for toggling read/unread status with optimistic updates and API failure handling.
-- [x] Task: Implement: Refine the optimistic update handlers to handle rollbacks if API calls fail.
-- [x] Task: Implement: Ensure `lastFetchedAt` is correctly updated and persisted (e.g., in local storage or a dedicated metadata collection).
+- [x] Task: Write Tests: Create integration tests in `src/mocks/integration.test.tsx` for toggling read/unread status with optimistic updates and API failure handling. ce2f487
+- [x] Task: Implement: Refine the optimistic update handlers to handle rollbacks if API calls fail. ce2f487
+- [x] Task: Implement: Ensure `lastFetchedAt` is correctly updated and persisted (e.g., in local storage or a dedicated metadata collection). ce2f487
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: Optimistic Updates and State Sync' (Protocol in workflow.md)
