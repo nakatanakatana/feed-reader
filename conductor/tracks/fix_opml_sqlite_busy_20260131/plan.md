@@ -7,7 +7,7 @@ This phase focuses on defining the necessary data structures and API contracts.
     - [ ] Create a migration file `sql/schema.sql` (or new migration) to add `import_jobs` table.
     - [ ] Define columns: `id`, `status`, `total_feeds`, `processed_feeds`, `failed_feeds` (JSON), `created_at`, `updated_at`.
     - [ ] Run `sqlc generate` to generate Go code for the new schema.
-- [ ] Task: Update Proto Definitions
+- [x] Task: Update Proto Definitions (5a94714)
     - [ ] Edit `proto/feed/v1/feed.proto`.
     - [ ] Add `job_id` to `ImportOpmlResponse`.
     - [ ] Add `GetImportJobRequest` and `GetImportJobResponse` messages.
