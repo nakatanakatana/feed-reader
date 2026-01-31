@@ -23,6 +23,7 @@ type FeedServer struct {
 type ItemFetcher interface {
 	FetchAndSave(ctx context.Context, f store.Feed) error
 	FetchFeedsByIDs(ctx context.Context, ids []string) error
+	FetchFeedsByIDsSync(ctx context.Context, ids []string) ([]FeedFetchResult, error)
 }
 
 func NewFeedServer(s *store.Store, uuidGen UUIDGenerator, fetcher FeedFetcher, itemFetcher ItemFetcher) feedv1connect.FeedServiceHandler {
@@ -223,11 +224,27 @@ func (s *FeedServer) RefreshFeeds(ctx context.Context, req *connect.Request[feed
 		return connect.NewResponse(&feedv1.RefreshFeedsResponse{}), nil
 	}
 
-	if err := s.itemFetcher.FetchFeedsByIDs(ctx, req.Msg.Ids); err != nil {
+	results, err := s.itemFetcher.FetchFeedsByIDsSync(ctx, req.Msg.Ids)
+	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	return connect.NewResponse(&feedv1.RefreshFeedsResponse{}), nil
+	protoResults := make([]*feedv1.FeedFetchStatus, len(results))
+	for i, r := range results {
+		status := &feedv1.FeedFetchStatus{
+			FeedId:        r.FeedID,
+			Success:       r.Success,
+			NewItemsCount: r.NewItemsCount,
+		}
+		if r.ErrorMessage != "" {
+			status.ErrorMessage = &r.ErrorMessage
+		}
+		protoResults[i] = status
+	}
+
+	return connect.NewResponse(&feedv1.RefreshFeedsResponse{
+		Results: protoResults,
+	}), nil
 }
 
 func (s *FeedServer) ImportOpml(ctx context.Context, req *connect.Request[feedv1.ImportOpmlRequest]) (*connect.Response[feedv1.ImportOpmlResponse], error) {
