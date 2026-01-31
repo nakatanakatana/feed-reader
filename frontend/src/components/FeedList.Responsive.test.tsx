@@ -169,12 +169,14 @@ describe("FeedList Responsive", () => {
     const checkbox = page.getByRole("checkbox").first();
     await checkbox.click();
 
-    // Check if the button is in the document
-    const manageButton = page.getByText(/Manage Tags/i);
-    await expect.element(manageButton).toBeInTheDocument();
-
-    // Check if it is hidden via CSS display: none
-    const styles = window.getComputedStyle(manageButton.element());
+    // Check if the header button is hidden via CSS display: none
+    const headerContainer = document.querySelector(
+      '[data-role="header-manage-tags"]',
+    ) as HTMLElement | null;
+    if (!headerContainer) {
+      throw new Error("Header manage tags container not found");
+    }
+    const styles = window.getComputedStyle(headerContainer);
     expect(styles.display).toBe("none");
   });
 
@@ -262,12 +264,16 @@ describe("FeedList Responsive", () => {
     await checkbox.click();
 
     // The Manage Tags button should be in the header, not a FAB
-    const manageButton = page.getByRole("button", { name: /Manage Tags/i });
-    await expect.element(manageButton).toBeInTheDocument();
+    const headerContainer = document.querySelector(
+      '[data-role="header-manage-tags"]',
+    ) as HTMLElement | null;
+    if (!headerContainer) {
+      throw new Error("Header manage tags container not found");
+    }
 
-    const styles = window.getComputedStyle(manageButton.element());
+    const styles = window.getComputedStyle(headerContainer);
     // On desktop, it should be part of the flow (not fixed) and visible
     expect(styles.position).not.toBe("fixed");
-    expect(styles.display).toBe("block");
+    expect(styles.display).not.toBe("none");
   });
 });

@@ -1,10 +1,12 @@
 import { create } from "@bufbuild/protobuf";
-import { createSignal, For, Show } from "solid-js";
+import { createSignal, For } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { ManageFeedTagsRequestSchema } from "../gen/feed/v1/feed_pb";
 import { useManageFeedTags } from "../lib/feed-query";
 import { useTags } from "../lib/tag-query";
+import { ActionButton } from "./ui/ActionButton";
+import { Modal } from "./ui/Modal";
 
 interface ManageTagsModalProps {
   isOpen: boolean;
@@ -58,173 +60,88 @@ export function ManageTagsModal(props: ManageTagsModalProps) {
   };
 
   return (
-    <Show when={props.isOpen}>
-      {/* biome-ignore lint/a11y/noStaticElementInteractions: Backdrop click handling */}
-      {/* biome-ignore lint/a11y/useKeyWithClickEvents: Backdrop click handling */}
-      <div
-        class={css({
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "full",
-          height: "full",
-          bg: "black/50",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 1000,
-        })}
-        onClick={(e) => {
-          if (e.target === e.currentTarget) {
-            props.onClose();
-          }
-        }}
-      >
+    <Modal
+      isOpen={props.isOpen}
+      onClose={props.onClose}
+      size="standard"
+      title={`Manage Tags for ${props.feedIds.length} feeds`}
+      ariaLabel="Manage tags"
+      footer={
         <div
-          class={stack({
-            bg: "white",
-            padding: "6",
-            rounded: "lg",
-            width: "xl",
-            maxWidth: "90%",
-            gap: "6",
-          })}
+          class={flex({ justifyContent: "flex-end", gap: "3", width: "full" })}
         >
-          <div class={stack({ gap: "1" })}>
-            <h2 class={css({ fontSize: "xl", fontWeight: "bold" })}>
-              Manage Tags for {props.feedIds.length} feeds
-            </h2>
-            <p class={css({ fontSize: "sm", color: "gray.500" })}>
-              Select tags to add to or remove from all selected feeds.
-            </p>
-          </div>
-
-          <div class={stack({ gap: "4" })}>
-            <div class={stack({ gap: "2" })}>
-              <h3 class={css({ fontSize: "md", fontWeight: "semibold" })}>
-                All Tags
-              </h3>
-              <div
-                class={css({
-                  maxHeight: "60",
-                  overflowY: "auto",
-                  border: "1px solid",
-                  borderColor: "gray.200",
-                  rounded: "md",
-                })}
-              >
-                <For each={tagsQuery.data?.tags}>
-                  {(tag) => (
-                    <div
-                      class={flex({
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        padding: "2",
-                        borderBottom: "1px solid",
-                        borderColor: "gray.100",
-                        _last: { borderBottom: "none" },
-                      })}
+          <ActionButton variant="secondary" onClick={props.onClose}>
+            Cancel
+          </ActionButton>
+          <ActionButton
+            variant="primary"
+            onClick={handleSave}
+            disabled={
+              manageTagsMutation.isPending ||
+              (addTagIds().length === 0 && removeTagIds().length === 0)
+            }
+          >
+            {manageTagsMutation.isPending ? "Saving..." : "Save Changes"}
+          </ActionButton>
+        </div>
+      }
+    >
+      <div class={stack({ gap: "4" })}>
+        <p class={css({ fontSize: "sm", color: "gray.500" })}>
+          Select tags to add to or remove from all selected feeds.
+        </p>
+        <div class={stack({ gap: "2" })}>
+          <h3 class={css({ fontSize: "md", fontWeight: "semibold" })}>
+            All Tags
+          </h3>
+          <div
+            class={css({
+              maxHeight: "60",
+              overflowY: "auto",
+              border: "1px solid",
+              borderColor: "gray.200",
+              rounded: "md",
+            })}
+          >
+            <For each={tagsQuery.data?.tags}>
+              {(tag) => (
+                <div
+                  class={flex({
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    padding: "2",
+                    borderBottom: "1px solid",
+                    borderColor: "gray.100",
+                    _last: { borderBottom: "none" },
+                  })}
+                >
+                  <span class={css({ fontSize: "sm" })}>{tag.name}</span>
+                  <div class={flex({ gap: "2" })}>
+                    <ActionButton
+                      size="sm"
+                      variant={
+                        addTagIds().includes(tag.id) ? "primary" : "secondary"
+                      }
+                      onClick={() => toggleAddTag(tag.id)}
                     >
-                      <span class={css({ fontSize: "sm" })}>{tag.name}</span>
-                      <div class={flex({ gap: "2" })}>
-                        <button
-                          type="button"
-                          onClick={() => toggleAddTag(tag.id)}
-                          class={css({
-                            px: "2",
-                            py: "1",
-                            rounded: "md",
-                            fontSize: "xs",
-                            cursor: "pointer",
-                            border: "1px solid",
-                            ...(addTagIds().includes(tag.id)
-                              ? {
-                                  bg: "green.100",
-                                  borderColor: "green.500",
-                                  color: "green.700",
-                                }
-                              : {
-                                  bg: "gray.50",
-                                  borderColor: "gray.300",
-                                  color: "gray.600",
-                                }),
-                          })}
-                        >
-                          Add
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => toggleRemoveTag(tag.id)}
-                          class={css({
-                            px: "2",
-                            py: "1",
-                            rounded: "md",
-                            fontSize: "xs",
-                            cursor: "pointer",
-                            border: "1px solid",
-                            ...(removeTagIds().includes(tag.id)
-                              ? {
-                                  bg: "red.100",
-                                  borderColor: "red.500",
-                                  color: "red.700",
-                                }
-                              : {
-                                  bg: "gray.50",
-                                  borderColor: "gray.300",
-                                  color: "gray.600",
-                                }),
-                          })}
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </For>
-              </div>
-            </div>
-          </div>
-
-          <div class={flex({ justifyContent: "flex-end", gap: "3" })}>
-            <button
-              type="button"
-              onClick={props.onClose}
-              class={css({
-                px: "4",
-                py: "2",
-                rounded: "md",
-                fontSize: "sm",
-                cursor: "pointer",
-                bg: "gray.100",
-                _hover: { bg: "gray.200" },
-              })}
-            >
-              Cancel
-            </button>
-            <button
-              type="button"
-              onClick={handleSave}
-              disabled={
-                manageTagsMutation.isPending ||
-                (addTagIds().length === 0 && removeTagIds().length === 0)
-              }
-              class={css({
-                px: "4",
-                py: "2",
-                rounded: "md",
-                fontSize: "sm",
-                cursor: "pointer",
-                bg: "blue.600",
-                color: "white",
-                _hover: { bg: "blue.700" },
-                _disabled: { opacity: 0.5, cursor: "not-allowed" },
-              })}
-            >
-              {manageTagsMutation.isPending ? "Saving..." : "Save Changes"}
-            </button>
+                      Add
+                    </ActionButton>
+                    <ActionButton
+                      size="sm"
+                      variant={
+                        removeTagIds().includes(tag.id) ? "danger" : "secondary"
+                      }
+                      onClick={() => toggleRemoveTag(tag.id)}
+                    >
+                      Remove
+                    </ActionButton>
+                  </div>
+                </div>
+              )}
+            </For>
           </div>
         </div>
       </div>
-    </Show>
+    </Modal>
   );
 }

@@ -1,6 +1,6 @@
-import { For, type JSX, onMount, Show } from "solid-js";
+import { For, type JSX, Show } from "solid-js";
 import { css } from "../../styled-system/css";
-import { center, flex, stack } from "../../styled-system/patterns";
+import { flex } from "../../styled-system/patterns";
 import { useItem, useUpdateItemStatus } from "../lib/item-query";
 import {
   formatDate,
@@ -8,6 +8,8 @@ import {
   normalizeCategories,
 } from "../lib/item-utils";
 import { MarkdownRenderer } from "./MarkdownRenderer";
+import { ActionButton } from "./ui/ActionButton";
+import { Modal } from "./ui/Modal";
 
 interface ItemDetailModalProps {
   itemId: string | undefined;
@@ -20,15 +22,8 @@ interface ItemDetailModalProps {
 }
 
 export function ItemDetailModal(props: ItemDetailModalProps) {
-  let modalRef: HTMLDivElement | undefined;
   const itemQuery = useItem(() => props.itemId);
   const updateStatusMutation = useUpdateItemStatus();
-
-  onMount(() => {
-    if (modalRef) {
-      modalRef.focus();
-    }
-  });
 
   const handleToggleRead = () => {
     const item = itemQuery.data;
@@ -38,12 +33,6 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
       ids: [item.id],
       isRead: !item.isRead,
     });
-  };
-
-  const handleBackdropClick = (e: MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      props.onClose();
-    }
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
@@ -56,259 +45,183 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     }
   };
 
+  const footer = props.footerExtras ?? (
+    <>
+      <div class={flex({ gap: "2" })}>
+        <ActionButton
+          variant="secondary"
+          onClick={props.onPrev}
+          disabled={!props.prevItemId}
+        >
+          ← Previous
+        </ActionButton>
+        <ActionButton
+          variant="secondary"
+          onClick={props.onNext}
+          disabled={!props.nextItemId}
+        >
+          Next →
+        </ActionButton>
+      </div>
+      <ActionButton
+        variant={itemQuery.data?.isRead ? "secondary" : "ghost"}
+        onClick={handleToggleRead}
+        disabled={updateStatusMutation.isPending}
+      >
+        {itemQuery.data?.isRead ? "Mark as Unread" : "Mark as Read"}
+      </ActionButton>
+    </>
+  );
+
   return (
     <Show when={props.itemId}>
-      {/* biome-ignore lint/a11y/noStaticElementInteractions: Backdrop click to close */}
-      {/* biome-ignore lint/a11y/useKeyWithClickEvents: Backdrop click to close */}
-      <div
-        onClick={handleBackdropClick}
-        class={center({
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "screen",
-          height: "screen",
-          backgroundColor: "rgba(0, 0, 0, 0.5)",
-          zIndex: 1000,
-          padding: { base: "0", md: "4" },
-        })}
+      <Modal
+        isOpen={!!props.itemId}
+        onClose={props.onClose}
+        size="full"
+        hideClose
+        ariaLabel="Item details"
+        onKeyDown={handleKeyDown}
+        bodyPadding={false}
+        footer={footer}
       >
         <div
-          ref={modalRef}
-          tabindex="-1"
-          role="dialog"
-          aria-modal="true"
-          onClick={(e) => e.stopPropagation()}
-          onKeyDown={handleKeyDown}
-          class={stack({
-            backgroundColor: "white",
-            width: { base: "full", md: "90%" },
-            height: { base: "full", md: "90%" },
-            maxWidth: { base: "full", md: "none" },
-            maxHeight: { base: "full", md: "90vh" },
-            borderRadius: { base: "none", md: "lg" },
-            boxShadow: "xl",
-            outline: "none",
-            overflow: "hidden",
-            position: "relative",
-            textAlign: "left",
+          class={flex({
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "4",
+            borderBottom: "1px solid",
+            borderColor: "gray.100",
           })}
         >
-          {/* Header */}
-          <div
-            class={flex({
-              justifyContent: "space-between",
-              alignItems: "center",
-              padding: "4",
-              borderBottom: "1px solid",
-              borderColor: "gray.100",
-            })}
-          >
-            <h2
-              class={css({
-                fontSize: "lg",
-                fontWeight: "bold",
-                truncate: true,
-                flex: 1,
-              })}
-            >
-              <Show when={itemQuery.data} fallback="Loading...">
-                {(item) => (
-                  <a
-                    href={item().url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class={css({
-                      color: "inherit",
-                      textDecoration: "none",
-                      _hover: {
-                        textDecoration: "underline",
-                        color: "blue.600",
-                      },
-                    })}
-                  >
-                    {item().title}
-                  </a>
-                )}
-              </Show>
-            </h2>
-          </div>
-
-          {/* Content */}
-          <div
-            class={stack({
-              padding: "6",
-              overflowY: "auto",
+          <h2
+            class={css({
+              fontSize: "lg",
+              fontWeight: "bold",
+              truncate: true,
               flex: 1,
-              gap: "4",
             })}
           >
-            <Show when={itemQuery.isLoading}>
-              <div class={center({ padding: "10", color: "gray.500" })}>
-                Loading content...
-              </div>
-            </Show>
-
-            <Show when={itemQuery.data}>
+            <Show when={itemQuery.data} fallback="Loading...">
               {(item) => (
-                <>
-                  <div
-                    class={flex({
-                      gap: "4",
-                      fontSize: "sm",
-                      color: "gray.500",
-                      flexWrap: "wrap",
-                      alignItems: "center",
-                    })}
-                  >
-                    <span>
-                      {getItemDisplayDate(item()).label}:{" "}
-                      {formatDate(getItemDisplayDate(item()).date)}
-                    </span>
-                    <Show when={item().author}>
-                      <span>By {item().author}</span>
-                    </Show>
-                    <Show when={item().categories}>
-                      <div class={flex({ gap: "1", flexWrap: "wrap" })}>
-                        <For each={normalizeCategories(item().categories)}>
-                          {(cat) => (
-                            <span
-                              class={css({
-                                px: "2",
-                                py: "0.5",
-                                bg: "gray.100",
-                                rounded: "full",
-                                fontSize: "10px",
-                                color: "gray.600",
-                                border: "1px solid",
-                                borderColor: "gray.200",
-                              })}
-                            >
-                              {cat}
-                            </span>
-                          )}
-                        </For>
-                      </div>
-                    </Show>
-                  </div>
-
-                  <Show when={item().imageUrl}>
-                    <div class={css({ my: "4" })}>
-                      <img
-                        src={item().imageUrl}
-                        alt=""
-                        class={css({
-                          maxWidth: "full",
-                          height: "auto",
-                          borderRadius: "md",
-                          boxShadow: "sm",
-                        })}
-                      />
-                    </div>
-                  </Show>
-
-                  <div
-                    class={css({
-                      lineHeight: "relaxed",
-                      "& a": { color: "blue.600", textDecoration: "underline" },
-                      "& p": { marginBottom: "4" },
-                      "& img": { maxWidth: "full", height: "auto", my: "4" },
-                    })}
-                  >
-                    <MarkdownRenderer
-                      content={item().content || item().description || ""}
-                    />
-                  </div>
-                </>
+                <a
+                  href={item().url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class={css({
+                    color: "inherit",
+                    textDecoration: "none",
+                    _hover: {
+                      textDecoration: "underline",
+                      color: "blue.600",
+                    },
+                  })}
+                >
+                  {item().title}
+                </a>
               )}
             </Show>
-          </div>
-
-          {/* Footer */}
-          <div
-            class={flex({
-              justifyContent: "space-between",
-              alignItems: "center",
-              padding: "4",
-              borderTop: "1px solid",
-              borderColor: "gray.100",
-              backgroundColor: "gray.50",
-            })}
-          >
-            <Show
-              when={props.footerExtras}
-              fallback={
-                <>
-                  <div class={flex({ gap: "2" })}>
-                    <button
-                      type="button"
-                      onClick={props.onPrev}
-                      disabled={!props.prevItemId}
-                      class={css({
-                        padding: "2",
-                        paddingInline: "4",
-                        borderRadius: "md",
-                        border: "1px solid",
-                        borderColor: "gray.300",
-                        backgroundColor: "white",
-                        cursor: "pointer",
-                        fontSize: "sm",
-                        _hover: { backgroundColor: "gray.100" },
-                        _disabled: { opacity: 0.5, cursor: "not-allowed" },
-                      })}
-                    >
-                      ← Previous
-                    </button>
-                    <button
-                      type="button"
-                      onClick={props.onNext}
-                      disabled={!props.nextItemId}
-                      class={css({
-                        padding: "2",
-                        paddingInline: "4",
-                        borderRadius: "md",
-                        border: "1px solid",
-                        borderColor: "gray.300",
-                        backgroundColor: "white",
-                        cursor: "pointer",
-                        fontSize: "sm",
-                        _hover: { backgroundColor: "gray.100" },
-                        _disabled: { opacity: 0.5, cursor: "not-allowed" },
-                      })}
-                    >
-                      Next →
-                    </button>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={handleToggleRead}
-                    disabled={updateStatusMutation.isPending}
-                    class={css({
-                      padding: "2",
-                      paddingInline: "4",
-                      borderRadius: "md",
-                      backgroundColor: itemQuery.data?.isRead
-                        ? "gray.200"
-                        : "blue.50",
-                      color: itemQuery.data?.isRead ? "gray.700" : "blue.700",
-                      cursor: "pointer",
-                      fontSize: "sm",
-                      fontWeight: "medium",
-                      _hover: { opacity: 0.8 },
-                      _disabled: { opacity: 0.5, cursor: "not-allowed" },
-                    })}
-                  >
-                    {itemQuery.data?.isRead ? "Mark as Unread" : "Mark as Read"}
-                  </button>
-                </>
-              }
-            >
-              {props.footerExtras}
-            </Show>
-          </div>
+          </h2>
+          <ActionButton variant="ghost" onClick={props.onClose}>
+            Close
+          </ActionButton>
         </div>
-      </div>
+        <div
+          class={flex({
+            flexDirection: "column",
+            gap: "4",
+            padding: "6",
+            overflowY: "auto",
+            height: "full",
+          })}
+        >
+          <Show when={itemQuery.isLoading}>
+            <div
+              class={css({
+                textAlign: "center",
+                padding: "10",
+                color: "gray.500",
+              })}
+            >
+              Loading content...
+            </div>
+          </Show>
+
+          <Show when={itemQuery.data}>
+            {(item) => (
+              <>
+                <div
+                  class={flex({
+                    gap: "4",
+                    fontSize: "sm",
+                    color: "gray.500",
+                    flexWrap: "wrap",
+                    alignItems: "center",
+                  })}
+                >
+                  <span>
+                    {getItemDisplayDate(item()).label}:{" "}
+                    {formatDate(getItemDisplayDate(item()).date)}
+                  </span>
+                  <Show when={item().author}>
+                    <span>By {item().author}</span>
+                  </Show>
+                  <Show when={item().categories}>
+                    <div class={flex({ gap: "1", flexWrap: "wrap" })}>
+                      <For each={normalizeCategories(item().categories)}>
+                        {(cat) => (
+                          <span
+                            class={css({
+                              px: "2",
+                              py: "0.5",
+                              bg: "gray.100",
+                              rounded: "full",
+                              fontSize: "10px",
+                              color: "gray.600",
+                              border: "1px solid",
+                              borderColor: "gray.200",
+                            })}
+                          >
+                            {cat}
+                          </span>
+                        )}
+                      </For>
+                    </div>
+                  </Show>
+                </div>
+
+                <Show when={item().imageUrl}>
+                  <div class={css({ my: "4" })}>
+                    <img
+                      src={item().imageUrl}
+                      alt=""
+                      class={css({
+                        maxWidth: "full",
+                        height: "auto",
+                        borderRadius: "md",
+                        boxShadow: "sm",
+                      })}
+                    />
+                  </div>
+                </Show>
+
+                <div
+                  class={css({
+                    lineHeight: "relaxed",
+                    "& a": { color: "blue.600", textDecoration: "underline" },
+                    "& p": { marginBottom: "4" },
+                    "& img": { maxWidth: "full", height: "auto", my: "4" },
+                  })}
+                >
+                  <MarkdownRenderer
+                    content={item().content || item().description || ""}
+                  />
+                </div>
+              </>
+            )}
+          </Show>
+        </div>
+      </Modal>
     </Show>
   );
 }

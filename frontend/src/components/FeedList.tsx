@@ -1,13 +1,18 @@
+import { create } from "@bufbuild/protobuf";
 import { useLiveQuery } from "@tanstack/solid-db";
 import { createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
+import { RefreshFeedsRequestSchema } from "../gen/feed/v1/feed_pb";
 import { type Feed, feeds } from "../lib/db";
 import { useRefreshFeeds } from "../lib/feed-query";
 import { fetchingState } from "../lib/fetching-state";
 import { formatDate, formatUnreadCount } from "../lib/item-utils";
 import { useTags } from "../lib/tag-query";
 import { ManageTagsModal } from "./ManageTagsModal";
+import { ActionButton } from "./ui/ActionButton";
+import { Badge } from "./ui/Badge";
+import { EmptyState } from "./ui/EmptyState";
 
 export function FeedList() {
   const refreshMutation = useRefreshFeeds();
@@ -115,7 +120,7 @@ export function FeedList() {
           position: "sticky",
           top: 0,
           zIndex: 2,
-          backgroundColor: "white",
+          backgroundColor: "gray.50",
           paddingBottom: "1",
           md: {
             alignItems: "center",
@@ -144,47 +149,34 @@ export function FeedList() {
               "pointer-events": selectedFeedIds().length > 0 ? "auto" : "none",
             }}
           >
-            <button
-              type="button"
-              onClick={() => refreshMutation.mutate({ ids: selectedFeedIds() })}
-              disabled={refreshMutation.isPending}
-              class={css({
-                display: "none",
-                sm: { display: "block" },
-                px: "2.5",
-                py: "1",
-                bg: "blue.100",
-                color: "blue.700",
-                rounded: "md",
-                fontSize: "sm",
-                fontWeight: "bold",
-                cursor: "pointer",
-                whiteSpace: "nowrap",
-                _hover: { bg: "blue.200" },
-                _disabled: { opacity: 0.5, cursor: "not-allowed" },
-              })}
+            <div class={css({ display: "none", sm: { display: "block" } })}>
+              <ActionButton
+                size="sm"
+                variant="secondary"
+                onClick={() =>
+                  refreshMutation.mutate(
+                    create(RefreshFeedsRequestSchema, {
+                      ids: selectedFeedIds(),
+                    }),
+                  )
+                }
+                disabled={refreshMutation.isPending}
+              >
+                {refreshMutation.isPending ? "Fetching..." : "Fetch Selected"}
+              </ActionButton>
+            </div>
+            <div
+              class={css({ display: "none", sm: { display: "block" } })}
+              data-role="header-manage-tags"
             >
-              {refreshMutation.isPending ? "Fetching..." : "Fetch Selected"}
-            </button>
-            <button
-              type="button"
-              onClick={() => setIsManageModalOpen(true)}
-              class={css({
-                display: "none",
-                sm: { display: "block" },
-                px: "2.5",
-                py: "1",
-                bg: "blue.600",
-                color: "white",
-                rounded: "md",
-                fontSize: "sm",
-                cursor: "pointer",
-                whiteSpace: "nowrap",
-                _hover: { bg: "blue.700" },
-              })}
-            >
-              Manage Tags ({selectedFeedIds().length})
-            </button>
+              <ActionButton
+                size="sm"
+                variant="primary"
+                onClick={() => setIsManageModalOpen(true)}
+              >
+                Manage Tags ({selectedFeedIds().length})
+              </ActionButton>
+            </div>
           </div>
         </div>
         <div
@@ -280,15 +272,19 @@ export function FeedList() {
           gap: "2",
           flex: "1",
           minHeight: 0,
+          backgroundColor: "white",
         })}
       >
         <Show when={isLoading()}>
-          <p>Loading...</p>
+          <p class={css({ color: "gray.500", fontSize: "sm" })}>Loading...</p>
         </Show>
         <Show when={deleteError()}>
           <p class={css({ color: "red.500" })}>
             Delete Error: {deleteError()?.message}
           </p>
+        </Show>
+        <Show when={!isLoading() && sortedFeeds().length === 0}>
+          <EmptyState title="No feeds found." />
         </Show>
         <div
           class={css({
@@ -410,71 +406,37 @@ export function FeedList() {
                   </div>
                   <div class={flex({ gap: "2", alignItems: "center" })}>
                     <Show when={Number(feed.unreadCount || 0) > 0}>
-                      <span
-                        class={css({
-                          bg: "blue.100",
-                          color: "blue.700",
-                          px: "2",
-                          py: "0.5",
-                          rounded: "full",
-                          fontSize: "xs",
-                          fontWeight: "bold",
-                        })}
-                      >
+                      <Badge variant="primary">
                         {feed.unreadCount?.toString()}
-                      </span>
+                      </Badge>
                     </Show>
-                    <button
-                      type="button"
-                      onClick={(e) => {
+                    <ActionButton
+                      size="sm"
+                      variant="ghost"
+                      onClickEvent={(e) => {
                         e.stopPropagation();
-                        refreshMutation.mutate({ ids: [feed.id] });
+                        refreshMutation.mutate(
+                          create(RefreshFeedsRequestSchema, {
+                            ids: [feed.id],
+                          }),
+                        );
                       }}
                       disabled={fetchingState.isFetching(feed.id)}
-                      class={css({
-                        color: "blue.600",
-                        padding: "1",
-                        paddingInline: "2",
-                        borderRadius: "md",
-                        fontSize: "sm",
-                        cursor: "pointer",
-                        _hover: {
-                          backgroundColor: "blue.50",
-                          textDecoration: "underline",
-                        },
-                        _disabled: {
-                          color: "gray.400",
-                          cursor: "not-allowed",
-                          textDecoration: "none",
-                        },
-                      })}
                     >
                       {fetchingState.isFetching(feed.id)
                         ? "Fetching..."
                         : "Fetch"}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={(e) => {
+                    </ActionButton>
+                    <ActionButton
+                      size="sm"
+                      variant="danger"
+                      onClickEvent={(e) => {
                         e.stopPropagation();
                         handleDelete(feed.id);
                       }}
-                      class={css({
-                        color: "red.500",
-                        padding: "1",
-                        paddingInline: "2",
-                        borderRadius: "md",
-                        fontSize: "sm",
-                        cursor: "pointer",
-                        _hover: {
-                          backgroundColor: "red.50",
-                          textDecoration: "underline",
-                        },
-                        _disabled: { color: "gray.400", cursor: "not-allowed" },
-                      })}
                     >
                       Delete
-                    </button>
+                    </ActionButton>
                   </div>
                 </li>
               )}
@@ -505,25 +467,22 @@ export function FeedList() {
           style={{ position: "fixed" }}
         >
           <div class={stack({ gap: "2", alignItems: "flex-end" })}>
-            <button
-              type="button"
-              onClick={() => refreshMutation.mutate({ ids: selectedFeedIds() })}
+            <ActionButton
+              variant="secondary"
+              onClick={() =>
+                refreshMutation.mutate(
+                  create(RefreshFeedsRequestSchema, {
+                    ids: selectedFeedIds(),
+                  }),
+                )
+              }
               disabled={refreshMutation.isPending}
+              ariaLabel="Fetch Selected"
               class={css({
-                px: "4",
-                py: "4",
-                bg: "blue.100",
-                color: "blue.700",
-                rounded: "full",
-                fontSize: "sm",
-                fontWeight: "bold",
-                cursor: "pointer",
+                padding: "4",
+                borderRadius: "full",
                 boxShadow: "lg",
-                _hover: { bg: "blue.200" },
-                _active: { transform: "scale(0.95)" },
-                _disabled: { opacity: 0.5, cursor: "not-allowed" },
               })}
-              aria-label="Fetch Selected"
             >
               <div class={flex({ gap: "2", alignItems: "center" })}>
                 <svg
@@ -545,24 +504,16 @@ export function FeedList() {
                   {refreshMutation.isPending ? "Fetching..." : "Fetch"}
                 </span>
               </div>
-            </button>
-            <button
-              type="button"
+            </ActionButton>
+            <ActionButton
+              variant="primary"
               onClick={() => setIsManageModalOpen(true)}
+              ariaLabel="Manage Tags"
               class={css({
-                px: "4",
-                py: "4",
-                bg: "blue.600",
-                color: "white",
-                rounded: "full",
-                fontSize: "sm",
-                fontWeight: "bold",
-                cursor: "pointer",
+                padding: "4",
+                borderRadius: "full",
                 boxShadow: "lg",
-                _hover: { bg: "blue.700" },
-                _active: { transform: "scale(0.95)" },
               })}
-              aria-label="Manage Tags"
             >
               <div class={flex({ gap: "2", alignItems: "center" })}>
                 <svg
@@ -582,7 +533,7 @@ export function FeedList() {
                 </svg>
                 <span>Tags ({selectedFeedIds().length})</span>
               </div>
-            </button>
+            </ActionButton>
           </div>
         </div>
       </Show>

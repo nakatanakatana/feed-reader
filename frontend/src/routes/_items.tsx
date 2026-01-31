@@ -1,7 +1,8 @@
 import { createFileRoute, Outlet } from "@tanstack/solid-router";
 import { css } from "../../styled-system/css";
-import { stack } from "../../styled-system/patterns";
 import { ItemList } from "../components/ItemList";
+import { PageHeader } from "../components/ui/PageHeader";
+import { PageLayout } from "../components/ui/PageLayout";
 import type { DateFilterValue } from "../lib/item-utils";
 
 interface ItemsSearch {
@@ -25,16 +26,8 @@ function ItemsLayout() {
   const search = Route.useSearch();
 
   return (
-    <div
-      class={stack({
-        padding: "4",
-        gap: "4",
-        height: "calc(100vh - 56px)",
-        minHeight: 0,
-        overflow: "hidden",
-      })}
-    >
-      <h2 class={css({ fontSize: "xl", fontWeight: "bold" })}>All Items</h2>
+    <PageLayout>
+      <PageHeader title="All Items" />
       <div
         class={css({
           flex: "1",
@@ -51,6 +44,6 @@ function ItemsLayout() {
         />
         <Outlet />
       </div>
-    </div>
+    </PageLayout>
   );
 }

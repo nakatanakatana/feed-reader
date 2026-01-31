@@ -1,10 +1,13 @@
 import { createClient } from "@connectrpc/connect";
 import { createSignal, Show } from "solid-js";
 import { css } from "../../styled-system/css";
-import { center, flex, stack } from "../../styled-system/patterns";
+import { stack } from "../../styled-system/patterns";
 import { FeedService } from "../gen/feed/v1/feed_pb";
 import { queryClient } from "../lib/query";
 import { useTransport } from "../lib/transport-context";
+import { ActionButton } from "./ui/ActionButton";
+import { LoadingState } from "./ui/LoadingState";
+import { Modal } from "./ui/Modal";
 
 interface ImportOpmlModalProps {
   isOpen: boolean;
@@ -67,196 +70,92 @@ export function ImportOpmlModal(props: ImportOpmlModalProps) {
     }
   };
 
-  const handleBackdropClick = (e: MouseEvent) => {
-    if (e.target === e.currentTarget && !isPending()) {
-      props.onClose();
-    }
-  };
-
   return (
-    <Show when={props.isOpen}>
-      {/* biome-ignore lint/a11y/noStaticElementInteractions: Backdrop click to close */}
-      <div
-        onClick={handleBackdropClick}
-        onKeyDown={(e) => {
-          if (e.key === "Escape") props.onClose();
-        }}
-        class={center({
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "screen",
-          height: "screen",
-          backgroundColor: "rgba(0, 0, 0, 0.5)",
-          zIndex: 1000,
-          padding: "4",
-        })}
-      >
-        <div
-          role="dialog"
-          aria-modal="true"
-          onClick={(e) => e.stopPropagation()}
-          onKeyDown={() => {}}
-          class={stack({
-            backgroundColor: "white",
+    <Modal
+      isOpen={props.isOpen}
+      onClose={props.onClose}
+      size="standard"
+      title="Import OPML"
+      disableBackdropClose={isPending()}
+      ariaLabel="Import OPML"
+    >
+      <Show when={!result() && !isPending()}>
+        <p class={css({ color: "gray.600", fontSize: "sm" })}>
+          Select an .opml or .xml file to import your feed subscriptions.
+        </p>
+        <input
+          type="file"
+          accept=".opml,.xml"
+          onChange={handleFileChange}
+          class={css({
             width: "full",
-            maxWidth: "md",
-            borderRadius: "lg",
-            boxShadow: "xl",
-            overflow: "hidden",
-            position: "relative",
-            textAlign: "left",
+            padding: "2",
+            border: "1px dashed",
+            borderColor: "gray.300",
+            borderRadius: "md",
+            cursor: "pointer",
           })}
-        >
-          {/* Header */}
-          <div
-            class={flex({
-              justifyContent: "space-between",
-              alignItems: "center",
-              padding: "4",
-              borderBottom: "1px solid",
-              borderColor: "gray.100",
-            })}
-          >
-            <h2 class={css({ fontSize: "lg", fontWeight: "bold" })}>
-              Import OPML
-            </h2>
-            <button
-              type="button"
-              onClick={props.onClose}
-              disabled={isPending()}
-              class={css({
-                padding: "2",
-                cursor: "pointer",
-                color: "gray.500",
-                _hover: { color: "gray.700" },
-                _disabled: { opacity: 0.5, cursor: "not-allowed" },
+        />
+      </Show>
+
+      <Show when={isPending()}>
+        <LoadingState label="Processing OPML file..." />
+      </Show>
+
+      <Show when={error()}>
+        <p class={css({ color: "red.500", fontSize: "sm" })}>
+          Error: {error()}
+        </p>
+      </Show>
+
+      <Show when={result()}>
+        {(res) => (
+          <div class={stack({ gap: "2" })}>
+            <p class={css({ fontWeight: "medium", color: "green.600" })}>
+              Import Completed!
+            </p>
+            <ul
+              class={stack({
+                gap: "1",
+                fontSize: "sm",
+                color: "gray.700",
               })}
             >
-              ✕
-            </button>
-          </div>
-
-          {/* Content */}
-          <div class={stack({ padding: "6", gap: "4" })}>
-            <Show when={!result() && !isPending()}>
-              <p class={css({ color: "gray.600", fontSize: "sm" })}>
-                Select an .opml or .xml file to import your feed subscriptions.
-              </p>
-              <input
-                type="file"
-                accept=".opml,.xml"
-                onChange={handleFileChange}
-                class={css({
-                  width: "full",
-                  padding: "2",
-                  border: "1px dashed",
-                  borderColor: "gray.300",
-                  borderRadius: "md",
-                  cursor: "pointer",
-                })}
-              />
-            </Show>
-
-            <Show when={isPending()}>
-              <div
-                class={center({
-                  padding: "8",
-                  gap: "3",
-                  flexDirection: "column",
-                })}
-              >
-                <div
+              <li>Total feeds found: {res().total}</li>
+              <li>Successfully imported: {res().success}</li>
+              <li>Skipped (already exists): {res().skipped}</li>
+            </ul>
+            <Show when={res().failedFeeds.length > 0}>
+              <div class={stack({ gap: "1", marginTop: "2" })}>
+                <p
                   class={css({
-                    width: "8",
-                    height: "8",
-                    border: "4px solid",
-                    borderColor: "blue.100",
-                    borderTopColor: "blue.600",
-                    borderRadius: "full",
-                    animation: "spin 1s linear infinite",
+                    fontSize: "sm",
+                    fontWeight: "medium",
+                    color: "red.500",
                   })}
-                />
-                <p class={css({ color: "gray.600" })}>
-                  Processing OPML file...
+                >
+                  Failed to import:
                 </p>
+                <ul
+                  class={css({
+                    fontSize: "xs",
+                    color: "red.400",
+                    maxHeight: "20",
+                    overflowY: "auto",
+                  })}
+                >
+                  {res().failedFeeds.map((url) => (
+                    <li>{url}</li>
+                  ))}
+                </ul>
               </div>
             </Show>
-
-            <Show when={error()}>
-              <p class={css({ color: "red.500", fontSize: "sm" })}>
-                Error: {error()}
-              </p>
-            </Show>
-
-            <Show when={result()}>
-              {(res) => (
-                <div class={stack({ gap: "2" })}>
-                  <p class={css({ fontWeight: "medium", color: "green.600" })}>
-                    Import Completed!
-                  </p>
-                  <ul
-                    class={stack({
-                      gap: "1",
-                      fontSize: "sm",
-                      color: "gray.700",
-                    })}
-                  >
-                    <li>Total feeds found: {res().total}</li>
-                    <li>Successfully imported: {res().success}</li>
-                    <li>Skipped (already exists): {res().skipped}</li>
-                  </ul>
-                  <Show when={res().failedFeeds.length > 0}>
-                    <div class={stack({ gap: "1", marginTop: "2" })}>
-                      <p
-                        class={css({
-                          fontSize: "sm",
-                          fontWeight: "medium",
-                          color: "red.500",
-                        })}
-                      >
-                        Failed to import:
-                      </p>
-                      <ul
-                        class={css({
-                          fontSize: "xs",
-                          color: "red.400",
-                          maxHeight: "20",
-                          overflowY: "auto",
-                        })}
-                      >
-                        {res().failedFeeds.map((url) => (
-                          <li>{url}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </Show>
-                  <button
-                    type="button"
-                    onClick={props.onClose}
-                    class={css({
-                      marginTop: "4",
-                      padding: "2",
-                      backgroundColor: "blue.600",
-                      color: "white",
-                      borderRadius: "md",
-                      cursor: "pointer",
-                      _hover: { backgroundColor: "blue.700" },
-                    })}
-                  >
-                    Done
-                  </button>
-                </div>
-              )}
-            </Show>
+            <ActionButton variant="primary" onClick={props.onClose}>
+              Done
+            </ActionButton>
           </div>
-        </div>
-      </div>
-      <style>{`
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
-    </Show>
+        )}
+      </Show>
+    </Modal>
   );
 }

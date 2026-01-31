@@ -56,25 +56,25 @@ describe("RootComponent Navigation", () => {
     // Verify Header Container Style
     const headerContainer = page.getByRole("banner");
     await expect.element(headerContainer).toHaveStyle({
-      "padding-top": "8px",
+      paddingTop: "8px",
     });
     await expect.element(headerContainer).toHaveStyle({
-      "border-bottom-color": "rgb(243, 244, 246)",
+      borderBottomColor: "rgb(243, 244, 246)",
     });
 
     // 6. Verify Active State
     // Expecting a bottom border and background color for active links.
     await expect.element(homeLink).toHaveStyle({
-      "border-bottom-width": "2px",
-      "border-bottom-style": "solid",
-      "border-bottom-color": "rgb(37, 99, 235)", // blue.600
+      borderBottomWidth: "2px",
+      borderBottomStyle: "solid",
+      borderBottomColor: "rgb(37, 99, 235)", // blue.600
       color: "rgb(29, 78, 216)", // blue.700
-      "background-color": "rgb(239, 246, 255)", // blue.50
+      backgroundColor: "rgb(239, 246, 255)", // blue.50
     });
 
     // Verify inactive link does NOT have it
     await expect.element(feedsLink).not.toHaveStyle({
-      "border-bottom-width": "2px",
+      borderBottomWidth: "2px",
     });
     await expect.element(feedsLink).toHaveStyle({
       color: "rgb(107, 114, 128)", // gray.500
