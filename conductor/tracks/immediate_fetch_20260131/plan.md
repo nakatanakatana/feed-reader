@@ -13,7 +13,7 @@ This plan implements the "Fetch Now" feature, allowing users to manually trigger
     - [ ] Update `cmd/feed-reader/handler.go` to use the enhanced fetch logic and return the detailed status in the RPC response.
 - [x] Task: Conductor - User Manual Verification 'Backend API Enhancement' (Protocol in workflow.md) [4d56108]
 
-## Phase 2: Frontend Data Layer
+## Phase 2: Frontend Data Layer [checkpoint: 9c898fb]
 - [x] Task: Update TanStack Query mutation for `RefreshFeeds` [42c4986]
     - [ ] Ensure the mutation handles the new response format and updates the cache (e.g., invalidating feed queries) upon completion.
 - [x] Task: Implement fetching state management [9df6cd5]
