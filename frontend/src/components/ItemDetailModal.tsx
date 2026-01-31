@@ -2,7 +2,11 @@ import { For, type JSX, onMount, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { center, flex, stack } from "../../styled-system/patterns";
 import { useItem, useUpdateItemStatus } from "../lib/item-query";
-import { formatDate, getItemDisplayDate } from "../lib/item-utils";
+import {
+  formatDate,
+  getItemDisplayDate,
+  normalizeCategories,
+} from "../lib/item-utils";
 import { MarkdownRenderer } from "./MarkdownRenderer";
 
 interface ItemDetailModalProps {
@@ -166,11 +170,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                     </Show>
                     <Show when={item().categories}>
                       <div class={flex({ gap: "1", flexWrap: "wrap" })}>
-                        <For
-                          each={item()
-                            .categories.split(",")
-                            .map((c) => c.trim())}
-                        >
+                        <For each={normalizeCategories(item().categories)}>
                           {(cat) => (
                             <span
                               class={css({

@@ -73,3 +73,43 @@ export const getItemDisplayDate = (
     date: item.createdAt,
   };
 };
+
+export const normalizeCategories = (categories: string): string[] => {
+  if (!categories) return [];
+  const trimmed = categories.trim();
+  const normalizeValue = (value: string) => {
+    const valueTrimmed = value.trim();
+    if (
+      valueTrimmed.length >= 2 &&
+      valueTrimmed.startsWith('"') &&
+      valueTrimmed.endsWith('"')
+    ) {
+      return valueTrimmed.slice(1, -1).trim();
+    }
+    return valueTrimmed;
+  };
+  if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
+    try {
+      const parsed = JSON.parse(trimmed);
+      if (Array.isArray(parsed)) {
+        return parsed
+          .filter((value) => value != null)
+          .map((value) => normalizeValue(String(value)))
+          .filter((value) => value.length > 0);
+      }
+    } catch (_error) {
+      // Fall back to comma-splitting below.
+    }
+  }
+  let fallbackSource = trimmed;
+  if (fallbackSource.startsWith("[")) {
+    fallbackSource = fallbackSource.slice(1);
+  }
+  if (fallbackSource.endsWith("]")) {
+    fallbackSource = fallbackSource.slice(0, -1);
+  }
+  return fallbackSource
+    .split(",")
+    .map((value) => normalizeValue(value))
+    .filter((value) => value.length > 0);
+};
