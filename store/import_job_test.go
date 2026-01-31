@@ -22,13 +22,13 @@ func TestImportJob(t *testing.T) {
 		t.Fatalf("failed to create schema: %v", err)
 	}
 
-	queries := store.New(db)
+	s := store.NewStore(db)
 	ctx := context.Background()
 
 	jobID := uuid.New().String()
 	
 	// Create job
-	job, err := queries.CreateImportJob(ctx, store.CreateImportJobParams{
+	job, err := s.CreateImportJob(ctx, store.CreateImportJobParams{
 		ID:         jobID,
 		Status:     "queued",
 		TotalFeeds: 10,
@@ -49,7 +49,7 @@ func TestImportJob(t *testing.T) {
 
 	// Update job
 	failedFeeds := `["http://example.com/fail"]`
-	updatedJob, err := queries.UpdateImportJob(ctx, store.UpdateImportJobParams{
+	updatedJob, err := s.UpdateImportJob(ctx, store.UpdateImportJobParams{
 		ID:             jobID,
 		Status:         "processing",
 		ProcessedFeeds: 5,
@@ -70,7 +70,7 @@ func TestImportJob(t *testing.T) {
 	}
 
 	// Get job
-	fetchedJob, err := queries.GetImportJob(ctx, jobID)
+	fetchedJob, err := s.GetImportJob(ctx, jobID)
 	if err != nil {
 		t.Fatalf("failed to get import job: %v", err)
 	}
