@@ -404,3 +404,33 @@ SET
   updated_at = CURRENT_TIMESTAMP
 WHERE
   id = ?;
+
+-- name: GetImportJob :one
+SELECT
+  *
+FROM
+  import_jobs
+WHERE
+  id = ?;
+
+-- name: CreateImportJob :one
+INSERT INTO import_jobs (
+  id,
+  status,
+  total_feeds
+) VALUES (
+  ?, ?, ?
+)
+RETURNING *;
+
+-- name: UpdateImportJob :one
+UPDATE
+  import_jobs
+SET
+  status = ?,
+  processed_feeds = ?,
+  failed_feeds = ?,
+  updated_at = CURRENT_TIMESTAMP
+WHERE
+  id = ?
+RETURNING *;
