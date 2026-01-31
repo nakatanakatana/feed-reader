@@ -194,7 +194,7 @@ func (s *FetcherService) shouldFetch(f store.Feed) bool {
 }
 
 func (s *FetcherService) FetchAndSave(ctx context.Context, f store.Feed) error {
-	s.logger.DebugContext(ctx, "fetching feed", "url", f.Url, "id", f.ID)
+	s.logger.InfoContext(ctx, "fetching feed", "url", f.Url, "id", f.ID)
 
 	if _, loaded := s.fetching.LoadOrStore(f.ID, struct{}{}); loaded {
 		s.logger.DebugContext(ctx, "fetch already in progress, skipping", "url", f.Url, "id", f.ID)
