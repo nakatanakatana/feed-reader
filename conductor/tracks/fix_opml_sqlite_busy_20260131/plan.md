@@ -34,11 +34,11 @@ This phase implements the backend logic for managing jobs and integrating with t
     - [x] Implement `GetImportJob` in `cmd/feed-reader/handler.go`.
 - [x] Task: Conductor - User Manual Verification 'Import Job Service & Write Queue Integration' (Protocol in workflow.md) (0ee7486)
 
-## Phase 3: Testing & Cleanup
+## Phase 3: Testing & Cleanup [checkpoint: a98a805]
 - [x] Task: Write Integration Tests (89e0193)
     - [x] Create a test in `cmd/feed-reader/handler_test.go` or new integration test file.
     - [x] Simulate a large OPML import.
     - [x] Verify `job_id` is returned.
     - [x] Poll `GetImportJob` to verify progress and completion.
     - [x] Verify feeds are actually in the DB.
-- [ ] Task: Conductor - User Manual Verification 'Testing & Cleanup' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Testing & Cleanup' (Protocol in workflow.md) (a98a805)
