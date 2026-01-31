@@ -78,6 +78,7 @@ export const handlers = [
           url: feed.url,
           title: feed.title,
           unreadCount: feed.unreadCount ?? 0n,
+          tags: feed.tags,
         }),
       );
       return create(ListFeedsResponseSchema, { feeds: listFeeds });

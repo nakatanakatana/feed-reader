@@ -1,4 +1,3 @@
-import * as fc from "fast-check";
 import { describe, expect, it, vi } from "vitest";
 import {
   formatUnreadCount,
