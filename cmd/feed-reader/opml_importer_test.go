@@ -55,3 +55,26 @@ func TestOPMLImporter_ImportSync(t *testing.T) {
 	feeds, _ := queries.ListFeeds(ctx, nil)
 	assert.Len(t, feeds, 2) // existing + new
 }
+
+func TestOPMLImporter_ImportSync_Errors(t *testing.T) {
+	ctx := context.Background()
+	_, db := setupTestDB(t)
+	s := store.NewStore(db)
+
+	t.Run("Parse Error", func(t *testing.T) {
+		importer := NewOPMLImporter(s, &mockFetcher{}, slog.Default(), nil)
+		results, err := importer.ImportSync(ctx, []byte("invalid xml"))
+		assert.Error(t, err)
+		assert.Nil(t, results)
+	})
+
+	t.Run("UUID Error", func(t *testing.T) {
+		opmlContent := `<?xml version="1.0" encoding="UTF-8"?><opml version="1.0"><body><outline xmlUrl="https://example.com/new" /></body></opml>`
+		fetcher := &mockFetcher{feed: &gofeed.Feed{Title: "Title"}}
+		// mockUUIDGenerator with error
+		importer := NewOPMLImporter(s, fetcher, slog.Default(), mockUUIDGenerator{err: errors.New("uuid error")})
+		results, err := importer.ImportSync(ctx, []byte(opmlContent))
+		assert.Error(t, err)
+		assert.Nil(t, results)
+	})
+}
