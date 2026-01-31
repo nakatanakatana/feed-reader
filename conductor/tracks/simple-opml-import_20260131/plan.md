@@ -7,8 +7,8 @@ In this phase, we will remove the asynchronous job infrastructure and redefine t
 
 - [x] Task: Remove `ImportJob` and related storage logic in `store/` <!-- id: 83367b9 -->
 - [x] Task: Update `FeedStore.CreateFeed` (or equivalent) to only fetch metadata and not items <!-- id: 3567454 -->
-- [~] Task: Remove background worker pool and write queue related to OPML imports if redundant
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend Cleanup and Redefinition' (Protocol in workflow.md)
+- [x] Task: Remove background worker pool and write queue related to OPML imports if redundant <!-- id: 4b9f6f8 -->
+- [~] Task: Conductor - User Manual Verification 'Phase 1: Backend Cleanup and Redefinition' (Protocol in workflow.md)
 
 ## Phase 2: Synchronous Import Implementation
 Implement the synchronous logic for processing OPML files and returning results.
