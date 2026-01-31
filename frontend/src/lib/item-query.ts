@@ -77,7 +77,7 @@ export const itemsInfiniteQueryOptions = (
     queryFn: async ({ pageParam }) => {
       return fetchItems(transport, {
         ...params,
-        limit: 20,
+        limit: 100,
         offset: pageParam as number,
       });
     },
@@ -86,7 +86,7 @@ export const itemsInfiniteQueryOptions = (
       if (lastPage.items.length === 0) {
         return undefined;
       }
-      return (lastPageParam as number) + 20;
+      return (lastPageParam as number) + 100;
     },
   });
 };

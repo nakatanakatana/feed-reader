@@ -37,7 +37,7 @@ func (s *ItemServer) GetItem(ctx context.Context, req *connect.Request[itemv1.Ge
 func (s *ItemServer) ListItems(ctx context.Context, req *connect.Request[itemv1.ListItemsRequest]) (*connect.Response[itemv1.ListItemsResponse], error) {
 	limit := int64(req.Msg.Limit)
 	if limit <= 0 {
-		limit = 20
+		limit = 100
 	}
 	offset := int64(req.Msg.Offset)
 
