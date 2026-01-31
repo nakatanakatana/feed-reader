@@ -20,7 +20,7 @@ This plan implements the "Fetch Now" feature, allowing users to manually trigger
     - [ ] Add a mechanism (e.g., a simple reactive set of IDs) to track which feeds are currently being fetched across the application.
 - [x] Task: Conductor - User Manual Verification 'Frontend Data Layer' (Protocol in workflow.md) [9df6cd5]
 
-## Phase 3: Frontend UI Implementation
+## Phase 3: Frontend UI Implementation [checkpoint: 9694802]
 - [x] Task: Implement row-level indicators in `FeedList` [872ed7d]
     - [ ] Update `FeedList` components to display a loading spinner when a feed is being fetched.
     - [ ] Implement error display (icon + tooltip) when a fetch fails.
