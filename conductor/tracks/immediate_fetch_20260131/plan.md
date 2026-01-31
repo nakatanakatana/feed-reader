@@ -24,7 +24,7 @@ This plan implements the "Fetch Now" feature, allowing users to manually trigger
 - [x] Task: Implement row-level indicators in `FeedList` [872ed7d]
     - [ ] Update `FeedList` components to display a loading spinner when a feed is being fetched.
     - [ ] Implement error display (icon + tooltip) when a fetch fails.
-- [ ] Task: Add "Fetch Now" to Feed Context Menu
+- [x] Task: Add "Fetch Now" to Feed Context Menu [d014060]
     - [ ] Integrate the fetch action into the existing "..." menu for individual feeds.
 - [ ] Task: Implement Bulk "Fetch Selected" action
     - [ ] Add a "Fetch Selected" button to the bulk actions toolbar.
