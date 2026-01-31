@@ -4,6 +4,7 @@ import { flex, stack } from "../../styled-system/patterns";
 import type { Item } from "../lib/db";
 import { updateItemStatus } from "../lib/db";
 import { formatDate, getItemDisplayDate } from "../lib/item-utils";
+import { ActionButton } from "./ui/ActionButton";
 
 interface ItemRowProps {
   item: Item;
@@ -17,8 +18,8 @@ export function ItemRow(props: ItemRowProps) {
 
   const displayDate = () => getItemDisplayDate(props.item);
 
-  const handleToggleRead = async (e: MouseEvent) => {
-    e.stopPropagation();
+  const handleToggleRead = async (e?: MouseEvent) => {
+    e?.stopPropagation();
     setIsPending(true);
     try {
       await updateItemStatus({
@@ -128,28 +129,15 @@ export function ItemRow(props: ItemRowProps) {
         </button>
       </div>
       <div class={css({ padding: "3" })}>
-        <button
-          type="button"
+        <ActionButton
+          size="sm"
+          variant="secondary"
           onClick={handleToggleRead}
           disabled={isPending()}
-          class={css({
-            fontSize: "xs",
-            padding: "2",
-            paddingInline: "3",
-            borderRadius: "md",
-            cursor: "pointer",
-            border: "1px solid",
-            borderColor: "gray.200",
-            backgroundColor: "white",
-            minWidth: "100px",
-            display: "flex",
-            justifyContent: "center",
-            _hover: { backgroundColor: "gray.50" },
-            _disabled: { opacity: 0.5, cursor: "not-allowed" },
-          })}
+          class={css({ minWidth: "110px", justifyContent: "center" })}
         >
           {props.item.isRead ? "Mark as Unread" : "Mark as Read"}
-        </button>
+        </ActionButton>
       </div>
     </div>
   );

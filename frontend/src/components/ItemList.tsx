@@ -11,6 +11,10 @@ import {
 import { useTags } from "../lib/tag-query";
 import { DateFilterSelector } from "./DateFilterSelector";
 import { ItemRow } from "./ItemRow";
+import { ActionButton } from "./ui/ActionButton";
+import { Badge } from "./ui/Badge";
+import { EmptyState } from "./ui/EmptyState";
+import { TagChip } from "./ui/TagChip";
 
 interface ItemListProps {
   tagId?: string;
@@ -119,98 +123,40 @@ export function ItemList(props: ItemListProps) {
           <span class={css({ fontSize: "sm", color: "gray.600" })}>
             Filter by Tag:
           </span>
-          <button
-            type="button"
+          <TagChip
+            selected={props.tagId === undefined}
             onClick={() => handleTagClick(undefined)}
-            class={css({
-              px: "3",
-              py: "1",
-              minH: "8",
-              rounded: "full",
-              fontSize: "xs",
-              cursor: "pointer",
-              border: "1px solid",
-              display: "inline-flex",
-              alignItems: "center",
-              transition: "all 0.2s",
-              ...(props.tagId === undefined
-                ? { bg: "blue.100", borderColor: "blue.500", color: "blue.700" }
-                : {
-                    bg: "gray.50",
-                    borderColor: "gray.300",
-                    color: "gray.600",
-                  }),
-            })}
           >
             All
             <Show when={(tagsQuery.data?.totalUnreadCount ?? 0n) > 0n}>
-              <span
-                class={css({
-                  ml: "1.5",
-                  bg: props.tagId === undefined ? "blue.600" : "gray.200",
-                  color: props.tagId === undefined ? "white" : "gray.700",
-                  px: "1.5",
-                  py: "0.5",
-                  rounded: "full",
-                  fontSize: "xs",
-                  fontWeight: "bold",
-                  minWidth: "1.5rem",
-                  textAlign: "center",
-                })}
+              <Badge
+                variant={props.tagId === undefined ? "primary" : "neutral"}
+                class={css({ ml: "1.5", fontSize: "10px", minWidth: "1.5rem" })}
               >
                 {formatUnreadCount(Number(tagsQuery.data?.totalUnreadCount))}
-              </span>
+              </Badge>
             </Show>
-          </button>
+          </TagChip>
           <For each={tagsQuery.data?.tags}>
             {(tag) => (
-              <button
-                type="button"
+              <TagChip
+                selected={props.tagId === tag.id}
                 onClick={() => handleTagClick(tag.id)}
-                class={css({
-                  px: "3",
-                  py: "1",
-                  minH: "8",
-                  rounded: "full",
-                  fontSize: "xs",
-                  cursor: "pointer",
-                  border: "1px solid",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  transition: "all 0.2s",
-                  ...(props.tagId === tag.id
-                    ? {
-                        bg: "blue.100",
-                        borderColor: "blue.500",
-                        color: "blue.700",
-                      }
-                    : {
-                        bg: "gray.50",
-                        borderColor: "gray.300",
-                        color: "gray.600",
-                      }),
-                })}
               >
                 {tag.name}
                 <Show when={(tag.unreadCount ?? 0n) > 0n}>
-                  <span
+                  <Badge
+                    variant={props.tagId === tag.id ? "primary" : "neutral"}
                     class={css({
                       ml: "1.5",
-                      bg: props.tagId === tag.id ? "blue.600" : "gray.200",
-                      color: props.tagId === tag.id ? "white" : "gray.700",
-                      px: "1.5",
-                      py: "0.5",
-                      rounded: "full",
-                      fontSize: "xs",
-                      fontWeight: "bold",
+                      fontSize: "10px",
                       minWidth: "1.5rem",
-                      textAlign: "center",
                     })}
                   >
                     {formatUnreadCount(Number(tag.unreadCount))}
-                  </span>
+                  </Badge>
                 </Show>
-              </button>
+              </TagChip>
             )}
           </For>
         </div>
@@ -291,41 +237,23 @@ export function ItemList(props: ItemListProps) {
             {selectedItemIds().size} items selected
           </span>
           <div class={flex({ gap: "2" })}>
-            <button
-              type="button"
+            <ActionButton
+              size="sm"
+              variant="secondary"
               onClick={() => setSelectedItemIds(new Set())}
-              class={css({
-                fontSize: "xs",
-                padding: "1.5",
-                paddingInline: "3",
-                color: "gray.600",
-                cursor: "pointer",
-                _hover: { color: "gray.800" },
-              })}
             >
               Clear
-            </button>
-            <button
-              type="button"
+            </ActionButton>
+            <ActionButton
+              size="sm"
+              variant="primary"
               onClick={handleBulkMarkAsRead}
               disabled={updateStatusMutation.isPending}
-              class={css({
-                fontSize: "xs",
-                fontWeight: "bold",
-                padding: "1.5",
-                paddingInline: "4",
-                backgroundColor: "blue.600",
-                color: "white",
-                borderRadius: "md",
-                cursor: "pointer",
-                _hover: { backgroundColor: "blue.700" },
-                _disabled: { opacity: 0.5, cursor: "not-allowed" },
-              })}
             >
               {updateStatusMutation.isPending
                 ? "Processing..."
                 : "Mark as Read"}
-            </button>
+            </ActionButton>
           </div>
         </div>
       </Show>
@@ -358,29 +286,17 @@ export function ItemList(props: ItemListProps) {
       </Show>
 
       <Show when={!isLoading() && allItems().length === 0}>
-        <div
-          class={css({ textAlign: "center", padding: "8", color: "gray.500" })}
-        >
-          No items found.
-        </div>
+        <EmptyState title="No items found." />
       </Show>
 
       <Show when={itemsQuery.hasNextPage}>
-        <button
-          type="button"
+        <ActionButton
+          variant="secondary"
           onClick={() => itemsQuery.fetchNextPage()}
           disabled={itemsQuery.isFetchingNextPage}
-          class={css({
-            padding: "2",
-            backgroundColor: "gray.100",
-            borderRadius: "md",
-            cursor: "pointer",
-            _hover: { backgroundColor: "gray.200" },
-            _disabled: { opacity: 0.5, cursor: "not-allowed" },
-          })}
         >
           {itemsQuery.isFetchingNextPage ? "Loading more..." : "Load More"}
-        </button>
+        </ActionButton>
       </Show>
     </div>
   );
@@ -405,6 +321,7 @@ export function ItemList(props: ItemListProps) {
             overflow: "auto",
             display: "flex",
             flexDirection: "column",
+            backgroundColor: "white",
           })}
         >
           {listBody}
