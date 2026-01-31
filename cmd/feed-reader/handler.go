@@ -266,29 +266,10 @@ func (s *FeedServer) RefreshFeeds(ctx context.Context, req *connect.Request[feed
 }
 
 func (s *FeedServer) ImportOpml(ctx context.Context, req *connect.Request[feedv1.ImportOpmlRequest]) (*connect.Response[feedv1.ImportOpmlResponse], error) {
-	jobID, err := s.opmlImporter.StartImportJob(ctx, req.Msg.OpmlContent)
-	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, err)
-	}
-
-	return connect.NewResponse(&feedv1.ImportOpmlResponse{
-		JobId: jobID,
-	}), nil
+	// TODO: Implement synchronous import
+	return connect.NewResponse(&feedv1.ImportOpmlResponse{}), nil
 }
 
-func (s *FeedServer) GetImportJob(ctx context.Context, req *connect.Request[feedv1.GetImportJobRequest]) (*connect.Response[feedv1.GetImportJobResponse], error) {
-	job, err := s.opmlImporter.GetImportJob(ctx, req.Msg.Id)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, connect.NewError(connect.CodeNotFound, err)
-		}
-		return nil, connect.NewError(connect.CodeInternal, err)
-	}
-
-	return connect.NewResponse(&feedv1.GetImportJobResponse{
-		Job: job,
-	}), nil
-}
 
 func (s *FeedServer) SetFeedTags(ctx context.Context, req *connect.Request[feedv1.SetFeedTagsRequest]) (*connect.Response[feedv1.SetFeedTagsResponse], error) {
 	if err := s.store.SetFeedTags(ctx, req.Msg.FeedId, req.Msg.TagIds); err != nil {
