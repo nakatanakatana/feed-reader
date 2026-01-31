@@ -26,10 +26,10 @@ Update the UI to handle the synchronous flow and remove obsolete job-tracking co
 - [x] Task: Remove job monitoring UI components and related state/queries <!-- id: existing -->
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Frontend Update and Cleanup' (Protocol in workflow.md)
 
-## Phase 4: Verification and Refinement
+## Phase 4: Verification and Refinement [checkpoint: cbd6e15]
 Final checks to ensure everything works as expected and coverage is maintained.
 
 - [x] Task: Verify that initial feed registration does not trigger immediate item fetch across all methods <!-- id: b94346c -->
 - [x] Task: Ensure background scheduler correctly picks up new feeds for their first item crawl <!-- id: a0e7bc0 -->
 - [x] Task: Run full test suite and ensure >80% coverage for changed areas <!-- id: ee869c0 -->
-- [~] Task: Conductor - User Manual Verification 'Phase 4: Verification and Refinement' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Verification and Refinement' (Protocol in workflow.md)
