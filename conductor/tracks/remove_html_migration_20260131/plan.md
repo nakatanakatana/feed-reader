@@ -10,9 +10,9 @@
 - [x] Task: Remove configuration flag from `main.go` d31a6ea
     - [x] Remove `MigrateContentMarkdown` field from configuration struct
     - [x] Remove usage of `cfg.MigrateContentMarkdown` in `main.go`
-- [ ] Task: Delete migration files
-    - [ ] Delete `cmd/feed-reader/migrate_md.go`
-    - [ ] Delete `cmd/feed-reader/migrate_md_test.go`
+- [x] Task: Delete migration files
+    - [x] Delete `cmd/feed-reader/migrate_md.go`
+    - [x] Delete `cmd/feed-reader/migrate_md_test.go`
 - [ ] Task: Verify build and tests
     - [ ] Run `go build ./cmd/feed-reader` to ensure no lingering references prevent compilation
     - [ ] Run `go test ./cmd/feed-reader/...` to ensure no regressions
