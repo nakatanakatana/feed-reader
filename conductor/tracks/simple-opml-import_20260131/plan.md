@@ -31,5 +31,5 @@ Final checks to ensure everything works as expected and coverage is maintained.
 
 - [x] Task: Verify that initial feed registration does not trigger immediate item fetch across all methods <!-- id: b94346c -->
 - [x] Task: Ensure background scheduler correctly picks up new feeds for their first item crawl <!-- id: a0e7bc0 -->
-- [~] Task: Run full test suite and ensure >80% coverage for changed areas
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Verification and Refinement' (Protocol in workflow.md)
+- [x] Task: Run full test suite and ensure >80% coverage for changed areas <!-- id: ee869c0 -->
+- [~] Task: Conductor - User Manual Verification 'Phase 4: Verification and Refinement' (Protocol in workflow.md)
