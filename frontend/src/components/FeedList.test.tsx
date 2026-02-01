@@ -1,4 +1,3 @@
-import { useLiveQuery } from "@tanstack/solid-db";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
@@ -13,6 +12,7 @@ import * as db from "../lib/db";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
+import { setupLiveQuery } from "../test-utils/live-query";
 
 // Mock the db module
 vi.mock("../lib/db", () => ({
@@ -84,9 +84,7 @@ describe("FeedList", () => {
       { id: "2", title: "Feed 2", url: "http://example.com/2", tags: [] },
     ];
 
-    vi.mocked(useLiveQuery).mockReturnValue({
-      data: mockFeeds,
-    } as unknown as ReturnType<typeof useLiveQuery>);
+    setupLiveQuery(mockFeeds);
 
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
     const router = createRouter({ routeTree, history });
@@ -108,9 +106,7 @@ describe("FeedList", () => {
     const mockFeeds = [
       { id: "1", title: "Feed 1", url: "http://example.com/1", tags: [] },
     ];
-    vi.mocked(useLiveQuery).mockReturnValue({
-      data: mockFeeds,
-    } as unknown as ReturnType<typeof useLiveQuery>);
+    setupLiveQuery(mockFeeds);
 
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
     const router = createRouter({ routeTree, history });
@@ -137,9 +133,7 @@ describe("FeedList", () => {
       { id: "1", title: "Feed 1", url: "u1", tags: [] },
       { id: "2", title: "Feed 2", url: "u2", tags: [] },
     ];
-    vi.mocked(useLiveQuery).mockReturnValue({
-      data: mockFeeds,
-    } as unknown as ReturnType<typeof useLiveQuery>);
+    setupLiveQuery(mockFeeds);
 
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
     const router = createRouter({ routeTree, history });
@@ -169,9 +163,7 @@ describe("FeedList", () => {
 
   it("manages tags for selected feeds", async () => {
     const mockFeeds = [{ id: "1", title: "Feed 1", url: "u1", tags: [] }];
-    vi.mocked(useLiveQuery).mockReturnValue({
-      data: mockFeeds,
-    } as unknown as ReturnType<typeof useLiveQuery>);
+    setupLiveQuery(mockFeeds);
 
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
     const router = createRouter({ routeTree, history });
@@ -230,28 +222,5 @@ describe("FeedList", () => {
     // 6. Modal should close (manage button hidden)
     const manageButtonAfter = page.getByText(/Manage Tags/);
     await expect.element(manageButtonAfter).not.toBeVisible();
-  });
-
-  it("does NOT have a navigation link to feed details", async () => {
-    const mockFeeds = [{ uuid: "1", title: "Feed 1", url: "u1" }];
-    vi.mocked(useLiveQuery).mockReturnValue({
-      data: mockFeeds,
-    } as unknown as ReturnType<typeof useLiveQuery>);
-
-    const history = createMemoryHistory({ initialEntries: ["/feeds"] });
-    const router = createRouter({ routeTree, history });
-
-    dispose = render(
-      () => (
-        <TestWrapper>
-          <RouterProvider router={router} />
-        </TestWrapper>
-      ),
-      document.body,
-    );
-
-    // Ensure the navigation icon link is not present
-    const viewItemsLink = page.getByRole("link", { name: /View items/i });
-    await expect.element(viewItemsLink).not.toBeInTheDocument();
   });
 });

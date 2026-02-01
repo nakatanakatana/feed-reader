@@ -1,4 +1,3 @@
-import { useLiveQuery } from "@tanstack/solid-db";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
@@ -13,6 +12,7 @@ import { queryClient, transport } from "../lib/query";
 import { useTags } from "../lib/tag-query";
 import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
+import { setupLiveQuery } from "../test-utils/live-query";
 
 // Mock the db module
 vi.mock("../lib/db", () => ({
@@ -99,9 +99,7 @@ describe("FeedList Navigation", () => {
       },
     ];
 
-    vi.mocked(useLiveQuery).mockReturnValue({
-      data: mockFeeds,
-    } as unknown as ReturnType<typeof useLiveQuery>);
+    setupLiveQuery(mockFeeds);
 
     vi.mocked(useTags).mockReturnValue({
       data: { tags: [] },

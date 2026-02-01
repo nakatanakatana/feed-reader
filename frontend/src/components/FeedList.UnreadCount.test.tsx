@@ -1,4 +1,3 @@
-import { useLiveQuery } from "@tanstack/solid-db";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
@@ -13,6 +12,7 @@ import { queryClient, transport } from "../lib/query";
 import { useTags } from "../lib/tag-query";
 import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
+import { setupLiveQuery } from "../test-utils/live-query";
 
 // Mock the db module
 vi.mock("../lib/db", () => ({
@@ -98,9 +98,7 @@ describe("FeedList Unread Counts", () => {
       },
     ];
 
-    vi.mocked(useLiveQuery).mockReturnValue({
-      data: mockFeeds,
-    } as unknown as ReturnType<typeof useLiveQuery>);
+    setupLiveQuery(mockFeeds);
 
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
     const router = createRouter({ routeTree, history });
@@ -140,9 +138,7 @@ describe("FeedList Unread Counts", () => {
       { id: "2", unreadCount: 3n, tags: [] },
     ];
 
-    vi.mocked(useLiveQuery).mockReturnValue({
-      data: mockFeeds,
-    } as unknown as ReturnType<typeof useLiveQuery>);
+    setupLiveQuery(mockFeeds);
 
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
     const router = createRouter({ routeTree, history });
@@ -168,9 +164,7 @@ describe("FeedList Unread Counts", () => {
   });
 
   it("displays unread counts for tags in filter bar", async () => {
-    vi.mocked(useLiveQuery).mockReturnValue({
-      data: [],
-    } as unknown as ReturnType<typeof useLiveQuery>);
+    setupLiveQuery([]);
 
     vi.mocked(useTags).mockReturnValue({
       data: {
@@ -210,9 +204,7 @@ describe("FeedList Unread Counts", () => {
   });
 
   it("formats unread counts of 1000 or more as '999+'", async () => {
-    vi.mocked(useLiveQuery).mockReturnValue({
-      data: [],
-    } as unknown as ReturnType<typeof useLiveQuery>);
+    setupLiveQuery([]);
 
     vi.mocked(useTags).mockReturnValue({
       data: {

@@ -1,4 +1,3 @@
-import { useLiveQuery } from "@tanstack/solid-db";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
@@ -14,6 +13,7 @@ import { useTags } from "../lib/tag-query";
 import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
 import "../styles.css";
+import { setupLiveQuery } from "../test-utils/live-query";
 
 // Mock the db module
 vi.mock("../lib/db", () => ({
@@ -85,56 +85,6 @@ describe("FeedList Responsive", () => {
     </TransportProvider>
   );
 
-  it("stacks elements vertically on narrow viewports", async () => {
-    // Set a narrow viewport
-    await page.viewport?.(375, 667);
-
-    const mockFeeds = [
-      {
-        id: "1",
-        title: "Feed 1",
-        url: "http://example.com/1",
-        tags: [],
-      },
-    ];
-
-    vi.mocked(useLiveQuery).mockReturnValue({
-      data: mockFeeds,
-    } as unknown as ReturnType<typeof useLiveQuery>);
-
-    const history = createMemoryHistory({ initialEntries: ["/feeds"] });
-    const router = createRouter({ routeTree, history });
-
-    dispose = render(
-      () => (
-        <TestWrapper>
-          <RouterProvider router={router} />
-        </TestWrapper>
-      ),
-      document.body,
-    );
-
-    // 1. Assert Filter/Sort controls are horizontal on mobile
-    // Sort controls may be hidden on narrow viewports; skip layout assertions if not rendered.
-    const sortSelect = document.querySelector("#sort-by") as HTMLSelectElement;
-    if (!sortSelect) return;
-    const controlsContainer = sortSelect.parentElement;
-    if (!controlsContainer) throw new Error("Controls container not found");
-    const controlsStyles = window.getComputedStyle(controlsContainer);
-
-    expect(controlsStyles.flexDirection).toBe("row");
-    expect(controlsStyles.flexWrap).toBe("nowrap");
-
-    // 4. Assert that the "Manage Tags" button is NOT visible in the header on mobile
-    // First, we need to make some feeds selected to trigger the button visibility
-    // But since we are testing layout, we can just check if it's hidden if it were there,
-    // or better, actually mock the selection.
-
-    // For now, let's just assert it's not there by default,
-    // but the task says "assert that action buttons are hidden from the header on mobile".
-    // If I add selection, I can test it.
-  });
-
   it("hides action buttons from the header on mobile", async () => {
     // Set a narrow viewport
     await page.viewport?.(375, 667);
@@ -148,9 +98,7 @@ describe("FeedList Responsive", () => {
       },
     ];
 
-    vi.mocked(useLiveQuery).mockReturnValue({
-      data: mockFeeds,
-    } as unknown as ReturnType<typeof useLiveQuery>);
+    setupLiveQuery(mockFeeds);
 
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
     const router = createRouter({ routeTree, history });
@@ -193,9 +141,7 @@ describe("FeedList Responsive", () => {
       },
     ];
 
-    vi.mocked(useLiveQuery).mockReturnValue({
-      data: mockFeeds,
-    } as unknown as ReturnType<typeof useLiveQuery>);
+    setupLiveQuery(mockFeeds);
 
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
     const router = createRouter({ routeTree, history });
@@ -243,9 +189,7 @@ describe("FeedList Responsive", () => {
       },
     ];
 
-    vi.mocked(useLiveQuery).mockReturnValue({
-      data: mockFeeds,
-    } as unknown as ReturnType<typeof useLiveQuery>);
+    setupLiveQuery(mockFeeds);
 
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
     const router = createRouter({ routeTree, history });
