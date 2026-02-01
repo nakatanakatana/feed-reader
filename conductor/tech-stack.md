@@ -7,7 +7,7 @@ The backend is responsible for feed management, article fetching, and providing 
 
 -   **Programming Language:** Go (Golang)
 -   **API Framework:** Connect RPC (Protobuf over HTTP/2)
--   **Database:** SQLite (Relational storage)
+-   **Database:** SQLite (Relational storage via `ncruces/go-sqlite3`)
 -   **SQLite Resilience:** Application-level retry mechanism with exponential backoff for transient lock conflicts (`SQLITE_BUSY`).
 -   **Write Consolidation:** Dedicated Write Queue Service to batch multiple write operations into single transactions, reducing disk I/O and further minimizing `SQLITE_BUSY` errors during concurrent access.
 -   **Query Tooling:** `sqlc` (Type-safe SQL generation)
