@@ -7,15 +7,17 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/nakatanakatana/feed-reader/sql"
+	schema "github.com/nakatanakatana/feed-reader/sql"
 	"github.com/nakatanakatana/feed-reader/store"
+	_ "github.com/ncruces/go-sqlite3/driver"
+	_ "github.com/ncruces/go-sqlite3/embed"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	_ "modernc.org/sqlite"
 )
 
+// setupStore is a helper for other tests in the package
 func setupStore(t *testing.T) *store.Store {
-	db, err := sql.Open("sqlite", ":memory:")
+	db, err := sql.Open("sqlite3", ":memory:")
 	require.NoError(t, err)
 
 	_, err = db.ExecContext(context.Background(), schema.Schema)
@@ -26,6 +28,21 @@ func setupStore(t *testing.T) *store.Store {
 	})
 
 	return store.NewStore(db)
+}
+
+func TestCreateFeed(t *testing.T) {
+	ctx := context.Background()
+	db, err := sql.Open("sqlite3", ":memory:")
+	require.NoError(t, err)
+
+	_, err = db.ExecContext(ctx, schema.Schema)
+	require.NoError(t, err)
+
+	t.Cleanup(func() {
+		_ = db.Close()
+	})
+
+	_ = store.NewStore(db)
 }
 
 func TestStore_SaveFetchedItem(t *testing.T) {
@@ -104,7 +121,7 @@ func TestStore_SaveFetchedItem(t *testing.T) {
 	})
 
 	t.Run("Error on Closed DB", func(t *testing.T) {
-		db, err := sql.Open("sqlite", ":memory:")
+		db, err := sql.Open("sqlite3", ":memory:")
 		require.NoError(t, err)
 		storeClosed := store.NewStore(db)
 		_ = db.Close()
@@ -129,10 +146,7 @@ func TestStore_ListFeeds_Sorting(t *testing.T) {
 	require.NoError(t, err)
 
 	// Sleep to ensure timestamp difference (SQLite CURRENT_TIMESTAMP resolution is 1s usually, but might be less in memory?)
-	// Actually, let's update it explicitly to be sure or check if they differ.
-	// Or we can manipulate the DB directly to set timestamps if needed.
-	// Let's try creating Feed 2.
-	time.Sleep(1100 * time.Millisecond) // Wait > 1s for safe measure with SQLite default
+	time.Sleep(1100 * time.Millisecond)
 
 	// 2. Create Feed 2
 	feed2ID := uuid.NewString()

@@ -6,11 +6,14 @@ import (
 	"testing"
 
 	"github.com/nakatanakatana/feed-reader/sql"
-	_ "modernc.org/sqlite"
+	"github.com/stretchr/testify/assert"
+	_ "github.com/ncruces/go-sqlite3/driver"
+	_ "github.com/ncruces/go-sqlite3/embed"
 )
 
 func TestSchema(t *testing.T) {
-	db, err := sql.Open("sqlite", ":memory:")
+	db, err := sql.Open("sqlite3", ":memory:")
+	assert.NoError(t, err)
 	if err != nil {
 		t.Fatalf("failed to open database: %v", err)
 	}

@@ -14,7 +14,6 @@ require (
 	github.com/stretchr/testify v1.11.1
 	golang.org/x/net v0.49.0
 	google.golang.org/protobuf v1.36.11
-	modernc.org/sqlite v1.41.0
 	pgregory.net/rapid v1.2.0
 )
 
@@ -46,4 +45,5 @@ require (
 	modernc.org/libc v1.67.6 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
+	modernc.org/sqlite v1.41.0 // indirect
 )

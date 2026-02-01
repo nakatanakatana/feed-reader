@@ -11,7 +11,8 @@ import (
 	"github.com/nakatanakatana/feed-reader/sql"
 	"github.com/nakatanakatana/feed-reader/store"
 	"github.com/stretchr/testify/require"
-	_ "modernc.org/sqlite"
+	_ "github.com/ncruces/go-sqlite3/driver"
+	_ "github.com/ncruces/go-sqlite3/embed"
 )
 
 func TestStore_RetryIntegration(t *testing.T) {
@@ -24,7 +25,7 @@ func TestStore_RetryIntegration(t *testing.T) {
 
 	// Helper to open connection
 	openDB := func() *sql.DB {
-		db, err := sql.Open("sqlite", dbPath+"?_busy_timeout=1")
+		db, err := sql.Open("sqlite3", dbPath+"?_busy_timeout=1")
 		require.NoError(t, err)
 		return db
 	}
@@ -42,6 +43,10 @@ func TestStore_RetryIntegration(t *testing.T) {
 		// Use a second connection to lock the database
 		db2 := openDB()
 		defer func() { _ = db2.Close() }()
+
+		// Create item first to satisfy FK
+		_, err := s.CreateItem(ctx, store.CreateItemParams{ID: "some-item", Url: "u-lock"})
+		require.NoError(t, err)
 
 		// Start a transaction in db2 and hold a lock
 		// Use BEGIN IMMEDIATE to acquire a RESERVED lock immediately
