@@ -17,5 +17,9 @@
 - [x] Task: Verify compilation (`go build ./cmd/feed-reader`). [2ba4d45]
 - [x] Task: Conductor - User Manual Verification 'Driver Replacement' (Protocol in workflow.md) [9614ce5]
 
-## Phase 3: Verification
-- [ ] Task: Run the "write-heavy" reproduction test case again.
+## Phase 3: Verification [checkpoint: c9dfce2]
+- [x] Task: Run the "write-heavy" reproduction test case again. [2ddb772]
+    - [x] Sub-task: Verify it passes or errors are significantly reduced.
+- [x] Task: Run the full application test suite (`go test ./...`). [2ddb772]
+    - [x] Sub-task: Fix any regression failures if they occur.
+- [x] Task: Conductor - User Manual Verification 'Verification' (Protocol in workflow.md) [c9dfce2]
