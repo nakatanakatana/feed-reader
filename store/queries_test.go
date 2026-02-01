@@ -10,11 +10,12 @@ import (
 	"github.com/nakatanakatana/feed-reader/store"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	_ "modernc.org/sqlite"
+	_ "github.com/ncruces/go-sqlite3/driver"
+	_ "github.com/ncruces/go-sqlite3/embed"
 )
 
 func setupDB(t *testing.T) (*store.Queries, *store.Store) {
-	db, err := sql.Open("sqlite", ":memory:")
+	db, err := sql.Open("sqlite3", ":memory:")
 	require.NoError(t, err)
 
 	_, err = db.ExecContext(context.Background(), schema.Schema)

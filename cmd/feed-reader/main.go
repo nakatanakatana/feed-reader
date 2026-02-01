@@ -19,7 +19,8 @@ import (
 	"github.com/nakatanakatana/feed-reader/store"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
-	_ "modernc.org/sqlite"
+	_ "github.com/ncruces/go-sqlite3/driver"
+	_ "github.com/ncruces/go-sqlite3/embed"
 )
 
 type config struct {
@@ -53,7 +54,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	db, err := sql.Open("sqlite", cfg.DBPath)
+	db, err := sql.Open("sqlite3", cfg.DBPath)
 	if err != nil {
 		logger.ErrorContext(ctx, "failed to open database", "error", err)
 		os.Exit(1)

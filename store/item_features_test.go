@@ -6,15 +6,16 @@ import (
 	"testing"
 	"time"
 
-	"github.com/nakatanakatana/feed-reader/sql"
+	schema "github.com/nakatanakatana/feed-reader/sql"
 	"github.com/nakatanakatana/feed-reader/store"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	_ "modernc.org/sqlite"
+	_ "github.com/ncruces/go-sqlite3/driver"
+	_ "github.com/ncruces/go-sqlite3/embed"
 )
 
-func TestNewFeatures_SchemaAndQueries(t *testing.T) {
-	db, err := sql.Open("sqlite", ":memory:")
+func TestItemStore_GetItems_Features(t *testing.T) {
+	db, err := sql.Open("sqlite3", ":memory:")
 	require.NoError(t, err)
 	defer func() { _ = db.Close() }()
 
