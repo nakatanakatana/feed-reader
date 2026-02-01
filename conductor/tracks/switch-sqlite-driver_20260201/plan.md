@@ -1,11 +1,11 @@
 # Implementation Plan - Switch SQLite Driver to ncruces/go-sqlite3
 
-## Phase 1: Baseline & Reproduction
-- [ ] Task: Create a "write-heavy" reproduction test case (e.g., `cmd/feed-reader/reproduce_busy_test.go` or a separate script) that triggers `SQLite Busy` errors with the current driver.
-    - [ ] Sub-task: Implement a concurrent writer test.
-    - [ ] Sub-task: Run the test and confirm failure (Busy errors) or high contention.
-- [ ] Task: Run all existing tests to ensure the current state is green (ignoring the new reproduction test).
-- [ ] Task: Conductor - User Manual Verification 'Baseline & Reproduction' (Protocol in workflow.md)
+## Phase 1: Baseline & Reproduction [checkpoint: 95502d4]
+- [x] Task: Create a "write-heavy" reproduction test case (e.g., `cmd/feed-reader/reproduce_busy_test.go` or a separate script) that triggers `SQLite Busy` errors with the current driver. [342a4b8]
+    - [x] Sub-task: Implement a concurrent writer test.
+    - [x] Sub-task: Run the test and confirm failure (Busy errors) or high contention.
+- [x] Task: Run all existing tests to ensure the current state is green (ignoring the new reproduction test). [342a4b8]
+- [x] Task: Conductor - User Manual Verification 'Baseline & Reproduction' (Protocol in workflow.md) [95502d4]
 
 ## Phase 2: Driver Replacement
 - [ ] Task: Switch dependencies in `go.mod`.
