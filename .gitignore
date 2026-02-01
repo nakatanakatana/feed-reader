@@ -1,6 +1,7 @@
 /dist/
 /feed-reader
 *.db
+*.db-journal
 
 .wrangler
 .output
@@ -39,3 +40,4 @@ coverage.html
 frontend/coverage/
 .agentfs/
 cmd/feed-reader/dist/
+store/testdata/

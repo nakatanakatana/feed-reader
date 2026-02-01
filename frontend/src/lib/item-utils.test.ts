@@ -1,3 +1,4 @@
+import * as fc from "fast-check";
 import { describe, expect, it, vi } from "vitest";
 import {
   formatUnreadCount,
@@ -50,6 +51,40 @@ describe("item-utils", () => {
 
       vi.useRealTimers();
     });
+
+    it("should match preset offsets", () => {
+      vi.useFakeTimers();
+      const presets = [
+        { value: "24h", ms: 24 * 60 * 60 * 1000 },
+        { value: "7d", ms: 7 * 24 * 60 * 60 * 1000 },
+        { value: "30d", ms: 30 * 24 * 60 * 60 * 1000 },
+        { value: "90d", ms: 90 * 24 * 60 * 60 * 1000 },
+        { value: "365d", ms: 365 * 24 * 60 * 60 * 1000 },
+      ] as const;
+      try {
+        fc.assert(
+          fc.property(
+            fc.date({
+              min: new Date("2000-01-01T00:00:00Z"),
+              max: new Date("2100-01-01T00:00:00Z"),
+            }),
+            fc.constantFrom(...presets),
+            (now, preset) => {
+              vi.setSystemTime(now);
+              const result = getPublishedSince(preset.value);
+              if (!result) return false;
+              const expectedSeconds = BigInt(
+                Math.floor((now.getTime() - preset.ms) / 1000),
+              );
+              return result.seconds === expectedSeconds;
+            },
+          ),
+          { numRuns: 100 },
+        );
+      } finally {
+        vi.useRealTimers();
+      }
+    });
   });
 
   describe("getItemDisplayDate", () => {
@@ -85,6 +120,19 @@ describe("item-utils", () => {
       expect(formatUnreadCount(1000)).toBe("999+");
       expect(formatUnreadCount(1001)).toBe("999+");
       expect(formatUnreadCount(10000)).toBe("999+");
+    });
+
+    it("should satisfy basic output invariants", () => {
+      fc.assert(
+        fc.property(fc.integer({ min: 0, max: 5000 }), (count) => {
+          const result = formatUnreadCount(count);
+          if (count < 1000) {
+            return result === String(count);
+          }
+          return result === "999+";
+        }),
+        { numRuns: 100 },
+      );
     });
   });
 
@@ -126,6 +174,39 @@ describe("item-utils", () => {
         "Foo/Bar",
         "R&D",
       ]);
+    });
+
+    it("should return trimmed, non-empty values", () => {
+      const jsonArray = fc.array(
+        fc.oneof(fc.string(), fc.integer(), fc.boolean(), fc.constant(null)),
+      );
+      const csvArray = fc.array(fc.string());
+      fc.assert(
+        fc.property(
+          fc.oneof(
+            fc.string(),
+            jsonArray.map((values) => JSON.stringify(values)),
+            csvArray.map((values) => values.join(",")),
+          ),
+          (input) => {
+            const result = normalizeCategories(input);
+            return result.every(
+              (value) => value.length > 0 && value === value.trim(),
+            );
+          },
+        ),
+        { numRuns: 100 },
+      );
+    });
+
+    it("should return empty array for blank input", () => {
+      fc.assert(
+        fc.property(fc.string(), (value) => {
+          if (value.trim().length !== 0) return true;
+          return normalizeCategories(value).length === 0;
+        }),
+        { numRuns: 100 },
+      );
     });
   });
 });

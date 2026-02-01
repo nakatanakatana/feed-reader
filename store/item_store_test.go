@@ -9,6 +9,7 @@ import (
 	"github.com/nakatanakatana/feed-reader/store"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"pgregory.net/rapid"
 )
 
 func TestStore_ItemOperations(t *testing.T) {
@@ -84,6 +85,83 @@ func TestStore_ItemOperations(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, int64(3), count)
 	})
+}
+
+func TestStore_ListItems_IsRead_CountMatches_PBT(t *testing.T) {
+	rapid.Check(t, func(t *rapid.T) {
+		s := setupStoreForRapid(t)
+		ctx := context.Background()
+		defer func() {
+			_ = s.DB.Close()
+		}()
+
+		feedID := uuid.NewString()
+		_, err := s.CreateFeed(ctx, store.CreateFeedParams{
+			ID:  feedID,
+			Url: "http://example.com/read-pbt.xml",
+		})
+		require.NoError(t, err)
+
+		count := rapid.IntRange(5, 20).Draw(t, "count")
+		itemIDs := make([]string, 0, count)
+		for i := 0; i < count; i++ {
+			pubAt := time.Now().Add(time.Duration(-i) * time.Hour).Format(time.RFC3339)
+			id := createTestItemForRapid(
+				t,
+				s,
+				ctx,
+				feedID,
+				"http://example.com/read-pbt/"+uuid.NewString(),
+				"Read PBT Item",
+				pubAt,
+			)
+			itemIDs = append(itemIDs, id)
+		}
+
+		readCount := 0
+		for _, id := range itemIDs {
+			if rapid.Bool().Draw(t, "isRead") {
+				readCount++
+				_, err := s.SetItemRead(ctx, store.SetItemReadParams{ItemID: id, IsRead: 1})
+				require.NoError(t, err)
+			}
+		}
+
+		items, err := s.ListItems(ctx, store.ListItemsParams{IsRead: int64(1), Limit: 100})
+		require.NoError(t, err)
+
+		counted, err := s.CountItems(ctx, store.CountItemsParams{IsRead: int64(1)})
+		require.NoError(t, err)
+
+		if len(items) != readCount {
+			t.Fatalf("expected read items to match: len(items)=%d readCount=%d", len(items), readCount)
+		}
+		if int64(readCount) != counted {
+			t.Fatalf("expected count to match read items: count=%d readCount=%d", counted, readCount)
+		}
+	})
+}
+
+func createTestItemForRapid(t *rapid.T, s *store.Store, ctx context.Context, feedID, url, title, pubAt string) string {
+	desc := "desc"
+	guid := uuid.NewString()
+	params := store.SaveFetchedItemParams{
+		FeedID:      feedID,
+		Url:         url,
+		Title:       &title,
+		Description: &desc,
+		PublishedAt: &pubAt,
+		Guid:        &guid,
+	}
+	if err := s.SaveFetchedItem(ctx, params); err != nil {
+		t.Fatalf("failed to save item: %v", err)
+	}
+
+	var id string
+	if err := s.DB.QueryRowContext(ctx, "SELECT id FROM items WHERE url = ?", url).Scan(&id); err != nil {
+		t.Fatalf("failed to load item id: %v", err)
+	}
+	return id
 }
 
 func createTestItem(t *testing.T, s *store.Store, ctx context.Context, feedID, url, title, pubAt string) string {

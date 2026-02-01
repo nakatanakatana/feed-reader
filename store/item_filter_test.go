@@ -9,6 +9,7 @@ import (
 	"github.com/nakatanakatana/feed-reader/store"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"pgregory.net/rapid"
 )
 
 func TestStore_ListItems_DateFilter(t *testing.T) {
@@ -78,5 +79,110 @@ func TestStore_ListItems_DateFilter(t *testing.T) {
 		})
 		require.NoError(t, err)
 		assert.Equal(t, int64(2), count)
+	})
+}
+
+func TestStore_ListItems_DateFilter_Monotonic_PBT(t *testing.T) {
+	s := setupStore(t)
+	ctx := context.Background()
+
+	feedID := uuid.NewString()
+	_, err := s.CreateFeed(ctx, store.CreateFeedParams{
+		ID:  feedID,
+		Url: "http://example.com/date-filter-pbt.xml",
+	})
+	require.NoError(t, err)
+
+	now := time.Now().UTC().Truncate(time.Second)
+	itemCount := 25
+	for i := 0; i < itemCount; i++ {
+		pubAt := now.Add(-time.Duration(i) * time.Hour).Format(time.RFC3339)
+		_ = createTestItem(
+			t,
+			s,
+			ctx,
+			feedID,
+			"http://example.com/pbt/"+uuid.NewString(),
+			"PBT Item",
+			pubAt,
+		)
+	}
+
+	maxHours := int64(itemCount + 4)
+	rapid.Check(t, func(t *rapid.T) {
+		offsetA := rapid.Int64Range(0, maxHours).Draw(t, "offsetA")
+		offsetB := rapid.Int64Range(0, maxHours).Draw(t, "offsetB")
+		if offsetA < offsetB {
+			offsetA, offsetB = offsetB, offsetA
+		}
+
+		sinceA := now.Add(-time.Duration(offsetA) * time.Hour).Format(time.RFC3339)
+		sinceB := now.Add(-time.Duration(offsetB) * time.Hour).Format(time.RFC3339)
+
+		itemsA, err := s.ListItems(ctx, store.ListItemsParams{
+			PublishedSince: &sinceA,
+			Limit:          100,
+			Offset:         0,
+		})
+		require.NoError(t, err)
+		itemsB, err := s.ListItems(ctx, store.ListItemsParams{
+			PublishedSince: &sinceB,
+			Limit:          100,
+			Offset:         0,
+		})
+		require.NoError(t, err)
+
+		if len(itemsA) < len(itemsB) {
+			t.Fatalf("expected monotonic filter: len(itemsA)=%d len(itemsB)=%d", len(itemsA), len(itemsB))
+		}
+	})
+}
+
+func TestStore_ListItems_CountMatches_List_PBT(t *testing.T) {
+	s := setupStore(t)
+	ctx := context.Background()
+
+	feedID := uuid.NewString()
+	_, err := s.CreateFeed(ctx, store.CreateFeedParams{
+		ID:  feedID,
+		Url: "http://example.com/date-filter-count-pbt.xml",
+	})
+	require.NoError(t, err)
+
+	now := time.Now().UTC().Truncate(time.Second)
+	itemCount := 30
+	for i := 0; i < itemCount; i++ {
+		pubAt := now.Add(-time.Duration(i) * time.Hour).Format(time.RFC3339)
+		_ = createTestItem(
+			t,
+			s,
+			ctx,
+			feedID,
+			"http://example.com/pbt-count/"+uuid.NewString(),
+			"PBT Count Item",
+			pubAt,
+		)
+	}
+
+	maxHours := int64(itemCount + 4)
+	rapid.Check(t, func(t *rapid.T) {
+		offset := rapid.Int64Range(0, maxHours).Draw(t, "offset")
+		since := now.Add(-time.Duration(offset) * time.Hour).Format(time.RFC3339)
+
+		items, err := s.ListItems(ctx, store.ListItemsParams{
+			PublishedSince: &since,
+			Limit:          100,
+			Offset:         0,
+		})
+		require.NoError(t, err)
+
+		count, err := s.CountItems(ctx, store.CountItemsParams{
+			PublishedSince: &since,
+		})
+		require.NoError(t, err)
+
+		if int64(len(items)) != count {
+			t.Fatalf("expected count to match list length: len(items)=%d count=%d", len(items), count)
+		}
 	})
 }
