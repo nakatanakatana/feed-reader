@@ -1,4 +1,3 @@
-import { useLiveQuery } from "@tanstack/solid-db";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
@@ -13,6 +12,7 @@ import { queryClient, transport } from "../lib/query";
 import { useTags } from "../lib/tag-query";
 import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
+import { setupLiveQuery } from "../test-utils/live-query";
 
 // Mock the db module
 vi.mock("../lib/db", () => ({
@@ -102,9 +102,7 @@ describe("FeedList Sorting", () => {
       },
     ];
 
-    vi.mocked(useLiveQuery).mockReturnValue({
-      data: mockFeeds,
-    } as unknown as ReturnType<typeof useLiveQuery>);
+    setupLiveQuery(mockFeeds);
 
     vi.mocked(useTags).mockReturnValue({
       data: { tags: [] },
@@ -123,16 +121,19 @@ describe("FeedList Sorting", () => {
       document.body,
     );
 
-    // Default sorting (should be Title A-Z if implemented as default, or unsorted)
-    // Let's assume we implement Title A-Z as default.
-
     const sortSelect = page.getByRole("combobox", { name: /sort by/i });
     await expect.element(sortSelect).toBeInTheDocument();
+
+    // Default sorting should be Title A-Z
+    let feedItems = document.querySelectorAll("li");
+    expect(feedItems[0].textContent).toContain("A Feed");
+    expect(feedItems[1].textContent).toContain("B Feed");
+    expect(feedItems[2].textContent).toContain("C Feed");
 
     // 1. Sort by Title (Z-A)
     await sortSelect.selectOptions("title_desc");
 
-    let feedItems = document.querySelectorAll("li");
+    feedItems = document.querySelectorAll("li");
     expect(feedItems[0].textContent).toContain("C Feed");
     expect(feedItems[1].textContent).toContain("B Feed");
     expect(feedItems[2].textContent).toContain("A Feed");

@@ -25,7 +25,7 @@ export function FeedList() {
 
   const tagsQuery = useTags();
 
-  const { data: feedList } = useLiveQuery((q) => {
+  const feedListQuery = useLiveQuery((q) => {
     const tagId = selectedTagId();
     const currentSort = sortBy();
     let query = q.from({ feed: feeds });
@@ -51,36 +51,12 @@ export function FeedList() {
     return query;
   });
 
-  const filteredFeeds = () => {
-    const list = (feedList as unknown as Feed[]) ?? [];
-    const tagId = selectedTagId();
-    if (tagId === undefined) return list;
-    if (tagId === null) {
-      return list.filter((feed) => !feed.tags || feed.tags.length === 0);
-    }
-    return list.filter(
-      (feed) => feed.tags?.some((tag) => tag.id === tagId) ?? false,
-    );
-  };
-
-  const sortedFeeds = () => {
-    const list = [...filteredFeeds()];
-    const sort = sortBy();
-
-    return list.sort((a, b) => {
-      if (sort === "title_desc") {
-        return (b.title || "").localeCompare(a.title || "");
-      }
-      return (a.title || "").localeCompare(b.title || "");
-    });
-  };
-
   const [deleteError, setDeleteError] = createSignal<Error | null>(null);
 
   const handleDelete = async (id: string) => {
     setDeleteError(null);
     try {
-      await feeds.delete(id);
+      feeds.delete(id);
     } catch (e) {
       setDeleteError(
         e instanceof Error ? e : new Error("Failed to delete feed"),
@@ -95,8 +71,6 @@ export function FeedList() {
       setSelectedFeedIds([...selectedFeedIds(), id]);
     }
   };
-
-  const isLoading = () => feedList === undefined;
 
   return (
     <div
@@ -275,7 +249,7 @@ export function FeedList() {
           backgroundColor: "white",
         })}
       >
-        <Show when={isLoading()}>
+        <Show when={feedListQuery.isLoading}>
           <p class={css({ color: "gray.500", fontSize: "sm" })}>Loading...</p>
         </Show>
         <Show when={deleteError()}>
@@ -283,7 +257,7 @@ export function FeedList() {
             Delete Error: {deleteError()?.message}
           </p>
         </Show>
-        <Show when={!isLoading() && sortedFeeds().length === 0}>
+        <Show when={!feedListQuery.isLoading && feedListQuery().length === 0}>
           <EmptyState title="No feeds found." />
         </Show>
         <div
@@ -296,7 +270,7 @@ export function FeedList() {
           })}
         >
           <ul class={stack({ gap: "2", width: "full" })}>
-            <For each={sortedFeeds()}>
+            <For each={feedListQuery()}>
               {(feed: Feed) => (
                 <li
                   onClick={() => toggleFeedSelection(feed.id)}
