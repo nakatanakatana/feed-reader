@@ -16,9 +16,12 @@ const (
 
 // IsBusyError returns true if the error is a SQLite busy or locked error.
 func IsBusyError(err error) bool {
-	var sqliteErr *sqlite3.Error
+	type coder interface {
+		Code() int
+	}
+	var sqliteErr coder
 	if errors.As(err, &sqliteErr) {
-		return sqliteErr.Code() == sqlite3.BUSY || sqliteErr.Code() == sqlite3.LOCKED
+		return sqliteErr.Code() == int(sqlite3.BUSY) || sqliteErr.Code() == int(sqlite3.LOCKED)
 	}
 	return false
 }
