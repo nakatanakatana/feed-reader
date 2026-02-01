@@ -4,5 +4,5 @@ This file tracks all active and completed development tracks (features, bugs, ch
 
 ---
 
-- [ ] **Track: Switch SQLite driver to ncruces/go-sqlite3**
+- [x] **Track: Switch SQLite driver to ncruces/go-sqlite3**
 *Link: [./tracks/switch-sqlite-driver_20260201/](./tracks/switch-sqlite-driver_20260201/)*
