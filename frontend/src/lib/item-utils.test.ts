@@ -62,14 +62,13 @@ describe("item-utils", () => {
         { value: "365d", ms: 365 * 24 * 60 * 60 * 1000 },
       ] as const;
       try {
-        const minTime = new Date("2000-01-01T00:00:00Z").getTime();
-        const maxTime = new Date("2100-01-01T00:00:00Z").getTime();
-        const validDates = fc
-          .integer({ min: minTime, max: maxTime })
-          .map((time) => new Date(time));
         fc.assert(
           fc.property(
-            validDates,
+            fc.date({
+              min: new Date("2000-01-01T00:00:00Z"),
+              max: new Date("2100-01-01T00:00:00Z"),
+              noInvalidDate: true,
+            }),
             fc.constantFrom(...presets),
             (now, preset) => {
               vi.setSystemTime(now);
