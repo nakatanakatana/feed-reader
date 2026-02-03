@@ -10,8 +10,8 @@ CREATE TABLE feeds (
   feed_type       TEXT,
   feed_version    TEXT,
   last_fetched_at TEXT,
-  created_at      TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at      TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  created_at      TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now')),
+  updated_at      TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now'))
 );
 
 CREATE TABLE items (
@@ -25,15 +25,15 @@ CREATE TABLE items (
   content      TEXT,
   image_url    TEXT,
   categories   TEXT,
-  created_at   TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at   TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  created_at   TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now')),
+  updated_at   TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now'))
 );
 
 CREATE TABLE feed_items (
   feed_id    TEXT NOT NULL,
   item_id    TEXT NOT NULL,
-  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  created_at TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now')),
+  updated_at TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now')),
   PRIMARY KEY (feed_id, item_id),
   FOREIGN KEY (feed_id) REFERENCES feeds(id) ON DELETE CASCADE,
   FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE CASCADE
@@ -43,8 +43,8 @@ CREATE TABLE item_reads (
   item_id    TEXT NOT NULL,
   is_read    INTEGER NOT NULL DEFAULT 0, -- 0: false, 1: true
   read_at    TEXT,
-  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  created_at TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now')),
+  updated_at TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now')),
   PRIMARY KEY (item_id),
   FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE CASCADE
 );
@@ -52,15 +52,15 @@ CREATE TABLE item_reads (
 CREATE TABLE tags (
   id         TEXT PRIMARY KEY,
   name       TEXT NOT NULL UNIQUE,
-  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  created_at TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now')),
+  updated_at TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now'))
 );
 
 CREATE TABLE feed_tags (
   feed_id    TEXT NOT NULL,
   tag_id     TEXT NOT NULL,
-  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  created_at TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now')),
+  updated_at TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now')),
   PRIMARY KEY (feed_id, tag_id),
   FOREIGN KEY (feed_id) REFERENCES feeds(id) ON DELETE CASCADE,
   FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE

@@ -1,11 +1,13 @@
 import { useNavigate } from "@tanstack/solid-router";
 import { createEffect, createSignal } from "solid-js";
 import { useItems, useUpdateItemStatus } from "../lib/item-query";
+import { type DateFilterValue, getPublishedSince } from "../lib/item-utils";
 import { ItemDetailModal } from "./ItemDetailModal";
 
 interface ItemDetailRouteViewProps {
   itemId: string | undefined;
   tagId?: string;
+  publishedSince?: DateFilterValue;
 }
 
 export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
@@ -20,9 +22,17 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
     return { to, params };
   };
 
-  const itemsQuery = useItems({
+  const effectivePublishedSince = () =>
+    props.publishedSince ?? (props.tagId ? undefined : "30d");
+
+  const itemsQuery = useItems(() => ({
     tagId: props.tagId,
-  });
+    isRead: false,
+    publishedSince: (() => {
+      const since = effectivePublishedSince();
+      return since ? getPublishedSince(since) : undefined;
+    })(),
+  }));
 
   const allItems = () =>
     itemsQuery.data?.pages.flatMap((page) => page.items) ?? [];
