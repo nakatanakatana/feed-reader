@@ -1,4 +1,4 @@
-import { afterAll, afterEach, beforeAll } from "vitest";
+import { afterAll, afterEach, beforeAll, vi } from "vitest";
 import { worker } from "./mocks/browser";
 
 beforeAll(async () => {
@@ -7,6 +7,8 @@ beforeAll(async () => {
 
 afterEach(() => {
   worker.resetHandlers();
+  vi.useRealTimers();
+  vi.clearAllMocks();
 });
 
 afterAll(() => {

@@ -67,6 +67,7 @@ describe("item-utils", () => {
             fc.date({
               min: new Date("2000-01-01T00:00:00Z"),
               max: new Date("2100-01-01T00:00:00Z"),
+              noInvalidDate: true,
             }),
             fc.constantFrom(...presets),
             (now, preset) => {

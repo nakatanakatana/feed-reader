@@ -2,7 +2,13 @@ import { useLiveQuery } from "@tanstack/solid-db";
 import { vi } from "vitest";
 
 export const setupLiveQuery = (feeds: unknown[], isLoading = false) => {
-  vi.mocked(useLiveQuery).mockImplementation((callback) => {
+  const useLiveQueryMock = vi.mocked(useLiveQuery) as unknown as {
+    mockImplementation: (
+      impl: (...args: unknown[]) => ReturnType<typeof useLiveQuery>,
+    ) => void;
+  };
+
+  useLiveQueryMock.mockImplementation((callback?: unknown) => {
     const makeQuery = (rows: unknown[]) => ({
       __data: rows,
       fn: {
@@ -27,9 +33,12 @@ export const setupLiveQuery = (feeds: unknown[], isLoading = false) => {
     });
 
     const accessor = (() => {
-      const query = callback({
-        from: () => makeQuery(feeds),
-      } as unknown);
+      const query =
+        typeof callback === "function"
+          ? callback({
+              from: () => makeQuery(feeds),
+            } as unknown)
+          : undefined;
       return (query as { __data?: unknown[] } | undefined)?.__data ?? feeds;
     }) as unknown as ReturnType<typeof useLiveQuery>;
     (accessor as { isLoading?: boolean }).isLoading = isLoading;
