@@ -1,8 +1,0 @@
-{
-  "track_id": "sort_items_created_at_20260205",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-02-05T10:00:00Z",
-  "updated_at": "2026-02-05T10:00:00Z",
-  "description": "Itemsの一覧の並び順をcreated_atの昇順に変更し、モーダルで両方の日付を表示する"
-}
