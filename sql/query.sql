@@ -183,7 +183,7 @@ WHERE
 GROUP BY
   i.id
 ORDER BY
-  COALESCE(i.published_at, i.created_at) ASC
+  i.created_at ASC
 LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
 
 -- name: CountUnreadItemsPerFeed :many

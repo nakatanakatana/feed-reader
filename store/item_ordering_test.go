@@ -30,11 +30,18 @@ func TestStore_ItemOrdering(t *testing.T) {
 	require.NoError(t, err)
 
 	/*
-		Target Order (ASC):
-		1. Item A: Published 2026-01-01
-		2. Item B: Published 2026-01-02
-		3. Item C: Published NULL, Created 2026-01-03 (fallback)
-		4. Item D: Published NULL, Created 2026-01-04 (fallback)
+		Target Order (ASC) - Now based on created_at:
+		1. Item A: Created 2026-01-28 00:00:00
+		2. Item B: Created 2026-01-28 00:00:01
+		3. Item C: Created 2026-01-03 00:00:00
+		4. Item D: Created 2026-01-04 00:00:00
+
+		Wait, let's make it clearer.
+		Item A: Created T1
+		Item B: Created T2
+		Item C: Created T3
+		Item D: Created T4
+		Sorted: T1 < T2 < T3 < T4
 	*/
 
 	createItemWithDates := func(id, url, title string, pubAt *string, createdAt string) {
@@ -57,23 +64,27 @@ func TestStore_ItemOrdering(t *testing.T) {
 		require.NoError(t, err)
 	}
 
-	p1 := "2026-01-01T00:00:00Z"
-	p2 := "2026-01-02T00:00:00Z"
+	// Use simple dates for clarity
+	c1 := "2026-01-01T00:00:00Z"
+	c2 := "2026-01-02T00:00:00Z"
 	c3 := "2026-01-03T00:00:00Z"
 	c4 := "2026-01-04T00:00:00Z"
+
+	// Published dates intentionally mixed up or null to prove they are ignored
+	p1 := "2026-02-01T00:00:00Z" // Late published
+	p2 := "2025-01-01T00:00:00Z" // Early published
 
 	itemA := uuid.NewString()
 	itemB := uuid.NewString()
 	itemC := uuid.NewString()
 	itemD := uuid.NewString()
 
-	createItemWithDates(itemA, "http://ex.com/a", "Item A", &p1, "2026-01-28T00:00:00Z")
-	createItemWithDates(itemB, "http://ex.com/b", "Item B", &p2, "2026-01-28T00:00:01Z")
-	createItemWithDates(itemC, "http://ex.com/c", "Item C", nil, c3)
-	createItemWithDates(itemD, "http://ex.com/d", "Item D", nil, c4)
+	createItemWithDates(itemA, "http://ex.com/a", "Item A", &p1, c1)  // Created 1st
+	createItemWithDates(itemB, "http://ex.com/b", "Item B", &p2, c2)  // Created 2nd
+	createItemWithDates(itemC, "http://ex.com/c", "Item C", nil, c3) // Created 3rd
+	createItemWithDates(itemD, "http://ex.com/d", "Item D", nil, c4) // Created 4th
 
-	t.Run("ListItems should also sort by COALESCE(published_at, created_at) ASC", func(t *testing.T) {
-		// Based on spec: "Update the item listing queries to sort items in ascending order (oldest first)"
+	t.Run("ListItems should sort by created_at ASC", func(t *testing.T) {
 		items, err := s.ListItems(ctx, store.ListItemsParams{Limit: 10})
 		require.NoError(t, err)
 		require.Len(t, items, 4)
@@ -84,7 +95,7 @@ func TestStore_ItemOrdering(t *testing.T) {
 		assert.Equal(t, itemD, items[3].ID)
 	})
 
-	t.Run("ListItemsByFeed should also sort by COALESCE(published_at, created_at) ASC", func(t *testing.T) {
+	t.Run("ListItemsByFeed should sort by created_at ASC", func(t *testing.T) {
 		items, err := s.ListItems(ctx, store.ListItemsParams{FeedID: feedID, Limit: 10})
 		require.NoError(t, err)
 		require.Len(t, items, 4)
@@ -159,13 +170,10 @@ func TestStore_ItemOrdering_PBT(t *testing.T) {
 		var prev time.Time
 		for i, item := range items {
 			timestamp := item.CreatedAt
-			if item.PublishedAt != nil && *item.PublishedAt != "" {
-				timestamp = *item.PublishedAt
-			}
 			current, err := time.Parse(time.RFC3339, timestamp)
 			require.NoError(t, err)
 			if i > 0 && current.Before(prev) {
-				t.Fatalf("items not ordered by coalesced date: %s before %s", current, prev)
+				t.Fatalf("items not ordered by created_at: %s before %s", current, prev)
 			}
 			prev = current
 		}

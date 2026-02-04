@@ -717,7 +717,7 @@ WHERE
 GROUP BY
   i.id
 ORDER BY
-  COALESCE(i.published_at, i.created_at) ASC
+  i.created_at ASC
 LIMIT ?6 OFFSET ?5
 `
 
