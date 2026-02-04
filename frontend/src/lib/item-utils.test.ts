@@ -2,9 +2,7 @@ import * as fc from "fast-check";
 import { describe, expect, it, vi } from "vitest";
 import {
   formatUnreadCount,
-  getItemDisplayDate,
   getPublishedSince,
-  type Item,
   normalizeCategories,
 } from "./item-utils";
 
@@ -85,28 +83,6 @@ describe("item-utils", () => {
       } finally {
         vi.useRealTimers();
       }
-    });
-  });
-
-  describe("getItemDisplayDate", () => {
-    it("should return Published label and date when publishedAt is present", () => {
-      const item: Pick<Item, "publishedAt" | "createdAt"> = {
-        publishedAt: "2026-01-01T00:00:00Z",
-        createdAt: "2026-01-02T00:00:00Z",
-      };
-      const result = getItemDisplayDate(item);
-      expect(result.label).toBe("Published");
-      expect(result.date).toBe("2026-01-01T00:00:00Z");
-    });
-
-    it("should return Received label and createdAt when publishedAt is empty", () => {
-      const item: Pick<Item, "publishedAt" | "createdAt"> = {
-        publishedAt: "",
-        createdAt: "2026-01-02T00:00:00Z",
-      };
-      const result = getItemDisplayDate(item);
-      expect(result.label).toBe("Received");
-      expect(result.date).toBe("2026-01-02T00:00:00Z");
     });
   });
 

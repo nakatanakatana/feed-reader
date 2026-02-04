@@ -57,31 +57,31 @@ func (s *ItemServer) ListItems(ctx context.Context, req *connect.Request[itemv1.
 	if req.Msg.TagId != nil {
 		tagID = *req.Msg.TagId
 	}
-	var publishedSince interface{}
-	if req.Msg.PublishedSince != nil {
-		publishedSince = req.Msg.PublishedSince.AsTime().UTC().Format(time.RFC3339)
+	var since interface{}
+	if req.Msg.Since != nil {
+		since = req.Msg.Since.AsTime().UTC().Format(time.RFC3339)
 	}
 
 	var totalCount int64
 	var err error
 
 	totalCount, err = s.store.CountItems(ctx, store.CountItemsParams{
-		FeedID:         feedID,
-		IsRead:         isRead,
-		TagID:          tagID,
-		PublishedSince: publishedSince,
+		FeedID: feedID,
+		IsRead: isRead,
+		TagID:  tagID,
+		Since:  since,
 	})
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
 	rows, err := s.store.ListItems(ctx, store.ListItemsParams{
-		FeedID:         feedID,
-		IsRead:         isRead,
-		TagID:          tagID,
-		PublishedSince: publishedSince,
-		Limit:          limit,
-		Offset:         offset,
+		FeedID: feedID,
+		IsRead: isRead,
+		TagID:  tagID,
+		Since:  since,
+		Limit:  limit,
+		Offset: offset,
 	})
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)

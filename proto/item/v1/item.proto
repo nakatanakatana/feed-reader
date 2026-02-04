@@ -48,7 +48,7 @@ message ListItemsRequest {
   optional string feed_id = 1;
   optional bool is_read = 2;
   optional string tag_id = 7;
-  optional google.protobuf.Timestamp published_since = 8;
+  optional google.protobuf.Timestamp since = 8;
 
   int32 limit = 5;
   int32 offset = 6;

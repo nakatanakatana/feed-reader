@@ -38,8 +38,17 @@ func TestStore_ItemOperations(t *testing.T) {
 	t3 := now.Format(time.RFC3339)
 
 	item1ID := createTestItem(t, s, ctx, feedID, "http://example.com/1", "Item 1", t1)
-	_ = createTestItem(t, s, ctx, feedID, "http://example.com/2", "Item 2", t2)
+	// Manually update created_at to ensure sorting order (as test runs fast, created_at might be identical)
+	_, err = s.DB.ExecContext(ctx, "UPDATE items SET created_at = ? WHERE id = ?", t1, item1ID)
+	require.NoError(t, err)
+
+	item2ID := createTestItem(t, s, ctx, feedID, "http://example.com/2", "Item 2", t2)
+	_, err = s.DB.ExecContext(ctx, "UPDATE items SET created_at = ? WHERE id = ?", t2, item2ID)
+	require.NoError(t, err)
+
 	item3ID := createTestItem(t, s, ctx, feedID, "http://example.com/3", "Item 3", t3)
+	_, err = s.DB.ExecContext(ctx, "UPDATE items SET created_at = ? WHERE id = ?", t3, item3ID)
+	require.NoError(t, err)
 
 	// Set Statuses
 	_, err = s.SetItemRead(ctx, store.SetItemReadParams{ItemID: item1ID, IsRead: 1, ReadAt: &t3})

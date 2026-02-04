@@ -63,14 +63,14 @@ WHERE
   (?3 IS NULL OR EXISTS (
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = ?3
   )) AND
-  (?4 IS NULL OR COALESCE(i.published_at, i.created_at) >= ?4)
+  (?4 IS NULL OR i.created_at >= ?4)
 `
 
 type CountItemsParams struct {
-	FeedID         interface{} `json:"feed_id"`
-	IsRead         interface{} `json:"is_read"`
-	TagID          interface{} `json:"tag_id"`
-	PublishedSince interface{} `json:"published_since"`
+	FeedID interface{} `json:"feed_id"`
+	IsRead interface{} `json:"is_read"`
+	TagID  interface{} `json:"tag_id"`
+	Since  interface{} `json:"since"`
 }
 
 func (q *Queries) CountItems(ctx context.Context, arg CountItemsParams) (int64, error) {
@@ -78,7 +78,7 @@ func (q *Queries) CountItems(ctx context.Context, arg CountItemsParams) (int64, 
 		arg.FeedID,
 		arg.IsRead,
 		arg.TagID,
-		arg.PublishedSince,
+		arg.Since,
 	)
 	var count int64
 	err := row.Scan(&count)
@@ -713,21 +713,21 @@ WHERE
   (?3 IS NULL OR EXISTS (
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = ?3
   )) AND
-  (?4 IS NULL OR COALESCE(i.published_at, i.created_at) >= ?4)
+  (?4 IS NULL OR i.created_at >= ?4)
 GROUP BY
   i.id
 ORDER BY
-  COALESCE(i.published_at, i.created_at) ASC
+  i.created_at ASC
 LIMIT ?6 OFFSET ?5
 `
 
 type ListItemsParams struct {
-	FeedID         interface{} `json:"feed_id"`
-	IsRead         interface{} `json:"is_read"`
-	TagID          interface{} `json:"tag_id"`
-	PublishedSince interface{} `json:"published_since"`
-	Offset         int64       `json:"offset"`
-	Limit          int64       `json:"limit"`
+	FeedID interface{} `json:"feed_id"`
+	IsRead interface{} `json:"is_read"`
+	TagID  interface{} `json:"tag_id"`
+	Since  interface{} `json:"since"`
+	Offset int64       `json:"offset"`
+	Limit  int64       `json:"limit"`
 }
 
 type ListItemsRow struct {
@@ -751,7 +751,7 @@ func (q *Queries) ListItems(ctx context.Context, arg ListItemsParams) ([]ListIte
 		arg.FeedID,
 		arg.IsRead,
 		arg.TagID,
-		arg.PublishedSince,
+		arg.Since,
 		arg.Offset,
 		arg.Limit,
 	)

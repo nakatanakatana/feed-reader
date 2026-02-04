@@ -66,6 +66,7 @@ describe("ItemDetailModal", () => {
 
     await expect.element(page.getByText("Test Item")).toBeInTheDocument();
     await expect.element(page.getByText(/Published:/)).toBeInTheDocument();
+    await expect.element(page.getByText(/Received:/)).toBeInTheDocument();
     await expect.element(page.getByText("By Test Author")).toBeInTheDocument();
     await expect.element(page.getByText("Test Content")).toBeInTheDocument();
 

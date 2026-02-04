@@ -293,13 +293,12 @@ export const handlers = [
 
       let filteredItems = allMockItems;
 
-      if (req.publishedSince) {
+      if (req.since) {
         const sinceDate = new Date(
-          Number(req.publishedSince.seconds) * 1000 +
-            req.publishedSince.nanos / 1000000,
+          Number(req.since.seconds) * 1000 + req.since.nanos / 1000000,
         );
         filteredItems = allMockItems.filter(
-          (item) => new Date(item.publishedAt) >= sinceDate,
+          (item) => new Date(item.createdAt) >= sinceDate,
         );
       }
 

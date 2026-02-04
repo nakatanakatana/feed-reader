@@ -2,11 +2,7 @@ import { For, type JSX, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
 import { useItem, useUpdateItemStatus } from "../lib/item-query";
-import {
-  formatDate,
-  getItemDisplayDate,
-  normalizeCategories,
-} from "../lib/item-utils";
+import { formatDate, normalizeCategories } from "../lib/item-utils";
 import { MarkdownRenderer } from "./MarkdownRenderer";
 import { ActionButton } from "./ui/ActionButton";
 import { Modal } from "./ui/Modal";
@@ -159,10 +155,10 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                     alignItems: "center",
                   })}
                 >
-                  <span>
-                    {getItemDisplayDate(item()).label}:{" "}
-                    {formatDate(getItemDisplayDate(item()).date)}
-                  </span>
+                  <Show when={!!item().publishedAt}>
+                    <span>Published: {formatDate(item().publishedAt)}</span>
+                  </Show>
+                  <span>Received: {formatDate(item().createdAt)}</span>
                   <Show when={item().author}>
                     <span>By {item().author}</span>
                   </Show>

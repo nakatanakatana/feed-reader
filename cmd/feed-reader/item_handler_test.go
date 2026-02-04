@@ -47,6 +47,8 @@ func TestItemServer(t *testing.T) {
 	var item1ID string
 	err = db.QueryRowContext(ctx, "SELECT id FROM items WHERE url = ?", "http://example.com/item1").Scan(&item1ID)
 	require.NoError(t, err)
+	_, err = db.ExecContext(ctx, "UPDATE items SET created_at = ? WHERE id = ?", t1, item1ID)
+	require.NoError(t, err)
 
 	err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
 		FeedID:      feedID,
@@ -58,6 +60,8 @@ func TestItemServer(t *testing.T) {
 
 	var item2ID string
 	err = db.QueryRowContext(ctx, "SELECT id FROM items WHERE url = ?", "http://example.com/item2").Scan(&item2ID)
+	require.NoError(t, err)
+	_, err = db.ExecContext(ctx, "UPDATE items SET created_at = ? WHERE id = ?", t2, item2ID)
 	require.NoError(t, err)
 
 	t.Run("GetItem", func(t *testing.T) {
@@ -88,6 +92,8 @@ func TestItemServer(t *testing.T) {
 		var id string
 		err = db.QueryRowContext(ctx, "SELECT id FROM items WHERE url = ?", "http://rich").Scan(&id)
 		require.NoError(t, err)
+		_, err = db.ExecContext(ctx, "UPDATE items SET created_at = ? WHERE id = ?", tRich, id)
+		require.NoError(t, err)
 
 		res, err := server.GetItem(ctx, connect.NewRequest(&itemv1.GetItemRequest{Id: id}))
 		require.NoError(t, err)
@@ -110,6 +116,12 @@ func TestItemServer(t *testing.T) {
 			Description: &desc,
 			PublishedAt: &t2,
 		})
+		require.NoError(t, err)
+
+		var itemWithDescID string
+		err = db.QueryRowContext(ctx, "SELECT id FROM items WHERE url = ?", "http://example.com/item-with-desc").Scan(&itemWithDescID)
+		require.NoError(t, err)
+		_, err = db.ExecContext(ctx, "UPDATE items SET created_at = ? WHERE id = ?", t2, itemWithDescID)
 		require.NoError(t, err)
 
 		res, err := server.ListItems(ctx, connect.NewRequest(&itemv1.ListItemsRequest{
@@ -147,7 +159,7 @@ func TestItemServer(t *testing.T) {
 	t.Run("ListItems_DateFilter", func(t *testing.T) {
 		since := now.Add(-90 * time.Minute)
 		res, err := server.ListItems(ctx, connect.NewRequest(&itemv1.ListItemsRequest{
-			PublishedSince: timestamppb.New(since),
+			Since: timestamppb.New(since),
 			Limit:          10,
 		}))
 		require.NoError(t, err)

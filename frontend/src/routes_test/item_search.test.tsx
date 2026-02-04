@@ -32,13 +32,13 @@ describe("Item Search Params", () => {
     vi.clearAllMocks();
   });
 
-  it("should validate and include publishedSince in search parameters", async () => {
+  it("should validate and include since in search parameters", async () => {
     const transport = createConnectTransport({
       baseUrl: "http://localhost:3000",
     });
 
     const history = createMemoryHistory({
-      initialEntries: ["/?publishedSince=30d"],
+      initialEntries: ["/?since=30d"],
     });
     const router = createRouter({ routeTree, history });
 
@@ -57,10 +57,8 @@ describe("Item Search Params", () => {
     const searchParamsEl = page.getByTestId("search-params");
     await expect.element(searchParamsEl).toBeInTheDocument();
 
-    // Check if publishedSince is in the search params
+    // Check if since is in the search params
     // It should be present in the JSON output
-    await expect
-      .element(searchParamsEl)
-      .toHaveTextContent(/"publishedSince":"30d"/);
+    await expect.element(searchParamsEl).toHaveTextContent(/"since":"30d"/);
   });
 });

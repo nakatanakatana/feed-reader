@@ -327,15 +327,15 @@ func (x *GetItemResponse) GetItem() *Item {
 }
 
 type ListItemsRequest struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	FeedId         *string                `protobuf:"bytes,1,opt,name=feed_id,json=feedId,proto3,oneof" json:"feed_id,omitempty"`
-	IsRead         *bool                  `protobuf:"varint,2,opt,name=is_read,json=isRead,proto3,oneof" json:"is_read,omitempty"`
-	TagId          *string                `protobuf:"bytes,7,opt,name=tag_id,json=tagId,proto3,oneof" json:"tag_id,omitempty"`
-	PublishedSince *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=published_since,json=publishedSince,proto3,oneof" json:"published_since,omitempty"`
-	Limit          int32                  `protobuf:"varint,5,opt,name=limit,proto3" json:"limit,omitempty"`
-	Offset         int32                  `protobuf:"varint,6,opt,name=offset,proto3" json:"offset,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	FeedId        *string                `protobuf:"bytes,1,opt,name=feed_id,json=feedId,proto3,oneof" json:"feed_id,omitempty"`
+	IsRead        *bool                  `protobuf:"varint,2,opt,name=is_read,json=isRead,proto3,oneof" json:"is_read,omitempty"`
+	TagId         *string                `protobuf:"bytes,7,opt,name=tag_id,json=tagId,proto3,oneof" json:"tag_id,omitempty"`
+	Since         *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=since,proto3,oneof" json:"since,omitempty"`
+	Limit         int32                  `protobuf:"varint,5,opt,name=limit,proto3" json:"limit,omitempty"`
+	Offset        int32                  `protobuf:"varint,6,opt,name=offset,proto3" json:"offset,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ListItemsRequest) Reset() {
@@ -389,9 +389,9 @@ func (x *ListItemsRequest) GetTagId() string {
 	return ""
 }
 
-func (x *ListItemsRequest) GetPublishedSince() *timestamppb.Timestamp {
+func (x *ListItemsRequest) GetSince() *timestamppb.Timestamp {
 	if x != nil {
-		return x.PublishedSince
+		return x.Since
 	}
 	return nil
 }
@@ -583,20 +583,20 @@ const file_item_v1_item_proto_rawDesc = "" +
 	"\x0eGetItemRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"4\n" +
 	"\x0fGetItemResponse\x12!\n" +
-	"\x04item\x18\x01 \x01(\v2\r.item.v1.ItemR\x04item\"\x99\x02\n" +
+	"\x04item\x18\x01 \x01(\v2\r.item.v1.ItemR\x04item\"\xfc\x01\n" +
 	"\x10ListItemsRequest\x12\x1c\n" +
 	"\afeed_id\x18\x01 \x01(\tH\x00R\x06feedId\x88\x01\x01\x12\x1c\n" +
 	"\ais_read\x18\x02 \x01(\bH\x01R\x06isRead\x88\x01\x01\x12\x1a\n" +
-	"\x06tag_id\x18\a \x01(\tH\x02R\x05tagId\x88\x01\x01\x12H\n" +
-	"\x0fpublished_since\x18\b \x01(\v2\x1a.google.protobuf.TimestampH\x03R\x0epublishedSince\x88\x01\x01\x12\x14\n" +
+	"\x06tag_id\x18\a \x01(\tH\x02R\x05tagId\x88\x01\x01\x125\n" +
+	"\x05since\x18\b \x01(\v2\x1a.google.protobuf.TimestampH\x03R\x05since\x88\x01\x01\x12\x14\n" +
 	"\x05limit\x18\x05 \x01(\x05R\x05limit\x12\x16\n" +
 	"\x06offset\x18\x06 \x01(\x05R\x06offsetB\n" +
 	"\n" +
 	"\b_feed_idB\n" +
 	"\n" +
 	"\b_is_readB\t\n" +
-	"\a_tag_idB\x12\n" +
-	"\x10_published_since\"]\n" +
+	"\a_tag_idB\b\n" +
+	"\x06_since\"]\n" +
 	"\x11ListItemsResponse\x12'\n" +
 	"\x05items\x18\x01 \x03(\v2\x11.item.v1.ListItemR\x05items\x12\x1f\n" +
 	"\vtotal_count\x18\x02 \x01(\x05R\n" +
@@ -638,7 +638,7 @@ var file_item_v1_item_proto_goTypes = []any{
 }
 var file_item_v1_item_proto_depIdxs = []int32{
 	0, // 0: item.v1.GetItemResponse.item:type_name -> item.v1.Item
-	8, // 1: item.v1.ListItemsRequest.published_since:type_name -> google.protobuf.Timestamp
+	8, // 1: item.v1.ListItemsRequest.since:type_name -> google.protobuf.Timestamp
 	1, // 2: item.v1.ListItemsResponse.items:type_name -> item.v1.ListItem
 	2, // 3: item.v1.ItemService.GetItem:input_type -> item.v1.GetItemRequest
 	4, // 4: item.v1.ItemService.ListItems:input_type -> item.v1.ListItemsRequest

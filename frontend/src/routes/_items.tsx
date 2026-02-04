@@ -7,16 +7,16 @@ import type { DateFilterValue } from "../lib/item-utils";
 
 interface ItemsSearch {
   tagId?: string;
-  publishedSince?: DateFilterValue;
+  since?: DateFilterValue;
 }
 
 export const Route = createFileRoute("/_items")({
   validateSearch: (search: Record<string, unknown>): ItemsSearch => {
-    const publishedSince = search.publishedSince as DateFilterValue | undefined;
+    const since = search.since as DateFilterValue | undefined;
     const tagId = search.tagId as string | undefined;
     return {
       tagId,
-      publishedSince: publishedSince ?? (tagId ? undefined : "30d"),
+      since: since ?? (tagId ? undefined : "30d"),
     };
   },
   component: ItemsLayout,
@@ -39,7 +39,7 @@ function ItemsLayout() {
       >
         <ItemList
           tagId={search()?.tagId}
-          dateFilter={search()?.publishedSince}
+          dateFilter={search()?.since}
           fixedControls
         />
         <Outlet />

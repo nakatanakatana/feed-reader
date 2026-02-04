@@ -70,3 +70,4 @@ CREATE TABLE feed_tags (
 
 CREATE INDEX idx_feeds_updated_at ON feeds(updated_at);
 CREATE INDEX idx_tags_updated_at ON tags(updated_at);
+CREATE INDEX idx_items_created_at ON items(created_at);

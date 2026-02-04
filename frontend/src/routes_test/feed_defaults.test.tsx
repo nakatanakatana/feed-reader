@@ -68,7 +68,7 @@ describe("Item Route Defaults", () => {
     >;
 
     const params = paramsGetter();
-    expect(params.publishedSince).toEqual(
+    expect(params.since).toEqual(
       expect.objectContaining({ seconds: expect.any(BigInt) }),
     );
   });

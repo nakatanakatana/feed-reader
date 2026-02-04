@@ -42,7 +42,7 @@ export interface FetchItemsParams {
   feedId?: string;
   isRead?: boolean;
   tagId?: string;
-  publishedSince?: Timestamp;
+  since?: Timestamp;
   limit?: number;
   offset?: number;
 }
@@ -56,7 +56,7 @@ export const fetchItems = async (
     feedId: params.feedId,
     isRead: params.isRead,
     tagId: params.tagId,
-    publishedSince: params.publishedSince,
+    since: params.since,
     limit: params.limit,
     offset: params.offset,
   });
