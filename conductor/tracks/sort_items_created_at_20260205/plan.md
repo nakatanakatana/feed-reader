@@ -3,12 +3,12 @@
 ## Phase 1: Backend Implementation (Sorting Logic)
 Modify the database queries and repository logic to sort items by `created_at` in ascending order.
 
-- [ ] Task: Update SQL queries for item retrieval to use `created_at ASC` instead of `published_at`.
+- [x] Task: Update SQL queries for item retrieval to use `created_at ASC` instead of `published_at`. 64dee48
     - [ ] Modify `sql/query.sql` to update `ListItems` or equivalent queries.
     - [ ] Regenerate Go code using `make gen-sql` (sqlc).
-- [ ] Task: Ensure database indexes exist for `created_at` on the `items` table.
+- [x] Task: Ensure database indexes exist for `created_at` on the `items` table. 64dee48
     - [ ] Check `sql/schema.sql` and add index if missing.
-- [ ] Task: Implement/Update backend tests for item sorting.
+- [x] Task: Implement/Update backend tests for item sorting. 64dee48
     - [ ] Write a test in `store/item_ordering_test.go` to verify `created_at ASC` sorting.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend Implementation' (Protocol in workflow.md)
 
