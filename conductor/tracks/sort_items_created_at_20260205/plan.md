@@ -1,6 +1,6 @@
 # Implementation Plan: Sort Items by Created Date
 
-## Phase 1: Backend Implementation (Sorting Logic)
+## Phase 1: Backend Implementation (Sorting Logic) [checkpoint: 7cb861c]
 Modify the database queries and repository logic to sort items by `created_at` in ascending order.
 
 - [x] Task: Update SQL queries for item retrieval to use `created_at ASC` instead of `published_at`. 64dee48
