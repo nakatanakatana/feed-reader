@@ -12,7 +12,7 @@ Modify the database queries and repository logic to sort items by `created_at` i
     - [ ] Write a test in `store/item_ordering_test.go` to verify `created_at ASC` sorting.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend Implementation' (Protocol in workflow.md)
 
-## Phase 2: Frontend Implementation (UI/UX)
+## Phase 2: Frontend Implementation (UI/UX) [checkpoint: 78b7703]
 Update the item detail modal to display both dates and ensure the list reflects the sorting.
 
 - [x] Task: Update Item Detail Modal to display both `published_at` and `created_at`. e94bd0b
