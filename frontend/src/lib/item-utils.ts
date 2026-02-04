@@ -62,15 +62,15 @@ export const formatDate = (dateString: string) => {
 export const getItemDisplayDate = (
   item: Pick<Item, "publishedAt" | "createdAt">,
 ) => {
-  if (item.publishedAt) {
+  if (item.createdAt) {
     return {
-      label: "Published",
-      date: item.publishedAt,
+      label: "Received",
+      date: item.createdAt,
     };
   }
   return {
-    label: "Received",
-    date: item.createdAt,
+    label: "Published",
+    date: item.publishedAt,
   };
 };
 

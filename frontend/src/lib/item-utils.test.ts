@@ -89,24 +89,24 @@ describe("item-utils", () => {
   });
 
   describe("getItemDisplayDate", () => {
-    it("should return Published label and date when publishedAt is present", () => {
+    it("should return Received label and createdAt when createdAt is present", () => {
       const item: Pick<Item, "publishedAt" | "createdAt"> = {
         publishedAt: "2026-01-01T00:00:00Z",
         createdAt: "2026-01-02T00:00:00Z",
       };
       const result = getItemDisplayDate(item);
-      expect(result.label).toBe("Published");
-      expect(result.date).toBe("2026-01-01T00:00:00Z");
-    });
-
-    it("should return Received label and createdAt when publishedAt is empty", () => {
-      const item: Pick<Item, "publishedAt" | "createdAt"> = {
-        publishedAt: "",
-        createdAt: "2026-01-02T00:00:00Z",
-      };
-      const result = getItemDisplayDate(item);
       expect(result.label).toBe("Received");
       expect(result.date).toBe("2026-01-02T00:00:00Z");
+    });
+
+    it("should return Published label and date when createdAt is empty", () => {
+      const item: Pick<Item, "publishedAt" | "createdAt"> = {
+        publishedAt: "2026-01-01T00:00:00Z",
+        createdAt: "",
+      };
+      const result = getItemDisplayDate(item);
+      expect(result.label).toBe("Published");
+      expect(result.date).toBe("2026-01-01T00:00:00Z");
     });
   });
 
