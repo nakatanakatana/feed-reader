@@ -63,7 +63,7 @@ WHERE
   (?3 IS NULL OR EXISTS (
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = ?3
   )) AND
-  (?4 IS NULL OR COALESCE(i.published_at, i.created_at) >= ?4)
+  (?4 IS NULL OR i.created_at >= ?4)
 `
 
 type CountItemsParams struct {
@@ -713,7 +713,7 @@ WHERE
   (?3 IS NULL OR EXISTS (
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = ?3
   )) AND
-  (?4 IS NULL OR COALESCE(i.published_at, i.created_at) >= ?4)
+  (?4 IS NULL OR i.created_at >= ?4)
 GROUP BY
   i.id
 ORDER BY

@@ -3,7 +3,7 @@ import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import type { Item } from "../lib/db";
 import { updateItemStatus } from "../lib/db";
-import { formatDate, getItemDisplayDate } from "../lib/item-utils";
+import { formatDate } from "../lib/item-utils";
 import { ActionButton } from "./ui/ActionButton";
 
 interface ItemRowProps {
@@ -15,8 +15,6 @@ interface ItemRowProps {
 
 export function ItemRow(props: ItemRowProps) {
   const [isPending, setIsPending] = createSignal(false);
-
-  const displayDate = () => getItemDisplayDate(props.item);
 
   const handleToggleRead = async (e?: MouseEvent) => {
     e?.stopPropagation();
@@ -110,7 +108,11 @@ export function ItemRow(props: ItemRowProps) {
           </Show>
           <div class={flex({ gap: "2", alignItems: "center", marginTop: "1" })}>
             <span class={css({ fontSize: "xs", color: "gray.500" })}>
-              {displayDate().label}: {formatDate(displayDate().date)}
+              Received: {formatDate(props.item.createdAt)}
+              <Show when={props.item.publishedAt}>
+                <span class={css({ marginInline: "1" })}>•</span>
+                Published: {formatDate(props.item.publishedAt)}
+              </Show>
             </span>
             <Show when={props.item.isRead}>
               <span

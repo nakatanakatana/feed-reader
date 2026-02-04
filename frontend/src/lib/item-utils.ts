@@ -59,21 +59,6 @@ export const formatDate = (dateString: string) => {
   }
 };
 
-export const getItemDisplayDate = (
-  item: Pick<Item, "publishedAt" | "createdAt">,
-) => {
-  if (item.createdAt) {
-    return {
-      label: "Received",
-      date: item.createdAt,
-    };
-  }
-  return {
-    label: "Published",
-    date: item.publishedAt,
-  };
-};
-
 export const normalizeCategories = (categories: string): string[] => {
   if (!categories) return [];
   const trimmed = categories.trim();

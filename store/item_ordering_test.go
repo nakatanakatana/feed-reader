@@ -31,12 +31,6 @@ func TestStore_ItemOrdering(t *testing.T) {
 
 	/*
 		Target Order (ASC) - Now based on created_at:
-		1. Item A: Created 2026-01-28 00:00:00
-		2. Item B: Created 2026-01-28 00:00:01
-		3. Item C: Created 2026-01-03 00:00:00
-		4. Item D: Created 2026-01-04 00:00:00
-
-		Wait, let's make it clearer.
 		Item A: Created T1
 		Item B: Created T2
 		Item C: Created T3

@@ -155,7 +155,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                     alignItems: "center",
                   })}
                 >
-                  <Show when={item().publishedAt}>
+                  <Show when={!!item().publishedAt}>
                     <span>Published: {formatDate(item().publishedAt)}</span>
                   </Show>
                   <span>Created: {formatDate(item().createdAt)}</span>
