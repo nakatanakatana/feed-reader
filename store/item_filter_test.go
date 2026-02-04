@@ -32,9 +32,17 @@ func TestStore_ListItems_DateFilter(t *testing.T) {
 	tMid := now.Add(-12 * time.Hour).Format(time.RFC3339) // 12 hours ago
 	tNew := now.Add(-1 * time.Hour).Format(time.RFC3339)  // 1 hour ago
 
-	_ = createTestItem(t, s, ctx, feedID, "http://example.com/old", "Old Item", tOld)
-	_ = createTestItem(t, s, ctx, feedID, "http://example.com/mid", "Mid Item", tMid)
-	_ = createTestItem(t, s, ctx, feedID, "http://example.com/new", "New Item", tNew)
+	idOld := createTestItem(t, s, ctx, feedID, "http://example.com/old", "Old Item", tOld)
+	_, err = s.DB.ExecContext(ctx, "UPDATE items SET created_at = ? WHERE id = ?", tOld, idOld)
+	require.NoError(t, err)
+
+	idMid := createTestItem(t, s, ctx, feedID, "http://example.com/mid", "Mid Item", tMid)
+	_, err = s.DB.ExecContext(ctx, "UPDATE items SET created_at = ? WHERE id = ?", tMid, idMid)
+	require.NoError(t, err)
+
+	idNew := createTestItem(t, s, ctx, feedID, "http://example.com/new", "New Item", tNew)
+	_, err = s.DB.ExecContext(ctx, "UPDATE items SET created_at = ? WHERE id = ?", tNew, idNew)
+	require.NoError(t, err)
 
 	t.Run("Filter by 24h", func(t *testing.T) {
 		since := now.Add(-24 * time.Hour).Format(time.RFC3339)
