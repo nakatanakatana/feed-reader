@@ -15,12 +15,12 @@ Modify the database queries and repository logic to sort items by `created_at` i
 ## Phase 2: Frontend Implementation (UI/UX)
 Update the item detail modal to display both dates and ensure the list reflects the sorting.
 
-- [ ] Task: Update Item Detail Modal to display both `published_at` and `created_at`.
+- [x] Task: Update Item Detail Modal to display both `published_at` and `created_at`. e94bd0b
     - [ ] Modify `frontend/src/components/ItemDetailModal.tsx` to include both dates side-by-side.
     - [ ] Ensure proper labeling (e.g., "Published" and "Created").
-- [ ] Task: Update frontend tests for the detail modal.
+- [x] Task: Update frontend tests for the detail modal. e94bd0b
     - [ ] Update `frontend/src/components/ItemDetailModal.test.tsx` to verify both dates are rendered.
-- [ ] Task: Verify item list sorting in the frontend.
+- [x] Task: Verify item list sorting in the frontend. e94bd0b
     - [ ] Confirm `frontend/src/lib/item-query.ts` or relevant query logic correctly handles the sorted API response.
     - [ ] Update `frontend/src/components/ItemList.test.tsx` if it makes assumptions about sorting.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Frontend Implementation' (Protocol in workflow.md)
