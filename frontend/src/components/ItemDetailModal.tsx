@@ -158,7 +158,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                   <Show when={!!item().publishedAt}>
                     <span>Published: {formatDate(item().publishedAt)}</span>
                   </Show>
-                  <span>Created: {formatDate(item().createdAt)}</span>
+                  <span>Received: {formatDate(item().createdAt)}</span>
                   <Show when={item().author}>
                     <span>By {item().author}</span>
                   </Show>
