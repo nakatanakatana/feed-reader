@@ -179,7 +179,7 @@ WHERE
   (sqlc.narg('tag_id') IS NULL OR EXISTS (
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = sqlc.narg('tag_id')
   )) AND
-  (sqlc.narg('published_since') IS NULL OR i.created_at >= sqlc.narg('published_since'))
+  (sqlc.narg('since') IS NULL OR i.created_at >= sqlc.narg('since'))
 GROUP BY
   i.id
 ORDER BY
@@ -248,7 +248,7 @@ WHERE
   (sqlc.narg('tag_id') IS NULL OR EXISTS (
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = sqlc.narg('tag_id')
   )) AND
-  (sqlc.narg('published_since') IS NULL OR i.created_at >= sqlc.narg('published_since'));
+  (sqlc.narg('since') IS NULL OR i.created_at >= sqlc.narg('since'));
 
 
 -- name: SetItemRead :one

@@ -59,19 +59,19 @@ describe("Item Queries", () => {
     expect(result).toEqual(mockResponse);
   });
 
-  it("should fetch items with publishedSince filter", async () => {
+  it("should fetch items with since filter", async () => {
     const mockResponse = { items: [], totalCount: 0 };
     mockClient.listItems.mockResolvedValue(mockResponse);
 
     const transport = {} as unknown as Transport;
     const since = { seconds: BigInt(1234567890), nanos: 0 } as Timestamp;
-    const params = { publishedSince: since };
+    const params = { since: since };
 
     await fetchItems(transport, params);
 
     expect(mockClient.listItems).toHaveBeenCalledWith(
       expect.objectContaining({
-        publishedSince: since,
+        since: since,
       }),
     );
   });

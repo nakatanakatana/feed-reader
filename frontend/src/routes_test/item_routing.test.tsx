@@ -45,7 +45,7 @@ describe("Item Routing", () => {
       .element(page.getByText("Detail for Item 1"))
       .toBeInTheDocument();
 
-    // Check if the URL includes the default publishedSince=30d
-    expect(history.location.search).toEqual("?publishedSince=30d");
+    // Check if the URL includes the default since=30d
+    expect(history.location.search).toEqual("?since=30d");
   });
 });

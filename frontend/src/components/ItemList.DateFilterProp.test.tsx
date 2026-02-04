@@ -75,11 +75,11 @@ describe("ItemList Date Filter Prop", () => {
     ][0] as () => Omit<FetchItemsParams, "limit" | "offset">;
     const params = latestCallGetter();
 
-    expect(params.publishedSince).toBeDefined();
+    expect(params.since).toBeDefined();
 
     // Verify it's 30 days
-    const since = params.publishedSince;
-    if (!since) throw new Error("publishedSince should be defined");
+    const since = params.since;
+    if (!since) throw new Error("since should be defined");
 
     const sinceDate = new Date(Number(since.seconds) * 1000);
     const now = new Date();

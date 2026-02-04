@@ -13,7 +13,7 @@ function ItemDetailRoute() {
     <ItemDetailRouteView
       itemId={params()?.itemId}
       tagId={search()?.tagId}
-      publishedSince={search()?.publishedSince}
+      since={search()?.since}
     />
   );
 }

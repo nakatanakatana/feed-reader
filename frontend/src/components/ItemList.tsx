@@ -47,7 +47,7 @@ export function ItemList(props: ItemListProps) {
       // @ts-expect-error
       search: (prev) => ({
         ...prev,
-        publishedSince: value === "all" ? undefined : value,
+        since: value === "all" ? undefined : value,
       }),
     });
   };
@@ -55,7 +55,7 @@ export function ItemList(props: ItemListProps) {
   const itemsQuery = useItems(() => ({
     tagId: props.tagId,
     isRead: showRead() ? undefined : false,
-    publishedSince: getPublishedSince(dateFilter()),
+    since: getPublishedSince(dateFilter()),
   }));
 
   const allItems = () =>

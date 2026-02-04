@@ -7,7 +7,7 @@ import { ItemDetailModal } from "./ItemDetailModal";
 interface ItemDetailRouteViewProps {
   itemId: string | undefined;
   tagId?: string;
-  publishedSince?: DateFilterValue;
+  since?: DateFilterValue;
 }
 
 export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
@@ -22,14 +22,13 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
     return { to, params };
   };
 
-  const effectivePublishedSince = () =>
-    props.publishedSince ?? (props.tagId ? undefined : "30d");
+  const effectiveSince = () => props.since ?? (props.tagId ? undefined : "30d");
 
   const itemsQuery = useItems(() => ({
     tagId: props.tagId,
     isRead: false,
-    publishedSince: (() => {
-      const since = effectivePublishedSince();
+    since: (() => {
+      const since = effectiveSince();
       return since ? getPublishedSince(since) : undefined;
     })(),
   }));

@@ -67,10 +67,10 @@ WHERE
 `
 
 type CountItemsParams struct {
-	FeedID         interface{} `json:"feed_id"`
-	IsRead         interface{} `json:"is_read"`
-	TagID          interface{} `json:"tag_id"`
-	PublishedSince interface{} `json:"published_since"`
+	FeedID interface{} `json:"feed_id"`
+	IsRead interface{} `json:"is_read"`
+	TagID  interface{} `json:"tag_id"`
+	Since  interface{} `json:"since"`
 }
 
 func (q *Queries) CountItems(ctx context.Context, arg CountItemsParams) (int64, error) {
@@ -78,7 +78,7 @@ func (q *Queries) CountItems(ctx context.Context, arg CountItemsParams) (int64, 
 		arg.FeedID,
 		arg.IsRead,
 		arg.TagID,
-		arg.PublishedSince,
+		arg.Since,
 	)
 	var count int64
 	err := row.Scan(&count)
@@ -722,12 +722,12 @@ LIMIT ?6 OFFSET ?5
 `
 
 type ListItemsParams struct {
-	FeedID         interface{} `json:"feed_id"`
-	IsRead         interface{} `json:"is_read"`
-	TagID          interface{} `json:"tag_id"`
-	PublishedSince interface{} `json:"published_since"`
-	Offset         int64       `json:"offset"`
-	Limit          int64       `json:"limit"`
+	FeedID interface{} `json:"feed_id"`
+	IsRead interface{} `json:"is_read"`
+	TagID  interface{} `json:"tag_id"`
+	Since  interface{} `json:"since"`
+	Offset int64       `json:"offset"`
+	Limit  int64       `json:"limit"`
 }
 
 type ListItemsRow struct {
@@ -751,7 +751,7 @@ func (q *Queries) ListItems(ctx context.Context, arg ListItemsParams) ([]ListIte
 		arg.FeedID,
 		arg.IsRead,
 		arg.TagID,
-		arg.PublishedSince,
+		arg.Since,
 		arg.Offset,
 		arg.Limit,
 	)

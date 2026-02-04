@@ -70,7 +70,7 @@ describe("ItemList Defaults", () => {
     expect(paramsGetter()).toEqual(
       expect.objectContaining({
         isRead: false,
-        publishedSince: expect.objectContaining({
+        since: expect.objectContaining({
           seconds: expect.any(BigInt),
         }),
       }),

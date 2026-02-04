@@ -93,26 +93,26 @@ describe("ItemList Date Filter", () => {
     const select = page.getByRole("combobox");
     await expect.element(select).toBeInTheDocument();
 
-    // Initial call should have publishedSince: undefined
+    // Initial call should have since: undefined
     const firstCallParams = vi.mocked(useItems).mock.calls[0][0] as () => Omit<
       FetchItemsParams,
       "limit" | "offset"
     >;
-    expect(firstCallParams().publishedSince).toBeDefined();
+    expect(firstCallParams().since).toBeDefined();
 
     // Change to "Past 24 Hours"
     await select.selectOptions("24h");
 
-    // The latest call should have a publishedSince timestamp
+    // The latest call should have a since timestamp
     const latestCallGetter = vi.mocked(useItems).mock.calls[
       vi.mocked(useItems).mock.calls.length - 1
     ][0] as () => Omit<FetchItemsParams, "limit" | "offset">;
     const params = latestCallGetter();
 
-    expect(params.publishedSince).toBeDefined();
+    expect(params.since).toBeDefined();
     // We can check if it's approximately 24 hours ago
-    const since = params.publishedSince;
-    if (!since) throw new Error("publishedSince should be defined");
+    const since = params.since;
+    if (!since) throw new Error("since should be defined");
 
     const sinceDate = new Date(Number(since.seconds) * 1000);
     const now = new Date();
@@ -141,6 +141,6 @@ describe("ItemList Date Filter", () => {
 
     // Check if URL is updated
     // Note: createMemoryHistory location.search is an object in TanStack Router v1
-    expect(history.location.search).toEqual("?publishedSince=30d");
+    expect(history.location.search).toEqual("?since=30d");
   });
 });
