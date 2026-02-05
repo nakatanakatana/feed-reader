@@ -140,13 +140,17 @@ export function ItemList(props: ItemListProps) {
     setLimit((prev) => prev + PAGE_SIZE);
   };
 
-  const tagsArray = () => tagsCollection.toArray;
+  const tagsQuery = useLiveQuery((q) => {
+    return q.from({ tag: tagsCollection }).select(({ tag }) => ({...tag}));
+  });
+
   const totalUnreadCount = () =>
-    tagsArray().reduce(
+    tagsQuery().reduce(
       (sum: bigint, tag: { unreadCount?: bigint }) =>
         sum + (tag.unreadCount ?? 0n),
       0n,
     );
+
 
   const controls = (
     <>
@@ -176,7 +180,7 @@ export function ItemList(props: ItemListProps) {
               </Badge>
             </Show>
           </TagChip>
-          <For each={tagsArray()}>
+          <For each={tagsQuery()}>
             {(tag) => (
               <TagChip
                 selected={props.tagId === tag.id}
