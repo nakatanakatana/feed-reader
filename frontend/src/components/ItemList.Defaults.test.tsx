@@ -97,6 +97,6 @@ describe("ItemList Defaults", () => {
     // Get the mocked createItems function
     const { createItems } = await import("../lib/db");
     // Check if createItems was called with the correct defaults (30d is the route default)
-    expect(createItems).toHaveBeenCalledWith(false, "30d");
+    expect(createItems).toHaveBeenCalledWith(false, "30d", expect.anything());
   });
 });

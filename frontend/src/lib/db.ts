@@ -140,16 +140,21 @@ export const createItemBulkMarkAsReadTx = () =>
     },
   });
 
-export const createItems = (showRead: boolean, since: DateFilterValue) => {
+export const createItems = (
+  showRead: boolean,
+  since: DateFilterValue,
+  tagId?: string,
+) => {
   let lastFetched: Date | null = null;
   const isRead = showRead ? {} : { isRead: false };
   const sinceTimestamp = since !== "all" ? getPublishedSince(since) : undefined;
+  const tagFilter = tagId ? { tagId } : {};
   const items = createCollection(
     queryCollectionOptions({
       id: "items",
       queryClient,
       refetchInterval: 1 * 60 * 1000,
-      queryKey: ["items", { since }],
+      queryKey: ["items", { since, tagId }],
       queryFn: async ({ queryKey }) => {
         const existingData = queryClient.getQueryData(queryKey) || [];
         const searchSince =
@@ -159,6 +164,7 @@ export const createItems = (showRead: boolean, since: DateFilterValue) => {
           limit: 10000,
           offset: 0,
           ...isRead,
+          ...tagFilter,
         });
         lastFetched = new Date();
 

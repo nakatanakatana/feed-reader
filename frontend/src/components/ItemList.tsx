@@ -57,7 +57,9 @@ export function ItemList(props: ItemListProps) {
     });
   };
 
-  const items = createMemo(() => createItems(showRead(), dateFilter()));
+  const items = createMemo(() =>
+    createItems(showRead(), dateFilter(), props.tagId),
+  );
 
   const itemsQuery = useLiveQuery((q) => {
     let query = q.from({ item: items() });

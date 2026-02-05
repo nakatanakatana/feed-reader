@@ -117,13 +117,21 @@ describe("ItemList Date Filter", () => {
     const { createItems } = await import("../lib/db");
 
     // Initial call should use default date filter (30d is the route default)
-    expect(createItems).toHaveBeenCalledWith(expect.any(Boolean), "30d");
+    expect(createItems).toHaveBeenCalledWith(
+      expect.any(Boolean),
+      "30d",
+      expect.anything(),
+    );
 
     // Change to "Past 24 Hours"
     await select.selectOptions("24h");
 
     // The latest call should have 24h as the date filter
-    expect(createItems).toHaveBeenLastCalledWith(expect.any(Boolean), "24h");
+    expect(createItems).toHaveBeenLastCalledWith(
+      expect.any(Boolean),
+      "24h",
+      expect.anything(),
+    );
   });
 
   it("updates URL search params when date filter is changed", async () => {
