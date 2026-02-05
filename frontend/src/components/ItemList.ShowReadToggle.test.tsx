@@ -121,7 +121,7 @@ describe("ItemList Show Read Toggle", () => {
     expect(createItems).toHaveBeenCalledWith(
       false,
       expect.any(String),
-      expect.anything(),
+      undefined,
     );
 
     await toggle.click();
@@ -130,7 +130,7 @@ describe("ItemList Show Read Toggle", () => {
     expect(createItems).toHaveBeenLastCalledWith(
       true,
       expect.any(String),
-      expect.anything(),
+      undefined,
     );
   });
 });

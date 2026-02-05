@@ -95,7 +95,7 @@ describe("ItemList Date Filter Prop", () => {
     expect(createItems).toHaveBeenCalledWith(
       expect.any(Boolean),
       "30d",
-      expect.anything(),
+      undefined,
     );
   });
 });

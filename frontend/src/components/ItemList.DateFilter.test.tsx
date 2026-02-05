@@ -120,7 +120,7 @@ describe("ItemList Date Filter", () => {
     expect(createItems).toHaveBeenCalledWith(
       expect.any(Boolean),
       "30d",
-      expect.anything(),
+      undefined,
     );
 
     // Change to "Past 24 Hours"
@@ -130,7 +130,7 @@ describe("ItemList Date Filter", () => {
     expect(createItems).toHaveBeenLastCalledWith(
       expect.any(Boolean),
       "24h",
-      expect.anything(),
+      undefined,
     );
   });
 
