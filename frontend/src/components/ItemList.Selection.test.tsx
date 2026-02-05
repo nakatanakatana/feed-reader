@@ -13,15 +13,74 @@ import { routeTree } from "../routeTree.gen";
 
 // Mock hooks
 vi.mock("../lib/item-query", () => ({
-  useItems: vi.fn(),
-  useItem: vi.fn(),
   useUpdateItemStatus: () => ({
-    mutate: vi.fn(),
+    mutateAsync: vi.fn().mockResolvedValue({}),
     isPending: false,
   }),
+  useItem: vi.fn(),
+  useItems: vi.fn(),
 }));
 
-import { useItems } from "../lib/item-query";
+// Mock tanstack/solid-db
+vi.mock("@tanstack/solid-db", async () => {
+  const actual =
+    await vi.importActual<typeof import("@tanstack/solid-db")>(
+      "@tanstack/solid-db",
+    );
+  return {
+    ...actual,
+    useLiveQuery: vi.fn(() => {
+      const result = () => [
+        {
+          id: "1",
+          title: "Item 1",
+          publishedAt: "2026-01-26",
+          createdAt: "2026-01-26",
+          isRead: false,
+          feedId: "feed1",
+        },
+        {
+          id: "2",
+          title: "Item 2",
+          publishedAt: "2026-01-26",
+          createdAt: "2026-01-26",
+          isRead: false,
+          feedId: "feed1",
+        },
+      ];
+      (result as { isLoading?: boolean }).isLoading = false;
+      return result;
+    }),
+    eq: actual.eq,
+    isUndefined: actual.isUndefined,
+  };
+});
+
+vi.mock("../lib/db", () => ({
+  tags: {
+    toArray: [],
+  },
+  localRead: {
+    insert: vi.fn(),
+    toArray: [],
+  },
+  feeds: {
+    delete: vi.fn(),
+    isReady: true,
+    toArray: [],
+  },
+  addFeed: vi.fn(),
+  updateItemStatus: vi.fn(),
+  createItemBulkMarkAsReadTx: () => ({
+    mutate: vi.fn(),
+  }),
+  createItems: vi.fn(() => ({
+    toArray: [],
+    utils: {
+      refetch: vi.fn(),
+    },
+  })),
+}));
 
 describe("ItemList Selection", () => {
   let dispose: () => void;
@@ -35,33 +94,6 @@ describe("ItemList Selection", () => {
   });
 
   it("toggles item selection", async () => {
-    const mockItems = [
-      {
-        id: "1",
-        title: "Item 1",
-        publishedAt: "2026-01-26",
-        createdAt: "2026-01-26",
-        isRead: false,
-      },
-      {
-        id: "2",
-        title: "Item 2",
-        publishedAt: "2026-01-26",
-        createdAt: "2026-01-26",
-        isRead: false,
-      },
-    ];
-
-    vi.mocked(useItems).mockReturnValue({
-      data: {
-        pages: [{ items: mockItems }],
-      },
-      isLoading: false,
-      hasNextPage: false,
-      fetchNextPage: vi.fn(),
-      isFetchingNextPage: false,
-    } as unknown as ReturnType<typeof useItems>);
-
     const history = createMemoryHistory({ initialEntries: ["/"] });
     const router = createRouter({ routeTree, history });
 
@@ -104,33 +136,6 @@ describe("ItemList Selection", () => {
   });
 
   it("selects all items when 'Select All' is clicked", async () => {
-    const mockItems = [
-      {
-        id: "1",
-        title: "Item 1",
-        publishedAt: "2026-01-26",
-        createdAt: "2026-01-26",
-        isRead: false,
-      },
-      {
-        id: "2",
-        title: "Item 2",
-        publishedAt: "2026-01-26",
-        createdAt: "2026-01-26",
-        isRead: false,
-      },
-    ];
-
-    vi.mocked(useItems).mockReturnValue({
-      data: {
-        pages: [{ items: mockItems }],
-      },
-      isLoading: false,
-      hasNextPage: false,
-      fetchNextPage: vi.fn(),
-      isFetchingNextPage: false,
-    } as unknown as ReturnType<typeof useItems>);
-
     const history = createMemoryHistory({ initialEntries: ["/"] });
     const router = createRouter({ routeTree, history });
 

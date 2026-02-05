@@ -119,6 +119,11 @@ export type ListItem = Message<"item.v1.ListItem"> & {
    * @generated from field: bool is_read = 6;
    */
   isRead: boolean;
+
+  /**
+   * @generated from field: string feed_id = 7;
+   */
+  feedId: string;
 };
 
 /**

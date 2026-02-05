@@ -6,49 +6,69 @@ import {
   RouterProvider,
 } from "@tanstack/solid-router";
 import { render } from "solid-js/web";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
 
 // Mock hooks
 vi.mock("../lib/item-query", () => ({
-  useItems: vi.fn(),
+  useUpdateItemStatus: () => ({
+    mutateAsync: vi.fn().mockResolvedValue({}),
+    isPending: false,
+  }),
   useItem: vi.fn(),
-  useUpdateItemStatus: vi.fn(),
+  useItems: vi.fn(),
 }));
 
-import {
-  type FetchItemsParams,
-  useItem,
-  useItems,
-  useUpdateItemStatus,
-} from "../lib/item-query";
+// Mock tanstack/solid-db
+vi.mock("@tanstack/solid-db", async () => {
+  const actual =
+    await vi.importActual<typeof import("@tanstack/solid-db")>(
+      "@tanstack/solid-db",
+    );
+  return {
+    ...actual,
+    useLiveQuery: vi.fn(() => {
+      const result = () => [];
+      (result as { isLoading?: boolean }).isLoading = false;
+      return result;
+    }),
+    eq: actual.eq,
+    isUndefined: actual.isUndefined,
+  };
+});
+
+vi.mock("../lib/db", () => ({
+  tags: {
+    toArray: [],
+  },
+  localRead: {
+    insert: vi.fn(),
+    toArray: [],
+  },
+  feeds: {
+    delete: vi.fn(),
+    isReady: true,
+    toArray: [],
+  },
+  addFeed: vi.fn(),
+  updateItemStatus: vi.fn(),
+  createItemBulkMarkAsReadTx: () => ({
+    mutate: vi.fn(),
+  }),
+  createItems: vi.fn(() => ({
+    toArray: [],
+    utils: {
+      refetch: vi.fn(),
+    },
+  })),
+}));
 
 describe("ItemList Date Filter", () => {
   let dispose: () => void;
   const queryClient = new QueryClient();
   const transport = createConnectTransport({ baseUrl: "http://localhost" });
-
-  beforeEach(() => {
-    vi.mocked(useItems).mockReturnValue({
-      data: {
-        pages: [{ items: [] }],
-      },
-      isLoading: false,
-      hasNextPage: false,
-    } as unknown as ReturnType<typeof useItems>);
-
-    vi.mocked(useItem).mockReturnValue({
-      data: undefined,
-      isLoading: false,
-    } as unknown as ReturnType<typeof useItem>);
-
-    vi.mocked(useUpdateItemStatus).mockReturnValue({
-      mutate: vi.fn(),
-      isPending: false,
-    } as unknown as ReturnType<typeof useUpdateItemStatus>);
-  });
 
   afterEach(() => {
     if (dispose) dispose();
@@ -75,7 +95,7 @@ describe("ItemList Date Filter", () => {
     await expect.element(dateFilter).toBeInTheDocument();
   });
 
-  it("updates useItems filter when date filter is changed", async () => {
+  it("updates createItems filter when date filter is changed", async () => {
     const history = createMemoryHistory({ initialEntries: ["/"] });
     const router = createRouter({ routeTree, history });
 
@@ -93,32 +113,17 @@ describe("ItemList Date Filter", () => {
     const select = page.getByRole("combobox");
     await expect.element(select).toBeInTheDocument();
 
-    // Initial call should have since: undefined
-    const firstCallParams = vi.mocked(useItems).mock.calls[0][0] as () => Omit<
-      FetchItemsParams,
-      "limit" | "offset"
-    >;
-    expect(firstCallParams().since).toBeDefined();
+    // Get the mocked createItems function
+    const { createItems } = await import("../lib/db");
+
+    // Initial call should use default date filter (30d is the route default)
+    expect(createItems).toHaveBeenCalledWith(expect.any(Boolean), "30d");
 
     // Change to "Past 24 Hours"
     await select.selectOptions("24h");
 
-    // The latest call should have a since timestamp
-    const latestCallGetter = vi.mocked(useItems).mock.calls[
-      vi.mocked(useItems).mock.calls.length - 1
-    ][0] as () => Omit<FetchItemsParams, "limit" | "offset">;
-    const params = latestCallGetter();
-
-    expect(params.since).toBeDefined();
-    // We can check if it's approximately 24 hours ago
-    const since = params.since;
-    if (!since) throw new Error("since should be defined");
-
-    const sinceDate = new Date(Number(since.seconds) * 1000);
-    const now = new Date();
-    const diffHours = (now.getTime() - sinceDate.getTime()) / (1000 * 60 * 60);
-    expect(diffHours).toBeGreaterThan(23.9);
-    expect(diffHours).toBeLessThan(24.1);
+    // The latest call should have 24h as the date filter
+    expect(createItems).toHaveBeenLastCalledWith(expect.any(Boolean), "24h");
   });
 
   it("updates URL search params when date filter is changed", async () => {

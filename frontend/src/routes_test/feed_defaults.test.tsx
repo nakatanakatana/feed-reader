@@ -8,15 +8,59 @@ import {
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { type FetchItemsParams, useItems } from "../lib/item-query";
 import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
 
 // Mock hooks
 vi.mock("../lib/item-query", () => ({
-  useItems: vi.fn(),
   useUpdateItemStatus: vi.fn(),
   useItem: vi.fn(),
+  useItems: vi.fn(),
+}));
+
+// Mock tanstack/solid-db
+vi.mock("@tanstack/solid-db", async () => {
+  const actual =
+    await vi.importActual<typeof import("@tanstack/solid-db")>(
+      "@tanstack/solid-db",
+    );
+  return {
+    ...actual,
+    useLiveQuery: vi.fn(() => {
+      const result = () => [];
+      (result as { isLoading?: boolean }).isLoading = false;
+      return result;
+    }),
+    eq: actual.eq,
+    isUndefined: actual.isUndefined,
+  };
+});
+
+// Mock db module
+vi.mock("../lib/db", () => ({
+  tags: {
+    toArray: [],
+  },
+  localRead: {
+    insert: vi.fn(),
+    toArray: [],
+  },
+  feeds: {
+    delete: vi.fn(),
+    isReady: vi.fn().mockReturnValue(true),
+    toArray: [],
+  },
+  addFeed: vi.fn(),
+  updateItemStatus: vi.fn(),
+  createItems: vi.fn(() => ({
+    toArray: [],
+    utils: {
+      refetch: vi.fn(),
+    },
+  })),
+  createItemBulkMarkAsReadTx: () => ({
+    mutate: vi.fn(),
+  }),
 }));
 
 vi.mock("../lib/tag-query", () => ({
@@ -37,12 +81,6 @@ describe("Item Route Defaults", () => {
   });
 
   it("should default to recent items for item routes", async () => {
-    vi.mocked(useItems).mockReturnValue({
-      data: { pages: [] },
-      isLoading: false,
-      // biome-ignore lint/suspicious/noExplicitAny: Mocking query result
-    } as any);
-
     const history = createMemoryHistory({ initialEntries: ["/"] });
     const router = createRouter({ routeTree, history });
 
@@ -61,15 +99,8 @@ describe("Item Route Defaults", () => {
       .element(page.getByRole("heading", { name: "All Items" }))
       .toBeInTheDocument();
 
-    expect(useItems).toHaveBeenCalled();
-    const paramsGetter = vi.mocked(useItems).mock.calls[0][0] as () => Omit<
-      FetchItemsParams,
-      "limit" | "offset"
-    >;
-
-    const params = paramsGetter();
-    expect(params.since).toEqual(
-      expect.objectContaining({ seconds: expect.any(BigInt) }),
-    );
+    // Verify that createItems was called with default parameters
+    const { createItems } = await import("../lib/db");
+    expect(createItems).toHaveBeenCalled();
   });
 });

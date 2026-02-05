@@ -13,18 +13,57 @@ import { routeTree } from "../routeTree.gen";
 
 // Mock hooks
 vi.mock("../lib/item-query", () => ({
-  useItems: vi.fn(),
-  useUpdateItemStatus: vi.fn(),
+  useUpdateItemStatus: () => ({
+    mutateAsync: vi.fn().mockResolvedValue({}),
+    isPending: false,
+  }),
   useItem: vi.fn(),
+  useItems: vi.fn(),
 }));
 
-vi.mock("../lib/tag-query", () => ({
-  useTags: vi.fn().mockReturnValue({ data: { tags: [] } }),
-  useCreateTag: vi.fn(),
-  useDeleteTag: vi.fn(),
-}));
+// Mock tanstack/solid-db
+vi.mock("@tanstack/solid-db", async () => {
+  const actual =
+    await vi.importActual<typeof import("@tanstack/solid-db")>(
+      "@tanstack/solid-db",
+    );
+  return {
+    ...actual,
+    useLiveQuery: vi.fn(() => {
+      const result = () => [];
+      (result as { isLoading?: boolean }).isLoading = false;
+      return result;
+    }),
+    eq: actual.eq,
+    isUndefined: actual.isUndefined,
+  };
+});
 
-import { type FetchItemsParams, useItems } from "../lib/item-query";
+vi.mock("../lib/db", () => ({
+  tags: {
+    toArray: [],
+  },
+  localRead: {
+    insert: vi.fn(),
+    toArray: [],
+  },
+  feeds: {
+    delete: vi.fn(),
+    isReady: true,
+    toArray: [],
+  },
+  addFeed: vi.fn(),
+  updateItemStatus: vi.fn(),
+  createItemBulkMarkAsReadTx: () => ({
+    mutate: vi.fn(),
+  }),
+  createItems: vi.fn(() => ({
+    toArray: [],
+    utils: {
+      refetch: vi.fn(),
+    },
+  })),
+}));
 
 describe("ItemList Defaults", () => {
   let dispose: () => void;
@@ -37,13 +76,7 @@ describe("ItemList Defaults", () => {
     vi.clearAllMocks();
   });
 
-  it("calls useItems with default filters: isRead=false", async () => {
-    vi.mocked(useItems).mockReturnValue({
-      data: { pages: [] },
-      isLoading: false,
-      // biome-ignore lint/suspicious/noExplicitAny: Mocking query result
-    } as any);
-
+  it("calls createItems with default filters: showRead=false, dateFilter=30d", async () => {
     const history = createMemoryHistory({ initialEntries: ["/"] });
     const router = createRouter({ routeTree, history });
 
@@ -61,19 +94,9 @@ describe("ItemList Defaults", () => {
     // Wait for rendering
     await expect.element(page.getByText("All Items")).toBeInTheDocument();
 
-    // Check if useItems was called with the correct defaults
-    expect(useItems).toHaveBeenCalledWith(expect.any(Function));
-    const paramsGetter = vi.mocked(useItems).mock.calls[0][0] as () => Omit<
-      FetchItemsParams,
-      "limit" | "offset"
-    >;
-    expect(paramsGetter()).toEqual(
-      expect.objectContaining({
-        isRead: false,
-        since: expect.objectContaining({
-          seconds: expect.any(BigInt),
-        }),
-      }),
-    );
+    // Get the mocked createItems function
+    const { createItems } = await import("../lib/db");
+    // Check if createItems was called with the correct defaults (30d is the route default)
+    expect(createItems).toHaveBeenCalledWith(false, "30d");
   });
 });

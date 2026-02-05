@@ -1,13 +1,27 @@
 import { createClient } from "@connectrpc/connect";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
-import { createCollection } from "@tanstack/solid-db";
+import {
+  createCollection,
+  createTransaction,
+  localStorageCollectionOptions,
+} from "@tanstack/solid-db";
 import type { ListFeed } from "../gen/feed/v1/feed_pb";
 import { FeedService } from "../gen/feed/v1/feed_pb";
-import { ItemService } from "../gen/item/v1/item_pb";
-import type { Tag } from "../gen/tag/v1/tag_pb";
+import { ItemService, type ListItem } from "../gen/item/v1/item_pb";
+import type { ListTag } from "../gen/tag/v1/tag_pb";
+import { TagService } from "../gen/tag/v1/tag_pb";
+import {
+  type DateFilterValue,
+  dateToTimestamp,
+  getPublishedSince,
+} from "./item-utils";
 import { queryClient, transport } from "./query";
 
-export type { Tag };
+export interface Tag {
+  id: string;
+  name: string;
+  unreadCount?: bigint;
+}
 
 export interface Feed {
   id: string;
@@ -26,10 +40,12 @@ export interface Item {
   publishedAt: string;
   isRead: boolean;
   createdAt: string;
+  feedId: string;
 }
 
 const feedClient = createClient(FeedService, transport);
 const itemClient = createClient(ItemService, transport);
+const tagClient = createClient(TagService, transport);
 
 export const addFeed = async (url: string, tagIds?: string[]) => {
   const response = await feedClient.createFeed({ url, tagIds });
@@ -42,8 +58,25 @@ export const updateItemStatus = async (params: {
   isRead?: boolean;
 }) => {
   await itemClient.updateItemStatus(params);
-  queryClient.invalidateQueries({ queryKey: ["items"] });
+  // queryClient.invalidateQueries({ queryKey: ["items"] });
 };
+
+export const tags = createCollection(
+  queryCollectionOptions({
+    id: "tags",
+    queryClient,
+    queryKey: ["tags"],
+    queryFn: async () => {
+      const response = await tagClient.listTags({});
+      return response.tags.map((tag: ListTag) => ({
+        id: tag.id,
+        name: tag.name,
+        unreadCount: tag.unreadCount,
+      }));
+    },
+    getKey: (tag: Tag) => tag.id,
+  }),
+);
 
 export const feeds = createCollection(
   queryCollectionOptions({
@@ -78,29 +111,81 @@ export const feeds = createCollection(
   }),
 );
 
-export const items = createCollection(
-  queryCollectionOptions({
-    id: "items",
-    queryClient,
-    queryKey: ["items"],
-    queryFn: async () => {
-      const response = await itemClient.listItems({});
-      return response.items.map((item) => ({
-        id: item.id,
-        title: item.title,
-        description: item.description,
-        publishedAt: item.publishedAt,
-        isRead: item.isRead,
-        createdAt: item.createdAt,
-      }));
+export const localRead = createCollection(
+  localStorageCollectionOptions({
+    id: "local-read-items",
+    storageKey: "local-read-items",
+    getKey: (item: { id: string }) => item.id,
+    onInsert: async ({ transaction }) => {
+      const ids = transaction.mutations.map((mutation) => mutation.modified.id);
+      await updateItemStatus({
+        ids: ids,
+        isRead: true,
+      });
     },
-    getKey: (item: Item) => item.id,
+    onDelete: async () => {},
   }),
 );
+
+export const createItemBulkMarkAsReadTx = () =>
+  createTransaction({
+    mutationFn: async ({ transaction }) => {
+      const ids = transaction.mutations
+        // @ts-expect-error
+        .filter((m) => m.collection === localRead)
+        .map((m) => m.modified.id);
+
+      console.log("ids", ids);
+      localRead.utils.acceptMutations(transaction);
+    },
+  });
+
+export const createItems = (showRead: boolean, since: DateFilterValue) => {
+  let lastFetched: Date | null = null;
+  const isRead = showRead ? {} : { isRead: false };
+  const sinceTimestamp = since !== "all" ? getPublishedSince(since) : undefined;
+  const items = createCollection(
+    queryCollectionOptions({
+      id: "items",
+      queryClient,
+      refetchInterval: 1 * 60 * 1000,
+      queryKey: ["items", { since }],
+      queryFn: async ({ queryKey }) => {
+        const existingData = queryClient.getQueryData(queryKey) || [];
+        const searchSince =
+          lastFetched === null ? sinceTimestamp : dateToTimestamp(lastFetched);
+        const response = await itemClient.listItems({
+          since: searchSince,
+          limit: 10000,
+          offset: 0,
+          ...isRead,
+        });
+        lastFetched = new Date();
+
+        const respList = response.items.map((item: ListItem) => ({
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          publishedAt: item.publishedAt,
+          isRead: item.isRead,
+          createdAt: item.createdAt,
+          feedId: item.feedId,
+        }));
+
+        // @ts-expect-error
+        return [...existingData, ...respList];
+      },
+      getKey: (item: ListItem) => item.id,
+    }),
+  );
+
+  return items;
+};
 
 // We still export a "db" object if we want to follow the spec's "Initialize the TanStack DB instance"
 // even if it's just a collection of collections.
 export const db = {
   feeds,
-  items,
+  localRead,
+  tags,
 };

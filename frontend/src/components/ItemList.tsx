@@ -1,14 +1,16 @@
+import { eq, isUndefined, useLiveQuery } from "@tanstack/solid-db";
 import { useNavigate } from "@tanstack/solid-router";
-import { createEffect, createSignal, For, Show } from "solid-js";
+import { createEffect, createMemo, createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
-import { useItems, useUpdateItemStatus } from "../lib/item-query";
 import {
-  type DateFilterValue,
-  formatUnreadCount,
-  getPublishedSince,
-} from "../lib/item-utils";
-import { useTags } from "../lib/tag-query";
+  createItemBulkMarkAsReadTx,
+  createItems,
+  localRead,
+  tags as tagsCollection,
+} from "../lib/db";
+import { useUpdateItemStatus } from "../lib/item-query";
+import { type DateFilterValue, formatUnreadCount } from "../lib/item-utils";
 import { DateFilterSelector } from "./DateFilterSelector";
 import { ItemRow } from "./ItemRow";
 import { ActionButton } from "./ui/ActionButton";
@@ -22,6 +24,8 @@ interface ItemListProps {
   fixedControls?: boolean;
 }
 
+const PAGE_SIZE = 100;
+
 export function ItemList(props: ItemListProps) {
   const navigate = useNavigate();
   const updateStatusMutation = useUpdateItemStatus();
@@ -29,11 +33,11 @@ export function ItemList(props: ItemListProps) {
     new Set(),
   );
 
-  const tagsQuery = useTags();
   const [showRead, setShowRead] = createSignal(false);
   const [dateFilter, setDateFilter] = createSignal<DateFilterValue>(
     props.dateFilter ?? "all",
   );
+  const [limit, setLimit] = createSignal(PAGE_SIZE);
 
   createEffect(() => {
     if (props.dateFilter) {
@@ -43,6 +47,7 @@ export function ItemList(props: ItemListProps) {
 
   const handleDateFilterSelect = (value: DateFilterValue) => {
     setDateFilter(value);
+    setLimit(PAGE_SIZE);
     navigate({
       // @ts-expect-error
       search: (prev) => ({
@@ -52,23 +57,39 @@ export function ItemList(props: ItemListProps) {
     });
   };
 
-  const itemsQuery = useItems(() => ({
-    tagId: props.tagId,
-    isRead: showRead() ? undefined : false,
-    since: getPublishedSince(dateFilter()),
-  }));
+  const items = createMemo(() => createItems(showRead(), dateFilter()));
 
-  const allItems = () =>
-    itemsQuery.data?.pages.flatMap((page) => page.items) ?? [];
+  const itemsQuery = useLiveQuery((q) => {
+    let query = q.from({ item: items() });
 
-  const isLoading = () => itemsQuery.isLoading;
+    // Filter by read status
+    if (!showRead()) {
+      query = query
+        .leftJoin({ read: localRead }, ({ item, read }) => eq(item.id, read.id))
+        .where(({ read }) => isUndefined(read));
+    }
+
+    query = query.orderBy(({ item }) => {
+      return item.publishedAt ? item.publishedAt : item.createdAt;
+    }, "asc");
+
+    query = query.limit(limit());
+
+    query = query.select(({ item }) => ({
+      ...item,
+    }));
+
+    return query;
+  });
+
+  const hasMore = () => itemsQuery().length === limit();
 
   const isAllSelected = () =>
-    allItems().length > 0 && selectedItemIds().size === allItems().length;
+    itemsQuery().length > 0 && selectedItemIds().size === itemsQuery().length;
 
   const handleToggleAll = (checked: boolean) => {
     if (checked) {
-      setSelectedItemIds(new Set<string>(allItems().map((i) => i.id)));
+      setSelectedItemIds(new Set<string>(itemsQuery().map((i) => i.id)));
     } else {
       setSelectedItemIds(new Set<string>());
     }
@@ -102,12 +123,28 @@ export function ItemList(props: ItemListProps) {
     const ids = Array.from(selectedItemIds());
     if (ids.length === 0) return;
 
-    await updateStatusMutation.mutateAsync({
-      ids,
-      isRead: true,
+    const tx = createItemBulkMarkAsReadTx();
+    tx.mutate(() => {
+      ids.forEach((id) => {
+        localRead.insert({ id });
+      });
     });
+
+    console.log("result", localRead.toArray);
     setSelectedItemIds(new Set<string>());
   };
+
+  const handleLoadMore = () => {
+    setLimit((prev) => prev + PAGE_SIZE);
+  };
+
+  const tagsArray = () => tagsCollection.toArray;
+  const totalUnreadCount = () =>
+    tagsArray().reduce(
+      (sum: bigint, tag: { unreadCount?: bigint }) =>
+        sum + (tag.unreadCount ?? 0n),
+      0n,
+    );
 
   const controls = (
     <>
@@ -128,16 +165,16 @@ export function ItemList(props: ItemListProps) {
             onClick={() => handleTagClick(undefined)}
           >
             All
-            <Show when={(tagsQuery.data?.totalUnreadCount ?? 0n) > 0n}>
+            <Show when={totalUnreadCount() > 0n}>
               <Badge
                 variant={props.tagId === undefined ? "primary" : "neutral"}
                 class={css({ ml: "1.5", fontSize: "10px", minWidth: "1.5rem" })}
               >
-                {formatUnreadCount(Number(tagsQuery.data?.totalUnreadCount))}
+                {formatUnreadCount(Number(totalUnreadCount()))}
               </Badge>
             </Show>
           </TagChip>
-          <For each={tagsQuery.data?.tags}>
+          <For each={tagsArray()}>
             {(tag) => (
               <TagChip
                 selected={props.tagId === tag.id}
@@ -263,7 +300,7 @@ export function ItemList(props: ItemListProps) {
   const listBody = (
     <div class={stack({ gap: "4", padding: "0" })}>
       <div class={stack({ gap: "2", padding: "0" })}>
-        <For each={allItems()}>
+        <For each={itemsQuery()}>
           {(item) => (
             <ItemRow
               item={item}
@@ -277,7 +314,7 @@ export function ItemList(props: ItemListProps) {
         </For>
       </div>
 
-      <Show when={isLoading()}>
+      <Show when={itemsQuery.isLoading}>
         <div
           class={css({ textAlign: "center", padding: "8", color: "gray.500" })}
         >
@@ -285,17 +322,17 @@ export function ItemList(props: ItemListProps) {
         </div>
       </Show>
 
-      <Show when={!isLoading() && allItems().length === 0}>
+      <Show when={!itemsQuery.isLoading && itemsQuery().length === 0}>
         <EmptyState title="No items found." />
       </Show>
 
-      <Show when={itemsQuery.hasNextPage}>
+      <Show when={hasMore()}>
         <ActionButton
           variant="secondary"
-          onClick={() => itemsQuery.fetchNextPage()}
-          disabled={itemsQuery.isFetchingNextPage}
+          onClick={handleLoadMore}
+          disabled={itemsQuery.isLoading}
         >
-          {itemsQuery.isFetchingNextPage ? "Loading more..." : "Load More"}
+          {itemsQuery.isLoading ? "Loading more..." : "Load More"}
         </ActionButton>
       </Show>
     </div>

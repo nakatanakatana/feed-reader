@@ -11,6 +11,13 @@ export interface Item {
   isRead: boolean;
 }
 
+export const dateToTimestamp = (d: Date): Timestamp => {
+  return {
+    seconds: BigInt(Math.floor(d.getTime() / 1000)),
+    nanos: (d.getTime() % 1000) * 1000000,
+  } as Timestamp;
+};
+
 export const getPublishedSince = (
   value: DateFilterValue,
 ): Timestamp | undefined => {
@@ -36,10 +43,7 @@ export const getPublishedSince = (
     default:
       return undefined;
   }
-  return {
-    seconds: BigInt(Math.floor(since.getTime() / 1000)),
-    nanos: (since.getTime() % 1000) * 1000000,
-  } as Timestamp;
+  return dateToTimestamp(since);
 };
 
 export const formatUnreadCount = (count: number): string => {
