@@ -92,10 +92,6 @@ describe("ItemList Date Filter Prop", () => {
     const { createItems } = await import("../lib/db");
     // Check createItems call
     expect(createItems).toHaveBeenCalled();
-    expect(createItems).toHaveBeenCalledWith(
-      expect.any(Boolean),
-      "30d",
-      undefined,
-    );
+    expect(createItems).toHaveBeenCalledWith(expect.any(Boolean), "30d");
   });
 });

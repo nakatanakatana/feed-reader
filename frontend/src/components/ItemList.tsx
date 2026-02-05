@@ -1,4 +1,4 @@
-import { eq, isUndefined, useLiveQuery } from "@tanstack/solid-db";
+import { eq, inArray, isUndefined, useLiveQuery } from "@tanstack/solid-db";
 import { useNavigate } from "@tanstack/solid-router";
 import { createEffect, createMemo, createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
@@ -6,6 +6,7 @@ import { flex, stack } from "../../styled-system/patterns";
 import {
   createItemBulkMarkAsReadTx,
   createItems,
+  feeds,
   localRead,
   tags as tagsCollection,
 } from "../lib/db";
@@ -57,12 +58,22 @@ export function ItemList(props: ItemListProps) {
     });
   };
 
-  const items = createMemo(() =>
-    createItems(showRead(), dateFilter(), props.tagId),
-  );
+  const items = createMemo(() => createItems(showRead(), dateFilter()));
 
   const itemsQuery = useLiveQuery((q) => {
     let query = q.from({ item: items() });
+
+    // Filter by tag - join with feeds and filter by tagId
+	// TODO: fix
+    if (props.tagId) {
+		
+
+      query = query
+        .innerJoin({ feed: feeds }, ({ item, feed }) =>
+          eq(item.feedId, feed.id),
+        )
+        .where(({ feed }) => inArray(props.tagId, feed.tags));
+    }
 
     // Filter by read status
     if (!showRead()) {
@@ -141,7 +152,7 @@ export function ItemList(props: ItemListProps) {
   };
 
   const tagsQuery = useLiveQuery((q) => {
-    return q.from({ tag: tagsCollection }).select(({ tag }) => ({...tag}));
+    return q.from({ tag: tagsCollection }).select(({ tag }) => ({ ...tag }));
   });
 
   const totalUnreadCount = () =>
@@ -150,7 +161,6 @@ export function ItemList(props: ItemListProps) {
         sum + (tag.unreadCount ?? 0n),
       0n,
     );
-
 
   const controls = (
     <>

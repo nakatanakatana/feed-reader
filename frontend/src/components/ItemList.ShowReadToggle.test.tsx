@@ -118,19 +118,11 @@ describe("ItemList Show Read Toggle", () => {
     const { createItems } = await import("../lib/db");
 
     // Initial call should have showRead=false
-    expect(createItems).toHaveBeenCalledWith(
-      false,
-      expect.any(String),
-      undefined,
-    );
+    expect(createItems).toHaveBeenCalledWith(false, expect.any(String));
 
     await toggle.click();
 
     // After click, it should call createItems with showRead=true
-    expect(createItems).toHaveBeenLastCalledWith(
-      true,
-      expect.any(String),
-      undefined,
-    );
+    expect(createItems).toHaveBeenLastCalledWith(true, expect.any(String));
   });
 });
