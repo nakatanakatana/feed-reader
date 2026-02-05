@@ -71,8 +71,8 @@ github.com/sebdah/goldie/v2 v2.8.0 h1:dZb9wR8q5++oplmEiJT+U/5KyotVD+HNGCAc5gNr8r
 github.com/sebdah/goldie/v2 v2.8.0/go.mod h1:oZ9fp0+se1eapSRjfYbsV/0Hqhbuu3bJVvKI/NNtssI=
 github.com/sergi/go-diff v1.4.0 h1:n/SP9D5ad1fORl+llWyN+D6qoUETXNZARKjyY2/KVCw=
 github.com/sergi/go-diff v1.4.0/go.mod h1:A0bzQcvG0E7Rwjx0REVgAGH58e96+X0MeOfepqsbeW4=
-github.com/sqldef/sqldef/v3 v3.9.6 h1:kg/Ehw9t6LLV5g09QparzqW5R9TNoDh7juPf6uD8ilU=
-github.com/sqldef/sqldef/v3 v3.9.6/go.mod h1:Z8i/4ft3oMmo6khkZx9k3kEE52UMZq6xVf+wvr42tAQ=
+github.com/sqldef/sqldef/v3 v3.9.7 h1:q+S5uF1jOFHX82nFkZZyV9gNlAiAQRLeC0hZc4dQiTk=
+github.com/sqldef/sqldef/v3 v3.9.7/go.mod h1:Z8i/4ft3oMmo6khkZx9k3kEE52UMZq6xVf+wvr42tAQ=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/objx v0.5.2 h1:xuMeJ0Sdp5ZMRXx/aWO6RZxdr3beISkG5/G/aIRr3pY=
 github.com/stretchr/objx v0.5.2/go.mod h1:FRsXN1f5AsAjCGJKqEizvkpNtU+EGNCLh3NxZ/8L+MA=
