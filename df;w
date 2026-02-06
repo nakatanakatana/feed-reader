@@ -89,7 +89,7 @@ export const feeds = createCollection(
     id: "feeds",
     queryClient,
     queryKey: ["feeds"],
-    gcTime: 5 * 1000,
+	gcTime: 30*1000,
     queryFn: async () => {
       const response = await feedClient.listFeeds({});
       return response.feeds.map((feed: ListFeed) => ({
@@ -136,8 +136,8 @@ export const feedTag = createCollection(
         });
       });
 
-      console.log("feeds", feeds.toArray);
-      console.log("feedtags", feedTags);
+	  console.log("feeds", feeds.toArray)
+	  console.log("feedtags", feedTags)
       return feedTags;
     },
     getKey: (feedTag: FeedTag) => feedTag.id,

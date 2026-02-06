@@ -1,4 +1,4 @@
-import { eq, inArray, isUndefined, useLiveQuery } from "@tanstack/solid-db";
+import { eq, isUndefined, useLiveQuery } from "@tanstack/solid-db";
 import { useNavigate } from "@tanstack/solid-router";
 import { createEffect, createMemo, createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
@@ -6,7 +6,7 @@ import { flex, stack } from "../../styled-system/patterns";
 import {
   createItemBulkMarkAsReadTx,
   createItems,
-  feeds,
+  feedTag,
   localRead,
   tags as tagsCollection,
 } from "../lib/db";
@@ -63,16 +63,13 @@ export function ItemList(props: ItemListProps) {
   const itemsQuery = useLiveQuery((q) => {
     let query = q.from({ item: items() });
 
-    // Filter by tag - join with feeds and filter by tagId
-	// TODO: fix
+    // Filter by tag - join with feedTag
     if (props.tagId) {
-		
-
       query = query
-        .innerJoin({ feed: feeds }, ({ item, feed }) =>
-          eq(item.feedId, feed.id),
+        .innerJoin({ ft: feedTag }, ({ item, ft }) =>
+          eq(item.feedId, ft.feedId),
         )
-        .where(({ feed }) => inArray(props.tagId, feed.tags));
+        .where(({ ft }) => eq(ft.tagId, props.tagId));
     }
 
     // Filter by read status
@@ -131,6 +128,8 @@ export function ItemList(props: ItemListProps) {
       search: { tagId },
     });
   };
+
+  const reloadFeedTag = async () => await feedTag.utils.refetch();
 
   const handleBulkMarkAsRead = async () => {
     const ids = Array.from(selectedItemIds());
@@ -262,6 +261,9 @@ export function ItemList(props: ItemListProps) {
             Select All
           </label>
         </div>
+        <ActionButton size="sm" variant="primary" onClick={reloadFeedTag}>
+          reload
+        </ActionButton>
       </div>
 
       <Show when={selectedItemIds().size > 0}>

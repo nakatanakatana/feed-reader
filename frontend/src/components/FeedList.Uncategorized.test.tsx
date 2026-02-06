@@ -24,6 +24,9 @@ vi.mock("../lib/db", () => ({
   tags: {
     toArray: vi.fn().mockReturnValue([]),
   },
+  feedTag: {
+    toArray: [],
+  },
   localRead: {
     insert: vi.fn(),
     toArray: vi.fn().mockReturnValue([]),

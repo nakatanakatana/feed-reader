@@ -276,7 +276,6 @@ func (s *FeedServer) ImportOpml(ctx context.Context, req *connect.Request[feedv1
 	}), nil
 }
 
-
 func (s *FeedServer) SetFeedTags(ctx context.Context, req *connect.Request[feedv1.SetFeedTagsRequest]) (*connect.Response[feedv1.SetFeedTagsResponse], error) {
 	if err := s.store.SetFeedTags(ctx, req.Msg.FeedId, req.Msg.TagIds); err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
