@@ -34,6 +34,7 @@ const tags = [
     name: "Tech",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+    unreadCount: 5n,
     feedCount: 1n,
   }),
   create(TagSchema, {
@@ -41,6 +42,7 @@ const tags = [
     name: "News",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+    unreadCount: 3n,
     feedCount: 2n,
   }),
 ];

@@ -1,31 +1,34 @@
-import { create } from "@bufbuild/protobuf";
+import { useLiveQuery } from "@tanstack/solid-db";
+import { useMutation } from "@tanstack/solid-query";
 import { createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
-import {
-  CreateTagRequestSchema,
-  DeleteTagRequestSchema,
-} from "../gen/tag/v1/tag_pb";
-import { useCreateTag, useDeleteTag, useTags } from "../lib/tag-query";
+import { createTag, deleteTag, tags as tagsCollection } from "../lib/tag-db";
 import { ActionButton } from "./ui/ActionButton";
 import { Badge } from "./ui/Badge";
 import { EmptyState } from "./ui/EmptyState";
 
 export const TagManagement = () => {
   const [newTagName, setNewTagName] = createSignal("");
-  const tagsQuery = useTags();
-  const createTagMutation = useCreateTag();
-  const deleteTagMutation = useDeleteTag();
+
+  const tagsQuery = useLiveQuery((q) => {
+    return q.from({ tag: tagsCollection }).select(({ tag }) => ({ ...tag }));
+  });
+
+  const createTagMutation = useMutation(() => ({
+    mutationFn: createTag,
+  }));
+
+  const deleteTagMutation = useMutation(() => ({
+    mutationFn: deleteTag,
+  }));
 
   const handleCreateTag = (e: Event) => {
     e.preventDefault();
     if (!newTagName()) return;
-    createTagMutation.mutate(
-      create(CreateTagRequestSchema, { name: newTagName() }),
-      {
-        onSuccess: () => setNewTagName(""),
-      },
-    );
+    createTagMutation.mutate(newTagName(), {
+      onSuccess: () => setNewTagName(""),
+    });
   };
 
   const handleDeleteTag = (id: string, name: string, feedCount: bigint) => {
@@ -35,7 +38,7 @@ export const TagManagement = () => {
       );
       if (!confirmed) return;
     }
-    deleteTagMutation.mutate(create(DeleteTagRequestSchema, { id }));
+    deleteTagMutation.mutate(id);
   };
 
   return (
@@ -99,7 +102,7 @@ export const TagManagement = () => {
         <span>Tag</span>
         <span>Feeds</span>
         <span class={css({ textAlign: "right", fontWeight: "semibold" })}>
-          {tagsQuery.data?.tags.length ?? 0} tags
+          {tagsQuery().length} tags
         </span>
       </div>
 
@@ -126,8 +129,8 @@ export const TagManagement = () => {
               paddingRight: "1",
             })}
           >
-            <Show when={(tagsQuery.data?.tags.length ?? 0) > 0}>
-              <For each={tagsQuery.data?.tags}>
+            <Show when={tagsQuery().length > 0}>
+              <For each={tagsQuery()}>
                 {(tag) => (
                   <div
                     class={css({
@@ -146,12 +149,12 @@ export const TagManagement = () => {
                     <span class={css({ fontWeight: "medium" })}>
                       {tag.name}
                     </span>
-                    <Badge>{tag.feedCount.toString()}</Badge>
+                    <Badge>{tag.unreadCount?.toString() ?? "0"}</Badge>
                     <ActionButton
                       variant="danger"
                       size="sm"
                       onClick={() =>
-                        handleDeleteTag(tag.id, tag.name, tag.feedCount)
+                        handleDeleteTag(tag.id, tag.name, tag.unreadCount ?? 0n)
                       }
                       ariaLabel={`Delete ${tag.name}`}
                     >
@@ -161,7 +164,7 @@ export const TagManagement = () => {
                 )}
               </For>
             </Show>
-            <Show when={(tagsQuery.data?.tags.length ?? 0) === 0}>
+            <Show when={tagsQuery().length === 0}>
               <EmptyState
                 title="No tags yet."
                 description="Create one to get started."

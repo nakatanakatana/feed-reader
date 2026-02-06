@@ -6,7 +6,7 @@ import { flex, stack } from "../../styled-system/patterns";
 import { type Feed, feeds, refreshFeeds } from "../lib/db";
 import { fetchingState } from "../lib/fetching-state";
 import { formatDate, formatUnreadCount } from "../lib/item-utils";
-import { useTags } from "../lib/tag-query";
+import { tags as tagsCollection } from "../lib/tag-db";
 import { ManageTagsModal } from "./ManageTagsModal";
 import { ActionButton } from "./ui/ActionButton";
 import { Badge } from "./ui/Badge";
@@ -23,7 +23,9 @@ export function FeedList() {
   const [selectedFeedIds, setSelectedFeedIds] = createSignal<string[]>([]);
   const [isManageModalOpen, setIsManageModalOpen] = createSignal(false);
 
-  const tagsQuery = useTags();
+  const tagsQuery = useLiveQuery((q) => {
+    return q.from({ tag: tagsCollection }).select(({ tag }) => ({ ...tag }));
+  });
 
   const feedListQuery = useLiveQuery((q) => {
     const tagId = selectedTagId();
@@ -214,12 +216,18 @@ export function FeedList() {
           >
             <option value="all">
               All
-              {tagsQuery.data?.totalUnreadCount
-                ? ` (${formatUnreadCount(Number(tagsQuery.data.totalUnreadCount))})`
-                : ""}
+              {(() => {
+                const total = tagsQuery().reduce(
+                  (sum, tag) => sum + (tag.unreadCount ?? 0n),
+                  0n,
+                );
+                return total > 0n
+                  ? ` (${formatUnreadCount(Number(total))})`
+                  : "";
+              })()}
             </option>
             <option value="untagged">Untagged</option>
-            <For each={tagsQuery.data?.tags}>
+            <For each={tagsQuery()}>
               {(tag) => (
                 <option value={tag.id}>
                   {tag.name}

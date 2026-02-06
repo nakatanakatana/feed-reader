@@ -29,3 +29,14 @@ export const tags = createCollection(
     getKey: (tag: Tag) => tag.id,
   }),
 );
+
+export const createTag = async (name: string) => {
+  await tagClient.createTag({ name });
+  queryClient.invalidateQueries({ queryKey: ["tags"] });
+};
+
+export const deleteTag = async (id: string) => {
+  await tagClient.deleteTag({ id });
+  queryClient.invalidateQueries({ queryKey: ["tags"] });
+  queryClient.invalidateQueries({ queryKey: ["feeds"] });
+};
