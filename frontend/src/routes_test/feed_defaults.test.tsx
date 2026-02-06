@@ -64,6 +64,8 @@ vi.mock("../lib/db", () => ({
   createItemBulkMarkAsReadTx: () => ({
     mutate: vi.fn(),
   }),
+  manageFeedTags: vi.fn(),
+  refreshFeeds: vi.fn(),
 }));
 
 vi.mock("../lib/tag-query", () => ({

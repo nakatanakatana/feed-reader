@@ -36,6 +36,8 @@ vi.mock("../lib/db", () => ({
   updateItemStatus: vi.fn(),
   createItems: vi.fn(() => ({ toArray: [], utils: { refetch: vi.fn() } })),
   createItemBulkMarkAsReadTx: () => ({ mutate: vi.fn() }),
+  manageFeedTags: vi.fn(),
+  refreshFeeds: vi.fn(),
 }));
 
 // Mock useLiveQuery

@@ -1,11 +1,9 @@
-import { create } from "@bufbuild/protobuf";
 import { useLiveQuery } from "@tanstack/solid-db";
+import { useMutation } from "@tanstack/solid-query";
 import { createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
-import { RefreshFeedsRequestSchema } from "../gen/feed/v1/feed_pb";
-import { type Feed, feeds } from "../lib/db";
-import { useRefreshFeeds } from "../lib/feed-query";
+import { type Feed, feeds, refreshFeeds } from "../lib/db";
 import { fetchingState } from "../lib/fetching-state";
 import { formatDate, formatUnreadCount } from "../lib/item-utils";
 import { useTags } from "../lib/tag-query";
@@ -15,7 +13,9 @@ import { Badge } from "./ui/Badge";
 import { EmptyState } from "./ui/EmptyState";
 
 export function FeedList() {
-  const refreshMutation = useRefreshFeeds();
+  const refreshMutation = useMutation(() => ({
+    mutationFn: refreshFeeds,
+  }));
   const [selectedTagId, setSelectedTagId] = createSignal<
     string | undefined | null
   >();
@@ -127,13 +127,7 @@ export function FeedList() {
               <ActionButton
                 size="sm"
                 variant="secondary"
-                onClick={() =>
-                  refreshMutation.mutate(
-                    create(RefreshFeedsRequestSchema, {
-                      ids: selectedFeedIds(),
-                    }),
-                  )
-                }
+                onClick={() => refreshMutation.mutate(selectedFeedIds())}
                 disabled={refreshMutation.isPending}
               >
                 {refreshMutation.isPending ? "Fetching..." : "Fetch Selected"}
@@ -389,11 +383,7 @@ export function FeedList() {
                       variant="ghost"
                       onClickEvent={(e) => {
                         e.stopPropagation();
-                        refreshMutation.mutate(
-                          create(RefreshFeedsRequestSchema, {
-                            ids: [feed.id],
-                          }),
-                        );
+                        refreshMutation.mutate([feed.id]);
                       }}
                       disabled={fetchingState.isFetching(feed.id)}
                     >
@@ -443,13 +433,7 @@ export function FeedList() {
           <div class={stack({ gap: "2", alignItems: "flex-end" })}>
             <ActionButton
               variant="secondary"
-              onClick={() =>
-                refreshMutation.mutate(
-                  create(RefreshFeedsRequestSchema, {
-                    ids: selectedFeedIds(),
-                  }),
-                )
-              }
+              onClick={() => refreshMutation.mutate(selectedFeedIds())}
               disabled={refreshMutation.isPending}
               ariaLabel="Fetch Selected"
               class={css({

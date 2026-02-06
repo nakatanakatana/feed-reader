@@ -66,6 +66,8 @@ vi.mock("../lib/db", () => ({
       refetch: vi.fn(),
     },
   })),
+  manageFeedTags: vi.fn(),
+  refreshFeeds: vi.fn(),
 }));
 
 describe("ItemList", () => {

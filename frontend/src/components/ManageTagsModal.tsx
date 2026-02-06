@@ -1,9 +1,8 @@
-import { create } from "@bufbuild/protobuf";
+import { useMutation } from "@tanstack/solid-query";
 import { createSignal, For } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
-import { ManageFeedTagsRequestSchema } from "../gen/feed/v1/feed_pb";
-import { useManageFeedTags } from "../lib/feed-query";
+import { manageFeedTags } from "../lib/db";
 import { useTags } from "../lib/tag-query";
 import { ActionButton } from "./ui/ActionButton";
 import { Modal } from "./ui/Modal";
@@ -16,7 +15,9 @@ interface ManageTagsModalProps {
 
 export function ManageTagsModal(props: ManageTagsModalProps) {
   const tagsQuery = useTags();
-  const manageTagsMutation = useManageFeedTags();
+  const manageTagsMutation = useMutation(() => ({
+    mutationFn: manageFeedTags,
+  }));
 
   const [addTagIds, setAddTagIds] = createSignal<string[]>([]);
   const [removeTagIds, setRemoveTagIds] = createSignal<string[]>([]);
@@ -43,13 +44,11 @@ export function ManageTagsModal(props: ManageTagsModalProps) {
 
   const handleSave = async () => {
     try {
-      await manageTagsMutation.mutateAsync(
-        create(ManageFeedTagsRequestSchema, {
-          feedIds: props.feedIds,
-          addTagIds: addTagIds(),
-          removeTagIds: removeTagIds(),
-        }),
-      );
+      await manageTagsMutation.mutateAsync({
+        feedIds: props.feedIds,
+        addTagIds: addTagIds(),
+        removeTagIds: removeTagIds(),
+      });
       props.onClose();
       // Reset state
       setAddTagIds([]);

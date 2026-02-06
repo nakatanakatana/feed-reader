@@ -10,6 +10,7 @@ import { FeedService } from "../gen/feed/v1/feed_pb";
 import { ItemService, type ListItem } from "../gen/item/v1/item_pb";
 import type { ListTag } from "../gen/tag/v1/tag_pb";
 import { TagService } from "../gen/tag/v1/tag_pb";
+import { fetchingState } from "./fetching-state";
 import {
   type DateFilterValue,
   dateToTimestamp,
@@ -57,6 +58,46 @@ export const addFeed = async (url: string, tagIds?: string[]) => {
   const response = await feedClient.createFeed({ url, tagIds });
   queryClient.invalidateQueries({ queryKey: ["feeds"] });
   return response.feed;
+};
+
+export const manageFeedTags = async (params: {
+  feedIds: string[];
+  addTagIds: string[];
+  removeTagIds: string[];
+}) => {
+  await feedClient.manageFeedTags(params);
+  // Invalidate feeds, tags, and feed-tags as associations changed
+  queryClient.invalidateQueries({ queryKey: ["feeds"] });
+  queryClient.invalidateQueries({ queryKey: ["tags"] });
+  queryClient.invalidateQueries({ queryKey: ["feed-tags"] });
+};
+
+export const refreshFeeds = async (feedIds: string[]) => {
+  fetchingState.startFetching(feedIds);
+  try {
+    const res = await feedClient.refreshFeeds({ ids: feedIds });
+    fetchingState.finishFetching(
+      feedIds,
+      res.results.map((r) => ({
+        feedId: r.feedId,
+        errorMessage: r.errorMessage,
+      })),
+    );
+    // Invalidate feeds, items, and tags as counts might have changed
+    queryClient.invalidateQueries({ queryKey: ["feeds"] });
+    queryClient.invalidateQueries({ queryKey: ["items"] });
+    queryClient.invalidateQueries({ queryKey: ["tags"] });
+    return res;
+  } catch (err) {
+    fetchingState.finishFetching(
+      feedIds,
+      feedIds.map((id) => ({
+        feedId: id,
+        errorMessage: err instanceof Error ? err.message : String(err),
+      })),
+    );
+    throw err;
+  }
 };
 
 export const updateItemStatus = async (params: {

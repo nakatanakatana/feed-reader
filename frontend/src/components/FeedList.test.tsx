@@ -33,6 +33,8 @@ vi.mock("../lib/db", () => ({
   },
   addFeed: vi.fn(),
   updateItemStatus: vi.fn(),
+  manageFeedTags: vi.fn(),
+  refreshFeeds: vi.fn(),
   createItems: vi.fn(() => ({
     toArray: [],
     utils: {

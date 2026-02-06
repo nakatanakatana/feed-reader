@@ -32,6 +32,8 @@ vi.mock("../lib/db", () => ({
     toArray: vi.fn().mockReturnValue([]),
   },
   addFeed: vi.fn(),
+  manageFeedTags: vi.fn(),
+  refreshFeeds: vi.fn(),
   updateItemStatus: vi.fn(),
   createItems: vi.fn(() => ({ toArray: [], utils: { refetch: vi.fn() } })),
   createItemBulkMarkAsReadTx: () => ({ mutate: vi.fn() }),
