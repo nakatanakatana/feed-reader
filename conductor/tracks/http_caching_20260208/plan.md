@@ -1,6 +1,6 @@
 # Implementation Plan: HTTP Caching for Feed Fetcher
 
-## Phase 1: Database Schema and Data Access
+## Phase 1: Database Schema and Data Access [checkpoint: 6896051]
 - [x] Task: Add the `feed_fetcher_cache` table definition to `sql/schema.sql`. 068fa70
 - [x] Task: Add SQL queries to `sql/query.sql` for CRUD operations on `feed_fetcher_cache`. 068fa70
 - [x] Task: Run `sqlc generate` to update the Go database code. 068fa70
