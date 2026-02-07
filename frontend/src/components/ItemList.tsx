@@ -1,4 +1,4 @@
-import { eq, isUndefined, useLiveQuery } from "@tanstack/solid-db";
+import { isNull,isUndefined, eq, useLiveQuery } from "@tanstack/solid-db";
 import { useMutation } from "@tanstack/solid-query";
 import { useNavigate } from "@tanstack/solid-router";
 import { createEffect, createSignal, For, Show } from "solid-js";
@@ -6,11 +6,12 @@ import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import {
   createItemBulkMarkAsReadTx,
-  feedTag,
   items,
+  feedTag,
   localRead,
-  tags as tagsCollection,
   updateItemStatus,
+  setItemsBase,
+  tags,
 } from "../lib/db";
 import { type DateFilterValue, formatUnreadCount } from "../lib/item-utils";
 import { DateFilterSelector } from "./DateFilterSelector";
@@ -19,6 +20,7 @@ import { ActionButton } from "./ui/ActionButton";
 import { Badge } from "./ui/Badge";
 import { EmptyState } from "./ui/EmptyState";
 import { TagChip } from "./ui/TagChip";
+import { itemsDateFilter, itemsShowReadFilter } from "../lib/default";
 
 interface ItemListProps {
   tagId?: string;
@@ -37,11 +39,10 @@ export function ItemList(props: ItemListProps) {
     new Set(),
   );
 
-  const [showRead, setShowRead] = createSignal(false);
+  const [showRead, setShowRead] = createSignal(itemsShowReadFilter);
   const [dateFilter, setDateFilter] = createSignal<DateFilterValue>(
-    props.dateFilter ?? "all",
+    props.dateFilter ?? itemsDateFilter,
   );
-  const [limit, setLimit] = createSignal(PAGE_SIZE);
 
   createEffect(() => {
     if (props.dateFilter) {
@@ -49,9 +50,36 @@ export function ItemList(props: ItemListProps) {
     }
   });
 
+  createEffect(() => {
+    setItemsBase(showRead(), dateFilter());
+  });
+
+  const itemQuery = useLiveQuery((q) => {
+    let query = q.from({ item: items });
+    if (props.tagId) {
+      query = query
+        .innerJoin({ ft: feedTag }, ({ item, ft }) =>
+          eq(item.feedId, ft.feedId),
+        )
+        .where(({ ft }) => eq(ft.tagId, props.tagId));
+    }
+    return query.select(({ item }) => ({ ...item }));
+  });
+
+  const totalUnread = useLiveQuery((q) =>
+    q
+      .from({ item: items })
+      .leftJoin({ lr: localRead }, ({ item, lr }) => eq(item.id, lr.id))
+      .where(({ item }) => eq(item.isRead, false))
+	  .where(({ lr }) => isUndefined(lr?.id)),
+  );
+
+  const tagsQuery = useLiveQuery((q) => {
+    return q.from({ tag: tags }).select(({ tag }) => ({ ...tag }));
+  });
+
   const handleDateFilterSelect = (value: DateFilterValue) => {
     setDateFilter(value);
-    setLimit(PAGE_SIZE);
     navigate({
       // @ts-expect-error
       search: (prev) => ({
@@ -61,46 +89,12 @@ export function ItemList(props: ItemListProps) {
     });
   };
 
-  const itemsQuery = useLiveQuery((q) => {
-    let query = q.from({ item: items });
-
-    // Filter by tag - join with feedTag
-    if (props.tagId) {
-      query = query
-        .innerJoin({ ft: feedTag }, ({ item, ft }) =>
-          eq(item.feedId, ft.feedId),
-        )
-        .where(({ ft }) => eq(ft.tagId, props.tagId));
-    }
-
-    // Filter by read status
-    if (!showRead()) {
-      query = query
-        .leftJoin({ read: localRead }, ({ item, read }) => eq(item.id, read.id))
-        .where(({ read }) => isUndefined(read));
-    }
-
-    query = query.orderBy(({ item }) => {
-      return item.publishedAt ? item.publishedAt : item.createdAt;
-    }, "asc");
-
-    query = query.limit(limit());
-
-    query = query.select(({ item }) => ({
-      ...item,
-    }));
-
-    return query;
-  });
-
-  const hasMore = () => itemsQuery().length === limit();
-
   const isAllSelected = () =>
-    itemsQuery().length > 0 && selectedItemIds().size === itemsQuery().length;
+    itemQuery().length > 0 && selectedItemIds().size === itemQuery().length;
 
   const handleToggleAll = (checked: boolean) => {
     if (checked) {
-      setSelectedItemIds(new Set<string>(itemsQuery().map((i) => i.id)));
+      setSelectedItemIds(new Set<string>(itemQuery().map((i) => i.id)));
     } else {
       setSelectedItemIds(new Set<string>());
     }
@@ -130,8 +124,6 @@ export function ItemList(props: ItemListProps) {
     });
   };
 
-  const reloadFeedTag = async () => await feedTag.utils.refetch();
-
   const handleBulkMarkAsRead = async () => {
     const ids = Array.from(selectedItemIds());
     if (ids.length === 0) return;
@@ -145,21 +137,6 @@ export function ItemList(props: ItemListProps) {
 
     setSelectedItemIds(new Set<string>());
   };
-
-  const handleLoadMore = () => {
-    setLimit((prev) => prev + PAGE_SIZE);
-  };
-
-  const tagsQuery = useLiveQuery((q) => {
-    return q.from({ tag: tagsCollection }).select(({ tag }) => ({ ...tag }));
-  });
-
-  const totalUnreadCount = () =>
-    tagsQuery().reduce(
-      (sum: bigint, tag: { unreadCount?: bigint }) =>
-        sum + (tag.unreadCount ?? 0n),
-      0n,
-    );
 
   const controls = (
     <>
@@ -180,12 +157,12 @@ export function ItemList(props: ItemListProps) {
             onClick={() => handleTagClick(undefined)}
           >
             All
-            <Show when={totalUnreadCount() > 0n}>
+            <Show when={totalUnread().length > 0n}>
               <Badge
                 variant={props.tagId === undefined ? "primary" : "neutral"}
                 class={css({ ml: "1.5", fontSize: "10px", minWidth: "1.5rem" })}
               >
-                {formatUnreadCount(Number(totalUnreadCount()))}
+                {formatUnreadCount(Number(totalUnread().length))}
               </Badge>
             </Show>
           </TagChip>
@@ -261,9 +238,6 @@ export function ItemList(props: ItemListProps) {
             Select All
           </label>
         </div>
-        <ActionButton size="sm" variant="primary" onClick={reloadFeedTag}>
-          reload
-        </ActionButton>
       </div>
 
       <Show when={selectedItemIds().size > 0}>
@@ -318,7 +292,7 @@ export function ItemList(props: ItemListProps) {
   const listBody = (
     <div class={stack({ gap: "4", padding: "0" })}>
       <div class={stack({ gap: "2", padding: "0" })}>
-        <For each={itemsQuery()}>
+        <For each={itemQuery()}>
           {(item) => (
             <ItemRow
               item={item}
@@ -332,7 +306,7 @@ export function ItemList(props: ItemListProps) {
         </For>
       </div>
 
-      <Show when={itemsQuery.isLoading}>
+      <Show when={itemQuery.isLoading}>
         <div
           class={css({ textAlign: "center", padding: "8", color: "gray.500" })}
         >
@@ -340,18 +314,8 @@ export function ItemList(props: ItemListProps) {
         </div>
       </Show>
 
-      <Show when={!itemsQuery.isLoading && itemsQuery().length === 0}>
+      <Show when={!itemQuery.isLoading && itemQuery().length === 0}>
         <EmptyState title="No items found." />
-      </Show>
-
-      <Show when={hasMore()}>
-        <ActionButton
-          variant="secondary"
-          onClick={handleLoadMore}
-          disabled={itemsQuery.isLoading}
-        >
-          {itemsQuery.isLoading ? "Loading more..." : "Load More"}
-        </ActionButton>
       </Show>
     </div>
   );

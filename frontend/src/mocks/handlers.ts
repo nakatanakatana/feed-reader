@@ -6,6 +6,7 @@ import {
   FeedService,
   ListFeedSchema,
   ListFeedsResponseSchema,
+  ListFeedTagsResponseSchema,
   ManageFeedTagsResponseSchema,
   SetFeedTagsResponseSchema,
   UpdateFeedResponseSchema,
@@ -262,6 +263,22 @@ export const handlers = [
         t.feedCount = BigInt(count);
       });
       return create(ManageFeedTagsResponseSchema, {});
+    },
+  }),
+
+  mockConnectWeb(FeedService)({
+    method: "listFeedTags",
+    handler: () => {
+      const feedTags: { feedId: string; tagId: string }[] = [];
+      for (const feed of feeds) {
+        for (const tag of feed.tags) {
+          feedTags.push({
+            feedId: feed.id,
+            tagId: tag.id,
+          });
+        }
+      }
+      return create(ListFeedTagsResponseSchema, { feedTags });
     },
   }),
 

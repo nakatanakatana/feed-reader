@@ -320,3 +320,13 @@ WHERE
   ft.feed_id = ?
 ORDER BY
   t.name ASC;
+
+-- name: ListFeedTags :many
+SELECT
+  feed_id,
+  tag_id
+FROM
+  feed_tags
+WHERE
+  (sqlc.narg('feed_id') IS NULL OR feed_id = sqlc.narg('feed_id'))
+  AND (sqlc.narg('tag_id') IS NULL OR tag_id = sqlc.narg('tag_id'));

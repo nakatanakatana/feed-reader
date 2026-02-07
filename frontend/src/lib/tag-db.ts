@@ -1,6 +1,9 @@
 import { createClient } from "@connectrpc/connect";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
-import { createCollection } from "@tanstack/solid-db";
+import {
+  createCollection,
+  createLiveQueryCollection,
+} from "@tanstack/solid-db";
 import type { ListTag } from "../gen/tag/v1/tag_pb";
 import { TagService } from "../gen/tag/v1/tag_pb";
 import { queryClient, transport } from "./query";
@@ -29,6 +32,10 @@ export const tags = createCollection(
     getKey: (tag: Tag) => tag.id,
   }),
 );
+
+export const tagsQuery = createLiveQueryCollection((q) => {
+  return q.from({ tag: tags }).select(({ tag }) => ({ ...tag }));
+});
 
 export const createTag = async (name: string) => {
   await tagClient.createTag({ name });

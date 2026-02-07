@@ -1,6 +1,9 @@
 import { createClient } from "@connectrpc/connect";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
-import { createCollection } from "@tanstack/solid-db";
+import {
+  createCollection,
+  createLiveQueryCollection,
+} from "@tanstack/solid-db";
 import type { ListFeed } from "../gen/feed/v1/feed_pb";
 import { FeedService } from "../gen/feed/v1/feed_pb";
 import { fetchingState } from "./fetching-state";
@@ -111,19 +114,12 @@ export const feedTag = createCollection(
     queryClient,
     queryKey: ["feed-tags"],
     queryFn: async () => {
-      // Build feedTag from feeds Collection
-      const feedTags: FeedTag[] = [];
-      feeds.toArray.forEach((feed: Feed) => {
-        feed.tags?.forEach((tag: Tag) => {
-          feedTags.push({
-            id: `${feed.id}-${tag.id}`, // Unique ID
-            feedId: feed.id,
-            tagId: tag.id,
-          });
-        });
-      });
-
-      return feedTags;
+      const response = await feedClient.listFeedTags({});
+      return response.feedTags.map((ft) => ({
+        id: `${ft.feedId}-${ft.tagId}`,
+        feedId: ft.feedId,
+        tagId: ft.tagId,
+      }));
     },
     getKey: (feedTag: FeedTag) => feedTag.id,
   }),

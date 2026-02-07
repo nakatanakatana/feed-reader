@@ -1306,6 +1306,154 @@ func (*ManageFeedTagsResponse) Descriptor() ([]byte, []int) {
 	return file_feed_v1_feed_proto_rawDescGZIP(), []int{20}
 }
 
+type FeedTag struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	FeedId        string                 `protobuf:"bytes,1,opt,name=feed_id,json=feedId,proto3" json:"feed_id,omitempty"`
+	TagId         string                 `protobuf:"bytes,2,opt,name=tag_id,json=tagId,proto3" json:"tag_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FeedTag) Reset() {
+	*x = FeedTag{}
+	mi := &file_feed_v1_feed_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FeedTag) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FeedTag) ProtoMessage() {}
+
+func (x *FeedTag) ProtoReflect() protoreflect.Message {
+	mi := &file_feed_v1_feed_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FeedTag.ProtoReflect.Descriptor instead.
+func (*FeedTag) Descriptor() ([]byte, []int) {
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *FeedTag) GetFeedId() string {
+	if x != nil {
+		return x.FeedId
+	}
+	return ""
+}
+
+func (x *FeedTag) GetTagId() string {
+	if x != nil {
+		return x.TagId
+	}
+	return ""
+}
+
+type ListFeedTagsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	FeedId        *string                `protobuf:"bytes,1,opt,name=feed_id,json=feedId,proto3,oneof" json:"feed_id,omitempty"`
+	TagId         *string                `protobuf:"bytes,2,opt,name=tag_id,json=tagId,proto3,oneof" json:"tag_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListFeedTagsRequest) Reset() {
+	*x = ListFeedTagsRequest{}
+	mi := &file_feed_v1_feed_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListFeedTagsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListFeedTagsRequest) ProtoMessage() {}
+
+func (x *ListFeedTagsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_feed_v1_feed_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListFeedTagsRequest.ProtoReflect.Descriptor instead.
+func (*ListFeedTagsRequest) Descriptor() ([]byte, []int) {
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *ListFeedTagsRequest) GetFeedId() string {
+	if x != nil && x.FeedId != nil {
+		return *x.FeedId
+	}
+	return ""
+}
+
+func (x *ListFeedTagsRequest) GetTagId() string {
+	if x != nil && x.TagId != nil {
+		return *x.TagId
+	}
+	return ""
+}
+
+type ListFeedTagsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	FeedTags      []*FeedTag             `protobuf:"bytes,1,rep,name=feed_tags,json=feedTags,proto3" json:"feed_tags,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListFeedTagsResponse) Reset() {
+	*x = ListFeedTagsResponse{}
+	mi := &file_feed_v1_feed_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListFeedTagsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListFeedTagsResponse) ProtoMessage() {}
+
+func (x *ListFeedTagsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_feed_v1_feed_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListFeedTagsResponse.ProtoReflect.Descriptor instead.
+func (*ListFeedTagsResponse) Descriptor() ([]byte, []int) {
+	return file_feed_v1_feed_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *ListFeedTagsResponse) GetFeedTags() []*FeedTag {
+	if x != nil {
+		return x.FeedTags
+	}
+	return nil
+}
+
 var File_feed_v1_feed_proto protoreflect.FileDescriptor
 
 const file_feed_v1_feed_proto_rawDesc = "" +
@@ -1440,7 +1588,18 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"\bfeed_ids\x18\x01 \x03(\tR\afeedIds\x12\x1e\n" +
 	"\vadd_tag_ids\x18\x02 \x03(\tR\taddTagIds\x12$\n" +
 	"\x0eremove_tag_ids\x18\x03 \x03(\tR\fremoveTagIds\"\x18\n" +
-	"\x16ManageFeedTagsResponse2\x95\x05\n" +
+	"\x16ManageFeedTagsResponse\"9\n" +
+	"\aFeedTag\x12\x17\n" +
+	"\afeed_id\x18\x01 \x01(\tR\x06feedId\x12\x15\n" +
+	"\x06tag_id\x18\x02 \x01(\tR\x05tagId\"f\n" +
+	"\x13ListFeedTagsRequest\x12\x1c\n" +
+	"\afeed_id\x18\x01 \x01(\tH\x00R\x06feedId\x88\x01\x01\x12\x1a\n" +
+	"\x06tag_id\x18\x02 \x01(\tH\x01R\x05tagId\x88\x01\x01B\n" +
+	"\n" +
+	"\b_feed_idB\t\n" +
+	"\a_tag_id\"E\n" +
+	"\x14ListFeedTagsResponse\x12-\n" +
+	"\tfeed_tags\x18\x01 \x03(\v2\x10.feed.v1.FeedTagR\bfeedTags2\xe2\x05\n" +
 	"\vFeedService\x12<\n" +
 	"\aGetFeed\x12\x17.feed.v1.GetFeedRequest\x1a\x18.feed.v1.GetFeedResponse\x12B\n" +
 	"\tListFeeds\x12\x19.feed.v1.ListFeedsRequest\x1a\x1a.feed.v1.ListFeedsResponse\x12E\n" +
@@ -1452,7 +1611,8 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"DeleteFeed\x12\x1a.feed.v1.DeleteFeedRequest\x1a\x1b.feed.v1.DeleteFeedResponse\x12K\n" +
 	"\fRefreshFeeds\x12\x1c.feed.v1.RefreshFeedsRequest\x1a\x1d.feed.v1.RefreshFeedsResponse\x12E\n" +
 	"\n" +
-	"ImportOpml\x12\x1a.feed.v1.ImportOpmlRequest\x1a\x1b.feed.v1.ImportOpmlResponse\x12H\n" +
+	"ImportOpml\x12\x1a.feed.v1.ImportOpmlRequest\x1a\x1b.feed.v1.ImportOpmlResponse\x12K\n" +
+	"\fListFeedTags\x12\x1c.feed.v1.ListFeedTagsRequest\x1a\x1d.feed.v1.ListFeedTagsResponse\x12H\n" +
 	"\vSetFeedTags\x12\x1b.feed.v1.SetFeedTagsRequest\x1a\x1c.feed.v1.SetFeedTagsResponse\x12Q\n" +
 	"\x0eManageFeedTags\x12\x1e.feed.v1.ManageFeedTagsRequest\x1a\x1f.feed.v1.ManageFeedTagsResponseB=Z;github.com/nakatanakatana/feed-reader/gen/go/feed/v1;feedv1b\x06proto3"
 
@@ -1468,7 +1628,7 @@ func file_feed_v1_feed_proto_rawDescGZIP() []byte {
 	return file_feed_v1_feed_proto_rawDescData
 }
 
-var file_feed_v1_feed_proto_msgTypes = make([]protoimpl.MessageInfo, 21)
+var file_feed_v1_feed_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
 var file_feed_v1_feed_proto_goTypes = []any{
 	(*Feed)(nil),                   // 0: feed.v1.Feed
 	(*ListFeed)(nil),               // 1: feed.v1.ListFeed
@@ -1491,39 +1651,45 @@ var file_feed_v1_feed_proto_goTypes = []any{
 	(*SetFeedTagsResponse)(nil),    // 18: feed.v1.SetFeedTagsResponse
 	(*ManageFeedTagsRequest)(nil),  // 19: feed.v1.ManageFeedTagsRequest
 	(*ManageFeedTagsResponse)(nil), // 20: feed.v1.ManageFeedTagsResponse
-	(*v1.Tag)(nil),                 // 21: tag.v1.Tag
+	(*FeedTag)(nil),                // 21: feed.v1.FeedTag
+	(*ListFeedTagsRequest)(nil),    // 22: feed.v1.ListFeedTagsRequest
+	(*ListFeedTagsResponse)(nil),   // 23: feed.v1.ListFeedTagsResponse
+	(*v1.Tag)(nil),                 // 24: tag.v1.Tag
 }
 var file_feed_v1_feed_proto_depIdxs = []int32{
-	21, // 0: feed.v1.Feed.tags:type_name -> tag.v1.Tag
-	21, // 1: feed.v1.ListFeed.tags:type_name -> tag.v1.Tag
+	24, // 0: feed.v1.Feed.tags:type_name -> tag.v1.Tag
+	24, // 1: feed.v1.ListFeed.tags:type_name -> tag.v1.Tag
 	0,  // 2: feed.v1.GetFeedResponse.feed:type_name -> feed.v1.Feed
 	1,  // 3: feed.v1.ListFeedsResponse.feeds:type_name -> feed.v1.ListFeed
 	0,  // 4: feed.v1.CreateFeedResponse.feed:type_name -> feed.v1.Feed
 	0,  // 5: feed.v1.UpdateFeedResponse.feed:type_name -> feed.v1.Feed
 	13, // 6: feed.v1.RefreshFeedsResponse.results:type_name -> feed.v1.FeedFetchStatus
-	2,  // 7: feed.v1.FeedService.GetFeed:input_type -> feed.v1.GetFeedRequest
-	4,  // 8: feed.v1.FeedService.ListFeeds:input_type -> feed.v1.ListFeedsRequest
-	6,  // 9: feed.v1.FeedService.CreateFeed:input_type -> feed.v1.CreateFeedRequest
-	8,  // 10: feed.v1.FeedService.UpdateFeed:input_type -> feed.v1.UpdateFeedRequest
-	10, // 11: feed.v1.FeedService.DeleteFeed:input_type -> feed.v1.DeleteFeedRequest
-	12, // 12: feed.v1.FeedService.RefreshFeeds:input_type -> feed.v1.RefreshFeedsRequest
-	15, // 13: feed.v1.FeedService.ImportOpml:input_type -> feed.v1.ImportOpmlRequest
-	17, // 14: feed.v1.FeedService.SetFeedTags:input_type -> feed.v1.SetFeedTagsRequest
-	19, // 15: feed.v1.FeedService.ManageFeedTags:input_type -> feed.v1.ManageFeedTagsRequest
-	3,  // 16: feed.v1.FeedService.GetFeed:output_type -> feed.v1.GetFeedResponse
-	5,  // 17: feed.v1.FeedService.ListFeeds:output_type -> feed.v1.ListFeedsResponse
-	7,  // 18: feed.v1.FeedService.CreateFeed:output_type -> feed.v1.CreateFeedResponse
-	9,  // 19: feed.v1.FeedService.UpdateFeed:output_type -> feed.v1.UpdateFeedResponse
-	11, // 20: feed.v1.FeedService.DeleteFeed:output_type -> feed.v1.DeleteFeedResponse
-	14, // 21: feed.v1.FeedService.RefreshFeeds:output_type -> feed.v1.RefreshFeedsResponse
-	16, // 22: feed.v1.FeedService.ImportOpml:output_type -> feed.v1.ImportOpmlResponse
-	18, // 23: feed.v1.FeedService.SetFeedTags:output_type -> feed.v1.SetFeedTagsResponse
-	20, // 24: feed.v1.FeedService.ManageFeedTags:output_type -> feed.v1.ManageFeedTagsResponse
-	16, // [16:25] is the sub-list for method output_type
-	7,  // [7:16] is the sub-list for method input_type
-	7,  // [7:7] is the sub-list for extension type_name
-	7,  // [7:7] is the sub-list for extension extendee
-	0,  // [0:7] is the sub-list for field type_name
+	21, // 7: feed.v1.ListFeedTagsResponse.feed_tags:type_name -> feed.v1.FeedTag
+	2,  // 8: feed.v1.FeedService.GetFeed:input_type -> feed.v1.GetFeedRequest
+	4,  // 9: feed.v1.FeedService.ListFeeds:input_type -> feed.v1.ListFeedsRequest
+	6,  // 10: feed.v1.FeedService.CreateFeed:input_type -> feed.v1.CreateFeedRequest
+	8,  // 11: feed.v1.FeedService.UpdateFeed:input_type -> feed.v1.UpdateFeedRequest
+	10, // 12: feed.v1.FeedService.DeleteFeed:input_type -> feed.v1.DeleteFeedRequest
+	12, // 13: feed.v1.FeedService.RefreshFeeds:input_type -> feed.v1.RefreshFeedsRequest
+	15, // 14: feed.v1.FeedService.ImportOpml:input_type -> feed.v1.ImportOpmlRequest
+	22, // 15: feed.v1.FeedService.ListFeedTags:input_type -> feed.v1.ListFeedTagsRequest
+	17, // 16: feed.v1.FeedService.SetFeedTags:input_type -> feed.v1.SetFeedTagsRequest
+	19, // 17: feed.v1.FeedService.ManageFeedTags:input_type -> feed.v1.ManageFeedTagsRequest
+	3,  // 18: feed.v1.FeedService.GetFeed:output_type -> feed.v1.GetFeedResponse
+	5,  // 19: feed.v1.FeedService.ListFeeds:output_type -> feed.v1.ListFeedsResponse
+	7,  // 20: feed.v1.FeedService.CreateFeed:output_type -> feed.v1.CreateFeedResponse
+	9,  // 21: feed.v1.FeedService.UpdateFeed:output_type -> feed.v1.UpdateFeedResponse
+	11, // 22: feed.v1.FeedService.DeleteFeed:output_type -> feed.v1.DeleteFeedResponse
+	14, // 23: feed.v1.FeedService.RefreshFeeds:output_type -> feed.v1.RefreshFeedsResponse
+	16, // 24: feed.v1.FeedService.ImportOpml:output_type -> feed.v1.ImportOpmlResponse
+	23, // 25: feed.v1.FeedService.ListFeedTags:output_type -> feed.v1.ListFeedTagsResponse
+	18, // 26: feed.v1.FeedService.SetFeedTags:output_type -> feed.v1.SetFeedTagsResponse
+	20, // 27: feed.v1.FeedService.ManageFeedTags:output_type -> feed.v1.ManageFeedTagsResponse
+	18, // [18:28] is the sub-list for method output_type
+	8,  // [8:18] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_feed_v1_feed_proto_init() }
@@ -1537,13 +1703,14 @@ func file_feed_v1_feed_proto_init() {
 	file_feed_v1_feed_proto_msgTypes[6].OneofWrappers = []any{}
 	file_feed_v1_feed_proto_msgTypes[8].OneofWrappers = []any{}
 	file_feed_v1_feed_proto_msgTypes[13].OneofWrappers = []any{}
+	file_feed_v1_feed_proto_msgTypes[22].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_feed_v1_feed_proto_rawDesc), len(file_feed_v1_feed_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   21,
+			NumMessages:   24,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
