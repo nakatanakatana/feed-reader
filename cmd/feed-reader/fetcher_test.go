@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -9,9 +10,22 @@ import (
 	"testing"
 
 	"github.com/mmcdole/gofeed"
+	schema "github.com/nakatanakatana/feed-reader/sql"
+	"github.com/nakatanakatana/feed-reader/store"
+	_ "github.com/ncruces/go-sqlite3/driver"
+	_ "github.com/ncruces/go-sqlite3/embed"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGofeedFetcher_Fetch(t *testing.T) {
+	// Setup store for testing
+	db, err := sql.Open("sqlite3", ":memory:")
+	require.NoError(t, err)
+	defer db.Close()
+	_, err = db.Exec(schema.Schema)
+	require.NoError(t, err)
+	s := store.NewStore(db)
+
 	tests := []struct {
 		name        string
 		feedContent string
@@ -90,8 +104,8 @@ func TestGofeedFetcher_Fetch(t *testing.T) {
 			}))
 			defer server.Close()
 
-			f := NewGofeedFetcher()
-			feed, err := f.Fetch(context.Background(), server.URL)
+			f := NewGofeedFetcher(s)
+			feed, err := f.Fetch(context.Background(), "", server.URL)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Fetch() error = %v, wantErr %v", err, tt.wantErr)
 				return

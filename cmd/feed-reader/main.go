@@ -80,7 +80,7 @@ func main() {
 	go writeQueue.Start(ctx)
 
 	// 4. Initialize Fetcher components
-	fetcher := NewGofeedFetcher()
+	fetcher := NewGofeedFetcher(s)
 	fetchService := NewFetcherService(s, fetcher, pool, writeQueue, logger, cfg.FetchInterval)
 
 	opmlImporter := NewOPMLImporter(s, fetcher, logger, nil)

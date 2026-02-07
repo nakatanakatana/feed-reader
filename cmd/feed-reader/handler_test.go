@@ -68,7 +68,7 @@ type mockFetcher struct {
 	errs map[string]error
 }
 
-func (m *mockFetcher) Fetch(ctx context.Context, url string) (*gofeed.Feed, error) {
+func (m *mockFetcher) Fetch(ctx context.Context, feedID string, url string) (*gofeed.Feed, error) {
 	if m.errs != nil {
 		if err, ok := m.errs[url]; ok {
 			return nil, err

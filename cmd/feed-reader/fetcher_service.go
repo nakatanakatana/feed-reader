@@ -90,7 +90,7 @@ func (s *FetcherService) FetchFeedsByIDsSync(ctx context.Context, ids []string) 
 func (s *FetcherService) fetchAndSaveSync(ctx context.Context, f store.Feed) (*FeedFetchResult, error) {
 	s.logger.DebugContext(ctx, "fetching feed sync", "url", f.Url, "id", f.ID)
 
-	parsedFeed, err := s.fetcher.Fetch(ctx, f.Url)
+	parsedFeed, err := s.fetcher.Fetch(ctx, f.ID, f.Url)
 	if err != nil {
 		s.logger.ErrorContext(ctx, "failed to fetch feed sync", "url", f.Url, "error", err)
 		return nil, err
@@ -202,7 +202,7 @@ func (s *FetcherService) FetchAndSave(ctx context.Context, f store.Feed) error {
 	}
 	defer s.fetching.Delete(f.ID)
 
-	parsedFeed, err := s.fetcher.Fetch(ctx, f.Url)
+	parsedFeed, err := s.fetcher.Fetch(ctx, f.ID, f.Url)
 	if err != nil {
 		s.logger.ErrorContext(ctx, "failed to fetch feed", "url", f.Url, "error", err)
 		return err
