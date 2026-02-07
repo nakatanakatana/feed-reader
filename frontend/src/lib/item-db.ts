@@ -45,6 +45,7 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
       refetchInterval: 1 * 60 * 1000,
       queryKey: ["items", { since }],
       queryFn: async ({ queryKey }) => {
+		  console.log("queryFn")
         const existingData = queryClient.getQueryData(queryKey) || [];
         const searchSince =
           lastFetched === null ? sinceTimestamp : dateToTimestamp(lastFetched);
@@ -66,18 +67,48 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
           feedId: item.feedId,
         }));
 
-        // @ts-expect-error
-        return [...existingData, ...respList];
+        // Merge existing data with new data, ensuring no duplicates and respecting local state
+        // If an item exists in both, we might want to prioritize local isRead status 
+        // if it was recently updated. However, the most robust way is to let TanStack DB
+        // handle the merge but avoid duplicate IDs in the array we return.
+        const merged = [...existingData];
+        for (const newItem of respList) {
+          const index = merged.findIndex((i) => i.id === newItem.id);
+          if (index !== -1) {
+            // Keep the item but potentially update fields. 
+            // Here we prioritize the API data BUT we could merge here if needed.
+            // For now, let's just replace to ensure we have the latest metadata, 
+            // relying on onUpdate + Query Cache fix to handle reactivity.
+            merged[index] = { ...merged[index], ...newItem };
+          } else {
+            merged.push(newItem);
+          }
+        }
+
+        return merged;
       },
       getKey: (item: ListItem) => item.id,
       onUpdate: async ({ transaction }) => {
         const ids = transaction.mutations.map((m) => m.modified.id);
-        const isRead = transaction.mutations[0].modified.isRead;
+        const firstMutation = transaction.mutations[0];
+        const isRead = firstMutation.modified.isRead;
 
         await itemClient.updateItemStatus({
           ids: ids,
           isRead: isRead,
         });
+
+        // Update TanStack Query cache to prevent queryFn from overwriting with stale data
+        const currentQueryKey = ["items", { since }];
+        const existingData = queryClient.getQueryData<Item[]>(currentQueryKey);
+        if (existingData) {
+          const newData = existingData.map((item) => {
+            const mutation = transaction.mutations.find(m => m.modified.id === item.id);
+            return mutation ? { ...item, ...mutation.modified } : item;
+          });
+          queryClient.setQueryData(currentQueryKey, newData);
+        }
+
         return { refetch: false };
       },
     }),

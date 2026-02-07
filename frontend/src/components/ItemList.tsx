@@ -39,6 +39,7 @@ export function ItemList(props: ItemListProps) {
   });
 
   const itemQuery = useLiveQuery((q) => {
+	  console.log("itemQuery", items().toArray.filter((i) => i.isRead === false).length)
     let query = q.from({ item: items() });
     if (props.tagId) {
       query = query
