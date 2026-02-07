@@ -6,11 +6,6 @@ import {
   localStorageCollectionOptions,
 } from "@tanstack/solid-db";
 import { ItemService, type ListItem } from "../gen/item/v1/item_pb";
-import {
-  type DateFilterValue,
-  dateToTimestamp,
-  getPublishedSince,
-} from "./item-utils";
 import { queryClient, transport } from "./query";
 
 export interface Item {
@@ -21,6 +16,11 @@ export interface Item {
   isRead: boolean;
   createdAt: string;
   feedId: string;
+  url?: string;
+  author?: string;
+  categories?: string;
+  imageUrl?: string;
+  content?: string;
 }
 
 const itemClient = createClient(ItemService, transport);
@@ -62,44 +62,43 @@ export const createItemBulkMarkAsReadTx = () =>
     },
   });
 
-export const createItems = (showRead: boolean, since: DateFilterValue) => {
-  let lastFetched: Date | null = null;
-  const isRead = showRead ? {} : { isRead: false };
-  const sinceTimestamp = since !== "all" ? getPublishedSince(since) : undefined;
-  const items = createCollection(
-    queryCollectionOptions({
-      id: "items",
-      queryClient,
-      refetchInterval: 1 * 60 * 1000,
-      queryKey: ["items", { since }],
-      queryFn: async ({ queryKey }) => {
-        const existingData = queryClient.getQueryData(queryKey) || [];
-        const searchSince =
-          lastFetched === null ? sinceTimestamp : dateToTimestamp(lastFetched);
-        const response = await itemClient.listItems({
-          since: searchSince,
-          limit: 10000,
-          offset: 0,
-          ...isRead,
-        });
-        lastFetched = new Date();
+export const items = createCollection(
+  queryCollectionOptions({
+    id: "items",
+    queryClient,
+    refetchInterval: 1 * 60 * 1000,
+    queryKey: ["items"],
+    queryFn: async () => {
+      const response = await itemClient.listItems({
+        limit: 10000,
+        offset: 0,
+      });
 
-        const respList = response.items.map((item: ListItem) => ({
-          id: item.id,
-          title: item.title,
-          description: item.description,
-          publishedAt: item.publishedAt,
-          isRead: item.isRead,
-          createdAt: item.createdAt,
-          feedId: item.feedId,
-        }));
-
+      return response.items.map((item: ListItem) => ({
+        id: item.id,
+        title: item.title,
+        description: item.description,
+        publishedAt: item.publishedAt,
+        isRead: item.isRead,
+        createdAt: item.createdAt,
+        feedId: item.feedId,
+        // @ts-expect-error - Additional fields from GetItem response
+        url: item.url,
         // @ts-expect-error
-        return [...existingData, ...respList];
-      },
-      getKey: (item: ListItem) => item.id,
-    }),
-  );
+        author: item.author,
+        // @ts-expect-error
+        categories: item.categories,
+        // @ts-expect-error
+        imageUrl: item.imageUrl,
+        // @ts-expect-error
+        content: item.content,
+      })) as Item[];
+    },
+    getKey: (item: Item) => item.id,
+  }),
+);
 
-  return items;
+export const getItem = async (id: string) => {
+  const response = await itemClient.getItem({ id });
+  return response.item;
 };

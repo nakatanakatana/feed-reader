@@ -1,7 +1,9 @@
+import { eq, useLiveQuery } from "@tanstack/solid-db";
+import { useMutation } from "@tanstack/solid-query";
 import { For, type JSX, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
-import { useItem, useUpdateItemStatus } from "../lib/item-query";
+import { items, updateItemStatus } from "../lib/db";
 import { formatDate, normalizeCategories } from "../lib/item-utils";
 import { MarkdownRenderer } from "./MarkdownRenderer";
 import { ActionButton } from "./ui/ActionButton";
@@ -18,16 +20,27 @@ interface ItemDetailModalProps {
 }
 
 export function ItemDetailModal(props: ItemDetailModalProps) {
-  const itemQuery = useItem(() => props.itemId);
-  const updateStatusMutation = useUpdateItemStatus();
+  const itemsQuery = useLiveQuery((q) => {
+    return q
+      .from({ item: items })
+      .where(({ item }) => (props.itemId ? eq(item.id, props.itemId) : false))
+      .select(({ item }) => item);
+  });
+
+  const item = () => itemsQuery()[0];
+  const isLoading = () => itemsQuery.isLoading;
+
+  const updateStatusMutation = useMutation(() => ({
+    mutationFn: updateItemStatus,
+  }));
 
   const handleToggleRead = () => {
-    const item = itemQuery.data;
-    if (!item) return;
+    const currentItem = item();
+    if (!currentItem) return;
 
     updateStatusMutation.mutate({
-      ids: [item.id],
-      isRead: !item.isRead,
+      ids: [currentItem.id],
+      isRead: !currentItem.isRead,
     });
   };
 
@@ -60,11 +73,11 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
         </ActionButton>
       </div>
       <ActionButton
-        variant={itemQuery.data?.isRead ? "secondary" : "ghost"}
+        variant={item()?.isRead ? "secondary" : "ghost"}
         onClick={handleToggleRead}
         disabled={updateStatusMutation.isPending}
       >
-        {itemQuery.data?.isRead ? "Mark as Unread" : "Mark as Read"}
+        {item()?.isRead ? "Mark as Unread" : "Mark as Read"}
       </ActionButton>
     </>
   );
@@ -98,10 +111,10 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
               flex: 1,
             })}
           >
-            <Show when={itemQuery.data} fallback="Loading...">
-              {(item) => (
+            <Show when={item()} fallback="Loading...">
+              {(itemData) => (
                 <a
-                  href={item().url}
+                  href={itemData().url}
                   target="_blank"
                   rel="noopener noreferrer"
                   class={css({
@@ -113,7 +126,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                     },
                   })}
                 >
-                  {item().title}
+                  {itemData().title}
                 </a>
               )}
             </Show>
@@ -131,7 +144,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             height: "full",
           })}
         >
-          <Show when={itemQuery.isLoading}>
+          <Show when={isLoading()}>
             <div
               class={css({
                 textAlign: "center",
@@ -143,8 +156,8 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             </div>
           </Show>
 
-          <Show when={itemQuery.data}>
-            {(item) => (
+          <Show when={item()}>
+            {(itemData) => (
               <>
                 <div
                   class={flex({
@@ -155,16 +168,18 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                     alignItems: "center",
                   })}
                 >
-                  <Show when={!!item().publishedAt}>
-                    <span>Published: {formatDate(item().publishedAt)}</span>
+                  <Show when={!!itemData().publishedAt}>
+                    <span>Published: {formatDate(itemData().publishedAt)}</span>
                   </Show>
-                  <span>Received: {formatDate(item().createdAt)}</span>
-                  <Show when={item().author}>
-                    <span>By {item().author}</span>
+                  <span>Received: {formatDate(itemData().createdAt)}</span>
+                  <Show when={itemData().author}>
+                    <span>By {itemData().author}</span>
                   </Show>
-                  <Show when={item().categories}>
+                  <Show when={itemData().categories}>
                     <div class={flex({ gap: "1", flexWrap: "wrap" })}>
-                      <For each={normalizeCategories(item().categories)}>
+                      <For
+                        each={normalizeCategories(itemData().categories ?? "")}
+                      >
                         {(cat) => (
                           <span
                             class={css({
@@ -186,10 +201,10 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                   </Show>
                 </div>
 
-                <Show when={item().imageUrl}>
+                <Show when={itemData().imageUrl}>
                   <div class={css({ my: "4" })}>
                     <img
-                      src={item().imageUrl}
+                      src={itemData().imageUrl}
                       alt=""
                       class={css({
                         maxWidth: "full",
@@ -210,7 +225,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                   })}
                 >
                   <MarkdownRenderer
-                    content={item().content || item().description || ""}
+                    content={itemData().content || itemData().description || ""}
                   />
                 </div>
               </>

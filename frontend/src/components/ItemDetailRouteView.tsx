@@ -1,6 +1,8 @@
+import { useLiveQuery } from "@tanstack/solid-db";
+import { useMutation } from "@tanstack/solid-query";
 import { useNavigate } from "@tanstack/solid-router";
-import { createEffect, createSignal } from "solid-js";
-import { useItems, useUpdateItemStatus } from "../lib/item-query";
+import { createMemo, createSignal } from "solid-js";
+import { items, updateItemStatus } from "../lib/db";
 import { type DateFilterValue, getPublishedSince } from "../lib/item-utils";
 import { ItemDetailModal } from "./ItemDetailModal";
 
@@ -12,7 +14,9 @@ interface ItemDetailRouteViewProps {
 
 export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
   const navigate = useNavigate();
-  const updateStatusMutation = useUpdateItemStatus();
+  const updateStatusMutation = useMutation(() => ({
+    mutationFn: updateItemStatus,
+  }));
   const [isWaitingForNextPage, setIsWaitingForNextPage] = createSignal(false);
 
   const getLinkProps = (targetItemId: string | undefined) => {
@@ -24,38 +28,29 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
 
   const effectiveSince = () => props.since ?? (props.tagId ? undefined : "30d");
 
-  const itemsQuery = useItems(() => ({
-    tagId: props.tagId,
-    isRead: false,
-    since: (() => {
-      const since = effectiveSince();
-      return since ? getPublishedSince(since) : undefined;
-    })(),
-  }));
+  // Use useLiveQuery with items Collection
+  const itemsQuery = useLiveQuery((q) => {
+    let query = q.from({ item: items });
 
-  const allItems = () =>
-    itemsQuery.data?.pages.flatMap((page) => page.items) ?? [];
-
-  // Auto-navigate when next page is loaded
-  createEffect(() => {
-    const data = itemsQuery.data;
-    if (isWaitingForNextPage() && data && props.itemId) {
-      const items = data.pages.flatMap((p) => p.items);
-      const index = items.findIndex((i) => i.id === props.itemId);
-      if (index !== -1 && index < items.length - 1) {
-        setIsWaitingForNextPage(false);
-        const targetItem = items[index + 1];
-        const linkProps = getLinkProps(targetItem?.id);
-        if (linkProps) {
-          navigate({
-            to: linkProps.to,
-            // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
-            params: linkProps.params as any,
-          });
-        }
+    // Filter by date
+    const since = effectiveSince();
+    if (since && since !== "all") {
+      const sinceDate = getPublishedSince(since);
+      if (sinceDate) {
+        const sinceStr = new Date(
+          Number(sinceDate.seconds) * 1000,
+        ).toISOString();
+        query = query.where(({ item }) => item.createdAt >= sinceStr);
       }
     }
+
+    // Filter by read status (only show unread)
+    query = query.where(({ item }) => !item.isRead);
+
+    return query.select(({ item }) => item);
   });
+
+  const allItems = () => itemsQuery();
 
   const currentIndex = () =>
     props.itemId ? allItems().findIndex((i) => i.id === props.itemId) : -1;
@@ -78,9 +73,6 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
           params: linkProps.params as any,
         });
       }
-    } else if (itemsQuery.hasNextPage) {
-      setIsWaitingForNextPage(true);
-      itemsQuery.fetchNextPage();
     }
   };
 
@@ -116,9 +108,7 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
         });
       }}
       prevItemId={prevItem()?.id}
-      nextItemId={
-        nextItem()?.id || (itemsQuery.hasNextPage ? "loading" : undefined)
-      }
+      nextItemId={nextItem()?.id}
       onPrev={handlePrev}
       onNext={handleNext}
     />

@@ -1,16 +1,17 @@
 import { eq, isUndefined, useLiveQuery } from "@tanstack/solid-db";
+import { useMutation } from "@tanstack/solid-query";
 import { useNavigate } from "@tanstack/solid-router";
-import { createEffect, createMemo, createSignal, For, Show } from "solid-js";
+import { createEffect, createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import {
   createItemBulkMarkAsReadTx,
-  createItems,
   feedTag,
+  items,
   localRead,
   tags as tagsCollection,
+  updateItemStatus,
 } from "../lib/db";
-import { useUpdateItemStatus } from "../lib/item-query";
 import { type DateFilterValue, formatUnreadCount } from "../lib/item-utils";
 import { DateFilterSelector } from "./DateFilterSelector";
 import { ItemRow } from "./ItemRow";
@@ -29,7 +30,9 @@ const PAGE_SIZE = 100;
 
 export function ItemList(props: ItemListProps) {
   const navigate = useNavigate();
-  const updateStatusMutation = useUpdateItemStatus();
+  const updateStatusMutation = useMutation(() => ({
+    mutationFn: updateItemStatus,
+  }));
   const [selectedItemIds, setSelectedItemIds] = createSignal<Set<string>>(
     new Set(),
   );
@@ -58,10 +61,8 @@ export function ItemList(props: ItemListProps) {
     });
   };
 
-  const items = createMemo(() => createItems(showRead(), dateFilter()));
-
   const itemsQuery = useLiveQuery((q) => {
-    let query = q.from({ item: items() });
+    let query = q.from({ item: items });
 
     // Filter by tag - join with feedTag
     if (props.tagId) {
