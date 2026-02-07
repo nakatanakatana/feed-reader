@@ -2,7 +2,7 @@ import { createSignal, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import type { Item } from "../lib/db";
-import { localRead } from "../lib/db";
+import { items } from "../lib/db";
 import { formatDate } from "../lib/item-utils";
 import { ActionButton } from "./ui/ActionButton";
 
@@ -19,22 +19,18 @@ export function ItemRow(props: ItemRowProps) {
   const handleToggleRead = async (e?: MouseEvent) => {
     e?.stopPropagation();
     setIsPending(true);
+
     const newIsRead = !props.item.isRead;
     try {
-      // Update localRead Collection for optimistic UI
-      if (newIsRead) {
-        localRead.insert({ id: props.item.id });
-      } else {
-        localRead.delete(props.item.id);
-      }
+      console.log("items", JSON.stringify(items.toArray));
+      items.update(props.item.id, { metadata: { intent: "read" } }, (draft) => {
+        draft.id = props.item.id;
+        draft.isRead = newIsRead;
+      });
     } catch (e) {
       console.error("Failed to update item status", e);
-      // Revert local change on error
-      if (newIsRead) {
-        localRead.delete(props.item.id);
-      } else {
-        localRead.insert({ id: props.item.id });
-      }
+      // Revert is handled by query refetch or error state,
+      // but items.update should be atomic if we configured it correctly with API call.
     } finally {
       setIsPending(false);
     }

@@ -1,7 +1,7 @@
 import { useLiveQuery } from "@tanstack/solid-db";
 import { useMutation } from "@tanstack/solid-query";
 import { useNavigate } from "@tanstack/solid-router";
-import { items, localRead } from "../lib/db";
+import { items } from "../lib/db";
 import type { DateFilterValue } from "../lib/item-utils";
 import { ItemDetailModal } from "./ItemDetailModal";
 
@@ -69,7 +69,9 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
 
   const markCurrentAsRead = () => {
     if (!props.itemId) return;
-    localRead.insert({ id: props.itemId });
+    items.update(props.itemId, (draft) => {
+      draft.isRead = true;
+    });
   };
 
   return (

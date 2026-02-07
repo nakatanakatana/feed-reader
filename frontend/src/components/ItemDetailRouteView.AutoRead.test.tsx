@@ -11,44 +11,53 @@ import { page } from "vitest/browser";
 import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
 
-// Mock the query hooks
-const markAsReadMock = vi.fn();
-vi.mock("../lib/item-query", () => ({
-  useItems: () => ({
-    data: {
-      pages: [
-        {
-          items: [
-            { id: "1", title: "Item 1", isRead: false },
-            { id: "2", title: "Item 2", isRead: false },
-          ],
-        },
-      ],
-    },
-    isLoading: false,
-  }),
-  useItem: (id: () => string | undefined) => ({
-    get data() {
-      const itemId = id();
-      if (!itemId) return undefined;
-      return {
-        id: itemId,
-        title: `Test Item ${itemId}`,
-        description: "<p>Test Content</p>",
-        publishedAt: "2026-01-24",
-        author: "Test Author",
-        url: "http://example.com",
-        isRead: false,
-      };
-    },
-    get isLoading() {
-      return false;
-    },
-  }),
-  useUpdateItemStatus: () => ({
-    mutate: markAsReadMock,
-    isPending: false,
-  }),
+const { insertMock, updateMock } = vi.hoisted(() => ({
+  insertMock: vi.fn(),
+  updateMock: vi.fn(),
+}));
+
+// Mock db
+vi.mock("../lib/db", () => ({
+  // Add other exports to avoid ReferenceErrors
+  setItemsBase: vi.fn(),
+  itemsUnreadQuery: { toArray: [], isReady: vi.fn().mockReturnValue(true) },
+  updateItemStatus: vi.fn(),
+  feedInsert: vi.fn(),
+  manageFeedTags: vi.fn(),
+  feedTag: {},
+  feeds: {},
+  tags: {},
+  db: {},
+  refreshFeeds: vi.fn(),
+  items: { update: updateMock },
+  createItemBulkMarkAsReadTx: vi.fn(),
+}));
+
+// Mock useLiveQuery to return items
+vi.mock("@tanstack/solid-db", async () => {
+  return {
+    useLiveQuery: () => () => [
+      { id: "1", title: "Item 1", isRead: false },
+      { id: "2", title: "Item 2", isRead: false },
+    ],
+    // Mock other solid-db exports if needed
+    isUndefined: (v: any) => v === undefined,
+    eq: () => ({}),
+    count: () => 0,
+    createCollection: vi.fn(() => ({})),
+    createLiveQueryCollection: vi.fn(() => ({})),
+  };
+});
+
+// Mock ItemDetailModal to avoid dealing with its internal logic
+vi.mock("./ItemDetailModal", () => ({
+  ItemDetailModal: (props: any) => (
+    <div>
+      <button onClick={props.onPrev}>← Previous</button>
+      <button onClick={props.onNext}>Next →</button>
+      <button onClick={props.onClose}>Close</button>
+    </div>
+  ),
 }));
 
 describe("ItemDetailRouteView Auto-Read", () => {
@@ -82,8 +91,7 @@ describe("ItemDetailRouteView Auto-Read", () => {
     const nextButton = page.getByText("Next →");
     await nextButton.click();
 
-    expect(markAsReadMock).toHaveBeenCalledWith({
-      ids: ["1"],
+    expect(updateMock).toHaveBeenCalledWith("1", {
       isRead: true,
     });
   });
@@ -106,8 +114,7 @@ describe("ItemDetailRouteView Auto-Read", () => {
     const prevButton = page.getByText("← Previous");
     await prevButton.click();
 
-    expect(markAsReadMock).toHaveBeenCalledWith({
-      ids: ["2"],
+    expect(updateMock).toHaveBeenCalledWith("2", {
       isRead: true,
     });
   });

@@ -2,11 +2,8 @@ import { createClient } from "@connectrpc/connect";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import {
   eq,
-  isUndefined,
   createCollection,
   createLiveQueryCollection,
-  createTransaction,
-  localStorageCollectionOptions,
 } from "@tanstack/solid-db";
 import { ItemService, type ListItem } from "../gen/item/v1/item_pb";
 import { queryClient, transport } from "./query";
@@ -34,43 +31,16 @@ export interface Item {
 
 const itemClient = createClient(ItemService, transport);
 
-export const localRead = createCollection(
-  localStorageCollectionOptions({
-    id: "local-read-items",
-    storageKey: "local-read-items",
-    getKey: (item: { id: string }) => item.id,
-    onInsert: async ({ transaction }) => {
-      const ids = transaction.mutations.map((mutation) => mutation.modified.id);
-      await itemClient.updateItemStatus({
-        ids: ids,
-        isRead: true,
-      });
-    },
-    onDelete: async () => {},
-  }),
-);
-
-export const createItemBulkMarkAsReadTx = () =>
-  createTransaction({
-    mutationFn: async ({ transaction }) => {
-      const ids = transaction.mutations
-        // @ts-expect-error
-        .filter((m) => m.collection === localRead)
-        .map((m) => m.modified.id) as string[];
-
-      await itemClient.updateItemStatus({ ids: ids, isRead: true });
-      localRead.utils.acceptMutations(transaction);
-    },
-  });
-
 const createItems = (showRead: boolean, since: DateFilterValue) => {
   let lastFetched: Date | null = null;
   const isRead = showRead ? {} : { isRead: false };
   const sinceTimestamp = since !== "all" ? getPublishedSince(since) : undefined;
   console.log("isRead", isRead, since);
-  const items = createCollection(
+  
+  return createCollection(
     queryCollectionOptions({
       id: "items",
+	  gcTime: 5*1000,
       queryClient,
       refetchInterval: 1 * 60 * 1000,
       queryKey: ["items", { since }],
@@ -100,10 +70,18 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
         return [...existingData, ...respList];
       },
       getKey: (item: ListItem) => item.id,
+      onUpdate: async ({ transaction }) => {
+        const ids = transaction.mutations.map((m) => m.modified.id);
+        const isRead = transaction.mutations[0].modified.isRead;
+
+        await itemClient.updateItemStatus({
+          ids: ids,
+          isRead: isRead,
+        });
+        return { refetch: false };
+      },
     }),
   );
-
-  return items;
 };
 
 export let items = createItems(itemsShowReadFilter, itemsDateFilter);
@@ -115,9 +93,7 @@ export const setItemsBase = (showRead: boolean, since: DateFilterValue) => {
 export const itemsUnreadQuery = createLiveQueryCollection((q) =>
   q
     .from({ item: items })
-    .leftJoin({ lr: localRead }, ({ item, lr }) => eq(item.id, lr.id))
     .where(({ item }) => eq(item.isRead, false))
-    .where(({ lr }) => isUndefined(lr?.id))
     .select(({ item }) => ({ ...item })),
 );
 

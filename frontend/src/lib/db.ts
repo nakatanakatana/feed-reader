@@ -6,7 +6,6 @@ export * from "./tag-db";
 
 // Import for db object
 import { feeds, feedTag } from "./feed-db";
-import { localRead } from "./item-db";
 import { tags } from "./tag-db";
 
 // We still export a "db" object if we want to follow the spec's "Initialize the TanStack DB instance"
@@ -14,6 +13,5 @@ import { tags } from "./tag-db";
 export const db = {
   feeds,
   feedTag,
-  localRead,
   tags,
 };

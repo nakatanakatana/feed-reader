@@ -12,8 +12,16 @@ import { routeTree } from "../routeTree.gen";
 
 // Mock db
 vi.mock("../lib/db", () => ({
+  setItemsBase: vi.fn(),
+  itemsUnreadQuery: { toArray: [], isReady: vi.fn().mockReturnValue(true) },
   items: {},
   updateItemStatus: vi.fn(),
+  feedInsert: vi.fn(),
+  manageFeedTags: vi.fn(),
+  feedTag: {},
+  feeds: {},
+  tags: {},
+  refreshFeeds: vi.fn(),
 }));
 
 const navigate = vi.fn();

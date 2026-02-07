@@ -4,10 +4,8 @@ import { createEffect, createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import {
-  createItemBulkMarkAsReadTx,
   items,
   feedTag,
-  localRead,
   setItemsBase,
   tags,
   itemsUnreadQuery,
@@ -32,6 +30,7 @@ export function ItemList(props: ItemListProps) {
   const [selectedItemIds, setSelectedItemIds] = createSignal<Set<string>>(
     new Set(),
   );
+  const [isBulkMarking, setIsBulkMarking] = createSignal(false);
 
   const [showRead, setShowRead] = createSignal(itemsShowReadFilter);
   const [dateFilter, setDateFilter] = createSignal<DateFilterValue>(
@@ -127,12 +126,18 @@ export function ItemList(props: ItemListProps) {
     const ids = Array.from(selectedItemIds());
     if (ids.length === 0) return;
 
-    const tx = createItemBulkMarkAsReadTx();
-    tx.mutate(() => {
-      ids.forEach((id) => {
-        localRead.insert({ id });
-      });
-    });
+    setIsBulkMarking(true);
+    try {
+      await Promise.all(
+        ids.map((id) =>
+          items.update(id, (draft) => {
+            draft.isRead = true;
+          }),
+        ),
+      );
+    } finally {
+      setIsBulkMarking(false);
+    }
 
     setSelectedItemIds(new Set<string>());
   };
@@ -276,11 +281,9 @@ export function ItemList(props: ItemListProps) {
               size="sm"
               variant="primary"
               onClick={handleBulkMarkAsRead}
-              disabled={updateStatusMutation.isPending}
+              disabled={isBulkMarking()}
             >
-              {updateStatusMutation.isPending
-                ? "Processing..."
-                : "Mark as Read"}
+              {isBulkMarking() ? "Processing..." : "Mark as Read"}
             </ActionButton>
           </div>
         </div>

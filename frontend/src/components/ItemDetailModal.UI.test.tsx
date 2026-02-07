@@ -7,6 +7,8 @@ import { ItemDetailModal } from "./ItemDetailModal";
 
 // Mock db
 vi.mock("../lib/db", () => ({
+  setItemsBase: vi.fn(),
+  itemsUnreadQuery: { toArray: [], isReady: vi.fn().mockReturnValue(true) },
   items: {},
   updateItemStatus: vi.fn(),
 }));

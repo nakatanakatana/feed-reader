@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "@tanstack/solid-query";
 import { For, type JSX, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
-import { getItem, localRead } from "../lib/item-db";
+import { items, getItem } from "../lib/item-db";
 import { formatDate, normalizeCategories } from "../lib/item-utils";
 import { MarkdownRenderer } from "./MarkdownRenderer";
 import { ActionButton } from "./ui/ActionButton";
@@ -35,7 +35,9 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     const currentItem = item();
     if (!currentItem) return;
 
-    localRead.insert({ id: currentItem.id });
+    items.update(currentItem.id, (draft) => {
+      draft.isRead = !currentItem.isRead;
+    });
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
