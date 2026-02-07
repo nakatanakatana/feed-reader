@@ -2,7 +2,7 @@
 
 ## Phase 1: Database Schema and Data Access
 - [x] Task: Add the `feed_fetcher_caches` table definition to `sql/schema.sql`. da9debc
-- [ ] Task: Add SQL queries to `sql/query.sql` for CRUD operations on `feed_fetcher_caches`.
+- [x] Task: Add SQL queries to `sql/query.sql` for CRUD operations on `feed_fetcher_caches`. 59fdc0a
 - [ ] Task: Run `sqlc generate` to update the Go database code.
 - [ ] Task: Create a unit test in `store/` to verify cache data persistence.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Database Schema and Data Access' (Protocol in workflow.md)
