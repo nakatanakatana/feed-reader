@@ -73,9 +73,9 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
       getKey: (item: ListItem) => item.id,
       onUpdate: async ({ transaction }) => {
         const ids = transaction.mutations.map((m) => {
+          //NOTE: update localClientState
           items().utils.writeUpdate({
-            id: m.modified.id,
-            isRead: m.modified.isRead,
+            ...m.modified,
           });
           return m.modified.id;
         });
@@ -86,16 +86,6 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
           ids: ids,
           isRead: isRead,
         });
-
-        // const currentQueryKey = ["items", { since }];
-        // const existingData = queryClient.getQueryData<Item[]>(currentQueryKey);
-        // if (existingData) {
-        //   const newData = existingData.map((item) => {
-        //     const mutation = transaction.mutations.find(m => m.modified.id === item.id);
-        //     return mutation ? { ...item, ...mutation.modified } : item;
-        //   });
-        //   queryClient.setQueryData(currentQueryKey, newData);
-        // }
 
         return { refetch: false };
       },
