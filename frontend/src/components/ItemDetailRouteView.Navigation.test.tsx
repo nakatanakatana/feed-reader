@@ -5,10 +5,8 @@ import {
   createRouter,
   RouterProvider,
 } from "@tanstack/solid-router";
-import { createSignal } from "solid-js";
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { page } from "vitest/browser";
+import { afterEach, describe, it, vi } from "vitest";
 import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
 

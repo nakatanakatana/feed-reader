@@ -1,9 +1,8 @@
 import { useLiveQuery } from "@tanstack/solid-db";
 import { useMutation } from "@tanstack/solid-query";
 import { useNavigate } from "@tanstack/solid-router";
-import { createMemo, createSignal } from "solid-js";
 import { items, updateItemStatus } from "../lib/db";
-import { type DateFilterValue, getPublishedSince } from "../lib/item-utils";
+import type { DateFilterValue } from "../lib/item-utils";
 import { ItemDetailModal } from "./ItemDetailModal";
 
 interface ItemDetailRouteViewProps {
@@ -17,7 +16,6 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
   const updateStatusMutation = useMutation(() => ({
     mutationFn: updateItemStatus,
   }));
-  const [isWaitingForNextPage, setIsWaitingForNextPage] = createSignal(false);
 
   const getLinkProps = (targetItemId: string | undefined) => {
     if (!targetItemId) return undefined;
@@ -25,8 +23,6 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
     const params = { itemId: targetItemId };
     return { to, params };
   };
-
-  const effectiveSince = () => props.since ?? (props.tagId ? undefined : "30d");
 
   // Use useLiveQuery with items Collection
   const itemsQuery = useLiveQuery((q) => {
