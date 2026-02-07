@@ -320,3 +320,31 @@ WHERE
   ft.feed_id = ?
 ORDER BY
   t.name ASC;
+
+-- name: GetFeedFetcherCache :one
+SELECT
+  *
+FROM
+  feed_fetcher_caches
+WHERE
+  feed_id = ?;
+
+-- name: UpsertFeedFetcherCache :one
+INSERT INTO feed_fetcher_caches (
+  feed_id,
+  etag,
+  last_modified
+) VALUES (
+  ?, ?, ?
+)
+ON CONFLICT(feed_id) DO UPDATE SET
+  etag = excluded.etag,
+  last_modified = excluded.last_modified,
+  updated_at = CURRENT_TIMESTAMP
+RETURNING *;
+
+-- name: DeleteFeedFetcherCache :exec
+DELETE FROM
+  feed_fetcher_caches
+WHERE
+  feed_id = ?;
