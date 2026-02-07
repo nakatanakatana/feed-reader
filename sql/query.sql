@@ -325,12 +325,12 @@ ORDER BY
 SELECT
   *
 FROM
-  feed_fetcher_caches
+  feed_fetcher_cache
 WHERE
   feed_id = ?;
 
 -- name: UpsertFeedFetcherCache :one
-INSERT INTO feed_fetcher_caches (
+INSERT INTO feed_fetcher_cache (
   feed_id,
   etag,
   last_modified
@@ -345,6 +345,6 @@ RETURNING *;
 
 -- name: DeleteFeedFetcherCache :exec
 DELETE FROM
-  feed_fetcher_caches
+  feed_fetcher_cache
 WHERE
   feed_id = ?;

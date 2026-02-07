@@ -20,6 +20,14 @@ type Feed struct {
 	UpdatedAt     string  `json:"updated_at"`
 }
 
+type FeedFetcherCache struct {
+	FeedID       string  `json:"feed_id"`
+	Etag         *string `json:"etag"`
+	LastModified *string `json:"last_modified"`
+	CreatedAt    string  `json:"created_at"`
+	UpdatedAt    string  `json:"updated_at"`
+}
+
 type FeedItem struct {
 	FeedID    string `json:"feed_id"`
 	ItemID    string `json:"item_id"`

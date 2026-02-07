@@ -66,7 +66,7 @@ CREATE TABLE feed_tags (
   FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
 );
 
-CREATE TABLE feed_fetcher_caches (
+CREATE TABLE feed_fetcher_cache (
   feed_id       TEXT PRIMARY KEY,
   etag          TEXT,
   last_modified TEXT,

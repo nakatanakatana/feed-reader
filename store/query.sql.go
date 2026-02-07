@@ -417,6 +417,18 @@ func (q *Queries) DeleteFeed(ctx context.Context, id string) error {
 	return err
 }
 
+const deleteFeedFetcherCache = `-- name: DeleteFeedFetcherCache :exec
+DELETE FROM
+  feed_fetcher_cache
+WHERE
+  feed_id = ?
+`
+
+func (q *Queries) DeleteFeedFetcherCache(ctx context.Context, feedID string) error {
+	_, err := q.db.ExecContext(ctx, deleteFeedFetcherCache, feedID)
+	return err
+}
+
 const deleteFeedTag = `-- name: DeleteFeedTag :exec
 DELETE FROM
   feed_tags
@@ -512,6 +524,28 @@ func (q *Queries) GetFeedByURL(ctx context.Context, url string) (Feed, error) {
 		&i.FeedType,
 		&i.FeedVersion,
 		&i.LastFetchedAt,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getFeedFetcherCache = `-- name: GetFeedFetcherCache :one
+SELECT
+  feed_id, etag, last_modified, created_at, updated_at
+FROM
+  feed_fetcher_cache
+WHERE
+  feed_id = ?
+`
+
+func (q *Queries) GetFeedFetcherCache(ctx context.Context, feedID string) (FeedFetcherCache, error) {
+	row := q.db.QueryRowContext(ctx, getFeedFetcherCache, feedID)
+	var i FeedFetcherCache
+	err := row.Scan(
+		&i.FeedID,
+		&i.Etag,
+		&i.LastModified,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -980,6 +1014,40 @@ func (q *Queries) UpdateFeed(ctx context.Context, arg UpdateFeedParams) (Feed, e
 		&i.FeedType,
 		&i.FeedVersion,
 		&i.LastFetchedAt,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const upsertFeedFetcherCache = `-- name: UpsertFeedFetcherCache :one
+INSERT INTO feed_fetcher_cache (
+  feed_id,
+  etag,
+  last_modified
+) VALUES (
+  ?, ?, ?
+)
+ON CONFLICT(feed_id) DO UPDATE SET
+  etag = excluded.etag,
+  last_modified = excluded.last_modified,
+  updated_at = CURRENT_TIMESTAMP
+RETURNING feed_id, etag, last_modified, created_at, updated_at
+`
+
+type UpsertFeedFetcherCacheParams struct {
+	FeedID       string  `json:"feed_id"`
+	Etag         *string `json:"etag"`
+	LastModified *string `json:"last_modified"`
+}
+
+func (q *Queries) UpsertFeedFetcherCache(ctx context.Context, arg UpsertFeedFetcherCacheParams) (FeedFetcherCache, error) {
+	row := q.db.QueryRowContext(ctx, upsertFeedFetcherCache, arg.FeedID, arg.Etag, arg.LastModified)
+	var i FeedFetcherCache
+	err := row.Scan(
+		&i.FeedID,
+		&i.Etag,
+		&i.LastModified,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
