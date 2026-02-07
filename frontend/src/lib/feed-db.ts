@@ -84,7 +84,6 @@ export const feeds = createCollection(
     },
     getKey: (feed: Feed) => feed.id,
     onInsert: async ({ transaction }) => {
-      console.log("onInsert");
       transaction.mutations.map(async (m) => {
         const url = m.modified.url;
         const tagIds = m.modified.tags.map((t) => t.id);
