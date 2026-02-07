@@ -4,7 +4,7 @@
 - [x] Task: Add the `feed_fetcher_cache` table definition to `sql/schema.sql`. 068fa70
 - [x] Task: Add SQL queries to `sql/query.sql` for CRUD operations on `feed_fetcher_cache`. 068fa70
 - [x] Task: Run `sqlc generate` to update the Go database code. 068fa70
-- [ ] Task: Create a unit test in `store/` to verify cache data persistence.
+- [x] Task: Create a unit test in `store/` to verify cache data persistence. 6fda746
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Database Schema and Data Access' (Protocol in workflow.md)
 
 ## Phase 2: Fetcher Service Integration
