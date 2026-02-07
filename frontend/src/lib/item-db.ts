@@ -82,17 +82,7 @@ export const items = createCollection(
         isRead: item.isRead,
         createdAt: item.createdAt,
         feedId: item.feedId,
-        // @ts-expect-error - Additional fields from GetItem response
-        url: item.url,
-        // @ts-expect-error
-        author: item.author,
-        // @ts-expect-error
-        categories: item.categories,
-        // @ts-expect-error
-        imageUrl: item.imageUrl,
-        // @ts-expect-error
-        content: item.content,
-      })) as Item[];
+      }));
     },
     getKey: (item: Item) => item.id,
   }),

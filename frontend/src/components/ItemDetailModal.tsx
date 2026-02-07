@@ -1,9 +1,9 @@
-import { eq, useLiveQuery } from "@tanstack/solid-db";
-import { useMutation } from "@tanstack/solid-query";
+import { useMutation, useQuery } from "@tanstack/solid-query";
 import { For, type JSX, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
-import { items, updateItemStatus } from "../lib/db";
+import { updateItemStatus } from "../lib/db";
+import { getItem } from "../lib/item-db";
 import { formatDate, normalizeCategories } from "../lib/item-utils";
 import { MarkdownRenderer } from "./MarkdownRenderer";
 import { ActionButton } from "./ui/ActionButton";
@@ -20,15 +20,17 @@ interface ItemDetailModalProps {
 }
 
 export function ItemDetailModal(props: ItemDetailModalProps) {
-  const itemsQuery = useLiveQuery((q) => {
-    return q
-      .from({ item: items })
-      .where(({ item }) => (props.itemId ? eq(item.id, props.itemId) : false))
-      .select(({ item }) => item);
-  });
+  const itemQuery = useQuery(() => ({
+    queryKey: ["item", props.itemId],
+    queryFn: async () => {
+      if (!props.itemId) return null;
+      return await getItem(props.itemId);
+    },
+    enabled: !!props.itemId,
+  }));
 
-  const item = () => itemsQuery()[0];
-  const isLoading = () => itemsQuery.isLoading;
+  const item = () => itemQuery.data ?? null;
+  const isLoading = () => itemQuery.isPending;
 
   const updateStatusMutation = useMutation(() => ({
     mutationFn: updateItemStatus,
