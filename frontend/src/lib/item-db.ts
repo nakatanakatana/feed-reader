@@ -1,19 +1,19 @@
 import { createClient } from "@connectrpc/connect";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import {
-  eq,
   createCollection,
   createLiveQueryCollection,
+  eq,
 } from "@tanstack/solid-db";
 import { createMemo, createRoot } from "solid-js";
 import { ItemService, type ListItem } from "../gen/item/v1/item_pb";
-import { queryClient, transport } from "./query";
+import { itemStore } from "./item-store";
 import {
-  DateFilterValue,
+  type DateFilterValue,
   dateToTimestamp,
   getPublishedSince,
 } from "./item-utils";
-import { itemStore } from "./item-store";
+import { queryClient, transport } from "./query";
 
 export interface Item {
   id: string;
@@ -36,16 +36,17 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
   let lastFetched: Date | null = null;
   const isRead = showRead ? {} : { isRead: false };
   const sinceTimestamp = since !== "all" ? getPublishedSince(since) : undefined;
-  
+
   return createCollection(
     queryCollectionOptions({
       id: "items",
-	  gcTime: 5*1000,
+      gcTime: 5 * 1000,
       queryClient,
+
       refetchInterval: 1 * 60 * 1000,
       queryKey: ["items", { since }],
       queryFn: async ({ queryKey }) => {
-		  console.log("queryFn")
+        console.log("queryFn");
         const existingData = queryClient.getQueryData(queryKey) || [];
         const searchSince =
           lastFetched === null ? sinceTimestamp : dateToTimestamp(lastFetched);
@@ -67,29 +68,18 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
           feedId: item.feedId,
         }));
 
-        // Merge existing data with new data, ensuring no duplicates and respecting local state
-        // If an item exists in both, we might want to prioritize local isRead status 
-        // if it was recently updated. However, the most robust way is to let TanStack DB
-        // handle the merge but avoid duplicate IDs in the array we return.
-        const merged = [...existingData];
-        for (const newItem of respList) {
-          const index = merged.findIndex((i) => i.id === newItem.id);
-          if (index !== -1) {
-            // Keep the item but potentially update fields. 
-            // Here we prioritize the API data BUT we could merge here if needed.
-            // For now, let's just replace to ensure we have the latest metadata, 
-            // relying on onUpdate + Query Cache fix to handle reactivity.
-            merged[index] = { ...merged[index], ...newItem };
-          } else {
-            merged.push(newItem);
-          }
-        }
-
-        return merged;
+        // @ts-expect-error
+        return [...existingData, ...respList];
       },
       getKey: (item: ListItem) => item.id,
       onUpdate: async ({ transaction }) => {
-        const ids = transaction.mutations.map((m) => m.modified.id);
+        const ids = transaction.mutations.map((m) => {
+          items().utils.writeUpdate({
+            id: m.modified.id,
+            isRead: m.modified.isRead,
+          });
+          return m.modified.id;
+        });
         const firstMutation = transaction.mutations[0];
         const isRead = firstMutation.modified.isRead;
 
@@ -98,16 +88,15 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
           isRead: isRead,
         });
 
-        // Update TanStack Query cache to prevent queryFn from overwriting with stale data
-        const currentQueryKey = ["items", { since }];
-        const existingData = queryClient.getQueryData<Item[]>(currentQueryKey);
-        if (existingData) {
-          const newData = existingData.map((item) => {
-            const mutation = transaction.mutations.find(m => m.modified.id === item.id);
-            return mutation ? { ...item, ...mutation.modified } : item;
-          });
-          queryClient.setQueryData(currentQueryKey, newData);
-        }
+        // const currentQueryKey = ["items", { since }];
+        // const existingData = queryClient.getQueryData<Item[]>(currentQueryKey);
+        // if (existingData) {
+        //   const newData = existingData.map((item) => {
+        //     const mutation = transaction.mutations.find(m => m.modified.id === item.id);
+        //     return mutation ? { ...item, ...mutation.modified } : item;
+        //   });
+        //   queryClient.setQueryData(currentQueryKey, newData);
+        // }
 
         return { refetch: false };
       },
@@ -117,8 +106,8 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
 
 export const items = createRoot(() =>
   createMemo(() =>
-    createItems(itemStore.state.showRead, itemStore.state.since)
-  )
+    createItems(itemStore.state.showRead, itemStore.state.since),
+  ),
 );
 
 export const itemsUnreadQuery = createRoot(() =>
@@ -127,9 +116,9 @@ export const itemsUnreadQuery = createRoot(() =>
       q
         .from({ item: items() })
         .where(({ item }) => eq(item.isRead, false))
-        .select(({ item }) => ({ ...item }))
-    )
-  )
+        .select(({ item }) => ({ ...item })),
+    ),
+  ),
 );
 
 export const getItem = async (id: string) => {

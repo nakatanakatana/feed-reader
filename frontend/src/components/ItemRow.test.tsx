@@ -7,7 +7,6 @@ import { page } from "vitest/browser";
 import { ListItemSchema } from "../gen/item/v1/item_pb";
 import { TransportProvider } from "../lib/transport-context";
 import { ItemRow } from "./ItemRow";
-import { items } from "../lib/db";
 
 const { updateMock } = vi.hoisted(() => ({
   updateMock: vi.fn(),
@@ -140,12 +139,8 @@ describe("ItemRow", () => {
     await toggleButton.click();
 
     expect(consoleSpy).not.toHaveBeenCalled();
-    // Check that update was called with correct ID and some metadata/callback
-    expect(updateMock).toHaveBeenCalledWith(
-        mockItem.id, 
-        expect.anything(), 
-        expect.any(Function)
-    );
+    // Check that update was called with correct ID and callback
+    expect(updateMock).toHaveBeenCalledWith(mockItem.id, expect.any(Function));
     consoleSpy.mockRestore();
   });
 

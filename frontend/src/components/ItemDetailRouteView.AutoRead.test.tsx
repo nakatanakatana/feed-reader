@@ -11,16 +11,18 @@ import { page } from "vitest/browser";
 import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
 
-const { insertMock, updateMock } = vi.hoisted(() => ({
-  insertMock: vi.fn(),
+const { updateMock } = vi.hoisted(() => ({
   updateMock: vi.fn(),
 }));
 
 // Mock db
 vi.mock("../lib/db", () => ({
   // Add other exports to avoid ReferenceErrors
-  
-  itemsUnreadQuery: vi.fn(() => ({ toArray: [], isReady: vi.fn().mockReturnValue(true) })),
+
+  itemsUnreadQuery: vi.fn(() => ({
+    toArray: [],
+    isReady: vi.fn().mockReturnValue(true),
+  })),
   updateItemStatus: vi.fn(),
   feedInsert: vi.fn(),
   manageFeedTags: vi.fn(),
@@ -41,7 +43,7 @@ vi.mock("@tanstack/solid-db", async () => {
       { id: "2", title: "Item 2", isRead: false },
     ],
     // Mock other solid-db exports if needed
-    isUndefined: (v: any) => v === undefined,
+    isUndefined: (v: unknown) => v === undefined,
     eq: () => ({}),
     count: () => 0,
     createCollection: vi.fn(() => ({})),
@@ -51,11 +53,21 @@ vi.mock("@tanstack/solid-db", async () => {
 
 // Mock ItemDetailModal to avoid dealing with its internal logic
 vi.mock("./ItemDetailModal", () => ({
-  ItemDetailModal: (props: any) => (
+  ItemDetailModal: (props: {
+    onPrev: () => void;
+    onNext: () => void;
+    onClose: () => void;
+  }) => (
     <div>
-      <button onClick={props.onPrev}>← Previous</button>
-      <button onClick={props.onNext}>Next →</button>
-      <button onClick={props.onClose}>Close</button>
+      <button type="button" onClick={props.onPrev}>
+        ← Previous
+      </button>
+      <button type="button" onClick={props.onNext}>
+        Next →
+      </button>
+      <button type="button" onClick={props.onClose}>
+        Close
+      </button>
     </div>
   ),
 }));

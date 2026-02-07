@@ -1,7 +1,6 @@
 import { eq, useLiveQuery } from "@tanstack/solid-db";
-import { useMutation } from "@tanstack/solid-query";
 import { useNavigate } from "@tanstack/solid-router";
-import { items, feedTag } from "../lib/db";
+import { feedTag, items } from "../lib/db";
 import type { DateFilterValue } from "../lib/item-utils";
 import { ItemDetailModal } from "./ItemDetailModal";
 

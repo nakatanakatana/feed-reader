@@ -1,15 +1,15 @@
 import { createClient } from "@connectrpc/connect";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import {
-  eq,
   count,
   createCollection,
   createLiveQueryCollection,
+  eq,
 } from "@tanstack/solid-db";
 import type { ListTag } from "../gen/tag/v1/tag_pb";
 import { TagService } from "../gen/tag/v1/tag_pb";
-import { queryClient, transport } from "./query";
 import { feedTag } from "./feed-db";
+import { queryClient, transport } from "./query";
 
 export interface Tag {
   id: string;

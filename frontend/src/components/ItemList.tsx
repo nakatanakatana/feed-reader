@@ -1,14 +1,9 @@
-import { isUndefined, eq, useLiveQuery, count } from "@tanstack/solid-db";
+import { count, eq, useLiveQuery } from "@tanstack/solid-db";
 import { useNavigate } from "@tanstack/solid-router";
 import { createEffect, createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
-import {
-  items,
-  feedTag,
-  tags,
-  itemsUnreadQuery,
-} from "../lib/db";
+import { feedTag, items, itemsUnreadQuery, tags } from "../lib/db";
 import { itemStore } from "../lib/item-store";
 import { type DateFilterValue, formatUnreadCount } from "../lib/item-utils";
 import { DateFilterSelector } from "./DateFilterSelector";
@@ -17,7 +12,6 @@ import { ActionButton } from "./ui/ActionButton";
 import { Badge } from "./ui/Badge";
 import { EmptyState } from "./ui/EmptyState";
 import { TagChip } from "./ui/TagChip";
-import { itemsDateFilter, itemsShowReadFilter } from "../lib/default";
 
 interface ItemListProps {
   tagId?: string;
@@ -39,7 +33,10 @@ export function ItemList(props: ItemListProps) {
   });
 
   const itemQuery = useLiveQuery((q) => {
-	  console.log("itemQuery", items().toArray.filter((i) => i.isRead === false).length)
+    console.log(
+      "itemQuery",
+      items().toArray.filter((i) => i.isRead === false).length,
+    );
     let query = q.from({ item: items() });
     if (props.tagId) {
       query = query

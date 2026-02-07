@@ -2,7 +2,7 @@ import { useLiveQuery } from "@tanstack/solid-db";
 import { createSignal, For } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
-import { feedInsert, feeds } from "../lib/db";
+import { feedInsert } from "../lib/db";
 import { tagsFeedQuery } from "../lib/tag-db";
 import { ActionButton } from "./ui/ActionButton";
 import { TagChip } from "./ui/TagChip";
@@ -25,7 +25,9 @@ export function AddFeedForm() {
     setError(null);
 
     try {
-      await feedInsert(url(), selectedTagIds());
+      const tags = tagsQuery().filter((t) => selectedTagIds().includes(t.id));
+      // @ts-expect-error
+      await feedInsert(url(), tags);
 
       setUrl("");
       setSelectedTagIds([]);

@@ -1,15 +1,11 @@
 import { createClient } from "@connectrpc/connect";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
-import {
-  createCollection,
-  createLiveQueryCollection,
-  eq,
-} from "@tanstack/solid-db";
+import { createCollection } from "@tanstack/solid-db";
 import type { ListFeed } from "../gen/feed/v1/feed_pb";
 import { FeedService } from "../gen/feed/v1/feed_pb";
+import type { Tag } from "../gen/tag/v1/tag_pb";
 import { fetchingState } from "./fetching-state";
 import { queryClient, transport } from "./query";
-import { tags, type Tag } from "./tag-db";
 
 export interface Feed {
   id: string;
@@ -88,6 +84,7 @@ export const feeds = createCollection(
     },
     getKey: (feed: Feed) => feed.id,
     onInsert: async ({ transaction }) => {
+      console.log("onInsert");
       transaction.mutations.map(async (m) => {
         const url = m.modified.url;
         const tagIds = m.modified.tags.map((t) => t.id);
@@ -104,7 +101,7 @@ export const feeds = createCollection(
   }),
 );
 
-export const feedInsert = (url: string, tags: string[]) => {
+export const feedInsert = (url: string, tags: Tag[]) => {
   const dummyFeed = {
     id: "_dummy",
     url: "_dummy",

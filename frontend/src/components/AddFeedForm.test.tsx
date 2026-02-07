@@ -4,7 +4,6 @@ import { render } from "solid-js/web";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { FeedSchema } from "../gen/feed/v1/feed_pb";
-import * as db from "../lib/db";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { AddFeedForm } from "./AddFeedForm";
@@ -40,7 +39,7 @@ describe("AddFeedForm", () => {
 
   it("creates a new feed", async () => {
     vi.mocked(mocks.feedInsert).mockResolvedValue(
-      // @ts-ignore
+      // @ts-expect-error
       create(FeedSchema, {
         id: "1",
         url: "http://example.com",

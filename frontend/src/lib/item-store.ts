@@ -1,7 +1,7 @@
 import { createRoot } from "solid-js";
 import { createStore } from "solid-js/store";
-import { DateFilterValue } from "./item-utils";
 import { itemsDateFilter, itemsShowReadFilter } from "./default";
+import type { DateFilterValue } from "./item-utils";
 
 function createItemStore() {
   const [state, setState] = createStore({
