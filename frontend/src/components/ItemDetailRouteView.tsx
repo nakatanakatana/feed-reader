@@ -1,7 +1,7 @@
-import { useLiveQuery } from "@tanstack/solid-db";
+import { eq, useLiveQuery } from "@tanstack/solid-db";
 import { useMutation } from "@tanstack/solid-query";
 import { useNavigate } from "@tanstack/solid-router";
-import { items } from "../lib/db";
+import { items, feedTag } from "../lib/db";
 import type { DateFilterValue } from "../lib/item-utils";
 import { ItemDetailModal } from "./ItemDetailModal";
 
@@ -21,9 +21,17 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
     return { to, params };
   };
 
-  // Use useLiveQuery with items Collection
+  // Use useLiveQuery with items Collection and respect tag filtering
   const itemsQuery = useLiveQuery((q) => {
-    return q.from({ item: items });
+    let query = q.from({ item: items() });
+    if (props.tagId) {
+      query = query
+        .innerJoin({ ft: feedTag }, ({ item, ft }) =>
+          eq(item.feedId, ft.feedId),
+        )
+        .where(({ ft }) => eq(ft.tagId, props.tagId));
+    }
+    return query.select(({ item }) => ({ ...item }));
   });
 
   const allItems = () => itemsQuery();
@@ -69,7 +77,7 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
 
   const markCurrentAsRead = () => {
     if (!props.itemId) return;
-    items.update(props.itemId, (draft) => {
+    items().update(props.itemId, (draft) => {
       draft.isRead = true;
     });
   };

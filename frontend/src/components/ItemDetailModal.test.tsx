@@ -22,9 +22,9 @@ vi.mock("../lib/item-db", () => ({
       isRead: false,
     });
   }),
-  items: {
+  items: vi.fn(() => ({
     update: vi.fn(),
-  },
+  })),
 }));
 
 describe("ItemDetailModal", () => {

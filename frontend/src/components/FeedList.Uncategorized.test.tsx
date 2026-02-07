@@ -15,9 +15,9 @@ import { setupLiveQuery } from "../test-utils/live-query";
 
 // Mock the db module
 vi.mock("../lib/db", () => ({
-  setItemsBase: vi.fn(),
-  itemsUnreadQuery: { toArray: [], isReady: vi.fn().mockReturnValue(true) },
-  items: { insert: vi.fn(), update: vi.fn(), delete: vi.fn(), toArray: [] },
+  
+  itemsUnreadQuery: vi.fn(() => ({ toArray: [], isReady: vi.fn().mockReturnValue(true) })),
+  items: vi.fn(() => ({ insert: vi.fn(), update: vi.fn(), delete: vi.fn(), toArray: [] })),
   feeds: {
     delete: vi.fn(),
     isReady: vi.fn().mockReturnValue(true),

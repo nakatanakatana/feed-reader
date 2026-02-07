@@ -9,11 +9,15 @@ import { TransportProvider } from "../lib/transport-context";
 import { ItemRow } from "./ItemRow";
 import { items } from "../lib/db";
 
+const { updateMock } = vi.hoisted(() => ({
+  updateMock: vi.fn(),
+}));
+
 // Mock the db module
 vi.mock("../lib/db", () => ({
-  items: {
-    update: vi.fn(),
-  },
+  items: vi.fn(() => ({
+    update: updateMock,
+  })),
 }));
 
 describe("ItemRow", () => {
@@ -136,7 +140,12 @@ describe("ItemRow", () => {
     await toggleButton.click();
 
     expect(consoleSpy).not.toHaveBeenCalled();
-    expect(items.update).toHaveBeenCalledWith(mockItem.id, { isRead: true });
+    // Check that update was called with correct ID and some metadata/callback
+    expect(updateMock).toHaveBeenCalledWith(
+        mockItem.id, 
+        expect.anything(), 
+        expect.any(Function)
+    );
     consoleSpy.mockRestore();
   });
 

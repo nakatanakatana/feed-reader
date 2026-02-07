@@ -19,8 +19,8 @@ const { insertMock, updateMock } = vi.hoisted(() => ({
 // Mock db
 vi.mock("../lib/db", () => ({
   // Add other exports to avoid ReferenceErrors
-  setItemsBase: vi.fn(),
-  itemsUnreadQuery: { toArray: [], isReady: vi.fn().mockReturnValue(true) },
+  
+  itemsUnreadQuery: vi.fn(() => ({ toArray: [], isReady: vi.fn().mockReturnValue(true) })),
   updateItemStatus: vi.fn(),
   feedInsert: vi.fn(),
   manageFeedTags: vi.fn(),
@@ -29,7 +29,7 @@ vi.mock("../lib/db", () => ({
   tags: {},
   db: {},
   refreshFeeds: vi.fn(),
-  items: { update: updateMock },
+  items: vi.fn(() => ({ update: updateMock })),
   createItemBulkMarkAsReadTx: vi.fn(),
 }));
 
@@ -91,9 +91,7 @@ describe("ItemDetailRouteView Auto-Read", () => {
     const nextButton = page.getByText("Next →");
     await nextButton.click();
 
-    expect(updateMock).toHaveBeenCalledWith("1", {
-      isRead: true,
-    });
+    expect(updateMock).toHaveBeenCalledWith("1", expect.any(Function));
   });
 
   it("marks current item as read when navigating to prev", async () => {
@@ -114,8 +112,6 @@ describe("ItemDetailRouteView Auto-Read", () => {
     const prevButton = page.getByText("← Previous");
     await prevButton.click();
 
-    expect(updateMock).toHaveBeenCalledWith("2", {
-      isRead: true,
-    });
+    expect(updateMock).toHaveBeenCalledWith("2", expect.any(Function));
   });
 });

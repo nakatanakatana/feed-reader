@@ -44,9 +44,16 @@ vi.mock("../lib/db", () => ({
   feedTag: {
     toArray: [],
   },
-  setItemsBase: vi.fn(),
-  itemsUnreadQuery: { toArray: [], isReady: vi.fn().mockReturnValue(true) },
-  items: { insert: vi.fn(), update: vi.fn(), delete: vi.fn(), toArray: [] },
+  itemsUnreadQuery: vi.fn(() => ({ 
+    toArray: [], 
+    isReady: vi.fn().mockReturnValue(true) 
+  })),
+  items: vi.fn(() => ({ 
+    insert: vi.fn(), 
+    update: vi.fn(), 
+    delete: vi.fn(), 
+    toArray: [] 
+  })),
   feeds: {
     delete: vi.fn(),
     isReady: vi.fn().mockReturnValue(true),
@@ -55,11 +62,6 @@ vi.mock("../lib/db", () => ({
   addFeed: vi.fn(),
   feedInsert: vi.fn(),
   updateItemStatus: vi.fn(),
-  setItemsBase: vi.fn(),
-  itemsUnreadQuery: { toArray: [], isReady: vi.fn().mockReturnValue(true) },
-  items: {
-    toArray: [],
-  },
   manageFeedTags: vi.fn(),
   refreshFeeds: vi.fn(),
 }));

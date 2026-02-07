@@ -6,10 +6,10 @@ import { flex, stack } from "../../styled-system/patterns";
 import {
   items,
   feedTag,
-  setItemsBase,
   tags,
   itemsUnreadQuery,
 } from "../lib/db";
+import { itemStore } from "../lib/item-store";
 import { type DateFilterValue, formatUnreadCount } from "../lib/item-utils";
 import { DateFilterSelector } from "./DateFilterSelector";
 import { ItemRow } from "./ItemRow";
@@ -32,23 +32,14 @@ export function ItemList(props: ItemListProps) {
   );
   const [isBulkMarking, setIsBulkMarking] = createSignal(false);
 
-  const [showRead, setShowRead] = createSignal(itemsShowReadFilter);
-  const [dateFilter, setDateFilter] = createSignal<DateFilterValue>(
-    props.dateFilter ?? itemsDateFilter,
-  );
-
   createEffect(() => {
     if (props.dateFilter) {
-      setDateFilter(props.dateFilter);
+      itemStore.setDateFilter(props.dateFilter);
     }
   });
 
-  createEffect(() => {
-    setItemsBase(showRead(), dateFilter());
-  });
-
   const itemQuery = useLiveQuery((q) => {
-    let query = q.from({ item: items });
+    let query = q.from({ item: items() });
     if (props.tagId) {
       query = query
         .innerJoin({ ft: feedTag }, ({ item, ft }) =>
@@ -59,13 +50,13 @@ export function ItemList(props: ItemListProps) {
     return query.select(({ item }) => ({ ...item }));
   });
 
-  const totalUnread = useLiveQuery((q) => q.from({ item: itemsUnreadQuery }));
+  const totalUnread = useLiveQuery((q) => q.from({ item: itemsUnreadQuery() }));
 
   const tagsQuery = useLiveQuery((q) => {
     return q
       .from({ tag: tags })
       .leftJoin({ tf: feedTag }, ({ tag, tf }) => eq(tag.id, tf.tagId))
-      .leftJoin({ i: itemsUnreadQuery }, ({ tf, i }) =>
+      .leftJoin({ i: itemsUnreadQuery() }, ({ tf, i }) =>
         eq(tf?.feedId, i.feedId),
       )
       .groupBy(({ tag }) => [tag.id, tag.name])
@@ -77,7 +68,7 @@ export function ItemList(props: ItemListProps) {
   });
 
   const handleDateFilterSelect = (value: DateFilterValue) => {
-    setDateFilter(value);
+    itemStore.setDateFilter(value);
     navigate({
       // @ts-expect-error
       search: (prev) => ({
@@ -130,7 +121,7 @@ export function ItemList(props: ItemListProps) {
     try {
       await Promise.all(
         ids.map((id) =>
-          items.update(id, (draft) => {
+          items().update(id, (draft) => {
             draft.isRead = true;
           }),
         ),
@@ -199,7 +190,7 @@ export function ItemList(props: ItemListProps) {
             class={flex({ gap: "2", alignItems: "center", marginRight: "4" })}
           >
             <DateFilterSelector
-              value={dateFilter()}
+              value={itemStore.state.since}
               onSelect={handleDateFilterSelect}
             />
           </div>
@@ -209,8 +200,8 @@ export function ItemList(props: ItemListProps) {
             <input
               id="show-read-toggle"
               type="checkbox"
-              checked={showRead()}
-              onChange={(e) => setShowRead(e.currentTarget.checked)}
+              checked={itemStore.state.showRead}
+              onChange={(e) => itemStore.setShowRead(e.currentTarget.checked)}
               class={css({ cursor: "pointer" })}
             />
             <label

@@ -35,8 +35,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     const currentItem = item();
     if (!currentItem) return;
 
-    items.update(currentItem.id, (draft) => {
-      draft.isRead = !currentItem.isRead;
+          items().update(currentItem.id, (draft) => {      draft.isRead = !currentItem.isRead;
     });
   };
 

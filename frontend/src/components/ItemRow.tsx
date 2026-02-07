@@ -23,7 +23,7 @@ export function ItemRow(props: ItemRowProps) {
     const newIsRead = !props.item.isRead;
     try {
       console.log("items", JSON.stringify(items.toArray));
-      items.update(props.item.id, { metadata: { intent: "read" } }, (draft) => {
+      items().update(props.item.id, { metadata: { intent: "read" } }, (draft) => {
         draft.id = props.item.id;
         draft.isRead = newIsRead;
       });

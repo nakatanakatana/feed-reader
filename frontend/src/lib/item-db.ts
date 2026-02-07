@@ -5,6 +5,7 @@ import {
   createCollection,
   createLiveQueryCollection,
 } from "@tanstack/solid-db";
+import { createMemo, createRoot } from "solid-js";
 import { ItemService, type ListItem } from "../gen/item/v1/item_pb";
 import { queryClient, transport } from "./query";
 import {
@@ -12,7 +13,7 @@ import {
   dateToTimestamp,
   getPublishedSince,
 } from "./item-utils";
-import { itemsDateFilter, itemsShowReadFilter } from "./default";
+import { itemStore } from "./item-store";
 
 export interface Item {
   id: string;
@@ -35,7 +36,6 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
   let lastFetched: Date | null = null;
   const isRead = showRead ? {} : { isRead: false };
   const sinceTimestamp = since !== "all" ? getPublishedSince(since) : undefined;
-  console.log("isRead", isRead, since);
   
   return createCollection(
     queryCollectionOptions({
@@ -84,17 +84,21 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
   );
 };
 
-export let items = createItems(itemsShowReadFilter, itemsDateFilter);
+export const items = createRoot(() =>
+  createMemo(() =>
+    createItems(itemStore.state.showRead, itemStore.state.since)
+  )
+);
 
-export const setItemsBase = (showRead: boolean, since: DateFilterValue) => {
-  items = createItems(showRead, since);
-};
-
-export const itemsUnreadQuery = createLiveQueryCollection((q) =>
-  q
-    .from({ item: items })
-    .where(({ item }) => eq(item.isRead, false))
-    .select(({ item }) => ({ ...item })),
+export const itemsUnreadQuery = createRoot(() =>
+  createMemo(() =>
+    createLiveQueryCollection((q) =>
+      q
+        .from({ item: items() })
+        .where(({ item }) => eq(item.isRead, false))
+        .select(({ item }) => ({ ...item }))
+    )
+  )
 );
 
 export const getItem = async (id: string) => {
