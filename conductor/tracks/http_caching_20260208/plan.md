@@ -9,10 +9,10 @@
 
 ## Phase 2: Fetcher Service Integration
 - [x] Task: Modify `cmd/feed-reader/fetcher.go` to include cache lookup logic before making HTTP requests. 67873cd
-- [ ] Task: Update the HTTP client logic to include `If-None-Match` and `If-Modified-Since` headers.
-- [ ] Task: Implement handling for `304 Not Modified` responses to skip processing.
-- [ ] Task: Implement logic to update or delete cache info based on `200 OK` or error responses.
-- [ ] Task: Add unit tests in `cmd/feed-reader/fetcher_test.go` using a mock HTTP server to verify conditional GET behavior.
+- [x] Task: Update the HTTP client logic to include `If-None-Match` and `If-Modified-Since` headers. 67873cd
+- [x] Task: Implement handling for `304 Not Modified` responses to skip processing. d1d8206
+- [x] Task: Implement logic to update or delete cache info based on `200 OK` or error responses. d1d8206
+- [x] Task: Add unit tests in `cmd/feed-reader/fetcher_test.go` using a mock HTTP server to verify conditional GET behavior. d1d8206
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Fetcher Service Integration' (Protocol in workflow.md)
 
 ## Phase 3: Integration and Verification
