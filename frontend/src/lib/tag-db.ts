@@ -1,12 +1,15 @@
 import { createClient } from "@connectrpc/connect";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import {
+  eq,
+  count,
   createCollection,
   createLiveQueryCollection,
 } from "@tanstack/solid-db";
 import type { ListTag } from "../gen/tag/v1/tag_pb";
 import { TagService } from "../gen/tag/v1/tag_pb";
 import { queryClient, transport } from "./query";
+import { feedTag } from "./feed-db";
 
 export interface Tag {
   id: string;
@@ -26,24 +29,34 @@ export const tags = createCollection(
       return response.tags.map((tag: ListTag) => ({
         id: tag.id,
         name: tag.name,
-        unreadCount: tag.unreadCount,
       }));
+    },
+    onInsert: async ({ transaction }) => {
+      transaction.mutations.map(async (m) => {
+        await tagClient.createTag({ name: m.modified.name });
+      });
+    },
+    onDelete: async ({ transaction }) => {
+      transaction.mutations.map(async (m) => {
+        await tagClient.deleteTag({ id: m.modified.id });
+      });
     },
     getKey: (tag: Tag) => tag.id,
   }),
 );
 
-export const tagsQuery = createLiveQueryCollection((q) => {
+export const tagsBaseQuery = createLiveQueryCollection((q) => {
   return q.from({ tag: tags }).select(({ tag }) => ({ ...tag }));
 });
 
-export const createTag = async (name: string) => {
-  await tagClient.createTag({ name });
-  queryClient.invalidateQueries({ queryKey: ["tags"] });
-};
-
-export const deleteTag = async (id: string) => {
-  await tagClient.deleteTag({ id });
-  queryClient.invalidateQueries({ queryKey: ["tags"] });
-  queryClient.invalidateQueries({ queryKey: ["feeds"] });
-};
+export const tagsFeedQuery = createLiveQueryCollection((q) =>
+  q
+    .from({ tag: tagsBaseQuery })
+    .leftJoin({ ft: feedTag }, ({ tag, ft }) => eq(tag.id, ft.tagId))
+    .groupBy(({ tag }) => [tag.id, tag.name])
+    .select(({ tag, ft }) => ({
+      id: tag.id,
+      name: tag.name,
+      feedCount: count(ft?.feedId),
+    })),
+);

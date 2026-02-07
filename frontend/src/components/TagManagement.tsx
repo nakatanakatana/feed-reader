@@ -1,9 +1,8 @@
 import { useLiveQuery } from "@tanstack/solid-db";
-import { useMutation } from "@tanstack/solid-query";
 import { createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
-import { createTag, deleteTag, tags as tagsCollection } from "../lib/tag-db";
+import { tags, tagsFeedQuery } from "../lib/tag-db";
 import { ActionButton } from "./ui/ActionButton";
 import { Badge } from "./ui/Badge";
 import { EmptyState } from "./ui/EmptyState";
@@ -12,23 +11,17 @@ export const TagManagement = () => {
   const [newTagName, setNewTagName] = createSignal("");
 
   const tagsQuery = useLiveQuery((q) => {
-    return q.from({ tag: tagsCollection }).select(({ tag }) => ({ ...tag }));
+    return q
+      .from({ tag: tagsFeedQuery })
+      .orderBy(({ tag }) => tag.feedCount, "desc");
   });
-
-  const createTagMutation = useMutation(() => ({
-    mutationFn: createTag,
-  }));
-
-  const deleteTagMutation = useMutation(() => ({
-    mutationFn: deleteTag,
-  }));
 
   const handleCreateTag = (e: Event) => {
     e.preventDefault();
     if (!newTagName()) return;
-    createTagMutation.mutate(newTagName(), {
-      onSuccess: () => setNewTagName(""),
-    });
+
+    tags.insert({ id: "dummy", name: newTagName() });
+    setNewTagName("");
   };
 
   const handleDeleteTag = (id: string, name: string, feedCount: bigint) => {
@@ -38,7 +31,8 @@ export const TagManagement = () => {
       );
       if (!confirmed) return;
     }
-    deleteTagMutation.mutate(id);
+
+    tags.delete(id);
   };
 
   return (
@@ -74,12 +68,8 @@ export const TagManagement = () => {
               _focusVisible: { outlineColor: "blue.500" },
             })}
           />
-          <ActionButton
-            type="submit"
-            variant="primary"
-            disabled={createTagMutation.isPending}
-          >
-            {createTagMutation.isPending ? "Adding..." : "Add Tag"}
+          <ActionButton type="submit" variant="primary">
+            Add Tag
           </ActionButton>
         </form>
       </div>
@@ -149,12 +139,16 @@ export const TagManagement = () => {
                     <span class={css({ fontWeight: "medium" })}>
                       {tag.name}
                     </span>
-                    <Badge>{tag.unreadCount?.toString() ?? "0"}</Badge>
+                    <Badge>feed: {tag.feedCount}</Badge>
                     <ActionButton
                       variant="danger"
                       size="sm"
                       onClick={() =>
-                        handleDeleteTag(tag.id, tag.name, tag.unreadCount ?? 0n)
+                        handleDeleteTag(
+                          tag.id,
+                          tag.name,
+                          tag.feedCount ? BigInt(tag.feedCount) : 0n,
+                        )
                       }
                       ariaLabel={`Delete ${tag.name}`}
                     >
