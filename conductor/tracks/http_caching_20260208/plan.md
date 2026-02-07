@@ -1,7 +1,7 @@
 # Implementation Plan: HTTP Caching for Feed Fetcher
 
 ## Phase 1: Database Schema and Data Access
-- [ ] Task: Add the `feed_fetcher_caches` table definition to `sql/schema.sql`.
+- [x] Task: Add the `feed_fetcher_caches` table definition to `sql/schema.sql`. da9debc
 - [ ] Task: Add SQL queries to `sql/query.sql` for CRUD operations on `feed_fetcher_caches`.
 - [ ] Task: Run `sqlc generate` to update the Go database code.
 - [ ] Task: Create a unit test in `store/` to verify cache data persistence.
