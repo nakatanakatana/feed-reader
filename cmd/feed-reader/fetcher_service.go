@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"log/slog"
 	"sync"
 	"time"
@@ -90,8 +91,15 @@ func (s *FetcherService) FetchFeedsByIDsSync(ctx context.Context, ids []string) 
 func (s *FetcherService) fetchAndSaveSync(ctx context.Context, f store.Feed) (*FeedFetchResult, error) {
 	s.logger.DebugContext(ctx, "fetching feed sync", "url", f.Url, "id", f.ID)
 
-	parsedFeed, err := s.fetcher.Fetch(ctx, f.Url)
+	parsedFeed, err := s.fetcher.Fetch(ctx, f.ID, f.Url)
 	if err != nil {
+		if errors.Is(err, ErrNotModified) {
+			s.logger.InfoContext(ctx, "feed not modified, skipping sync", "url", f.Url, "id", f.ID)
+			return &FeedFetchResult{
+				FeedID:  f.ID,
+				Success: true,
+			}, nil
+		}
 		s.logger.ErrorContext(ctx, "failed to fetch feed sync", "url", f.Url, "error", err)
 		return nil, err
 	}
@@ -202,8 +210,20 @@ func (s *FetcherService) FetchAndSave(ctx context.Context, f store.Feed) error {
 	}
 	defer s.fetching.Delete(f.ID)
 
-	parsedFeed, err := s.fetcher.Fetch(ctx, f.Url)
+	parsedFeed, err := s.fetcher.Fetch(ctx, f.ID, f.Url)
 	if err != nil {
+		if errors.Is(err, ErrNotModified) {
+			s.logger.InfoContext(ctx, "feed not modified, skipping", "url", f.Url, "id", f.ID)
+			// Still update last_fetched_at to avoid immediate re-fetch if interval is small
+			now := time.Now().Format(time.RFC3339)
+			s.writeQueue.Submit(&MarkFetchedJob{
+				Params: store.MarkFeedFetchedParams{
+					LastFetchedAt: &now,
+					ID:            f.ID,
+				},
+			})
+			return nil
+		}
 		s.logger.ErrorContext(ctx, "failed to fetch feed", "url", f.Url, "error", err)
 		return err
 	}
