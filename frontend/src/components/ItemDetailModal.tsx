@@ -2,8 +2,7 @@ import { useMutation, useQuery } from "@tanstack/solid-query";
 import { For, type JSX, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
-import { updateItemStatus } from "../lib/db";
-import { getItem } from "../lib/item-db";
+import { getItem, localRead } from "../lib/item-db";
 import { formatDate, normalizeCategories } from "../lib/item-utils";
 import { MarkdownRenderer } from "./MarkdownRenderer";
 import { ActionButton } from "./ui/ActionButton";
@@ -32,18 +31,11 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   const item = () => itemQuery.data ?? null;
   const isLoading = () => itemQuery.isPending;
 
-  const updateStatusMutation = useMutation(() => ({
-    mutationFn: updateItemStatus,
-  }));
-
   const handleToggleRead = () => {
     const currentItem = item();
     if (!currentItem) return;
 
-    updateStatusMutation.mutate({
-      ids: [currentItem.id],
-      isRead: !currentItem.isRead,
-    });
+    localRead.insert({ id: currentItem.id });
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
@@ -77,7 +69,6 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
       <ActionButton
         variant={item()?.isRead ? "secondary" : "ghost"}
         onClick={handleToggleRead}
-        disabled={updateStatusMutation.isPending}
       >
         {item()?.isRead ? "Mark as Unread" : "Mark as Read"}
       </ActionButton>

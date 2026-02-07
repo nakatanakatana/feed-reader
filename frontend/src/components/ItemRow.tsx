@@ -2,7 +2,7 @@ import { createSignal, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import type { Item } from "../lib/db";
-import { localRead, updateItemStatus } from "../lib/db";
+import { localRead } from "../lib/db";
 import { formatDate } from "../lib/item-utils";
 import { ActionButton } from "./ui/ActionButton";
 
@@ -27,11 +27,6 @@ export function ItemRow(props: ItemRowProps) {
       } else {
         localRead.delete(props.item.id);
       }
-      // Sync with server
-      await updateItemStatus({
-        ids: [props.item.id],
-        isRead: newIsRead,
-      });
     } catch (e) {
       console.error("Failed to update item status", e);
       // Revert local change on error

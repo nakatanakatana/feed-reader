@@ -1,6 +1,8 @@
 import { createClient } from "@connectrpc/connect";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import {
+  eq,
+  isUndefined,
   createCollection,
   createLiveQueryCollection,
   createTransaction,
@@ -32,14 +34,6 @@ export interface Item {
 
 const itemClient = createClient(ItemService, transport);
 
-export const updateItemStatus = async (params: {
-  ids: string[];
-  isRead?: boolean;
-}) => {
-  await itemClient.updateItemStatus(params);
-  // queryClient.invalidateQueries({ queryKey: ["items"] });
-};
-
 export const localRead = createCollection(
   localStorageCollectionOptions({
     id: "local-read-items",
@@ -47,7 +41,7 @@ export const localRead = createCollection(
     getKey: (item: { id: string }) => item.id,
     onInsert: async ({ transaction }) => {
       const ids = transaction.mutations.map((mutation) => mutation.modified.id);
-      await updateItemStatus({
+      await itemClient.updateItemStatus({
         ids: ids,
         isRead: true,
       });
@@ -64,7 +58,7 @@ export const createItemBulkMarkAsReadTx = () =>
         .filter((m) => m.collection === localRead)
         .map((m) => m.modified.id) as string[];
 
-      await updateItemStatus({ ids: ids, isRead: true });
+      await itemClient.updateItemStatus({ ids: ids, isRead: true });
       localRead.utils.acceptMutations(transaction);
     },
   });
@@ -118,12 +112,14 @@ export const setItemsBase = (showRead: boolean, since: DateFilterValue) => {
   items = createItems(showRead, since);
 };
 
-export const itemsQuery = createLiveQueryCollection((q) => {
-  return q
+export const itemsUnreadQuery = createLiveQueryCollection((q) =>
+  q
     .from({ item: items })
-    .orderBy(({ item }) => item.publishedAt, "asc")
-    .orderBy(({ item }) => item.createdAt, "asc");
-});
+    .leftJoin({ lr: localRead }, ({ item, lr }) => eq(item.id, lr.id))
+    .where(({ item }) => eq(item.isRead, false))
+    .where(({ lr }) => isUndefined(lr?.id))
+    .select(({ item }) => ({ ...item })),
+);
 
 export const getItem = async (id: string) => {
   const response = await itemClient.getItem({ id });

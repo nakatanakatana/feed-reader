@@ -1,5 +1,4 @@
-import { isNull,isUndefined, eq, useLiveQuery } from "@tanstack/solid-db";
-import { useMutation } from "@tanstack/solid-query";
+import { isUndefined, eq, useLiveQuery, count } from "@tanstack/solid-db";
 import { useNavigate } from "@tanstack/solid-router";
 import { createEffect, createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
@@ -9,9 +8,9 @@ import {
   items,
   feedTag,
   localRead,
-  updateItemStatus,
   setItemsBase,
   tags,
+  itemsUnreadQuery,
 } from "../lib/db";
 import { type DateFilterValue, formatUnreadCount } from "../lib/item-utils";
 import { DateFilterSelector } from "./DateFilterSelector";
@@ -28,13 +27,8 @@ interface ItemListProps {
   fixedControls?: boolean;
 }
 
-const PAGE_SIZE = 100;
-
 export function ItemList(props: ItemListProps) {
   const navigate = useNavigate();
-  const updateStatusMutation = useMutation(() => ({
-    mutationFn: updateItemStatus,
-  }));
   const [selectedItemIds, setSelectedItemIds] = createSignal<Set<string>>(
     new Set(),
   );
@@ -66,16 +60,21 @@ export function ItemList(props: ItemListProps) {
     return query.select(({ item }) => ({ ...item }));
   });
 
-  const totalUnread = useLiveQuery((q) =>
-    q
-      .from({ item: items })
-      .leftJoin({ lr: localRead }, ({ item, lr }) => eq(item.id, lr.id))
-      .where(({ item }) => eq(item.isRead, false))
-	  .where(({ lr }) => isUndefined(lr?.id)),
-  );
+  const totalUnread = useLiveQuery((q) => q.from({ item: itemsUnreadQuery }));
 
   const tagsQuery = useLiveQuery((q) => {
-    return q.from({ tag: tags }).select(({ tag }) => ({ ...tag }));
+    return q
+      .from({ tag: tags })
+      .leftJoin({ tf: feedTag }, ({ tag, tf }) => eq(tag.id, tf.tagId))
+      .leftJoin({ i: itemsUnreadQuery }, ({ tf, i }) =>
+        eq(tf?.feedId, i.feedId),
+      )
+      .groupBy(({ tag }) => [tag.id, tag.name])
+      .select(({ tag, i }) => ({
+        id: tag.id,
+        name: tag.name,
+        unreadCount: count(i?.id),
+      }));
   });
 
   const handleDateFilterSelect = (value: DateFilterValue) => {
