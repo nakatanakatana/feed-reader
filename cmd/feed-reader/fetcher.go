@@ -68,6 +68,9 @@ func (f *GofeedFetcher) Fetch(ctx context.Context, feedID string, url string) (*
 
 	resp, err := f.client.Do(req)
 	if err != nil {
+		if feedID != "" {
+			_ = f.store.DeleteFeedFetcherCache(ctx, feedID)
+		}
 		return nil, err
 	}
 	defer resp.Body.Close()
@@ -76,8 +79,33 @@ func (f *GofeedFetcher) Fetch(ctx context.Context, feedID string, url string) (*
 		return nil, ErrNotModified
 	}
 
+	if resp.StatusCode >= 500 {
+		if feedID != "" {
+			_ = f.store.DeleteFeedFetcherCache(ctx, feedID)
+		}
+		return nil, fmt.Errorf("server error: %d", resp.StatusCode)
+	}
+
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+	}
+
+	// Update cache info
+	if feedID != "" {
+		newEtag := resp.Header.Get("ETag")
+		newLastModified := resp.Header.Get("Last-Modified")
+		if newEtag != "" || newLastModified != "" {
+			arg := store.UpsertFeedFetcherCacheParams{
+				FeedID: feedID,
+			}
+			if newEtag != "" {
+				arg.Etag = &newEtag
+			}
+			if newLastModified != "" {
+				arg.LastModified = &newLastModified
+			}
+			_, _ = f.store.UpsertFeedFetcherCache(ctx, arg)
+		}
 	}
 
 	fp := gofeed.NewParser()
