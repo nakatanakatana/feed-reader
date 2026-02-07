@@ -21,7 +21,7 @@ func TestGofeedFetcher_Fetch(t *testing.T) {
 	// Setup store for testing
 	db, err := sql.Open("sqlite3", ":memory:")
 	require.NoError(t, err)
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 	_, err = db.Exec(schema.Schema)
 	require.NoError(t, err)
 	s := store.NewStore(db)
@@ -118,10 +118,16 @@ func TestGofeedFetcher_Fetch(t *testing.T) {
 			}
 			
 			func TestGofeedFetcher_ConditionalFetch(t *testing.T) {
+			
 				db, err := sql.Open("sqlite3", ":memory:")
+			
 				require.NoError(t, err)
-				defer db.Close()
+			
+				defer func() { _ = db.Close() }()
+			
 				_, err = db.Exec(schema.Schema)
+			
+			
 				require.NoError(t, err)
 				s := store.NewStore(db)
 			
