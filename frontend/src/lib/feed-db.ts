@@ -3,12 +3,13 @@ import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import {
   createCollection,
   createLiveQueryCollection,
+  eq,
 } from "@tanstack/solid-db";
 import type { ListFeed } from "../gen/feed/v1/feed_pb";
 import { FeedService } from "../gen/feed/v1/feed_pb";
 import { fetchingState } from "./fetching-state";
 import { queryClient, transport } from "./query";
-import type { Tag } from "./tag-db";
+import { tags, type Tag } from "./tag-db";
 
 export interface Feed {
   id: string;
@@ -27,12 +28,6 @@ export interface FeedTag {
 }
 
 const feedClient = createClient(FeedService, transport);
-
-export const addFeed = async (url: string, tagIds?: string[]) => {
-  const response = await feedClient.createFeed({ url, tagIds });
-  queryClient.invalidateQueries({ queryKey: ["feeds"] });
-  return response.feed;
-};
 
 export const manageFeedTags = async (params: {
   feedIds: string[];
@@ -87,16 +82,17 @@ export const feeds = createCollection(
         url: feed.url,
         link: feed.link,
         title: feed.title,
-        unreadCount: feed.unreadCount,
         lastFetchedAt: feed.lastFetchedAt,
         tags: feed.tags,
       }));
     },
     getKey: (feed: Feed) => feed.id,
-    onInsert: async () => {
-      // In a real app, we might want to call the API here.
-      // But the spec says "Minimal UX regression: Synchronization behavior should remain reliable."
-      // For now we just sync with the query.
+    onInsert: async ({ transaction }) => {
+      transaction.mutations.map(async (m) => {
+        const url = m.modified.url;
+        const tagIds = m.modified.tags.map((t) => t.id);
+        await feedClient.createFeed({ url, tagIds });
+      });
     },
     onDelete: async ({ transaction }) => {
       for (const mutation of transaction.mutations) {
@@ -107,6 +103,22 @@ export const feeds = createCollection(
     },
   }),
 );
+
+export const feedInsert = (url: string, tags: string[]) => {
+  const dummyFeed = {
+    id: "_dummy",
+    url: "_dummy",
+    link: "_dummy",
+    title: "_dummy",
+    lastFetchedAt: "",
+    tags: [],
+  };
+  return feeds.insert({
+    ...dummyFeed,
+    url: url,
+    tags: tags,
+  });
+};
 
 export const feedTag = createCollection(
   queryCollectionOptions({
