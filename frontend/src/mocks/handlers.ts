@@ -327,6 +327,7 @@ export const handlers = [
           title: `Detail for Item ${req.id}`,
           description: `<p>This is the full content for item ${req.id}. It includes <strong>HTML</strong> formatting.</p>`,
           publishedAt: new Date().toISOString(),
+          createdAt: new Date().toISOString(),
           author: "Mock Author",
           url: "https://example.com/mock-item",
           isRead: false,

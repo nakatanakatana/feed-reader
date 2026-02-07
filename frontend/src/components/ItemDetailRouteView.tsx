@@ -30,24 +30,7 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
 
   // Use useLiveQuery with items Collection
   const itemsQuery = useLiveQuery((q) => {
-    let query = q.from({ item: items });
-
-    // Filter by date
-    const since = effectiveSince();
-    if (since && since !== "all") {
-      const sinceDate = getPublishedSince(since);
-      if (sinceDate) {
-        const sinceStr = new Date(
-          Number(sinceDate.seconds) * 1000,
-        ).toISOString();
-        query = query.where(({ item }) => item.createdAt >= sinceStr);
-      }
-    }
-
-    // Filter by read status (only show unread)
-    query = query.where(({ item }) => !item.isRead);
-
-    return query.select(({ item }) => item);
+    return q.from({ item: items });
   });
 
   const allItems = () => itemsQuery();
