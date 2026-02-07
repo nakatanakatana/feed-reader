@@ -143,7 +143,6 @@ export function ItemList(props: ItemListProps) {
       });
     });
 
-    console.log("result", localRead.toArray);
     setSelectedItemIds(new Set<string>());
   };
 

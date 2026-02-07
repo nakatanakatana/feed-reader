@@ -57,7 +57,6 @@ export const createItemBulkMarkAsReadTx = () =>
         .filter((m) => m.collection === localRead)
         .map((m) => m.modified.id);
 
-      console.log("ids", ids);
       localRead.utils.acceptMutations(transaction);
     },
   });

@@ -123,8 +123,6 @@ export const feedTag = createCollection(
         });
       });
 
-      console.log("feeds", feeds.toArray);
-      console.log("feedtags", feedTags);
       return feedTags;
     },
     getKey: (feedTag: FeedTag) => feedTag.id,
