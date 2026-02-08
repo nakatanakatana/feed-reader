@@ -75,22 +75,25 @@ describe("ItemList", () => {
 
     // Should show "No items found" when empty
     await expect.element(page.getByText("No items found")).toBeVisible();
+
+    expect(document.body.innerHTML).toMatchSnapshot();
   });
 
   it("displays a list of items", async () => {
+    const fixedDate = "2026-01-20T19:00:00Z";
     setupMockData([
       {
         id: "1",
         title: "Item 1",
-        publishedAt: new Date().toISOString(),
-        createdAt: new Date().toISOString(),
+        publishedAt: fixedDate,
+        createdAt: fixedDate,
         isRead: false,
       },
       {
         id: "2",
         title: "Item 2",
-        publishedAt: new Date().toISOString(),
-        createdAt: new Date().toISOString(),
+        publishedAt: fixedDate,
+        createdAt: fixedDate,
         isRead: true,
       },
     ]);
@@ -111,5 +114,7 @@ describe("ItemList", () => {
 
     await expect.element(page.getByText("Item 1")).toBeInTheDocument();
     await expect.element(page.getByText("Item 2")).toBeInTheDocument();
+
+    expect(document.body.innerHTML).toMatchSnapshot();
   });
 });

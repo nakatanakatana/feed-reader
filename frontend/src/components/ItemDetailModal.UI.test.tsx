@@ -82,6 +82,8 @@ describe("ItemDetailModal UI Updates", () => {
 
     await expect.element(page.getByText("Tech")).toBeInTheDocument();
     await expect.element(page.getByText("News")).toBeInTheDocument();
+
+    expect(document.body.innerHTML).toMatchSnapshot();
   });
 
   it("renders comma-separated categories when JSON format is absent", async () => {
@@ -101,6 +103,8 @@ describe("ItemDetailModal UI Updates", () => {
 
     await expect.element(page.getByText("Science")).toBeInTheDocument();
     await expect.element(page.getByText("Space")).toBeInTheDocument();
+
+    expect(document.body.innerHTML).toMatchSnapshot();
   });
 
   it("falls back to CSV parsing when JSON is malformed", async () => {
@@ -120,5 +124,7 @@ describe("ItemDetailModal UI Updates", () => {
 
     await expect.element(page.getByText("Malformed")).toBeInTheDocument();
     await expect.element(page.getByText("JSON")).toBeInTheDocument();
+
+    expect(document.body.innerHTML).toMatchSnapshot();
   });
 });

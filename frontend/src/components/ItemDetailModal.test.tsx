@@ -71,6 +71,8 @@ describe("ItemDetailModal", () => {
     await expect
       .element(titleLink)
       .toHaveAttribute("href", "http://example.com");
+
+    expect(document.body.innerHTML).toMatchSnapshot();
   });
 
   it("does NOT render a close button (✕)", async () => {
