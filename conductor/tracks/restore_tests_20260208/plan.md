@@ -14,12 +14,12 @@ Standardize MSW setup and prepare the environment to test with the actual `tanst
 ## Phase 2: Restore Feed Management Tests
 Refactor tests related to adding and updating feeds to use MSW and actual application logic.
 
-- [~] Task: Refactor `AddFeedForm.test.tsx` (or relevant tests).
-    - [ ] Remove mocks for `@tanstack/db` or custom store logic.
-    - [ ] Implement MSW handlers for feed creation.
-    - [ ] Verify the test passes with actual library logic.
-- [ ] Task: Refactor `FeedList` related tests.
-    - [ ] Ensure feed listing and updates are tested via MSW and real state.
+- [x] Task: Refactor `AddFeedForm.test.tsx` (or relevant tests). (979d22c)
+    - [x] Remove mocks for `@tanstack/db` or custom store logic.
+    - [x] Implement MSW handlers for feed creation.
+    - [x] Verify the test passes with actual library logic.
+- [x] Task: Refactor `FeedList` related tests. (979d22c)
+    - [x] Ensure feed listing and updates are tested via MSW and real state.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Restore Feed Management Tests' (Protocol in workflow.md)
 
 ## Phase 3: Restore Article Status Management Tests
