@@ -164,79 +164,95 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
           </Show>
 
           <Show when={item()}>
-            {(itemData) => (
-              <>
-                <div
-                  class={flex({
-                    gap: "4",
-                    fontSize: "sm",
-                    color: "gray.500",
-                    flexWrap: "wrap",
-                    alignItems: "center",
-                  })}
-                >
-                  <Show when={!!itemData().publishedAt}>
-                    <span>Published: {formatDate(itemData().publishedAt)}</span>
-                  </Show>
-                  <span>Received: {formatDate(itemData().createdAt)}</span>
-                  <Show when={itemData().author}>
-                    <span>By {itemData().author}</span>
-                  </Show>
-                  <Show when={itemData().categories}>
-                    <div class={flex({ gap: "1", flexWrap: "wrap" })}>
-                      <For
-                        each={normalizeCategories(itemData().categories ?? "")}
-                      >
-                        {(cat) => (
-                          <span
-                            class={css({
-                              px: "2",
-                              py: "0.5",
-                              bg: "gray.100",
-                              rounded: "full",
-                              fontSize: "10px",
-                              color: "gray.600",
-                              border: "1px solid",
-                              borderColor: "gray.200",
-                            })}
-                          >
-                            {cat}
-                          </span>
-                        )}
-                      </For>
+            {(itemData) => {
+              const isImageInContent = () => {
+                const content =
+                  itemData().content || itemData().description || "";
+                return (
+                  itemData().imageUrl && content.includes(itemData().imageUrl)
+                );
+              };
+
+              return (
+                <>
+                  <div
+                    class={flex({
+                      gap: "4",
+                      fontSize: "sm",
+                      color: "gray.500",
+                      flexWrap: "wrap",
+                      alignItems: "center",
+                    })}
+                  >
+                    <Show when={!!itemData().publishedAt}>
+                      <span>
+                        Published: {formatDate(itemData().publishedAt)}
+                      </span>
+                    </Show>
+                    <span>Received: {formatDate(itemData().createdAt)}</span>
+                    <Show when={itemData().author}>
+                      <span>By {itemData().author}</span>
+                    </Show>
+                    <Show when={itemData().categories}>
+                      <div class={flex({ gap: "1", flexWrap: "wrap" })}>
+                        <For
+                          each={normalizeCategories(
+                            itemData().categories ?? "",
+                          )}
+                        >
+                          {(cat) => (
+                            <span
+                              class={css({
+                                px: "2",
+                                py: "0.5",
+                                bg: "gray.100",
+                                rounded: "full",
+                                fontSize: "10px",
+                                color: "gray.600",
+                                border: "1px solid",
+                                borderColor: "gray.200",
+                              })}
+                            >
+                              {cat}
+                            </span>
+                          )}
+                        </For>
+                      </div>
+                    </Show>
+                  </div>
+
+                  <Show when={itemData().imageUrl && !isImageInContent()}>
+                    <div class={css({ my: "4" })}>
+                      <img
+                        src={itemData().imageUrl}
+                        alt=""
+                        class={css({
+                          maxWidth: "full",
+                          height: "auto",
+                          borderRadius: "md",
+                          boxShadow: "sm",
+                        })}
+                      />
                     </div>
                   </Show>
-                </div>
 
-                <Show when={itemData().imageUrl}>
-                  <div class={css({ my: "4" })}>
-                    <img
-                      src={itemData().imageUrl}
-                      alt=""
-                      class={css({
-                        maxWidth: "full",
-                        height: "auto",
-                        borderRadius: "md",
-                        boxShadow: "sm",
-                      })}
+                  <div
+                    class={css({
+                      lineHeight: "relaxed",
+                      "& a": { color: "blue.600", textDecoration: "underline" },
+                      "& p": { marginBottom: "4" },
+                      "& img": { maxWidth: "full", height: "auto", my: "4" },
+                    })}
+                  >
+                    <MarkdownRenderer
+                      content={
+                        itemData().content || itemData().description || ""
+                      }
                     />
                   </div>
-                </Show>
-
-                <div
-                  class={css({
-                    lineHeight: "relaxed",
-                    "& a": { color: "blue.600", textDecoration: "underline" },
-                    "& p": { marginBottom: "4" },
-                    "& img": { maxWidth: "full", height: "auto", my: "4" },
-                  })}
-                >
-                  <MarkdownRenderer
-                    content={itemData().content || itemData().description || ""}
-                  />
-                </div>
-              </>
-            )}
+                </>
+              );
+            }}
           </Show>
         </div>
       </Modal>
