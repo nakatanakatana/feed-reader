@@ -8,8 +8,8 @@ import (
 
 	"github.com/nakatanakatana/feed-reader/store"
 	"github.com/ncruces/go-sqlite3"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"gotest.tools/v3/assert"
 )
 
 type mockDBTX struct {
@@ -47,7 +47,7 @@ func TestRetryingDB_ExecContext(t *testing.T) {
 		m.On("ExecContext", mock.Anything, "query", mock.Anything).Return(mockResult, nil).Once()
 
 		_, err := rdb.ExecContext(context.Background(), "query")
-		assert.NoError(t, err)
+		assert.NilError(t, err)
 		m.AssertExpectations(t)
 	})
 
@@ -75,7 +75,7 @@ func TestRetryingDB_PrepareContext(t *testing.T) {
 	m.On("PrepareContext", mock.Anything, "query").Return(stmt, nil).Once()
 
 	_, err := rdb.PrepareContext(context.Background(), "query")
-	assert.NoError(t, err)
+	assert.NilError(t, err)
 	m.AssertExpectations(t)
 }
 

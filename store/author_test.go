@@ -6,9 +6,8 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/nakatanakatana/feed-reader/store"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
+	"gotest.tools/v3/assert"
 )
 
 func TestStore_AuthorField(t *testing.T) {
@@ -21,7 +20,7 @@ func TestStore_AuthorField(t *testing.T) {
 		ID:  feedID,
 		Url: "http://example.com/feed",
 	})
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	// Use SaveFetchedItem
 	author := "Author Name"
@@ -31,15 +30,15 @@ func TestStore_AuthorField(t *testing.T) {
 		Title:  proto.String("Title"),
 		Author: &author,
 	})
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	// Get ID
 	var itemID string
 	err = s.DB.QueryRowContext(ctx, "SELECT id FROM items WHERE url = ?", "http://example.com/item-with-author").Scan(&itemID)
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	// Use GetItem
 	got, err := s.GetItem(ctx, itemID)
-	require.NoError(t, err)
-	assert.Equal(t, author, *got.Author)
+	assert.NilError(t, err)
+	assert.Equal(t, *got.Author, author)
 }

@@ -7,7 +7,7 @@ import (
 
 	"github.com/nakatanakatana/feed-reader/store"
 	"github.com/ncruces/go-sqlite3"
-	"github.com/stretchr/testify/assert"
+	"gotest.tools/v3/assert"
 )
 
 type mockSqliteError struct {
@@ -68,8 +68,8 @@ func TestWithRetry(t *testing.T) {
 			count++
 			return nil
 		})
-		assert.NoError(t, err)
-		assert.Equal(t, 1, count)
+		assert.NilError(t, err)
+		assert.Equal(t, count, 1)
 	})
 
 	t.Run("success after retries", func(t *testing.T) {
@@ -81,8 +81,8 @@ func TestWithRetry(t *testing.T) {
 			}
 			return nil
 		})
-		assert.NoError(t, err)
-		assert.Equal(t, 3, count)
+		assert.NilError(t, err)
+		assert.Equal(t, count, 3)
 	})
 
 	t.Run("fail after max attempts", func(t *testing.T) {
@@ -93,7 +93,7 @@ func TestWithRetry(t *testing.T) {
 			return busyErr
 		})
 		assert.ErrorIs(t, err, busyErr)
-		assert.Equal(t, 10, count) // MaxRetries is 10
+		assert.Equal(t, count, 10) // MaxRetries is 10
 	})
 
 	t.Run("no retry on non-busy error", func(t *testing.T) {
@@ -104,7 +104,7 @@ func TestWithRetry(t *testing.T) {
 			return otherErr
 		})
 		assert.ErrorIs(t, err, otherErr)
-		assert.Equal(t, 1, count)
+		assert.Equal(t, count, 1)
 	})
 
 	t.Run("respect context cancellation", func(t *testing.T) {

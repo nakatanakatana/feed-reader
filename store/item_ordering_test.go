@@ -9,8 +9,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/nakatanakatana/feed-reader/sql"
 	"github.com/nakatanakatana/feed-reader/store"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
+	"gotest.tools/v3/assert"
+	"gotest.tools/v3/assert/cmp"
 	_ "modernc.org/sqlite"
 	"pgregory.net/rapid"
 )
@@ -27,7 +27,7 @@ func TestStore_ItemOrdering(t *testing.T) {
 		Url:   "http://ordering.example.com/feed.xml",
 		Title: &feedTitle,
 	})
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	/*
 		Target Order (ASC) - Now based on created_at:
@@ -45,17 +45,17 @@ func TestStore_ItemOrdering(t *testing.T) {
 			Title:       &title,
 			PublishedAt: pubAt,
 		})
-		require.NoError(t, err)
+		assert.NilError(t, err)
 
 		err = s.CreateFeedItem(ctx, store.CreateFeedItemParams{
 			FeedID: feedID,
 			ItemID: id,
 		})
-		require.NoError(t, err)
+		assert.NilError(t, err)
 
 		// Manually update created_at to control ordering in test
 		_, err = s.DB.ExecContext(ctx, "UPDATE items SET created_at = ? WHERE id = ?", createdAt, id)
-		require.NoError(t, err)
+		assert.NilError(t, err)
 	}
 
 	// Use simple dates for clarity
@@ -80,24 +80,24 @@ func TestStore_ItemOrdering(t *testing.T) {
 
 	t.Run("ListItems should sort by created_at ASC", func(t *testing.T) {
 		items, err := s.ListItems(ctx, store.ListItemsParams{Limit: 10})
-		require.NoError(t, err)
-		require.Len(t, items, 4)
+		assert.NilError(t, err)
+		assert.Assert(t, cmp.Len(items, 4))
 
-		assert.Equal(t, itemA, items[0].ID)
-		assert.Equal(t, itemB, items[1].ID)
-		assert.Equal(t, itemC, items[2].ID)
-		assert.Equal(t, itemD, items[3].ID)
+		assert.Equal(t, items[0].ID, itemA)
+		assert.Equal(t, items[1].ID, itemB)
+		assert.Equal(t, items[2].ID, itemC)
+		assert.Equal(t, items[3].ID, itemD)
 	})
 
 	t.Run("ListItemsByFeed should sort by created_at ASC", func(t *testing.T) {
 		items, err := s.ListItems(ctx, store.ListItemsParams{FeedID: feedID, Limit: 10})
-		require.NoError(t, err)
-		require.Len(t, items, 4)
+		assert.NilError(t, err)
+		assert.Assert(t, cmp.Len(items, 4))
 
-		assert.Equal(t, itemA, items[0].ID)
-		assert.Equal(t, itemB, items[1].ID)
-		assert.Equal(t, itemC, items[2].ID)
-		assert.Equal(t, itemD, items[3].ID)
+		assert.Equal(t, items[0].ID, itemA)
+		assert.Equal(t, items[1].ID, itemB)
+		assert.Equal(t, items[2].ID, itemC)
+		assert.Equal(t, items[3].ID, itemD)
 	})
 }
 
@@ -114,7 +114,7 @@ func TestStore_ItemOrdering_PBT(t *testing.T) {
 			ID:  feedID,
 			Url: "http://ordering.example.com/pbt.xml",
 		})
-		require.NoError(t, err)
+		assert.NilError(t, err)
 
 		count := rapid.IntRange(5, 20).Draw(t, "count")
 		base := time.Now().UTC().Truncate(time.Second)
@@ -140,13 +140,13 @@ func TestStore_ItemOrdering_PBT(t *testing.T) {
 				Title:       &title,
 				PublishedAt: publishedAt,
 			})
-			require.NoError(t, err)
+			assert.NilError(t, err)
 
 			err = s.CreateFeedItem(ctx, store.CreateFeedItemParams{
 				FeedID: feedID,
 				ItemID: id,
 			})
-			require.NoError(t, err)
+			assert.NilError(t, err)
 
 			_, err = s.DB.ExecContext(
 				ctx,
@@ -154,18 +154,18 @@ func TestStore_ItemOrdering_PBT(t *testing.T) {
 				createdAt.Format(time.RFC3339),
 				id,
 			)
-			require.NoError(t, err)
+			assert.NilError(t, err)
 		}
 
 		items, err := s.ListItems(ctx, store.ListItemsParams{FeedID: feedID, Limit: 100})
-		require.NoError(t, err)
-		require.Len(t, items, count)
+		assert.NilError(t, err)
+		assert.Assert(t, cmp.Len(items, count))
 
 		var prev time.Time
 		for i, item := range items {
 			timestamp := item.CreatedAt
 			current, err := time.Parse(time.RFC3339, timestamp)
-			require.NoError(t, err)
+			assert.NilError(t, err)
 			if i > 0 && current.Before(prev) {
 				t.Fatalf("items not ordered by created_at: %s before %s", current, prev)
 			}
