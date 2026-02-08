@@ -28,7 +28,11 @@ export function TagChip(props: TagChipProps) {
           transition: "all 0.2s",
           ...(props.selected
             ? { bg: "blue.600", borderColor: "blue.600", color: "white" }
-            : { bg: "transparent", borderColor: "gray.300", color: "gray.600" }),
+            : {
+                bg: "transparent",
+                borderColor: "gray.300",
+                color: "gray.600",
+              }),
         }),
         props.class,
       )}

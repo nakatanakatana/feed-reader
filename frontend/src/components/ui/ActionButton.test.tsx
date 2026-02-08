@@ -18,10 +18,11 @@ describe("ActionButton styles", () => {
     );
     const button = page.getByRole("button", { name: "Primary" });
     await expect.element(button).toBeInTheDocument();
-    
+
     // In vitest browser, we can check styles
-    const el = document.querySelector('button');
-    const style = window.getComputedStyle(el!);
+    const el = document.querySelector("button");
+    if (!el) throw new Error("Button not found");
+    const style = window.getComputedStyle(el);
     if (style.backgroundColor === "rgba(0, 0, 0, 0)") {
       console.log("Button classes:", el?.className);
       console.log("Computed background-color:", style.backgroundColor);
@@ -39,10 +40,11 @@ describe("ActionButton styles", () => {
     );
     const button = page.getByRole("button", { name: "Secondary" });
     await expect.element(button).toBeInTheDocument();
-    
-    const el = document.querySelector('button');
-    const style = window.getComputedStyle(el!);
-    console.log("Secondary classes:", el?.className);
+
+    const el = document.querySelector("button");
+    if (!el) throw new Error("Button not found");
+    const style = window.getComputedStyle(el);
+    console.log("Secondary classes:", el.className);
     // Secondary should be transparent background with gray border
     // Current is gray.100 (rgb(243, 244, 246))
     expect(style.backgroundColor).toBe("rgba(0, 0, 0, 0)"); // transparent
