@@ -7,7 +7,7 @@
     - [ ] Add `test-update` target or ensure `go test ./... -args -update` is documented
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Infrastructure Setup' (82f3842) (Protocol in workflow.md)
 
-## Phase 2: Backend Snapshot Implementation
+## Phase 2: Backend Snapshot Implementation [checkpoint: dfb1926]
 - [x] Task: Implement golden testing in `cmd/feed-reader/converter_test.go` (8dc7174)
     - [ ] Write tests that fail (Red Phase)
     - [ ] Refactor existing tests to use `golden.Assert`
