@@ -1,7 +1,7 @@
 # Implementation Plan: Introduction of Snapshot Testing (Golden Testing)
 
 ## Phase 1: Infrastructure Setup
-- [ ] Task: Install `gotest.tools/v3` for the backend
+- [x] Task: Install `gotest.tools/v3` for the backend (dc7a7f3)
     - [ ] Run `go get gotest.tools/v3` (Avoid `go mod tidy` until it's used in code)
 - [ ] Task: Configure `Makefile` for snapshot updates
     - [ ] Add `test-update` target or ensure `go test ./... -args -update` is documented
