@@ -26,7 +26,7 @@
     - [ ] Add `toMatchSnapshot()` tests for `FeedList.tsx`
     - [ ] Add `toMatchSnapshot()` tests for `ItemRow.tsx`
     - [ ] Add `toMatchSnapshot()` tests for `AddFeedForm.tsx`
-- [ ] Task: Implement snapshot testing for data logic
+- [x] Task: Implement snapshot testing for data logic (2b9870d)
     - [ ] Add snapshot tests for complex store/DB results if applicable
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Frontend Snapshot Implementation' (Protocol in workflow.md)
 
