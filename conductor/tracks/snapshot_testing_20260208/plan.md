@@ -17,7 +17,7 @@
     - [ ] Refactor API response validations to use `golden.Assert`
     - [ ] Ensure dynamic fields (if any) are handled
     - [ ] Verify tests pass with generated golden files (Green Phase)
-- [ ] Task: Finalize Backend Dependencies
+- [x] Task: Finalize Backend Dependencies (182287b)
     - [ ] Run `go mod tidy` now that `gotest.tools/v3` is utilized in code
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Backend Snapshot Implementation' (Protocol in workflow.md)
 
