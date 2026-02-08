@@ -5,7 +5,7 @@
     - [ ] Run `go get gotest.tools/v3` (Avoid `go mod tidy` until it's used in code)
 - [x] Task: Configure `Makefile` for snapshot updates (0f49b9d)
     - [ ] Add `test-update` target or ensure `go test ./... -args -update` is documented
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Infrastructure Setup' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Infrastructure Setup' (82f3842) (Protocol in workflow.md)
 
 ## Phase 2: Backend Snapshot Implementation
 - [ ] Task: Implement golden testing in `cmd/feed-reader/converter_test.go`
