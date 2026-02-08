@@ -12,7 +12,7 @@
     - [ ] Write tests that fail (Red Phase)
     - [ ] Refactor existing tests to use `golden.Assert`
     - [ ] Verify tests pass with generated golden files (Green Phase)
-- [ ] Task: Implement golden testing in `cmd/feed-reader/handler_test.go`
+- [x] Task: Implement golden testing in `cmd/feed-reader/handler_test.go` (cbd0d9f)
     - [ ] Write tests that fail (Red Phase)
     - [ ] Refactor API response validations to use `golden.Assert`
     - [ ] Ensure dynamic fields (if any) are handled
