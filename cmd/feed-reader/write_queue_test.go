@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/nakatanakatana/feed-reader/store"
 	schema "github.com/nakatanakatana/feed-reader/sql"
+	"github.com/nakatanakatana/feed-reader/store"
 	_ "github.com/ncruces/go-sqlite3/driver"
 	_ "github.com/ncruces/go-sqlite3/embed"
 )

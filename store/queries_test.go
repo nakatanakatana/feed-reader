@@ -3,15 +3,16 @@ package store_test
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"testing"
 	"time"
 
 	"github.com/nakatanakatana/feed-reader/sql"
 	"github.com/nakatanakatana/feed-reader/store"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	_ "github.com/ncruces/go-sqlite3/driver"
 	_ "github.com/ncruces/go-sqlite3/embed"
+	"github.com/stretchr/testify/require"
+	"gotest.tools/v3/golden"
 )
 
 func setupDB(t *testing.T) (*store.Queries, *store.Store) {
@@ -26,6 +27,40 @@ func setupDB(t *testing.T) (*store.Queries, *store.Store) {
 	})
 
 	return store.New(db), store.NewStore(db)
+}
+
+func maskJSON(t *testing.T, data interface{}) string {
+	b, err := json.Marshal(data)
+	require.NoError(t, err)
+
+	var m interface{}
+	err = json.Unmarshal(b, &m)
+	require.NoError(t, err)
+
+	mask(m)
+
+	b, err = json.MarshalIndent(m, "", "  ")
+	require.NoError(t, err)
+	return string(b)
+}
+
+func mask(i interface{}) {
+	switch v := i.(type) {
+	case map[string]interface{}:
+		for k, val := range v {
+			if k == "created_at" || k == "updated_at" || k == "published_at" || k == "read_at" || k == "last_fetched_at" {
+				if val != nil {
+					v[k] = "MASKED"
+				}
+			} else {
+				mask(val)
+			}
+		}
+	case []interface{}:
+		for _, val := range v {
+			mask(val)
+		}
+	}
 }
 
 func TestQueries_CreateItem(t *testing.T) {
@@ -44,9 +79,8 @@ func TestQueries_CreateItem(t *testing.T) {
 
 		item, err := q.CreateItem(ctx, params)
 		require.NoError(t, err)
-		assert.Equal(t, params.ID, item.ID)
-		assert.Equal(t, params.Url, item.Url)
-		assert.Equal(t, params.Title, item.Title)
+
+		golden.Assert(t, maskJSON(t, item), "create_item_new.golden")
 	})
 
 	t.Run("Upsert existing item", func(t *testing.T) {
@@ -69,28 +103,8 @@ func TestQueries_CreateItem(t *testing.T) {
 		}
 		item, err := q.CreateItem(ctx, newParams)
 		require.NoError(t, err)
-		assert.Equal(t, "Item 2 Updated", *item.Title)
-		// ID should NOT change on conflict update for other fields, but since we use RETURNING *, it returns the row.
-		// However, our query does ON CONFLICT(url) DO UPDATE ...
-		// The ID in the WHERE clause of the update is implied by the conflict target.
-		// Wait, the INSERT statement tries to insert a NEW ID.
-		// SQLite ON CONFLICT UPDATE does NOT update the Primary Key unless specified.
-		// So the ID should remain "item-2".
 
-		// Let's verify the ID is still the original one by querying
-		// But CreateItem returns the row. Let's see what it returns.
-		// It returns the updated row.
-
-		// ACTUALLY, checking the query:
-		// INSERT INTO items (id, ...) VALUES (?, ...)
-		// ON CONFLICT(url) DO UPDATE SET title = excluded.title ...
-		// It does NOT update ID.
-
-		// NOTE: In SQLite, if we insert with a different ID but same URL, and it conflicts on URL,
-		// the row is updated. The ID remains the OLD ID.
-		// The RETURNING clause should return the row as it exists after the update.
-
-		assert.Equal(t, "item-2", item.ID)
+		golden.Assert(t, maskJSON(t, item), "create_item_upsert.golden")
 	})
 }
 
@@ -135,8 +149,7 @@ func TestQueries_CreateFeedItem(t *testing.T) {
 			Limit: 10,
 		})
 		require.NoError(t, err)
-		assert.NotEmpty(t, items)
-		assert.NotEmpty(t, items[0].CreatedAt)
+		golden.Assert(t, maskJSON(t, items), "list_items_with_created_at.golden")
 	})
 }
 

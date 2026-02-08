@@ -1,13 +1,17 @@
 package main
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 
+	"connectrpc.com/connect"
+	"github.com/nakatanakatana/feed-reader/gen/go/item/v1"
 	"github.com/nakatanakatana/feed-reader/gen/go/item/v1/itemv1connect"
 	"github.com/nakatanakatana/feed-reader/store"
+	"github.com/stretchr/testify/require"
 )
 
 func TestItemRouting(t *testing.T) {
@@ -41,5 +45,20 @@ func TestItemRouting(t *testing.T) {
 		if resp.StatusCode != http.StatusOK {
 			t.Errorf("Expected status OK on /api path %s, got %v", url, resp.Status)
 		}
+	})
+
+	t.Run("ListItems snapshot", func(t *testing.T) {
+		// Add some data
+		ctx := context.Background()
+		_, err := s.CreateFeed(ctx, store.CreateFeedParams{ID: "f1", Url: "u1"})
+		require.NoError(t, err)
+		err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{FeedID: "f1", Url: "i1", Title: func() *string { s := "Item 1"; return &s }()})
+		require.NoError(t, err)
+
+		client := itemv1connect.NewItemServiceClient(http.DefaultClient, ts.URL+"/api")
+		res, err := client.ListItems(ctx, connect.NewRequest(&itemv1.ListItemsRequest{}))
+		require.NoError(t, err)
+
+		assertResponseGolden(t, res.Msg, "item_routing_list_items.golden")
 	})
 }

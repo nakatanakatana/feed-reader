@@ -31,7 +31,14 @@ vi.mock("@tanstack/solid-router", async (importOriginal) => {
 describe("FeedList", () => {
   let dispose: () => void;
 
+  beforeEach(() => {
+    const mockNow = new Date("2026-02-08T13:00:00Z");
+    vi.useFakeTimers();
+    vi.setSystemTime(mockNow);
+  });
+
   afterEach(async () => {
+    vi.useRealTimers();
     if (dispose) dispose();
     document.body.innerHTML = "";
     vi.clearAllMocks();
@@ -61,6 +68,13 @@ describe("FeedList", () => {
 
     await expect.element(page.getByText("Example Feed 1")).toBeInTheDocument();
     await expect.element(page.getByText("Example Feed 2")).toBeInTheDocument();
+
+    // Snapshot testing with masking for dynamic timestamps
+    const html = document.body.innerHTML.replace(
+      /Last fetched: [^<]+/g,
+      "Last fetched: MASKED_TIMESTAMP",
+    );
+    expect(html).toMatchSnapshot();
   });
 
   it("deletes a feed", async () => {

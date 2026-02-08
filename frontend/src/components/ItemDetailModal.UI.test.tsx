@@ -1,15 +1,15 @@
+import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
+import { HttpResponse, http } from "msw";
 import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
+import { GetItemResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
-import { ItemDetailModal } from "./ItemDetailModal";
-import { http, HttpResponse } from "msw";
 import { worker } from "../mocks/browser";
-import { create, toJson } from "@bufbuild/protobuf";
-import { GetItemResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
+import { ItemDetailModal } from "./ItemDetailModal";
 
 describe("ItemDetailModal UI Updates", () => {
   let dispose: () => void;
@@ -82,6 +82,8 @@ describe("ItemDetailModal UI Updates", () => {
 
     await expect.element(page.getByText("Tech")).toBeInTheDocument();
     await expect.element(page.getByText("News")).toBeInTheDocument();
+
+    expect(document.body.innerHTML).toMatchSnapshot();
   });
 
   it("renders comma-separated categories when JSON format is absent", async () => {
@@ -101,6 +103,8 @@ describe("ItemDetailModal UI Updates", () => {
 
     await expect.element(page.getByText("Science")).toBeInTheDocument();
     await expect.element(page.getByText("Space")).toBeInTheDocument();
+
+    expect(document.body.innerHTML).toMatchSnapshot();
   });
 
   it("falls back to CSV parsing when JSON is malformed", async () => {
@@ -120,5 +124,7 @@ describe("ItemDetailModal UI Updates", () => {
 
     await expect.element(page.getByText("Malformed")).toBeInTheDocument();
     await expect.element(page.getByText("JSON")).toBeInTheDocument();
+
+    expect(document.body.innerHTML).toMatchSnapshot();
   });
 });

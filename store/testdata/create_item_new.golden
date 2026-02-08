@@ -1,0 +1,14 @@
+{
+  "author": null,
+  "categories": null,
+  "content": null,
+  "created_at": "MASKED",
+  "description": "Description 1",
+  "guid": "guid-1",
+  "id": "item-1",
+  "image_url": null,
+  "published_at": "MASKED",
+  "title": "Item 1",
+  "updated_at": "MASKED",
+  "url": "http://example.com/item1"
+}

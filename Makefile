@@ -27,13 +27,25 @@ dev-frontend-mock:
 
 dev: dev-backend dev-frontend
 
+sync-assets:
+	mkdir -p frontend/dist
+	touch frontend/dist/index.html
+
 test-backend: sync-assets
 	go test ./...
+
+test-update-backend: sync-assets
+	go test ./... -args -update
 
 test-frontend:
 	npm run test
 
+test-update-frontend:
+	npm run test -- -u
+
 test: test-backend test-frontend
+
+test-update: test-update-backend test-update-frontend
 
 lint-backend:
 	golangci-lint run

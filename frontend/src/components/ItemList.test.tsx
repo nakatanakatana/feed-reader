@@ -1,24 +1,24 @@
+import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
   createRouter,
   RouterProvider,
 } from "@tanstack/solid-router";
+import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { queryClient, transport } from "../lib/query";
-import { TransportProvider } from "../lib/transport-context";
-import { routeTree } from "../routeTree.gen";
-import { http, HttpResponse } from "msw";
-import { worker } from "../mocks/browser";
-import { create, toJson } from "@bufbuild/protobuf";
+import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
 import {
-  ListItemsResponseSchema,
   ListItemSchema,
+  ListItemsResponseSchema,
 } from "../gen/item/v1/item_pb";
 import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
-import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
+import { queryClient, transport } from "../lib/query";
+import { TransportProvider } from "../lib/transport-context";
+import { worker } from "../mocks/browser";
+import { routeTree } from "../routeTree.gen";
 
 describe("ItemList", () => {
   let dispose: () => void;
@@ -75,22 +75,25 @@ describe("ItemList", () => {
 
     // Should show "No items found" when empty
     await expect.element(page.getByText("No items found")).toBeVisible();
+
+    expect(document.body.innerHTML).toMatchSnapshot();
   });
 
   it("displays a list of items", async () => {
+    const fixedDate = "2026-01-20T19:00:00Z";
     setupMockData([
       {
         id: "1",
         title: "Item 1",
-        publishedAt: new Date().toISOString(),
-        createdAt: new Date().toISOString(),
+        publishedAt: fixedDate,
+        createdAt: fixedDate,
         isRead: false,
       },
       {
         id: "2",
         title: "Item 2",
-        publishedAt: new Date().toISOString(),
-        createdAt: new Date().toISOString(),
+        publishedAt: fixedDate,
+        createdAt: fixedDate,
         isRead: true,
       },
     ]);
@@ -111,5 +114,7 @@ describe("ItemList", () => {
 
     await expect.element(page.getByText("Item 1")).toBeInTheDocument();
     await expect.element(page.getByText("Item 2")).toBeInTheDocument();
+
+    expect(document.body.innerHTML).toMatchSnapshot();
   });
 });

@@ -1,10 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"gotest.tools/v3/golden"
 )
 
 func TestParseOPML(t *testing.T) {
@@ -24,16 +26,10 @@ func TestParseOPML(t *testing.T) {
 
 	feeds, err := ParseOPML([]byte(opmlContent))
 	require.NoError(t, err)
-	assert.Len(t, feeds, 3)
 
-	assert.Equal(t, "Hacker News", feeds[0].Title)
-	assert.Equal(t, "https://news.ycombinator.com/rss", feeds[0].URL)
-
-	assert.Equal(t, "Go Blog", feeds[1].Title)
-	assert.Equal(t, "https://go.dev/blog/feed.atom", feeds[1].URL)
-
-	assert.Equal(t, "Another Feed", feeds[2].Title)
-	assert.Equal(t, "https://example.com/feed.xml", feeds[2].URL)
+	data, err := json.MarshalIndent(feeds, "", "  ")
+	require.NoError(t, err)
+	golden.Assert(t, string(data), "parse_opml.golden")
 }
 
 func TestParseOPML_InvalidXML(t *testing.T) {
@@ -53,5 +49,8 @@ func TestParseOPML_NoFeeds(t *testing.T) {
 </opml>`
 	feeds, err := ParseOPML([]byte(opmlContent))
 	require.NoError(t, err)
-	assert.Empty(t, feeds)
+
+	data, err := json.MarshalIndent(feeds, "", "  ")
+	require.NoError(t, err)
+	golden.Assert(t, string(data), "parse_opml_no_feeds.golden")
 }

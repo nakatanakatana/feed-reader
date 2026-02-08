@@ -1,0 +1,17 @@
+[
+  {
+    "author": null,
+    "categories": null,
+    "content": null,
+    "created_at": "MASKED",
+    "description": "",
+    "feed_id": "feed-1",
+    "guid": null,
+    "id": "item-1",
+    "image_url": null,
+    "is_read": 0,
+    "published_at": null,
+    "title": null,
+    "url": "http://example.com/item1"
+  }
+]

@@ -5,15 +5,16 @@ import (
 	"database/sql"
 	"errors"
 	"log/slog"
+	"regexp"
 	"testing"
 	"time"
 
-
 	"connectrpc.com/connect"
 	"github.com/google/uuid"
-	"google.golang.org/protobuf/proto"
 	_ "github.com/ncruces/go-sqlite3/driver"
 	_ "github.com/ncruces/go-sqlite3/embed"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 
 	"github.com/mmcdole/gofeed"
 	"github.com/nakatanakatana/feed-reader/gen/go/feed/v1"
@@ -22,7 +23,31 @@ import (
 	"github.com/nakatanakatana/feed-reader/store"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"gotest.tools/v3/golden"
 )
+
+func assertResponseGolden(t *testing.T, m proto.Message, goldenFile string) {
+	t.Helper()
+	options := protojson.MarshalOptions{
+		Multiline:       true,
+		Indent:          "  ",
+		EmitUnpopulated: false,
+	}
+	b, err := options.Marshal(m)
+	require.NoError(t, err)
+
+	// Replace dynamic IDs and timestamps for stability
+	// This is a simple regex-based replacement for this example
+	s := string(b)
+	// Mask UUIDs
+	reUUID := regexp.MustCompile(`[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}`)
+	s = reUUID.ReplaceAllString(s, "00000000-0000-0000-0000-000000000000")
+	// Mask ISO8601 Timestamps
+	reTime := regexp.MustCompile(`\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z`)
+	s = reTime.ReplaceAllString(s, "2026-01-01T00:00:00Z")
+
+	golden.Assert(t, s, goldenFile)
+}
 
 func setupTestDB(t *testing.T) (*store.Queries, *sql.DB) {
 	t.Helper()
@@ -82,7 +107,6 @@ func (m *mockFetcher) Fetch(ctx context.Context, feedID string, url string) (*go
 	}
 	return m.feed, nil
 }
-
 
 type mockItemFetcher struct {
 	called bool
@@ -357,16 +381,8 @@ func TestFeedServer_ListFeeds_UnreadCounts(t *testing.T) {
 	// List Feeds
 	res, err := server.ListFeeds(ctx, connect.NewRequest(&feedv1.ListFeedsRequest{}))
 	require.NoError(t, err)
-	require.Len(t, res.Msg.Feeds, 2)
 
-	// Check counts
-	feedsMap := make(map[string]int64)
-	for _, f := range res.Msg.Feeds {
-		feedsMap[f.Id] = f.UnreadCount
-	}
-
-	assert.Equal(t, int64(1), feedsMap[f1.ID], "Feed 1 should have 1 unread")
-	assert.Equal(t, int64(1), feedsMap[f2.ID], "Feed 2 should have 1 unread")
+	assertResponseGolden(t, res.Msg, "list_feeds_unread_counts.golden")
 }
 
 func TestFeedServer_UpdateFeed(t *testing.T) {
@@ -535,8 +551,6 @@ func TestFeedServer_RefreshFeeds(t *testing.T) {
 		})
 	}
 }
-
-
 
 func TestFeedServer_ImportOpml_Sync(t *testing.T) {
 	ctx := context.Background()

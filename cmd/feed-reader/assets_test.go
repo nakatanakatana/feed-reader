@@ -15,7 +15,7 @@ func TestNewAssetsHandler(t *testing.T) {
 		"dist/assets/style.css":          {Data: []byte("css content")},
 		"dist/assets/index-BLoa0RA4.css": {Data: []byte("css content")},
 		"dist/data/file.txt":             {Data: []byte("data content")},
-		"dist/nested/index.html":        {Data: []byte("nested index")},
+		"dist/nested/index.html":         {Data: []byte("nested index")},
 	}
 
 	handler := NewAssetsHandler(mockFS)

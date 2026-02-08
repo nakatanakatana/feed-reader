@@ -5,38 +5,33 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"gotest.tools/v3/golden"
 )
 
 func TestConvertHTMLToMarkdown(t *testing.T) {
 	tests := []struct {
-		name     string
-		input    string
-		expected string
+		name  string
+		input string
 	}{
 		{
-			name:     "Simple Paragraph",
-			input:    "<p>Hello World</p>",
-			expected: "Hello World",
+			name:  "simple_paragraph",
+			input: "<p>Hello World</p>",
 		},
 		{
-			name:     "Bold Text",
-			input:    "<strong>Bold</strong>",
-			expected: "**Bold**",
+			name:  "bold_text",
+			input: "<strong>Bold</strong>",
 		},
 		{
-			name:     "Link",
-			input:    "<a href=\"https://example.com\">Link</a>",
-			expected: "[Link](https://example.com)",
+			name:  "link",
+			input: "<a href=\"https://example.com\">Link</a>",
 		},
 		{
-			name:     "Unordered List",
-			input:    "<ul><li>Item 1</li><li>Item 2</li></ul>",
-			expected: "- Item 1\n- Item 2",
+			name:  "unordered_list",
+			input: "<ul><li>Item 1</li><li>Item 2</li></ul>",
 		},
 		{
-			name:     "Empty",
-			input:    "",
-			expected: "",
+			name:  "empty",
+			input: "",
 		},
 	}
 
@@ -45,7 +40,7 @@ func TestConvertHTMLToMarkdown(t *testing.T) {
 			result, err := ConvertHTMLToMarkdown(tt.input)
 			assert.NoError(t, err)
 			// Trim space to handle potential trailing newlines from the library
-			assert.Equal(t, tt.expected, strings.TrimSpace(result))
+			golden.Assert(t, strings.TrimSpace(result), tt.name+".golden")
 		})
 	}
 }

@@ -1,15 +1,15 @@
+import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
+import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
+import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
+import { ListTagSchema, ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
-import { ManageTagsModal } from "./ManageTagsModal";
-import { http, HttpResponse } from "msw";
 import { worker } from "../mocks/browser";
-import { create, toJson } from "@bufbuild/protobuf";
-import { ListTagSchema, ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
-import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
+import { ManageTagsModal } from "./ManageTagsModal";
 
 describe("ManageTagsModal", () => {
   let dispose: () => void;

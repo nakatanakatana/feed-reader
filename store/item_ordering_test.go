@@ -73,8 +73,8 @@ func TestStore_ItemOrdering(t *testing.T) {
 	itemC := uuid.NewString()
 	itemD := uuid.NewString()
 
-	createItemWithDates(itemA, "http://ex.com/a", "Item A", &p1, c1)  // Created 1st
-	createItemWithDates(itemB, "http://ex.com/b", "Item B", &p2, c2)  // Created 2nd
+	createItemWithDates(itemA, "http://ex.com/a", "Item A", &p1, c1) // Created 1st
+	createItemWithDates(itemB, "http://ex.com/b", "Item B", &p2, c2) // Created 2nd
 	createItemWithDates(itemC, "http://ex.com/c", "Item C", nil, c3) // Created 3rd
 	createItemWithDates(itemD, "http://ex.com/d", "Item D", nil, c4) // Created 4th
 
