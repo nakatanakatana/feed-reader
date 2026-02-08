@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"log/slog"
 	"testing"
@@ -10,6 +11,7 @@ import (
 	"github.com/nakatanakatana/feed-reader/store"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"gotest.tools/v3/golden"
 )
 
 func TestOPMLImporter_ImportSync(t *testing.T) {
@@ -45,11 +47,9 @@ func TestOPMLImporter_ImportSync(t *testing.T) {
 	results, err := importer.ImportSync(ctx, []byte(opmlContent))
 	require.NoError(t, err)
 
-	assert.Equal(t, int32(3), results.Total)
-	assert.Equal(t, int32(1), results.Success)   // "new"
-	assert.Equal(t, int32(1), results.Skipped)   // "existing"
-	assert.Equal(t, 1, len(results.FailedFeeds)) // "fail"
-	assert.Equal(t, "https://example.com/fail", results.FailedFeeds[0])
+	data, err := json.MarshalIndent(results, "", "  ")
+	require.NoError(t, err)
+	golden.Assert(t, string(data), "opml_import_results.golden")
 
 	// Verify DB
 	feeds, _ := queries.ListFeeds(ctx, nil)

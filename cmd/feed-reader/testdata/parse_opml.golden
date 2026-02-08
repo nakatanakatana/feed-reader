@@ -1,0 +1,14 @@
+[
+  {
+    "Title": "Hacker News",
+    "URL": "https://news.ycombinator.com/rss"
+  },
+  {
+    "Title": "Go Blog",
+    "URL": "https://go.dev/blog/feed.atom"
+  },
+  {
+    "Title": "Another Feed",
+    "URL": "https://example.com/feed.xml"
+  }
+]

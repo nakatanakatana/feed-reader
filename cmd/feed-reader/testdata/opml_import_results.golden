@@ -1,0 +1,8 @@
+{
+  "Total": 3,
+  "Success": 1,
+  "Skipped": 1,
+  "FailedFeeds": [
+    "https://example.com/fail"
+  ]
+}
