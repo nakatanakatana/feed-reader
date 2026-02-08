@@ -1,5 +1,4 @@
-import { createConnectTransport } from "@connectrpc/connect-web";
-import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
+import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
   createRouter,
@@ -7,23 +6,25 @@ import {
 } from "@tanstack/solid-router";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { itemStore } from "../lib/item-store";
+import { page } from "vitest/browser";
+import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
-
-// Mock db partially
-vi.mock("../lib/db", async () => {
-  const actual = await vi.importActual<Record<string, unknown>>("../lib/db");
-  return {
-    ...actual,
-    // We might need to mock items() to return specific data for testing navigation
-  };
-});
+import { itemStore } from "../lib/item-store";
+import { http, HttpResponse } from "msw";
+import { worker } from "../mocks/browser";
+import { create, toJson } from "@bufbuild/protobuf";
+import {
+  ListItemsResponseSchema,
+  ListItemSchema,
+  GetItemResponseSchema,
+  ItemSchema,
+} from "../gen/item/v1/item_pb";
+import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
+import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
 
 describe("ItemDetailRouteView Reactivity", () => {
   let dispose: () => void;
-  const queryClient = new QueryClient();
-  const transport = createConnectTransport({ baseUrl: "http://localhost" });
 
   afterEach(() => {
     if (dispose) dispose();
@@ -31,13 +32,53 @@ describe("ItemDetailRouteView Reactivity", () => {
     vi.clearAllMocks();
   });
 
+  const setupMockData = (itemsData: Partial<ListItemSchema>[]) => {
+    worker.use(
+      http.post("*/item.v1.ItemService/ListItems", () => {
+        const msg = create(ListItemsResponseSchema, {
+          items: itemsData.map((i) => create(ListItemSchema, i)),
+          totalCount: itemsData.length,
+        });
+        return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
+      }),
+      http.post("*/item.v1.ItemService/GetItem", async ({ request }) => {
+        const body = (await request.json()) as { id: string };
+        const msg = create(GetItemResponseSchema, {
+          item: create(ItemSchema, {
+            id: body.id,
+            title: `Item ${body.id}`,
+            isRead: false,
+          }),
+        });
+        return HttpResponse.json(toJson(GetItemResponseSchema, msg));
+      }),
+      http.post("*/tag.v1.TagService/ListTags", () => {
+        return HttpResponse.json(
+          toJson(
+            ListTagsResponseSchema,
+            create(ListTagsResponseSchema, { tags: [] }),
+          ),
+        );
+      }),
+      http.post("*/feed.v1.FeedService/ListFeedTags", () => {
+        return HttpResponse.json(
+          toJson(
+            ListFeedTagsResponseSchema,
+            create(ListFeedTagsResponseSchema, { feedTags: [] }),
+          ),
+        );
+      }),
+    );
+  };
+
   it("should correctly compute next/prev items based on reactive items()", async () => {
+    setupMockData([
+      { id: "1", title: "Item 1", isRead: false },
+      { id: "2", title: "Item 2", isRead: false },
+    ]);
+
     const history = createMemoryHistory({ initialEntries: ["/items/1"] });
     const router = createRouter({ routeTree, history });
-
-    // We can't easily mock the result of items() here without a full DB setup,
-    // but we can verify that the component renders without crashing and
-    // respects the reactive store.
 
     dispose = render(
       () => (
@@ -50,12 +91,25 @@ describe("ItemDetailRouteView Reactivity", () => {
       document.body,
     );
 
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    // Initial state: Item 1 has Next (Item 2)
+    await expect
+      .element(page.getByRole("heading", { name: "Item 1" }))
+      .toBeInTheDocument();
+    const nextButton = page.getByRole("button", { name: "Next →" });
+    await expect.element(nextButton).not.toBeDisabled();
 
-    // Change filter state
-    itemStore.setShowRead(true);
+    // Update mock data to only have 1 item
 
-    // The component should re-render and re-query items()
-    expect(true).toBe(true); // Placeholder for structural integrity
+    setupMockData([{ id: "1", title: "Item 1", isRead: false }]);
+
+    // Change filter state to trigger a fresh query key
+
+    itemStore.setDateFilter("24h");
+
+    // It should have been called again due to reactivity
+
+    // And with the new mock data (only 1 item), it should have no Next.
+
+    await expect.element(nextButton).toBeDisabled();
   });
 });

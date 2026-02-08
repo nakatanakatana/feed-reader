@@ -1,23 +1,21 @@
-import { create } from "@bufbuild/protobuf";
-import { createConnectTransport } from "@connectrpc/connect-web";
-import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
+import { QueryClientProvider } from "@tanstack/solid-query";
+import { useLiveQuery } from "@tanstack/solid-db";
+import { Show } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { ListItemSchema } from "../gen/item/v1/item_pb";
+import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { ItemRow } from "./ItemRow";
-
-const { updateMock } = vi.hoisted(() => ({
-  updateMock: vi.fn(),
-}));
-
-// Mock the db module
-vi.mock("../lib/db", () => ({
-  items: vi.fn(() => ({
-    update: updateMock,
-  })),
-}));
+import { items } from "../lib/db";
+import { http, HttpResponse } from "msw";
+import { worker } from "../mocks/browser";
+import { create, toJson } from "@bufbuild/protobuf";
+import {
+  ListItemsResponseSchema,
+  ListItemSchema,
+  UpdateItemStatusResponseSchema,
+} from "../gen/item/v1/item_pb";
 
 describe("ItemRow", () => {
   let dispose: () => void;
@@ -28,25 +26,15 @@ describe("ItemRow", () => {
     vi.clearAllMocks();
   });
 
-  const transport = createConnectTransport({
-    baseUrl: "http://localhost:3000",
-  });
-
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: { retry: false },
-      mutations: { retry: false },
-    },
-  });
-
-  const mockItem = create(ListItemSchema, {
+  const mockItem = {
     id: "1",
     title: "Test Article Title",
     publishedAt: "2026-01-21T10:00:00Z",
     createdAt: "2026-01-20T10:00:00Z",
     description: "This is a test description snippet that should be displayed.",
     isRead: false,
-  });
+    feedId: "feed-1",
+  };
 
   it("renders item title, description and metadata", () => {
     dispose = render(
@@ -61,7 +49,6 @@ describe("ItemRow", () => {
     );
 
     expect(page.getByText("Test Article Title")).toBeInTheDocument();
-    // Use regex to be more flexible with formatting but check for label
     expect(page.getByText(/Received:/)).toBeInTheDocument();
     expect(
       page.getByText(
@@ -71,7 +58,7 @@ describe("ItemRow", () => {
   });
 
   it("renders read status correctly", () => {
-    const readItem = create(ListItemSchema, { ...mockItem, isRead: true });
+    const readItem = { ...mockItem, isRead: true };
 
     dispose = render(
       () => (
@@ -84,24 +71,73 @@ describe("ItemRow", () => {
       document.body,
     );
 
-    // Assuming we show "Read" or some indicator
     expect(page.getByText("Read", { exact: true })).toBeInTheDocument();
+    expect(
+      page.getByRole("button", { name: "Mark as Unread" }),
+    ).toBeInTheDocument();
   });
 
   it("calls updateStatus when toggle button is clicked", async () => {
+    let updateCalled = false;
+    worker.use(
+      http.post("*/item.v1.ItemService/ListItems", () => {
+        return HttpResponse.json(
+          toJson(
+            ListItemsResponseSchema,
+            create(ListItemsResponseSchema, {
+              items: [create(ListItemSchema, mockItem)],
+              totalCount: 1,
+            }),
+          ),
+        );
+      }),
+      http.post(
+        "*/item.v1.ItemService/UpdateItemStatus",
+        async ({ request }) => {
+          const body = (await request.json()) as {
+            ids: string[];
+            isRead: boolean;
+          };
+          if (body.ids.includes("1") && body.isRead === true) {
+            updateCalled = true;
+          }
+          return HttpResponse.json(
+            toJson(
+              UpdateItemStatusResponseSchema,
+              create(UpdateItemStatusResponseSchema, {}),
+            ),
+          );
+        },
+      ),
+    );
+
+    const TestObserved = () => {
+      const data = useLiveQuery((q) => q.from({ item: items() }));
+      return (
+        <Show when={data().length >= 0}>
+          <ItemRow item={mockItem} onClick={() => {}} />
+        </Show>
+      );
+    };
+
     dispose = render(
       () => (
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>
-            <ItemRow item={mockItem} onClick={() => {}} />
+            <TestObserved />
           </QueryClientProvider>
         </TransportProvider>
       ),
       document.body,
     );
 
-    const toggleButton = page.getByRole("button", { name: /Mark as Read/i });
+    // Wait for the item to be in the collection (it should be because we setup MSW and useLiveQuery)
+    const toggleButton = page.getByRole("button", { name: "Mark as Read" });
+    await expect.element(toggleButton).toBeInTheDocument();
+
     await toggleButton.click();
+
+    await expect.poll(() => updateCalled).toBe(true);
   });
 
   it("calls onClick when clicked", async () => {
@@ -117,45 +153,10 @@ describe("ItemRow", () => {
       document.body,
     );
 
-    const listItem = page.getByRole("button", { name: /Test Article Title/ });
-    await listItem.click();
+    const titleButton = page.getByRole("button", {
+      name: "Test Article Title",
+    });
+    await titleButton.click();
     expect(onClick).toHaveBeenCalledWith(mockItem);
-  });
-
-  it("updates item status without error", async () => {
-    const consoleSpy = vi.spyOn(console, "error");
-    dispose = render(
-      () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ItemRow item={mockItem} onClick={() => {}} />
-          </QueryClientProvider>
-        </TransportProvider>
-      ),
-      document.body,
-    );
-
-    const toggleButton = page.getByRole("button", { name: /Mark as Read/i });
-    await toggleButton.click();
-
-    expect(consoleSpy).not.toHaveBeenCalled();
-    // Check that update was called with correct ID and callback
-    expect(updateMock).toHaveBeenCalledWith(mockItem.id, expect.any(Function));
-    consoleSpy.mockRestore();
-  });
-
-  it("has title text", () => {
-    dispose = render(
-      () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ItemRow item={mockItem} onClick={() => {}} />
-          </QueryClientProvider>
-        </TransportProvider>
-      ),
-      document.body,
-    );
-
-    expect(page.getByText("Test Article Title")).toBeInTheDocument();
   });
 });

@@ -44,7 +44,7 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
       queryClient,
 
       refetchInterval: 1 * 60 * 1000,
-      queryKey: ["items", { since }],
+      queryKey: ["items", { since, showRead }],
       queryFn: async ({ queryKey }) => {
         const existingData = queryClient.getQueryData(queryKey) || [];
         const searchSince =

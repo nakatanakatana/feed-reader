@@ -6,52 +6,20 @@ import {
 } from "@tanstack/solid-router";
 import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
-import { setupLiveQuery } from "../test-utils/live-query";
-
-// Mock the db module
-vi.mock("../lib/db", () => ({
-  itemsUnreadQuery: vi.fn(() => ({
-    toArray: [],
-    isReady: vi.fn().mockReturnValue(true),
-  })),
-  items: vi.fn(() => ({
-    insert: vi.fn(),
-    update: vi.fn(),
-    delete: vi.fn(),
-    toArray: [],
-  })),
-  feeds: {
-    delete: vi.fn(),
-    isReady: vi.fn().mockReturnValue(true),
-    toArray: vi.fn().mockReturnValue([]),
-  },
-  tags: {
-    toArray: vi.fn().mockReturnValue([]),
-  },
-  feedTag: {
-    toArray: [],
-  },
-  addFeed: vi.fn(),
-  feedInsert: vi.fn(),
-  updateItemStatus: vi.fn(),
-  createItems: vi.fn(() => ({ toArray: [], utils: { refetch: vi.fn() } })),
-  manageFeedTags: vi.fn(),
-  refreshFeeds: vi.fn(),
-}));
-
-// Mock useLiveQuery
-vi.mock("@tanstack/solid-db", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@tanstack/solid-db")>();
-  return {
-    ...actual,
-    useLiveQuery: vi.fn(),
-  };
-});
+import { http, HttpResponse } from "msw";
+import { worker } from "../mocks/browser";
+import { create, toJson } from "@bufbuild/protobuf";
+import {
+  ListFeedsResponseSchema,
+  ListFeedSchema,
+  ListFeedTagsResponseSchema,
+} from "../gen/feed/v1/feed_pb";
+import { ListTagsResponseSchema, ListTagSchema } from "../gen/tag/v1/tag_pb";
 
 // Mock Link from solid-router
 vi.mock("@tanstack/solid-router", async (importOriginal) => {
@@ -59,8 +27,9 @@ vi.mock("@tanstack/solid-router", async (importOriginal) => {
     await importOriginal<typeof import("@tanstack/solid-router")>();
   return {
     ...actual,
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock for simplicity
-    Link: (props: any) => (
+    Link: (
+      props: { to: string; children: JSX.Element } & JSX.IntrinsicElements["a"],
+    ) => (
       <a href={props.to} {...props}>
         {props.children}
       </a>
@@ -70,10 +39,6 @@ vi.mock("@tanstack/solid-router", async (importOriginal) => {
 
 describe("FeedList Tag Filters", () => {
   let dispose: () => void;
-
-  beforeEach(() => {
-    queryClient.clear();
-  });
 
   afterEach(() => {
     if (dispose) dispose();
@@ -89,24 +54,40 @@ describe("FeedList Tag Filters", () => {
     </TransportProvider>
   );
 
-  it.skip("keeps feeds visible when tag filters change", async () => {
-    // Setup mock return for useLiveQuery
-    const mockFeeds = [
-      {
-        id: "1",
-        title: "Tagged Feed",
-        url: "http://example.com/1",
-        tags: [{ id: "t1", name: "Tech" }],
-      },
-      {
-        id: "2",
-        title: "Untagged Feed",
-        url: "http://example.com/2",
-        tags: [],
-      },
-    ];
-
-    setupLiveQuery(mockFeeds);
+  it("keeps feeds visible when tag filters change", async () => {
+    worker.use(
+      http.post("*/feed.v1.FeedService/ListFeeds", () => {
+        const msg = create(ListFeedsResponseSchema, {
+          feeds: [
+            create(ListFeedSchema, {
+              id: "1",
+              title: "Tagged Feed",
+              url: "url1",
+              tags: [create(ListTagSchema, { id: "t1", name: "Tech" })],
+            }),
+            create(ListFeedSchema, {
+              id: "2",
+              title: "Untagged Feed",
+              url: "url2",
+              tags: [],
+            }),
+          ],
+        });
+        return HttpResponse.json(toJson(ListFeedsResponseSchema, msg));
+      }),
+      http.post("*/tag.v1.TagService/ListTags", () => {
+        const msg = create(ListTagsResponseSchema, {
+          tags: [create(ListTagSchema, { id: "t1", name: "Tech" })],
+        });
+        return HttpResponse.json(toJson(ListTagsResponseSchema, msg));
+      }),
+      http.post("*/feed.v1.FeedService/ListFeedTags", () => {
+        const msg = create(ListFeedTagsResponseSchema, {
+          feedTags: [{ feedId: "1", tagId: "t1" }],
+        });
+        return HttpResponse.json(toJson(ListFeedTagsResponseSchema, msg));
+      }),
+    );
 
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
     const router = createRouter({ routeTree, history });
@@ -129,11 +110,10 @@ describe("FeedList Tag Filters", () => {
       .toBeInTheDocument();
 
     // Switch to Untagged filter
-    await page
-      .getByRole("combobox", { name: "Filter by tag" })
-      .selectOptions("untagged");
+    const filterSelect = page.getByRole("combobox", { name: "Filter by tag" });
+    await filterSelect.selectOptions("untagged");
 
-    // Expect only untagged feeds (query now filters in useLiveQuery)
+    // Expect only untagged feeds
     await expect
       .element(page.getByText("Untagged Feed", { exact: true }))
       .toBeInTheDocument();

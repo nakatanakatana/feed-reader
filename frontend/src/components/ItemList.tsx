@@ -113,13 +113,11 @@ export function ItemList(props: ItemListProps) {
 
     setIsBulkMarking(true);
     try {
-      await Promise.all(
-        ids.map((id) =>
-          items().update(id, (draft) => {
-            draft.isRead = true;
-          }),
-        ),
-      );
+      items().update(ids, (drafts) => {
+        for (const draft of drafts) {
+          draft.isRead = true;
+        }
+      });
     } finally {
       setIsBulkMarking(false);
     }

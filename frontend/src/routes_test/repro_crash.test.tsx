@@ -41,7 +41,7 @@ describe("Item Detail Crash Reproduction", () => {
 
     // Wait for the modal content to appear
     await expect
-      .element(page.getByText("Detail for Item 1"))
+      .element(page.getByRole("heading", { name: "Item 1" }))
       .toBeInTheDocument();
 
     // Now navigate away to home

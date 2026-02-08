@@ -83,13 +83,6 @@ export const feeds = createCollection(
       }));
     },
     getKey: (feed: Feed) => feed.id,
-    onInsert: async ({ transaction }) => {
-      transaction.mutations.map(async (m) => {
-        const url = m.modified.url;
-        const tagIds = m.modified.tags.map((t) => t.id);
-        await feedClient.createFeed({ url, tagIds });
-      });
-    },
     onDelete: async ({ transaction }) => {
       for (const mutation of transaction.mutations) {
         if (mutation.type === "delete") {
@@ -100,20 +93,17 @@ export const feeds = createCollection(
   }),
 );
 
-export const feedInsert = (url: string, tags: Tag[]) => {
-  const dummyFeed = {
-    id: "_dummy",
-    url: "_dummy",
-    link: "_dummy",
-    title: "_dummy",
-    lastFetchedAt: "",
-    tags: [],
-  };
-  return feeds.insert({
-    ...dummyFeed,
-    url: url,
-    tags: tags,
-  });
+export const feedInsert = async (url: string, tags: Tag[]) => {
+  const tagIds = tags.map((t) => t.id);
+  await feedClient.createFeed({ url, tagIds });
+  await queryClient.invalidateQueries({ queryKey: ["feeds"] });
+};
+
+export const feedDelete = async (id: string) => {
+  await feedClient.deleteFeed({ id });
+  await queryClient.invalidateQueries({ queryKey: ["feeds"] });
+  await queryClient.invalidateQueries({ queryKey: ["tags"] });
+  await queryClient.invalidateQueries({ queryKey: ["feed-tags"] });
 };
 
 export const feedTag = createCollection(

@@ -30,8 +30,8 @@ The frontend is a modern Single Page Application (SPA) designed for speed and re
 -   **Markdown Rendering:** `markdown-it` (Safe client-side rendering)
 -   **Styling:** Panda CSS (CSS-in-JS with build-time generation)
 -   **Communication:** Connect RPC Web (Communication with the backend)
--   **Testing:** Vitest (Test runner with Browser Mode enabled), Playwright (Browser provider), solid-js/web (for rendering in tests)
--   **API Mocking:** MSW (Mock Service Worker) for standalone development and testing.
+-   **Testing:** Vitest (Test runner with Browser Mode enabled), Playwright (Browser provider), solid-js/web (for rendering in tests). **Strategy:** Integration tests prioritize actual library logic (e.g., TanStack DB) over internal mocks to ensure high reliability.
+-   **API Mocking:** MSW (Mock Service Worker). Serves as the primary mocking layer for both standalone development and integration testing, intercepting network requests at the browser level.
 -   **Property-Based Testing:** `fast-check` (For robust logic validation)
 -   **Linting & Formatting:** BiomeJS (Fast all-in-one toolchain)
 

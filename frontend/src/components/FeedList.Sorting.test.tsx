@@ -6,52 +6,20 @@ import {
 } from "@tanstack/solid-router";
 import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
-import { setupLiveQuery } from "../test-utils/live-query";
-
-// Mock the db module
-vi.mock("../lib/db", () => ({
-  itemsUnreadQuery: vi.fn(() => ({
-    toArray: [],
-    isReady: vi.fn().mockReturnValue(true),
-  })),
-  items: vi.fn(() => ({
-    insert: vi.fn(),
-    update: vi.fn(),
-    delete: vi.fn(),
-    toArray: [],
-  })),
-  feeds: {
-    delete: vi.fn(),
-    isReady: vi.fn().mockReturnValue(true),
-    toArray: vi.fn().mockReturnValue([]),
-  },
-  tags: {
-    toArray: vi.fn().mockReturnValue([]),
-  },
-  feedTag: {
-    toArray: [],
-  },
-  addFeed: vi.fn(),
-  feedInsert: vi.fn(),
-  updateItemStatus: vi.fn(),
-  createItems: vi.fn(() => ({ toArray: [], utils: { refetch: vi.fn() } })),
-  manageFeedTags: vi.fn(),
-  refreshFeeds: vi.fn(),
-}));
-
-// Mock useLiveQuery
-vi.mock("@tanstack/solid-db", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@tanstack/solid-db")>();
-  return {
-    ...actual,
-    useLiveQuery: vi.fn(),
-  };
-});
+import { http, HttpResponse } from "msw";
+import { worker } from "../mocks/browser";
+import { create, toJson } from "@bufbuild/protobuf";
+import {
+  ListFeedsResponseSchema,
+  ListFeedSchema,
+  ListFeedTagsResponseSchema,
+} from "../gen/feed/v1/feed_pb";
+import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
 
 // Mock Link from solid-router
 vi.mock("@tanstack/solid-router", async (importOriginal) => {
@@ -59,8 +27,9 @@ vi.mock("@tanstack/solid-router", async (importOriginal) => {
     await importOriginal<typeof import("@tanstack/solid-router")>();
   return {
     ...actual,
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock for simplicity
-    Link: (props: any) => (
+    Link: (
+      props: { to: string; children: JSX.Element } & JSX.IntrinsicElements["a"],
+    ) => (
       <a href={props.to} {...props}>
         {props.children}
       </a>
@@ -70,10 +39,6 @@ vi.mock("@tanstack/solid-router", async (importOriginal) => {
 
 describe("FeedList Sorting", () => {
   let dispose: () => void;
-
-  beforeEach(() => {
-    queryClient.clear();
-  });
 
   afterEach(() => {
     if (dispose) dispose();
@@ -89,29 +54,50 @@ describe("FeedList Sorting", () => {
     </TransportProvider>
   );
 
-  it.skip("sorts feeds correctly by title and date", async () => {
-    const mockFeeds = [
-      {
-        id: "1",
-        title: "B Feed",
-        url: "url1",
-        tags: [],
-      },
-      {
-        id: "2",
-        title: "A Feed",
-        url: "url2",
-        tags: [],
-      },
-      {
-        id: "3",
-        title: "C Feed",
-        url: "url3",
-        tags: [],
-      },
-    ];
-
-    setupLiveQuery(mockFeeds);
+  it("sorts feeds correctly by title", async () => {
+    worker.use(
+      http.post("*/feed.v1.FeedService/ListFeeds", () => {
+        const msg = create(ListFeedsResponseSchema, {
+          feeds: [
+            create(ListFeedSchema, {
+              id: "1",
+              title: "B Feed",
+              url: "url1",
+              tags: [],
+            }),
+            create(ListFeedSchema, {
+              id: "2",
+              title: "A Feed",
+              url: "url2",
+              tags: [],
+            }),
+            create(ListFeedSchema, {
+              id: "3",
+              title: "C Feed",
+              url: "url3",
+              tags: [],
+            }),
+          ],
+        });
+        return HttpResponse.json(toJson(ListFeedsResponseSchema, msg));
+      }),
+      http.post("*/tag.v1.TagService/ListTags", () => {
+        return HttpResponse.json(
+          toJson(
+            ListTagsResponseSchema,
+            create(ListTagsResponseSchema, { tags: [] }),
+          ),
+        );
+      }),
+      http.post("*/feed.v1.FeedService/ListFeedTags", () => {
+        return HttpResponse.json(
+          toJson(
+            ListFeedTagsResponseSchema,
+            create(ListFeedTagsResponseSchema, { feedTags: [] }),
+          ),
+        );
+      }),
+    );
 
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
     const router = createRouter({ routeTree, history });
@@ -128,25 +114,47 @@ describe("FeedList Sorting", () => {
     const sortSelect = page.getByRole("combobox", { name: /sort by/i });
     await expect.element(sortSelect).toBeInTheDocument();
 
-    // Default sorting should be Title A-Z
-    let feedItems = document.querySelectorAll("li");
-    expect(feedItems[0].textContent).toContain("A Feed");
-    expect(feedItems[1].textContent).toContain("B Feed");
-    expect(feedItems[2].textContent).toContain("C Feed");
+    // Default sorting should be Title A-Z (implemented in FeedList.tsx as default)
+    await expect
+      .poll(() => {
+        const feedItems = document.querySelectorAll("li");
+        return (
+          feedItems.length === 3 &&
+          feedItems[0].textContent?.includes("A Feed") &&
+          feedItems[1].textContent?.includes("B Feed") &&
+          feedItems[2].textContent?.includes("C Feed")
+        );
+      })
+      .toBeTruthy();
 
     // 1. Sort by Title (Z-A)
     await sortSelect.selectOptions("title_desc");
 
-    feedItems = document.querySelectorAll("li");
-    expect(feedItems[0].textContent).toContain("C Feed");
-    expect(feedItems[1].textContent).toContain("B Feed");
-    expect(feedItems[2].textContent).toContain("A Feed");
+    await expect
+      .poll(() => {
+        const feedItems = document.querySelectorAll("li");
+        return (
+          feedItems.length === 3 &&
+          feedItems[0].textContent?.includes("C Feed") &&
+          feedItems[1].textContent?.includes("B Feed") &&
+          feedItems[2].textContent?.includes("A Feed")
+        );
+      })
+      .toBeTruthy();
 
     // 2. Sort by Title (A-Z)
     await sortSelect.selectOptions("title_asc");
-    feedItems = document.querySelectorAll("li");
-    expect(feedItems[0].textContent).toContain("A Feed");
-    expect(feedItems[1].textContent).toContain("B Feed");
-    expect(feedItems[2].textContent).toContain("C Feed");
+
+    await expect
+      .poll(() => {
+        const feedItems = document.querySelectorAll("li");
+        return (
+          feedItems.length === 3 &&
+          feedItems[0].textContent?.includes("A Feed") &&
+          feedItems[1].textContent?.includes("B Feed") &&
+          feedItems[2].textContent?.includes("C Feed")
+        );
+      })
+      .toBeTruthy();
   });
 });

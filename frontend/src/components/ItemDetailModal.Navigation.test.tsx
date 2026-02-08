@@ -1,42 +1,17 @@
-import { createConnectTransport } from "@connectrpc/connect-web";
-import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
+import { QueryClientProvider } from "@tanstack/solid-query";
 import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page, userEvent } from "vitest/browser";
+import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { ItemDetailModal } from "./ItemDetailModal";
-
-// Mock the query hooks
-vi.mock("../lib/item-query", () => ({
-  useItem: (id: () => string | undefined) => ({
-    get data() {
-      if (!id()) return undefined;
-      return {
-        id: id(),
-        title: `Test Item ${id()}`,
-        description: "<p>Test Content</p>",
-        publishedAt: "2026-01-24",
-        author: "Test Author",
-        url: "http://example.com",
-        isRead: false,
-      };
-    },
-    get isLoading() {
-      return false;
-    },
-  }),
-  useUpdateItemStatus: () => ({
-    mutate: vi.fn(),
-    isPending: false,
-  }),
-}));
+import { http, HttpResponse } from "msw";
+import { worker } from "../mocks/browser";
+import { create, toJson } from "@bufbuild/protobuf";
+import { GetItemResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
 
 describe("ItemDetailModal Navigation", () => {
-  const queryClient = new QueryClient();
-  const transport = createConnectTransport({
-    baseUrl: "http://localhost:8080",
-  });
   let dispose: () => void;
 
   afterEach(() => {
@@ -44,6 +19,26 @@ describe("ItemDetailModal Navigation", () => {
     document.body.innerHTML = "";
     vi.clearAllMocks();
   });
+
+  const setupMockData = (itemId: string) => {
+    worker.use(
+      http.post("*/item.v1.ItemService/GetItem", () => {
+        const msg = create(GetItemResponseSchema, {
+          item: create(ItemSchema, {
+            id: itemId,
+            title: `Test Item ${itemId}`,
+            description: "<p>Test Content</p>",
+            publishedAt: "2026-01-24T10:00:00Z",
+            createdAt: "2026-01-24T09:00:00Z",
+            author: "Test Author",
+            url: "http://example.com",
+            isRead: false,
+          }),
+        });
+        return HttpResponse.json(toJson(GetItemResponseSchema, msg));
+      }),
+    );
+  };
 
   const Wrapper = (props: { children: JSX.Element }) => (
     <TransportProvider transport={transport}>
@@ -54,6 +49,7 @@ describe("ItemDetailModal Navigation", () => {
   );
 
   it("calls onNext when Next button is clicked", async () => {
+    setupMockData("1");
     const onNext = vi.fn();
     dispose = render(
       () => (
@@ -69,12 +65,14 @@ describe("ItemDetailModal Navigation", () => {
       document.body,
     );
 
+    await expect.element(page.getByText("Test Item 1")).toBeInTheDocument();
     const nextButton = page.getByText("Next →");
     await nextButton.click();
     expect(onNext).toHaveBeenCalled();
   });
 
   it("calls onPrev when Previous button is clicked", async () => {
+    setupMockData("2");
     const onPrev = vi.fn();
     dispose = render(
       () => (
@@ -90,12 +88,14 @@ describe("ItemDetailModal Navigation", () => {
       document.body,
     );
 
+    await expect.element(page.getByText("Test Item 2")).toBeInTheDocument();
     const prevButton = page.getByText("← Previous");
     await prevButton.click();
     expect(onPrev).toHaveBeenCalled();
   });
 
   it("calls onNext when 'k' key is pressed", async () => {
+    setupMockData("1");
     const onNext = vi.fn();
     dispose = render(
       () => (
@@ -111,11 +111,13 @@ describe("ItemDetailModal Navigation", () => {
       document.body,
     );
 
+    await expect.element(page.getByText("Test Item 1")).toBeInTheDocument();
     await userEvent.keyboard("k");
     expect(onNext).toHaveBeenCalled();
   });
 
   it("calls onPrev when 'j' key is pressed", async () => {
+    setupMockData("2");
     const onPrev = vi.fn();
     dispose = render(
       () => (
@@ -131,6 +133,7 @@ describe("ItemDetailModal Navigation", () => {
       document.body,
     );
 
+    await expect.element(page.getByText("Test Item 2")).toBeInTheDocument();
     await userEvent.keyboard("j");
     expect(onPrev).toHaveBeenCalled();
   });

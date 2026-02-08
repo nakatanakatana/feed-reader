@@ -1,5 +1,7 @@
 import { afterAll, afterEach, beforeAll, vi } from "vitest";
+import { resetDatabase } from "./lib/db";
 import { worker } from "./mocks/browser";
+import { resetState } from "./mocks/handlers";
 
 beforeAll(async () => {
   await worker.start({ onUnhandledRequest: "bypass" });
@@ -7,6 +9,8 @@ beforeAll(async () => {
 
 afterEach(() => {
   worker.resetHandlers();
+  resetState();
+  resetDatabase();
   vi.useRealTimers();
   vi.clearAllMocks();
 });

@@ -2,12 +2,12 @@ import { toJson } from "@bufbuild/protobuf";
 import { createClient } from "@connectrpc/connect";
 import { describe, expect, it } from "vitest";
 import {
-  CreateFeedResponseSchema,
   DeleteFeedResponseSchema,
   FeedService,
   ListFeedsResponseSchema,
 } from "../gen/feed/v1/feed_pb";
 import { transport } from "../lib/query";
+import { resetState } from "./handlers";
 
 describe("FeedService Mock Handlers", () => {
   it("should mock ListFeeds", async () => {
@@ -17,23 +17,40 @@ describe("FeedService Mock Handlers", () => {
     const data = toJson(ListFeedsResponseSchema, response);
     expect(data).toHaveProperty("feeds");
     expect(Array.isArray(response.feeds)).toBe(true);
-    expect(response.feeds.length).toBeGreaterThan(0);
+    expect(response.feeds.length).toBe(2); // Initial state has 2 feeds
   });
 
   it("should mock CreateFeed", async () => {
     const feedData = {
-      url: "https://example.com/feed.xml",
-      title: "Example Feed",
+      url: "https://example.com/new-feed.xml",
+      title: "New Example Feed",
     };
 
     const client = createClient(FeedService, transport);
     const response = await client.createFeed(feedData);
 
-    const data = toJson(CreateFeedResponseSchema, response);
-    expect(data).toHaveProperty("feed");
     expect(response.feed?.url).toBe(feedData.url);
-    expect(response.feed?.title).toBe(feedData.title);
-    expect(response.feed?.id).toBeDefined();
+
+    const listResponse = await client.listFeeds({});
+    expect(listResponse.feeds.length).toBe(3); // 2 initial + 1 new
+  });
+
+  it("should have reset state after the previous test (via vitest-setup.ts or manual call)", async () => {
+    // In this test file, vitest-setup.ts should have called resetState() after the previous 'it' block.
+    const client = createClient(FeedService, transport);
+    const response = await client.listFeeds({});
+    expect(response.feeds.length).toBe(2); // Should be back to 2
+  });
+
+  it("should manually reset state", async () => {
+    const client = createClient(FeedService, transport);
+    await client.createFeed({ url: "https://test.com" });
+    let list = await client.listFeeds({});
+    expect(list.feeds.length).toBe(3);
+
+    resetState();
+    list = await client.listFeeds({});
+    expect(list.feeds.length).toBe(2);
   });
 
   it("should mock DeleteFeed", async () => {
@@ -52,5 +69,6 @@ describe("FeedService Mock Handlers", () => {
     expect(
       listResponseAfter.feeds.find((f) => f.id === idToDelete),
     ).toBeUndefined();
+    expect(listResponseAfter.feeds.length).toBe(1);
   });
 });

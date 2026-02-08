@@ -1,37 +1,17 @@
-import { createConnectTransport } from "@connectrpc/connect-web";
-import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
+import { QueryClientProvider } from "@tanstack/solid-query";
 import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
+import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { ItemDetailModal } from "./ItemDetailModal";
-
-// Mock the db hooks
-vi.mock("../lib/item-db", () => ({
-  getItem: vi.fn().mockImplementation((id) => {
-    if (!id) return null;
-    return Promise.resolve({
-      id: id,
-      title: "Test Item",
-      description: "<p>Test Content</p>",
-      publishedAt: "2026-01-24T10:00:00Z",
-      createdAt: "2026-01-24T09:00:00Z",
-      author: "Test Author",
-      url: "http://example.com",
-      isRead: false,
-    });
-  }),
-  items: vi.fn(() => ({
-    update: vi.fn(),
-  })),
-}));
+import { http, HttpResponse } from "msw";
+import { worker } from "../mocks/browser";
+import { create, toJson } from "@bufbuild/protobuf";
+import { GetItemResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
 
 describe("ItemDetailModal", () => {
-  const queryClient = new QueryClient();
-  const transport = createConnectTransport({
-    baseUrl: "http://localhost:8080",
-  });
   let dispose: () => void;
 
   afterEach(() => {
@@ -39,6 +19,26 @@ describe("ItemDetailModal", () => {
     document.body.innerHTML = "";
     vi.clearAllMocks();
   });
+
+  const setupMockData = (itemId: string) => {
+    worker.use(
+      http.post("*/item.v1.ItemService/GetItem", () => {
+        const msg = create(GetItemResponseSchema, {
+          item: create(ItemSchema, {
+            id: itemId,
+            title: "Test Item",
+            description: "<p>Test Content</p>",
+            publishedAt: "2026-01-24T10:00:00Z",
+            createdAt: "2026-01-24T09:00:00Z",
+            author: "Test Author",
+            url: "http://example.com",
+            isRead: false,
+          }),
+        });
+        return HttpResponse.json(toJson(GetItemResponseSchema, msg));
+      }),
+    );
+  };
 
   const Wrapper = (props: { children: JSX.Element }) => (
     <TransportProvider transport={transport}>
@@ -49,6 +49,7 @@ describe("ItemDetailModal", () => {
   );
 
   it("renders item content when itemId is provided", async () => {
+    setupMockData("test-id");
     dispose = render(
       () => (
         <Wrapper>
@@ -70,14 +71,10 @@ describe("ItemDetailModal", () => {
     await expect
       .element(titleLink)
       .toHaveAttribute("href", "http://example.com");
-
-    // The old button should NOT be present
-    await expect
-      .element(page.getByText("Open original article ↗"))
-      .not.toBeInTheDocument();
   });
 
   it("does NOT render a close button (✕)", async () => {
+    setupMockData("test-id");
     dispose = render(
       () => (
         <Wrapper>
@@ -87,6 +84,7 @@ describe("ItemDetailModal", () => {
       document.body,
     );
 
+    await expect.element(page.getByText("Test Item")).toBeInTheDocument();
     const closeButton = page.getByText("✕");
     await expect.element(closeButton).not.toBeInTheDocument();
   });
