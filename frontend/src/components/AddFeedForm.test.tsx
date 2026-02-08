@@ -32,6 +32,8 @@ describe("AddFeedForm", () => {
   it("creates a new feed", async () => {
     dispose = render(() => <TestWrapper />, document.body);
 
+    expect(document.body.innerHTML).toMatchSnapshot();
+
     const input = page.getByPlaceholder("Feed URL");
     await input.fill("http://example.com/new-feed.xml");
 

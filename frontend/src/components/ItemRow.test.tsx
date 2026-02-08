@@ -55,6 +55,8 @@ describe("ItemRow", () => {
         "This is a test description snippet that should be displayed.",
       ),
     ).toBeInTheDocument();
+
+    expect(document.body.innerHTML).toMatchSnapshot();
   });
 
   it("renders read status correctly", () => {

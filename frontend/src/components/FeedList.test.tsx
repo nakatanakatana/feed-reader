@@ -61,6 +61,9 @@ describe("FeedList", () => {
 
     await expect.element(page.getByText("Example Feed 1")).toBeInTheDocument();
     await expect.element(page.getByText("Example Feed 2")).toBeInTheDocument();
+
+    // Snapshot testing
+    expect(document.body.innerHTML).toMatchSnapshot();
   });
 
   it("deletes a feed", async () => {
