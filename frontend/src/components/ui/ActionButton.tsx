@@ -27,34 +27,34 @@ export function ActionButton(props: ActionButtonProps) {
 
   const sizeStyle = () =>
     size() === "sm"
-      ? { fontSize: "xs", paddingY: "1.5", paddingX: "3" }
-      : { fontSize: "sm", paddingY: "2", paddingX: "4" };
+      ? { fontSize: "xs", py: "1.5", px: "3" }
+      : { fontSize: "sm", py: "2", px: "4" };
 
   const variantStyle = () => {
     switch (variant()) {
       case "primary":
         return {
-          backgroundColor: "blue.600",
+          bg: "blue.600",
           color: "white",
-          _hover: { backgroundColor: "blue.700" },
+          _hover: { bg: "blue.700" },
         };
       case "ghost":
         return {
-          backgroundColor: "transparent",
+          bg: "transparent",
           color: "blue.600",
-          _hover: { backgroundColor: "blue.50", color: "blue.700" },
+          _hover: { bg: "blue.50", color: "blue.700" },
         };
       case "danger":
         return {
-          backgroundColor: "red.50",
-          color: "red.600",
-          _hover: { backgroundColor: "red.100" },
+          bg: "red.600",
+          color: "white",
+          _hover: { bg: "red.700" },
         };
       default:
         return {
-          backgroundColor: "gray.100",
-          color: "gray.700",
-          _hover: { backgroundColor: "gray.200" },
+          bg: "transparent",
+          color: "gray.600",
+          _hover: { bg: "gray.50", color: "gray.700" },
         };
     }
   };
@@ -79,8 +79,10 @@ export function ActionButton(props: ActionButtonProps) {
             variant() === "ghost"
               ? "transparent"
               : variant() === "danger"
-                ? "red.200"
-                : "gray.200",
+                ? "red.600"
+                : variant() === "primary"
+                  ? "blue.600"
+                  : "gray.300",
           transition: "all 0.2s",
           display: "inline-flex",
           alignItems: "center",

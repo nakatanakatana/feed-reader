@@ -31,14 +31,7 @@ vi.mock("@tanstack/solid-router", async (importOriginal) => {
 describe("FeedList", () => {
   let dispose: () => void;
 
-  beforeEach(() => {
-    const mockNow = new Date("2026-02-08T13:00:00Z");
-    vi.useFakeTimers();
-    vi.setSystemTime(mockNow);
-  });
-
   afterEach(async () => {
-    vi.useRealTimers();
     if (dispose) dispose();
     document.body.innerHTML = "";
     vi.clearAllMocks();
@@ -132,6 +125,7 @@ describe("FeedList", () => {
   });
 
   it("manages tags for selected feeds", async () => {
+    vi.useRealTimers();
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
 
     const router = createRouter({ routeTree, history });
@@ -146,16 +140,17 @@ describe("FeedList", () => {
       document.body,
     );
 
+    const checkboxes = page.getByRole("checkbox");
+    await expect.poll(async () => (await checkboxes.all()).length).toBe(2);
+
     // Select first feed
+    await checkboxes.first().click();
 
-    await page.getByRole("checkbox").first().click();
-
-    // Click Manage Tags
-
+    // Click Manage Tags button
     const manageButton = page.getByRole("button", {
       name: /Manage Tags \(1\)/i,
     });
-
+    await expect.element(manageButton).toBeInTheDocument();
     await manageButton.click();
 
     // Should show modal
