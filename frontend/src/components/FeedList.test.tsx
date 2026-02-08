@@ -47,6 +47,9 @@ describe("FeedList", () => {
   );
 
   it("displays a list of feeds", async () => {
+    const mockNow = new Date("2026-02-08T13:00:00Z");
+    vi.setSystemTime(mockNow);
+
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
     const router = createRouter({ routeTree, history });
 
@@ -64,6 +67,8 @@ describe("FeedList", () => {
 
     // Snapshot testing
     expect(document.body.innerHTML).toMatchSnapshot();
+
+    vi.useRealTimers();
   });
 
   it("deletes a feed", async () => {
