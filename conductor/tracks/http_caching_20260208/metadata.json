@@ -1,8 +1,0 @@
-{
-  "track_id": "http_caching_20260208",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-02-08T00:00:00Z",
-  "updated_at": "2026-02-08T00:00:00Z",
-  "description": "Implement HTTP caching (Conditional GET) for the feed fetcher."
-}
