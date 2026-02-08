@@ -18,7 +18,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Frontend Rendering Refactoring' c1e0cc8
 
 ## Phase 3: Final Integration & API Verification
-- [ ] Task: Migrate API routing tests to snapshots
+- [x] Task: Migrate API routing tests to snapshots 9f99ad0
     - Refactor `cmd/feed-reader/item_routing_test.go` to use `protojson` snapshots.
 - [ ] Task: Final full test suite run and verification
     - Execute `make test-backend` and `make test-frontend`.
