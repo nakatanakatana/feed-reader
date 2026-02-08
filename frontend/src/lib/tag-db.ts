@@ -54,10 +54,11 @@ export const tagsFeedQuery = createLiveQueryCollection((q) =>
   q
     .from({ tag: tagsBaseQuery })
     .leftJoin({ ft: feedTag }, ({ tag, ft }) => eq(tag.id, ft.tagId))
-    .groupBy(({ tag }) => [tag.id, tag.name])
+    .groupBy(({ tag }) => [tag.id, tag.name, tag.unreadCount])
     .select(({ tag, ft }) => ({
       id: tag.id,
       name: tag.name,
+      unreadCount: tag.unreadCount,
       feedCount: count(ft?.feedId),
     })),
 );
