@@ -16,7 +16,7 @@ Focus on the data layer (`store` package) which has extensive tests.
 Refactor the main application logic tests.
 
 - [x] Task: Audit `cmd/feed-reader/` tests for refactoring targets (b4b3741)
-- [ ] Task: Refactor `cmd/feed-reader/handler_test.go` and related HTTP handler tests
+- [x] Task: Refactor `cmd/feed-reader/handler_test.go` and related HTTP handler tests (54abacd)
 - [ ] Task: Refactor `cmd/feed-reader/fetcher_test.go` and `scheduler_test.go`
 - [ ] Task: Refactor `cmd/feed-reader/opml_importer_test.go` and `converter_test.go`
 - [ ] Task: Migrate existing golden tests in `cmd/feed-reader/` to `gotest.tools/v3/golden`
