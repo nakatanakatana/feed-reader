@@ -20,23 +20,23 @@ Refactor tests related to adding and updating feeds to use MSW and actual applic
     - [x] Verify the test passes with actual library logic.
 - [x] Task: Refactor `FeedList` related tests. (979d22c)
     - [x] Ensure feed listing and updates are tested via MSW and real state.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Restore Feed Management Tests' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Restore Feed Management Tests' (Protocol in workflow.md)
 
-## Phase 3: Restore Article Status Management Tests
+## Phase 3: Restore Article Status Management Tests [checkpoint: 2755e37]
 Restore tests related to toggling read/unread status of articles.
 
-- [ ] Task: Refactor `ItemList` and `ItemRow` tests.
-    - [ ] Remove article-related mocks.
-    - [ ] Set up MSW handlers for marking items as read/unread.
-    - [ ] Ensure state updates in `tanstack/db` are correctly reflected in the UI during tests.
-- [ ] Task: Refactor `ItemDetailModal` tests.
-    - [ ] Verify interactions within the detail view correctly trigger status updates.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Restore Article Status Management Tests' (Protocol in workflow.md)
+- [x] Task: Refactor `ItemList` and `ItemRow` tests.
+    - [x] Remove article-related mocks.
+    - [x] Set up MSW handlers for marking items as read/unread.
+    - [x] Ensure state updates in `tanstack/db` are correctly reflected in the UI during tests.
+- [x] Task: Refactor `ItemDetailModal` tests.
+    - [x] Verify interactions within the detail view correctly trigger status updates.
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Restore Article Status Management Tests' (Protocol in workflow.md)
 
-## Phase 4: Final Cleanup and Verification
+## Phase 4: Final Cleanup and Verification [checkpoint: 785d1e2]
 Ensure the entire test suite is stable and correctly verified.
 
-- [ ] Task: Run all frontend tests and ensure no unintended regressions.
-- [ ] Task: Verify that no `test.skip` or `describe.skip` remain for the target areas.
-- [ ] Task: Final code quality and coverage check.
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Final Cleanup and Verification' (Protocol in workflow.md)
+- [x] Task: Run all frontend tests and ensure no unintended regressions.
+- [x] Task: Verify that no `test.skip` or `describe.skip` remain for the target areas.
+- [x] Task: Final code quality and coverage check.
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Final Cleanup and Verification' (Protocol in workflow.md)

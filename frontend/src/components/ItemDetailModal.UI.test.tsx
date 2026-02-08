@@ -1,24 +1,18 @@
-import { createConnectTransport } from "@connectrpc/connect-web";
-import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
+import { QueryClientProvider } from "@tanstack/solid-query";
+import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
-import { afterEach, describe, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { page } from "vitest/browser";
+import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { ItemDetailModal } from "./ItemDetailModal";
-
-// Mock db
-vi.mock("../lib/db", () => ({
-  itemsUnreadQuery: vi.fn(() => ({
-    toArray: [],
-    isReady: vi.fn().mockReturnValue(true),
-  })),
-  items: vi.fn(() => ({})),
-  updateItemStatus: vi.fn(),
-}));
+import { http, HttpResponse } from "msw";
+import { worker } from "../mocks/browser";
+import { create, toJson } from "@bufbuild/protobuf";
+import { GetItemResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
 
 describe("ItemDetailModal UI Updates", () => {
   let dispose: () => void;
-  const queryClient = new QueryClient();
-  const transport = createConnectTransport({ baseUrl: "http://localhost" });
 
   afterEach(() => {
     if (dispose) dispose();
@@ -26,45 +20,97 @@ describe("ItemDetailModal UI Updates", () => {
     vi.clearAllMocks();
   });
 
+  const setupMockData = (itemId: string, itemData: any) => {
+    worker.use(
+      http.post("*/item.v1.ItemService/GetItem", () => {
+        const msg = create(GetItemResponseSchema, {
+          item: create(ItemSchema, {
+            id: itemId,
+            ...itemData
+          })
+        });
+        return HttpResponse.json(toJson(GetItemResponseSchema, msg));
+      })
+    );
+  };
+
+  const Wrapper = (props: { children: JSX.Element }) => (
+    <TransportProvider transport={transport}>
+      <QueryClientProvider client={queryClient}>
+        {props.children}
+      </QueryClientProvider>
+    </TransportProvider>
+  );
+
   it("renders title as a link and displays content, image, and categories", async () => {
-    // TODO: Update test to work with item-db instead of item-query hooks
+    setupMockData("1", {
+        title: "Link Title",
+        url: "https://example.com/item1",
+        description: "Content",
+        imageUrl: "https://example.com/image.jpg",
+        categories: '["Tech", "News"]'
+    });
+
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ItemDetailModal itemId="1" onClose={() => {}} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <Wrapper>
+          <ItemDetailModal itemId="1" onClose={() => {}} />
+        </Wrapper>
       ),
       document.body,
     );
+
+    const titleLink = page.getByRole("link", { name: "Link Title" });
+    await expect.element(titleLink).toBeInTheDocument();
+    await expect.element(titleLink).toHaveAttribute("href", "https://example.com/item1");
+
+    await expect.element(page.getByText("Content")).toBeInTheDocument();
+    
+    // Use poll with querySelector to wait for image to appear
+    await expect.poll(() => document.querySelector('img[src="https://example.com/image.jpg"]')).not.toBeNull();
+
+    const image = document.querySelector('img[src="https://example.com/image.jpg"]') as HTMLImageElement;
+    expect(image.getAttribute("src")).toBe("https://example.com/image.jpg");
+
+    await expect.element(page.getByText("Tech")).toBeInTheDocument();
+    await expect.element(page.getByText("News")).toBeInTheDocument();
   });
 
   it("renders comma-separated categories when JSON format is absent", async () => {
-    // TODO: Update test to work with item-db instead of item-query hooks
+    setupMockData("2", {
+        title: "Item 2",
+        categories: "Science, Space"
+    });
+
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ItemDetailModal itemId="2" onClose={() => {}} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <Wrapper>
+          <ItemDetailModal itemId="2" onClose={() => {}} />
+        </Wrapper>
       ),
       document.body,
     );
+
+    await expect.element(page.getByText("Science")).toBeInTheDocument();
+    await expect.element(page.getByText("Space")).toBeInTheDocument();
   });
 
   it("falls back to CSV parsing when JSON is malformed", async () => {
-    // TODO: Update test to work with item-db instead of item-query hooks
+    setupMockData("3", {
+        title: "Item 3",
+        categories: '[Malformed, JSON'
+    });
+
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ItemDetailModal itemId="3" onClose={() => {}} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <Wrapper>
+          <ItemDetailModal itemId="3" onClose={() => {}} />
+        </Wrapper>
       ),
       document.body,
     );
+
+    await expect.element(page.getByText("Malformed")).toBeInTheDocument();
+    await expect.element(page.getByText("JSON")).toBeInTheDocument();
   });
 });

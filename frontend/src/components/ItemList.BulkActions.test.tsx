@@ -1,5 +1,4 @@
-import { createConnectTransport } from "@connectrpc/connect-web";
-import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
+import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
   createRouter,
@@ -8,94 +7,18 @@ import {
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
+import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
-
-// Mock hooks
-vi.mock("../lib/item-query", () => ({
-  useUpdateItemStatus: () => ({
-    mutateAsync: vi.fn().mockResolvedValue({}),
-    isPending: false,
-  }),
-  useItem: vi.fn(),
-  useItems: vi.fn(),
-}));
-
-// Mock tanstack/solid-db
-vi.mock("@tanstack/solid-db", async () => {
-  const actual =
-    await vi.importActual<typeof import("@tanstack/solid-db")>(
-      "@tanstack/solid-db",
-    );
-  return {
-    ...actual,
-    useLiveQuery: vi.fn(() => {
-      const result = () => [
-        {
-          id: "1",
-          title: "Item 1",
-          publishedAt: "2026-01-26",
-          createdAt: "2026-01-26",
-          isRead: false,
-          feedId: "feed1",
-        },
-        {
-          id: "2",
-          title: "Item 2",
-          publishedAt: "2026-01-26",
-          createdAt: "2026-01-26",
-          isRead: false,
-          feedId: "feed1",
-        },
-      ];
-      (result as { isLoading?: boolean }).isLoading = false;
-      return result;
-    }),
-    eq: actual.eq,
-    isUndefined: actual.isUndefined,
-  };
-});
-
-vi.mock("../lib/db", () => ({
-  tags: {
-    toArray: [],
-  },
-  feedTag: {
-    toArray: [],
-  },
-
-  itemsUnreadQuery: vi.fn(() => ({
-    toArray: [],
-    isReady: vi.fn().mockReturnValue(true),
-  })),
-  items: vi.fn(() => ({
-    insert: vi.fn(),
-    update: vi.fn(),
-    delete: vi.fn(),
-    toArray: [],
-  })),
-  feeds: {
-    delete: vi.fn(),
-    isReady: true,
-    toArray: [],
-  },
-  addFeed: vi.fn(),
-  feedInsert: vi.fn(),
-  updateItemStatus: vi.fn(),
-  createItems: vi.fn(() => ({
-    toArray: [],
-    utils: {
-      refetch: vi.fn(),
-    },
-  })),
-  manageFeedTags: vi.fn(),
-  refreshFeeds: vi.fn(),
-}));
+import { http, HttpResponse } from "msw";
+import { worker } from "../mocks/browser";
+import { create, toJson } from "@bufbuild/protobuf";
+import { ListItemsResponseSchema, ListItemSchema, UpdateItemStatusResponseSchema } from "../gen/item/v1/item_pb";
+import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
+import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
 
 describe("ItemList Bulk Actions", () => {
   let dispose: () => void;
-  const queryClient = new QueryClient();
-  const transport = createConnectTransport({ baseUrl: "http://localhost" });
 
   afterEach(() => {
     if (dispose) dispose();
@@ -103,7 +26,41 @@ describe("ItemList Bulk Actions", () => {
     vi.clearAllMocks();
   });
 
+  const setupMockData = (items: any[] = []) => {
+    worker.use(
+      http.post("*/item.v1.ItemService/ListItems", () => {
+        const msg = create(ListItemsResponseSchema, {
+          items: items.map(i => create(ListItemSchema, i)),
+          totalCount: items.length
+        });
+        return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
+      }),
+      http.post("*/tag.v1.TagService/ListTags", () => {
+        return HttpResponse.json(toJson(ListTagsResponseSchema, create(ListTagsResponseSchema, { tags: [] })));
+      }),
+      http.post("*/feed.v1.FeedService/ListFeedTags", () => {
+        return HttpResponse.json(toJson(ListFeedTagsResponseSchema, create(ListFeedTagsResponseSchema, { feedTags: [] })));
+      })
+    );
+  };
+
   it("marks multiple items as read using transaction", async () => {
+    setupMockData([
+      { id: "1", title: "Item 1", publishedAt: "2026-01-26", createdAt: "2026-01-26", isRead: false, feedId: "feed1" },
+      { id: "2", title: "Item 2", publishedAt: "2026-01-26", createdAt: "2026-01-26", isRead: false, feedId: "feed1" },
+    ]);
+
+    let updateCount = 0;
+    worker.use(
+        http.post("*/item.v1.ItemService/UpdateItemStatus", async ({ request }) => {
+            const body = await request.json() as any;
+            if (body.ids.length === 2 && body.isRead === true) {
+                updateCount++;
+            }
+            return HttpResponse.json(toJson(UpdateItemStatusResponseSchema, create(UpdateItemStatusResponseSchema, {})));
+        })
+    );
+
     const history = createMemoryHistory({ initialEntries: ["/"] });
     const router = createRouter({ routeTree, history });
 
@@ -118,17 +75,20 @@ describe("ItemList Bulk Actions", () => {
       document.body,
     );
 
+    await expect.element(page.getByText("Item 1")).toBeInTheDocument();
+
     const selectAll = page.getByLabelText(/Select All/i);
     await selectAll.click();
 
     // The bulk bar appears when items are selected.
     // It contains a "Mark as Read" button.
-    const bulkMarkBtn = page
-      .getByRole("button", { name: "Mark as Read" })
-      .nth(0);
+    const bulkMarkBtn = page.getByRole("button", { name: "Mark as Read" }).first();
     await bulkMarkBtn.click();
 
     // Selection should be cleared
     await expect.element(selectAll).not.toBeChecked();
+    
+    // Verify API called
+    await expect.poll(() => updateCount).toBe(1);
   });
 });
