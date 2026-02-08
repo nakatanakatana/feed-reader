@@ -30,10 +30,18 @@ dev: dev-backend dev-frontend
 test-backend: sync-assets
 	go test ./...
 
+test-update-backend: sync-assets
+	go test ./... -args -update
+
 test-frontend:
 	npm run test
 
+test-update-frontend:
+	npm run test -- -u
+
 test: test-backend test-frontend
+
+test-update: test-update-backend test-update-frontend
 
 lint-backend:
 	golangci-lint run
