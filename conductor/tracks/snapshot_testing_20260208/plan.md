@@ -1,6 +1,6 @@
 # Implementation Plan: Introduction of Snapshot Testing (Golden Testing)
 
-## Phase 1: Infrastructure Setup
+## Phase 1: Infrastructure Setup [checkpoint: 4910804]
 - [x] Task: Install `gotest.tools/v3` for the backend (dc7a7f3)
     - [ ] Run `go get gotest.tools/v3` (Avoid `go mod tidy` until it's used in code)
 - [x] Task: Configure `Makefile` for snapshot updates (0f49b9d)
