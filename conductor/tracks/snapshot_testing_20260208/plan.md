@@ -21,7 +21,7 @@
     - [ ] Run `go mod tidy` now that `gotest.tools/v3` is utilized in code
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Backend Snapshot Implementation' (cef40d5) (Protocol in workflow.md)
 
-## Phase 3: Frontend Snapshot Implementation
+## Phase 3: Frontend Snapshot Implementation [checkpoint: 6bb9142]
 - [x] Task: Implement snapshot testing for key UI components (64ea576)
     - [ ] Add `toMatchSnapshot()` tests for `FeedList.tsx`
     - [ ] Add `toMatchSnapshot()` tests for `ItemRow.tsx`
