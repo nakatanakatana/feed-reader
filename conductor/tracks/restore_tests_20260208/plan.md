@@ -1,6 +1,6 @@
 # Implementation Plan - Refactor Frontend Tests and Restore Skipped Tests
 
-## Phase 1: Test Infrastructure Enhancement
+## Phase 1: Test Infrastructure Enhancement [checkpoint: 47db490]
 Standardize MSW setup and prepare the environment to test with the actual `tanstack/db` instead of mocks.
 
 - [x] Task: Audit skipped tests and current mocks. (a266934)
@@ -9,12 +9,12 @@ Standardize MSW setup and prepare the environment to test with the actual `tanst
 - [x] Task: Standardize MSW handlers and server setup. (b192940)
     - [x] Review `frontend/src/mocks/handlers.ts` (or equivalent) to ensure it covers feed and item operations.
     - [x] Create/Update test utilities to easily reset `tanstack/db` state between tests.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Test Infrastructure Enhancement' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Test Infrastructure Enhancement' (47db490)
 
 ## Phase 2: Restore Feed Management Tests
 Refactor tests related to adding and updating feeds to use MSW and actual application logic.
 
-- [ ] Task: Refactor `AddFeedForm.test.tsx` (or relevant tests).
+- [~] Task: Refactor `AddFeedForm.test.tsx` (or relevant tests).
     - [ ] Remove mocks for `@tanstack/db` or custom store logic.
     - [ ] Implement MSW handlers for feed creation.
     - [ ] Verify the test passes with actual library logic.
