@@ -1,8 +1,12 @@
 import { createFileRoute, Outlet } from "@tanstack/solid-router";
+import { onCleanup, onMount } from "solid-js";
 import { css } from "../../styled-system/css";
+import { flex } from "../../styled-system/patterns";
 import { ItemList } from "../components/ItemList";
+import { ActionButton } from "../components/ui/ActionButton";
 import { PageHeader } from "../components/ui/PageHeader";
 import { PageLayout } from "../components/ui/PageLayout";
+import { items, lastFetched } from "../lib/item-db";
 import type { DateFilterValue } from "../lib/item-utils";
 
 interface ItemsSearch {
@@ -24,10 +28,58 @@ export const Route = createFileRoute("/_items")({
 
 function ItemsLayout() {
   const search = Route.useSearch();
+  const itemsCollection = items();
+
+  onMount(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore if user is typing in an input field
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement ||
+        e.target instanceof HTMLSelectElement
+      ) {
+        return;
+      }
+
+      // 'r' key to refresh items
+      if (e.key === "r" && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        e.preventDefault();
+        itemsCollection.utils.refresh();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    onCleanup(() => window.removeEventListener("keydown", handleKeyDown));
+  });
 
   return (
     <PageLayout>
-      <PageHeader title="All Items" />
+      <PageHeader
+        title="All Items"
+        actions={
+          <div class={flex({ gap: "2", alignItems: "center" })}>
+            {lastFetched() && (
+              <span class={css({ fontSize: "sm", color: "gray.500" })}>
+                {lastFetched()?.toLocaleTimeString()}
+              </span>
+            )}
+            <ActionButton
+              size="sm"
+              variant="secondary"
+              onClick={() => itemsCollection.utils.refresh()}
+              disabled={
+                (itemsCollection as unknown as { isFetching: boolean })
+                  .isFetching
+              }
+            >
+              {(itemsCollection as unknown as { isFetching: boolean })
+                .isFetching
+                ? "Refreshing..."
+                : "Refresh"}
+            </ActionButton>
+          </div>
+        }
+      />
       <div
         class={css({
           flex: "1",
