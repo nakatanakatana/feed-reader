@@ -23,18 +23,24 @@ import { routeTree } from "../routeTree.gen";
 
 describe("ItemList", () => {
   let dispose: () => void;
+  let localeTimeSpy: ReturnType<typeof vi.spyOn> | null = null;
 
   afterEach(() => {
     if (dispose) dispose();
     document.body.innerHTML = "";
     vi.clearAllMocks();
     vi.useRealTimers();
+    localeTimeSpy?.mockRestore();
+    localeTimeSpy = null;
     setLastFetched(null);
   });
 
   beforeEach(() => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-01-20T19:00:00Z"));
+    localeTimeSpy = vi
+      .spyOn(Date.prototype, "toLocaleTimeString")
+      .mockReturnValue("4:00:00 AM");
   });
 
   const setupMockData = (items: Record<string, unknown>[] = []) => {
