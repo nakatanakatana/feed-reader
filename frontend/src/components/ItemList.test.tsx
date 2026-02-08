@@ -7,7 +7,7 @@ import {
 } from "@tanstack/solid-router";
 import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
 import {
@@ -15,6 +15,7 @@ import {
   ListItemsResponseSchema,
 } from "../gen/item/v1/item_pb";
 import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
+import { setLastFetched } from "../lib/item-db";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
@@ -27,6 +28,13 @@ describe("ItemList", () => {
     if (dispose) dispose();
     document.body.innerHTML = "";
     vi.clearAllMocks();
+    vi.useRealTimers();
+    setLastFetched(null);
+  });
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-01-20T19:00:00Z"));
   });
 
   const setupMockData = (items: Record<string, unknown>[] = []) => {
@@ -58,6 +66,7 @@ describe("ItemList", () => {
   };
 
   it("renders empty state when no items", async () => {
+    setLastFetched(new Date("2026-01-20T19:00:00Z"));
     setupMockData([]);
     const history = createMemoryHistory({ initialEntries: ["/"] });
     const router = createRouter({ routeTree, history });
@@ -81,6 +90,7 @@ describe("ItemList", () => {
 
   it("displays a list of items", async () => {
     const fixedDate = "2026-01-20T19:00:00Z";
+    setLastFetched(new Date(fixedDate));
     setupMockData([
       {
         id: "1",
