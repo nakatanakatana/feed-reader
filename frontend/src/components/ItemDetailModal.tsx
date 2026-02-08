@@ -43,9 +43,21 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   const handleKeyDown = (e: KeyboardEvent) => {
     if (e.key === "Escape") {
       props.onClose();
-    } else if (e.key === "ArrowLeft" || e.key === "j" || e.key === "J") {
+    } else if (
+      e.key === "ArrowLeft" ||
+      e.key === "k" ||
+      e.key === "K" ||
+      e.key === "h" ||
+      e.key === "H"
+    ) {
       if (props.onPrev && props.prevItemId) props.onPrev();
-    } else if (e.key === "ArrowRight" || e.key === "k" || e.key === "K") {
+    } else if (
+      e.key === "ArrowRight" ||
+      e.key === "j" ||
+      e.key === "J" ||
+      e.key === "l" ||
+      e.key === "L"
+    ) {
       if (props.onNext && props.nextItemId) props.onNext();
     }
   };
