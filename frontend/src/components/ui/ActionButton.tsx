@@ -46,9 +46,9 @@ export function ActionButton(props: ActionButtonProps) {
         };
       case "danger":
         return {
-          bg: "red.600",
-          color: "white",
-          _hover: { bg: "red.700" },
+          bg: "red.50",
+          color: "red.600",
+          _hover: { bg: "red.100" },
         };
       default:
         return {
@@ -79,7 +79,7 @@ export function ActionButton(props: ActionButtonProps) {
             variant() === "ghost"
               ? "transparent"
               : variant() === "danger"
-                ? "red.600"
+                ? "red.200"
                 : variant() === "primary"
                   ? "blue.600"
                   : "gray.300",
