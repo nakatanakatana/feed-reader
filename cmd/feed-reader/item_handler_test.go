@@ -9,10 +9,10 @@ import (
 	"github.com/google/uuid"
 	"github.com/nakatanakatana/feed-reader/gen/go/item/v1"
 	"github.com/nakatanakatana/feed-reader/store"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
+	"gotest.tools/v3/assert"
+	"gotest.tools/v3/assert/cmp"
 )
 
 func TestItemServer(t *testing.T) {
@@ -27,7 +27,7 @@ func TestItemServer(t *testing.T) {
 		ID:  feedID,
 		Url: "http://example.com/feed",
 	})
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	// Create test items
 	now := time.Now().UTC()
@@ -42,13 +42,13 @@ func TestItemServer(t *testing.T) {
 		PublishedAt: &t1,
 		Author:      &author,
 	})
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	var item1ID string
 	err = db.QueryRowContext(ctx, "SELECT id FROM items WHERE url = ?", "http://example.com/item1").Scan(&item1ID)
-	require.NoError(t, err)
+	assert.NilError(t, err)
 	_, err = db.ExecContext(ctx, "UPDATE items SET created_at = ? WHERE id = ?", t1, item1ID)
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
 		FeedID:      feedID,
@@ -56,21 +56,21 @@ func TestItemServer(t *testing.T) {
 		Title:       proto.String("Item 2"),
 		PublishedAt: &t2,
 	})
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	var item2ID string
 	err = db.QueryRowContext(ctx, "SELECT id FROM items WHERE url = ?", "http://example.com/item2").Scan(&item2ID)
-	require.NoError(t, err)
+	assert.NilError(t, err)
 	_, err = db.ExecContext(ctx, "UPDATE items SET created_at = ? WHERE id = ?", t2, item2ID)
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	t.Run("GetItem", func(t *testing.T) {
 		res, err := server.GetItem(ctx, connect.NewRequest(&itemv1.GetItemRequest{Id: item1ID}))
-		require.NoError(t, err)
-		assert.Equal(t, item1ID, res.Msg.Item.Id)
-		assert.Equal(t, "Item 1", res.Msg.Item.Title)
-		assert.Equal(t, author, res.Msg.Item.Author)
-		assert.NotEmpty(t, res.Msg.Item.CreatedAt)
+		assert.NilError(t, err)
+		assert.Equal(t, res.Msg.Item.Id, item1ID)
+		assert.Equal(t, res.Msg.Item.Title, "Item 1")
+		assert.Equal(t, res.Msg.Item.Author, author)
+		assert.Assert(t, res.Msg.Item.CreatedAt != "")
 	})
 
 	t.Run("GetItem_WithRichContent", func(t *testing.T) {
@@ -87,20 +87,20 @@ func TestItemServer(t *testing.T) {
 			Categories:  &cats,
 			PublishedAt: &tRich,
 		})
-		require.NoError(t, err)
+		assert.NilError(t, err)
 
 		var id string
 		err = db.QueryRowContext(ctx, "SELECT id FROM items WHERE url = ?", "http://rich").Scan(&id)
-		require.NoError(t, err)
+		assert.NilError(t, err)
 		_, err = db.ExecContext(ctx, "UPDATE items SET created_at = ? WHERE id = ?", tRich, id)
-		require.NoError(t, err)
+		assert.NilError(t, err)
 
 		res, err := server.GetItem(ctx, connect.NewRequest(&itemv1.GetItemRequest{Id: id}))
-		require.NoError(t, err)
-		assert.Equal(t, content, res.Msg.Item.Content)
-		assert.Equal(t, img, res.Msg.Item.ImageUrl)
-		assert.Equal(t, cats, res.Msg.Item.Categories)
-		assert.NotEmpty(t, res.Msg.Item.CreatedAt)
+		assert.NilError(t, err)
+		assert.Equal(t, res.Msg.Item.Content, content)
+		assert.Equal(t, res.Msg.Item.ImageUrl, img)
+		assert.Equal(t, res.Msg.Item.Categories, cats)
+		assert.Assert(t, res.Msg.Item.CreatedAt != "")
 	})
 
 	t.Run("ListItems", func(t *testing.T) {
@@ -116,32 +116,32 @@ func TestItemServer(t *testing.T) {
 			Description: &desc,
 			PublishedAt: &t2,
 		})
-		require.NoError(t, err)
+		assert.NilError(t, err)
 
 		var itemWithDescID string
 		err = db.QueryRowContext(ctx, "SELECT id FROM items WHERE url = ?", "http://example.com/item-with-desc").Scan(&itemWithDescID)
-		require.NoError(t, err)
+		assert.NilError(t, err)
 		_, err = db.ExecContext(ctx, "UPDATE items SET created_at = ? WHERE id = ?", t2, itemWithDescID)
-		require.NoError(t, err)
+		assert.NilError(t, err)
 
 		res, err := server.ListItems(ctx, connect.NewRequest(&itemv1.ListItemsRequest{
 			Limit: 10,
 		}))
-		require.NoError(t, err)
-		assert.Len(t, res.Msg.Items, 4)
+		assert.NilError(t, err)
+		assert.Assert(t, cmp.Len(res.Msg.Items, 4))
 		for _, item := range res.Msg.Items {
-			assert.NotEmpty(t, item.Title)
-			assert.NotEmpty(t, item.CreatedAt)
+			assert.Assert(t, item.Title != "")
+			assert.Assert(t, item.CreatedAt != "")
 		}
 
 		var found bool
 		for _, item := range res.Msg.Items {
 			if item.Title == "Item with desc" {
 				found = true
-				assert.Len(t, item.Description, 140)
+				assert.Assert(t, cmp.Len(item.Description, 140))
 			}
 		}
-		assert.True(t, found)
+		assert.Assert(t, found)
 	})
 
 	t.Run("UpdateItemStatus", func(t *testing.T) {
@@ -149,11 +149,11 @@ func TestItemServer(t *testing.T) {
 			Ids:    []string{item1ID},
 			IsRead: proto.Bool(true),
 		}))
-		require.NoError(t, err)
+		assert.NilError(t, err)
 
 		got, err := server.GetItem(ctx, connect.NewRequest(&itemv1.GetItemRequest{Id: item1ID}))
-		require.NoError(t, err)
-		assert.True(t, got.Msg.Item.IsRead)
+		assert.NilError(t, err)
+		assert.Assert(t, got.Msg.Item.IsRead)
 	})
 
 	t.Run("ListItems_DateFilter", func(t *testing.T) {
@@ -162,8 +162,8 @@ func TestItemServer(t *testing.T) {
 			Since: timestamppb.New(since),
 			Limit: 10,
 		}))
-		require.NoError(t, err)
+		assert.NilError(t, err)
 		// Should include item2 and rich item, but not item1 (2h ago)
-		assert.Len(t, res.Msg.Items, 3)
+		assert.Assert(t, cmp.Len(res.Msg.Items, 3))
 	})
 }

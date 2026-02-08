@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/nakatanakatana/feed-reader/gen/go/feed/v1/feedv1connect"
+	"gotest.tools/v3/assert"
 )
 
 func TestRouting(t *testing.T) {
@@ -34,15 +35,11 @@ func TestRouting(t *testing.T) {
 		url := ts.URL + feedv1connect.FeedServiceListFeedsProcedure
 
 		resp, err := http.Post(url, "application/json", strings.NewReader("{}"))
-		if err != nil {
-			t.Fatalf("Failed to make request: %v", err)
-		}
+		assert.NilError(t, err, "Failed to make request")
 		defer func() { _ = resp.Body.Close() }()
 
 		// Should fail (404 NotFound) on root path after update
-		if resp.StatusCode != http.StatusNotFound {
-			t.Errorf("Expected status NotFound on root path %s, got %v", url, resp.Status)
-		}
+		assert.Equal(t, resp.StatusCode, http.StatusNotFound, "Expected status NotFound on root path %s, got %v", url, resp.Status)
 	})
 
 	t.Run("API prefix routing", func(t *testing.T) {
@@ -50,14 +47,10 @@ func TestRouting(t *testing.T) {
 		url := ts.URL + "/api" + feedv1connect.FeedServiceListFeedsProcedure
 
 		resp, err := http.Post(url, "application/json", strings.NewReader("{}"))
-		if err != nil {
-			t.Fatalf("Failed to make request: %v", err)
-		}
+		assert.NilError(t, err, "Failed to make request")
 		defer func() { _ = resp.Body.Close() }()
 
 		// Should succeed (200 OK) on /api path
-		if resp.StatusCode != http.StatusOK {
-			t.Errorf("Expected status OK on /api path %s, got %v", url, resp.Status)
-		}
+		assert.Equal(t, resp.StatusCode, http.StatusOK, "Expected status OK on /api path %s, got %v", url, resp.Status)
 	})
 }
