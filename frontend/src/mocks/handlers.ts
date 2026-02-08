@@ -29,47 +29,80 @@ import {
 } from "../gen/tag/v1/tag_pb";
 import { mockConnectWeb } from "./connect";
 
-const tags = [
-  create(TagSchema, {
-    id: "tag-1",
-    name: "Tech",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    unreadCount: 5n,
-    feedCount: 1n,
-  }),
-  create(TagSchema, {
-    id: "tag-2",
-    name: "News",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    unreadCount: 3n,
-    feedCount: 2n,
-  }),
-];
+let tags: any[] = [];
+let feeds: any[] = [];
+let items: any[] = [];
 
-const feeds = [
-  create(FeedSchema, {
-    id: "1",
-    url: "https://example.com/feed1.xml",
-    link: "https://example.com/",
-    title: "Example Feed 1",
-    lastFetchedAt: new Date().toISOString(),
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    tags: [tags[0]],
-  }),
-  create(FeedSchema, {
-    id: "2",
-    url: "https://example.com/feed2.xml",
-    link: "https://example.com/news",
-    title: "Example Feed 2",
-    lastFetchedAt: new Date().toISOString(),
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    tags: [tags[1]],
-  }),
-];
+export const resetState = () => {
+  tags = [
+    create(TagSchema, {
+      id: "tag-1",
+      name: "Tech",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      unreadCount: 5n,
+      feedCount: 1n,
+    }),
+    create(TagSchema, {
+      id: "tag-2",
+      name: "News",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      unreadCount: 3n,
+      feedCount: 2n,
+    }),
+  ];
+
+  feeds = [
+    create(FeedSchema, {
+      id: "1",
+      url: "https://example.com/feed1.xml",
+      link: "https://example.com/",
+      title: "Example Feed 1",
+      lastFetchedAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      tags: [tags[0]],
+    }),
+    create(FeedSchema, {
+      id: "2",
+      url: "https://example.com/feed2.xml",
+      link: "https://example.com/news",
+      title: "Example Feed 2",
+      lastFetchedAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      tags: [tags[1]],
+    }),
+  ];
+
+  items = Array.from({ length: 40 }, (_, i) => {
+    const id = (i + 1).toString();
+    const date = new Date();
+    // Item 1-10: past 24h
+    // Item 11-20: 2 days ago
+    // Item 21-30: 10 days ago
+    // Item 31-40: 40 days ago
+    if (i < 10) date.setHours(date.getHours() - i);
+    else if (i < 20) date.setDate(date.getDate() - 2);
+    else if (i < 30) date.setDate(date.getDate() - 10);
+    else date.setDate(date.getDate() - 40);
+
+    return create(ItemSchema, {
+      id,
+      title: `Item ${id}`,
+      publishedAt: date.toISOString(),
+      createdAt: date.toISOString(),
+      isRead: false,
+      description: `<p>Full content for item ${id}</p>`,
+      author: "Mock Author",
+      url: `https://example.com/item${id}`,
+    });
+  });
+};
+
+// Initial state
+resetState();
 
 export const handlers = [
   mockConnectWeb(FeedService)({
@@ -288,49 +321,46 @@ export const handlers = [
       const offset = req.offset ?? 0;
       const limit = req.limit ?? 100;
 
-      // Mock items with different dates for testing the filter
-      const allMockItems = Array.from({ length: 40 }, (_, i) => {
-        const id = (i + 1).toString();
-        const date = new Date();
-        // Item 1-10: past 24h
-        // Item 11-20: 2 days ago
-        // Item 21-30: 10 days ago
-        // Item 31-40: 40 days ago
-        if (i < 10) date.setHours(date.getHours() - i);
-        else if (i < 20) date.setDate(date.getDate() - 2);
-        else if (i < 30) date.setDate(date.getDate() - 10);
-        else date.setDate(date.getDate() - 40);
-
-        return create(ListItemSchema, {
-          id,
-          title: `Item ${id}`,
-          publishedAt: date.toISOString(),
-          createdAt: date.toISOString(),
-          isRead: false,
-        });
-      });
-
-      let filteredItems = allMockItems;
+      let filteredItems = items;
 
       if (req.since) {
         const sinceDate = new Date(
           Number(req.since.seconds) * 1000 + req.since.nanos / 1000000,
         );
-        filteredItems = allMockItems.filter(
+        filteredItems = items.filter(
           (item) => new Date(item.createdAt) >= sinceDate,
         );
       }
 
       const totalCount = filteredItems.length;
-      const items = filteredItems.slice(offset, offset + limit);
+      const resultItems = filteredItems
+        .slice(offset, offset + limit)
+        .map((item) =>
+          create(ListItemSchema, {
+            id: item.id,
+            title: item.title,
+            publishedAt: item.publishedAt,
+            createdAt: item.createdAt,
+            isRead: item.isRead,
+          }),
+        );
 
-      return create(ListItemsResponseSchema, { items, totalCount });
+      return create(ListItemsResponseSchema, {
+        items: resultItems,
+        totalCount,
+      });
     },
   }),
 
   mockConnectWeb(ItemService)({
     method: "updateItemStatus",
-    handler: () => {
+    handler: (req) => {
+      for (const id of req.ids || []) {
+        const item = items.find((i) => i.id === id);
+        if (item) {
+          item.isRead = req.isRead;
+        }
+      }
       return create(UpdateItemStatusResponseSchema, {});
     },
   }),
@@ -338,18 +368,11 @@ export const handlers = [
   mockConnectWeb(ItemService)({
     method: "getItem",
     handler: (req) => {
-      return create(GetItemResponseSchema, {
-        item: create(ItemSchema, {
-          id: req.id,
-          title: `Detail for Item ${req.id}`,
-          description: `<p>This is the full content for item ${req.id}. It includes <strong>HTML</strong> formatting.</p>`,
-          publishedAt: new Date().toISOString(),
-          createdAt: new Date().toISOString(),
-          author: "Mock Author",
-          url: "https://example.com/mock-item",
-          isRead: false,
-        }),
-      });
+      const item = items.find((i) => i.id === req.id);
+      if (item) {
+        return create(GetItemResponseSchema, { item });
+      }
+      throw new Error("Item not found");
     },
   }),
 ];
