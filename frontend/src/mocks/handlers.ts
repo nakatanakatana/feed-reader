@@ -29,12 +29,14 @@ import {
 } from "../gen/tag/v1/tag_pb";
 import { mockConnectWeb } from "./connect";
 
-let tags: any[] = [];
-let feeds: any[] = [];
-let items: any[] = [];
+const tags: any[] = [];
+const feeds: any[] = [];
+const items: any[] = [];
 
 export const resetState = () => {
-  tags = [
+  console.log("MSW: resetState called");
+  tags.length = 0;
+  tags.push(
     create(TagSchema, {
       id: "tag-1",
       name: "Tech",
@@ -51,9 +53,10 @@ export const resetState = () => {
       unreadCount: 3n,
       feedCount: 2n,
     }),
-  ];
+  );
 
-  feeds = [
+  feeds.length = 0;
+  feeds.push(
     create(FeedSchema, {
       id: "1",
       url: "https://example.com/feed1.xml",
@@ -74,31 +77,30 @@ export const resetState = () => {
       updatedAt: new Date().toISOString(),
       tags: [tags[1]],
     }),
-  ];
+  );
 
-  items = Array.from({ length: 40 }, (_, i) => {
+  items.length = 0;
+  for (let i = 0; i < 40; i++) {
     const id = (i + 1).toString();
     const date = new Date();
-    // Item 1-10: past 24h
-    // Item 11-20: 2 days ago
-    // Item 21-30: 10 days ago
-    // Item 31-40: 40 days ago
     if (i < 10) date.setHours(date.getHours() - i);
     else if (i < 20) date.setDate(date.getDate() - 2);
     else if (i < 30) date.setDate(date.getDate() - 10);
     else date.setDate(date.getDate() - 40);
 
-    return create(ItemSchema, {
-      id,
-      title: `Item ${id}`,
-      publishedAt: date.toISOString(),
-      createdAt: date.toISOString(),
-      isRead: false,
-      description: `<p>Full content for item ${id}</p>`,
-      author: "Mock Author",
-      url: `https://example.com/item${id}`,
-    });
-  });
+    items.push(
+      create(ItemSchema, {
+        id,
+        title: `Item ${id}`,
+        publishedAt: date.toISOString(),
+        createdAt: date.toISOString(),
+        isRead: false,
+        description: `<p>Full content for item ${id}</p>`,
+        author: "Mock Author",
+        url: `https://example.com/item${id}`,
+      }),
+    );
+  }
 };
 
 // Initial state
@@ -108,7 +110,10 @@ export const handlers = [
   mockConnectWeb(FeedService)({
     method: "listFeeds",
     handler: (req) => {
+      console.log("MSW: listFeeds called, count:", feeds.length);
       let filteredFeeds = feeds;
+// ... (rest of handlers remain same but with logging added to key ones)
+
       if (req.tagId) {
         filteredFeeds = feeds.filter((f) =>
           f.tags.some((t) => t.id === req.tagId),
@@ -184,9 +189,11 @@ export const handlers = [
   mockConnectWeb(FeedService)({
     method: "deleteFeed",
     handler: (req) => {
+      console.log("MSW: deleteFeed called for id:", req.id);
       const index = feeds.findIndex((f) => f.id === req.id);
       if (index !== -1) {
         feeds.splice(index, 1);
+        console.log("MSW: feed deleted, remaining:", feeds.length);
         tags.forEach((t) => {
           const count = feeds.filter((f) =>
             f.tags.some((ft) => ft.id === t.id),

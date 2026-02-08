@@ -29,6 +29,7 @@ export const tags = createCollection(
       return response.tags.map((tag: ListTag) => ({
         id: tag.id,
         name: tag.name,
+        unreadCount: tag.unreadCount,
       }));
     },
     onInsert: async ({ transaction }) => {

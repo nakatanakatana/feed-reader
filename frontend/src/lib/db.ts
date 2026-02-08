@@ -1,5 +1,7 @@
-// Re-export all database modules
+import { queryClient } from "./query";
 
+// Re-export all database modules
+// ... (omitting lines for brevity, use real content)
 export * from "./feed-db";
 export * from "./item-db";
 export * from "./tag-db";
@@ -14,4 +16,10 @@ export const db = {
   feeds,
   feedTag,
   tags,
+};
+
+export const resetDatabase = () => {
+  console.log("DB: resetDatabase called");
+  // resetQueries will clear data and trigger refetch for active queries
+  queryClient.resetQueries();
 };

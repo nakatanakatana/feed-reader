@@ -1,17 +1,15 @@
-import { create } from "@bufbuild/protobuf";
-import { createRouterTransport } from "@connectrpc/connect";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import {
-  ListTagSchema,
-  ListTagsResponseSchema,
-  TagService,
-} from "../gen/tag/v1/tag_pb";
-import { queryClient } from "../lib/query";
+import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { ManageTagsModal } from "./ManageTagsModal";
+import { http, HttpResponse } from "msw";
+import { worker } from "../mocks/browser";
+import { create, toJson } from "@bufbuild/protobuf";
+import { ListTagSchema, ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
+import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
 
 describe("ManageTagsModal", () => {
   let dispose: () => void;
@@ -20,22 +18,23 @@ describe("ManageTagsModal", () => {
     if (dispose) dispose();
     document.body.innerHTML = "";
     vi.clearAllMocks();
-    queryClient.clear();
   });
 
-  it.skip("renders the modal with tags", async () => {
-    const transport = createRouterTransport(({ service }) => {
-      service(TagService, {
-        async listTags() {
-          return create(ListTagsResponseSchema, {
-            tags: [
-              create(ListTagSchema, { id: "t1", name: "Tech", feedCount: 1n }),
-              create(ListTagSchema, { id: "t2", name: "News", feedCount: 2n }),
-            ],
-          });
-        },
-      });
-    });
+  it("renders the modal with tags", async () => {
+    worker.use(
+      http.post("*/tag.v1.TagService/ListTags", () => {
+        const msg = create(ListTagsResponseSchema, {
+          tags: [
+            create(ListTagSchema, { id: "t1", name: "Tech", feedCount: 1n }),
+            create(ListTagSchema, { id: "t2", name: "News", feedCount: 2n }),
+          ]
+        });
+        return HttpResponse.json(toJson(ListTagsResponseSchema, msg));
+      }),
+      http.post("*/feed.v1.FeedService/ListFeedTags", () => {
+        return HttpResponse.json(toJson(ListFeedTagsResponseSchema, create(ListFeedTagsResponseSchema, { feedTags: [] })));
+      })
+    );
 
     dispose = render(
       () => (

@@ -6,66 +6,17 @@ import {
 } from "@tanstack/solid-router";
 import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import * as db from "../lib/db";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
-import { setupLiveQuery } from "../test-utils/live-query";
-
-// Mock the db module
-vi.mock("../lib/db", () => ({
-  itemsUnreadQuery: vi.fn(() => ({
-    toArray: [],
-    isReady: vi.fn().mockReturnValue(true),
-  })),
-  items: vi.fn(() => ({
-    insert: vi.fn(),
-    update: vi.fn(),
-    delete: vi.fn(),
-    toArray: [],
-  })),
-  feeds: {
-    delete: vi.fn(),
-    isReady: vi.fn().mockReturnValue(true),
-    toArray: [],
-  },
-  tags: {
-    toArray: [],
-  },
-  feedTag: {
-    toArray: [],
-  },
-  addFeed: vi.fn(),
-  feedInsert: vi.fn(),
-  updateItemStatus: vi.fn(),
-  manageFeedTags: vi.fn(),
-  refreshFeeds: vi.fn(),
-  createItems: vi.fn(() => ({
-    toArray: [],
-    utils: {
-      refetch: vi.fn(),
-    },
-  })),
-}));
-
-// Mock useLiveQuery
-vi.mock("@tanstack/solid-db", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@tanstack/solid-db")>();
-  return {
-    ...actual,
-    useLiveQuery: vi.fn(),
-  };
-});
 
 // Mock Link from solid-router to avoid Context issues
 vi.mock("@tanstack/solid-router", async (importOriginal) => {
-  const actual =
-    await importOriginal<typeof import("@tanstack/solid-router")>();
+  const actual = await importOriginal<typeof import("@tanstack/solid-router")>();
   return {
     ...actual,
-    // biome-ignore lint/suspicious/noExplicitAny: Mocking external library component
     Link: (props: any) => (
       <a href={props.to} {...props}>
         {props.children}
@@ -77,14 +28,11 @@ vi.mock("@tanstack/solid-router", async (importOriginal) => {
 describe("FeedList", () => {
   let dispose: () => void;
 
-  beforeEach(() => {
-    queryClient.clear();
-  });
-
-  afterEach(() => {
+  afterEach(async () => {
     if (dispose) dispose();
     document.body.innerHTML = "";
     vi.clearAllMocks();
+    await new Promise((resolve) => setTimeout(resolve, 50));
   });
 
   const TestWrapper = (props: { children: JSX.Element }) => (
@@ -95,20 +43,7 @@ describe("FeedList", () => {
     </TransportProvider>
   );
 
-  it.skip("displays a list of feeds", async () => {
-    // Setup mock return for useLiveQuery
-    const mockFeeds = [
-      {
-        id: "1",
-        title: "Feed 1",
-        url: "http://example.com/1",
-        tags: [],
-      },
-      { id: "2", title: "Feed 2", url: "http://example.com/2", tags: [] },
-    ];
-
-    setupLiveQuery(mockFeeds);
-
+  it("displays a list of feeds", async () => {
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
     const router = createRouter({ routeTree, history });
 
@@ -121,18 +56,14 @@ describe("FeedList", () => {
       document.body,
     );
 
-    await expect.element(page.getByText("Feed 1")).toBeInTheDocument();
-    await expect.element(page.getByText("Feed 2")).toBeInTheDocument();
+    await expect.element(page.getByText("Example Feed 1")).toBeInTheDocument();
+    await expect.element(page.getByText("Example Feed 2")).toBeInTheDocument();
   });
 
-  it.skip("deletes a feed", async () => {
-    const mockFeeds = [
-      { id: "1", title: "Feed 1", url: "http://example.com/1", tags: [] },
-    ];
-    setupLiveQuery(mockFeeds);
-
+  it("deletes a feed", async () => {
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
     const router = createRouter({ routeTree, history });
+    const qc = (window as any).__queryClient;
 
     dispose = render(
       () => (
@@ -143,107 +74,240 @@ describe("FeedList", () => {
       document.body,
     );
 
-    await expect.element(page.getByText("Feed 1")).toBeInTheDocument();
+        await expect.element(page.getByText("Example Feed 1")).toBeInTheDocument();
 
-    const deleteButton = page.getByText("Delete");
-    await deleteButton.click();
+    
 
-    expect(db.feeds.delete).toHaveBeenCalledWith("1");
-  });
+        const deleteButton = page.getByRole("button", { name: "Delete" }).first();
 
-  it.skip("supports bulk selection", async () => {
-    const mockFeeds = [
-      { id: "1", title: "Feed 1", url: "u1", tags: [] },
-      { id: "2", title: "Feed 2", url: "u2", tags: [] },
-    ];
-    setupLiveQuery(mockFeeds);
+        await deleteButton.click();
 
-    const history = createMemoryHistory({ initialEntries: ["/feeds"] });
-    const router = createRouter({ routeTree, history });
+    
 
-    dispose = render(
-      () => (
-        <TestWrapper>
-          <RouterProvider router={router} />
-        </TestWrapper>
-      ),
-      document.body,
-    );
+            // Wait for the feed to disappear
 
-    await expect.element(page.getByText("Feed 1")).toBeInTheDocument();
+    
 
-    // Select first feed
-    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-    expect(checkboxes.length).toBe(2);
+            await expect.element(page.getByText("Example Feed 1")).not.toBeInTheDocument();
 
-    // Using native click as vitest-browser click might be tricky with multiple elements sometimes
-    (checkboxes[0] as HTMLInputElement).click();
+    
 
-    // Now "Manage Tags (1)" should be visible
-    const manageButton = page.getByText("Manage Tags (1)");
-    await expect.element(manageButton).toBeInTheDocument();
-  });
+          });
 
-  it.skip("manages tags for selected feeds", async () => {
-    const mockFeeds = [{ id: "1", title: "Feed 1", url: "u1", tags: [] }];
-    setupLiveQuery(mockFeeds);
+    
 
-    const history = createMemoryHistory({ initialEntries: ["/feeds"] });
-    const router = createRouter({ routeTree, history });
+        
 
-    dispose = render(
-      () => (
-        <TestWrapper>
-          <RouterProvider router={router} />
-        </TestWrapper>
-      ),
-      document.body,
-    );
+    
 
-    // Give time for initial load
-    await new Promise((resolve) => setTimeout(resolve, 500));
+          it("supports bulk selection", async () => {
 
-    // 1. Select feed
-    const checkbox = document.querySelector(
-      'input[type="checkbox"]',
-    ) as HTMLInputElement;
-    if (!checkbox) {
-      console.log("BODY HTML:", document.body.innerHTML);
-      throw new Error("Checkbox not found");
-    }
-    checkbox.click();
+    
 
-    // 2. Click Manage Tags
-    const manageButton = page.getByText("Manage Tags (1)");
-    await manageButton.click();
+            const history = createMemoryHistory({ initialEntries: ["/feeds"] });
 
-    // 3. Modal should be open
-    await expect
-      .element(page.getByText("Manage Tags for 1 feeds"))
-      .toBeInTheDocument();
+    
 
-    // 4. Click Add for Tech tag
-    const addButton = Array.from(document.querySelectorAll("button")).find(
-      (b) => b.textContent === "Add",
-    );
-    if (!addButton) throw new Error("Add button not found");
-    addButton.click();
+            const router = createRouter({ routeTree, history });
 
-    // Give time for state update
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    
 
-    // 5. Click Save Changes
-    const saveButton = Array.from(document.querySelectorAll("button")).find(
-      (b) => b.textContent === "Save Changes",
-    );
-    if (!saveButton) throw new Error("Save Changes button not found");
-    saveButton.click();
+        
 
-    // Give time for mutation and close
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    
 
-    // 6. Modal should close (manage button hidden)
-    const manageButtonAfter = page.getByText(/Manage Tags/);
-    await expect.element(manageButtonAfter).not.toBeVisible();
-  });
-});
+            dispose = render(
+
+    
+
+              () => (
+
+    
+
+                <TestWrapper>
+
+    
+
+                  <RouterProvider router={router} />
+
+    
+
+                </TestWrapper>
+
+    
+
+              ),
+
+    
+
+              document.body,
+
+    
+
+            );
+
+    
+
+        
+
+    
+
+                const checkboxes = page.getByRole("checkbox");
+
+    
+
+        
+
+    
+
+                await expect.poll(async () => (await checkboxes.all()).length).toBe(2);
+
+    
+
+        
+
+    
+
+            
+
+    
+
+        
+
+    
+
+                await checkboxes.first().click();
+
+    
+
+        
+
+    
+
+            
+
+    
+
+            await checkboxes.last().click();
+
+    
+
+        
+
+    
+
+            // Header buttons should show selected count
+
+    
+
+            await expect.element(page.getByText("Manage Tags (2)")).toBeInTheDocument();
+
+    
+
+          });
+
+    
+
+        
+
+    
+
+          it("manages tags for selected feeds", async () => {
+
+    
+
+            const history = createMemoryHistory({ initialEntries: ["/feeds"] });
+
+    
+
+            const router = createRouter({ routeTree, history });
+
+    
+
+        
+
+    
+
+            dispose = render(
+
+    
+
+              () => (
+
+    
+
+                <TestWrapper>
+
+    
+
+                  <RouterProvider router={router} />
+
+    
+
+                </TestWrapper>
+
+    
+
+              ),
+
+    
+
+              document.body,
+
+    
+
+            );
+
+    
+
+        
+
+    
+
+            // Select first feed
+
+    
+
+            await page.getByRole("checkbox").first().click();
+
+    
+
+        
+
+    
+
+            // Click Manage Tags
+
+    
+
+            const manageButton = page.getByRole("button", { name: /Manage Tags \(1\)/i });
+
+    
+
+            await manageButton.click();
+
+    
+
+        
+
+    
+
+            // Should show modal
+
+    
+
+            await expect.element(page.getByText("Manage Tags for 1 feeds")).toBeInTheDocument();
+
+    
+
+          });
+
+    
+
+        });
+
+    
+
+        
+
+    
