@@ -23,11 +23,6 @@ describe("ActionButton styles", () => {
     const el = document.querySelector("button");
     if (!el) throw new Error("Button not found");
     const style = window.getComputedStyle(el);
-    if (style.backgroundColor === "rgba(0, 0, 0, 0)") {
-      console.log("Button classes:", el?.className);
-      console.log("Computed background-color:", style.backgroundColor);
-      console.log("Computed color:", style.color);
-    }
     // blue.600 is likely #2563eb or rgb(37, 99, 235)
     expect(style.backgroundColor).toBe("rgb(37, 99, 235)");
     expect(style.color).toBe("rgb(255, 255, 255)");
@@ -44,7 +39,6 @@ describe("ActionButton styles", () => {
     const el = document.querySelector("button");
     if (!el) throw new Error("Button not found");
     const style = window.getComputedStyle(el);
-    console.log("Secondary classes:", el.className);
     // Secondary should be transparent background with gray border
     // Current is gray.100 (rgb(243, 244, 246))
     expect(style.backgroundColor).toBe("rgba(0, 0, 0, 0)"); // transparent
