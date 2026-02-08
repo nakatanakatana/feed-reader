@@ -10,7 +10,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Structural Data Refactoring' b08c819
 
 ## Phase 2: Frontend Rendering Refactoring
-- [ ] Task: Migrate Markdown rendering tests to snapshots
+- [x] Task: Migrate Markdown rendering tests to snapshots ae7a9fd
     - Refactor `MarkdownRenderer.test.tsx` to use `toMatchSnapshot()`.
 - [ ] Task: Migrate complex UI components to snapshots
     - Add `toMatchSnapshot()` to `ItemDetailModal.test.tsx`.
