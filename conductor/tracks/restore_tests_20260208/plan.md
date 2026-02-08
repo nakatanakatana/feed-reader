@@ -3,9 +3,9 @@
 ## Phase 1: Test Infrastructure Enhancement
 Standardize MSW setup and prepare the environment to test with the actual `tanstack/db` instead of mocks.
 
-- [ ] Task: Audit skipped tests and current mocks.
-    - [ ] List all skipped tests in `frontend/src/components` and `frontend/src/lib`.
-    - [ ] Identify files where `@tanstack/db` is being mocked.
+- [x] Task: Audit skipped tests and current mocks. (a266934)
+    - [x] List all skipped tests in `frontend/src/components` and `frontend/src/lib`.
+    - [x] Identify files where `@tanstack/db` is being mocked.
 - [ ] Task: Standardize MSW handlers and server setup.
     - [ ] Review `frontend/src/mocks/handlers.ts` (or equivalent) to ensure it covers feed and item operations.
     - [ ] Create/Update test utilities to easily reset `tanstack/db` state between tests.
