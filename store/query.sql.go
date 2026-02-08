@@ -614,6 +614,50 @@ func (q *Queries) GetItem(ctx context.Context, id string) (GetItemRow, error) {
 	return i, err
 }
 
+const listFeedTags = `-- name: ListFeedTags :many
+SELECT
+  feed_id,
+  tag_id
+FROM
+  feed_tags
+WHERE
+  (?1 IS NULL OR feed_id = ?1)
+  AND (?2 IS NULL OR tag_id = ?2)
+`
+
+type ListFeedTagsParams struct {
+	FeedID interface{} `json:"feed_id"`
+	TagID  interface{} `json:"tag_id"`
+}
+
+type ListFeedTagsRow struct {
+	FeedID string `json:"feed_id"`
+	TagID  string `json:"tag_id"`
+}
+
+func (q *Queries) ListFeedTags(ctx context.Context, arg ListFeedTagsParams) ([]ListFeedTagsRow, error) {
+	rows, err := q.db.QueryContext(ctx, listFeedTags, arg.FeedID, arg.TagID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListFeedTagsRow
+	for rows.Next() {
+		var i ListFeedTagsRow
+		if err := rows.Scan(&i.FeedID, &i.TagID); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listFeeds = `-- name: ListFeeds :many
 SELECT
   f.id, f.url, f.link, f.title, f.description, f.lang, f.image_url, f.copyright, f.feed_type, f.feed_version, f.last_fetched_at, f.created_at, f.updated_at

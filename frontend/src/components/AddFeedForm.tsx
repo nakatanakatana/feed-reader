@@ -1,8 +1,9 @@
+import { useLiveQuery } from "@tanstack/solid-db";
 import { createSignal, For } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
-import { addFeed } from "../lib/db";
-import { useTags } from "../lib/tag-query";
+import { feedInsert } from "../lib/db";
+import { tagsFeedQuery } from "../lib/tag-db";
 import { ActionButton } from "./ui/ActionButton";
 import { TagChip } from "./ui/TagChip";
 
@@ -12,7 +13,11 @@ export function AddFeedForm() {
   const [isPending, setIsPending] = createSignal(false);
   const [error, setError] = createSignal<Error | null>(null);
 
-  const tagsQuery = useTags();
+  const tagsQuery = useLiveQuery((q) => {
+    return q
+      .from({ tag: tagsFeedQuery })
+      .orderBy(({ tag }) => tag.feedCount, "desc");
+  });
 
   const handleSubmit = async (e: Event) => {
     e.preventDefault();
@@ -20,7 +25,10 @@ export function AddFeedForm() {
     setError(null);
 
     try {
-      await addFeed(url(), selectedTagIds());
+      const tags = tagsQuery().filter((t) => selectedTagIds().includes(t.id));
+      // @ts-expect-error
+      await feedInsert(url(), tags);
+
       setUrl("");
       setSelectedTagIds([]);
     } catch (e) {
@@ -77,7 +85,7 @@ export function AddFeedForm() {
 
       <div class={flex({ gap: "2", flexWrap: "wrap", alignItems: "center" })}>
         <span class={css({ fontSize: "sm", color: "gray.600" })}>Tags:</span>
-        <For each={tagsQuery.data?.tags}>
+        <For each={tagsQuery()}>
           {(tag) => (
             <TagChip
               selected={selectedTagIds().includes(tag.id)}

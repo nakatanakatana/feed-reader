@@ -2,7 +2,7 @@ import { createSignal, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import type { Item } from "../lib/db";
-import { updateItemStatus } from "../lib/db";
+import { items } from "../lib/db";
 import { formatDate } from "../lib/item-utils";
 import { ActionButton } from "./ui/ActionButton";
 
@@ -19,13 +19,17 @@ export function ItemRow(props: ItemRowProps) {
   const handleToggleRead = async (e?: MouseEvent) => {
     e?.stopPropagation();
     setIsPending(true);
+
+    const newIsRead = !props.item.isRead;
     try {
-      await updateItemStatus({
-        ids: [props.item.id],
-        isRead: !props.item.isRead,
+      items().update(props.item.id, (draft) => {
+        draft.id = props.item.id;
+        draft.isRead = newIsRead;
       });
     } catch (e) {
       console.error("Failed to update item status", e);
+      // Revert is handled by query refetch or error state,
+      // but items.update should be atomic if we configured it correctly with API call.
     } finally {
       setIsPending(false);
     }

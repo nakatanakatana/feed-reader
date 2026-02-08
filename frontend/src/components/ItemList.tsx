@@ -1,14 +1,11 @@
+import { count, eq, useLiveQuery } from "@tanstack/solid-db";
 import { useNavigate } from "@tanstack/solid-router";
 import { createEffect, createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
-import { useItems, useUpdateItemStatus } from "../lib/item-query";
-import {
-  type DateFilterValue,
-  formatUnreadCount,
-  getPublishedSince,
-} from "../lib/item-utils";
-import { useTags } from "../lib/tag-query";
+import { feedTag, items, itemsUnreadQuery, tags } from "../lib/db";
+import { itemStore } from "../lib/item-store";
+import { type DateFilterValue, formatUnreadCount } from "../lib/item-utils";
 import { DateFilterSelector } from "./DateFilterSelector";
 import { ItemRow } from "./ItemRow";
 import { ActionButton } from "./ui/ActionButton";
@@ -24,25 +21,48 @@ interface ItemListProps {
 
 export function ItemList(props: ItemListProps) {
   const navigate = useNavigate();
-  const updateStatusMutation = useUpdateItemStatus();
   const [selectedItemIds, setSelectedItemIds] = createSignal<Set<string>>(
     new Set(),
   );
-
-  const tagsQuery = useTags();
-  const [showRead, setShowRead] = createSignal(false);
-  const [dateFilter, setDateFilter] = createSignal<DateFilterValue>(
-    props.dateFilter ?? "all",
-  );
+  const [isBulkMarking, setIsBulkMarking] = createSignal(false);
 
   createEffect(() => {
     if (props.dateFilter) {
-      setDateFilter(props.dateFilter);
+      itemStore.setDateFilter(props.dateFilter);
     }
   });
 
+  const itemQuery = useLiveQuery((q) => {
+    let query = q.from({ item: items() });
+    if (props.tagId) {
+      query = query
+        .innerJoin({ ft: feedTag }, ({ item, ft }) =>
+          eq(item.feedId, ft.feedId),
+        )
+        .where(({ ft }) => eq(ft.tagId, props.tagId));
+    }
+    return query.select(({ item }) => ({ ...item }));
+  });
+
+  const totalUnread = useLiveQuery((q) => q.from({ item: itemsUnreadQuery() }));
+
+  const tagsQuery = useLiveQuery((q) => {
+    return q
+      .from({ tag: tags })
+      .leftJoin({ tf: feedTag }, ({ tag, tf }) => eq(tag.id, tf.tagId))
+      .leftJoin({ i: itemsUnreadQuery() }, ({ tf, i }) =>
+        eq(tf?.feedId, i.feedId),
+      )
+      .groupBy(({ tag }) => [tag.id, tag.name])
+      .select(({ tag, i }) => ({
+        id: tag.id,
+        name: tag.name,
+        unreadCount: count(i?.id),
+      }));
+  });
+
   const handleDateFilterSelect = (value: DateFilterValue) => {
-    setDateFilter(value);
+    itemStore.setDateFilter(value);
     navigate({
       // @ts-expect-error
       search: (prev) => ({
@@ -52,23 +72,12 @@ export function ItemList(props: ItemListProps) {
     });
   };
 
-  const itemsQuery = useItems(() => ({
-    tagId: props.tagId,
-    isRead: showRead() ? undefined : false,
-    since: getPublishedSince(dateFilter()),
-  }));
-
-  const allItems = () =>
-    itemsQuery.data?.pages.flatMap((page) => page.items) ?? [];
-
-  const isLoading = () => itemsQuery.isLoading;
-
   const isAllSelected = () =>
-    allItems().length > 0 && selectedItemIds().size === allItems().length;
+    itemQuery().length > 0 && selectedItemIds().size === itemQuery().length;
 
   const handleToggleAll = (checked: boolean) => {
     if (checked) {
-      setSelectedItemIds(new Set<string>(allItems().map((i) => i.id)));
+      setSelectedItemIds(new Set<string>(itemQuery().map((i) => i.id)));
     } else {
       setSelectedItemIds(new Set<string>());
     }
@@ -102,10 +111,19 @@ export function ItemList(props: ItemListProps) {
     const ids = Array.from(selectedItemIds());
     if (ids.length === 0) return;
 
-    await updateStatusMutation.mutateAsync({
-      ids,
-      isRead: true,
-    });
+    setIsBulkMarking(true);
+    try {
+      await Promise.all(
+        ids.map((id) =>
+          items().update(id, (draft) => {
+            draft.isRead = true;
+          }),
+        ),
+      );
+    } finally {
+      setIsBulkMarking(false);
+    }
+
     setSelectedItemIds(new Set<string>());
   };
 
@@ -128,16 +146,16 @@ export function ItemList(props: ItemListProps) {
             onClick={() => handleTagClick(undefined)}
           >
             All
-            <Show when={(tagsQuery.data?.totalUnreadCount ?? 0n) > 0n}>
+            <Show when={totalUnread().length > 0n}>
               <Badge
                 variant={props.tagId === undefined ? "primary" : "neutral"}
                 class={css({ ml: "1.5", fontSize: "10px", minWidth: "1.5rem" })}
               >
-                {formatUnreadCount(Number(tagsQuery.data?.totalUnreadCount))}
+                {formatUnreadCount(Number(totalUnread().length))}
               </Badge>
             </Show>
           </TagChip>
-          <For each={tagsQuery.data?.tags}>
+          <For each={tagsQuery()}>
             {(tag) => (
               <TagChip
                 selected={props.tagId === tag.id}
@@ -166,7 +184,7 @@ export function ItemList(props: ItemListProps) {
             class={flex({ gap: "2", alignItems: "center", marginRight: "4" })}
           >
             <DateFilterSelector
-              value={dateFilter()}
+              value={itemStore.state.since}
               onSelect={handleDateFilterSelect}
             />
           </div>
@@ -176,8 +194,8 @@ export function ItemList(props: ItemListProps) {
             <input
               id="show-read-toggle"
               type="checkbox"
-              checked={showRead()}
-              onChange={(e) => setShowRead(e.currentTarget.checked)}
+              checked={itemStore.state.showRead}
+              onChange={(e) => itemStore.setShowRead(e.currentTarget.checked)}
               class={css({ cursor: "pointer" })}
             />
             <label
@@ -248,11 +266,9 @@ export function ItemList(props: ItemListProps) {
               size="sm"
               variant="primary"
               onClick={handleBulkMarkAsRead}
-              disabled={updateStatusMutation.isPending}
+              disabled={isBulkMarking()}
             >
-              {updateStatusMutation.isPending
-                ? "Processing..."
-                : "Mark as Read"}
+              {isBulkMarking() ? "Processing..." : "Mark as Read"}
             </ActionButton>
           </div>
         </div>
@@ -263,7 +279,7 @@ export function ItemList(props: ItemListProps) {
   const listBody = (
     <div class={stack({ gap: "4", padding: "0" })}>
       <div class={stack({ gap: "2", padding: "0" })}>
-        <For each={allItems()}>
+        <For each={itemQuery()}>
           {(item) => (
             <ItemRow
               item={item}
@@ -277,7 +293,7 @@ export function ItemList(props: ItemListProps) {
         </For>
       </div>
 
-      <Show when={isLoading()}>
+      <Show when={itemQuery.isLoading}>
         <div
           class={css({ textAlign: "center", padding: "8", color: "gray.500" })}
         >
@@ -285,18 +301,8 @@ export function ItemList(props: ItemListProps) {
         </div>
       </Show>
 
-      <Show when={!isLoading() && allItems().length === 0}>
+      <Show when={!itemQuery.isLoading && itemQuery().length === 0}>
         <EmptyState title="No items found." />
-      </Show>
-
-      <Show when={itemsQuery.hasNextPage}>
-        <ActionButton
-          variant="secondary"
-          onClick={() => itemsQuery.fetchNextPage()}
-          disabled={itemsQuery.isFetchingNextPage}
-        >
-          {itemsQuery.isFetchingNextPage ? "Loading more..." : "Load More"}
-        </ActionButton>
       </Show>
     </div>
   );

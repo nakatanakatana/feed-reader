@@ -1,21 +1,21 @@
-import { create } from "@bufbuild/protobuf";
-import { useLiveQuery } from "@tanstack/solid-db";
+import { eq, isUndefined, useLiveQuery } from "@tanstack/solid-db";
+import { useMutation } from "@tanstack/solid-query";
 import { createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
-import { RefreshFeedsRequestSchema } from "../gen/feed/v1/feed_pb";
-import { type Feed, feeds } from "../lib/db";
-import { useRefreshFeeds } from "../lib/feed-query";
+import { type Feed, feeds, feedTag, refreshFeeds } from "../lib/db";
 import { fetchingState } from "../lib/fetching-state";
 import { formatDate, formatUnreadCount } from "../lib/item-utils";
-import { useTags } from "../lib/tag-query";
+import { tagsFeedQuery } from "../lib/tag-db";
 import { ManageTagsModal } from "./ManageTagsModal";
 import { ActionButton } from "./ui/ActionButton";
 import { Badge } from "./ui/Badge";
 import { EmptyState } from "./ui/EmptyState";
 
 export function FeedList() {
-  const refreshMutation = useRefreshFeeds();
+  const refreshMutation = useMutation(() => ({
+    mutationFn: refreshFeeds,
+  }));
   const [selectedTagId, setSelectedTagId] = createSignal<
     string | undefined | null
   >();
@@ -23,7 +23,9 @@ export function FeedList() {
   const [selectedFeedIds, setSelectedFeedIds] = createSignal<string[]>([]);
   const [isManageModalOpen, setIsManageModalOpen] = createSignal(false);
 
-  const tagsQuery = useTags();
+  const tagsQuery = useLiveQuery((q) => {
+    return q.from({ tag: tagsFeedQuery }).select(({ tag }) => ({ ...tag }));
+  });
 
   const feedListQuery = useLiveQuery((q) => {
     const tagId = selectedTagId();
@@ -31,15 +33,16 @@ export function FeedList() {
     let query = q.from({ feed: feeds });
 
     if (tagId === null) {
-      query = query.fn.where(
-        (row) => !row.feed.tags || row.feed.tags.length === 0,
-      );
+      // untagged
+      query = query
+        .leftJoin({ ft: feedTag }, ({ feed, ft }) => eq(feed.id, ft.feedId))
+        .where(({ ft }) => isUndefined(ft));
     }
 
     if (tagId && tagId !== null) {
-      query = query.fn.where(
-        (row) => row.feed.tags?.some((tag) => tag.id === tagId) ?? false,
-      );
+      query = query
+        .leftJoin({ ft: feedTag }, ({ feed, ft }) => eq(feed.id, ft.feedId))
+        .where(({ ft }) => eq(ft?.tagId, tagId));
     }
 
     if (currentSort === "title_desc") {
@@ -48,7 +51,9 @@ export function FeedList() {
       query = query.orderBy(({ feed }) => feed.title, "asc");
     }
 
-    return query;
+    return query.select(({ feed }) => ({
+      ...feed,
+    }));
   });
 
   const [deleteError, setDeleteError] = createSignal<Error | null>(null);
@@ -127,13 +132,7 @@ export function FeedList() {
               <ActionButton
                 size="sm"
                 variant="secondary"
-                onClick={() =>
-                  refreshMutation.mutate(
-                    create(RefreshFeedsRequestSchema, {
-                      ids: selectedFeedIds(),
-                    }),
-                  )
-                }
+                onClick={() => refreshMutation.mutate(selectedFeedIds())}
                 disabled={refreshMutation.isPending}
               >
                 {refreshMutation.isPending ? "Fetching..." : "Fetch Selected"}
@@ -218,20 +217,15 @@ export function FeedList() {
               minW: "10rem",
             })}
           >
-            <option value="all">
-              All
-              {tagsQuery.data?.totalUnreadCount
-                ? ` (${formatUnreadCount(Number(tagsQuery.data.totalUnreadCount))})`
-                : ""}
-            </option>
+            <option value="all">All</option>
             <option value="untagged">Untagged</option>
-            <For each={tagsQuery.data?.tags}>
+            <For each={tagsQuery()}>
               {(tag) => (
                 <option value={tag.id}>
                   {tag.name}
-                  {tag.unreadCount && tag.unreadCount > 0n
-                    ? ` (${formatUnreadCount(Number(tag.unreadCount))})`
-                    : ""}
+                  {tag.feedCount && tag.feedCount > 0n
+                    ? ` (${formatUnreadCount(Number(tag.feedCount))})`
+                    : "(0)"}
                 </option>
               )}
             </For>
@@ -322,6 +316,9 @@ export function FeedList() {
                         >
                           {feed.title || "Untitled Feed"}
                         </a>
+                        <For each={feed.tags}>
+                          {(tag) => <Badge>{tag.name}</Badge>}
+                        </For>
                         <div class={flex({ gap: "2", alignItems: "center" })}>
                           <Show when={fetchingState.isFetching(feed.id)}>
                             <div
@@ -379,21 +376,12 @@ export function FeedList() {
                     </div>
                   </div>
                   <div class={flex({ gap: "2", alignItems: "center" })}>
-                    <Show when={Number(feed.unreadCount || 0) > 0}>
-                      <Badge variant="primary">
-                        {feed.unreadCount?.toString()}
-                      </Badge>
-                    </Show>
                     <ActionButton
                       size="sm"
                       variant="ghost"
                       onClickEvent={(e) => {
                         e.stopPropagation();
-                        refreshMutation.mutate(
-                          create(RefreshFeedsRequestSchema, {
-                            ids: [feed.id],
-                          }),
-                        );
+                        refreshMutation.mutate([feed.id]);
                       }}
                       disabled={fetchingState.isFetching(feed.id)}
                     >
@@ -443,13 +431,7 @@ export function FeedList() {
           <div class={stack({ gap: "2", alignItems: "flex-end" })}>
             <ActionButton
               variant="secondary"
-              onClick={() =>
-                refreshMutation.mutate(
-                  create(RefreshFeedsRequestSchema, {
-                    ids: selectedFeedIds(),
-                  }),
-                )
-              }
+              onClick={() => refreshMutation.mutate(selectedFeedIds())}
               disabled={refreshMutation.isPending}
               ariaLabel="Fetch Selected"
               class={css({

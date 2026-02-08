@@ -2,11 +2,22 @@ import { create } from "@bufbuild/protobuf";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { ListItemSchema } from "../gen/item/v1/item_pb";
 import { TransportProvider } from "../lib/transport-context";
 import { ItemRow } from "./ItemRow";
+
+const { updateMock } = vi.hoisted(() => ({
+  updateMock: vi.fn(),
+}));
+
+// Mock the db module
+vi.mock("../lib/db", () => ({
+  items: vi.fn(() => ({
+    update: updateMock,
+  })),
+}));
 
 describe("ItemRow", () => {
   let dispose: () => void;
@@ -14,6 +25,7 @@ describe("ItemRow", () => {
   afterEach(() => {
     if (dispose) dispose();
     document.body.innerHTML = "";
+    vi.clearAllMocks();
   });
 
   const transport = createConnectTransport({
@@ -108,6 +120,28 @@ describe("ItemRow", () => {
     const listItem = page.getByRole("button", { name: /Test Article Title/ });
     await listItem.click();
     expect(onClick).toHaveBeenCalledWith(mockItem);
+  });
+
+  it("updates item status without error", async () => {
+    const consoleSpy = vi.spyOn(console, "error");
+    dispose = render(
+      () => (
+        <TransportProvider transport={transport}>
+          <QueryClientProvider client={queryClient}>
+            <ItemRow item={mockItem} onClick={() => {}} />
+          </QueryClientProvider>
+        </TransportProvider>
+      ),
+      document.body,
+    );
+
+    const toggleButton = page.getByRole("button", { name: /Mark as Read/i });
+    await toggleButton.click();
+
+    expect(consoleSpy).not.toHaveBeenCalled();
+    // Check that update was called with correct ID and callback
+    expect(updateMock).toHaveBeenCalledWith(mockItem.id, expect.any(Function));
+    consoleSpy.mockRestore();
   });
 
   it("has title text", () => {

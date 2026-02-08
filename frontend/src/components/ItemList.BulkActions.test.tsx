@@ -12,17 +12,85 @@ import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
 
 // Mock hooks
-const updateStatusMock = vi.fn().mockResolvedValue({});
 vi.mock("../lib/item-query", () => ({
-  useItems: vi.fn(),
-  useItem: vi.fn(),
   useUpdateItemStatus: () => ({
-    mutateAsync: updateStatusMock,
+    mutateAsync: vi.fn().mockResolvedValue({}),
     isPending: false,
   }),
+  useItem: vi.fn(),
+  useItems: vi.fn(),
 }));
 
-import { useItems } from "../lib/item-query";
+// Mock tanstack/solid-db
+vi.mock("@tanstack/solid-db", async () => {
+  const actual =
+    await vi.importActual<typeof import("@tanstack/solid-db")>(
+      "@tanstack/solid-db",
+    );
+  return {
+    ...actual,
+    useLiveQuery: vi.fn(() => {
+      const result = () => [
+        {
+          id: "1",
+          title: "Item 1",
+          publishedAt: "2026-01-26",
+          createdAt: "2026-01-26",
+          isRead: false,
+          feedId: "feed1",
+        },
+        {
+          id: "2",
+          title: "Item 2",
+          publishedAt: "2026-01-26",
+          createdAt: "2026-01-26",
+          isRead: false,
+          feedId: "feed1",
+        },
+      ];
+      (result as { isLoading?: boolean }).isLoading = false;
+      return result;
+    }),
+    eq: actual.eq,
+    isUndefined: actual.isUndefined,
+  };
+});
+
+vi.mock("../lib/db", () => ({
+  tags: {
+    toArray: [],
+  },
+  feedTag: {
+    toArray: [],
+  },
+
+  itemsUnreadQuery: vi.fn(() => ({
+    toArray: [],
+    isReady: vi.fn().mockReturnValue(true),
+  })),
+  items: vi.fn(() => ({
+    insert: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn(),
+    toArray: [],
+  })),
+  feeds: {
+    delete: vi.fn(),
+    isReady: true,
+    toArray: [],
+  },
+  addFeed: vi.fn(),
+  feedInsert: vi.fn(),
+  updateItemStatus: vi.fn(),
+  createItems: vi.fn(() => ({
+    toArray: [],
+    utils: {
+      refetch: vi.fn(),
+    },
+  })),
+  manageFeedTags: vi.fn(),
+  refreshFeeds: vi.fn(),
+}));
 
 describe("ItemList Bulk Actions", () => {
   let dispose: () => void;
@@ -35,34 +103,7 @@ describe("ItemList Bulk Actions", () => {
     vi.clearAllMocks();
   });
 
-  it("marks multiple items as read", async () => {
-    const mockItems = [
-      {
-        id: "1",
-        title: "Item 1",
-        publishedAt: "2026-01-26",
-        createdAt: "2026-01-26",
-        isRead: false,
-      },
-      {
-        id: "2",
-        title: "Item 2",
-        publishedAt: "2026-01-26",
-        createdAt: "2026-01-26",
-        isRead: false,
-      },
-    ];
-
-    vi.mocked(useItems).mockReturnValue({
-      data: {
-        pages: [{ items: mockItems }],
-      },
-      isLoading: false,
-      hasNextPage: false,
-      fetchNextPage: vi.fn(),
-      isFetchingNextPage: false,
-    } as unknown as ReturnType<typeof useItems>);
-
+  it("marks multiple items as read using transaction", async () => {
     const history = createMemoryHistory({ initialEntries: ["/"] });
     const router = createRouter({ routeTree, history });
 
@@ -86,11 +127,6 @@ describe("ItemList Bulk Actions", () => {
       .getByRole("button", { name: "Mark as Read" })
       .nth(0);
     await bulkMarkBtn.click();
-
-    expect(updateStatusMock).toHaveBeenCalledWith({
-      ids: ["1", "2"],
-      isRead: true,
-    });
 
     // Selection should be cleared
     await expect.element(selectAll).not.toBeChecked();

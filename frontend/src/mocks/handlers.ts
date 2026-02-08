@@ -6,6 +6,7 @@ import {
   FeedService,
   ListFeedSchema,
   ListFeedsResponseSchema,
+  ListFeedTagsResponseSchema,
   ManageFeedTagsResponseSchema,
   SetFeedTagsResponseSchema,
   UpdateFeedResponseSchema,
@@ -34,6 +35,7 @@ const tags = [
     name: "Tech",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+    unreadCount: 5n,
     feedCount: 1n,
   }),
   create(TagSchema, {
@@ -41,6 +43,7 @@ const tags = [
     name: "News",
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+    unreadCount: 3n,
     feedCount: 2n,
   }),
 ];
@@ -263,6 +266,22 @@ export const handlers = [
     },
   }),
 
+  mockConnectWeb(FeedService)({
+    method: "listFeedTags",
+    handler: () => {
+      const feedTags: { feedId: string; tagId: string }[] = [];
+      for (const feed of feeds) {
+        for (const tag of feed.tags) {
+          feedTags.push({
+            feedId: feed.id,
+            tagId: tag.id,
+          });
+        }
+      }
+      return create(ListFeedTagsResponseSchema, { feedTags });
+    },
+  }),
+
   mockConnectWeb(ItemService)({
     method: "listItems",
     handler: (req) => {
@@ -325,6 +344,7 @@ export const handlers = [
           title: `Detail for Item ${req.id}`,
           description: `<p>This is the full content for item ${req.id}. It includes <strong>HTML</strong> formatting.</p>`,
           publishedAt: new Date().toISOString(),
+          createdAt: new Date().toISOString(),
           author: "Mock Author",
           url: "https://example.com/mock-item",
           isRead: false,

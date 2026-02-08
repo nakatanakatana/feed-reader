@@ -1,31 +1,27 @@
-import { create } from "@bufbuild/protobuf";
+import { useLiveQuery } from "@tanstack/solid-db";
 import { createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
-import {
-  CreateTagRequestSchema,
-  DeleteTagRequestSchema,
-} from "../gen/tag/v1/tag_pb";
-import { useCreateTag, useDeleteTag, useTags } from "../lib/tag-query";
+import { tags, tagsFeedQuery } from "../lib/tag-db";
 import { ActionButton } from "./ui/ActionButton";
 import { Badge } from "./ui/Badge";
 import { EmptyState } from "./ui/EmptyState";
 
 export const TagManagement = () => {
   const [newTagName, setNewTagName] = createSignal("");
-  const tagsQuery = useTags();
-  const createTagMutation = useCreateTag();
-  const deleteTagMutation = useDeleteTag();
+
+  const tagsQuery = useLiveQuery((q) => {
+    return q
+      .from({ tag: tagsFeedQuery })
+      .orderBy(({ tag }) => tag.feedCount, "desc");
+  });
 
   const handleCreateTag = (e: Event) => {
     e.preventDefault();
     if (!newTagName()) return;
-    createTagMutation.mutate(
-      create(CreateTagRequestSchema, { name: newTagName() }),
-      {
-        onSuccess: () => setNewTagName(""),
-      },
-    );
+
+    tags.insert({ id: "dummy", name: newTagName() });
+    setNewTagName("");
   };
 
   const handleDeleteTag = (id: string, name: string, feedCount: bigint) => {
@@ -35,7 +31,8 @@ export const TagManagement = () => {
       );
       if (!confirmed) return;
     }
-    deleteTagMutation.mutate(create(DeleteTagRequestSchema, { id }));
+
+    tags.delete(id);
   };
 
   return (
@@ -71,12 +68,8 @@ export const TagManagement = () => {
               _focusVisible: { outlineColor: "blue.500" },
             })}
           />
-          <ActionButton
-            type="submit"
-            variant="primary"
-            disabled={createTagMutation.isPending}
-          >
-            {createTagMutation.isPending ? "Adding..." : "Add Tag"}
+          <ActionButton type="submit" variant="primary">
+            Add Tag
           </ActionButton>
         </form>
       </div>
@@ -99,7 +92,7 @@ export const TagManagement = () => {
         <span>Tag</span>
         <span>Feeds</span>
         <span class={css({ textAlign: "right", fontWeight: "semibold" })}>
-          {tagsQuery.data?.tags.length ?? 0} tags
+          {tagsQuery().length} tags
         </span>
       </div>
 
@@ -126,8 +119,8 @@ export const TagManagement = () => {
               paddingRight: "1",
             })}
           >
-            <Show when={(tagsQuery.data?.tags.length ?? 0) > 0}>
-              <For each={tagsQuery.data?.tags}>
+            <Show when={tagsQuery().length > 0}>
+              <For each={tagsQuery()}>
                 {(tag) => (
                   <div
                     class={css({
@@ -146,12 +139,16 @@ export const TagManagement = () => {
                     <span class={css({ fontWeight: "medium" })}>
                       {tag.name}
                     </span>
-                    <Badge>{tag.feedCount.toString()}</Badge>
+                    <Badge>feed: {tag.feedCount}</Badge>
                     <ActionButton
                       variant="danger"
                       size="sm"
                       onClick={() =>
-                        handleDeleteTag(tag.id, tag.name, tag.feedCount)
+                        handleDeleteTag(
+                          tag.id,
+                          tag.name,
+                          tag.feedCount ? BigInt(tag.feedCount) : 0n,
+                        )
                       }
                       ariaLabel={`Delete ${tag.name}`}
                     >
@@ -161,7 +158,7 @@ export const TagManagement = () => {
                 )}
               </For>
             </Show>
-            <Show when={(tagsQuery.data?.tags.length ?? 0) === 0}>
+            <Show when={tagsQuery().length === 0}>
               <EmptyState
                 title="No tags yet."
                 description="Create one to get started."

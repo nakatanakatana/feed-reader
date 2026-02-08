@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { db, feeds, items } from "./db";
+import { db, feeds, tags } from "./db";
 
 describe("db", () => {
   it("should be defined", () => {
@@ -11,8 +11,8 @@ describe("db", () => {
     expect(feeds).toBeDefined();
   });
 
-  it("should have items collection", () => {
-    expect(db.items).toBeDefined();
-    expect(items).toBeDefined();
+  it("should have tags collection", () => {
+    expect(db.tags).toBeDefined();
+    expect(tags).toBeDefined();
   });
 });

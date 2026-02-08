@@ -4,15 +4,17 @@ import { render } from "solid-js/web";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { FeedSchema } from "../gen/feed/v1/feed_pb";
-import * as db from "../lib/db";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { AddFeedForm } from "./AddFeedForm";
 
-// Mock the db module
-vi.mock("../lib/db", () => ({
+const mocks = vi.hoisted(() => ({
   addFeed: vi.fn(),
+  feedInsert: vi.fn(),
 }));
+
+// Mock the db module
+vi.mock("../lib/db", () => mocks);
 
 describe("AddFeedForm", () => {
   let dispose: () => void;
@@ -36,7 +38,8 @@ describe("AddFeedForm", () => {
   );
 
   it("creates a new feed", async () => {
-    vi.mocked(db.addFeed).mockResolvedValue(
+    vi.mocked(mocks.feedInsert).mockResolvedValue(
+      // @ts-expect-error
       create(FeedSchema, {
         id: "1",
         url: "http://example.com",
@@ -53,13 +56,15 @@ describe("AddFeedForm", () => {
     await button.click();
 
     await expect
-      .poll(() => vi.mocked(db.addFeed).mock.calls.length)
+      .poll(() => vi.mocked(mocks.feedInsert).mock.calls.length)
       .toBeGreaterThan(0);
-    expect(db.addFeed).toHaveBeenCalledWith("http://example.com", []);
+    expect(mocks.feedInsert).toHaveBeenCalledWith("http://example.com", []);
   });
 
   it("displays an error message when createFeed fails", async () => {
-    vi.mocked(db.addFeed).mockRejectedValue(new Error("Invalid feed URL"));
+    vi.mocked(mocks.feedInsert).mockRejectedValue(
+      new Error("Invalid feed URL"),
+    );
 
     dispose = render(() => <TestWrapper />, document.body);
 

@@ -7,30 +7,24 @@ import { page } from "vitest/browser";
 import { TransportProvider } from "../lib/transport-context";
 import { ItemDetailModal } from "./ItemDetailModal";
 
-// Mock the query hooks
-vi.mock("../lib/item-query", () => ({
-  useItem: (id: () => string | undefined) => ({
-    get data() {
-      if (!id()) return undefined;
-      return {
-        id: id(),
-        title: "Test Item",
-        description: "<p>Test Content</p>",
-        publishedAt: "2026-01-24T10:00:00Z",
-        createdAt: "2026-01-24T09:00:00Z",
-        author: "Test Author",
-        url: "http://example.com",
-        isRead: false,
-      };
-    },
-    get isLoading() {
-      return false;
-    },
+// Mock the db hooks
+vi.mock("../lib/item-db", () => ({
+  getItem: vi.fn().mockImplementation((id) => {
+    if (!id) return null;
+    return Promise.resolve({
+      id: id,
+      title: "Test Item",
+      description: "<p>Test Content</p>",
+      publishedAt: "2026-01-24T10:00:00Z",
+      createdAt: "2026-01-24T09:00:00Z",
+      author: "Test Author",
+      url: "http://example.com",
+      isRead: false,
+    });
   }),
-  useUpdateItemStatus: () => ({
-    mutate: vi.fn(),
-    isPending: false,
-  }),
+  items: vi.fn(() => ({
+    update: vi.fn(),
+  })),
 }));
 
 describe("ItemDetailModal", () => {

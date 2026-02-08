@@ -276,7 +276,6 @@ func (s *FeedServer) ImportOpml(ctx context.Context, req *connect.Request[feedv1
 	}), nil
 }
 
-
 func (s *FeedServer) SetFeedTags(ctx context.Context, req *connect.Request[feedv1.SetFeedTagsRequest]) (*connect.Response[feedv1.SetFeedTagsResponse], error) {
 	if err := s.store.SetFeedTags(ctx, req.Msg.FeedId, req.Msg.TagIds); err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
@@ -291,6 +290,33 @@ func (s *FeedServer) ManageFeedTags(ctx context.Context, req *connect.Request[fe
 	}
 
 	return connect.NewResponse(&feedv1.ManageFeedTagsResponse{}), nil
+}
+
+func (s *FeedServer) ListFeedTags(ctx context.Context, req *connect.Request[feedv1.ListFeedTagsRequest]) (*connect.Response[feedv1.ListFeedTagsResponse], error) {
+	arg := store.ListFeedTagsParams{}
+	if req.Msg.FeedId != nil {
+		arg.FeedID = *req.Msg.FeedId
+	}
+	if req.Msg.TagId != nil {
+		arg.TagID = *req.Msg.TagId
+	}
+
+	feedTags, err := s.store.ListFeedTags(ctx, arg)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	protoFeedTags := make([]*feedv1.FeedTag, len(feedTags))
+	for i, ft := range feedTags {
+		protoFeedTags[i] = &feedv1.FeedTag{
+			FeedId: ft.FeedID,
+			TagId:  ft.TagID,
+		}
+	}
+
+	return connect.NewResponse(&feedv1.ListFeedTagsResponse{
+		FeedTags: protoFeedTags,
+	}), nil
 }
 
 func (s *FeedServer) toProtoFeed(ctx context.Context, f store.Feed) (*feedv1.Feed, error) {
