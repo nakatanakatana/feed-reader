@@ -13,7 +13,13 @@ import { routeTree } from "../routeTree.gen";
 import { http, HttpResponse } from "msw";
 import { worker } from "../mocks/browser";
 import { create, toJson } from "@bufbuild/protobuf";
-import { ListItemsResponseSchema, ListItemSchema, GetItemResponseSchema, ItemSchema, UpdateItemStatusResponseSchema } from "../gen/item/v1/item_pb";
+import {
+  ListItemsResponseSchema,
+  ListItemSchema,
+  GetItemResponseSchema,
+  ItemSchema,
+  UpdateItemStatusResponseSchema,
+} from "../gen/item/v1/item_pb";
 import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
 import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
 
@@ -34,30 +40,45 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
             create(ListItemSchema, { id: "1", title: "Item 1", isRead: false }),
             create(ListItemSchema, { id: "2", title: "Item 2", isRead: false }),
           ],
-          totalCount: 2
+          totalCount: 2,
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),
       http.post("*/item.v1.ItemService/GetItem", async ({ request }) => {
-        const body = await request.json() as any;
+        const body = (await request.json()) as { id: string };
         const msg = create(GetItemResponseSchema, {
           item: create(ItemSchema, {
             id: body.id,
             title: `Item ${body.id}`,
             isRead: false,
-          })
+          }),
         });
         return HttpResponse.json(toJson(GetItemResponseSchema, msg));
       }),
       http.post("*/item.v1.ItemService/UpdateItemStatus", () => {
-        return HttpResponse.json(toJson(UpdateItemStatusResponseSchema, create(UpdateItemStatusResponseSchema, {})));
+        return HttpResponse.json(
+          toJson(
+            UpdateItemStatusResponseSchema,
+            create(UpdateItemStatusResponseSchema, {}),
+          ),
+        );
       }),
       http.post("*/tag.v1.TagService/ListTags", () => {
-        return HttpResponse.json(toJson(ListTagsResponseSchema, create(ListTagsResponseSchema, { tags: [] })));
+        return HttpResponse.json(
+          toJson(
+            ListTagsResponseSchema,
+            create(ListTagsResponseSchema, { tags: [] }),
+          ),
+        );
       }),
       http.post("*/feed.v1.FeedService/ListFeedTags", () => {
-        return HttpResponse.json(toJson(ListFeedTagsResponseSchema, create(ListFeedTagsResponseSchema, { feedTags: [] })));
-      })
+        return HttpResponse.json(
+          toJson(
+            ListFeedTagsResponseSchema,
+            create(ListFeedTagsResponseSchema, { feedTags: [] }),
+          ),
+        );
+      }),
     );
   };
 
@@ -78,16 +99,20 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
     );
 
     // Wait for content
-    await expect.element(page.getByRole("heading", { name: "Item 1" })).toBeInTheDocument();
+    await expect
+      .element(page.getByRole("heading", { name: "Item 1" }))
+      .toBeInTheDocument();
 
     const nextButton = page.getByRole("button", { name: "Next →" });
     await nextButton.click();
 
     // URL should update
     await expect.poll(() => history.location.pathname).toBe("/items/2");
-    
+
     // Heading should update
-    await expect.element(page.getByRole("heading", { name: "Item 2" })).toBeInTheDocument();
+    await expect
+      .element(page.getByRole("heading", { name: "Item 2" }))
+      .toBeInTheDocument();
   });
 
   it("navigates to prev item correctly", async () => {
@@ -106,12 +131,16 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
       document.body,
     );
 
-    await expect.element(page.getByRole("heading", { name: "Item 2" })).toBeInTheDocument();
+    await expect
+      .element(page.getByRole("heading", { name: "Item 2" }))
+      .toBeInTheDocument();
 
     const prevButton = page.getByRole("button", { name: "← Previous" });
     await prevButton.click();
 
     await expect.poll(() => history.location.pathname).toBe("/items/1");
-    await expect.element(page.getByRole("heading", { name: "Item 1" })).toBeInTheDocument();
+    await expect
+      .element(page.getByRole("heading", { name: "Item 1" }))
+      .toBeInTheDocument();
   });
 });

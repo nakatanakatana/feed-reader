@@ -13,7 +13,13 @@ import { routeTree } from "../routeTree.gen";
 import { http, HttpResponse } from "msw";
 import { worker } from "../mocks/browser";
 import { create, toJson } from "@bufbuild/protobuf";
-import { ListItemsResponseSchema, ListItemSchema, GetItemResponseSchema, ItemSchema, UpdateItemStatusResponseSchema } from "../gen/item/v1/item_pb";
+import {
+  ListItemsResponseSchema,
+  ListItemSchema,
+  GetItemResponseSchema,
+  ItemSchema,
+  UpdateItemStatusResponseSchema,
+} from "../gen/item/v1/item_pb";
 import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
 import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
 
@@ -34,27 +40,37 @@ describe("ItemDetailRouteView Auto-Read", () => {
             create(ListItemSchema, { id: "1", title: "Item 1", isRead: false }),
             create(ListItemSchema, { id: "2", title: "Item 2", isRead: false }),
           ],
-          totalCount: 2
+          totalCount: 2,
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),
       http.post("*/item.v1.ItemService/GetItem", async ({ request }) => {
-        const body = await request.json() as any;
+        const body = (await request.json()) as { id: string };
         const msg = create(GetItemResponseSchema, {
           item: create(ItemSchema, {
             id: body.id,
             title: `Item ${body.id}`,
             isRead: false,
-          })
+          }),
         });
         return HttpResponse.json(toJson(GetItemResponseSchema, msg));
       }),
       http.post("*/tag.v1.TagService/ListTags", () => {
-        return HttpResponse.json(toJson(ListTagsResponseSchema, create(ListTagsResponseSchema, { tags: [] })));
+        return HttpResponse.json(
+          toJson(
+            ListTagsResponseSchema,
+            create(ListTagsResponseSchema, { tags: [] }),
+          ),
+        );
       }),
       http.post("*/feed.v1.FeedService/ListFeedTags", () => {
-        return HttpResponse.json(toJson(ListFeedTagsResponseSchema, create(ListFeedTagsResponseSchema, { feedTags: [] })));
-      })
+        return HttpResponse.json(
+          toJson(
+            ListFeedTagsResponseSchema,
+            create(ListFeedTagsResponseSchema, { feedTags: [] }),
+          ),
+        );
+      }),
     );
   };
 
@@ -62,13 +78,24 @@ describe("ItemDetailRouteView Auto-Read", () => {
     setupMockData();
     let updateCalledForId = "";
     worker.use(
-        http.post("*/item.v1.ItemService/UpdateItemStatus", async ({ request }) => {
-            const body = await request.json() as any;
-            if (body.isRead === true) {
-                updateCalledForId = body.ids[0];
-            }
-            return HttpResponse.json(toJson(UpdateItemStatusResponseSchema, create(UpdateItemStatusResponseSchema, {})));
-        })
+      http.post(
+        "*/item.v1.ItemService/UpdateItemStatus",
+        async ({ request }) => {
+          const body = (await request.json()) as {
+            ids: string[];
+            isRead: boolean;
+          };
+          if (body.isRead === true) {
+            updateCalledForId = body.ids[0];
+          }
+          return HttpResponse.json(
+            toJson(
+              UpdateItemStatusResponseSchema,
+              create(UpdateItemStatusResponseSchema, {}),
+            ),
+          );
+        },
+      ),
     );
 
     const history = createMemoryHistory({ initialEntries: ["/items/1"] });
@@ -86,7 +113,9 @@ describe("ItemDetailRouteView Auto-Read", () => {
     );
 
     // Wait for content
-    await expect.element(page.getByRole("heading", { name: "Item 1" })).toBeInTheDocument();
+    await expect
+      .element(page.getByRole("heading", { name: "Item 1" }))
+      .toBeInTheDocument();
 
     const nextButton = page.getByRole("button", { name: "Next →" });
     await nextButton.click();
@@ -98,13 +127,24 @@ describe("ItemDetailRouteView Auto-Read", () => {
     setupMockData();
     let updateCalledForId = "";
     worker.use(
-        http.post("*/item.v1.ItemService/UpdateItemStatus", async ({ request }) => {
-            const body = await request.json() as any;
-            if (body.isRead === true) {
-                updateCalledForId = body.ids[0];
-            }
-            return HttpResponse.json(toJson(UpdateItemStatusResponseSchema, create(UpdateItemStatusResponseSchema, {})));
-        })
+      http.post(
+        "*/item.v1.ItemService/UpdateItemStatus",
+        async ({ request }) => {
+          const body = (await request.json()) as {
+            ids: string[];
+            isRead: boolean;
+          };
+          if (body.isRead === true) {
+            updateCalledForId = body.ids[0];
+          }
+          return HttpResponse.json(
+            toJson(
+              UpdateItemStatusResponseSchema,
+              create(UpdateItemStatusResponseSchema, {}),
+            ),
+          );
+        },
+      ),
     );
 
     const history = createMemoryHistory({ initialEntries: ["/items/2"] });
@@ -121,7 +161,9 @@ describe("ItemDetailRouteView Auto-Read", () => {
       document.body,
     );
 
-    await expect.element(page.getByRole("heading", { name: "Item 2" })).toBeInTheDocument();
+    await expect
+      .element(page.getByRole("heading", { name: "Item 2" }))
+      .toBeInTheDocument();
 
     const prevButton = page.getByRole("button", { name: "← Previous" });
     await prevButton.click();

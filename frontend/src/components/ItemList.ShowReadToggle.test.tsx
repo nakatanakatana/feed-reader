@@ -26,19 +26,36 @@ describe("ItemList Show Read Toggle", () => {
     vi.clearAllMocks();
   });
 
-  const setupMockData = (onListItems?: (req: any) => void) => {
+  const setupMockData = (
+    onListItems?: (req: Record<string, unknown>) => void,
+  ) => {
     worker.use(
       http.post("*/item.v1.ItemService/ListItems", async ({ request }) => {
         const body = await request.json();
         onListItems?.(body);
-        return HttpResponse.json(toJson(ListItemsResponseSchema, create(ListItemsResponseSchema, { items: [], totalCount: 0 })));
+        return HttpResponse.json(
+          toJson(
+            ListItemsResponseSchema,
+            create(ListItemsResponseSchema, { items: [], totalCount: 0 }),
+          ),
+        );
       }),
       http.post("*/tag.v1.TagService/ListTags", () => {
-        return HttpResponse.json(toJson(ListTagsResponseSchema, create(ListTagsResponseSchema, { tags: [] })));
+        return HttpResponse.json(
+          toJson(
+            ListTagsResponseSchema,
+            create(ListTagsResponseSchema, { tags: [] }),
+          ),
+        );
       }),
       http.post("*/feed.v1.FeedService/ListFeedTags", () => {
-        return HttpResponse.json(toJson(ListFeedTagsResponseSchema, create(ListFeedTagsResponseSchema, { feedTags: [] })));
-      })
+        return HttpResponse.json(
+          toJson(
+            ListFeedTagsResponseSchema,
+            create(ListFeedTagsResponseSchema, { feedTags: [] }),
+          ),
+        );
+      }),
     );
   };
 
@@ -63,9 +80,9 @@ describe("ItemList Show Read Toggle", () => {
   });
 
   it("triggers a refetch when toggle is clicked", async () => {
-    let lastIsRead: boolean | undefined = undefined;
+    let lastIsRead: boolean | undefined;
     setupMockData((body) => {
-        lastIsRead = body.isRead;
+      lastIsRead = body.isRead;
     });
 
     const history = createMemoryHistory({ initialEntries: ["/"] });
@@ -84,7 +101,7 @@ describe("ItemList Show Read Toggle", () => {
 
     const toggle = page.getByLabelText(/Show Read/i);
     await expect.element(toggle).toBeInTheDocument();
-    
+
     // Initial call should have isRead: false (default showRead is false)
     await expect.poll(() => lastIsRead).toBe(false);
 

@@ -29,14 +29,29 @@ describe("ItemList Defaults", () => {
   const setupMockData = () => {
     worker.use(
       http.post("*/item.v1.ItemService/ListItems", () => {
-        return HttpResponse.json(toJson(ListItemsResponseSchema, create(ListItemsResponseSchema, { items: [], totalCount: 0 })));
+        return HttpResponse.json(
+          toJson(
+            ListItemsResponseSchema,
+            create(ListItemsResponseSchema, { items: [], totalCount: 0 }),
+          ),
+        );
       }),
       http.post("*/tag.v1.TagService/ListTags", () => {
-        return HttpResponse.json(toJson(ListTagsResponseSchema, create(ListTagsResponseSchema, { tags: [] })));
+        return HttpResponse.json(
+          toJson(
+            ListTagsResponseSchema,
+            create(ListTagsResponseSchema, { tags: [] }),
+          ),
+        );
       }),
       http.post("*/feed.v1.FeedService/ListFeedTags", () => {
-        return HttpResponse.json(toJson(ListFeedTagsResponseSchema, create(ListFeedTagsResponseSchema, { feedTags: [] })));
-      })
+        return HttpResponse.json(
+          toJson(
+            ListFeedTagsResponseSchema,
+            create(ListFeedTagsResponseSchema, { feedTags: [] }),
+          ),
+        );
+      }),
     );
   };
 

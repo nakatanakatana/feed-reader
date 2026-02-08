@@ -27,10 +27,10 @@ describe("ItemDetailModal Dismissal", () => {
             id: "1",
             title: "Test Item",
             isRead: false,
-          })
+          }),
         });
         return HttpResponse.json(toJson(GetItemResponseSchema, msg));
-      })
+      }),
     );
   };
 
@@ -68,7 +68,7 @@ describe("ItemDetailModal Dismissal", () => {
     );
 
     await expect.element(page.getByText("Test Item")).toBeInTheDocument();
-    
+
     const dialog = page.getByRole("dialog");
     const backdrop = (await dialog.element()).parentElement;
     await backdrop?.click();

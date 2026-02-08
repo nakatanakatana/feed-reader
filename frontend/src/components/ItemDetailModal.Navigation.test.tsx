@@ -33,10 +33,10 @@ describe("ItemDetailModal Navigation", () => {
             author: "Test Author",
             url: "http://example.com",
             isRead: false,
-          })
+          }),
         });
         return HttpResponse.json(toJson(GetItemResponseSchema, msg));
-      })
+      }),
     );
   };
 

@@ -16,7 +16,6 @@ import { create, toJson } from "@bufbuild/protobuf";
 import { ListItemsResponseSchema } from "../gen/item/v1/item_pb";
 import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
 import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
-import { ItemList } from "./ItemList";
 
 describe("ItemList Date Filter Prop", () => {
   let dispose: () => void;
@@ -30,14 +29,29 @@ describe("ItemList Date Filter Prop", () => {
   const setupMockData = () => {
     worker.use(
       http.post("*/item.v1.ItemService/ListItems", () => {
-        return HttpResponse.json(toJson(ListItemsResponseSchema, create(ListItemsResponseSchema, { items: [], totalCount: 0 })));
+        return HttpResponse.json(
+          toJson(
+            ListItemsResponseSchema,
+            create(ListItemsResponseSchema, { items: [], totalCount: 0 }),
+          ),
+        );
       }),
       http.post("*/tag.v1.TagService/ListTags", () => {
-        return HttpResponse.json(toJson(ListTagsResponseSchema, create(ListTagsResponseSchema, { tags: [] })));
+        return HttpResponse.json(
+          toJson(
+            ListTagsResponseSchema,
+            create(ListTagsResponseSchema, { tags: [] }),
+          ),
+        );
       }),
       http.post("*/feed.v1.FeedService/ListFeedTags", () => {
-        return HttpResponse.json(toJson(ListFeedTagsResponseSchema, create(ListFeedTagsResponseSchema, { feedTags: [] })));
-      })
+        return HttpResponse.json(
+          toJson(
+            ListFeedTagsResponseSchema,
+            create(ListFeedTagsResponseSchema, { feedTags: [] }),
+          ),
+        );
+      }),
     );
   };
 

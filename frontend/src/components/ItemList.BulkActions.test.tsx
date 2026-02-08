@@ -13,7 +13,11 @@ import { routeTree } from "../routeTree.gen";
 import { http, HttpResponse } from "msw";
 import { worker } from "../mocks/browser";
 import { create, toJson } from "@bufbuild/protobuf";
-import { ListItemsResponseSchema, ListItemSchema, UpdateItemStatusResponseSchema } from "../gen/item/v1/item_pb";
+import {
+  ListItemsResponseSchema,
+  ListItemSchema,
+  UpdateItemStatusResponseSchema,
+} from "../gen/item/v1/item_pb";
 import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
 import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
 
@@ -26,39 +30,75 @@ describe("ItemList Bulk Actions", () => {
     vi.clearAllMocks();
   });
 
-  const setupMockData = (items: any[] = []) => {
+  const setupMockData = (items: Record<string, unknown>[] = []) => {
     worker.use(
       http.post("*/item.v1.ItemService/ListItems", () => {
         const msg = create(ListItemsResponseSchema, {
-          items: items.map(i => create(ListItemSchema, i)),
-          totalCount: items.length
+          // biome-ignore lint/suspicious/noExplicitAny: mock data
+          items: items.map((i) => create(ListItemSchema, i as any)),
+          totalCount: items.length,
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),
       http.post("*/tag.v1.TagService/ListTags", () => {
-        return HttpResponse.json(toJson(ListTagsResponseSchema, create(ListTagsResponseSchema, { tags: [] })));
+        return HttpResponse.json(
+          toJson(
+            ListTagsResponseSchema,
+            create(ListTagsResponseSchema, { tags: [] }),
+          ),
+        );
       }),
       http.post("*/feed.v1.FeedService/ListFeedTags", () => {
-        return HttpResponse.json(toJson(ListFeedTagsResponseSchema, create(ListFeedTagsResponseSchema, { feedTags: [] })));
-      })
+        return HttpResponse.json(
+          toJson(
+            ListFeedTagsResponseSchema,
+            create(ListFeedTagsResponseSchema, { feedTags: [] }),
+          ),
+        );
+      }),
     );
   };
 
   it("marks multiple items as read using transaction", async () => {
     setupMockData([
-      { id: "1", title: "Item 1", publishedAt: "2026-01-26", createdAt: "2026-01-26", isRead: false, feedId: "feed1" },
-      { id: "2", title: "Item 2", publishedAt: "2026-01-26", createdAt: "2026-01-26", isRead: false, feedId: "feed1" },
+      {
+        id: "1",
+        title: "Item 1",
+        publishedAt: "2026-01-26",
+        createdAt: "2026-01-26",
+        isRead: false,
+        feedId: "feed1",
+      },
+      {
+        id: "2",
+        title: "Item 2",
+        publishedAt: "2026-01-26",
+        createdAt: "2026-01-26",
+        isRead: false,
+        feedId: "feed1",
+      },
     ]);
 
     let updateCount = 0;
     worker.use(
-        http.post("*/item.v1.ItemService/UpdateItemStatus", async ({ request }) => {
-            const body = await request.json() as any;
-            if (body.ids.length === 2 && body.isRead === true) {
-                updateCount++;
-            }
-            return HttpResponse.json(toJson(UpdateItemStatusResponseSchema, create(UpdateItemStatusResponseSchema, {})));
-        })
+      http.post(
+        "*/item.v1.ItemService/UpdateItemStatus",
+        async ({ request }) => {
+          const body = (await request.json()) as {
+            ids: string[];
+            isRead: boolean;
+          };
+          if (body.ids.length === 2 && body.isRead === true) {
+            updateCount++;
+          }
+          return HttpResponse.json(
+            toJson(
+              UpdateItemStatusResponseSchema,
+              create(UpdateItemStatusResponseSchema, {}),
+            ),
+          );
+        },
+      ),
     );
 
     const history = createMemoryHistory({ initialEntries: ["/"] });
@@ -82,12 +122,14 @@ describe("ItemList Bulk Actions", () => {
 
     // The bulk bar appears when items are selected.
     // It contains a "Mark as Read" button.
-    const bulkMarkBtn = page.getByRole("button", { name: "Mark as Read" }).first();
+    const bulkMarkBtn = page
+      .getByRole("button", { name: "Mark as Read" })
+      .first();
     await bulkMarkBtn.click();
 
     // Selection should be cleared
     await expect.element(selectAll).not.toBeChecked();
-    
+
     // Verify API called
     await expect.poll(() => updateCount).toBe(1);
   });

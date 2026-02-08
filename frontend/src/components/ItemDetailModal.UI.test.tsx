@@ -20,17 +20,17 @@ describe("ItemDetailModal UI Updates", () => {
     vi.clearAllMocks();
   });
 
-  const setupMockData = (itemId: string, itemData: any) => {
+  const setupMockData = (itemId: string, itemData: Partial<ItemSchema>) => {
     worker.use(
       http.post("*/item.v1.ItemService/GetItem", () => {
         const msg = create(GetItemResponseSchema, {
           item: create(ItemSchema, {
             id: itemId,
-            ...itemData
-          })
+            ...itemData,
+          }),
         });
         return HttpResponse.json(toJson(GetItemResponseSchema, msg));
-      })
+      }),
     );
   };
 
@@ -44,11 +44,11 @@ describe("ItemDetailModal UI Updates", () => {
 
   it("renders title as a link and displays content, image, and categories", async () => {
     setupMockData("1", {
-        title: "Link Title",
-        url: "https://example.com/item1",
-        description: "Content",
-        imageUrl: "https://example.com/image.jpg",
-        categories: '["Tech", "News"]'
+      title: "Link Title",
+      url: "https://example.com/item1",
+      description: "Content",
+      imageUrl: "https://example.com/image.jpg",
+      categories: '["Tech", "News"]',
     });
 
     dispose = render(
@@ -62,14 +62,22 @@ describe("ItemDetailModal UI Updates", () => {
 
     const titleLink = page.getByRole("link", { name: "Link Title" });
     await expect.element(titleLink).toBeInTheDocument();
-    await expect.element(titleLink).toHaveAttribute("href", "https://example.com/item1");
+    await expect
+      .element(titleLink)
+      .toHaveAttribute("href", "https://example.com/item1");
 
     await expect.element(page.getByText("Content")).toBeInTheDocument();
-    
-    // Use poll with querySelector to wait for image to appear
-    await expect.poll(() => document.querySelector('img[src="https://example.com/image.jpg"]')).not.toBeNull();
 
-    const image = document.querySelector('img[src="https://example.com/image.jpg"]') as HTMLImageElement;
+    // Use poll with querySelector to wait for image to appear
+    await expect
+      .poll(() =>
+        document.querySelector('img[src="https://example.com/image.jpg"]'),
+      )
+      .not.toBeNull();
+
+    const image = document.querySelector(
+      'img[src="https://example.com/image.jpg"]',
+    ) as HTMLImageElement;
     expect(image.getAttribute("src")).toBe("https://example.com/image.jpg");
 
     await expect.element(page.getByText("Tech")).toBeInTheDocument();
@@ -78,8 +86,8 @@ describe("ItemDetailModal UI Updates", () => {
 
   it("renders comma-separated categories when JSON format is absent", async () => {
     setupMockData("2", {
-        title: "Item 2",
-        categories: "Science, Space"
+      title: "Item 2",
+      categories: "Science, Space",
     });
 
     dispose = render(
@@ -97,8 +105,8 @@ describe("ItemDetailModal UI Updates", () => {
 
   it("falls back to CSV parsing when JSON is malformed", async () => {
     setupMockData("3", {
-        title: "Item 3",
-        categories: '[Malformed, JSON'
+      title: "Item 3",
+      categories: "[Malformed, JSON",
     });
 
     dispose = render(

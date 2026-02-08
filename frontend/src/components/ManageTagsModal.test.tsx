@@ -27,13 +27,18 @@ describe("ManageTagsModal", () => {
           tags: [
             create(ListTagSchema, { id: "t1", name: "Tech", feedCount: 1n }),
             create(ListTagSchema, { id: "t2", name: "News", feedCount: 2n }),
-          ]
+          ],
         });
         return HttpResponse.json(toJson(ListTagsResponseSchema, msg));
       }),
       http.post("*/feed.v1.FeedService/ListFeedTags", () => {
-        return HttpResponse.json(toJson(ListFeedTagsResponseSchema, create(ListFeedTagsResponseSchema, { feedTags: [] })));
-      })
+        return HttpResponse.json(
+          toJson(
+            ListFeedTagsResponseSchema,
+            create(ListFeedTagsResponseSchema, { feedTags: [] }),
+          ),
+        );
+      }),
     );
 
     dispose = render(

@@ -14,7 +14,10 @@ import { routeTree } from "../routeTree.gen";
 import { http, HttpResponse } from "msw";
 import { worker } from "../mocks/browser";
 import { create, toJson } from "@bufbuild/protobuf";
-import { ListFeedsResponseSchema, ListFeedSchema } from "../gen/feed/v1/feed_pb";
+import {
+  ListFeedsResponseSchema,
+  ListFeedSchema,
+} from "../gen/feed/v1/feed_pb";
 import { ListTagsResponseSchema, ListTagSchema } from "../gen/tag/v1/tag_pb";
 
 describe("FeedList Unread Counts", () => {
@@ -39,13 +42,28 @@ describe("FeedList Unread Counts", () => {
       http.post("*/feed.v1.FeedService/ListFeeds", () => {
         const msg = create(ListFeedsResponseSchema, {
           feeds: [
-            create(ListFeedSchema, { id: "1", title: "Feed 1", url: "http://example.com/1", unreadCount: 5n }),
-            create(ListFeedSchema, { id: "2", title: "Feed 2", url: "http://example.com/2", unreadCount: 0n }),
-            create(ListFeedSchema, { id: "3", title: "Feed 3", url: "http://example.com/3", unreadCount: 10n }),
-          ]
+            create(ListFeedSchema, {
+              id: "1",
+              title: "Feed 1",
+              url: "http://example.com/1",
+              unreadCount: 5n,
+            }),
+            create(ListFeedSchema, {
+              id: "2",
+              title: "Feed 2",
+              url: "http://example.com/2",
+              unreadCount: 0n,
+            }),
+            create(ListFeedSchema, {
+              id: "3",
+              title: "Feed 3",
+              url: "http://example.com/3",
+              unreadCount: 10n,
+            }),
+          ],
         });
         return HttpResponse.json(toJson(ListFeedsResponseSchema, msg));
-      })
+      }),
     );
 
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
@@ -68,20 +86,35 @@ describe("FeedList Unread Counts", () => {
       http.post("*/tag.v1.TagService/ListTags", () => {
         const msg = create(ListTagsResponseSchema, {
           tags: [
-            create(ListTagSchema, { id: "tag-1", name: "Tech", unreadCount: 5n, feedCount: 1n }),
-            create(ListTagSchema, { id: "tag-2", name: "News", unreadCount: 0n, feedCount: 1n }),
-          ]
+            create(ListTagSchema, {
+              id: "tag-1",
+              name: "Tech",
+              unreadCount: 5n,
+              feedCount: 1n,
+            }),
+            create(ListTagSchema, {
+              id: "tag-2",
+              name: "News",
+              unreadCount: 0n,
+              feedCount: 1n,
+            }),
+          ],
         });
         return HttpResponse.json(toJson(ListTagsResponseSchema, msg));
       }),
       http.post("*/feed.v1.FeedService/ListFeeds", () => {
         const msg = create(ListFeedsResponseSchema, {
           feeds: [
-            create(ListFeedSchema, { id: "1", title: "Feed 1", url: "http://example.com/1", unreadCount: 5n }),
-          ]
+            create(ListFeedSchema, {
+              id: "1",
+              title: "Feed 1",
+              url: "http://example.com/1",
+              unreadCount: 5n,
+            }),
+          ],
         });
         return HttpResponse.json(toJson(ListFeedsResponseSchema, msg));
-      })
+      }),
     );
 
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
@@ -98,9 +131,13 @@ describe("FeedList Unread Counts", () => {
 
     const filterSelect = page.getByRole("combobox", { name: "Filter by tag" });
     await expect.element(filterSelect).toBeInTheDocument();
-    
-    await expect.element(page.getByRole("option", { name: "Tech (5)" })).toBeInTheDocument();
-    await expect.element(page.getByRole("option", { name: "News (0)" })).toBeInTheDocument();
+
+    await expect
+      .element(page.getByRole("option", { name: "Tech (5)" }))
+      .toBeInTheDocument();
+    await expect
+      .element(page.getByRole("option", { name: "News (0)" }))
+      .toBeInTheDocument();
   });
 
   it("formats unread counts of 1000 or more as '999+'", async () => {
@@ -108,11 +145,16 @@ describe("FeedList Unread Counts", () => {
       http.post("*/tag.v1.TagService/ListTags", () => {
         const msg = create(ListTagsResponseSchema, {
           tags: [
-            create(ListTagSchema, { id: "tag-1", name: "Big", unreadCount: 1500n, feedCount: 1n }),
-          ]
+            create(ListTagSchema, {
+              id: "tag-1",
+              name: "Big",
+              unreadCount: 1500n,
+              feedCount: 1n,
+            }),
+          ],
         });
         return HttpResponse.json(toJson(ListTagsResponseSchema, msg));
-      })
+      }),
     );
 
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
@@ -129,7 +171,9 @@ describe("FeedList Unread Counts", () => {
 
     const filterSelect = page.getByRole("combobox", { name: "Filter by tag" });
     await expect.element(filterSelect).toBeInTheDocument();
-    
-    await expect.element(page.getByRole("option", { name: "Big (999+)" })).toBeInTheDocument();
+
+    await expect
+      .element(page.getByRole("option", { name: "Big (999+)" }))
+      .toBeInTheDocument();
   });
 });

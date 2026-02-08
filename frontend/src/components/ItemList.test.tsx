@@ -13,7 +13,10 @@ import { routeTree } from "../routeTree.gen";
 import { http, HttpResponse } from "msw";
 import { worker } from "../mocks/browser";
 import { create, toJson } from "@bufbuild/protobuf";
-import { ListItemsResponseSchema, ListItemSchema } from "../gen/item/v1/item_pb";
+import {
+  ListItemsResponseSchema,
+  ListItemSchema,
+} from "../gen/item/v1/item_pb";
 import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
 import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
 
@@ -26,21 +29,31 @@ describe("ItemList", () => {
     vi.clearAllMocks();
   });
 
-  const setupMockData = (items: any[] = []) => {
+  const setupMockData = (items: Record<string, unknown>[] = []) => {
     worker.use(
       http.post("*/item.v1.ItemService/ListItems", () => {
         const msg = create(ListItemsResponseSchema, {
-          items: items.map(i => create(ListItemSchema, i)),
-          totalCount: items.length
+          items: items.map((i) => create(ListItemSchema, i)),
+          totalCount: items.length,
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),
       http.post("*/tag.v1.TagService/ListTags", () => {
-        return HttpResponse.json(toJson(ListTagsResponseSchema, create(ListTagsResponseSchema, { tags: [] })));
+        return HttpResponse.json(
+          toJson(
+            ListTagsResponseSchema,
+            create(ListTagsResponseSchema, { tags: [] }),
+          ),
+        );
       }),
       http.post("*/feed.v1.FeedService/ListFeedTags", () => {
-        return HttpResponse.json(toJson(ListFeedTagsResponseSchema, create(ListFeedTagsResponseSchema, { feedTags: [] })));
-      })
+        return HttpResponse.json(
+          toJson(
+            ListFeedTagsResponseSchema,
+            create(ListFeedTagsResponseSchema, { feedTags: [] }),
+          ),
+        );
+      }),
     );
   };
 
@@ -66,10 +79,22 @@ describe("ItemList", () => {
 
   it("displays a list of items", async () => {
     setupMockData([
-      { id: "1", title: "Item 1", publishedAt: new Date().toISOString(), createdAt: new Date().toISOString(), isRead: false },
-      { id: "2", title: "Item 2", publishedAt: new Date().toISOString(), createdAt: new Date().toISOString(), isRead: true },
+      {
+        id: "1",
+        title: "Item 1",
+        publishedAt: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        isRead: false,
+      },
+      {
+        id: "2",
+        title: "Item 2",
+        publishedAt: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        isRead: true,
+      },
     ]);
-    
+
     const history = createMemoryHistory({ initialEntries: ["/"] });
     const router = createRouter({ routeTree, history });
 

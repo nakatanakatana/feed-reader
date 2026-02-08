@@ -29,8 +29,11 @@ import {
 } from "../gen/tag/v1/tag_pb";
 import { mockConnectWeb } from "./connect";
 
+// biome-ignore lint/suspicious/noExplicitAny: mock data
 const tags: any[] = [];
+// biome-ignore lint/suspicious/noExplicitAny: mock data
 const feeds: any[] = [];
+// biome-ignore lint/suspicious/noExplicitAny: mock data
 const items: any[] = [];
 
 export const resetState = () => {
@@ -112,7 +115,7 @@ export const handlers = [
     handler: (req) => {
       console.log("MSW: listFeeds called, count:", feeds.length);
       let filteredFeeds = feeds;
-// ... (rest of handlers remain same but with logging added to key ones)
+      // ... (rest of handlers remain same but with logging added to key ones)
 
       if (req.tagId) {
         filteredFeeds = feeds.filter((f) =>

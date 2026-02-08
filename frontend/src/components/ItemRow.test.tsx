@@ -11,7 +11,11 @@ import { items } from "../lib/db";
 import { http, HttpResponse } from "msw";
 import { worker } from "../mocks/browser";
 import { create, toJson } from "@bufbuild/protobuf";
-import { ListItemsResponseSchema, ListItemSchema, UpdateItemStatusResponseSchema } from "../gen/item/v1/item_pb";
+import {
+  ListItemsResponseSchema,
+  ListItemSchema,
+  UpdateItemStatusResponseSchema,
+} from "../gen/item/v1/item_pb";
 
 describe("ItemRow", () => {
   let dispose: () => void;
@@ -68,34 +72,52 @@ describe("ItemRow", () => {
     );
 
     expect(page.getByText("Read", { exact: true })).toBeInTheDocument();
-    expect(page.getByRole("button", { name: "Mark as Unread" })).toBeInTheDocument();
+    expect(
+      page.getByRole("button", { name: "Mark as Unread" }),
+    ).toBeInTheDocument();
   });
 
   it("calls updateStatus when toggle button is clicked", async () => {
     let updateCalled = false;
     worker.use(
       http.post("*/item.v1.ItemService/ListItems", () => {
-        return HttpResponse.json(toJson(ListItemsResponseSchema, create(ListItemsResponseSchema, {
-          items: [create(ListItemSchema, mockItem)],
-          totalCount: 1
-        })));
+        return HttpResponse.json(
+          toJson(
+            ListItemsResponseSchema,
+            create(ListItemsResponseSchema, {
+              items: [create(ListItemSchema, mockItem)],
+              totalCount: 1,
+            }),
+          ),
+        );
       }),
-      http.post("*/item.v1.ItemService/UpdateItemStatus", async ({ request }) => {
-        const body = await request.json() as any;
-        if (body.ids.includes("1") && body.isRead === true) {
+      http.post(
+        "*/item.v1.ItemService/UpdateItemStatus",
+        async ({ request }) => {
+          const body = (await request.json()) as {
+            ids: string[];
+            isRead: boolean;
+          };
+          if (body.ids.includes("1") && body.isRead === true) {
             updateCalled = true;
-        }
-        return HttpResponse.json(toJson(UpdateItemStatusResponseSchema, create(UpdateItemStatusResponseSchema, {})));
-      })
+          }
+          return HttpResponse.json(
+            toJson(
+              UpdateItemStatusResponseSchema,
+              create(UpdateItemStatusResponseSchema, {}),
+            ),
+          );
+        },
+      ),
     );
 
     const TestObserved = () => {
-        const data = useLiveQuery((q) => q.from({ item: items() }));
-        return (
-            <Show when={data().length >= 0}>
-                <ItemRow item={mockItem} onClick={() => {}} />
-            </Show>
-        );
+      const data = useLiveQuery((q) => q.from({ item: items() }));
+      return (
+        <Show when={data().length >= 0}>
+          <ItemRow item={mockItem} onClick={() => {}} />
+        </Show>
+      );
     };
 
     dispose = render(
@@ -112,7 +134,7 @@ describe("ItemRow", () => {
     // Wait for the item to be in the collection (it should be because we setup MSW and useLiveQuery)
     const toggleButton = page.getByRole("button", { name: "Mark as Read" });
     await expect.element(toggleButton).toBeInTheDocument();
-    
+
     await toggleButton.click();
 
     await expect.poll(() => updateCalled).toBe(true);
@@ -131,7 +153,9 @@ describe("ItemRow", () => {
       document.body,
     );
 
-    const titleButton = page.getByRole("button", { name: "Test Article Title" });
+    const titleButton = page.getByRole("button", {
+      name: "Test Article Title",
+    });
     await titleButton.click();
     expect(onClick).toHaveBeenCalledWith(mockItem);
   });

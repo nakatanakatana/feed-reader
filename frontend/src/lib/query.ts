@@ -7,5 +7,6 @@ export const transport = createConnectTransport({
 
 export const queryClient = new QueryClient();
 if (typeof window !== "undefined") {
-  (window as any).__queryClient = queryClient;
+  (window as unknown as { __queryClient: QueryClient }).__queryClient =
+    queryClient;
 }

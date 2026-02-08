@@ -33,10 +33,10 @@ describe("ItemDetailModal", () => {
             author: "Test Author",
             url: "http://example.com",
             isRead: false,
-          })
+          }),
         });
         return HttpResponse.json(toJson(GetItemResponseSchema, msg));
-      })
+      }),
     );
   };
 
@@ -68,7 +68,9 @@ describe("ItemDetailModal", () => {
     // Check for title link
     const titleLink = page.getByRole("link", { name: "Test Item" });
     await expect.element(titleLink).toBeInTheDocument();
-    await expect.element(titleLink).toHaveAttribute("href", "http://example.com");
+    await expect
+      .element(titleLink)
+      .toHaveAttribute("href", "http://example.com");
   });
 
   it("does NOT render a close button (✕)", async () => {

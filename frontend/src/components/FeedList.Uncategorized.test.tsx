@@ -14,15 +14,22 @@ import { routeTree } from "../routeTree.gen";
 import { http, HttpResponse } from "msw";
 import { worker } from "../mocks/browser";
 import { create, toJson } from "@bufbuild/protobuf";
-import { ListFeedsResponseSchema, ListFeedSchema, ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
+import {
+  ListFeedsResponseSchema,
+  ListFeedSchema,
+  ListFeedTagsResponseSchema,
+} from "../gen/feed/v1/feed_pb";
 import { ListTagsResponseSchema, ListTagSchema } from "../gen/tag/v1/tag_pb";
 
 // Mock Link from solid-router
 vi.mock("@tanstack/solid-router", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@tanstack/solid-router")>();
+  const actual =
+    await importOriginal<typeof import("@tanstack/solid-router")>();
   return {
     ...actual,
-    Link: (props: any) => (
+    Link: (
+      props: { to: string; children: JSX.Element } & JSX.IntrinsicElements["a"],
+    ) => (
       <a href={props.to} {...props}>
         {props.children}
       </a>
@@ -52,28 +59,34 @@ describe("FeedList Tag Filters", () => {
       http.post("*/feed.v1.FeedService/ListFeeds", () => {
         const msg = create(ListFeedsResponseSchema, {
           feeds: [
-            create(ListFeedSchema, { id: "1", title: "Tagged Feed", url: "url1", tags: [create(ListTagSchema, { id: "t1", name: "Tech" })] }),
-            create(ListFeedSchema, { id: "2", title: "Untagged Feed", url: "url2", tags: [] }),
-          ]
+            create(ListFeedSchema, {
+              id: "1",
+              title: "Tagged Feed",
+              url: "url1",
+              tags: [create(ListTagSchema, { id: "t1", name: "Tech" })],
+            }),
+            create(ListFeedSchema, {
+              id: "2",
+              title: "Untagged Feed",
+              url: "url2",
+              tags: [],
+            }),
+          ],
         });
         return HttpResponse.json(toJson(ListFeedsResponseSchema, msg));
       }),
       http.post("*/tag.v1.TagService/ListTags", () => {
         const msg = create(ListTagsResponseSchema, {
-          tags: [
-            create(ListTagSchema, { id: "t1", name: "Tech" }),
-          ]
+          tags: [create(ListTagSchema, { id: "t1", name: "Tech" })],
         });
         return HttpResponse.json(toJson(ListTagsResponseSchema, msg));
       }),
       http.post("*/feed.v1.FeedService/ListFeedTags", () => {
         const msg = create(ListFeedTagsResponseSchema, {
-          feedTags: [
-            { feedId: "1", tagId: "t1" },
-          ]
+          feedTags: [{ feedId: "1", tagId: "t1" }],
         });
         return HttpResponse.json(toJson(ListFeedTagsResponseSchema, msg));
-      })
+      }),
     );
 
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
@@ -89,15 +102,23 @@ describe("FeedList Tag Filters", () => {
     );
 
     // Initial state: All feeds visible
-    await expect.element(page.getByText("Tagged Feed", { exact: true })).toBeInTheDocument();
-    await expect.element(page.getByText("Untagged Feed", { exact: true })).toBeInTheDocument();
+    await expect
+      .element(page.getByText("Tagged Feed", { exact: true }))
+      .toBeInTheDocument();
+    await expect
+      .element(page.getByText("Untagged Feed", { exact: true }))
+      .toBeInTheDocument();
 
     // Switch to Untagged filter
     const filterSelect = page.getByRole("combobox", { name: "Filter by tag" });
     await filterSelect.selectOptions("untagged");
 
     // Expect only untagged feeds
-    await expect.element(page.getByText("Untagged Feed", { exact: true })).toBeInTheDocument();
-    await expect.element(page.getByText("Tagged Feed", { exact: true })).not.toBeInTheDocument();
+    await expect
+      .element(page.getByText("Untagged Feed", { exact: true }))
+      .toBeInTheDocument();
+    await expect
+      .element(page.getByText("Tagged Feed", { exact: true }))
+      .not.toBeInTheDocument();
   });
 });

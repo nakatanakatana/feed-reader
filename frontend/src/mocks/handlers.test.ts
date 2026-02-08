@@ -2,7 +2,6 @@ import { toJson } from "@bufbuild/protobuf";
 import { createClient } from "@connectrpc/connect";
 import { describe, expect, it } from "vitest";
 import {
-  CreateFeedResponseSchema,
   DeleteFeedResponseSchema,
   FeedService,
   ListFeedsResponseSchema,

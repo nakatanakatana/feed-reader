@@ -15,15 +15,22 @@ import "../styles.css";
 import { http, HttpResponse } from "msw";
 import { worker } from "../mocks/browser";
 import { create, toJson } from "@bufbuild/protobuf";
-import { ListFeedsResponseSchema, ListFeedSchema, ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
+import {
+  ListFeedsResponseSchema,
+  ListFeedSchema,
+  ListFeedTagsResponseSchema,
+} from "../gen/feed/v1/feed_pb";
 import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
 
 // Mock Link from solid-router
 vi.mock("@tanstack/solid-router", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@tanstack/solid-router")>();
+  const actual =
+    await importOriginal<typeof import("@tanstack/solid-router")>();
   return {
     ...actual,
-    Link: (props: any) => (
+    Link: (
+      props: { to: string; children: JSX.Element } & JSX.IntrinsicElements["a"],
+    ) => (
       <a href={props.to} {...props}>
         {props.children}
       </a>
@@ -53,17 +60,32 @@ describe("FeedList Responsive", () => {
       http.post("*/feed.v1.FeedService/ListFeeds", () => {
         const msg = create(ListFeedsResponseSchema, {
           feeds: [
-            create(ListFeedSchema, { id: "1", title: "Feed 1", url: "url1", tags: [] }),
-          ]
+            create(ListFeedSchema, {
+              id: "1",
+              title: "Feed 1",
+              url: "url1",
+              tags: [],
+            }),
+          ],
         });
         return HttpResponse.json(toJson(ListFeedsResponseSchema, msg));
       }),
       http.post("*/tag.v1.TagService/ListTags", () => {
-        return HttpResponse.json(toJson(ListTagsResponseSchema, create(ListTagsResponseSchema, { tags: [] })));
+        return HttpResponse.json(
+          toJson(
+            ListTagsResponseSchema,
+            create(ListTagsResponseSchema, { tags: [] }),
+          ),
+        );
       }),
       http.post("*/feed.v1.FeedService/ListFeedTags", () => {
-        return HttpResponse.json(toJson(ListFeedTagsResponseSchema, create(ListFeedTagsResponseSchema, { feedTags: [] })));
-      })
+        return HttpResponse.json(
+          toJson(
+            ListFeedTagsResponseSchema,
+            create(ListFeedTagsResponseSchema, { feedTags: [] }),
+          ),
+        );
+      }),
     );
   };
 
@@ -180,32 +202,33 @@ describe("FeedList Responsive", () => {
     // The FAB container should be hidden on desktop
     // In FeedList.tsx: <div class={css({ display: "block", sm: { display: "none" }, ... })}>
     // So on desktop (1024px > sm), it should be hidden.
-    const fab = page.getByRole("button", { name: /Manage Tags/i });
     // There are TWO "Manage Tags" buttons if both are rendered.
     // One in header, one in FAB.
     // The FAB is hidden via display: none on sm and above.
-    
-    const buttons = await page.getByRole("button", { name: /Manage Tags/i }).all();
+
+    const buttons = await page
+      .getByRole("button", { name: /Manage Tags/i })
+      .all();
     // One should be visible, one hidden (or not in document if using Show, but FeedList uses css display)
-    
+
     // Let's find the one that is NOT in the header
-    const fabButton = buttons.find(b => {
-        let parent = b.parentElement;
-        while(parent) {
-            if (parent.getAttribute('data-role') === 'header-manage-tags') return false;
-            parent = parent.parentElement;
-        }
-        return true;
+    const fabButton = buttons.find((b) => {
+      let parent = b.parentElement;
+      while (parent) {
+        if (parent.getAttribute("data-role") === "header-manage-tags")
+          return false;
+        parent = parent.parentElement;
+      }
+      return true;
     });
-    
+
     if (fabButton) {
-        const fabStyles = window.getComputedStyle(fabButton);
-        // Wait, the container is hidden, not the button itself maybe?
-        const fabContainer = fabButton.parentElement?.parentElement;
-        if (fabContainer) {
-            const containerStyles = window.getComputedStyle(fabContainer);
-            expect(containerStyles.display).toBe("none");
-        }
+      // Wait, the container is hidden, not the button itself maybe?
+      const fabContainer = fabButton.parentElement?.parentElement;
+      if (fabContainer) {
+        const containerStyles = window.getComputedStyle(fabContainer);
+        expect(containerStyles.display).toBe("none");
+      }
     }
   });
 });

@@ -14,15 +14,22 @@ import { routeTree } from "../routeTree.gen";
 import { http, HttpResponse } from "msw";
 import { worker } from "../mocks/browser";
 import { create, toJson } from "@bufbuild/protobuf";
-import { ListFeedsResponseSchema, ListFeedSchema, ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
+import {
+  ListFeedsResponseSchema,
+  ListFeedSchema,
+  ListFeedTagsResponseSchema,
+} from "../gen/feed/v1/feed_pb";
 import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
 
 // Mock Link from solid-router
 vi.mock("@tanstack/solid-router", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@tanstack/solid-router")>();
+  const actual =
+    await importOriginal<typeof import("@tanstack/solid-router")>();
   return {
     ...actual,
-    Link: (props: any) => (
+    Link: (
+      props: { to: string; children: JSX.Element } & JSX.IntrinsicElements["a"],
+    ) => (
       <a href={props.to} {...props}>
         {props.children}
       </a>
@@ -52,17 +59,32 @@ describe("FeedList Card Click Selection", () => {
       http.post("*/feed.v1.FeedService/ListFeeds", () => {
         const msg = create(ListFeedsResponseSchema, {
           feeds: [
-            create(ListFeedSchema, { id: "1", title: "Feed 1", url: "url1", tags: [] }),
-          ]
+            create(ListFeedSchema, {
+              id: "1",
+              title: "Feed 1",
+              url: "url1",
+              tags: [],
+            }),
+          ],
         });
         return HttpResponse.json(toJson(ListFeedsResponseSchema, msg));
       }),
       http.post("*/tag.v1.TagService/ListTags", () => {
-        return HttpResponse.json(toJson(ListTagsResponseSchema, create(ListTagsResponseSchema, { tags: [] })));
+        return HttpResponse.json(
+          toJson(
+            ListTagsResponseSchema,
+            create(ListTagsResponseSchema, { tags: [] }),
+          ),
+        );
       }),
       http.post("*/feed.v1.FeedService/ListFeedTags", () => {
-        return HttpResponse.json(toJson(ListFeedTagsResponseSchema, create(ListFeedTagsResponseSchema, { feedTags: [] })));
-      })
+        return HttpResponse.json(
+          toJson(
+            ListFeedTagsResponseSchema,
+            create(ListFeedTagsResponseSchema, { feedTags: [] }),
+          ),
+        );
+      }),
     );
 
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
@@ -81,7 +103,7 @@ describe("FeedList Card Click Selection", () => {
 
     const card = page.getByRole("listitem");
     const checkbox = card.getByRole("checkbox");
-    
+
     await expect.element(checkbox).not.toBeChecked();
 
     // Click the card background (li element)

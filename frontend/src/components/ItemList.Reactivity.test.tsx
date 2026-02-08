@@ -27,26 +27,43 @@ describe("ItemList Reactivity", () => {
     vi.clearAllMocks();
   });
 
-  const setupMockData = (onListItems?: (req: any) => void) => {
+  const setupMockData = (
+    onListItems?: (req: Record<string, unknown>) => void,
+  ) => {
     worker.use(
       http.post("*/item.v1.ItemService/ListItems", async ({ request }) => {
         const body = await request.json();
         onListItems?.(body);
-        return HttpResponse.json(toJson(ListItemsResponseSchema, create(ListItemsResponseSchema, { items: [], totalCount: 0 })));
+        return HttpResponse.json(
+          toJson(
+            ListItemsResponseSchema,
+            create(ListItemsResponseSchema, { items: [], totalCount: 0 }),
+          ),
+        );
       }),
       http.post("*/tag.v1.TagService/ListTags", () => {
-        return HttpResponse.json(toJson(ListTagsResponseSchema, create(ListTagsResponseSchema, { tags: [] })));
+        return HttpResponse.json(
+          toJson(
+            ListTagsResponseSchema,
+            create(ListTagsResponseSchema, { tags: [] }),
+          ),
+        );
       }),
       http.post("*/feed.v1.FeedService/ListFeedTags", () => {
-        return HttpResponse.json(toJson(ListFeedTagsResponseSchema, create(ListFeedTagsResponseSchema, { feedTags: [] })));
-      })
+        return HttpResponse.json(
+          toJson(
+            ListFeedTagsResponseSchema,
+            create(ListFeedTagsResponseSchema, { feedTags: [] }),
+          ),
+        );
+      }),
     );
   };
 
   it("should re-query items when itemStore parameters change", async () => {
     let callCount = 0;
     setupMockData(() => {
-        callCount++;
+      callCount++;
     });
 
     const history = createMemoryHistory({ initialEntries: ["/"] });

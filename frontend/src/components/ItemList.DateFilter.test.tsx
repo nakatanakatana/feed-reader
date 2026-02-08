@@ -29,15 +29,28 @@ describe("ItemList Date Filter", () => {
   const setupMockData = () => {
     worker.use(
       http.post("*/item.v1.ItemService/ListItems", () => {
-        const msg = create(ListItemsResponseSchema, { items: [], totalCount: 0 });
+        const msg = create(ListItemsResponseSchema, {
+          items: [],
+          totalCount: 0,
+        });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),
       http.post("*/tag.v1.TagService/ListTags", () => {
-        return HttpResponse.json(toJson(ListTagsResponseSchema, create(ListTagsResponseSchema, { tags: [] })));
+        return HttpResponse.json(
+          toJson(
+            ListTagsResponseSchema,
+            create(ListTagsResponseSchema, { tags: [] }),
+          ),
+        );
       }),
       http.post("*/feed.v1.FeedService/ListFeedTags", () => {
-        return HttpResponse.json(toJson(ListFeedTagsResponseSchema, create(ListFeedTagsResponseSchema, { feedTags: [] })));
-      })
+        return HttpResponse.json(
+          toJson(
+            ListFeedTagsResponseSchema,
+            create(ListFeedTagsResponseSchema, { feedTags: [] }),
+          ),
+        );
+      }),
     );
   };
 
