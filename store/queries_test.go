@@ -11,16 +11,16 @@ import (
 	"github.com/nakatanakatana/feed-reader/store"
 	_ "github.com/ncruces/go-sqlite3/driver"
 	_ "github.com/ncruces/go-sqlite3/embed"
-	"github.com/stretchr/testify/require"
+	"gotest.tools/v3/assert"
 	"gotest.tools/v3/golden"
 )
 
 func setupDB(t *testing.T) (*store.Queries, *store.Store) {
 	db, err := sql.Open("sqlite3", ":memory:")
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	_, err = db.ExecContext(context.Background(), schema.Schema)
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	t.Cleanup(func() {
 		_ = db.Close()
@@ -31,16 +31,16 @@ func setupDB(t *testing.T) (*store.Queries, *store.Store) {
 
 func maskJSON(t *testing.T, data interface{}) string {
 	b, err := json.Marshal(data)
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	var m interface{}
 	err = json.Unmarshal(b, &m)
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	mask(m)
 
 	b, err = json.MarshalIndent(m, "", "  ")
-	require.NoError(t, err)
+	assert.NilError(t, err)
 	return string(b)
 }
 
@@ -78,7 +78,7 @@ func TestQueries_CreateItem(t *testing.T) {
 		}
 
 		item, err := q.CreateItem(ctx, params)
-		require.NoError(t, err)
+		assert.NilError(t, err)
 
 		golden.Assert(t, maskJSON(t, item), "create_item_new.golden")
 	})
@@ -92,7 +92,7 @@ func TestQueries_CreateItem(t *testing.T) {
 			Description: stringPtr("Description 2"),
 		}
 		_, err := q.CreateItem(ctx, params)
-		require.NoError(t, err)
+		assert.NilError(t, err)
 
 		// Upsert with new title
 		newParams := store.CreateItemParams{
@@ -102,7 +102,7 @@ func TestQueries_CreateItem(t *testing.T) {
 			Description: stringPtr("Description 2"),
 		}
 		item, err := q.CreateItem(ctx, newParams)
-		require.NoError(t, err)
+		assert.NilError(t, err)
 
 		golden.Assert(t, maskJSON(t, item), "create_item_upsert.golden")
 	})
@@ -118,7 +118,7 @@ func TestQueries_CreateFeedItem(t *testing.T) {
 		Url: "http://example.com/feed.xml",
 	}
 	_, err := q.CreateFeed(ctx, feedParams)
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	// Create Item
 	itemParams := store.CreateItemParams{
@@ -126,14 +126,14 @@ func TestQueries_CreateFeedItem(t *testing.T) {
 		Url: "http://example.com/item1",
 	}
 	_, err = q.CreateItem(ctx, itemParams)
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	t.Run("Link feed and item", func(t *testing.T) {
 		err := q.CreateFeedItem(ctx, store.CreateFeedItemParams{
 			FeedID: "feed-1",
 			ItemID: "item-1",
 		})
-		require.NoError(t, err)
+		assert.NilError(t, err)
 	})
 
 	t.Run("Duplicate link should be ignored", func(t *testing.T) {
@@ -141,14 +141,14 @@ func TestQueries_CreateFeedItem(t *testing.T) {
 			FeedID: "feed-1",
 			ItemID: "item-1",
 		})
-		require.NoError(t, err)
+		assert.NilError(t, err)
 	})
 
 	t.Run("ListItems returns CreatedAt", func(t *testing.T) {
 		items, err := q.ListItems(ctx, store.ListItemsParams{
 			Limit: 10,
 		})
-		require.NoError(t, err)
+		assert.NilError(t, err)
 		golden.Assert(t, maskJSON(t, items), "list_items_with_created_at.golden")
 	})
 }
@@ -163,16 +163,16 @@ func TestQueries_CreateItemRead(t *testing.T) {
 		Url: "http://example.com/item1",
 	}
 	_, err := q.CreateItem(ctx, itemParams)
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	t.Run("Initialize item read status", func(t *testing.T) {
 		err := q.CreateItemRead(ctx, "item-1")
-		require.NoError(t, err)
+		assert.NilError(t, err)
 	})
 
 	t.Run("Duplicate initialization should be ignored", func(t *testing.T) {
 		err := q.CreateItemRead(ctx, "item-1")
-		require.NoError(t, err)
+		assert.NilError(t, err)
 	})
 }
 
