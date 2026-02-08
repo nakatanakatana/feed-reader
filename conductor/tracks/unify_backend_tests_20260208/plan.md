@@ -2,7 +2,7 @@
 
 This plan outlines the steps to refactor the Go backend tests to use `gotest.tools` consistently across all packages.
 
-## Phase 1: Setup and `store` Package Migration
+## Phase 1: Setup and `store` Package Migration [checkpoint: 3af53f5]
 Focus on the data layer (`store` package) which has extensive tests.
 
 - [x] Task: Audit `store` package tests to identify specific refactoring targets (assertions, error checks, custom golden logic) (cacee63)
@@ -10,7 +10,7 @@ Focus on the data layer (`store` package) which has extensive tests.
 - [x] Task: Refactor `store/item_store_test.go` to use `assert` and `cmp` (3cac95a)
 - [x] Task: Refactor other tests in `store/` (`author_test.go`, `tag_store.go`, etc.) (66b5cb6)
 - [x] Task: Migrate any custom golden file logic in `store/` to `gotest.tools/v3/golden` (c2b5415)
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: store Package Migration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: store Package Migration' (3af53f5)
 
 ## Phase 2: `cmd/feed-reader` Package Migration
 Refactor the main application logic tests.
