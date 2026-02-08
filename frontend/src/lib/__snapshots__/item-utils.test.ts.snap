@@ -1,0 +1,29 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`item-utils > normalizeCategories > matches snapshot for complex categories 1`] = `
+[
+  [
+    "Tech",
+    "SolidJS",
+    "Vitest",
+  ],
+  [
+    "Science",
+    "Space",
+    "NASA",
+  ],
+  [
+    "Quote 1",
+    "Quote 2",
+  ],
+  [
+    "Array",
+    "Mixed, CSV",
+  ],
+  [
+    "Malformed JSON",
+  ],
+  [],
+  [],
+]
+`;

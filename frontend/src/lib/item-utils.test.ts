@@ -153,6 +153,19 @@ describe("item-utils", () => {
       ]);
     });
 
+    it("matches snapshot for complex categories", () => {
+      const complexInputs = [
+        '["Tech", "SolidJS", "Vitest"]',
+        "Science, Space, NASA",
+        '"Quote 1", "Quote 2"',
+        '["Array", "Mixed, CSV"]',
+        "[Malformed JSON",
+        "",
+        "   ",
+      ];
+      expect(complexInputs.map(normalizeCategories)).toMatchSnapshot();
+    });
+
     it("should return trimmed, non-empty values", () => {
       const jsonArray = fc.array(
         fc.oneof(fc.string(), fc.integer(), fc.boolean(), fc.constant(null)),
