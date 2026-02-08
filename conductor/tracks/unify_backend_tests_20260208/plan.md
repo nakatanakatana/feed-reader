@@ -15,7 +15,7 @@ Focus on the data layer (`store` package) which has extensive tests.
 ## Phase 2: `cmd/feed-reader` Package Migration
 Refactor the main application logic tests.
 
-- [ ] Task: Audit `cmd/feed-reader/` tests for refactoring targets
+- [~] Task: Audit `cmd/feed-reader/` tests for refactoring targets
 - [ ] Task: Refactor `cmd/feed-reader/handler_test.go` and related HTTP handler tests
 - [ ] Task: Refactor `cmd/feed-reader/fetcher_test.go` and `scheduler_test.go`
 - [ ] Task: Refactor `cmd/feed-reader/opml_importer_test.go` and `converter_test.go`
