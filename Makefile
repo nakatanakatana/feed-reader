@@ -27,6 +27,10 @@ dev-frontend-mock:
 
 dev: dev-backend dev-frontend
 
+sync-assets:
+	mkdir -p frontend/dist
+	touch frontend/dist/index.html
+
 test-backend: sync-assets
 	go test ./...
 
