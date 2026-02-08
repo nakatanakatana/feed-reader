@@ -11,7 +11,7 @@ Standardize MSW setup and prepare the environment to test with the actual `tanst
     - [x] Create/Update test utilities to easily reset `tanstack/db` state between tests.
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Test Infrastructure Enhancement' (47db490)
 
-## Phase 2: Restore Feed Management Tests
+## Phase 2: Restore Feed Management Tests [checkpoint: a396127]
 Refactor tests related to adding and updating feeds to use MSW and actual application logic.
 
 - [x] Task: Refactor `AddFeedForm.test.tsx` (or relevant tests). (979d22c)
