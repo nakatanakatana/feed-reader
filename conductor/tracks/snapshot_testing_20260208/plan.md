@@ -22,7 +22,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Backend Snapshot Implementation' (cef40d5) (Protocol in workflow.md)
 
 ## Phase 3: Frontend Snapshot Implementation
-- [ ] Task: Implement snapshot testing for key UI components
+- [x] Task: Implement snapshot testing for key UI components (64ea576)
     - [ ] Add `toMatchSnapshot()` tests for `FeedList.tsx`
     - [ ] Add `toMatchSnapshot()` tests for `ItemRow.tsx`
     - [ ] Add `toMatchSnapshot()` tests for `AddFeedForm.tsx`
