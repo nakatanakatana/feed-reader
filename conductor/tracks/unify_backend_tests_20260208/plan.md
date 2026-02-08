@@ -6,7 +6,7 @@ This plan outlines the steps to refactor the Go backend tests to use `gotest.too
 Focus on the data layer (`store` package) which has extensive tests.
 
 - [x] Task: Audit `store` package tests to identify specific refactoring targets (assertions, error checks, custom golden logic) (cacee63)
-- [ ] Task: Refactor `store/feed_store_test.go` to use `assert` and `cmp`
+- [x] Task: Refactor `store/feed_store_test.go` to use `assert` and `cmp` (e786571)
 - [ ] Task: Refactor `store/item_store_test.go` to use `assert` and `cmp`
 - [ ] Task: Refactor other tests in `store/` (`author_test.go`, `tag_store.go`, etc.)
 - [ ] Task: Migrate any custom golden file logic in `store/` to `gotest.tools/v3/golden`
