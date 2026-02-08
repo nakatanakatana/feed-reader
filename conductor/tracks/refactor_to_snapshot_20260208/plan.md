@@ -1,13 +1,13 @@
 # Implementation Plan: Refactor Existing Tests to Snapshot Testing
 
-## Phase 1: Backend Structural Data Refactoring
+## Phase 1: Backend Structural Data Refactoring [checkpoint: b08c819]
 - [x] Task: Migrate OPML tests to golden testing 9395d7e
     - Refactor `opml_test.go` to use `golden.Assert` for XML export/import.
     - Refactor `opml_importer_test.go` to use golden files for result verification.
 - [x] Task: Migrate DB query tests to golden testing a56ce21
     - Refactor `store/queries_test.go` to use `golden.Assert`.
     - Implement JSON masking for dynamic fields in store results if necessary.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend Structural Data Refactoring'
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Backend Structural Data Refactoring' b08c819
 
 ## Phase 2: Frontend Rendering Refactoring
 - [ ] Task: Migrate Markdown rendering tests to snapshots
