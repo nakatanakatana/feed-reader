@@ -31,12 +31,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Frontend Snapshot Implementation' (875b22c) (Protocol in workflow.md)
 
 ## Phase 4: Verification, Linting and Documentation
-- [ ] Task: Run full test suite and verify all snapshots
-    - [ ] Execute `make test` and `npm test`
-- [ ] Task: Verify Code Standards and Linting
-    - [ ] Run `make lint` or equivalent for Go
-    - [ ] Run `npm run lint` and `npx biome check .` for Frontend
-    - [ ] Fix any linting or formatting issues introduced
-- [ ] Task: Verify CI behavior
-    - [ ] Ensure snapshots are correctly handled in CI environment
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Verification, Linting and Documentation' (Protocol in workflow.md)
+- [x] Task: Run full test suite and verify all snapshots (dfb1926)
+- [x] Task: Verify Code Standards and Linting (875b22c)
+- [x] Task: Verify CI behavior (875b22c)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Verification, Linting and Documentation' (5af1c66) (Protocol in workflow.md)
