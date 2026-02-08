@@ -330,3 +330,31 @@ FROM
 WHERE
   (sqlc.narg('feed_id') IS NULL OR feed_id = sqlc.narg('feed_id'))
   AND (sqlc.narg('tag_id') IS NULL OR tag_id = sqlc.narg('tag_id'));
+
+-- name: GetFeedFetcherCache :one
+SELECT
+  *
+FROM
+  feed_fetcher_cache
+WHERE
+  feed_id = ?;
+
+-- name: UpsertFeedFetcherCache :one
+INSERT INTO feed_fetcher_cache (
+  feed_id,
+  etag,
+  last_modified
+) VALUES (
+  ?, ?, ?
+)
+ON CONFLICT(feed_id) DO UPDATE SET
+  etag = excluded.etag,
+  last_modified = excluded.last_modified,
+  updated_at = CURRENT_TIMESTAMP
+RETURNING *;
+
+-- name: DeleteFeedFetcherCache :exec
+DELETE FROM
+  feed_fetcher_cache
+WHERE
+  feed_id = ?;

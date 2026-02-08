@@ -42,7 +42,7 @@ func (i *OPMLImporter) ImportSync(ctx context.Context, opmlContent []byte) (*Imp
 		}
 
 		// Fetch metadata
-		fetchedFeed, err := i.fetcher.Fetch(ctx, f.URL)
+		fetchedFeed, err := i.fetcher.Fetch(ctx, "", f.URL)
 		if err != nil {
 			i.logger.ErrorContext(ctx, "failed to fetch feed metadata", "url", f.URL, "error", err)
 			results.FailedFeeds = append(results.FailedFeeds, f.URL)

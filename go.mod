@@ -10,7 +10,7 @@ require (
 	github.com/hashicorp/go-retryablehttp v0.7.8
 	github.com/mmcdole/gofeed v1.3.0
 	github.com/ncruces/go-sqlite3 v0.30.5
-	github.com/sqldef/sqldef/v3 v3.9.6
+	github.com/sqldef/sqldef/v3 v3.9.7
 	github.com/stretchr/testify v1.11.1
 	golang.org/x/net v0.49.0
 	google.golang.org/protobuf v1.36.11

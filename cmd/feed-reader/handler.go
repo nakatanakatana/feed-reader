@@ -136,7 +136,7 @@ func (s *FeedServer) CreateFeed(ctx context.Context, req *connect.Request[feedv1
 }
 
 func (s *FeedServer) createFeedFromURL(ctx context.Context, url string, titleOverride *string, tagIds []string) (*store.Feed, error) {
-	fetchedFeed, err := s.fetcher.Fetch(ctx, url)
+	fetchedFeed, err := s.fetcher.Fetch(ctx, "", url)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch feed: %w", err)
 	}

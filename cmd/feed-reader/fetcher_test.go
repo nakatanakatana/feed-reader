@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -9,9 +10,22 @@ import (
 	"testing"
 
 	"github.com/mmcdole/gofeed"
+	schema "github.com/nakatanakatana/feed-reader/sql"
+	"github.com/nakatanakatana/feed-reader/store"
+	_ "github.com/ncruces/go-sqlite3/driver"
+	_ "github.com/ncruces/go-sqlite3/embed"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGofeedFetcher_Fetch(t *testing.T) {
+	// Setup store for testing
+	db, err := sql.Open("sqlite3", ":memory:")
+	require.NoError(t, err)
+	defer func() { _ = db.Close() }()
+	_, err = db.Exec(schema.Schema)
+	require.NoError(t, err)
+	s := store.NewStore(db)
+
 	tests := []struct {
 		name        string
 		feedContent string
@@ -90,15 +104,156 @@ func TestGofeedFetcher_Fetch(t *testing.T) {
 			}))
 			defer server.Close()
 
-			f := NewGofeedFetcher()
-			feed, err := f.Fetch(context.Background(), server.URL)
+			f := NewGofeedFetcher(s)
+			feed, err := f.Fetch(context.Background(), "", server.URL)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Fetch() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !tt.wantErr && tt.check != nil {
-				tt.check(t, feed)
+						if !tt.wantErr && tt.check != nil {
+							tt.check(t, feed)
+						}
+					})
+				}
 			}
-		})
-	}
-}
+			
+			func TestGofeedFetcher_ConditionalFetch(t *testing.T) {
+			
+				db, err := sql.Open("sqlite3", ":memory:")
+			
+				require.NoError(t, err)
+			
+				defer func() { _ = db.Close() }()
+			
+				_, err = db.Exec(schema.Schema)
+			
+			
+				require.NoError(t, err)
+				s := store.NewStore(db)
+			
+				feedID := "test-feed"
+				// Create feed to satisfy foreign key
+				_, err = s.CreateFeed(context.Background(), store.CreateFeedParams{
+					ID:  feedID,
+					Url: "http://example.com",
+				})
+				require.NoError(t, err)
+			
+				f := NewGofeedFetcher(s)
+			
+				t.Run("Sends headers and handles 304", func(t *testing.T) {
+					etag := "etag1"
+					lastMod := "mod1"
+					_, err := s.UpsertFeedFetcherCache(context.Background(), store.UpsertFeedFetcherCacheParams{
+						FeedID:       feedID,
+						Etag:         &etag,
+						LastModified: &lastMod,
+					})
+					require.NoError(t, err)
+			
+					server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+						if r.Header.Get("If-None-Match") != etag {
+							t.Errorf("expected If-None-Match %s, got %s", etag, r.Header.Get("If-None-Match"))
+						}
+						if r.Header.Get("If-Modified-Since") != lastMod {
+							t.Errorf("expected If-Modified-Since %s, got %s", lastMod, r.Header.Get("If-Modified-Since"))
+						}
+						w.WriteHeader(http.StatusNotModified)
+					}))
+					defer server.Close()
+			
+					_, err = f.Fetch(context.Background(), feedID, server.URL)
+					require.ErrorIs(t, err, ErrNotModified)
+				})
+			
+				t.Run("Updates cache on 200 OK", func(t *testing.T) {
+					newEtag := "etag2"
+					newLastMod := "mod2"
+					feedContent := `<?xml version="1.0" encoding="UTF-8" ?><rss version="2.0"><channel><title>T</title></channel></rss>`
+			
+					server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+						w.Header().Set("ETag", newEtag)
+						w.Header().Set("Last-Modified", newLastMod)
+						w.Header().Set("Content-Type", "application/xml")
+						_, _ = fmt.Fprint(w, feedContent)
+					}))
+					defer server.Close()
+			
+					_, err := f.Fetch(context.Background(), feedID, server.URL)
+					require.NoError(t, err)
+			
+					cache, err := s.GetFeedFetcherCache(context.Background(), feedID)
+					require.NoError(t, err)
+					require.Equal(t, newEtag, *cache.Etag)
+					require.Equal(t, newLastMod, *cache.LastModified)
+				})
+			
+					t.Run("Deletes cache on 5xx", func(t *testing.T) {
+			
+						// Pre-create cache
+			
+						etag := "to-be-deleted"
+			
+						_, err := s.UpsertFeedFetcherCache(context.Background(), store.UpsertFeedFetcherCacheParams{
+			
+							FeedID: feedID,
+			
+							Etag:   &etag,
+			
+						})
+			
+						require.NoError(t, err)
+			
+				
+			
+						server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			
+							w.WriteHeader(http.StatusInternalServerError)
+			
+						}))
+			
+						defer server.Close()
+			
+				
+			
+								_, err = f.Fetch(context.Background(), feedID, server.URL)
+			
+				
+			
+								require.Error(t, err)
+			
+				
+			
+						
+			
+				
+			
+								cache, err := s.GetFeedFetcherCache(context.Background(), feedID)
+			
+				
+			
+								if err == nil {
+			
+				
+			
+									t.Errorf("expected error, but got cache: %+v", cache)
+			
+				
+			
+								}
+			
+				
+			
+								require.ErrorIs(t, err, sql.ErrNoRows)
+			
+				
+			
+							})
+			
+				
+			
+						
+			
+				
+			}
+			
