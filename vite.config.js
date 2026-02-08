@@ -29,6 +29,7 @@ export default defineConfig({
           browser: "chromium",
         },
       ],
+      viewport: { width: 1280, height: 720 },
       headless: true,
     },
     setupFiles: ["./src/vitest-setup.ts"],

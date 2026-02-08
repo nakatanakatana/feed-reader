@@ -4,5 +4,5 @@ exports[`AddFeedForm > creates a new feed 1`] = `
 "
   
 
-<form class="d_flex flex-d_column ai_flex-start gap_4 w_full bg_white p_4 bdr_md bx-sh_sm bd_1px_solid bd-c_gray.200"><div class="d_flex gap_2 w_full"><input type="text" placeholder="Feed URL" class="bd_1px_solid bd-c_gray.300 p_2 bdr_md flex_1 disabled:op_0.5"><button variant="primary" type="submit" class="bdr_md fw_medium cursor_pointer bd_1px_solid bd-c_gray.200 trs_all_0.2s d_inline-flex ai_center jc_center gap_2 disabled:op_0.5 disabled:cursor_not-allowed fs_sm py_2 px_4 bg-c_blue.600 c_white hover:bg-c_blue.700">Add Feed</button></div><div class="d_flex ai_center flex-wrap_wrap gap_2"><span class="fs_sm c_gray.600">Tags:</span></div></form>"
+<form class="d_flex flex-d_column ai_flex-start gap_4 w_full bg_white p_4 bdr_md bx-sh_sm bd_1px_solid bd-c_gray.200"><div class="d_flex gap_2 w_full"><input type="text" placeholder="Feed URL" class="bd_1px_solid bd-c_gray.300 p_2 bdr_md flex_1 disabled:op_0.5"><button variant="primary" type="submit" class="bdr_md fw_medium cursor_pointer bd_1px_solid bd-c_blue.600 trs_all_0.2s d_inline-flex ai_center jc_center gap_2 disabled:op_0.5 disabled:cursor_not-allowed fs_sm py_2 px_4 bg_blue.600 c_white hover:bg_blue.700">Add Feed</button></div><div class="d_flex ai_center flex-wrap_wrap gap_2"><span class="fs_sm c_gray.600">Tags:</span></div></form>"
 `;
