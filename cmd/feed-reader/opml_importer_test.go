@@ -46,9 +46,9 @@ func TestOPMLImporter_ImportSync(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, int32(3), results.Total)
-	assert.Equal(t, int32(1), results.Success)      // "new"
-	assert.Equal(t, int32(1), results.Skipped)      // "existing"
-	assert.Equal(t, 1, len(results.FailedFeeds))    // "fail"
+	assert.Equal(t, int32(1), results.Success)   // "new"
+	assert.Equal(t, int32(1), results.Skipped)   // "existing"
+	assert.Equal(t, 1, len(results.FailedFeeds)) // "fail"
 	assert.Equal(t, "https://example.com/fail", results.FailedFeeds[0])
 
 	// Verify DB

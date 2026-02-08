@@ -5,10 +5,10 @@ import (
 	"testing"
 
 	"connectrpc.com/connect"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	_ "github.com/ncruces/go-sqlite3/driver"
 	_ "github.com/ncruces/go-sqlite3/embed"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	tagv1 "github.com/nakatanakatana/feed-reader/gen/go/tag/v1"
 	"github.com/nakatanakatana/feed-reader/store"

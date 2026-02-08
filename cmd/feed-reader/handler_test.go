@@ -9,13 +9,12 @@ import (
 	"testing"
 	"time"
 
-
 	"connectrpc.com/connect"
 	"github.com/google/uuid"
-	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/proto"
 	_ "github.com/ncruces/go-sqlite3/driver"
 	_ "github.com/ncruces/go-sqlite3/embed"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 
 	"github.com/mmcdole/gofeed"
 	"github.com/nakatanakatana/feed-reader/gen/go/feed/v1"
@@ -108,7 +107,6 @@ func (m *mockFetcher) Fetch(ctx context.Context, feedID string, url string) (*go
 	}
 	return m.feed, nil
 }
-
 
 type mockItemFetcher struct {
 	called bool
@@ -383,7 +381,7 @@ func TestFeedServer_ListFeeds_UnreadCounts(t *testing.T) {
 	// List Feeds
 	res, err := server.ListFeeds(ctx, connect.NewRequest(&feedv1.ListFeedsRequest{}))
 	require.NoError(t, err)
-	
+
 	assertResponseGolden(t, res.Msg, "list_feeds_unread_counts.golden")
 }
 
@@ -553,8 +551,6 @@ func TestFeedServer_RefreshFeeds(t *testing.T) {
 		})
 	}
 }
-
-
 
 func TestFeedServer_ImportOpml_Sync(t *testing.T) {
 	ctx := context.Background()

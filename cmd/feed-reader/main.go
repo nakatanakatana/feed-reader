@@ -17,18 +17,18 @@ import (
 	"github.com/nakatanakatana/feed-reader/gen/go/tag/v1/tagv1connect"
 	"github.com/nakatanakatana/feed-reader/sql"
 	"github.com/nakatanakatana/feed-reader/store"
-	"golang.org/x/net/http2"
-	"golang.org/x/net/http2/h2c"
 	_ "github.com/ncruces/go-sqlite3/driver"
 	_ "github.com/ncruces/go-sqlite3/embed"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
 )
 
 type config struct {
-	Port                   string        `env:"PORT" envDefault:"8080"`
-	DBPath                 string        `env:"DB_PATH" envDefault:"feed-reader.db"`
-	FetchInterval          time.Duration `env:"FETCH_INTERVAL" envDefault:"30m"`
-	MaxWorkers             int           `env:"MAX_WORKERS" envDefault:"10"`
-	SkipDBMigration        bool          `env:"SKIP_DB_MIGRATION" envDefault:"false"`
+	Port            string        `env:"PORT" envDefault:"8080"`
+	DBPath          string        `env:"DB_PATH" envDefault:"feed-reader.db"`
+	FetchInterval   time.Duration `env:"FETCH_INTERVAL" envDefault:"30m"`
+	MaxWorkers      int           `env:"MAX_WORKERS" envDefault:"10"`
+	SkipDBMigration bool          `env:"SKIP_DB_MIGRATION" envDefault:"false"`
 
 	// Write Queue settings
 	WriteQueueMaxBatchSize  int           `env:"WRITE_QUEUE_MAX_BATCH_SIZE" envDefault:"50"`

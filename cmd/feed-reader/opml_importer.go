@@ -96,7 +96,6 @@ func (i *OPMLImporter) ImportSync(ctx context.Context, opmlContent []byte) (*Imp
 	return results, nil
 }
 
-
 type OPMLImporter struct {
 	store   *store.Store
 	fetcher FeedFetcher
@@ -115,5 +114,3 @@ func NewOPMLImporter(s *store.Store, f FeedFetcher, l *slog.Logger, uuidGen UUID
 		uuidGen: uuidGen,
 	}
 }
-
-

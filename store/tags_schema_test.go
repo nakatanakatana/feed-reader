@@ -6,9 +6,9 @@ import (
 	"testing"
 
 	"github.com/nakatanakatana/feed-reader/sql"
-	"github.com/stretchr/testify/assert"
 	_ "github.com/ncruces/go-sqlite3/driver"
 	_ "github.com/ncruces/go-sqlite3/embed"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestTagsSchema(t *testing.T) {

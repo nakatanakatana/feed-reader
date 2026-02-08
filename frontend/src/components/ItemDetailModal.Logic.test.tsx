@@ -1,14 +1,14 @@
+import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
+import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
+import { GetItemResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
-import { ItemDetailModal } from "./ItemDetailModal";
-import { http, HttpResponse } from "msw";
 import { worker } from "../mocks/browser";
-import { create, toJson } from "@bufbuild/protobuf";
-import { GetItemResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
+import { ItemDetailModal } from "./ItemDetailModal";
 
 describe("ItemDetailModal Navigation Logic", () => {
   let dispose: () => void;

@@ -47,9 +47,9 @@ func TestStore_ListItems_DateFilter(t *testing.T) {
 	t.Run("Filter by 24h", func(t *testing.T) {
 		since := now.Add(-24 * time.Hour).Format(time.RFC3339)
 		items, err := s.ListItems(ctx, store.ListItemsParams{
-			Since: &since,
-			Limit:          10,
-			Offset:         0,
+			Since:  &since,
+			Limit:  10,
+			Offset: 0,
 		})
 		require.NoError(t, err)
 		assert.Len(t, items, 2)
@@ -61,9 +61,9 @@ func TestStore_ListItems_DateFilter(t *testing.T) {
 	t.Run("Filter by 1h", func(t *testing.T) {
 		since := now.Add(-2 * time.Hour).Format(time.RFC3339)
 		items, err := s.ListItems(ctx, store.ListItemsParams{
-			Since: &since,
-			Limit:          10,
-			Offset:         0,
+			Since:  &since,
+			Limit:  10,
+			Offset: 0,
 		})
 		require.NoError(t, err)
 		assert.Len(t, items, 1)
@@ -72,9 +72,9 @@ func TestStore_ListItems_DateFilter(t *testing.T) {
 
 	t.Run("All Time", func(t *testing.T) {
 		items, err := s.ListItems(ctx, store.ListItemsParams{
-			Since: nil,
-			Limit:          10,
-			Offset:         0,
+			Since:  nil,
+			Limit:  10,
+			Offset: 0,
 		})
 		require.NoError(t, err)
 		assert.Len(t, items, 3)
@@ -128,15 +128,15 @@ func TestStore_ListItems_DateFilter_Monotonic_PBT(t *testing.T) {
 		sinceB := now.Add(-time.Duration(offsetB) * time.Hour).Format(time.RFC3339)
 
 		itemsA, err := s.ListItems(ctx, store.ListItemsParams{
-			Since: &sinceA,
-			Limit:          100,
-			Offset:         0,
+			Since:  &sinceA,
+			Limit:  100,
+			Offset: 0,
 		})
 		require.NoError(t, err)
 		itemsB, err := s.ListItems(ctx, store.ListItemsParams{
-			Since: &sinceB,
-			Limit:          100,
-			Offset:         0,
+			Since:  &sinceB,
+			Limit:  100,
+			Offset: 0,
 		})
 		require.NoError(t, err)
 
@@ -178,9 +178,9 @@ func TestStore_ListItems_CountMatches_List_PBT(t *testing.T) {
 		since := now.Add(-time.Duration(offset) * time.Hour).Format(time.RFC3339)
 
 		items, err := s.ListItems(ctx, store.ListItemsParams{
-			Since: &since,
-			Limit:          100,
-			Offset:         0,
+			Since:  &since,
+			Limit:  100,
+			Offset: 0,
 		})
 		require.NoError(t, err)
 

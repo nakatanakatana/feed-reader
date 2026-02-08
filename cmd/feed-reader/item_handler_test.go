@@ -160,7 +160,7 @@ func TestItemServer(t *testing.T) {
 		since := now.Add(-90 * time.Minute)
 		res, err := server.ListItems(ctx, connect.NewRequest(&itemv1.ListItemsRequest{
 			Since: timestamppb.New(since),
-			Limit:          10,
+			Limit: 10,
 		}))
 		require.NoError(t, err)
 		// Should include item2 and rich item, but not item1 (2h ago)

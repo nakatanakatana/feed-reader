@@ -7,10 +7,10 @@ import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { ItemDetailModal } from "./ItemDetailModal";
 import "../styles.css";
-import { http, HttpResponse } from "msw";
-import { worker } from "../mocks/browser";
 import { create, toJson } from "@bufbuild/protobuf";
+import { HttpResponse, http } from "msw";
 import { GetItemResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
+import { worker } from "../mocks/browser";
 
 describe("ItemDetailModal Responsive", () => {
   let dispose: () => void;
