@@ -12,7 +12,7 @@
 ## Phase 2: Frontend Rendering Refactoring
 - [x] Task: Migrate Markdown rendering tests to snapshots ae7a9fd
     - Refactor `MarkdownRenderer.test.tsx` to use `toMatchSnapshot()`.
-- [ ] Task: Migrate complex UI components to snapshots
+- [x] Task: Migrate complex UI components to snapshots 8f4dd52
     - Add `toMatchSnapshot()` to `ItemDetailModal.test.tsx`.
     - Add `toMatchSnapshot()` to `ItemList.test.tsx`.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Frontend Rendering Refactoring'
