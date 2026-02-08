@@ -90,16 +90,7 @@ INSERT INTO items (
 ) VALUES (
   ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 )
-ON CONFLICT(url) DO UPDATE SET
-  title = excluded.title,
-  description = excluded.description,
-  published_at = excluded.published_at,
-  author = excluded.author,
-  guid = excluded.guid,
-  content = excluded.content,
-  image_url = excluded.image_url,
-  categories = excluded.categories,
-  updated_at = CURRENT_TIMESTAMP
+ON CONFLICT(url) DO NOTHING
 RETURNING *;
 
 -- name: CreateFeedItem :exec
