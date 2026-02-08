@@ -1,0 +1,8 @@
+{
+  "track_id": "snapshot_testing_20260208",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-02-08T00:00:00Z",
+  "updated_at": "2026-02-08T00:00:00Z",
+  "description": "Introduce snapshot testing (golden testing) to backend and frontend to improve test stability and simplify tracking of changes."
+}
