@@ -26,7 +26,7 @@ Refactor the main application logic tests.
 Complete the migration for `sql/` and any other backend directories.
 
 - [x] Task: Refactor `sql/` package tests (8b6440b)
-- [~] Task: Global search for any remaining redundant `if err != nil { t.Fatal(err) }` patterns in backend tests
-- [ ] Task: Remove any unused custom testing utility functions replaced by `gotest.tools`
-- [ ] Task: Verify overall test coverage hasn't regressed
+- [x] Task: Global search for any remaining redundant `if err != nil { t.Fatal(err) }` patterns in backend tests (e459931)
+- [x] Task: Remove any unused custom testing utility functions replaced by `gotest.tools` (e459931)
+- [x] Task: Verify overall test coverage hasn't regressed (e459931)
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Remaining Packages and Cleanup' (Protocol in workflow.md)
