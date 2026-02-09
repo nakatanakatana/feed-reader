@@ -12,7 +12,7 @@ Focus on the data layer (`store` package) which has extensive tests.
 - [x] Task: Migrate any custom golden file logic in `store/` to `gotest.tools/v3/golden` (c2b5415)
 - [x] Task: Conductor - User Manual Verification 'Phase 1: store Package Migration' (3af53f5)
 
-## Phase 2: `cmd/feed-reader` Package Migration
+## Phase 2: `cmd/feed-reader` Package Migration [checkpoint: e4dff46]
 Refactor the main application logic tests.
 
 - [x] Task: Audit `cmd/feed-reader/` tests for refactoring targets (b4b3741)
@@ -20,7 +20,7 @@ Refactor the main application logic tests.
 - [x] Task: Refactor `cmd/feed-reader/fetcher_test.go` and `scheduler_test.go` (462aaa2)
 - [x] Task: Refactor `cmd/feed-reader/opml_importer_test.go` and `converter_test.go` (c2360a5)
 - [x] Task: Migrate existing golden tests in `cmd/feed-reader/` to `gotest.tools/v3/golden` (b3c7d50)
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: cmd/feed-reader Package Migration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: cmd/feed-reader Package Migration' (e4dff46)
 
 ## Phase 3: Remaining Packages and Cleanup
 Complete the migration for `sql/` and any other backend directories.
