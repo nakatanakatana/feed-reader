@@ -352,6 +352,7 @@ export const handlers = [
             publishedAt: item.publishedAt,
             createdAt: item.createdAt,
             isRead: item.isRead,
+            url: item.url,
           }),
         );
 

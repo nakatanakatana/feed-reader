@@ -161,4 +161,89 @@ describe("ItemRow", () => {
     await titleButton.click();
     expect(onClick).toHaveBeenCalledWith(mockItem);
   });
+
+  it("handles middle-click by opening URL and marking as read", async () => {
+    const windowOpenSpy = vi.spyOn(window, "open").mockImplementation(() => null);
+    const onClick = vi.fn();
+    const mockItemWithUrl = {
+      ...mockItem,
+      url: "https://example.com/test-article",
+    };
+
+    let updateCalled = false;
+    worker.use(
+      http.post("*/item.v1.ItemService/ListItems", () => {
+        return HttpResponse.json(
+          toJson(
+            ListItemsResponseSchema,
+            create(ListItemsResponseSchema, {
+              items: [create(ListItemSchema, mockItemWithUrl)],
+              totalCount: 1,
+            }),
+          ),
+        );
+      }),
+      http.post(
+        "*/item.v1.ItemService/UpdateItemStatus",
+        async ({ request }) => {
+          const body = (await request.json()) as {
+            ids: string[];
+            isRead: boolean;
+          };
+          if (body.ids.includes("1") && body.isRead === true) {
+            updateCalled = true;
+          }
+          return HttpResponse.json(
+            toJson(
+              UpdateItemStatusResponseSchema,
+              create(UpdateItemStatusResponseSchema, {}),
+            ),
+          );
+        },
+      ),
+    );
+
+    const TestObserved = () => {
+      const data = useLiveQuery((q) => q.from({ item: items() }));
+      return (
+        <Show when={data().length >= 0}>
+          <ItemRow item={mockItemWithUrl} onClick={onClick} />
+        </Show>
+      );
+    };
+
+    dispose = render(
+      () => (
+        <TransportProvider transport={transport}>
+          <QueryClientProvider client={queryClient}>
+            <TestObserved />
+          </QueryClientProvider>
+        </TransportProvider>
+      ),
+      document.body,
+    );
+
+    const titleButton = page.getByRole("button", {
+      name: "Test Article Title",
+    });
+    await expect.element(titleButton).toBeInTheDocument();
+
+    // Simulate middle-click (button 1)
+    const auxClickEvent = new MouseEvent("auxclick", {
+      button: 1,
+      bubbles: true,
+      cancelable: true,
+    });
+    titleButton.element().dispatchEvent(auxClickEvent);
+
+    expect(windowOpenSpy).toHaveBeenCalledWith(
+      "https://example.com/test-article",
+      "_blank",
+      "noopener,noreferrer",
+    );
+    expect(onClick).not.toHaveBeenCalled();
+
+    // Check if mark as read was triggered
+    await expect.poll(() => updateCalled).toBe(true);
+  });
 });

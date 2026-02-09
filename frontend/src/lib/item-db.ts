@@ -70,6 +70,7 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
           isRead: item.isRead,
           createdAt: item.createdAt,
           feedId: item.feedId,
+          url: item.url,
         }));
 
         // @ts-expect-error
