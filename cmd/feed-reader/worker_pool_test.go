@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
+	"gotest.tools/v3/assert"
 )
 
 func TestWorkerPool_Concurrency(t *testing.T) {
@@ -55,6 +55,6 @@ func TestWorkerPool_Concurrency(t *testing.T) {
 
 	wp.Wait() // This closes the channel and waits
 
-	assert.Equal(t, int32(totalTasks), completedTasks)
-	assert.LessOrEqual(t, maxActiveWorkers, int32(maxWorkers), "Should not exceed max workers")
+	assert.Equal(t, completedTasks, int32(totalTasks))
+	assert.Assert(t, maxActiveWorkers <= int32(maxWorkers), "Should not exceed max workers")
 }
