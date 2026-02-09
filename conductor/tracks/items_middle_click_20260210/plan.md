@@ -13,10 +13,10 @@ Add the `url` field to the Protobuf definition and ensure the backend returns it
     - [x] Update `cmd/feed-reader/item_routing_test.go` or similar to verify the `url` field is present in the response
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Backend API Extension' (Protocol in workflow.md) f953bb7
 
-## Phase 2: Frontend Implementation
+## Phase 2: Frontend Implementation [checkpoint: 9a83759]
 Implement the middle-click handler and mark-as-read logic in the frontend.
 
-- [x] Task: Update Frontend Mock
+- [x] Task: Update Frontend Mock 6abfbd7
     - [x] Update `frontend/src/gen/item/v1/item_pb.ts` (if not automatically updated)
     - [x] Update MSW handlers or mock data in `frontend/src/mocks/` to include the `url` field
 - [x] Task: Implement Middle-Click Logic in `ItemRow` 6abfbd7
@@ -29,7 +29,7 @@ Implement the middle-click handler and mark-as-read logic in the frontend.
     - [x] Verify `window.open` is called with the correct parameters
     - [x] Verify the mark-as-read API request is triggered
     - [x] Verify the detail modal navigation is NOT triggered
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Frontend Implementation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Frontend Implementation' (Protocol in workflow.md) 9a83759
 
 ## Phase 3: Final Verification
 Ensure end-to-end functionality and code quality.
