@@ -16,19 +16,19 @@ Add the `url` field to the Protobuf definition and ensure the backend returns it
 ## Phase 2: Frontend Implementation
 Implement the middle-click handler and mark-as-read logic in the frontend.
 
-- [ ] Task: Update Frontend Mock
-    - [ ] Update `frontend/src/gen/item/v1/item_pb.ts` (if not automatically updated)
-    - [ ] Update MSW handlers or mock data in `frontend/src/mocks/` to include the `url` field
-- [ ] Task: Implement Middle-Click Logic in `ItemRow`
-    - [ ] Add `onAuxClick` handler to the item row component in `frontend/src/components/ItemRow.tsx`
-    - [ ] Implement logic to open `item.url` in a new tab with `noopener,noreferrer` when `button === 1`
-    - [ ] Call the `markAsRead` mutation immediately on middle-click
-    - [ ] Prevent event propagation to stop the detail modal from opening
-- [ ] Task: Write tests for Frontend
-    - [ ] Create/Update `frontend/src/components/ItemRow.test.tsx` to simulate middle-click
-    - [ ] Verify `window.open` is called with the correct parameters
-    - [ ] Verify the mark-as-read API request is triggered
-    - [ ] Verify the detail modal navigation is NOT triggered
+- [x] Task: Update Frontend Mock
+    - [x] Update `frontend/src/gen/item/v1/item_pb.ts` (if not automatically updated)
+    - [x] Update MSW handlers or mock data in `frontend/src/mocks/` to include the `url` field
+- [x] Task: Implement Middle-Click Logic in `ItemRow` 6abfbd7
+    - [x] Add `onAuxClick` handler to the item row component in `frontend/src/components/ItemRow.tsx`
+    - [x] Implement logic to open `item.url` in a new tab with `noopener,noreferrer` when `button === 1`
+    - [x] Call the `markAsRead` mutation immediately on middle-click
+    - [x] Prevent event propagation to stop the detail modal from opening
+- [x] Task: Write tests for Frontend 6abfbd7
+    - [x] Create/Update `frontend/src/components/ItemRow.test.tsx` to simulate middle-click
+    - [x] Verify `window.open` is called with the correct parameters
+    - [x] Verify the mark-as-read API request is triggered
+    - [x] Verify the detail modal navigation is NOT triggered
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Frontend Implementation' (Protocol in workflow.md)
 
 ## Phase 3: Final Verification
