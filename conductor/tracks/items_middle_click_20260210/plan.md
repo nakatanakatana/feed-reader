@@ -31,12 +31,12 @@ Implement the middle-click handler and mark-as-read logic in the frontend.
     - [x] Verify the detail modal navigation is NOT triggered
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Frontend Implementation' (Protocol in workflow.md) 9a83759
 
-## Phase 3: Final Verification
+## Phase 3: Final Verification [checkpoint: 5ce5779]
 Ensure end-to-end functionality and code quality.
 
-- [ ] Task: End-to-End Manual Test
-    - [ ] Verify the full flow: middle-click -> new tab opens -> item becomes read in the list
-- [ ] Task: Verify Quality Gates
-    - [ ] Check test coverage (>80%)
-    - [ ] Run linter and type checker
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Final Verification' (Protocol in workflow.md)
+- [x] Task: End-to-End Manual Test 6a01270
+    - [x] Verify the full flow: middle-click -> new tab opens -> item becomes read in the list
+- [x] Task: Verify Quality Gates 6a01270
+    - [x] Check test coverage (>80%)
+    - [x] Run linter and type checker
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Final Verification' (Protocol in workflow.md) 5ce5779
