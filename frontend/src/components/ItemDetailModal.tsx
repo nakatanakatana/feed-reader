@@ -109,7 +109,9 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   return (
     <Show when={props.itemId}>
       <Modal
-        ref={(el) => (modalRef = el)}
+        ref={(el) => {
+          modalRef = el;
+        }}
         isOpen={!!props.itemId}
         onClose={props.onClose}
         size="full"

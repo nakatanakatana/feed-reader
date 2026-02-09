@@ -217,13 +217,14 @@ describe("ItemDetailModal Focus", () => {
       document.body,
     );
 
-    const dialog = page.getByRole('dialog');
+    const dialog = page.getByRole("dialog");
     await expect.element(dialog).toBeVisible();
-    
+
     // The backdrop is the first child of document.body in our Modal implementation
-    const backdrop = document.body.firstElementChild!;
-    backdrop.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-    
+    const backdrop = document.body.firstElementChild;
+    if (!backdrop) throw new Error("Backdrop not found");
+    backdrop.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+
     expect(onClose).toHaveBeenCalled();
   });
 
