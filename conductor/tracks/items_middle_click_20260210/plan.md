@@ -3,14 +3,14 @@
 ## Phase 1: Backend API Extension
 Add the `url` field to the Protobuf definition and ensure the backend returns it in the API response.
 
-- [ ] Task: Update Protobuf definition
-    - [ ] Add `url` field to `item.v1.Item` in `proto/item/v1/item.proto`
-    - [ ] Run `make gen` to update generated code
-- [ ] Task: Implement backend logic for `url` field
-    - [ ] Update `cmd/feed-reader/converter.go` to map the URL from the DB model to the Protobuf message
-    - [ ] Verify that existing DB queries already fetch the URL (if not, update `sql/query.sql` and run `make sqlc`)
-- [ ] Task: Write tests for Backend API
-    - [ ] Update `cmd/feed-reader/item_routing_test.go` or similar to verify the `url` field is present in the response
+- [x] Task: Update Protobuf definition 3f3fae8
+    - [x] Add `url` field to `item.v1.Item` in `proto/item/v1/item.proto`
+    - [x] Run `make gen` to update generated code
+- [x] Task: Implement backend logic for `url` field 3f3fae8
+    - [x] Update `cmd/feed-reader/converter.go` to map the URL from the DB model to the Protobuf message
+    - [x] Verify that existing DB queries already fetch the URL (if not, update `sql/query.sql` and run `make sqlc`)
+- [x] Task: Write tests for Backend API 3f3fae8
+    - [x] Update `cmd/feed-reader/item_routing_test.go` or similar to verify the `url` field is present in the response
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend API Extension' (Protocol in workflow.md)
 
 ## Phase 2: Frontend Implementation
