@@ -20,19 +20,27 @@ interface ItemDetailModalProps {
 
 export function ItemDetailModal(props: ItemDetailModalProps) {
   let modalRef: HTMLDivElement | undefined;
+  let lastFocusedItemId: string | undefined;
 
   createEffect(() => {
-    // Track itemId and item data to trigger re-focus when content changes
+    // Track itemId and item data to trigger re-focus when the item actually changes
     const id = props.itemId;
     const itemData = item();
     const loading = isLoading();
 
+	console.log("ItemDetailModal effect")
+
     if (id && !loading && itemData && modalRef) {
-      requestAnimationFrame(() => {
-        if (modalRef) {
-          modalRef.focus();
-        }
-      });
+      // Only re-focus if we've moved to a different item
+      if (id !== lastFocusedItemId) {
+        lastFocusedItemId = id;
+        // Use requestAnimationFrame to ensure the DOM has finished updating
+        requestAnimationFrame(() => {
+          if (modalRef) {
+            modalRef.focus();
+          }
+        });
+      }
     }
   });
 
