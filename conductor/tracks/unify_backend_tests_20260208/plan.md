@@ -18,7 +18,7 @@ Refactor the main application logic tests.
 - [x] Task: Audit `cmd/feed-reader/` tests for refactoring targets (b4b3741)
 - [x] Task: Refactor `cmd/feed-reader/handler_test.go` and related HTTP handler tests (54abacd)
 - [x] Task: Refactor `cmd/feed-reader/fetcher_test.go` and `scheduler_test.go` (462aaa2)
-- [ ] Task: Refactor `cmd/feed-reader/opml_importer_test.go` and `converter_test.go`
+- [x] Task: Refactor `cmd/feed-reader/opml_importer_test.go` and `converter_test.go` (c2360a5)
 - [ ] Task: Migrate existing golden tests in `cmd/feed-reader/` to `gotest.tools/v3/golden`
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: cmd/feed-reader Package Migration' (Protocol in workflow.md)
 
