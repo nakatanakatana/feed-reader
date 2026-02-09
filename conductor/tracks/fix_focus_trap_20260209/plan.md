@@ -8,14 +8,14 @@
     - [x] Verify that the test fails (Red Phase)
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Test Case Preparation' (Protocol in workflow.md) (6094f02)
 
-## Phase 2: Implement Focus Trap and Re-focusing (Green Phase)
+## Phase 2: Implement Focus Trap and Re-focusing (Green Phase) [checkpoint: f8424b2]
 - [x] Task: Enhance the `Modal` component to support robust focus trapping (6094f02)
     - [x] Implement a focus trap mechanism that prevents Tab focus from leaving the modal
     - [x] Ensure the modal container is focusable and receives focus on mount
 - [x] Task: Implement automatic re-focusing in `ItemDetailModal` (6094f02)
     - [x] Add an effect to `ItemDetailModal` that re-focuses the modal container whenever `props.itemId` changes
     - [x] Verify that the tests created in Phase 1 now pass (Green Phase)
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Implement Focus Trap and Re-focusing' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Implement Focus Trap and Re-focusing' (Protocol in workflow.md) (6094f02)
 
 ## Phase 3: Final Verification and Documentation
 - [ ] Task: Verify overall accessibility and performance
