@@ -44,7 +44,7 @@ function ItemsLayout() {
       // 'r' key to refresh items
       if (e.key === "r" && !e.ctrlKey && !e.metaKey && !e.altKey) {
         e.preventDefault();
-        itemsCollection.utils.refresh();
+        itemsCollection.utils.refetch();
       }
     };
 
@@ -66,7 +66,7 @@ function ItemsLayout() {
             <ActionButton
               size="sm"
               variant="secondary"
-              onClick={() => itemsCollection.utils.refresh()}
+              onClick={() => itemsCollection.utils.refetch()}
               disabled={
                 (itemsCollection as unknown as { isFetching: boolean })
                   .isFetching
