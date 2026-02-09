@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
+	"gotest.tools/v3/assert"
 	"pgregory.net/rapid"
 )
 
@@ -36,7 +36,7 @@ func TestScheduler_Start(t *testing.T) {
 	time.Sleep(25 * time.Millisecond)
 
 	count := atomic.LoadInt32(&mockTask.callCount)
-	assert.GreaterOrEqual(t, count, int32(2), "Should have triggered at least 2 times")
+	assert.Assert(t, count >= 2, "Should have triggered at least 2 times")
 }
 
 func TestScheduler_Start_WithJitter(t *testing.T) {
@@ -56,11 +56,11 @@ func TestScheduler_Start_WithJitter(t *testing.T) {
 	time.Sleep(30 * time.Millisecond)
 
 	count := atomic.LoadInt32(&mockTask.callCount)
-	assert.GreaterOrEqual(t, count, int32(2), "Should have triggered at least 2 times")
+	assert.Assert(t, count >= 2, "Should have triggered at least 2 times")
 
 	elapsed := time.Since(start)
 	// Just ensuring it didn't block forever or panic
-	assert.Greater(t, elapsed, 10*time.Millisecond)
+	assert.Assert(t, elapsed > 10*time.Millisecond)
 }
 
 func TestScheduler_nextDelay_PBT(t *testing.T) {
@@ -73,11 +73,11 @@ func TestScheduler_nextDelay_PBT(t *testing.T) {
 		for i := 0; i < 100; i++ {
 			delay := s.nextDelay()
 
-			assert.GreaterOrEqual(t, int64(delay), int64(interval), "Delay should be at least the interval")
+			assert.Assert(t, int64(delay) >= int64(interval), "Delay should be at least the interval")
 			if maxJitter > 0 {
-				assert.Less(t, int64(delay), int64(interval+maxJitter), "Delay should be less than interval + maxJitter")
+				assert.Assert(t, int64(delay) < int64(interval+maxJitter), "Delay should be less than interval + maxJitter")
 			} else {
-				assert.Equal(t, interval, delay, "Delay should equal interval when maxJitter is 0")
+				assert.Equal(t, delay, interval, "Delay should equal interval when maxJitter is 0")
 			}
 		}
 	})
