@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/solid-query";
-import { For, type JSX, Show } from "solid-js";
+import { For, type JSX, Show, createEffect } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
 import { getItem, items } from "../lib/item-db";
@@ -19,6 +19,23 @@ interface ItemDetailModalProps {
 }
 
 export function ItemDetailModal(props: ItemDetailModalProps) {
+  let modalRef: HTMLDivElement | undefined;
+
+  createEffect(() => {
+    // Track itemId and item data to trigger re-focus when content changes
+    const id = props.itemId;
+    const itemData = item();
+    const loading = isLoading();
+
+    if (id && !loading && itemData && modalRef) {
+      requestAnimationFrame(() => {
+        if (modalRef) {
+          modalRef.focus();
+        }
+      });
+    }
+  });
+
   const itemQuery = useQuery(() => ({
     queryKey: ["item", props.itemId],
     queryFn: async () => {
@@ -92,6 +109,9 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   return (
     <Show when={props.itemId}>
       <Modal
+        ref={(el) => {
+          modalRef = el;
+        }}
         isOpen={!!props.itemId}
         onClose={props.onClose}
         size="full"

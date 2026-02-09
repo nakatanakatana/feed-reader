@@ -18,6 +18,7 @@ interface ModalProps {
   ariaLabel?: string;
   bodyPadding?: boolean;
   onKeyDown?: (e: KeyboardEvent) => void;
+  ref?: (el: HTMLDivElement) => void;
 }
 
 export function Modal(props: ModalProps) {
@@ -63,6 +64,34 @@ export function Modal(props: ModalProps) {
     if (e.key === "Escape" && !props.disableBackdropClose) {
       props.onClose();
     }
+
+    if (e.key === "Tab" && modalRef) {
+      const focusableSelector =
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+      const focusables = Array.from(
+        modalRef.querySelectorAll(focusableSelector),
+      ) as HTMLElement[];
+
+      if (focusables.length === 0) return;
+
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+
+      if (e.shiftKey) {
+        if (
+          document.activeElement === first ||
+          document.activeElement === modalRef
+        ) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    }
   };
 
   return (
@@ -83,7 +112,10 @@ export function Modal(props: ModalProps) {
         })}
       >
         <div
-          ref={modalRef}
+          ref={(el) => {
+            modalRef = el;
+            props.ref?.(el);
+          }}
           tabindex="-1"
           role="dialog"
           aria-modal="true"
