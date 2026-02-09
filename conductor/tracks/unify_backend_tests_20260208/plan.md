@@ -22,11 +22,11 @@ Refactor the main application logic tests.
 - [x] Task: Migrate existing golden tests in `cmd/feed-reader/` to `gotest.tools/v3/golden` (b3c7d50)
 - [x] Task: Conductor - User Manual Verification 'Phase 2: cmd/feed-reader Package Migration' (e4dff46)
 
-## Phase 3: Remaining Packages and Cleanup
+## Phase 3: Remaining Packages and Cleanup [checkpoint: 84c73bf]
 Complete the migration for `sql/` and any other backend directories.
 
 - [x] Task: Refactor `sql/` package tests (8b6440b)
 - [x] Task: Global search for any remaining redundant `if err != nil { t.Fatal(err) }` patterns in backend tests (e459931)
 - [x] Task: Remove any unused custom testing utility functions replaced by `gotest.tools` (e459931)
 - [x] Task: Verify overall test coverage hasn't regressed (e459931)
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Remaining Packages and Cleanup' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Remaining Packages and Cleanup' (84c73bf)
