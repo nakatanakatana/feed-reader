@@ -35,6 +35,7 @@ message ListItem {
   string created_at = 5;
   bool is_read = 6;
   string feed_id = 7;
+  string url = 8;
 }
 
 message GetItemRequest {
