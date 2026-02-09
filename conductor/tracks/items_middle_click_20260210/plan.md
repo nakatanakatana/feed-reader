@@ -1,6 +1,6 @@
 # Implementation Plan: items_middle_click_20260210
 
-## Phase 1: Backend API Extension
+## Phase 1: Backend API Extension [checkpoint: f953bb7]
 Add the `url` field to the Protobuf definition and ensure the backend returns it in the API response.
 
 - [x] Task: Update Protobuf definition 3f3fae8
@@ -11,7 +11,7 @@ Add the `url` field to the Protobuf definition and ensure the backend returns it
     - [x] Verify that existing DB queries already fetch the URL (if not, update `sql/query.sql` and run `make sqlc`)
 - [x] Task: Write tests for Backend API 3f3fae8
     - [x] Update `cmd/feed-reader/item_routing_test.go` or similar to verify the `url` field is present in the response
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend API Extension' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Backend API Extension' (Protocol in workflow.md) f953bb7
 
 ## Phase 2: Frontend Implementation
 Implement the middle-click handler and mark-as-read logic in the frontend.
