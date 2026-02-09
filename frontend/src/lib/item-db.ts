@@ -35,6 +35,7 @@ const itemClient = createClient(ItemService, transport);
 export const [lastFetched, setLastFetched] = createSignal<Date | null>(null);
 
 const createItems = (showRead: boolean, since: DateFilterValue) => {
+  setLastFetched(null);
   const isRead = showRead ? {} : { isRead: false };
   const sinceTimestamp = since !== "all" ? getPublishedSince(since) : undefined;
 
