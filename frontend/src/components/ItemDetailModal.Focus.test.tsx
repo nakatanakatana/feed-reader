@@ -204,4 +204,43 @@ describe("ItemDetailModal Focus", () => {
       await expect.element(page.getByRole("dialog")).toHaveFocus();
     });
   });
+
+  it("calls onClose when backdrop is clicked", async () => {
+    const onClose = vi.fn();
+    setupMockData("1");
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal itemId="1" onClose={onClose} />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    const dialog = page.getByRole('dialog');
+    await expect.element(dialog).toBeVisible();
+    
+    // The backdrop is the first child of document.body in our Modal implementation
+    const backdrop = document.body.firstElementChild!;
+    backdrop.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it("calls onClose when Escape key is pressed", async () => {
+    const onClose = vi.fn();
+    setupMockData("1");
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal itemId="1" onClose={onClose} />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    await expect.element(page.getByText("Test Item 1")).toBeInTheDocument();
+    await userEvent.keyboard("{Escape}");
+    expect(onClose).toHaveBeenCalled();
+  });
 });

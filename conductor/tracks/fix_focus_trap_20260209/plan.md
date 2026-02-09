@@ -18,8 +18,8 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Implement Focus Trap and Re-focusing' (Protocol in workflow.md) (6094f02)
 
 ## Phase 3: Final Verification and Documentation
-- [ ] Task: Verify overall accessibility and performance
-    - [ ] Ensure Tab navigation works correctly within the modal (cycles through buttons)
-    - [ ] Verify that the fix doesn't introduce any performance regressions in modal transitions
-    - [ ] Check code coverage for the new focus logic (>80%)
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Final Verification' (Protocol in workflow.md)
+- [x] Task: Verify overall accessibility and performance (6094f02)
+    - [x] Ensure Tab navigation works correctly within the modal (cycles through buttons)
+    - [x] Verify that the fix doesn't introduce any performance regressions in modal transitions
+    - [x] Check code coverage for the new focus logic (>80%)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Final Verification' (Protocol in workflow.md) (6094f02)
