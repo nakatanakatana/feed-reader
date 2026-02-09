@@ -17,7 +17,7 @@
     - [x] Verify that the tests created in Phase 1 now pass (Green Phase)
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Implement Focus Trap and Re-focusing' (Protocol in workflow.md) (6094f02)
 
-## Phase 3: Final Verification and Documentation
+## Phase 3: Final Verification and Documentation [checkpoint: 9f6b0ba]
 - [x] Task: Verify overall accessibility and performance (6094f02)
     - [x] Ensure Tab navigation works correctly within the modal (cycles through buttons)
     - [x] Verify that the fix doesn't introduce any performance regressions in modal transitions
