@@ -48,11 +48,14 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
     if (itemStore.state.showRead) return all;
     // Filter out read items, but:
     // 1. ALWAYS keep the current item so its index remains stable.
-    // 2. If we are at the end-of-list, keep the last item from the original list 
+    // 2. If we are at the end-of-list, keep the last item from the original list
     //    so we can navigate back to it.
     const lastItem = all[all.length - 1];
     return all.filter(
-      (i) => !i.isRead || i.id === props.itemId || (isEndOfList() && i.id === lastItem?.id),
+      (i) =>
+        !i.isRead ||
+        i.id === props.itemId ||
+        (isEndOfList() && i.id === lastItem?.id),
     );
   });
 
@@ -147,8 +150,16 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
           },
         });
       }}
-      prevItemId={isEndOfList() ? filteredItems()[filteredItems().length - 1]?.id : prevItem()?.id}
-      nextItemId={!isEndOfList() && currentIndex() === filteredItems().length - 1 ? "end-of-list" : nextItem()?.id}
+      prevItemId={
+        isEndOfList()
+          ? filteredItems()[filteredItems().length - 1]?.id
+          : prevItem()?.id
+      }
+      nextItemId={
+        !isEndOfList() && currentIndex() === filteredItems().length - 1
+          ? "end-of-list"
+          : nextItem()?.id
+      }
       onPrev={handlePrev}
       onNext={handleNext}
     />

@@ -173,7 +173,9 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
     await closeButton.click();
 
     await expect.poll(() => history.location.pathname).toBe("/");
-    await expect.poll(() => history.location.search).toContain("tagId=test-tag");
+    await expect
+      .poll(() => history.location.search)
+      .toContain("tagId=test-tag");
     await expect.poll(() => history.location.search).toContain("since=all");
   });
 
@@ -202,10 +204,12 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
     await nextButton.click();
 
     // Should navigate to end-of-list
-    await expect.poll(() => history.location.pathname).toBe("/items/end-of-list");
+    await expect
+      .poll(() => history.location.pathname)
+      .toBe("/items/end-of-list");
 
     // Item 2 should have been marked as read (mock setup for UpdateItemStatus is called)
-    // We can't easily check the DB state here without more complex setup, 
+    // We can't easily check the DB state here without more complex setup,
     // but we can verify the API call was made if we had a spy.
     // For now, let's just check the URL.
   });
@@ -263,7 +267,9 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
 
     // Use 'j' to go forward
     await userEvent.keyboard("j");
-    await expect.poll(() => history.location.pathname).toBe("/items/end-of-list");
+    await expect
+      .poll(() => history.location.pathname)
+      .toBe("/items/end-of-list");
 
     // Use 'k' to go back
     await userEvent.keyboard("k");
@@ -271,7 +277,9 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
 
     // Use Arrows
     await userEvent.keyboard("{ArrowRight}");
-    await expect.poll(() => history.location.pathname).toBe("/items/end-of-list");
+    await expect
+      .poll(() => history.location.pathname)
+      .toBe("/items/end-of-list");
 
     await userEvent.keyboard("{ArrowLeft}");
     await expect.poll(() => history.location.pathname).toBe("/items/2");
@@ -281,28 +289,50 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
     // Item 1 is unread, Item 2 is read.
     // If showRead is false, only Item 1 is visible.
     const mockItems = [
-      create(ListItemSchema, { id: "1", title: "Item 1", isRead: false, feedId: "f1" }),
-      create(ListItemSchema, { id: "2", title: "Item 2", isRead: true, feedId: "f1" }),
+      create(ListItemSchema, {
+        id: "1",
+        title: "Item 1",
+        isRead: false,
+        feedId: "f1",
+      }),
+      create(ListItemSchema, {
+        id: "2",
+        title: "Item 2",
+        isRead: true,
+        feedId: "f1",
+      }),
     ];
     setupMockData(mockItems);
 
     // Mock tag relation
     worker.use(
       http.post("*/tag.v1.TagService/ListTags", () => {
-        return HttpResponse.json(toJson(ListTagsResponseSchema, create(ListTagsResponseSchema, {
-          tags: [{ id: "tag-1", name: "Tag 1" }]
-        })));
+        return HttpResponse.json(
+          toJson(
+            ListTagsResponseSchema,
+            create(ListTagsResponseSchema, {
+              tags: [{ id: "tag-1", name: "Tag 1" }],
+            }),
+          ),
+        );
       }),
       http.post("*/feed.v1.FeedService/ListFeedTags", () => {
-        return HttpResponse.json(toJson(ListFeedTagsResponseSchema, create(ListFeedTagsResponseSchema, {
-          feedTags: [{ feedId: "f1", tagId: "tag-1" }]
-        })));
-      })
+        return HttpResponse.json(
+          toJson(
+            ListFeedTagsResponseSchema,
+            create(ListFeedTagsResponseSchema, {
+              feedTags: [{ feedId: "f1", tagId: "tag-1" }],
+            }),
+          ),
+        );
+      }),
     );
 
     // Initial state: showRead is false (default)
     // We expect Item 1 to be the only item in the navigation sequence.
-    const history = createMemoryHistory({ initialEntries: ["/items/1?tagId=tag-1"] });
+    const history = createMemoryHistory({
+      initialEntries: ["/items/1?tagId=tag-1"],
+    });
     const router = createRouter({ routeTree, history });
 
     dispose = render(
@@ -316,14 +346,18 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
       document.body,
     );
 
-    await expect.element(page.getByRole("heading", { name: "Item 1" })).toBeInTheDocument();
+    await expect
+      .element(page.getByRole("heading", { name: "Item 1" }))
+      .toBeInTheDocument();
 
     const nextButton = page.getByRole("button", { name: "Next →" });
     await nextButton.click();
 
-    // BUG REPRODUCTION: 
+    // BUG REPRODUCTION:
     // It should go to end-of-list because Item 2 is read and should be filtered out.
     // However, if the bug exists, it will navigate to /items/2.
-    await expect.poll(() => history.location.pathname).toBe("/items/end-of-list");
+    await expect
+      .poll(() => history.location.pathname)
+      .toBe("/items/end-of-list");
   });
 });

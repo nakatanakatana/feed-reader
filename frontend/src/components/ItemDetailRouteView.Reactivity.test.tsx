@@ -109,8 +109,17 @@ describe("ItemDetailRouteView Reactivity", () => {
 
     // It should have been called again due to reactivity
 
-    // And with the new mock data (only 1 item), it should have no Next.
+    // And with the new mock data (only 1 item), the Next button should STILL be enabled
+    // because it now transitions to the "End of List" placeholder.
+    await expect.element(nextButton).not.toBeDisabled();
 
+    // Navigate to the placeholder
+    await nextButton.click();
+    await expect
+      .poll(() => history.location.pathname)
+      .toBe("/items/end-of-list");
+
+    // NOW it should be disabled
     await expect.element(nextButton).toBeDisabled();
   });
 });
