@@ -2,14 +2,14 @@
 
 This plan outlines the steps to remove redundant UI elements from the `ItemDetailModal` and `ItemRow` components, adjust layouts, and clean up associated logic and tests.
 
-## Phase 1: Investigation & Test Identification
+## Phase 1: Investigation & Test Identification [checkpoint: 4a1a9b9]
 - [x] Task: Identify specific code locations for "Previous/Next" buttons in `ItemDetailModal`.
 - [x] Task: Identify specific code locations for "Mark as Read" buttons in `ItemRow`.
 - [x] Task: List all Vitest files that test these buttons (e.g., `ItemDetailModal.test.tsx`, `ItemRow.test.tsx`).
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Investigation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Investigation' (Protocol in workflow.md)
 
 ## Phase 2: Component Modification & Layout Adjustment
-- [ ] Task: Remove "Previous/Next" buttons from `ItemDetailModal.tsx` and adjust Panda CSS styles to reclaim space.
+- [~] Task: Remove "Previous/Next" buttons from `ItemDetailModal.tsx` and adjust Panda CSS styles to reclaim space.
 - [ ] Task: Remove "Mark as Read" button from `ItemRow.tsx` and adjust Panda CSS styles for title/date expansion.
 - [ ] Task: Verify UI appearance in browser (manual check) to ensure layouts are clean and responsive.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: UI Modification' (Protocol in workflow.md)
