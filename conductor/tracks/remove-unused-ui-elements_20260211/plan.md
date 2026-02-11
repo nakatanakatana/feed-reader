@@ -15,9 +15,9 @@ This plan outlines the steps to remove redundant UI elements from the `ItemDetai
 - [x] Task: Conductor - User Manual Verification 'Phase 2: UI Modification' (Protocol in workflow.md) [7c85249]
 
 ## Phase 3: Logic Cleanup
-- [~] Task: Identify and remove helper functions or state variables in components that were only used by the deleted buttons.
-- [ ] Task: Ensure that keyboard shortcut logic (navigation/marking as read) remains intact and functional.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Logic Cleanup' (Protocol in workflow.md)
+- [x] Task: Identify and remove helper functions or state variables in components that were only used by the deleted buttons. [ec968bd]
+- [x] Task: Ensure that keyboard shortcut logic (navigation/marking as read) remains intact and functional. [ec968bd]
+- [~] Task: Conductor - User Manual Verification 'Phase 3: Logic Cleanup' (Protocol in workflow.md)
 
 ## Phase 4: Test Maintenance & Verification
 - [ ] Task: Remove or update identified test cases in Vitest files that depend on the deleted buttons.
