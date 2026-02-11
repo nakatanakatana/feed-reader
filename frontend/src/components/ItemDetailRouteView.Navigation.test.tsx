@@ -113,8 +113,7 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
       .element(page.getByRole("heading", { name: "Item 1" }))
       .toBeInTheDocument();
 
-    const nextButton = page.getByRole("button", { name: "Next →" });
-    await nextButton.click();
+    await userEvent.keyboard("j");
 
     // URL should update
     await expect.poll(() => history.location.pathname).toBe("/items/2");
@@ -145,8 +144,7 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
       .element(page.getByRole("heading", { name: "Item 2" }))
       .toBeInTheDocument();
 
-    const prevButton = page.getByRole("button", { name: "← Previous" });
-    await prevButton.click();
+    await userEvent.keyboard("k");
 
     await expect.poll(() => history.location.pathname).toBe("/items/1");
     await expect
@@ -207,8 +205,7 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
       .element(page.getByRole("heading", { name: "Item 2" }))
       .toBeInTheDocument();
 
-    const nextButton = page.getByRole("button", { name: "Next →" });
-    await nextButton.click();
+    await userEvent.keyboard("j");
 
     // Should navigate to end-of-list
     await expect
@@ -245,8 +242,7 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
       .element(page.getByRole("heading", { name: "End of List" }))
       .toBeInTheDocument();
 
-    const prevButton = page.getByRole("button", { name: "← Previous" });
-    await prevButton.click();
+    await userEvent.keyboard("k");
 
     await expect.poll(() => history.location.pathname).toBe("/items/2");
     await expect
@@ -362,8 +358,7 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
       .element(page.getByRole("heading", { name: "Item 1" }))
       .toBeInTheDocument();
 
-    const nextButton = page.getByRole("button", { name: "Next →" });
-    await nextButton.click();
+    await userEvent.keyboard("j");
 
     // BUG REPRODUCTION:
     // It should go to end-of-list because Item 2 is read and should be filtered out.
