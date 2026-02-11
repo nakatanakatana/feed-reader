@@ -4,7 +4,7 @@ WORKDIR /app
 COPY package.json package-lock.json panda.config.ts postcss.config.cjs ./
 RUN npm ci
 COPY . .
-RUN npx vite build
+RUN npm run build
 
 # Stage 2: Backend Builder
 FROM golang:1.25-alpine AS backend-builder
