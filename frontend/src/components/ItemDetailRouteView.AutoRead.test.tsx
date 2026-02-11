@@ -8,7 +8,7 @@ import {
 import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { page } from "vitest/browser";
+import { page, userEvent } from "vitest/browser";
 import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
 import {
   GetItemResponseSchema,
@@ -117,8 +117,7 @@ describe("ItemDetailRouteView Auto-Read", () => {
       .element(page.getByRole("heading", { name: "Item 1" }))
       .toBeInTheDocument();
 
-    const nextButton = page.getByRole("button", { name: "Next →" });
-    await nextButton.click();
+    await userEvent.keyboard("j");
 
     await expect.poll(() => updateCalledForId).toBe("1");
   });
@@ -165,8 +164,7 @@ describe("ItemDetailRouteView Auto-Read", () => {
       .element(page.getByRole("heading", { name: "Item 2" }))
       .toBeInTheDocument();
 
-    const prevButton = page.getByRole("button", { name: "← Previous" });
-    await prevButton.click();
+    await userEvent.keyboard("k");
 
     await expect.poll(() => updateCalledForId).toBe("2");
   });

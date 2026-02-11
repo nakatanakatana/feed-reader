@@ -161,17 +161,6 @@ export function ItemRow(props: ItemRowProps) {
           </div>
         </button>
       </div>
-      <div class={css({ padding: "3" })}>
-        <ActionButton
-          size="sm"
-          variant="secondary"
-          onClick={handleToggleRead}
-          disabled={isPending()}
-          class={css({ minWidth: "110px", justifyContent: "center" })}
-        >
-          {props.item.isRead ? "Mark as Unread" : "Mark as Read"}
-        </ActionButton>
-      </div>
     </div>
   );
 }

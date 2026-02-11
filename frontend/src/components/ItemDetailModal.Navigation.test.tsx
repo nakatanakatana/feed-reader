@@ -48,17 +48,16 @@ describe("ItemDetailModal Navigation", () => {
     </TransportProvider>
   );
 
-  it("calls onNext when Next button is clicked", async () => {
+  it("should not have Previous and Next buttons", async () => {
     setupMockData("1");
-    const onNext = vi.fn();
     dispose = render(
       () => (
         <Wrapper>
           <ItemDetailModal
             itemId="1"
             onClose={() => {}}
+            prevItemId="0"
             nextItemId="2"
-            onNext={onNext}
           />
         </Wrapper>
       ),
@@ -66,32 +65,8 @@ describe("ItemDetailModal Navigation", () => {
     );
 
     await expect.element(page.getByText("Test Item 1")).toBeInTheDocument();
-    const nextButton = page.getByText("Next →");
-    await nextButton.click();
-    expect(onNext).toHaveBeenCalled();
-  });
-
-  it("calls onPrev when Previous button is clicked", async () => {
-    setupMockData("2");
-    const onPrev = vi.fn();
-    dispose = render(
-      () => (
-        <Wrapper>
-          <ItemDetailModal
-            itemId="2"
-            onClose={() => {}}
-            prevItemId="1"
-            onPrev={onPrev}
-          />
-        </Wrapper>
-      ),
-      document.body,
-    );
-
-    await expect.element(page.getByText("Test Item 2")).toBeInTheDocument();
-    const prevButton = page.getByText("← Previous");
-    await prevButton.click();
-    expect(onPrev).toHaveBeenCalled();
+    await expect.element(page.getByText("← Previous")).not.toBeInTheDocument();
+    await expect.element(page.getByText("Next →")).not.toBeInTheDocument();
   });
 
   it("calls onNext when 'j' key is pressed", async () => {

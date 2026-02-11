@@ -80,12 +80,10 @@ describe("ItemDetailModal Focus", () => {
     // So initially, the dialog should be focused.
     await expect.element(page.getByRole("dialog")).toHaveFocus();
 
-    // Find the Next button and click it.
-    // This moves focus to the button.
-    const nextButton = page.getByText("Next →");
-    await nextButton.click();
+    // Navigate to next item using keyboard shortcut 'j'
+    await userEvent.keyboard("j");
 
-    // After click, "onNext" runs, itemId changes to "2".
+    // After navigation, itemId changes to "2".
     // We expect the focus to be returned to the modal container (dialog)
     // or at least stay inside the modal (e.g., on the Next button if it's still there).
     // However, the requirement is: "Automatically return focus to the modal's main container after the itemId changes."
@@ -184,9 +182,8 @@ describe("ItemDetailModal Focus", () => {
     await expect.element(page.getByText("Test Item 1")).toBeInTheDocument();
     await expect.element(page.getByRole("dialog")).toHaveFocus();
 
-    // 2. Navigate to Item 2
-    const nextButton = page.getByText("Next →");
-    await nextButton.click();
+    // 2. Navigate to Item 2 using 'j'
+    await userEvent.keyboard("j");
     await expect.element(page.getByText("Test Item 2")).toBeInTheDocument();
 
     // Wait for animation frame and check focus
@@ -194,9 +191,8 @@ describe("ItemDetailModal Focus", () => {
       await expect.element(page.getByRole("dialog")).toHaveFocus();
     });
 
-    // 3. Navigate back to Item 1 (Cached)
-    const prevButton = page.getByText("← Previous");
-    await prevButton.click();
+    // 3. Navigate back to Item 1 (Cached) using 'k'
+    await userEvent.keyboard("k");
     await expect.element(page.getByText("Test Item 1")).toBeInTheDocument();
 
     // ASSERT: Focus should still be on the dialog

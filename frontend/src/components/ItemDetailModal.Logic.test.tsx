@@ -3,7 +3,7 @@ import { QueryClientProvider } from "@tanstack/solid-query";
 import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { page } from "vitest/browser";
+import { page, userEvent } from "vitest/browser";
 import { GetItemResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
@@ -65,13 +65,10 @@ describe("ItemDetailModal Navigation Logic", () => {
     // Wait for content
     await expect.element(page.getByText("Test Item 2")).toBeInTheDocument();
 
-    const nextButton = page.getByRole("button", { name: "Next →" });
-    const prevButton = page.getByRole("button", { name: "← Previous" });
-
-    await nextButton.click();
+    await userEvent.keyboard("j");
     expect(onNext).toHaveBeenCalled();
 
-    await prevButton.click();
+    await userEvent.keyboard("k");
     expect(onPrev).toHaveBeenCalled();
   });
 });
