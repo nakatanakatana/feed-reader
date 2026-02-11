@@ -1,8 +1,0 @@
-{
-  "track_id": "prefetch_items_20260211",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-02-11T00:00:00Z",
-  "updated_at": "2026-02-11T00:00:00Z",
-  "description": "ItemDetailModalでItemを開く時間を短縮するため、前後のアイテムを事前にフェッチする機能を追加する"
-}
