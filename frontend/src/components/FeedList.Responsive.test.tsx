@@ -155,7 +155,7 @@ describe("FeedList Responsive", () => {
     await expect.element(fab).toBeInTheDocument();
 
     // Check if it's fixed (FAB)
-    const fabElement = await fab.element();
+    const fabElement = (await fab.element()) as HTMLElement;
     // In FeedList.tsx, the container of the FAB has style={{ position: "fixed" }}
     const fabContainer = fabElement.parentElement?.parentElement;
     if (!fabContainer) throw new Error("FAB container not found");
@@ -212,15 +212,23 @@ describe("FeedList Responsive", () => {
     // One should be visible, one hidden (or not in document if using Show, but FeedList uses css display)
 
     // Let's find the one that is NOT in the header
-    const fabButton = buttons.find((b) => {
-      let parent = b.parentElement;
+    let fabButton: HTMLElement | undefined;
+    for (const b of buttons) {
+      const el = (await b.element()) as HTMLElement;
+      let parent = el.parentElement;
+      let inHeader = false;
       while (parent) {
-        if (parent.getAttribute("data-role") === "header-manage-tags")
-          return false;
+        if (parent.getAttribute("data-role") === "header-manage-tags") {
+          inHeader = true;
+          break;
+        }
         parent = parent.parentElement;
       }
-      return true;
-    });
+      if (!inHeader) {
+        fabButton = el;
+        break;
+      }
+    }
 
     if (fabButton) {
       // Wait, the container is hidden, not the button itself maybe?

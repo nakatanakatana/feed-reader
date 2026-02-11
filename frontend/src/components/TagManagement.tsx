@@ -20,7 +20,7 @@ export const TagManagement = () => {
     e.preventDefault();
     if (!newTagName()) return;
 
-    tags.insert({ id: "dummy", name: newTagName() });
+    tags.insert({ id: "dummy", name: newTagName(), unreadCount: 0n });
     setNewTagName("");
   };
 

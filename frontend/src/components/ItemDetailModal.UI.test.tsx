@@ -20,13 +20,14 @@ describe("ItemDetailModal UI Updates", () => {
     vi.clearAllMocks();
   });
 
-  const setupMockData = (itemId: string, itemData: Partial<ItemSchema>) => {
+  // biome-ignore lint/suspicious/noExplicitAny: test mock data
+  const setupMockData = (itemId: string, itemData: any) => {
     worker.use(
       http.post("*/item.v1.ItemService/GetItem", () => {
         const msg = create(GetItemResponseSchema, {
           item: create(ItemSchema, {
-            id: itemId,
             ...itemData,
+            id: itemId,
           }),
         });
         return HttpResponse.json(toJson(GetItemResponseSchema, msg));
