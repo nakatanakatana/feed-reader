@@ -78,7 +78,7 @@ describe("ItemDetailRouteView Reactivity", () => {
 
   it("should correctly compute next/prev items based on reactive items()", async () => {
     // Enable showRead to avoid items disappearing during navigation tests
-    itemStore.setShowRead(true); 
+    itemStore.setShowRead(true);
 
     setupMockData([
       { id: "1", title: "Item 1", isRead: false },
@@ -107,19 +107,25 @@ describe("ItemDetailRouteView Reactivity", () => {
     // Navigate to next item using 'j'
     await userEvent.keyboard("j");
     await expect.poll(() => history.location.pathname).toBe("/items/2");
-    await expect.element(page.getByRole("heading", { name: "Item 2" })).toBeInTheDocument();
+    await expect
+      .element(page.getByRole("heading", { name: "Item 2" }))
+      .toBeInTheDocument();
 
     // Navigate back to Item 1 using 'k'
     await userEvent.keyboard("k");
     await expect.poll(() => history.location.pathname).toBe("/items/1");
-    await expect.element(page.getByRole("heading", { name: "Item 1" })).toBeInTheDocument();
+    await expect
+      .element(page.getByRole("heading", { name: "Item 1" }))
+      .toBeInTheDocument();
 
     // Update mock data to only have 1 item
     setupMockData([{ id: "1", title: "Item 1", isRead: false }]);
 
     // Change filter state to trigger a fresh query key
     itemStore.setDateFilter("24h");
-    await expect.element(page.getByRole("heading", { name: "Item 1" })).toBeInTheDocument();
+    await expect
+      .element(page.getByRole("heading", { name: "Item 1" }))
+      .toBeInTheDocument();
 
     // Ensure focus is on the modal before pressing 'j'
     const dialog = page.getByRole("dialog");
@@ -132,6 +138,8 @@ describe("ItemDetailRouteView Reactivity", () => {
       .poll(() => history.location.pathname)
       .toBe("/items/end-of-list");
 
-    await expect.element(page.getByRole("heading", { name: "End of List" })).toBeInTheDocument();
+    await expect
+      .element(page.getByRole("heading", { name: "End of List" }))
+      .toBeInTheDocument();
   });
 });
