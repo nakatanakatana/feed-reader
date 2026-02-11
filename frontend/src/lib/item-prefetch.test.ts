@@ -12,25 +12,36 @@ describe("prefetchItems", () => {
     vi.clearAllMocks();
   });
 
-  it("calls queryClient.prefetchQuery for each item ID", async () => {
+  it("calls queryClient.prefetchQuery for each item ID with staleTime", async () => {
     const prefetchSpy = vi.spyOn(queryClient, "prefetchQuery");
     const itemIds = ["item1", "item2", "item3"];
 
     await prefetchItems(itemIds);
 
     expect(prefetchSpy).toHaveBeenCalledTimes(3);
-    expect(prefetchSpy).toHaveBeenCalledWith({
+    expect(prefetchSpy).toHaveBeenCalledWith(expect.objectContaining({
       queryKey: ["item", "item1"],
-      queryFn: expect.any(Function),
+      staleTime: 5 * 60 * 1000,
+    }));
+  });
+
+  it("skips items that are already in the cache", async () => {
+    const prefetchSpy = vi.spyOn(queryClient, "prefetchQuery");
+    const getQueryDataSpy = vi.spyOn(queryClient, "getQueryData").mockImplementation((key) => {
+      if (Array.isArray(key) && key[1] === "item1") return { id: "item1" };
+      return undefined;
     });
-    expect(prefetchSpy).toHaveBeenCalledWith({
+    
+    const itemIds = ["item1", "item2"];
+
+    await prefetchItems(itemIds);
+
+    expect(prefetchSpy).toHaveBeenCalledTimes(1);
+    expect(prefetchSpy).toHaveBeenCalledWith(expect.objectContaining({
       queryKey: ["item", "item2"],
-      queryFn: expect.any(Function),
-    });
-    expect(prefetchSpy).toHaveBeenCalledWith({
-      queryKey: ["item", "item3"],
-      queryFn: expect.any(Function),
-    });
+    }));
+    
+    getQueryDataSpy.mockRestore();
   });
 
   it("does not call prefetchQuery if itemIds is empty", async () => {

@@ -4,23 +4,23 @@ import { getItem } from "./item-db";
 /**
  * Prefetches item data for the given item IDs to improve navigation speed.
  * Uses TanStack Query's prefetchQuery to cache the data.
+ * Skips items that are already in the cache.
  * @param itemIds Array of item IDs to prefetch.
  */
 export async function prefetchItems(itemIds: string[]) {
   if (!itemIds || itemIds.length === 0) return;
 
-  const prefetchPromises = itemIds.map((id) => {
-    if (id === "end-of-list") return Promise.resolve();
-    
-    return queryClient.prefetchQuery({
-      queryKey: ["item", id],
-      queryFn: async () => {
-        return await getItem(id);
-      },
-      // Optional: set staleTime if we want to ensure it doesn't refetch too often
-      // staleTime: 5 * 60 * 1000,
+  const prefetchPromises = itemIds
+    .filter((id) => id !== "end-of-list" && !queryClient.getQueryData(["item", id]))
+    .map((id) => {
+      return queryClient.prefetchQuery({
+        queryKey: ["item", id],
+        queryFn: async () => {
+          return await getItem(id);
+        },
+        staleTime: 5 * 60 * 1000, // Consider prefetched data fresh for 5 minutes
+      });
     });
-  });
 
   await Promise.all(prefetchPromises);
 }
