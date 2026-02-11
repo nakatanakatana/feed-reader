@@ -200,6 +200,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                   fontSize: "4xl",
                   color: "gray.300",
                 })}
+                aria-hidden="true"
               >
                 🎉
               </div>

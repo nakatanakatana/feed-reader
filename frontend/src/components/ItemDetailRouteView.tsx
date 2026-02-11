@@ -29,8 +29,11 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
     return { to, params, search };
   };
 
-  // Use useLiveQuery with items Collection and respect tag filtering.
-  // We fetch all items (including read ones) to maintain stable indices during transitions.
+  const isEndOfList = () => props.itemId === "end-of-list";
+
+  // Use useLiveQuery with the items Collection and respect tag filtering.
+  // items() applies the global showRead filter; items that become read remain
+  // in the local collection so indices stay stable during navigation transitions.
   const itemsQuery = useLiveQuery((q) => {
     let query = q.from({ item: items() });
     if (props.tagId) {
@@ -67,8 +70,6 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
     currentIndex() >= 0 && currentIndex() < filteredItems().length - 1
       ? filteredItems()[currentIndex() + 1]
       : undefined;
-
-  const isEndOfList = () => props.itemId === "end-of-list";
 
   const handleNext = () => {
     markCurrentAsRead();

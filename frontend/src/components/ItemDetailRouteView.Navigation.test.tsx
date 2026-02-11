@@ -32,6 +32,8 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
     vi.clearAllMocks();
   });
 
+  const updateStatusSpy = vi.fn();
+
   const setupMockData = (
     mockItems = [
       create(ListItemSchema, { id: "1", title: "Item 1", isRead: false }),
@@ -58,14 +60,19 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
         });
         return HttpResponse.json(toJson(GetItemResponseSchema, msg));
       }),
-      http.post("*/item.v1.ItemService/UpdateItemStatus", () => {
-        return HttpResponse.json(
-          toJson(
-            UpdateItemStatusResponseSchema,
-            create(UpdateItemStatusResponseSchema, {}),
-          ),
-        );
-      }),
+      http.post(
+        "*/item.v1.ItemService/UpdateItemStatus",
+        async ({ request }) => {
+          const body = await request.json();
+          updateStatusSpy(body);
+          return HttpResponse.json(
+            toJson(
+              UpdateItemStatusResponseSchema,
+              create(UpdateItemStatusResponseSchema, {}),
+            ),
+          );
+        },
+      ),
       http.post("*/tag.v1.TagService/ListTags", () => {
         return HttpResponse.json(
           toJson(
@@ -208,10 +215,12 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
       .poll(() => history.location.pathname)
       .toBe("/items/end-of-list");
 
-    // Item 2 should have been marked as read (mock setup for UpdateItemStatus is called)
-    // We can't easily check the DB state here without more complex setup,
-    // but we can verify the API call was made if we had a spy.
-    // For now, let's just check the URL.
+    // Item 2 should have been marked as read
+    await expect
+      .poll(() => updateStatusSpy)
+      .toHaveBeenCalledWith(
+        expect.objectContaining({ ids: ["2"], isRead: true }),
+      );
   });
 
   it("navigates back from end-of-list to the last real item", async () => {
@@ -276,11 +285,14 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
     await expect.poll(() => history.location.pathname).toBe("/items/2");
 
     // Use Arrows
+    // Click a non-button element to ensure focus is in the modal
+    await page.getByRole("heading", { name: "Item 2" }).click();
     await userEvent.keyboard("{ArrowRight}");
     await expect
       .poll(() => history.location.pathname)
       .toBe("/items/end-of-list");
 
+    await page.getByRole("heading", { name: "End of List" }).click();
     await userEvent.keyboard("{ArrowLeft}");
     await expect.poll(() => history.location.pathname).toBe("/items/2");
   });
