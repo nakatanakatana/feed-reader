@@ -74,13 +74,14 @@ func TestStore_SaveFetchedItem(t *testing.T) {
 		Guid:        &guid,
 	}
 
+	var itemID string
+
 	// 3. First Save (Should succeed)
 	t.Run("First Save", func(t *testing.T) {
 		err := s.SaveFetchedItem(ctx, params)
 		assert.NilError(t, err)
 
 		// Verify Item exists
-		var itemID string
 		err = s.DB.QueryRowContext(ctx, "SELECT id FROM items WHERE url = ?", itemURL).Scan(&itemID)
 		assert.NilError(t, err)
 		assert.Assert(t, itemID != "")
@@ -110,7 +111,7 @@ func TestStore_SaveFetchedItem(t *testing.T) {
 		var newItemID string
 		err = s.DB.QueryRowContext(ctx, "SELECT id, title FROM items WHERE url = ?", itemURL).Scan(&newItemID, &newTitle)
 		assert.NilError(t, err)
-		assert.Equal(t, newItemID, newItemID)
+		assert.Equal(t, newItemID, itemID)
 		assert.Equal(t, newTitle, "Article 1 Updated")
 
 		// Verify Link count still 1

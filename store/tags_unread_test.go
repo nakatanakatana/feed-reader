@@ -196,13 +196,10 @@ func TestTags_UnreadCounts_PBT(t *testing.T) {
 
 func setupQueriesForRapid(t *rapid.T) (*store.Queries, *sql.DB) {
 	db, err := sql.Open("sqlite", ":memory:")
-	assert.Assert(t, err == nil, "failed to open sqlite db: %v", err)
+	assert.NilError(t, err, "failed to open sqlite db")
 
 	_, err = db.ExecContext(context.Background(), schema.Schema)
-	if err != nil {
-		_ = db.Close()
-		assert.Assert(t, err == nil, "failed to apply schema: %v", err)
-	}
+	assert.NilError(t, err, "failed to apply schema")
 
 	return store.New(db), db
 }
