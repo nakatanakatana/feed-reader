@@ -2,7 +2,7 @@
 
 This track implements a placeholder article at the end of the item list in the detail view to facilitate marking the last item as read and ensures that filters are preserved when closing the detail view.
 
-## Phase 1: Filter Preservation on Close
+## Phase 1: Filter Preservation on Close [checkpoint: 1d14682]
 Ensure that when a user closes the `ItemDetailModal`, they return to the list with their previous tag and date filters intact.
 
 - [x] Task: Update `ItemDetailRouteView` to preserve search parameters on close [4e7b616]
