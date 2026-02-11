@@ -1,6 +1,6 @@
 import { eq, useLiveQuery } from "@tanstack/solid-db";
 import { useNavigate } from "@tanstack/solid-router";
-import { createMemo } from "solid-js";
+import { createEffect, createMemo } from "solid-js";
 import { feedTag, items } from "../lib/db";
 import { itemStore } from "../lib/item-store";
 import type { DateFilterValue } from "../lib/item-utils";
@@ -14,6 +14,12 @@ interface ItemDetailRouteViewProps {
 
 export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
   const navigate = useNavigate();
+
+  createEffect(() => {
+    if (props.since) {
+      itemStore.setDateFilter(props.since);
+    }
+  });
 
   const getLinkProps = (targetItemId: string | undefined) => {
     if (!targetItemId) return undefined;
