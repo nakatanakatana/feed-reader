@@ -6,7 +6,7 @@ on:
       - 'v*'
 
 env:
-  IMAGE_PREFIX: ghcr.io/nakatanakatana
+  IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}
 
 permissions:
   contents: read
