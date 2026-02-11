@@ -5,10 +5,10 @@ This plan outlines the steps to replace `testify/mock` with hand-written mocks a
 ## Phase 1: Refactor `store/retry_db_test.go`
 Replace `testify/mock` with hand-written mocks and switch assertions to `gotest.tools/v3`.
 
-- [ ] Task: Create hand-written mock for `DBTX` interface in `store/retry_db_test.go`
-- [ ] Task: Refactor `TestRetryingDB` to use the new hand-written mock
-- [ ] Task: Replace `testify` assertions with `gotest.tools/v3` assertions in `store/retry_db_test.go`
-- [ ] Task: Verify tests in `store/` pass
+- [x] Task: Create hand-written mock for `DBTX` interface in `store/retry_db_test.go`
+- [x] Task: Refactor `TestRetryingDB` to use the new hand-written mock
+- [x] Task: Replace `testify` assertions with `gotest.tools/v3` assertions in `store/retry_db_test.go`
+- [x] Task: Verify tests in `store/` pass cc40a9d
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Refactor store/retry_db_test.go' (Protocol in workflow.md)
 
 ## Phase 2: Cleanup and Dependency Removal
