@@ -10,8 +10,8 @@ This plan outlines the steps to containerize the Feed Reader application using a
 - [x] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)
 
 ## Phase 2: Dockerfile Implementation
-- [ ] Task: Create a failing test for Docker image existence
-- [ ] Task: Implement Multi-stage Dockerfile
+- [x] Task: Create a failing test for Docker image existence (56c8b30)
+- [~] Task: Implement Multi-stage Dockerfile
     - [ ] Stage 1: Frontend build using Node.js
     - [ ] Stage 2: Backend build using Golang (incorporating frontend assets)
     - [ ] Stage 3: Final image using distroless/static
