@@ -1,7 +1,6 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
-import { queryClient } from "./query";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { prefetchItems } from "./item-prefetch";
-import { getItem } from "./item-db";
+import { queryClient } from "./query";
 
 vi.mock("./item-db", () => ({
   getItem: vi.fn(),
@@ -19,28 +18,34 @@ describe("prefetchItems", () => {
     await prefetchItems(itemIds);
 
     expect(prefetchSpy).toHaveBeenCalledTimes(3);
-    expect(prefetchSpy).toHaveBeenCalledWith(expect.objectContaining({
-      queryKey: ["item", "item1"],
-      staleTime: 5 * 60 * 1000,
-    }));
+    expect(prefetchSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        queryKey: ["item", "item1"],
+        staleTime: 5 * 60 * 1000,
+      }),
+    );
   });
 
   it("skips items that are already in the cache", async () => {
     const prefetchSpy = vi.spyOn(queryClient, "prefetchQuery");
-    const getQueryDataSpy = vi.spyOn(queryClient, "getQueryData").mockImplementation((key) => {
-      if (Array.isArray(key) && key[1] === "item1") return { id: "item1" };
-      return undefined;
-    });
-    
+    const getQueryDataSpy = vi
+      .spyOn(queryClient, "getQueryData")
+      .mockImplementation((key) => {
+        if (Array.isArray(key) && key[1] === "item1") return { id: "item1" };
+        return undefined;
+      });
+
     const itemIds = ["item1", "item2"];
 
     await prefetchItems(itemIds);
 
     expect(prefetchSpy).toHaveBeenCalledTimes(1);
-    expect(prefetchSpy).toHaveBeenCalledWith(expect.objectContaining({
-      queryKey: ["item", "item2"],
-    }));
-    
+    expect(prefetchSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        queryKey: ["item", "item2"],
+      }),
+    );
+
     getQueryDataSpy.mockRestore();
   });
 

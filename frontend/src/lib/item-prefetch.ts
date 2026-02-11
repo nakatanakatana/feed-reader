@@ -1,5 +1,5 @@
-import { queryClient } from "./query";
 import { getItem } from "./item-db";
+import { queryClient } from "./query";
 
 /**
  * Prefetches item data for the given item IDs to improve navigation speed.
@@ -11,7 +11,9 @@ export async function prefetchItems(itemIds: string[]) {
   if (!itemIds || itemIds.length === 0) return;
 
   const prefetchPromises = itemIds
-    .filter((id) => id !== "end-of-list" && !queryClient.getQueryData(["item", id]))
+    .filter(
+      (id) => id !== "end-of-list" && !queryClient.getQueryData(["item", id]),
+    )
     .map((id) => {
       return queryClient.prefetchQuery({
         queryKey: ["item", id],

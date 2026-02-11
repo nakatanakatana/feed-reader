@@ -81,7 +81,7 @@ describe("ItemDetailRouteView Prefetching", () => {
   it("prefetches neighboring items when an item is displayed", async () => {
     setupMockData(10);
     const prefetchSpy = vi.spyOn(queryClient, "prefetchQuery");
-    
+
     const history = createMemoryHistory({ initialEntries: ["/items/5"] });
     const router = createRouter({ routeTree, history });
 
@@ -102,8 +102,10 @@ describe("ItemDetailRouteView Prefetching", () => {
       .toBeInTheDocument();
 
     // Should prefetch 2, 3, 4 and 6, 7, 8
-    const prefetchedIds = prefetchSpy.mock.calls.map(call => call[0].queryKey?.[1]);
-    
+    const prefetchedIds = prefetchSpy.mock.calls.map(
+      (call) => call[0].queryKey?.[1],
+    );
+
     expect(prefetchedIds).toContain("2");
     expect(prefetchedIds).toContain("3");
     expect(prefetchedIds).toContain("4");

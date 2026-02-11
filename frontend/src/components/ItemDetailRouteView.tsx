@@ -2,7 +2,7 @@ import { eq, useLiveQuery } from "@tanstack/solid-db";
 import { useNavigate } from "@tanstack/solid-router";
 import { createEffect, createMemo } from "solid-js";
 import { feedTag, items } from "../lib/db";
-import { prefetchItems, getPrefetchIds } from "../lib/item-prefetch";
+import { getPrefetchIds, prefetchItems } from "../lib/item-prefetch";
 import { itemStore } from "../lib/item-store";
 import type { DateFilterValue } from "../lib/item-utils";
 import { ItemDetailModal } from "./ItemDetailModal";
