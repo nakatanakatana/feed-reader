@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/solid-query";
-import { For, type JSX, Show, createEffect } from "solid-js";
+import { createEffect, For, type JSX, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
 import { getItem, items } from "../lib/item-db";
@@ -262,6 +262,29 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                       "& a": { color: "blue.600", textDecoration: "underline" },
                       "& p": { marginBottom: "4" },
                       "& img": { maxWidth: "full", height: "auto", my: "4" },
+                      "& pre": {
+                        overflowX: "auto",
+                        maxWidth: "full",
+                        backgroundColor: "gray.50",
+                        padding: "4",
+                        borderRadius: "md",
+                        border: "1px solid",
+                        borderColor: "gray.200",
+                        my: "4",
+                      },
+                      "& code": {
+                        fontFamily: "mono",
+                        fontSize: "0.9em",
+                        backgroundColor: "gray.100",
+                        padding: "0.2em 0.4em",
+                        borderRadius: "sm",
+                      },
+                      "& pre code": {
+                        backgroundColor: "transparent",
+                        padding: 0,
+                        borderRadius: 0,
+                        fontSize: "sm",
+                      },
                     })}
                   >
                     <MarkdownRenderer

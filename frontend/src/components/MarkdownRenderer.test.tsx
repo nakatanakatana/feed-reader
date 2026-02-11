@@ -45,4 +45,16 @@ describe("MarkdownRenderer", () => {
     dispose = render(() => <MarkdownRenderer content="" />, document.body);
     expect(document.body.innerHTML).toMatchSnapshot();
   });
+
+  it("renders code blocks", () => {
+    const content = "```javascript\nconst x = 1;\n```";
+    dispose = render(
+      () => <MarkdownRenderer content={content} />,
+      document.body,
+    );
+
+    expect(document.body.querySelector("pre")).not.toBeNull();
+    expect(document.body.querySelector("code")).not.toBeNull();
+    expect(document.body.innerHTML).toContain("const x = 1;");
+  });
 });
