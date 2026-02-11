@@ -214,5 +214,6 @@ func toProtoListItem(row store.GetItemRow) *itemv1.ListItem {
 		CreatedAt:   row.CreatedAt,
 		IsRead:      row.IsRead == 1,
 		FeedId:      row.FeedID,
+		Url:         row.Url,
 	}
 }

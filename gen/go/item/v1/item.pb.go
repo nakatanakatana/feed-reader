@@ -163,6 +163,7 @@ type ListItem struct {
 	CreatedAt     string                 `protobuf:"bytes,5,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	IsRead        bool                   `protobuf:"varint,6,opt,name=is_read,json=isRead,proto3" json:"is_read,omitempty"`
 	FeedId        string                 `protobuf:"bytes,7,opt,name=feed_id,json=feedId,proto3" json:"feed_id,omitempty"`
+	Url           string                 `protobuf:"bytes,8,opt,name=url,proto3" json:"url,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -242,6 +243,13 @@ func (x *ListItem) GetIsRead() bool {
 func (x *ListItem) GetFeedId() string {
 	if x != nil {
 		return x.FeedId
+	}
+	return ""
+}
+
+func (x *ListItem) GetUrl() string {
+	if x != nil {
+		return x.Url
 	}
 	return ""
 }
@@ -579,7 +587,7 @@ const file_item_v1_item_proto_rawDesc = "" +
 	"categories\x18\f \x01(\tR\n" +
 	"categories\x12\x1d\n" +
 	"\n" +
-	"created_at\x18\r \x01(\tR\tcreatedAt\"\xc6\x01\n" +
+	"created_at\x18\r \x01(\tR\tcreatedAt\"\xd8\x01\n" +
 	"\bListItem\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12 \n" +
@@ -588,7 +596,8 @@ const file_item_v1_item_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\x05 \x01(\tR\tcreatedAt\x12\x17\n" +
 	"\ais_read\x18\x06 \x01(\bR\x06isRead\x12\x17\n" +
-	"\afeed_id\x18\a \x01(\tR\x06feedId\" \n" +
+	"\afeed_id\x18\a \x01(\tR\x06feedId\x12\x10\n" +
+	"\x03url\x18\b \x01(\tR\x03url\" \n" +
 	"\x0eGetItemRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"4\n" +
 	"\x0fGetItemResponse\x12!\n" +
