@@ -32,25 +32,28 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
     vi.clearAllMocks();
   });
 
-  const setupMockData = () => {
+  const setupMockData = (
+    mockItems = [
+      create(ListItemSchema, { id: "1", title: "Item 1", isRead: false }),
+      create(ListItemSchema, { id: "2", title: "Item 2", isRead: false }),
+    ],
+  ) => {
     worker.use(
       http.post("*/item.v1.ItemService/ListItems", () => {
         const msg = create(ListItemsResponseSchema, {
-          items: [
-            create(ListItemSchema, { id: "1", title: "Item 1", isRead: false }),
-            create(ListItemSchema, { id: "2", title: "Item 2", isRead: false }),
-          ],
-          totalCount: 2,
+          items: mockItems,
+          totalCount: mockItems.length,
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),
       http.post("*/item.v1.ItemService/GetItem", async ({ request }) => {
         const body = (await request.json()) as { id: string };
+        const found = mockItems.find((i) => i.id === body.id);
         const msg = create(GetItemResponseSchema, {
           item: create(ItemSchema, {
             id: body.id,
-            title: `Item ${body.id}`,
-            isRead: false,
+            title: found?.title || `Item ${body.id}`,
+            isRead: found?.isRead || false,
           }),
         });
         return HttpResponse.json(toJson(GetItemResponseSchema, msg));
@@ -272,5 +275,55 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
 
     await userEvent.keyboard("{ArrowLeft}");
     await expect.poll(() => history.location.pathname).toBe("/items/2");
+  });
+
+  it("reaches end-of-list correctly when filtered by tag and read status", async () => {
+    // Item 1 is unread, Item 2 is read.
+    // If showRead is false, only Item 1 is visible.
+    const mockItems = [
+      create(ListItemSchema, { id: "1", title: "Item 1", isRead: false, feedId: "f1" }),
+      create(ListItemSchema, { id: "2", title: "Item 2", isRead: true, feedId: "f1" }),
+    ];
+    setupMockData(mockItems);
+
+    // Mock tag relation
+    worker.use(
+      http.post("*/tag.v1.TagService/ListTags", () => {
+        return HttpResponse.json(toJson(ListTagsResponseSchema, create(ListTagsResponseSchema, {
+          tags: [{ id: "tag-1", name: "Tag 1" }]
+        })));
+      }),
+      http.post("*/feed.v1.FeedService/ListFeedTags", () => {
+        return HttpResponse.json(toJson(ListFeedTagsResponseSchema, create(ListFeedTagsResponseSchema, {
+          feedTags: [{ feedId: "f1", tagId: "tag-1" }]
+        })));
+      })
+    );
+
+    // Initial state: showRead is false (default)
+    // We expect Item 1 to be the only item in the navigation sequence.
+    const history = createMemoryHistory({ initialEntries: ["/items/1?tagId=tag-1"] });
+    const router = createRouter({ routeTree, history });
+
+    dispose = render(
+      () => (
+        <TransportProvider transport={transport}>
+          <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} />
+          </QueryClientProvider>
+        </TransportProvider>
+      ),
+      document.body,
+    );
+
+    await expect.element(page.getByRole("heading", { name: "Item 1" })).toBeInTheDocument();
+
+    const nextButton = page.getByRole("button", { name: "Next →" });
+    await nextButton.click();
+
+    // BUG REPRODUCTION: 
+    // It should go to end-of-list because Item 2 is read and should be filtered out.
+    // However, if the bug exists, it will navigate to /items/2.
+    await expect.poll(() => history.location.pathname).toBe("/items/end-of-list");
   });
 });
