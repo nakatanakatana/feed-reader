@@ -2,7 +2,7 @@
 
 This plan outlines the steps to integrate `tsc --noEmit` into the `lint` script and resolve all existing TypeScript errors in the repository.
 
-## Phase 1: Infrastructure and Investigation
+## Phase 1: Infrastructure and Investigation [checkpoint: 78927f8]
 In this phase, we will update the project configuration and identify the extent of current TypeScript errors.
 
 - [x] Task: Update `package.json` to include `tsc --noEmit` in the `lint` script d9a04a9
