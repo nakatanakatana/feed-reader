@@ -1,0 +1,8 @@
+{
+  "track_id": "remove-unused-ui-elements_20260211",
+  "type": "chore",
+  "status": "new",
+  "created_at": "2026-02-11T12:00:00Z",
+  "updated_at": "2026-02-11T12:00:00Z",
+  "description": "Remove unused UI elements (Previous/Next buttons in ItemDetailModal and Mark as Read button in ItemRow) that are redundant due to keyboard shortcuts."
+}
