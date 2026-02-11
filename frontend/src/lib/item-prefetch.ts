@@ -24,7 +24,7 @@ export async function prefetchItems(itemIds: string[]) {
       });
     });
 
-  await Promise.all(prefetchPromises);
+  await Promise.allSettled(prefetchPromises);
 }
 
 /**
@@ -38,7 +38,12 @@ export function getPrefetchIds(
   currentIndex: number,
   allItems: { id: string }[],
 ): string[] {
-  if (currentIndex < 0 || !allItems || allItems.length === 0) {
+  if (
+    currentIndex < 0 ||
+    currentIndex >= allItems.length ||
+    !allItems ||
+    allItems.length === 0
+  ) {
     return [];
   }
 

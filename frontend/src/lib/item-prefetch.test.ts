@@ -9,6 +9,7 @@ vi.mock("./item-db", () => ({
 describe("prefetchItems", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    queryClient.clear();
   });
 
   it("calls queryClient.prefetchQuery for each item ID with staleTime", async () => {
@@ -104,9 +105,21 @@ describe("getPrefetchIds", () => {
     expect(ids).toEqual([]);
   });
 
-  it("handles invalid index", async () => {
+  it("handles invalid index (negative)", async () => {
     const { getPrefetchIds } = await import("./item-prefetch");
     const ids = getPrefetchIds(-1, items);
+    expect(ids).toEqual([]);
+  });
+
+  it("handles invalid index (exceeds length)", async () => {
+    const { getPrefetchIds } = await import("./item-prefetch");
+    const ids = getPrefetchIds(items.length, items);
+    expect(ids).toEqual([]);
+  });
+
+  it("handles invalid index (far exceeds length)", async () => {
+    const { getPrefetchIds } = await import("./item-prefetch");
+    const ids = getPrefetchIds(100, items);
     expect(ids).toEqual([]);
   });
 });
