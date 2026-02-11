@@ -3,8 +3,8 @@
 This plan introduces a proactive prefetching mechanism for the `ItemDetailModal` to enhance navigation speed between articles.
 
 ## Phase 1: Infrastructure & Discovery
-- [ ] Task: Research existing data fetching logic in `ItemDetailModal` and `ItemDetailRouteView`.
-- [ ] Task: Identify how to access the current filtered list of item IDs within the modal context to determine "neighboring" items.
+- [x] Task: Research existing data fetching logic in `ItemDetailModal` and `ItemDetailRouteView`.
+- [x] Task: Identify how to access the current filtered list of item IDs within the modal context to determine "neighboring" items.
 - [ ] Task: Conductor - User Manual Verification 'Infrastructure & Discovery' (Protocol in workflow.md)
 
 ## Phase 2: Implementation of Prefetch Logic
