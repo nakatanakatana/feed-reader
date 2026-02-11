@@ -13,14 +13,14 @@ Ensure that when a user closes the `ItemDetailModal`, they return to the list wi
 ## Phase 2: Virtual "End-of-List" State
 Introduce a virtual state to represent the end of the list within the `ItemDetailRouteView`.
 
-- [ ] Task: Modify `ItemDetailRouteView` to support an "End of List" virtual item
-    - [ ] Update `handleNext` in `ItemDetailRouteView.tsx` to transition to a virtual "end" state instead of doing nothing when at the last item.
-    - [ ] Ensure that transitioning from the last real item to the "end" state marks the last item as read.
-    - [ ] Update `handlePrev` to transition from the "end" state back to the last real item.
-- [ ] Task: Update `ItemDetailModal` to render placeholder content
-    - [ ] Update `ItemDetailModal.tsx` to accept a `isEndOfList` prop or handle a special `itemId` (e.g., `"end-of-list"`).
-    - [ ] Implement the UI for the placeholder: "You've reached the end of the list" message and a "Back to List" button.
-    - [ ] Disable the "Next" button and keyboard navigation when in the "End of List" state.
+- [x] Task: Modify `ItemDetailRouteView` to support an "End of List" virtual item [2bff9b5]
+    - [x] Update `handleNext` in `ItemDetailRouteView.tsx` to transition to a virtual "end" state instead of doing nothing when at the last item.
+    - [x] Ensure that transitioning from the last real item to the "end" state marks the last item as read.
+    - [x] Update `handlePrev` to transition from the "end" state back to the last real item.
+- [x] Task: Update `ItemDetailModal` to render placeholder content [2bff9b5]
+    - [x] Update `ItemDetailModal.tsx` to accept a `isEndOfList` prop or handle a special `itemId` (e.g., `"end-of-list"`).
+    - [x] Implement the UI for the placeholder: "You've reached the end of the list" message and a "Back to List" button.
+    - [x] Disable the "Next" button and keyboard navigation when in the "End of List" state.
 - [ ] Task: Conductor - User Manual Verification 'Virtual "End-of-List" State' (Protocol in workflow.md)
 
 ## Phase 3: Verification & Polish
