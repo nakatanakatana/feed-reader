@@ -94,7 +94,7 @@ describe("ItemDetailModal Navigation", () => {
     expect(onPrev).toHaveBeenCalled();
   });
 
-  it("calls onNext when 'k' key is pressed", async () => {
+  it("calls onNext when 'j' key is pressed", async () => {
     setupMockData("1");
     const onNext = vi.fn();
     dispose = render(
@@ -112,11 +112,11 @@ describe("ItemDetailModal Navigation", () => {
     );
 
     await expect.element(page.getByText("Test Item 1")).toBeInTheDocument();
-    await userEvent.keyboard("k");
+    await userEvent.keyboard("j");
     expect(onNext).toHaveBeenCalled();
   });
 
-  it("calls onPrev when 'j' key is pressed", async () => {
+  it("calls onPrev when 'k' key is pressed", async () => {
     setupMockData("2");
     const onPrev = vi.fn();
     dispose = render(
@@ -134,7 +134,7 @@ describe("ItemDetailModal Navigation", () => {
     );
 
     await expect.element(page.getByText("Test Item 2")).toBeInTheDocument();
-    await userEvent.keyboard("j");
+    await userEvent.keyboard("k");
     expect(onPrev).toHaveBeenCalled();
   });
 });

@@ -5,7 +5,7 @@ import {
   createLiveQueryCollection,
   eq,
 } from "@tanstack/solid-db";
-import { createMemo, createRoot } from "solid-js";
+import { createMemo, createRoot, createSignal } from "solid-js";
 import { ItemService, type ListItem } from "../gen/item/v1/item_pb";
 import { itemStore } from "./item-store";
 import {
@@ -32,8 +32,10 @@ export interface Item {
 
 const itemClient = createClient(ItemService, transport);
 
+export const [lastFetched, setLastFetched] = createSignal<Date | null>(null);
+
 const createItems = (showRead: boolean, since: DateFilterValue) => {
-  let lastFetched: Date | null = null;
+  setLastFetched(null);
   const isRead = showRead ? {} : { isRead: false };
   const sinceTimestamp = since !== "all" ? getPublishedSince(since) : undefined;
 
@@ -47,15 +49,18 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
       queryKey: ["items", { since, showRead }],
       queryFn: async ({ queryKey }) => {
         const existingData = queryClient.getQueryData(queryKey) || [];
+        const lastFetchedValue = lastFetched();
         const searchSince =
-          lastFetched === null ? sinceTimestamp : dateToTimestamp(lastFetched);
+          lastFetchedValue === null
+            ? sinceTimestamp
+            : dateToTimestamp(lastFetchedValue);
         const response = await itemClient.listItems({
           since: searchSince,
           limit: 10000,
           offset: 0,
           ...isRead,
         });
-        lastFetched = new Date();
+        setLastFetched(new Date());
 
         const respList = response.items.map((item: ListItem) => ({
           id: item.id,

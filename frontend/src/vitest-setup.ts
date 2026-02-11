@@ -1,4 +1,5 @@
 import { afterAll, afterEach, beforeAll, vi } from "vitest";
+import "./styles.css";
 import { resetDatabase } from "./lib/db";
 import { worker } from "./mocks/browser";
 import { resetState } from "./mocks/handlers";

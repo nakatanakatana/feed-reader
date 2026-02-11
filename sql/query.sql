@@ -64,7 +64,7 @@ SET
   feed_type = ?,
   feed_version = ?,
   last_fetched_at = ?,
-  updated_at = CURRENT_TIMESTAMP
+  updated_at = (strftime('%FT%TZ', 'now'))
 WHERE
   id = ?
 RETURNING *;
@@ -99,7 +99,7 @@ ON CONFLICT(url) DO UPDATE SET
   content = excluded.content,
   image_url = excluded.image_url,
   categories = excluded.categories,
-  updated_at = CURRENT_TIMESTAMP
+  updated_at = (strftime('%FT%TZ', 'now'))
 RETURNING *;
 
 -- name: CreateFeedItem :exec
@@ -124,7 +124,7 @@ UPDATE
   feeds
 SET
   last_fetched_at = ?,
-  updated_at = CURRENT_TIMESTAMP
+  updated_at = (strftime('%FT%TZ', 'now'))
 WHERE
   id = ?;
 
@@ -262,7 +262,7 @@ INSERT INTO item_reads (
 ON CONFLICT(item_id) DO UPDATE SET
   is_read = excluded.is_read,
   read_at = excluded.read_at,
-  updated_at = CURRENT_TIMESTAMP
+  updated_at = (strftime('%FT%TZ', 'now'))
 RETURNING *;
 
 -- name: CreateTag :one
@@ -350,7 +350,7 @@ INSERT INTO feed_fetcher_cache (
 ON CONFLICT(feed_id) DO UPDATE SET
   etag = excluded.etag,
   last_modified = excluded.last_modified,
-  updated_at = CURRENT_TIMESTAMP
+  updated_at = (strftime('%FT%TZ', 'now'))
 RETURNING *;
 
 -- name: DeleteFeedFetcherCache :exec
