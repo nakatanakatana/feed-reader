@@ -45,11 +45,26 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
       ? allItems()[currentIndex() + 1]
       : undefined;
 
+  const isEndOfList = () => props.itemId === "end-of-list";
+
   const handleNext = () => {
     markCurrentAsRead();
+    if (isEndOfList()) return;
+
     const next = nextItem();
     if (next) {
       const linkProps = getLinkProps(next.id);
+      if (linkProps) {
+        navigate({
+          to: linkProps.to,
+          // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
+          params: linkProps.params as any,
+          search: linkProps.search,
+        });
+      }
+    } else if (currentIndex() === allItems().length - 1) {
+      // Transition to virtual end-of-list state
+      const linkProps = getLinkProps("end-of-list");
       if (linkProps) {
         navigate({
           to: linkProps.to,
@@ -63,6 +78,22 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
 
   const handlePrev = () => {
     markCurrentAsRead();
+    if (isEndOfList()) {
+      const lastItem = allItems()[allItems().length - 1];
+      if (lastItem) {
+        const linkProps = getLinkProps(lastItem.id);
+        if (linkProps) {
+          navigate({
+            to: linkProps.to,
+            // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
+            params: linkProps.params as any,
+            search: linkProps.search,
+          });
+        }
+      }
+      return;
+    }
+
     const prev = prevItem();
     if (prev) {
       const linkProps = getLinkProps(prev.id);
@@ -78,7 +109,7 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
   };
 
   const markCurrentAsRead = () => {
-    if (!props.itemId) return;
+    if (!props.itemId || isEndOfList()) return;
     items().update(props.itemId, (draft) => {
       draft.isRead = true;
     });
@@ -96,8 +127,8 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
           },
         });
       }}
-      prevItemId={prevItem()?.id}
-      nextItemId={nextItem()?.id}
+      prevItemId={isEndOfList() ? allItems()[allItems().length - 1]?.id : prevItem()?.id}
+      nextItemId={!isEndOfList() && currentIndex() === allItems().length - 1 ? "end-of-list" : nextItem()?.id}
       onPrev={handlePrev}
       onNext={handleNext}
     />

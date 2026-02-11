@@ -39,18 +39,19 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   const itemQuery = useQuery(() => ({
     queryKey: ["item", props.itemId],
     queryFn: async () => {
-      if (!props.itemId) return null;
+      if (!props.itemId || props.itemId === "end-of-list") return null;
       return await getItem(props.itemId);
     },
-    enabled: !!props.itemId,
+    enabled: !!props.itemId && props.itemId !== "end-of-list",
   }));
 
   const item = () => itemQuery.data ?? null;
   const isLoading = () => itemQuery.isPending;
+  const isEndOfList = () => props.itemId === "end-of-list";
 
   const handleToggleRead = () => {
     const currentItem = item();
-    if (!currentItem) return;
+    if (!currentItem || isEndOfList()) return;
 
     items().update(currentItem.id, (draft) => {
       draft.isRead = !currentItem.isRead;
@@ -75,7 +76,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
       e.key === "l" ||
       e.key === "L"
     ) {
-      if (props.onNext && props.nextItemId) props.onNext();
+      if (!isEndOfList() && props.onNext && props.nextItemId) props.onNext();
     }
   };
 
@@ -92,17 +93,24 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
         <ActionButton
           variant="secondary"
           onClick={props.onNext}
-          disabled={!props.nextItemId}
+          disabled={!props.nextItemId || isEndOfList()}
         >
           Next →
         </ActionButton>
       </div>
-      <ActionButton
-        variant={item()?.isRead ? "secondary" : "ghost"}
-        onClick={handleToggleRead}
-      >
-        {item()?.isRead ? "Mark as Unread" : "Mark as Read"}
-      </ActionButton>
+      <Show when={!isEndOfList()}>
+        <ActionButton
+          variant={item()?.isRead ? "secondary" : "ghost"}
+          onClick={handleToggleRead}
+        >
+          {item()?.isRead ? "Mark as Unread" : "Mark as Read"}
+        </ActionButton>
+      </Show>
+      <Show when={isEndOfList()}>
+        <ActionButton variant="primary" onClick={props.onClose}>
+          Back to List
+        </ActionButton>
+      </Show>
     </>
   );
 
@@ -116,7 +124,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
         onClose={props.onClose}
         size="full"
         hideClose
-        ariaLabel="Item details"
+        ariaLabel={isEndOfList() ? "End of list reached" : "Item details"}
         onKeyDown={handleKeyDown}
         bodyPadding={false}
         footer={footer}
@@ -138,24 +146,29 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
               flex: 1,
             })}
           >
-            <Show when={item()} fallback="Loading...">
-              {(itemData) => (
-                <a
-                  href={itemData().url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class={css({
-                    color: "inherit",
-                    textDecoration: "none",
-                    _hover: {
-                      textDecoration: "underline",
-                      color: "blue.600",
-                    },
-                  })}
-                >
-                  {itemData().title}
-                </a>
-              )}
+            <Show when={isEndOfList()}>
+              <span>End of List</span>
+            </Show>
+            <Show when={!isEndOfList()}>
+              <Show when={item()} fallback="Loading...">
+                {(itemData) => (
+                  <a
+                    href={itemData().url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class={css({
+                      color: "inherit",
+                      textDecoration: "none",
+                      _hover: {
+                        textDecoration: "underline",
+                        color: "blue.600",
+                      },
+                    })}
+                  >
+                    {itemData().title}
+                  </a>
+                )}
+              </Show>
             </Show>
           </h2>
           <ActionButton variant="ghost" onClick={props.onClose}>
@@ -171,7 +184,44 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             height: "full",
           })}
         >
-          <Show when={isLoading()}>
+          <Show when={isEndOfList()}>
+            <div
+              class={flex({
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                height: "full",
+                gap: "6",
+                textAlign: "center",
+              })}
+            >
+              <div
+                class={css({
+                  fontSize: "4xl",
+                  color: "gray.300",
+                })}
+              >
+                🎉
+              </div>
+              <div>
+                <h3
+                  class={css({
+                    fontSize: "xl",
+                    fontWeight: "bold",
+                    color: "gray.700",
+                    mb: "2",
+                  })}
+                >
+                  You've reached the end of the list!
+                </h3>
+                <p class={css({ color: "gray.500" })}>
+                  You've caught up with all the items in this view.
+                </p>
+              </div>
+            </div>
+          </Show>
+
+          <Show when={isLoading() && !isEndOfList()}>
             <div
               class={css({
                 textAlign: "center",
@@ -183,7 +233,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             </div>
           </Show>
 
-          <Show when={item()}>
+          <Show when={item() && !isEndOfList()}>
             {(itemData) => {
               const isImageInContent = () => {
                 const content =
