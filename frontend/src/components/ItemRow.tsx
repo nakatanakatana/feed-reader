@@ -16,11 +16,8 @@ interface ItemRowProps {
 export function ItemRow(props: ItemRowProps) {
   const [isPending, setIsPending] = createSignal(false);
 
-  const handleToggleRead = async (e?: MouseEvent) => {
-    e?.stopPropagation();
+  const setReadStatus = async (newIsRead: boolean) => {
     setIsPending(true);
-
-    const newIsRead = !props.item.isRead;
     try {
       items().update(props.item.id, (draft) => {
         draft.id = props.item.id;
@@ -28,11 +25,23 @@ export function ItemRow(props: ItemRowProps) {
       });
     } catch (e) {
       console.error("Failed to update item status", e);
-      // Revert is handled by query refetch or error state,
-      // but items.update should be atomic if we configured it correctly with API call.
     } finally {
       setIsPending(false);
     }
+  };
+
+  const isValidUrl = (url: string) => {
+    try {
+      const parsed = new URL(url);
+      return parsed.protocol === "http:" || parsed.protocol === "https:";
+    } catch {
+      return false;
+    }
+  };
+
+  const handleToggleRead = async (e?: MouseEvent) => {
+    e?.stopPropagation();
+    await setReadStatus(!props.item.isRead);
   };
 
   const handleCheckboxClick = (e: MouseEvent) => {
@@ -47,21 +56,11 @@ export function ItemRow(props: ItemRowProps) {
       e.preventDefault();
       e.stopPropagation();
 
-      if (props.item.url) {
+      if (props.item.url && isValidUrl(props.item.url)) {
         window.open(props.item.url, "_blank", "noopener,noreferrer");
 
         if (!props.item.isRead) {
-          setIsPending(true);
-          try {
-            items().update(props.item.id, (draft) => {
-              draft.id = props.item.id;
-              draft.isRead = true;
-            });
-          } catch (e) {
-            console.error("Failed to mark item as read on middle-click", e);
-          } finally {
-            setIsPending(false);
-          }
+          setReadStatus(true);
         }
       }
     }
