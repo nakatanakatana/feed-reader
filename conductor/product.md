@@ -20,6 +20,8 @@ The primary target audience is individuals and organizations seeking control ove
 
 - **Single Binary Distribution:** Both the backend API and the frontend Web UI are bundled into a single executable for simplified deployment and distribution.
 
+- **Containerization:** Official Docker support using multi-stage builds and distroless images for secure, lightweight, and consistent deployment.
+
 - **Feed Management:** Add, organize, and manage RSS/Atom feeds via the UI. Supports sorting by update time and bulk operations like tagging multiple feeds simultaneously.
 
 

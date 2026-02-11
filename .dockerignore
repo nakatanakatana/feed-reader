@@ -1,0 +1,16 @@
+Dockerfile
+.git/
+.github/
+
+# Dependency directories
+node_modules/
+# Build artifacts
+dist/
+cmd/feed-reader/dist/
+# Test coverage and reports
+coverage/
+.nyc_output/
+# Logs and temporary/editor files
+*.log
+*.tmp
+*.swp
