@@ -2,5 +2,5 @@
 
 ---
 
-- [ ] **Track: TypeScript Error Fixes and CI Lint Integration**
+- [~] **Track: TypeScript Error Fixes and CI Lint Integration**
 *Link: [./tracks/ts_error_fix_20260211/](./tracks/ts_error_fix_20260211/)*
