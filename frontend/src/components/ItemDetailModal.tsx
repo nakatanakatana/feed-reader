@@ -82,22 +82,6 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
 
   const footer = props.footerExtras ?? (
     <>
-      <div class={flex({ gap: "2" })}>
-        <ActionButton
-          variant="secondary"
-          onClick={props.onPrev}
-          disabled={!props.prevItemId}
-        >
-          ← Previous
-        </ActionButton>
-        <ActionButton
-          variant="secondary"
-          onClick={props.onNext}
-          disabled={!props.nextItemId || isEndOfList()}
-        >
-          Next →
-        </ActionButton>
-      </div>
       <Show when={!isEndOfList()}>
         <ActionButton
           variant={item()?.isRead ? "secondary" : "ghost"}

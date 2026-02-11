@@ -9,14 +9,13 @@ import (
 
 	"github.com/nakatanakatana/feed-reader/sql"
 	"github.com/nakatanakatana/feed-reader/store"
-	_ "github.com/ncruces/go-sqlite3/driver"
-	_ "github.com/ncruces/go-sqlite3/embed"
 	"gotest.tools/v3/assert"
 	"gotest.tools/v3/golden"
+	_ "modernc.org/sqlite"
 )
 
 func setupDB(t *testing.T) (*store.Queries, *store.Store) {
-	db, err := sql.Open("sqlite3", ":memory:")
+	db, err := sql.Open("sqlite", ":memory:")
 	assert.NilError(t, err)
 
 	_, err = db.ExecContext(context.Background(), schema.Schema)

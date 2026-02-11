@@ -1,10 +1,9 @@
-import { createSignal, Show } from "solid-js";
+import { Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import type { Item } from "../lib/db";
 import { items } from "../lib/db";
 import { formatDate } from "../lib/item-utils";
-import { ActionButton } from "./ui/ActionButton";
 
 interface ItemRowProps {
   item: Item;
@@ -14,10 +13,7 @@ interface ItemRowProps {
 }
 
 export function ItemRow(props: ItemRowProps) {
-  const [isPending, setIsPending] = createSignal(false);
-
   const setReadStatus = async (newIsRead: boolean) => {
-    setIsPending(true);
     try {
       items().update(props.item.id, (draft) => {
         draft.id = props.item.id;
@@ -25,8 +21,6 @@ export function ItemRow(props: ItemRowProps) {
       });
     } catch (e) {
       console.error("Failed to update item status", e);
-    } finally {
-      setIsPending(false);
     }
   };
 
@@ -37,11 +31,6 @@ export function ItemRow(props: ItemRowProps) {
     } catch {
       return false;
     }
-  };
-
-  const handleToggleRead = async (e?: MouseEvent) => {
-    e?.stopPropagation();
-    await setReadStatus(!props.item.isRead);
   };
 
   const handleCheckboxClick = (e: MouseEvent) => {
@@ -160,17 +149,6 @@ export function ItemRow(props: ItemRowProps) {
             </Show>
           </div>
         </button>
-      </div>
-      <div class={css({ padding: "3" })}>
-        <ActionButton
-          size="sm"
-          variant="secondary"
-          onClick={handleToggleRead}
-          disabled={isPending()}
-          class={css({ minWidth: "110px", justifyContent: "center" })}
-        >
-          {props.item.isRead ? "Mark as Unread" : "Mark as Read"}
-        </ActionButton>
       </div>
     </div>
   );

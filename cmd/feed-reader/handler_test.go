@@ -11,10 +11,9 @@ import (
 
 	"connectrpc.com/connect"
 	"github.com/google/uuid"
-	_ "github.com/ncruces/go-sqlite3/driver"
-	_ "github.com/ncruces/go-sqlite3/embed"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
+	_ "modernc.org/sqlite"
 
 	"github.com/mmcdole/gofeed"
 	"github.com/nakatanakatana/feed-reader/gen/go/feed/v1"
@@ -51,7 +50,7 @@ func assertResponseGolden(t *testing.T, m proto.Message, goldenFile string) {
 
 func setupTestDB(t *testing.T) (*store.Queries, *sql.DB) {
 	t.Helper()
-	db, err := sql.Open("sqlite3", ":memory:")
+	db, err := sql.Open("sqlite", ":memory:")
 	assert.NilError(t, err, "failed to open db")
 
 	// For in-memory SQLite, we must limit to a single connection to share the database across goroutines.

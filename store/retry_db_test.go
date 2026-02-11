@@ -7,14 +7,14 @@ import (
 	"testing"
 
 	"github.com/nakatanakatana/feed-reader/store"
-	"github.com/ncruces/go-sqlite3"
 	"gotest.tools/v3/assert"
+	sqlite3 "modernc.org/sqlite/lib"
 )
 
 type mockDBTX struct {
-	execContext    func(ctx context.Context, query string, args ...interface{}) (sql.Result, error)
-	prepareContext func(ctx context.Context, query string) (*sql.Stmt, error)
-	queryContext   func(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error)
+	execContext     func(ctx context.Context, query string, args ...interface{}) (sql.Result, error)
+	prepareContext  func(ctx context.Context, query string) (*sql.Stmt, error)
+	queryContext    func(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error)
 	queryRowContext func(ctx context.Context, query string, args ...interface{}) *sql.Row
 }
 
@@ -37,7 +37,7 @@ func (m *mockDBTX) QueryRowContext(ctx context.Context, query string, args ...in
 func TestRetryingDB_ExecContext(t *testing.T) {
 	t.Run("retry on busy error", func(t *testing.T) {
 		calls := 0
-		busyErr := mockSqliteError{code: int(sqlite3.BUSY)}
+		busyErr := mockSqliteError{code: sqlite3.SQLITE_BUSY}
 		mockResult := new(mockResult)
 		m := &mockDBTX{
 			execContext: func(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
@@ -75,7 +75,7 @@ func TestRetryingDB_ExecContext(t *testing.T) {
 
 func TestRetryingDB_PrepareContext(t *testing.T) {
 	calls := 0
-	busyErr := mockSqliteError{code: int(sqlite3.BUSY)}
+	busyErr := mockSqliteError{code: sqlite3.SQLITE_BUSY}
 	stmt := &sql.Stmt{}
 	m := &mockDBTX{
 		prepareContext: func(ctx context.Context, query string) (*sql.Stmt, error) {

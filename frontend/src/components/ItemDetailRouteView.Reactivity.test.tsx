@@ -8,7 +8,7 @@ import {
 import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { page } from "vitest/browser";
+import { page, userEvent } from "vitest/browser";
 import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
 import {
   GetItemResponseSchema,
@@ -44,11 +44,12 @@ describe("ItemDetailRouteView Reactivity", () => {
       }),
       http.post("*/item.v1.ItemService/GetItem", async ({ request }) => {
         const body = (await request.json()) as { id: string };
+        const found = itemsData.find((i) => i.id === body.id);
         const msg = create(GetItemResponseSchema, {
           item: create(ItemSchema, {
             id: body.id,
-            title: `Item ${body.id}`,
-            isRead: false,
+            title: found?.title || `Item ${body.id}`,
+            isRead: found?.isRead || false,
           }),
         });
         return HttpResponse.json(toJson(GetItemResponseSchema, msg));
@@ -69,10 +70,16 @@ describe("ItemDetailRouteView Reactivity", () => {
           ),
         );
       }),
+      http.post("*/item.v1.ItemService/UpdateItemStatus", () => {
+        return HttpResponse.json({});
+      }),
     );
   };
 
   it("should correctly compute next/prev items based on reactive items()", async () => {
+    // Enable showRead to avoid items disappearing during navigation tests
+    itemStore.setShowRead(true);
+
     setupMockData([
       { id: "1", title: "Item 1", isRead: false },
       { id: "2", title: "Item 2", isRead: false },
@@ -96,30 +103,43 @@ describe("ItemDetailRouteView Reactivity", () => {
     await expect
       .element(page.getByRole("heading", { name: "Item 1" }))
       .toBeInTheDocument();
-    const nextButton = page.getByRole("button", { name: "Next →" });
-    await expect.element(nextButton).not.toBeDisabled();
+
+    // Navigate to next item using 'j'
+    await userEvent.keyboard("j");
+    await expect.poll(() => history.location.pathname).toBe("/items/2");
+    await expect
+      .element(page.getByRole("heading", { name: "Item 2" }))
+      .toBeInTheDocument();
+
+    // Navigate back to Item 1 using 'k'
+    await userEvent.keyboard("k");
+    await expect.poll(() => history.location.pathname).toBe("/items/1");
+    await expect
+      .element(page.getByRole("heading", { name: "Item 1" }))
+      .toBeInTheDocument();
 
     // Update mock data to only have 1 item
-
     setupMockData([{ id: "1", title: "Item 1", isRead: false }]);
 
     // Change filter state to trigger a fresh query key
-
     itemStore.setDateFilter("24h");
+    await expect
+      .element(page.getByRole("heading", { name: "Item 1" }))
+      .toBeInTheDocument();
 
-    // It should have been called again due to reactivity
+    // Ensure focus is on the modal before pressing 'j'
+    const dialog = page.getByRole("dialog");
+    await expect.element(dialog).toBeInTheDocument();
+    await userEvent.click(dialog);
 
-    // And with the new mock data (only 1 item), the Next button should STILL be enabled
-    // because it now transitions to the "End of List" placeholder.
-    await expect.element(nextButton).not.toBeDisabled();
-
-    // Navigate to the placeholder
-    await nextButton.click();
+    // With only 1 item, 'j' should transition to the "End of List" placeholder.
+    await userEvent.keyboard("j");
     await expect
       .poll(() => history.location.pathname)
       .toBe("/items/end-of-list");
 
-    // NOW it should be disabled
-    await expect.element(nextButton).toBeDisabled();
+    await expect
+      .element(page.getByRole("heading", { name: "End of List" }))
+      .toBeInTheDocument();
   });
 });

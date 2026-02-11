@@ -5,9 +5,8 @@ import (
 	"testing"
 
 	"connectrpc.com/connect"
-	_ "github.com/ncruces/go-sqlite3/driver"
-	_ "github.com/ncruces/go-sqlite3/embed"
 	"gotest.tools/v3/assert"
+	_ "modernc.org/sqlite"
 
 	tagv1 "github.com/nakatanakatana/feed-reader/gen/go/tag/v1"
 	"github.com/nakatanakatana/feed-reader/store"

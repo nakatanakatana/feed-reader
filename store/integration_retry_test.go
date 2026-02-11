@@ -10,9 +10,8 @@ import (
 
 	"github.com/nakatanakatana/feed-reader/sql"
 	"github.com/nakatanakatana/feed-reader/store"
-	_ "github.com/ncruces/go-sqlite3/driver"
-	_ "github.com/ncruces/go-sqlite3/embed"
 	"gotest.tools/v3/assert"
+	_ "modernc.org/sqlite"
 )
 
 func TestStore_RetryIntegration(t *testing.T) {
@@ -25,7 +24,7 @@ func TestStore_RetryIntegration(t *testing.T) {
 
 	// Helper to open connection
 	openDB := func() *sql.DB {
-		db, err := sql.Open("sqlite3", dbPath+"?_busy_timeout=1")
+		db, err := sql.Open("sqlite", dbPath+"?_pragma=busy_timeout(1)")
 		assert.NilError(t, err)
 		return db
 	}

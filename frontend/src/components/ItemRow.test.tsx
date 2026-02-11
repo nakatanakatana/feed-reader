@@ -74,72 +74,6 @@ describe("ItemRow", () => {
     );
 
     expect(page.getByText("Read", { exact: true })).toBeInTheDocument();
-    expect(
-      page.getByRole("button", { name: "Mark as Unread" }),
-    ).toBeInTheDocument();
-  });
-
-  it("calls updateStatus when toggle button is clicked", async () => {
-    let updateCalled = false;
-    worker.use(
-      http.post("*/item.v1.ItemService/ListItems", () => {
-        return HttpResponse.json(
-          toJson(
-            ListItemsResponseSchema,
-            create(ListItemsResponseSchema, {
-              items: [create(ListItemSchema, mockItem)],
-              totalCount: 1,
-            }),
-          ),
-        );
-      }),
-      http.post(
-        "*/item.v1.ItemService/UpdateItemStatus",
-        async ({ request }) => {
-          const body = (await request.json()) as {
-            ids: string[];
-            isRead: boolean;
-          };
-          if (body.ids.includes("1") && body.isRead === true) {
-            updateCalled = true;
-          }
-          return HttpResponse.json(
-            toJson(
-              UpdateItemStatusResponseSchema,
-              create(UpdateItemStatusResponseSchema, {}),
-            ),
-          );
-        },
-      ),
-    );
-
-    const TestObserved = () => {
-      const data = useLiveQuery((q) => q.from({ item: items() }));
-      return (
-        <Show when={data().length >= 0}>
-          <ItemRow item={mockItem} onClick={() => {}} />
-        </Show>
-      );
-    };
-
-    dispose = render(
-      () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <TestObserved />
-          </QueryClientProvider>
-        </TransportProvider>
-      ),
-      document.body,
-    );
-
-    // Wait for the item to be in the collection (it should be because we setup MSW and useLiveQuery)
-    const toggleButton = page.getByRole("button", { name: "Mark as Read" });
-    await expect.element(toggleButton).toBeInTheDocument();
-
-    await toggleButton.click();
-
-    await expect.poll(() => updateCalled).toBe(true);
   });
 
   it("calls onClick when clicked", async () => {
@@ -208,7 +142,7 @@ describe("ItemRow", () => {
     const TestObserved = () => {
       const data = useLiveQuery((q) => q.from({ item: items() }));
       return (
-        <Show when={data().length >= 0}>
+        <Show when={data().length > 0}>
           <ItemRow item={mockItemWithUrl} onClick={onClick} />
         </Show>
       );
