@@ -5,8 +5,8 @@ This plan outlines the steps to integrate `tsc --noEmit` into the `lint` script 
 ## Phase 1: Infrastructure and Investigation
 In this phase, we will update the project configuration and identify the extent of current TypeScript errors.
 
-- [ ] Task: Update `package.json` to include `tsc --noEmit` in the `lint` script
-- [ ] Task: Identify all current TypeScript errors by running `npm run lint`
+- [x] Task: Update `package.json` to include `tsc --noEmit` in the `lint` script d9a04a9
+- [x] Task: Identify all current TypeScript errors by running `npm run lint` d9a04a9
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Infrastructure and Investigation' (Protocol in workflow.md)
 
 ## Phase 2: Error Resolution
