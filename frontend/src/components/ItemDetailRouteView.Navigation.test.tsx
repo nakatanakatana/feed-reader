@@ -8,7 +8,7 @@ import {
 import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { page } from "vitest/browser";
+import { page, userEvent } from "vitest/browser";
 import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
 import {
   GetItemResponseSchema,
@@ -225,10 +225,52 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
       document.body,
     );
 
-    // This will fail initially because ItemDetailRouteView doesn't handle "end-of-list" id
-    // and won't know what the "last real item" is without implementation.
-    
-    // We expect the placeholder to have a "Previous" navigation or "Back to List" button.
-    // The spec says "Previous navigation from the placeholder back to the last actual item is permitted."
+    await expect
+      .element(page.getByRole("heading", { name: "End of List" }))
+      .toBeInTheDocument();
+
+    const prevButton = page.getByRole("button", { name: "← Previous" });
+    await prevButton.click();
+
+    await expect.poll(() => history.location.pathname).toBe("/items/2");
+    await expect
+      .element(page.getByRole("heading", { name: "Item 2" }))
+      .toBeInTheDocument();
+  });
+
+  it("supports keyboard navigation through to the placeholder", async () => {
+    setupMockData();
+    const history = createMemoryHistory({ initialEntries: ["/items/2"] });
+    const router = createRouter({ routeTree, history });
+
+    dispose = render(
+      () => (
+        <TransportProvider transport={transport}>
+          <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} />
+          </QueryClientProvider>
+        </TransportProvider>
+      ),
+      document.body,
+    );
+
+    await expect
+      .element(page.getByRole("heading", { name: "Item 2" }))
+      .toBeInTheDocument();
+
+    // Use 'j' to go forward
+    await userEvent.keyboard("j");
+    await expect.poll(() => history.location.pathname).toBe("/items/end-of-list");
+
+    // Use 'k' to go back
+    await userEvent.keyboard("k");
+    await expect.poll(() => history.location.pathname).toBe("/items/2");
+
+    // Use Arrows
+    await userEvent.keyboard("{ArrowRight}");
+    await expect.poll(() => history.location.pathname).toBe("/items/end-of-list");
+
+    await userEvent.keyboard("{ArrowLeft}");
+    await expect.poll(() => history.location.pathname).toBe("/items/2");
   });
 });
