@@ -10,8 +10,7 @@ import (
 	"github.com/nakatanakatana/feed-reader/gen/go/item/v1"
 	"github.com/nakatanakatana/feed-reader/gen/go/item/v1/itemv1connect"
 	"github.com/nakatanakatana/feed-reader/store"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
+	"gotest.tools/v3/assert"
 )
 
 func TestListItems_ReturnsUrl(t *testing.T) {
@@ -36,7 +35,7 @@ func TestListItems_ReturnsUrl(t *testing.T) {
 	// Add test data
 	ctx := context.Background()
 	_, err := s.CreateFeed(ctx, store.CreateFeedParams{ID: "f1", Url: "u1"})
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	expectedUrl := "https://example.com/article"
 	err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
@@ -44,14 +43,14 @@ func TestListItems_ReturnsUrl(t *testing.T) {
 		Url:    expectedUrl,
 		Title:  func() *string { s := "Item 1"; return &s }(),
 	})
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	// Call ListItems
 	client := itemv1connect.NewItemServiceClient(http.DefaultClient, ts.URL+"/api")
 	res, err := client.ListItems(ctx, connect.NewRequest(&itemv1.ListItemsRequest{}))
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	// Assertions
-	require.Len(t, res.Msg.Items, 1)
-	assert.Equal(t, expectedUrl, res.Msg.Items[0].Url, "ListItems should return the item URL")
+	assert.Equal(t, len(res.Msg.Items), 1)
+	assert.Equal(t, res.Msg.Items[0].Url, expectedUrl, "ListItems should return the item URL")
 }
