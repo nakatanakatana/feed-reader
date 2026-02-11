@@ -23,10 +23,10 @@ Introduce a virtual state to represent the end of the list within the `ItemDetai
     - [x] Disable the "Next" button and keyboard navigation when in the "End of List" state.
 - [x] Task: Conductor - User Manual Verification 'Virtual "End-of-List" State' (Protocol in workflow.md) [ff333ce]
 
-## Phase 3: Verification & Polish
+## Phase 3: Verification & Polish [checkpoint: 9c960ad]
 Finalize the implementation and ensure all edge cases are covered.
 
-- [~] Task: Comprehensive Navigation Testing
-    - [ ] Write integration tests for the full sequence: First Item -> ... -> Last Item -> Placeholder -> Close.
-    - [ ] Verify keyboard navigation (j/k, l/h, arrows) works correctly with the placeholder.
-- [ ] Task: Conductor - User Manual Verification 'Verification & Polish' (Protocol in workflow.md)
+- [x] Task: Comprehensive Navigation Testing [9c960ad]
+    - [x] Write integration tests for the full sequence: First Item -> ... -> Last Item -> Placeholder -> Close.
+    - [x] Verify keyboard navigation (j/k, l/h, arrows) works correctly with the placeholder.
+- [x] Task: Conductor - User Manual Verification 'Verification & Polish' (Protocol in workflow.md) [9c960ad]
