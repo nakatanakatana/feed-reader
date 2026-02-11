@@ -17,7 +17,8 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
     if (!targetItemId) return undefined;
     const to = "/items/$itemId";
     const params = { itemId: targetItemId };
-    return { to, params };
+    const search = { tagId: props.tagId, since: props.since };
+    return { to, params, search };
   };
 
   // Use useLiveQuery with items Collection and respect tag filtering
@@ -54,6 +55,7 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
           to: linkProps.to,
           // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
           params: linkProps.params as any,
+          search: linkProps.search,
         });
       }
     }
@@ -69,6 +71,7 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
           to: linkProps.to,
           // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
           params: linkProps.params as any,
+          search: linkProps.search,
         });
       }
     }
@@ -87,6 +90,10 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
       onClose={() => {
         navigate({
           to: "/",
+          search: {
+            tagId: props.tagId,
+            since: props.since,
+          },
         });
       }}
       prevItemId={prevItem()?.id}

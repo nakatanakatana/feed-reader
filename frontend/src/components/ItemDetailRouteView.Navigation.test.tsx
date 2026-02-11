@@ -143,4 +143,34 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
       .element(page.getByRole("heading", { name: "Item 1" }))
       .toBeInTheDocument();
   });
+
+  it("closes the modal and preserves filters", async () => {
+    setupMockData();
+    const history = createMemoryHistory({
+      initialEntries: ["/items/1?tagId=test-tag&since=all"],
+    });
+    const router = createRouter({ routeTree, history });
+
+    dispose = render(
+      () => (
+        <TransportProvider transport={transport}>
+          <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} />
+          </QueryClientProvider>
+        </TransportProvider>
+      ),
+      document.body,
+    );
+
+    await expect
+      .element(page.getByRole("heading", { name: "Item 1" }))
+      .toBeInTheDocument();
+
+    const closeButton = page.getByRole("button", { name: "Close" });
+    await closeButton.click();
+
+    await expect.poll(() => history.location.pathname).toBe("/");
+    await expect.poll(() => history.location.search).toContain("tagId=test-tag");
+    await expect.poll(() => history.location.search).toContain("since=all");
+  });
 });
