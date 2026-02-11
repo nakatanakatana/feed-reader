@@ -233,7 +233,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             </div>
           </Show>
 
-          <Show when={item() && !isEndOfList()}>
+          <Show when={!isEndOfList() && item()}>
             {(itemData) => {
               const isImageInContent = () => {
                 const content =
