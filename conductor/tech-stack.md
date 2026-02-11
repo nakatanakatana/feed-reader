@@ -39,5 +39,5 @@ The frontend is a modern Single Page Application (SPA) designed for speed and re
 
 ## 3. Infrastructure & Deployment
 -   **Architecture:** Self-contained full-stack application with single binary distribution.
--   **Containerization:** Docker (For consistent environments and easy self-hosting).
+-   **Containerization:** Docker (Multi-stage builds using `golang:1.25-alpine`, `node:20-alpine`, and `gcr.io/distroless/static-debian12`).
 -   **Version Control:** Git.
