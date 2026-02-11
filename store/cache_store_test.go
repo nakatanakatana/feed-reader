@@ -6,8 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/nakatanakatana/feed-reader/store"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
+	"gotest.tools/v3/assert"
 )
 
 func TestFeedFetcherCache(t *testing.T) {
@@ -21,7 +20,7 @@ func TestFeedFetcherCache(t *testing.T) {
 		Url: "http://example.com/feed.xml",
 	}
 	_, err := s.CreateFeed(ctx, feedParams)
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	etag := "etag-123"
 	lastModified := "Wed, 21 Oct 2015 07:28:00 GMT"
@@ -34,16 +33,16 @@ func TestFeedFetcherCache(t *testing.T) {
 			LastModified: &lastModified,
 		}
 		cache, err := s.UpsertFeedFetcherCache(ctx, arg)
-		require.NoError(t, err)
-		assert.Equal(t, feedID, cache.FeedID)
-		assert.Equal(t, etag, *cache.Etag)
-		assert.Equal(t, lastModified, *cache.LastModified)
+		assert.NilError(t, err)
+		assert.Equal(t, cache.FeedID, feedID)
+		assert.Equal(t, *cache.Etag, etag)
+		assert.Equal(t, *cache.LastModified, lastModified)
 
 		// Get
 		cache, err = s.GetFeedFetcherCache(ctx, feedID)
-		require.NoError(t, err)
-		assert.Equal(t, etag, *cache.Etag)
-		assert.Equal(t, lastModified, *cache.LastModified)
+		assert.NilError(t, err)
+		assert.Equal(t, *cache.Etag, etag)
+		assert.Equal(t, *cache.LastModified, lastModified)
 	})
 
 	t.Run("Update Cache", func(t *testing.T) {
@@ -54,19 +53,19 @@ func TestFeedFetcherCache(t *testing.T) {
 			LastModified: nil,
 		}
 		_, err := s.UpsertFeedFetcherCache(ctx, arg)
-		require.NoError(t, err)
+		assert.NilError(t, err)
 
 		cache, err := s.GetFeedFetcherCache(ctx, feedID)
-		require.NoError(t, err)
-		assert.Equal(t, newEtag, *cache.Etag)
-		assert.Nil(t, cache.LastModified)
+		assert.NilError(t, err)
+		assert.Equal(t, *cache.Etag, newEtag)
+		assert.Assert(t, cache.LastModified == nil)
 	})
 
 	t.Run("Delete Cache", func(t *testing.T) {
 		err := s.DeleteFeedFetcherCache(ctx, feedID)
-		require.NoError(t, err)
+		assert.NilError(t, err)
 
 		_, err = s.GetFeedFetcherCache(ctx, feedID)
-		assert.Error(t, err)
+		assert.Assert(t, err != nil)
 	})
 }

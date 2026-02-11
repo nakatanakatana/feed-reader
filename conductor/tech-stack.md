@@ -18,7 +18,7 @@ The backend is responsible for feed management, article fetching, and providing 
 -   **CLI Manager:** `aqua` (Declarative tool management)
 -   **Asset Bundling:** Go `embed` (For packaging frontend artifacts into the binary)
 -   **Property-Based Testing:** `rapid` (For automated edge-case discovery)
--   **Snapshot Testing:** `gotest.tools/v3` (Golden testing for complex output and API response validation)
+-   **Testing Framework:** `gotest.tools/v3` (Standard assertion and golden testing library for clear, readable, and consistent backend tests). The project emphasizes the use of **hand-written mocks** over heavy mocking frameworks like `testify/mock` to maintain simplicity and clarity.
 -   **Task Runner:** `GNU Make` (Unified command interface)
 
 ## 2. Frontend

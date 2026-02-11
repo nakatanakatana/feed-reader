@@ -9,8 +9,7 @@ import (
 
 	"github.com/mmcdole/gofeed"
 	"github.com/nakatanakatana/feed-reader/store"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
+	"gotest.tools/v3/assert"
 	"gotest.tools/v3/golden"
 )
 
@@ -45,15 +44,15 @@ func TestOPMLImporter_ImportSync(t *testing.T) {
 	importer := NewOPMLImporter(s, fetcher, slog.Default(), nil)
 
 	results, err := importer.ImportSync(ctx, []byte(opmlContent))
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	data, err := json.MarshalIndent(results, "", "  ")
-	require.NoError(t, err)
+	assert.NilError(t, err)
 	golden.Assert(t, string(data), "opml_import_results.golden")
 
 	// Verify DB
 	feeds, _ := queries.ListFeeds(ctx, nil)
-	assert.Len(t, feeds, 2) // existing + new
+	assert.Equal(t, len(feeds), 2) // existing + new
 }
 
 func TestOPMLImporter_ImportSync_Errors(t *testing.T) {
@@ -64,8 +63,8 @@ func TestOPMLImporter_ImportSync_Errors(t *testing.T) {
 	t.Run("Parse Error", func(t *testing.T) {
 		importer := NewOPMLImporter(s, &mockFetcher{}, slog.Default(), nil)
 		results, err := importer.ImportSync(ctx, []byte("invalid xml"))
-		assert.Error(t, err)
-		assert.Nil(t, results)
+		assert.Assert(t, err != nil)
+		assert.Assert(t, results == nil)
 	})
 
 	t.Run("UUID Error", func(t *testing.T) {
@@ -74,7 +73,7 @@ func TestOPMLImporter_ImportSync_Errors(t *testing.T) {
 		// mockUUIDGenerator with error
 		importer := NewOPMLImporter(s, fetcher, slog.Default(), mockUUIDGenerator{err: errors.New("uuid error")})
 		results, err := importer.ImportSync(ctx, []byte(opmlContent))
-		assert.Error(t, err)
-		assert.Nil(t, results)
+		assert.Assert(t, err != nil)
+		assert.Assert(t, results == nil)
 	})
 }

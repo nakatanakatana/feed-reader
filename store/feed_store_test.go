@@ -11,17 +11,17 @@ import (
 	"github.com/nakatanakatana/feed-reader/store"
 	_ "github.com/ncruces/go-sqlite3/driver"
 	_ "github.com/ncruces/go-sqlite3/embed"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
+	"gotest.tools/v3/assert"
+	"gotest.tools/v3/assert/cmp"
 )
 
 // setupStore is a helper for other tests in the package
 func setupStore(t *testing.T) *store.Store {
 	db, err := sql.Open("sqlite3", ":memory:")
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	_, err = db.ExecContext(context.Background(), schema.Schema)
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	t.Cleanup(func() {
 		_ = db.Close()
@@ -33,10 +33,10 @@ func setupStore(t *testing.T) *store.Store {
 func TestCreateFeed(t *testing.T) {
 	ctx := context.Background()
 	db, err := sql.Open("sqlite3", ":memory:")
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	_, err = db.ExecContext(ctx, schema.Schema)
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	t.Cleanup(func() {
 		_ = db.Close()
@@ -56,7 +56,7 @@ func TestStore_SaveFetchedItem(t *testing.T) {
 		Url: "http://example.com/feed.xml",
 	}
 	_, err := s.CreateFeed(ctx, feedParams)
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	// 2. Define Item Params
 	itemURL := "http://example.com/article/1"
@@ -74,28 +74,29 @@ func TestStore_SaveFetchedItem(t *testing.T) {
 		Guid:        &guid,
 	}
 
+	var itemID string
+
 	// 3. First Save (Should succeed)
 	t.Run("First Save", func(t *testing.T) {
 		err := s.SaveFetchedItem(ctx, params)
-		require.NoError(t, err)
+		assert.NilError(t, err)
 
 		// Verify Item exists
-		var itemID string
 		err = s.DB.QueryRowContext(ctx, "SELECT id FROM items WHERE url = ?", itemURL).Scan(&itemID)
-		require.NoError(t, err)
-		require.NotEmpty(t, itemID)
+		assert.NilError(t, err)
+		assert.Assert(t, itemID != "")
 
 		// Verify FeedItem link
 		var linkCount int
 		err = s.DB.QueryRowContext(ctx, "SELECT count(*) FROM feed_items WHERE feed_id = ? AND item_id = ?", feedID, itemID).Scan(&linkCount)
-		require.NoError(t, err)
-		assert.Equal(t, 1, linkCount)
+		assert.NilError(t, err)
+		assert.Equal(t, linkCount, 1)
 
 		// Verify ItemRead
 		var readCount int
 		err = s.DB.QueryRowContext(ctx, "SELECT count(*) FROM item_reads WHERE item_id = ? AND is_read = 0", itemID).Scan(&readCount)
-		require.NoError(t, err)
-		assert.Equal(t, 1, readCount)
+		assert.NilError(t, err)
+		assert.Equal(t, readCount, 1)
 	})
 
 	// 4. Second Save (Idempotent)
@@ -104,31 +105,30 @@ func TestStore_SaveFetchedItem(t *testing.T) {
 		params.Title = &newTitle
 
 		err := s.SaveFetchedItem(ctx, params)
-		require.NoError(t, err)
+		assert.NilError(t, err)
 
 		// Verify ID is same
 		var newItemID string
 		err = s.DB.QueryRowContext(ctx, "SELECT id, title FROM items WHERE url = ?", itemURL).Scan(&newItemID, &newTitle)
-		require.NoError(t, err)
-		assert.Equal(t, newItemID, newItemID)
-		assert.Equal(t, "Article 1 Updated", newTitle)
+		assert.NilError(t, err)
+		assert.Equal(t, newItemID, itemID)
+		assert.Equal(t, newTitle, "Article 1 Updated")
 
 		// Verify Link count still 1
 		var linkCount int
 		err = s.DB.QueryRowContext(ctx, "SELECT count(*) FROM feed_items WHERE feed_id = ? AND item_id = ?", feedID, newItemID).Scan(&linkCount)
-		require.NoError(t, err)
-		assert.Equal(t, 1, linkCount)
+		assert.NilError(t, err)
+		assert.Equal(t, linkCount, 1)
 	})
 
 	t.Run("Error on Closed DB", func(t *testing.T) {
 		db, err := sql.Open("sqlite3", ":memory:")
-		require.NoError(t, err)
+		assert.NilError(t, err)
 		storeClosed := store.NewStore(db)
 		_ = db.Close()
 
 		err = storeClosed.SaveFetchedItem(ctx, params)
-		require.Error(t, err)
-		assert.Contains(t, err.Error(), "failed to begin transaction")
+		assert.ErrorContains(t, err, "failed to begin transaction")
 	})
 }
 
@@ -143,7 +143,7 @@ func TestStore_ListFeeds_Sorting(t *testing.T) {
 		Url:   "http://example.com/feed1.xml",
 		Title: func() *string { s := "Feed 1"; return &s }(),
 	})
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	// Sleep to ensure timestamp difference (SQLite CURRENT_TIMESTAMP resolution is 1s usually, but might be less in memory?)
 	time.Sleep(1100 * time.Millisecond)
@@ -155,12 +155,12 @@ func TestStore_ListFeeds_Sorting(t *testing.T) {
 		Url:   "http://example.com/feed2.xml",
 		Title: func() *string { s := "Feed 2"; return &s }(),
 	})
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	// 3. List Feeds in created order
 	feeds, err := s.ListFeeds(ctx, store.ListFeedsParams{})
-	require.NoError(t, err)
-	require.Len(t, feeds, 2)
-	assert.Equal(t, feed1ID, feeds[0].ID)
-	assert.Equal(t, feed2ID, feeds[1].ID)
+	assert.NilError(t, err)
+	assert.Assert(t, cmp.Len(feeds, 2))
+	assert.Equal(t, feeds[0].ID, feed1ID)
+	assert.Equal(t, feeds[1].ID, feed2ID)
 }

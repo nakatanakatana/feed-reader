@@ -6,7 +6,8 @@ import (
 	"testing"
 	"testing/fstest"
 
-	"github.com/stretchr/testify/assert"
+	"gotest.tools/v3/assert"
+	"gotest.tools/v3/assert/cmp"
 )
 
 func TestNewAssetsHandler(t *testing.T) {
@@ -83,8 +84,8 @@ func TestNewAssetsHandler(t *testing.T) {
 
 			handler.ServeHTTP(rr, req)
 
-			assert.Equal(t, tt.expectedStatus, rr.Code)
-			assert.Contains(t, rr.Body.String(), tt.expectedBody)
+			assert.Equal(t, rr.Code, tt.expectedStatus)
+			assert.Assert(t, cmp.Contains(rr.Body.String(), tt.expectedBody))
 		})
 	}
 }
@@ -99,14 +100,14 @@ func TestAssetsHandler_NoIndex(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "/", nil)
 		rr := httptest.NewRecorder()
 		handler.ServeHTTP(rr, req)
-		assert.Equal(t, http.StatusNotFound, rr.Code)
+		assert.Equal(t, rr.Code, http.StatusNotFound)
 	})
 
 	t.Run("Non-existent file fallback fails", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "/notfound", nil)
 		rr := httptest.NewRecorder()
 		handler.ServeHTTP(rr, req)
-		assert.Equal(t, http.StatusNotFound, rr.Code)
+		assert.Equal(t, rr.Code, http.StatusNotFound)
 	})
 }
 
@@ -118,6 +119,6 @@ func TestNewAssetsHandler_NoSubDir(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	rr := httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
-	assert.Equal(t, http.StatusOK, rr.Code)
-	assert.Contains(t, rr.Body.String(), "root index")
+	assert.Equal(t, rr.Code, http.StatusOK)
+	assert.Assert(t, cmp.Contains(rr.Body.String(), "root index"))
 }

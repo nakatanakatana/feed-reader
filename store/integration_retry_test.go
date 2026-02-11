@@ -12,13 +12,13 @@ import (
 	"github.com/nakatanakatana/feed-reader/store"
 	_ "github.com/ncruces/go-sqlite3/driver"
 	_ "github.com/ncruces/go-sqlite3/embed"
-	"github.com/stretchr/testify/require"
+	"gotest.tools/v3/assert"
 )
 
 func TestStore_RetryIntegration(t *testing.T) {
 	// Create a temporary directory for the SQLite file
 	tmpDir, err := os.MkdirTemp("", "store-retry-test-*")
-	require.NoError(t, err)
+	assert.NilError(t, err)
 	defer func() { _ = os.RemoveAll(tmpDir) }()
 
 	dbPath := filepath.Join(tmpDir, "test.db")
@@ -26,7 +26,7 @@ func TestStore_RetryIntegration(t *testing.T) {
 	// Helper to open connection
 	openDB := func() *sql.DB {
 		db, err := sql.Open("sqlite3", dbPath+"?_busy_timeout=1")
-		require.NoError(t, err)
+		assert.NilError(t, err)
 		return db
 	}
 
@@ -34,7 +34,7 @@ func TestStore_RetryIntegration(t *testing.T) {
 	db1 := openDB()
 	defer func() { _ = db1.Close() }()
 	_, err = db1.Exec(schema.Schema)
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	s := store.NewStore(db1)
 	ctx := context.Background()
@@ -46,16 +46,16 @@ func TestStore_RetryIntegration(t *testing.T) {
 
 		// Create item first to satisfy FK
 		_, err := s.CreateItem(ctx, store.CreateItemParams{ID: "some-item", Url: "u-lock"})
-		require.NoError(t, err)
+		assert.NilError(t, err)
 
 		// Start a transaction in db2 and hold a lock
 		// Use BEGIN IMMEDIATE to acquire a RESERVED lock immediately
 		_, err = db2.Exec("BEGIN IMMEDIATE")
-		require.NoError(t, err)
+		assert.NilError(t, err)
 
 		// Execute a write in tx2
 		_, err = db2.ExecContext(ctx, "INSERT INTO feeds (id, url) VALUES ('lock', 'lock')")
-		require.NoError(t, err)
+		assert.NilError(t, err)
 
 		// Now try to write via s (db1). It should fail with BUSY but retry.
 		done := make(chan error, 1)
@@ -72,11 +72,11 @@ func TestStore_RetryIntegration(t *testing.T) {
 
 		// then commit tx2 to release the lock
 		_, err = db2.Exec("COMMIT")
-		require.NoError(t, err)
+		assert.NilError(t, err)
 
 		// s.CreateFeedItem should now succeed after retry
 		err = <-done
-		require.NoError(t, err)
+		assert.NilError(t, err)
 	})
 
 	t.Run("retry on transactional write", func(t *testing.T) {
@@ -88,13 +88,13 @@ func TestStore_RetryIntegration(t *testing.T) {
 			ID:  "f1",
 			Url: "http://example.com/f1",
 		})
-		require.NoError(t, err)
+		assert.NilError(t, err)
 
 		// Start a transaction in db2 and hold a lock
 		_, err = db2.Exec("BEGIN IMMEDIATE")
-		require.NoError(t, err)
+		assert.NilError(t, err)
 		_, err = db2.ExecContext(ctx, "INSERT INTO feeds (id, url) VALUES ('lock2', 'lock2')")
-		require.NoError(t, err)
+		assert.NilError(t, err)
 
 		done := make(chan error, 1)
 		go func() {
@@ -109,10 +109,10 @@ func TestStore_RetryIntegration(t *testing.T) {
 
 		time.Sleep(100 * time.Millisecond)
 		_, err = db2.Exec("COMMIT")
-		require.NoError(t, err)
+		assert.NilError(t, err)
 
 		err = <-done
 		// This should FAIL currently because SaveFetchedItem doesn't retry the transaction
-		require.NoError(t, err)
+		assert.NilError(t, err)
 	})
 }
