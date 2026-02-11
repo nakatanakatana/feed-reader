@@ -5,7 +5,7 @@ This track implements a placeholder article at the end of the item list in the d
 ## Phase 1: Filter Preservation on Close
 Ensure that when a user closes the `ItemDetailModal`, they return to the list with their previous tag and date filters intact.
 
-- [ ] Task: Update `ItemDetailRouteView` to preserve search parameters on close
+- [x] Task: Update `ItemDetailRouteView` to preserve search parameters on close [4e7b616]
     - [ ] Write a test in `frontend/src/components/ItemDetailRouteView.Navigation.test.tsx` to verify that closing the modal maintains `tagId` and `since` filters.
     - [ ] Update the `onClose` handler in `ItemDetailRouteView.tsx` to include `tagId` and `since` in the navigation call.
 - [ ] Task: Conductor - User Manual Verification 'Filter Preservation on Close' (Protocol in workflow.md)
