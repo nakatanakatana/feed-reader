@@ -97,6 +97,10 @@ export function ItemList(props: ItemListProps) {
     navigate({
       to: "/items/$itemId",
       params: { itemId },
+      search: {
+        tagId: props.tagId,
+        since: props.dateFilter,
+      },
     });
   };
 
