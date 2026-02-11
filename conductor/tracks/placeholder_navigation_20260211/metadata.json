@@ -1,8 +1,0 @@
-{
-  "track_id": "placeholder_navigation_20260211",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-02-11T12:00:00Z",
-  "updated_at": "2026-02-11T12:00:00Z",
-  "description": "Add a placeholder article at the end of ItemDetail to facilitate marking the last item as read and preserve filters on close."
-}
