@@ -20,5 +20,5 @@
     "skipLibCheck": true,
     "strict": true
   },
-  "include": ["frontend/src"]
+  "include": ["frontend/src", "*.config.ts"]
 }

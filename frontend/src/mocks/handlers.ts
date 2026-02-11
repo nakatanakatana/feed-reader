@@ -2,6 +2,7 @@ import { create } from "@bufbuild/protobuf";
 import {
   CreateFeedResponseSchema,
   DeleteFeedResponseSchema,
+  type Feed,
   FeedSchema,
   FeedService,
   ListFeedSchema,
@@ -13,6 +14,7 @@ import {
 } from "../gen/feed/v1/feed_pb";
 import {
   GetItemResponseSchema,
+  type Item,
   ItemSchema,
   ItemService,
   ListItemSchema,
@@ -24,17 +26,15 @@ import {
   DeleteTagResponseSchema,
   ListTagSchema,
   ListTagsResponseSchema,
+  type Tag,
   TagSchema,
   TagService,
 } from "../gen/tag/v1/tag_pb";
 import { mockConnectWeb } from "./connect";
 
-// biome-ignore lint/suspicious/noExplicitAny: mock data
-const tags: any[] = [];
-// biome-ignore lint/suspicious/noExplicitAny: mock data
-const feeds: any[] = [];
-// biome-ignore lint/suspicious/noExplicitAny: mock data
-const items: any[] = [];
+const tags: Tag[] = [];
+const feeds: Feed[] = [];
+const items: Item[] = [];
 
 export const resetState = () => {
   console.log("MSW: resetState called");
@@ -119,7 +119,7 @@ export const handlers = [
 
       if (req.tagId) {
         filteredFeeds = feeds.filter((f) =>
-          f.tags.some((t) => t.id === req.tagId),
+          f.tags.some((t: Tag) => t.id === req.tagId),
         );
       }
       const listFeeds = filteredFeeds.map((feed) =>
@@ -155,7 +155,7 @@ export const handlers = [
       feeds.push(newFeed);
       tags.forEach((t) => {
         const count = feeds.filter((f) =>
-          f.tags.some((ft) => ft.id === t.id),
+          f.tags.some((ft: Tag) => ft.id === t.id),
         ).length;
         t.feedCount = BigInt(count);
       });
@@ -178,7 +178,7 @@ export const handlers = [
         }
         tags.forEach((t) => {
           const count = feeds.filter((f) =>
-            f.tags.some((ft) => ft.id === t.id),
+            f.tags.some((ft: Tag) => ft.id === t.id),
           ).length;
           t.feedCount = BigInt(count);
         });
@@ -199,7 +199,7 @@ export const handlers = [
         console.log("MSW: feed deleted, remaining:", feeds.length);
         tags.forEach((t) => {
           const count = feeds.filter((f) =>
-            f.tags.some((ft) => ft.id === t.id),
+            f.tags.some((ft: Tag) => ft.id === t.id),
           ).length;
           t.feedCount = BigInt(count);
         });
@@ -250,7 +250,7 @@ export const handlers = [
         });
         tags.forEach((t) => {
           const count = feeds.filter((f) =>
-            f.tags.some((ft) => ft.id === t.id),
+            f.tags.some((ft: Tag) => ft.id === t.id),
           ).length;
           t.feedCount = BigInt(count);
         });
@@ -271,7 +271,7 @@ export const handlers = [
         );
         tags.forEach((t) => {
           const count = feeds.filter((f) =>
-            f.tags.some((ft) => ft.id === t.id),
+            f.tags.some((ft: Tag) => ft.id === t.id),
           ).length;
           t.feedCount = BigInt(count);
         });
@@ -289,11 +289,13 @@ export const handlers = [
         const feed = feeds.find((f) => f.id === feedId);
         if (feed) {
           // Remove tags
-          feed.tags = feed.tags.filter((t) => !removeTagIds.includes(t.id));
+          feed.tags = feed.tags.filter(
+            (t: Tag) => !removeTagIds.includes(t.id),
+          );
           // Add tags
           for (const tagId of addTagIds) {
-            const tag = tags.find((t) => t.id === tagId);
-            if (tag && !feed.tags.some((ft) => ft.id === tagId)) {
+            const tag = tags.find((t: Tag) => t.id === tagId);
+            if (tag && !feed.tags.some((ft: Tag) => ft.id === tagId)) {
               feed.tags.push(tag);
             }
           }
@@ -301,7 +303,7 @@ export const handlers = [
       }
       tags.forEach((t) => {
         const count = feeds.filter((f) =>
-          f.tags.some((ft) => ft.id === t.id),
+          f.tags.some((ft: Tag) => ft.id === t.id),
         ).length;
         t.feedCount = BigInt(count);
       });
@@ -369,7 +371,9 @@ export const handlers = [
       for (const id of req.ids || []) {
         const item = items.find((i) => i.id === id);
         if (item) {
-          item.isRead = req.isRead;
+          if (req.isRead !== undefined) {
+            item.isRead = req.isRead;
+          }
         }
       }
       return create(UpdateItemStatusResponseSchema, {});
