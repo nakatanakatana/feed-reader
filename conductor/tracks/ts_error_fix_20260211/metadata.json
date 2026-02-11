@@ -1,8 +1,0 @@
-{
-  "track_id": "ts_error_fix_20260211",
-  "type": "chore",
-  "status": "new",
-  "created_at": "2026-02-11T12:00:00Z",
-  "updated_at": "2026-02-11T12:00:00Z",
-  "description": "tsc --noEmitをnpm run lintに組み込み、既存のTypeScriptエラーをすべて修正する"
-}
