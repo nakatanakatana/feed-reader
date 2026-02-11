@@ -32,7 +32,7 @@ describe("ItemList Reactivity", () => {
   ) => {
     worker.use(
       http.post("*/item.v1.ItemService/ListItems", async ({ request }) => {
-        const body = await request.json();
+        const body = (await request.json()) as Record<string, unknown>;
         onListItems?.(body);
         return HttpResponse.json(
           toJson(

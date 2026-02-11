@@ -15,7 +15,11 @@ import {
   ListFeedsResponseSchema,
   ListFeedTagsResponseSchema,
 } from "../gen/feed/v1/feed_pb";
-import { ListTagSchema, ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
+import {
+  ListTagSchema,
+  ListTagsResponseSchema,
+  TagSchema,
+} from "../gen/tag/v1/tag_pb";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
@@ -63,7 +67,7 @@ describe("FeedList Tag Filters", () => {
               id: "1",
               title: "Tagged Feed",
               url: "url1",
-              tags: [create(ListTagSchema, { id: "t1", name: "Tech" })],
+              tags: [create(TagSchema, { id: "t1", name: "Tech" })],
             }),
             create(ListFeedSchema, {
               id: "2",

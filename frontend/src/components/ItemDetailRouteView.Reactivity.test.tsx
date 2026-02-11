@@ -32,7 +32,8 @@ describe("ItemDetailRouteView Reactivity", () => {
     vi.clearAllMocks();
   });
 
-  const setupMockData = (itemsData: Partial<ListItemSchema>[]) => {
+  // biome-ignore lint/suspicious/noExplicitAny: test mock data
+  const setupMockData = (itemsData: any[]) => {
     worker.use(
       http.post("*/item.v1.ItemService/ListItems", () => {
         const msg = create(ListItemsResponseSchema, {
