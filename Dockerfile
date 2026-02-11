@@ -14,11 +14,15 @@ RUN go mod download
 COPY . .
 COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
 RUN CGO_ENABLED=0 GOOS=linux go build -v -o feed-reader ./cmd/feed-reader
+RUN mkdir /data && chown 65532:65532 /data
 
 # Stage 3: Final Image
 FROM gcr.io/distroless/static-debian12
 WORKDIR /
 COPY --from=backend-builder /app/feed-reader /feed-reader
+COPY --from=backend-builder --chown=nonroot:nonroot /data /data
+
+USER nonroot
 EXPOSE 8080
 ENV DB_PATH=/data/feed-reader.db
 VOLUME /data
