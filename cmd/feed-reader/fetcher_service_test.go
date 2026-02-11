@@ -9,7 +9,7 @@ import (
 
 	"github.com/mmcdole/gofeed"
 	"github.com/nakatanakatana/feed-reader/store"
-	"github.com/stretchr/testify/assert"
+	"gotest.tools/v3/assert"
 	"pgregory.net/rapid"
 )
 
@@ -38,26 +38,26 @@ func TestFetcherService_normalizeItem_PBT(t *testing.T) {
 
 		params := s.normalizeItem(feedID, item)
 
-		assert.Equal(t, feedID, params.FeedID)
-		assert.Equal(t, item.Link, params.Url)
-		assert.Equal(t, item.Title, *params.Title)
-		assert.Equal(t, item.Description, *params.Description)
-		assert.Equal(t, item.GUID, *params.Guid)
-		assert.Equal(t, item.Content, *params.Content)
-		assert.Equal(t, item.Image.URL, *params.ImageUrl)
+		assert.Equal(t, params.FeedID, feedID)
+		assert.Equal(t, params.Url, item.Link)
+		assert.Equal(t, *params.Title, item.Title)
+		assert.Equal(t, *params.Description, item.Description)
+		assert.Equal(t, *params.Guid, item.GUID)
+		assert.Equal(t, *params.Content, item.Content)
+		assert.Equal(t, *params.ImageUrl, item.Image.URL)
 
 		if len(item.Categories) > 0 {
-			assert.NotNil(t, params.Categories)
+			assert.Assert(t, params.Categories != nil)
 			// Optional: verify JSON content
 		} else {
-			assert.Nil(t, params.Categories)
+			assert.Assert(t, params.Categories == nil)
 		}
 
 		if hasPubDate {
-			assert.NotNil(t, params.PublishedAt)
-			assert.Equal(t, item.PublishedParsed.Format(time.RFC3339), *params.PublishedAt)
+			assert.Assert(t, params.PublishedAt != nil)
+			assert.Equal(t, *params.PublishedAt, item.PublishedParsed.Format(time.RFC3339))
 		} else {
-			assert.Nil(t, params.PublishedAt)
+			assert.Assert(t, params.PublishedAt == nil)
 		}
 	})
 }
@@ -72,9 +72,7 @@ func TestFetcherService_FetchAndSave(t *testing.T) {
 		ID:  "test-uuid",
 		Url: "https://example.com/rss",
 	})
-	if err != nil {
-		t.Fatalf("failed to create feed: %v", err)
-	}
+	assert.NilError(t, err, "failed to create feed")
 
 	mockFeed := &gofeed.Feed{
 		Items: []*gofeed.Item{
@@ -101,35 +99,25 @@ func TestFetcherService_FetchAndSave(t *testing.T) {
 	service := NewFetcherService(s, fetcher, nil, wq, logger, 30*time.Minute)
 
 	err = service.FetchAndSave(ctx, feed)
-	if err != nil {
-		t.Errorf("FetchAndSave() error = %v", err)
-	}
+	assert.NilError(t, err)
 
 	// Wait for WriteQueue to process jobs
 	time.Sleep(50 * time.Millisecond)
 
 	// Verify items are saved
 	items, err := queries.ListItems(ctx, store.ListItemsParams{FeedID: feed.ID, Limit: 10})
-	if err != nil {
-		t.Fatalf("failed to get items: %v", err)
-	}
-
-	if len(items) != 2 {
-		t.Errorf("expected 2 items, got %d", len(items))
-	}
+	assert.NilError(t, err, "failed to get items")
+	assert.Equal(t, len(items), 2)
 
 	found1 := false
 	for _, item := range items {
 		if item.Url == "https://example.com/1" {
 			found1 = true
-			if item.Title == nil || *item.Title != "Item 1" {
-				t.Errorf("expected title 'Item 1', got %v", item.Title)
-			}
+			assert.Assert(t, item.Title != nil)
+			assert.Equal(t, *item.Title, "Item 1")
 		}
 	}
-	if !found1 {
-		t.Error("item 1 not found in DB")
-	}
+	assert.Assert(t, found1, "item 1 not found in DB")
 }
 
 func TestFetcherService_FetchAllFeeds_Interval(t *testing.T) {
@@ -162,9 +150,7 @@ func TestFetcherService_FetchAllFeeds_Interval(t *testing.T) {
 
 	// Run FetchAllFeeds
 	err := service.FetchAllFeeds(ctx)
-	if err != nil {
-		t.Fatalf("FetchAllFeeds failed: %v", err)
-	}
+	assert.NilError(t, err)
 
 	// Wait for workers to finish
 	pool.Wait()
@@ -172,24 +158,14 @@ func TestFetcherService_FetchAllFeeds_Interval(t *testing.T) {
 	time.Sleep(50 * time.Millisecond)
 
 	// Verify results
-	// Recent feed should NOT have changed timestamp (or very minimally if we were unlucky, but we check if it is > recentTime + small delta? No, simpler: check if it was updated to NOW)
-	// Actually, if it fetched, it would update timestamp to NOW.
-	// So we check if timestamp is close to NOW vs close to recentTime.
-
 	fRecent, _ := queries.GetFeed(ctx, feedRecent.ID)
-	if *fRecent.LastFetchedAt != recentTime {
-		t.Errorf("Recent feed should not have been fetched. Want %s, got %s", recentTime, *fRecent.LastFetchedAt)
-	}
+	assert.Equal(t, *fRecent.LastFetchedAt, recentTime, "Recent feed should not have been fetched")
 
 	fOld, _ := queries.GetFeed(ctx, feedOld.ID)
-	if *fOld.LastFetchedAt == oldTime {
-		t.Error("Old feed should have been fetched and updated")
-	}
+	assert.Assert(t, *fOld.LastFetchedAt != oldTime, "Old feed should have been fetched and updated")
 
 	fNew, _ := queries.GetFeed(ctx, feedNew.ID)
-	if fNew.LastFetchedAt == nil {
-		t.Error("New feed should have been fetched")
-	}
+	assert.Assert(t, fNew.LastFetchedAt != nil, "New feed should have been fetched")
 }
 
 func TestFetcherService_FetchFeedsByIDs(t *testing.T) {
@@ -214,9 +190,7 @@ func TestFetcherService_FetchFeedsByIDs(t *testing.T) {
 
 	// Force refresh
 	err := service.FetchFeedsByIDs(ctx, []string{feed.ID})
-	if err != nil {
-		t.Fatalf("FetchFeedsByIDs failed: %v", err)
-	}
+	assert.NilError(t, err)
 
 	pool.Wait()
 	// Wait for WriteQueue
@@ -224,9 +198,7 @@ func TestFetcherService_FetchFeedsByIDs(t *testing.T) {
 
 	// Verify it was fetched (last_fetched_at updated to NOW)
 	updatedFeed, _ := queries.GetFeed(ctx, feed.ID)
-	if *updatedFeed.LastFetchedAt == recentTime {
-		t.Error("Feed should have been force refreshed")
-	}
+	assert.Assert(t, *updatedFeed.LastFetchedAt != recentTime, "Feed should have been force refreshed")
 }
 
 func TestFetcherService_FetchFeedsByIDsSync(t *testing.T) {
@@ -248,9 +220,8 @@ func TestFetcherService_FetchFeedsByIDsSync(t *testing.T) {
 	feed, _ := queries.CreateFeed(ctx, store.CreateFeedParams{ID: "sync-fetch", Url: "http://sync-fetch"})
 
 	results, err := service.FetchFeedsByIDsSync(ctx, []string{feed.ID})
-	assert.NoError(t, err)
-	assert.Len(t, results, 1)
-	assert.Equal(t, feed.ID, results[0].FeedID)
-	assert.True(t, results[0].Success)
-	// assert.Equal(t, int32(1), results[0].NewItemsCount) // We'll see if we can implement this easily
+	assert.NilError(t, err)
+	assert.Equal(t, len(results), 1)
+	assert.Equal(t, results[0].FeedID, feed.ID)
+	assert.Assert(t, results[0].Success)
 }

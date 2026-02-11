@@ -8,75 +8,89 @@ import (
 
 	"github.com/nakatanakatana/feed-reader/store"
 	"github.com/ncruces/go-sqlite3"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
+	"gotest.tools/v3/assert"
 )
 
 type mockDBTX struct {
-	mock.Mock
+	execContext    func(ctx context.Context, query string, args ...interface{}) (sql.Result, error)
+	prepareContext func(ctx context.Context, query string) (*sql.Stmt, error)
+	queryContext   func(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error)
+	queryRowContext func(ctx context.Context, query string, args ...interface{}) *sql.Row
 }
 
 func (m *mockDBTX) ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
-	ret := m.Called(ctx, query, args)
-	return ret.Get(0).(sql.Result), ret.Error(1)
+	return m.execContext(ctx, query, args...)
 }
 
 func (m *mockDBTX) PrepareContext(ctx context.Context, query string) (*sql.Stmt, error) {
-	ret := m.Called(ctx, query)
-	return ret.Get(0).(*sql.Stmt), ret.Error(1)
+	return m.prepareContext(ctx, query)
 }
 
 func (m *mockDBTX) QueryContext(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error) {
-	ret := m.Called(ctx, query, args)
-	return ret.Get(0).(*sql.Rows), ret.Error(1)
+	return m.queryContext(ctx, query, args...)
 }
 
 func (m *mockDBTX) QueryRowContext(ctx context.Context, query string, args ...interface{}) *sql.Row {
-	ret := m.Called(ctx, query, args)
-	return ret.Get(0).(*sql.Row)
+	return m.queryRowContext(ctx, query, args...)
 }
 
 func TestRetryingDB_ExecContext(t *testing.T) {
 	t.Run("retry on busy error", func(t *testing.T) {
-		m := new(mockDBTX)
-		rdb := store.NewRetryingDB(m)
+		calls := 0
 		busyErr := mockSqliteError{code: int(sqlite3.BUSY)}
 		mockResult := new(mockResult)
-
-		m.On("ExecContext", mock.Anything, "query", mock.Anything).Return(mockResult, busyErr).Once()
-		m.On("ExecContext", mock.Anything, "query", mock.Anything).Return(mockResult, nil).Once()
+		m := &mockDBTX{
+			execContext: func(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+				calls++
+				if calls == 1 {
+					return mockResult, busyErr
+				}
+				return mockResult, nil
+			},
+		}
+		rdb := store.NewRetryingDB(m)
 
 		_, err := rdb.ExecContext(context.Background(), "query")
-		assert.NoError(t, err)
-		m.AssertExpectations(t)
+		assert.NilError(t, err)
+		assert.Equal(t, calls, 2)
 	})
 
 	t.Run("fail on non-busy error", func(t *testing.T) {
-		m := new(mockDBTX)
-		rdb := store.NewRetryingDB(m)
+		calls := 0
 		otherErr := errors.New("other error")
 		mockResult := new(mockResult)
-
-		m.On("ExecContext", mock.Anything, "query", mock.Anything).Return(mockResult, otherErr).Once()
+		m := &mockDBTX{
+			execContext: func(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+				calls++
+				return mockResult, otherErr
+			},
+		}
+		rdb := store.NewRetryingDB(m)
 
 		_, err := rdb.ExecContext(context.Background(), "query")
 		assert.ErrorIs(t, err, otherErr)
-		m.AssertExpectations(t)
+		assert.Equal(t, calls, 1)
 	})
 }
 
 func TestRetryingDB_PrepareContext(t *testing.T) {
-	m := new(mockDBTX)
-	rdb := store.NewRetryingDB(m)
+	calls := 0
 	busyErr := mockSqliteError{code: int(sqlite3.BUSY)}
 	stmt := &sql.Stmt{}
-
-	m.On("PrepareContext", mock.Anything, "query").Return(stmt, busyErr).Once()
-	m.On("PrepareContext", mock.Anything, "query").Return(stmt, nil).Once()
+	m := &mockDBTX{
+		prepareContext: func(ctx context.Context, query string) (*sql.Stmt, error) {
+			calls++
+			if calls == 1 {
+				return stmt, busyErr
+			}
+			return stmt, nil
+		},
+	}
+	rdb := store.NewRetryingDB(m)
 
 	_, err := rdb.PrepareContext(context.Background(), "query")
-	assert.NoError(t, err)
-	m.AssertExpectations(t)
+	assert.NilError(t, err)
+	assert.Equal(t, calls, 2)
 }
 
 type mockResult struct{}

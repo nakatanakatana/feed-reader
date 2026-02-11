@@ -7,8 +7,8 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/nakatanakatana/feed-reader/store"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
+	"gotest.tools/v3/assert"
+	"gotest.tools/v3/assert/cmp"
 	"pgregory.net/rapid"
 )
 
@@ -25,7 +25,7 @@ func TestStore_ItemOperations(t *testing.T) {
 		Title: &feedTitle,
 	}
 	_, err := s.CreateFeed(ctx, feedParams)
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	// Create 3 items
 	// Item 1: Read, Saved, Oldest
@@ -40,59 +40,59 @@ func TestStore_ItemOperations(t *testing.T) {
 	item1ID := createTestItem(t, s, ctx, feedID, "http://example.com/1", "Item 1", t1)
 	// Manually update created_at to ensure sorting order (as test runs fast, created_at might be identical)
 	_, err = s.DB.ExecContext(ctx, "UPDATE items SET created_at = ? WHERE id = ?", t1, item1ID)
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	item2ID := createTestItem(t, s, ctx, feedID, "http://example.com/2", "Item 2", t2)
 	_, err = s.DB.ExecContext(ctx, "UPDATE items SET created_at = ? WHERE id = ?", t2, item2ID)
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	item3ID := createTestItem(t, s, ctx, feedID, "http://example.com/3", "Item 3", t3)
 	_, err = s.DB.ExecContext(ctx, "UPDATE items SET created_at = ? WHERE id = ?", t3, item3ID)
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	// Set Statuses
 	_, err = s.SetItemRead(ctx, store.SetItemReadParams{ItemID: item1ID, IsRead: 1, ReadAt: &t3})
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	// Test GetItem
 	t.Run("GetItem", func(t *testing.T) {
 		got, err := s.GetItem(ctx, item1ID)
-		require.NoError(t, err)
-		assert.Equal(t, item1ID, got.ID)
-		assert.Equal(t, int64(1), got.IsRead)
-		assert.Equal(t, feedID, got.FeedID)
+		assert.NilError(t, err)
+		assert.Equal(t, got.ID, item1ID)
+		assert.Equal(t, got.IsRead, int64(1))
+		assert.Equal(t, got.FeedID, feedID)
 
 		got3, err := s.GetItem(ctx, item3ID)
-		require.NoError(t, err)
-		assert.Equal(t, int64(0), got3.IsRead)
+		assert.NilError(t, err)
+		assert.Equal(t, got3.IsRead, int64(0))
 	})
 
 	// Test ListItems
 	t.Run("ListItems", func(t *testing.T) {
 		// All items, asc (standardized)
 		all, err := s.ListItems(ctx, store.ListItemsParams{Limit: 10, Offset: 0})
-		require.NoError(t, err)
-		assert.Len(t, all, 3)
-		assert.Equal(t, item1ID, all[0].ID) // Oldest first
-		assert.Equal(t, item3ID, all[2].ID) // Newest last
+		assert.NilError(t, err)
+		assert.Assert(t, cmp.Len(all, 3))
+		assert.Equal(t, all[0].ID, item1ID) // Oldest first
+		assert.Equal(t, all[2].ID, item3ID) // Newest last
 
 		// Filter by IsRead
 		reads, err := s.ListItems(ctx, store.ListItemsParams{IsRead: int64(1), Limit: 10})
-		require.NoError(t, err)
-		assert.Len(t, reads, 1)
-		assert.Equal(t, item1ID, reads[0].ID)
+		assert.NilError(t, err)
+		assert.Assert(t, cmp.Len(reads, 1))
+		assert.Equal(t, reads[0].ID, item1ID)
 
 		// Filter by Feed (should be all)
 		feedItems, err := s.ListItems(ctx, store.ListItemsParams{FeedID: feedID, Limit: 10})
-		require.NoError(t, err)
-		assert.Len(t, feedItems, 3)
+		assert.NilError(t, err)
+		assert.Assert(t, cmp.Len(feedItems, 3))
 	})
 
 	// Test CountItems
 	t.Run("CountItems", func(t *testing.T) {
 		count, err := s.CountItems(ctx, store.CountItemsParams{})
-		require.NoError(t, err)
-		assert.Equal(t, int64(3), count)
+		assert.NilError(t, err)
+		assert.Equal(t, count, int64(3))
 	})
 }
 
@@ -109,7 +109,7 @@ func TestStore_ListItems_IsRead_CountMatches_PBT(t *testing.T) {
 			ID:  feedID,
 			Url: "http://example.com/read-pbt.xml",
 		})
-		require.NoError(t, err)
+		assert.NilError(t, err)
 
 		count := rapid.IntRange(5, 20).Draw(t, "count")
 		itemIDs := make([]string, 0, count)
@@ -132,22 +132,18 @@ func TestStore_ListItems_IsRead_CountMatches_PBT(t *testing.T) {
 			if rapid.Bool().Draw(t, "isRead") {
 				readCount++
 				_, err := s.SetItemRead(ctx, store.SetItemReadParams{ItemID: id, IsRead: 1})
-				require.NoError(t, err)
+				assert.NilError(t, err)
 			}
 		}
 
 		items, err := s.ListItems(ctx, store.ListItemsParams{IsRead: int64(1), Limit: 100})
-		require.NoError(t, err)
+		assert.NilError(t, err)
 
 		counted, err := s.CountItems(ctx, store.CountItemsParams{IsRead: int64(1)})
-		require.NoError(t, err)
+		assert.NilError(t, err)
 
-		if len(items) != readCount {
-			t.Fatalf("expected read items to match: len(items)=%d readCount=%d", len(items), readCount)
-		}
-		if int64(readCount) != counted {
-			t.Fatalf("expected count to match read items: count=%d readCount=%d", counted, readCount)
-		}
+		assert.Equal(t, len(items), readCount)
+		assert.Equal(t, counted, int64(readCount))
 	})
 }
 
@@ -162,14 +158,12 @@ func createTestItemForRapid(t *rapid.T, s *store.Store, ctx context.Context, fee
 		PublishedAt: &pubAt,
 		Guid:        &guid,
 	}
-	if err := s.SaveFetchedItem(ctx, params); err != nil {
-		t.Fatalf("failed to save item: %v", err)
-	}
+	err := s.SaveFetchedItem(ctx, params)
+	assert.NilError(t, err)
 
 	var id string
-	if err := s.DB.QueryRowContext(ctx, "SELECT id FROM items WHERE url = ?", url).Scan(&id); err != nil {
-		t.Fatalf("failed to load item id: %v", err)
-	}
+	err = s.DB.QueryRowContext(ctx, "SELECT id FROM items WHERE url = ?", url).Scan(&id)
+	assert.NilError(t, err)
 	return id
 }
 
@@ -185,11 +179,11 @@ func createTestItem(t *testing.T, s *store.Store, ctx context.Context, feedID, u
 		Guid:        &guid,
 	}
 	err := s.SaveFetchedItem(ctx, params)
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	// Get ID
 	var id string
 	err = s.DB.QueryRowContext(ctx, "SELECT id FROM items WHERE url = ?", url).Scan(&id)
-	require.NoError(t, err)
+	assert.NilError(t, err)
 	return id
 }

@@ -21,8 +21,8 @@ import (
 	"github.com/nakatanakatana/feed-reader/gen/go/feed/v1/feedv1connect"
 	"github.com/nakatanakatana/feed-reader/sql"
 	"github.com/nakatanakatana/feed-reader/store"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
+	"gotest.tools/v3/assert"
+	"gotest.tools/v3/assert/cmp"
 	"gotest.tools/v3/golden"
 )
 
@@ -34,7 +34,7 @@ func assertResponseGolden(t *testing.T, m proto.Message, goldenFile string) {
 		EmitUnpopulated: false,
 	}
 	b, err := options.Marshal(m)
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	// Replace dynamic IDs and timestamps for stability
 	// This is a simple regex-based replacement for this example
@@ -52,25 +52,20 @@ func assertResponseGolden(t *testing.T, m proto.Message, goldenFile string) {
 func setupTestDB(t *testing.T) (*store.Queries, *sql.DB) {
 	t.Helper()
 	db, err := sql.Open("sqlite3", ":memory:")
-	if err != nil {
-		t.Fatalf("failed to open db: %v", err)
-	}
+	assert.NilError(t, err, "failed to open db")
 
 	// For in-memory SQLite, we must limit to a single connection to share the database across goroutines.
 	db.SetMaxOpenConns(1)
 
-	if _, err := db.Exec("PRAGMA foreign_keys = ON"); err != nil {
-		t.Fatalf("failed to enable foreign keys: %v", err)
-	}
+	_, err = db.Exec("PRAGMA foreign_keys = ON")
+	assert.NilError(t, err, "failed to enable foreign keys")
 
-	if _, err := db.Exec(schema.Schema); err != nil {
-		t.Fatalf("failed to apply schema: %v", err)
-	}
+	_, err = db.Exec(schema.Schema)
+	assert.NilError(t, err, "failed to apply schema")
 
 	t.Cleanup(func() {
-		if err := db.Close(); err != nil {
-			t.Fatalf("failed to close db in cleanup: %v", err)
-		}
+		err := db.Close()
+		assert.NilError(t, err, "failed to close db in cleanup")
 	})
 
 	return store.New(db), db
@@ -213,35 +208,20 @@ func TestFeedServer_CreateFeed(t *testing.T) {
 			server, _ := setupServer(t, db, tt.uuidErr, fetcher, itemFetcher)
 
 			res, err := server.CreateFeed(ctx, connect.NewRequest(tt.args.req))
-			if (err != nil) != tt.wantErr {
-				t.Errorf("CreateFeed() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
 			if tt.wantErr {
-				if connect.CodeOf(err) != tt.errCode {
-					t.Errorf("CreateFeed() error code = %v, want %v", connect.CodeOf(err), tt.errCode)
-				}
+				assert.Assert(t, err != nil)
+				assert.Equal(t, connect.CodeOf(err), tt.errCode)
 				return
 			}
+			assert.NilError(t, err)
 
-			if res.Msg.Feed.Id == "" {
-				t.Error("expected non-empty id")
-			}
-			if res.Msg.Feed.Url != tt.args.req.Url {
-				t.Errorf("expected url %s, got %s", tt.args.req.Url, res.Msg.Feed.Url)
-			}
+			assert.Assert(t, res.Msg.Feed.Id != "")
+			assert.Equal(t, res.Msg.Feed.Url, tt.args.req.Url)
 			if tt.wantTitle != "" {
-				if res.Msg.Feed.Title != tt.wantTitle {
-					t.Errorf("expected title %s, got %s", tt.wantTitle, res.Msg.Feed.Title)
-				}
+				assert.Equal(t, res.Msg.Feed.Title, tt.wantTitle)
 			}
 
-			if tt.wantFetch && !itemFetcher.called {
-				t.Error("expected FetchAndSave to be called")
-			}
-			if !tt.wantFetch && itemFetcher.called {
-				t.Error("expected FetchAndSave NOT to be called")
-			}
+			assert.Equal(t, itemFetcher.called, tt.wantFetch)
 		})
 	}
 }
@@ -263,9 +243,7 @@ func TestFeedServer_GetFeed(t *testing.T) {
 					Url:   "https://example.com/get",
 					Title: proto.String("Get Feed"),
 				}))
-				if err != nil {
-					t.Fatalf("setup failed: %v", err)
-				}
+				assert.NilError(t, err, "setup failed")
 				return res.Msg.Feed.Id
 			},
 			wantErr: false,
@@ -287,15 +265,12 @@ func TestFeedServer_GetFeed(t *testing.T) {
 			id := tt.setup(t, server)
 
 			_, err := server.GetFeed(ctx, connect.NewRequest(&feedv1.GetFeedRequest{Id: id}))
-			if (err != nil) != tt.wantErr {
-				t.Errorf("GetFeed() error = %v, wantErr %v", err, tt.wantErr)
+			if tt.wantErr {
+				assert.Assert(t, err != nil)
+				assert.Equal(t, connect.CodeOf(err), tt.errCode)
 				return
 			}
-			if tt.wantErr {
-				if connect.CodeOf(err) != tt.errCode {
-					t.Errorf("GetFeed() error code = %v, want %v", connect.CodeOf(err), tt.errCode)
-				}
-			}
+			assert.NilError(t, err)
 		})
 	}
 }
@@ -316,9 +291,7 @@ func TestFeedServer_ListFeeds(t *testing.T) {
 						Url:   "https://example.com/list-" + string(rune('a'+i)),
 						Title: proto.String("Feed " + string(rune('a'+i))),
 					}))
-					if err != nil {
-						t.Fatalf("setup failed: %v", err)
-					}
+					assert.NilError(t, err, "setup failed")
 				}
 			},
 			wantCount: 3,
@@ -337,12 +310,8 @@ func TestFeedServer_ListFeeds(t *testing.T) {
 			tt.setup(t, server)
 
 			res, err := server.ListFeeds(ctx, connect.NewRequest(&feedv1.ListFeedsRequest{}))
-			if err != nil {
-				t.Fatalf("ListFeeds() error = %v", err)
-			}
-			if len(res.Msg.Feeds) != tt.wantCount {
-				t.Errorf("ListFeeds() count = %d, want %d", len(res.Msg.Feeds), tt.wantCount)
-			}
+			assert.NilError(t, err)
+			assert.Assert(t, cmp.Len(res.Msg.Feeds, tt.wantCount))
 		})
 	}
 }
@@ -355,32 +324,32 @@ func TestFeedServer_ListFeeds_UnreadCounts(t *testing.T) {
 
 	// Feed 1
 	f1, err := s.CreateFeed(ctx, store.CreateFeedParams{ID: "f1", Url: "u1", Title: proto.String("Feed 1")})
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	// Feed 2
 	f2, err := s.CreateFeed(ctx, store.CreateFeedParams{ID: "f2", Url: "u2", Title: proto.String("Feed 2")})
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	// Items for F1: 1 unread, 1 read
 	err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{FeedID: f1.ID, Url: "i1-1", Title: proto.String("i1-1")}) // Unread by default
-	require.NoError(t, err)
+	assert.NilError(t, err)
 	err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{FeedID: f1.ID, Url: "i1-2", Title: proto.String("i1-2")})
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	// Mark i1-2 as read. Need ID.
 	var id1_2 string
 	err = db.QueryRow("SELECT id FROM items WHERE url = 'i1-2'").Scan(&id1_2)
-	require.NoError(t, err)
+	assert.NilError(t, err)
 	_, err = s.SetItemRead(ctx, store.SetItemReadParams{ItemID: id1_2, IsRead: 1})
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	// Items for F2: 1 unread
 	err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{FeedID: f2.ID, Url: "i2-1", Title: proto.String("i2-1")})
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	// List Feeds
 	res, err := server.ListFeeds(ctx, connect.NewRequest(&feedv1.ListFeedsRequest{}))
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	assertResponseGolden(t, res.Msg, "list_feeds_unread_counts.golden")
 }
@@ -401,9 +370,7 @@ func TestFeedServer_UpdateFeed(t *testing.T) {
 					Url:   "https://example.com/update",
 					Title: proto.String("Original"),
 				}))
-				if err != nil {
-					t.Fatalf("setup failed: %v", err)
-				}
+				assert.NilError(t, err, "setup failed")
 				feed := res.Msg.Feed
 				return &feedv1.UpdateFeedRequest{
 					Id:    feed.Id,
@@ -432,15 +399,12 @@ func TestFeedServer_UpdateFeed(t *testing.T) {
 			req := tt.setup(t, server)
 
 			_, err := server.UpdateFeed(ctx, connect.NewRequest(req))
-			if (err != nil) != tt.wantErr {
-				t.Errorf("UpdateFeed() error = %v, wantErr %v", err, tt.wantErr)
+			if tt.wantErr {
+				assert.Assert(t, err != nil)
+				assert.Equal(t, connect.CodeOf(err), tt.errCode)
 				return
 			}
-			if tt.wantErr {
-				if connect.CodeOf(err) != tt.errCode {
-					t.Errorf("UpdateFeed() error code = %v, want %v", connect.CodeOf(err), tt.errCode)
-				}
-			}
+			assert.NilError(t, err)
 		})
 	}
 }
@@ -460,9 +424,7 @@ func TestFeedServer_DeleteFeed(t *testing.T) {
 					Url:   "https://example.com/delete",
 					Title: proto.String("Delete Me"),
 				}))
-				if err != nil {
-					t.Fatalf("setup failed: %v", err)
-				}
+				assert.NilError(t, err, "setup failed")
 				return res.Msg.Feed.Id
 			},
 			wantErr: false,
@@ -476,17 +438,11 @@ func TestFeedServer_DeleteFeed(t *testing.T) {
 			id := tt.setup(t, server)
 
 			_, err := server.DeleteFeed(ctx, connect.NewRequest(&feedv1.DeleteFeedRequest{Id: id}))
-			if (err != nil) != tt.wantErr {
-				t.Errorf("DeleteFeed() error = %v, wantErr %v", err, tt.wantErr)
-			}
+			assert.NilError(t, err)
 
 			// Verify deletion
-			if !tt.wantErr {
-				_, err := server.GetFeed(ctx, connect.NewRequest(&feedv1.GetFeedRequest{Id: id}))
-				if connect.CodeOf(err) != connect.CodeNotFound {
-					t.Errorf("GetFeed() after DeleteFeed() code = %v, want CodeNotFound", connect.CodeOf(err))
-				}
-			}
+			_, err = server.GetFeed(ctx, connect.NewRequest(&feedv1.GetFeedRequest{Id: id}))
+			assert.Equal(t, connect.CodeOf(err), connect.CodeNotFound)
 		})
 	}
 }
@@ -531,22 +487,16 @@ func TestFeedServer_RefreshFeeds(t *testing.T) {
 			server, _ := setupServer(t, db, nil, &mockFetcher{}, itemFetcher)
 
 			_, err := server.RefreshFeeds(ctx, connect.NewRequest(&feedv1.RefreshFeedsRequest{Ids: tt.ids}))
-			if (err != nil) != tt.wantErr {
-				t.Errorf("RefreshFeeds() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
 			if tt.wantErr {
-				if connect.CodeOf(err) != tt.errCode {
-					t.Errorf("RefreshFeeds() error code = %v, want %v", connect.CodeOf(err), tt.errCode)
-				}
+				assert.Assert(t, err != nil)
+				assert.Equal(t, connect.CodeOf(err), tt.errCode)
 				return
 			}
+			assert.NilError(t, err)
 
-			if tt.wantFetch && !itemFetcher.called {
-				t.Error("expected FetchFeedsByIDs to be called")
-			}
-			if tt.wantFetch && len(itemFetcher.ids) != len(tt.ids) {
-				t.Errorf("expected %d ids, got %d", len(tt.ids), len(itemFetcher.ids))
+			assert.Equal(t, itemFetcher.called, tt.wantFetch)
+			if tt.wantFetch {
+				assert.Assert(t, cmp.Len(itemFetcher.ids, len(tt.ids)))
 			}
 		})
 	}
@@ -586,17 +536,17 @@ func TestFeedServer_ImportOpml_Sync(t *testing.T) {
 	}
 
 	res, err := server.ImportOpml(ctx, connect.NewRequest(req))
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
-	assert.Equal(t, int32(3), res.Msg.Total)
-	assert.Equal(t, int32(1), res.Msg.Success)
-	assert.Equal(t, int32(1), res.Msg.Skipped)
-	assert.Len(t, res.Msg.FailedFeeds, 1)
-	assert.Equal(t, "https://example.com/fail", res.Msg.FailedFeeds[0])
+	assert.Equal(t, res.Msg.Total, int32(3))
+	assert.Equal(t, res.Msg.Success, int32(1))
+	assert.Equal(t, res.Msg.Skipped, int32(1))
+	assert.Assert(t, cmp.Len(res.Msg.FailedFeeds, 1))
+	assert.Equal(t, res.Msg.FailedFeeds[0], "https://example.com/fail")
 
 	// Verify DB
 	feeds, _ := queries.ListFeeds(ctx, nil)
-	assert.Len(t, feeds, 2)
+	assert.Assert(t, cmp.Len(feeds, 2))
 }
 
 func TestFeedServer_ManageFeedTags(t *testing.T) {
@@ -625,16 +575,16 @@ func TestFeedServer_ManageFeedTags(t *testing.T) {
 		}
 
 		_, err := server.ManageFeedTags(ctx, connect.NewRequest(req))
-		require.NoError(t, err)
+		assert.NilError(t, err)
 
 		// Verify f1
 		res1, _ := server.GetFeed(ctx, connect.NewRequest(&feedv1.GetFeedRequest{Id: f1Res.Msg.Feed.Id}))
-		assert.Len(t, res1.Msg.Feed.Tags, 1)
-		assert.Equal(t, "t2", res1.Msg.Feed.Tags[0].Id)
+		assert.Assert(t, cmp.Len(res1.Msg.Feed.Tags, 1))
+		assert.Equal(t, res1.Msg.Feed.Tags[0].Id, "t2")
 
 		// Verify f2
 		res2, _ := server.GetFeed(ctx, connect.NewRequest(&feedv1.GetFeedRequest{Id: f2Res.Msg.Feed.Id}))
-		assert.Len(t, res2.Msg.Feed.Tags, 1)
-		assert.Equal(t, "t2", res2.Msg.Feed.Tags[0].Id)
+		assert.Assert(t, cmp.Len(res2.Msg.Feed.Tags, 1))
+		assert.Equal(t, res2.Msg.Feed.Tags[0].Id, "t2")
 	})
 }

@@ -4,8 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
+	"gotest.tools/v3/assert"
 	"gotest.tools/v3/golden"
 )
 
@@ -25,16 +24,16 @@ func TestParseOPML(t *testing.T) {
 </opml>`
 
 	feeds, err := ParseOPML([]byte(opmlContent))
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	data, err := json.MarshalIndent(feeds, "", "  ")
-	require.NoError(t, err)
+	assert.NilError(t, err)
 	golden.Assert(t, string(data), "parse_opml.golden")
 }
 
 func TestParseOPML_InvalidXML(t *testing.T) {
 	_, err := ParseOPML([]byte("invalid xml"))
-	assert.Error(t, err)
+	assert.Assert(t, err != nil)
 }
 
 func TestParseOPML_NoFeeds(t *testing.T) {
@@ -48,9 +47,9 @@ func TestParseOPML_NoFeeds(t *testing.T) {
     </body>
 </opml>`
 	feeds, err := ParseOPML([]byte(opmlContent))
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	data, err := json.MarshalIndent(feeds, "", "  ")
-	require.NoError(t, err)
+	assert.NilError(t, err)
 	golden.Assert(t, string(data), "parse_opml_no_feeds.golden")
 }
