@@ -5,10 +5,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	_ "github.com/ncruces/go-sqlite3/driver"
-	_ "github.com/ncruces/go-sqlite3/embed"
 	"gotest.tools/v3/assert"
 	"gotest.tools/v3/assert/cmp"
+	_ "modernc.org/sqlite"
 )
 
 func TestMigrate(t *testing.T) {

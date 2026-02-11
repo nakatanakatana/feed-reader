@@ -9,8 +9,7 @@ import (
 
 	schema "github.com/nakatanakatana/feed-reader/sql"
 	"github.com/nakatanakatana/feed-reader/store"
-	_ "github.com/ncruces/go-sqlite3/driver"
-	_ "github.com/ncruces/go-sqlite3/embed"
+	_ "modernc.org/sqlite"
 )
 
 type MockJob struct {
@@ -23,7 +22,7 @@ func (j *MockJob) Execute(ctx context.Context, q *store.Queries) error {
 }
 
 func setupTestStore(t *testing.T) *store.Store {
-	db, err := sql.Open("sqlite3", ":memory:")
+	db, err := sql.Open("sqlite", ":memory:")
 	if err != nil {
 		t.Fatalf("failed to open database: %v", err)
 	}

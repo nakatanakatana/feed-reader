@@ -8,13 +8,12 @@ import (
 
 	schema "github.com/nakatanakatana/feed-reader/sql"
 	"github.com/nakatanakatana/feed-reader/store"
-	_ "github.com/ncruces/go-sqlite3/driver"
-	_ "github.com/ncruces/go-sqlite3/embed"
 	"gotest.tools/v3/assert"
+	_ "modernc.org/sqlite"
 )
 
 func TestItemStore_GetItems_Features(t *testing.T) {
-	db, err := sql.Open("sqlite3", ":memory:")
+	db, err := sql.Open("sqlite", ":memory:")
 	assert.NilError(t, err)
 	defer func() { _ = db.Close() }()
 

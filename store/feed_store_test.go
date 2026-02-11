@@ -9,15 +9,14 @@ import (
 	"github.com/google/uuid"
 	schema "github.com/nakatanakatana/feed-reader/sql"
 	"github.com/nakatanakatana/feed-reader/store"
-	_ "github.com/ncruces/go-sqlite3/driver"
-	_ "github.com/ncruces/go-sqlite3/embed"
 	"gotest.tools/v3/assert"
 	"gotest.tools/v3/assert/cmp"
+	_ "modernc.org/sqlite"
 )
 
 // setupStore is a helper for other tests in the package
 func setupStore(t *testing.T) *store.Store {
-	db, err := sql.Open("sqlite3", ":memory:")
+	db, err := sql.Open("sqlite", ":memory:")
 	assert.NilError(t, err)
 
 	_, err = db.ExecContext(context.Background(), schema.Schema)
@@ -32,7 +31,7 @@ func setupStore(t *testing.T) *store.Store {
 
 func TestCreateFeed(t *testing.T) {
 	ctx := context.Background()
-	db, err := sql.Open("sqlite3", ":memory:")
+	db, err := sql.Open("sqlite", ":memory:")
 	assert.NilError(t, err)
 
 	_, err = db.ExecContext(ctx, schema.Schema)
@@ -122,7 +121,7 @@ func TestStore_SaveFetchedItem(t *testing.T) {
 	})
 
 	t.Run("Error on Closed DB", func(t *testing.T) {
-		db, err := sql.Open("sqlite3", ":memory:")
+		db, err := sql.Open("sqlite", ":memory:")
 		assert.NilError(t, err)
 		storeClosed := store.NewStore(db)
 		_ = db.Close()
