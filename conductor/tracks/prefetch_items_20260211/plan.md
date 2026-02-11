@@ -14,8 +14,8 @@ This plan introduces a proactive prefetching mechanism for the `ItemDetailModal`
 - [x] Task: Ensure that the prefetch logic handles the "end of list" and "start of list" cases gracefully. 571677a
 - [x] Task: Conductor - User Manual Verification 'Implementation of Prefetch Logic' (Protocol in workflow.md)
 
-## Phase 3: Verification & Optimization
+## Phase 3: Verification & Optimization [checkpoint: 78b5f29]
 - [x] Task: Write unit tests for the prefetch window calculation logic. a661894
 - [x] Task: Write integration tests using Vitest to verify that `prefetchQuery` is called with the correct IDs when an item is displayed. 571677a
 - [x] Task: Verify that navigating to a prefetched item results in a 'cache hit' and no new network request for the main item data. 571677a
-- [ ] Task: Conductor - User Manual Verification 'Verification & Optimization' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Verification & Optimization' (Protocol in workflow.md)
