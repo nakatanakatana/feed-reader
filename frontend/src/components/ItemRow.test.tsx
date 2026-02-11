@@ -163,7 +163,9 @@ describe("ItemRow", () => {
   });
 
   it("handles middle-click by opening URL and marking as read", async () => {
-    const windowOpenSpy = vi.spyOn(window, "open").mockImplementation(() => null);
+    const windowOpenSpy = vi
+      .spyOn(window, "open")
+      .mockImplementation(() => null);
     const onClick = vi.fn();
     const mockItemWithUrl = {
       ...mockItem,
@@ -228,14 +230,16 @@ describe("ItemRow", () => {
     });
     await expect.element(titleButton).toBeInTheDocument();
 
-    // Simulate middle-click (button 1)
-    const auxClickEvent = new MouseEvent("auxclick", {
+    // Simulate middle-click (button 1) via mousedown
+    const mouseDownEvent = new MouseEvent("mousedown", {
       button: 1,
       bubbles: true,
       cancelable: true,
     });
-    titleButton.element().dispatchEvent(auxClickEvent);
+    const preventDefaultSpy = vi.spyOn(mouseDownEvent, "preventDefault");
+    titleButton.element().dispatchEvent(mouseDownEvent);
 
+    expect(preventDefaultSpy).toHaveBeenCalled();
     expect(windowOpenSpy).toHaveBeenCalledWith(
       "https://example.com/test-article",
       "_blank",
@@ -246,4 +250,6 @@ describe("ItemRow", () => {
     // Check if mark as read was triggered
     await expect.poll(() => updateCalled).toBe(true);
   });
+
+  // This test is now covered by the updated one above
 });

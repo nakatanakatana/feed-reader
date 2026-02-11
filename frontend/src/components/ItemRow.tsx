@@ -40,25 +40,28 @@ export function ItemRow(props: ItemRowProps) {
     props.onToggleSelection?.((e.target as HTMLInputElement).checked);
   };
 
-  const handleAuxClick = async (e: MouseEvent) => {
+  const handleMouseDown = (e: MouseEvent) => {
     // Middle click is button 1
-    if (e.button === 1 && props.item.url) {
+    if (e.button === 1) {
+      // Prevent autoscroll
       e.preventDefault();
       e.stopPropagation();
 
-      window.open(props.item.url, "_blank", "noopener,noreferrer");
+      if (props.item.url) {
+        window.open(props.item.url, "_blank", "noopener,noreferrer");
 
-      if (!props.item.isRead) {
-        setIsPending(true);
-        try {
-          items().update(props.item.id, (draft) => {
-            draft.id = props.item.id;
-            draft.isRead = true;
-          });
-        } catch (e) {
-          console.error("Failed to mark item as read on middle-click", e);
-        } finally {
-          setIsPending(false);
+        if (!props.item.isRead) {
+          setIsPending(true);
+          try {
+            items().update(props.item.id, (draft) => {
+              draft.id = props.item.id;
+              draft.isRead = true;
+            });
+          } catch (e) {
+            console.error("Failed to mark item as read on middle-click", e);
+          } finally {
+            setIsPending(false);
+          }
         }
       }
     }
@@ -102,7 +105,7 @@ export function ItemRow(props: ItemRowProps) {
         <button
           type="button"
           onClick={handleClick}
-          onAuxClick={handleAuxClick}
+          onMouseDown={handleMouseDown}
           onKeyDown={handleKeyDown}
           class={stack({
             gap: "1",
