@@ -14,8 +14,8 @@ Goal: Consolidate tag lists into a single row with horizontal scrolling and arro
     - [x] Write Vitest tests for the `TagList` or filter component to verify single-row layout
     - [x] Update layout to `flex-nowrap` with `overflow-x-auto`
     - [x] Add left/right arrow buttons that appear when scrolling is possible
-- [ ] Task: Implement horizontal scroll for Feed Management tags
-    - [ ] Apply similar horizontal scroll and arrow button logic to the tags under the "Add Feed" form
+- [x] Task: Implement horizontal scroll for Feed Management tags 5f57f46
+    - [x] Apply similar horizontal scroll and arrow button logic to the tags under the "Add Feed" form
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Horizontal Scrolling for Tag Lists' (Protocol in workflow.md)
 
 ## Phase 3: Improved Bulk Action UI
