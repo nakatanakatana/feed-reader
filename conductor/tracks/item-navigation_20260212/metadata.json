@@ -1,0 +1,8 @@
+{
+  "track_id": "item-navigation_20260212",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-02-12T14:00:00Z",
+  "updated_at": "2026-02-12T14:00:00Z",
+  "description": "ItemDetailModalでのnext/prevの移動先の処理を変更し、ItemListで表示されている既読の記事も含めるようにする"
+}
