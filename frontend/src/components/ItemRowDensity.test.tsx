@@ -31,14 +31,14 @@ describe("ItemRow Density", () => {
 
     const button = page.getByRole("button", { name: "Test Article Title" });
     await expect.element(button).toBeInTheDocument();
-    
+
     const style = window.getComputedStyle(button.element());
-    
+
     // Initial padding: "3" which is 12px.
     // We want to reduce it, e.g., to "2" (8px) or "1.5" (6px).
-    const paddingTop = parseInt(style.paddingTop);
-    const paddingBottom = parseInt(style.paddingBottom);
-    
+    const paddingTop = parseInt(style.paddingTop, 10);
+    const paddingBottom = parseInt(style.paddingBottom, 10);
+
     // This should fail initially as 12 >= 10
     expect(paddingTop).toBeLessThan(10);
     expect(paddingBottom).toBeLessThan(10);

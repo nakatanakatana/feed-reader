@@ -1,5 +1,9 @@
 import { QueryClientProvider } from "@tanstack/solid-query";
-import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
+import {
+  createMemoryHistory,
+  createRouter,
+  RouterProvider,
+} from "@tanstack/solid-router";
 import { render } from "solid-js/web";
 import { describe, expect, it } from "vitest";
 import { page } from "vitest/browser";

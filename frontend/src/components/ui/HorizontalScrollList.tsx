@@ -1,9 +1,9 @@
-import { createSignal, onCleanup, onMount, Show } from "solid-js";
+import { createSignal, type JSX, onCleanup, onMount, Show } from "solid-js";
 import { css } from "../../../styled-system/css";
 import { flex } from "../../../styled-system/patterns";
 
 interface HorizontalScrollListProps {
-  children: any;
+  children: JSX.Element;
   class?: string;
 }
 
@@ -51,6 +51,7 @@ export function HorizontalScrollList(props: HorizontalScrollListProps) {
     >
       <Show when={showLeftArrow()}>
         <button
+          type="button"
           class={css({
             position: "absolute",
             left: 0,
@@ -80,15 +81,17 @@ export function HorizontalScrollList(props: HorizontalScrollListProps) {
             stroke-linecap="round"
             stroke-linejoin="round"
           >
+            <title>Scroll left</title>
             <path d="m15 18-6-6 6-6" />
           </svg>
         </button>
       </Show>
 
-      <div
+      <section
         ref={scrollContainer}
         onMouseEnter={checkScroll}
         data-testid="horizontal-scroll-container"
+        aria-label="Scrollable content"
         class={flex({
           gap: "2",
           overflowX: "auto",
@@ -102,10 +105,11 @@ export function HorizontalScrollList(props: HorizontalScrollListProps) {
         })}
       >
         {props.children}
-      </div>
+      </section>
 
       <Show when={showRightArrow()}>
         <button
+          type="button"
           class={css({
             position: "absolute",
             right: 0,
@@ -135,6 +139,7 @@ export function HorizontalScrollList(props: HorizontalScrollListProps) {
             stroke-linecap="round"
             stroke-linejoin="round"
           >
+            <title>Scroll right</title>
             <path d="m9 18 6-6-6-6" />
           </svg>
         </button>

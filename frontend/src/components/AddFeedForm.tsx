@@ -1,5 +1,5 @@
 import { useLiveQuery } from "@tanstack/solid-db";
-import { createSignal, For, JSX, Show } from "solid-js";
+import { createSignal, For, type JSX, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
 import { feedInsert } from "../lib/db";
@@ -73,49 +73,64 @@ export function AddFeedForm(props: AddFeedFormProps) {
           borderColor: "gray.200",
         })}
       >
-      <div class={flex({ gap: "2", width: "full" })}>
-        <input
-          type="text"
-          placeholder="Feed URL"
-          value={url()}
-          onInput={(e) => setUrl(e.currentTarget.value)}
-          disabled={isPending()}
-          class={css({
-            border: "1px solid",
-            borderColor: "gray.300",
-            padding: "2",
-            borderRadius: "md",
-            flex: "1",
-            _disabled: { opacity: 0.5 },
+        <div class={flex({ gap: "2", width: "full" })}>
+          <input
+            type="text"
+            placeholder="Feed URL"
+            value={url()}
+            onInput={(e) => setUrl(e.currentTarget.value)}
+            disabled={isPending()}
+            class={css({
+              border: "1px solid",
+              borderColor: "gray.300",
+              padding: "2",
+              borderRadius: "md",
+              flex: "1",
+              _disabled: { opacity: 0.5 },
+            })}
+          />
+          <ActionButton type="submit" variant="primary" disabled={isPending()}>
+            {isPending() ? "Adding..." : "Add Feed"}
+          </ActionButton>
+        </div>
+
+        <div
+          class={flex({
+            gap: "2",
+            alignItems: "center",
+            width: "full",
+            minWidth: 0,
           })}
-        />
-        <ActionButton type="submit" variant="primary" disabled={isPending()}>
-          {isPending() ? "Adding..." : "Add Feed"}
-        </ActionButton>
-      </div>
+        >
+          <span
+            class={css({
+              fontSize: "sm",
+              color: "gray.600",
+              whiteSpace: "nowrap",
+            })}
+          >
+            Tags:
+          </span>
+          <HorizontalScrollList>
+            <For each={tagsQuery()}>
+              {(tag) => (
+                <TagChip
+                  selected={selectedTagIds().includes(tag.id)}
+                  onClick={() => toggleTag(tag.id)}
+                >
+                  {tag.name}
+                </TagChip>
+              )}
+            </For>
+          </HorizontalScrollList>
+        </div>
 
-      <div class={flex({ gap: "2", alignItems: "center", width: "full", minWidth: 0 })}>
-        <span class={css({ fontSize: "sm", color: "gray.600", whiteSpace: "nowrap" })}>Tags:</span>
-        <HorizontalScrollList>
-          <For each={tagsQuery()}>
-            {(tag) => (
-              <TagChip
-                selected={selectedTagIds().includes(tag.id)}
-                onClick={() => toggleTag(tag.id)}
-              >
-                {tag.name}
-              </TagChip>
-            )}
-          </For>
-        </HorizontalScrollList>
-      </div>
-
-      {error() && (
-        <p class={css({ color: "red.500", fontSize: "sm", width: "full" })}>
-          Error: {error()?.message}
-        </p>
-      )}
-    </form>
+        {error() && (
+          <p class={css({ color: "red.500", fontSize: "sm", width: "full" })}>
+            Error: {error()?.message}
+          </p>
+        )}
+      </form>
     </div>
   );
 }

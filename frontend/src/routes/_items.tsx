@@ -4,7 +4,6 @@ import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
 import { ItemList } from "../components/ItemList";
 import { ActionButton } from "../components/ui/ActionButton";
-import { PageHeader } from "../components/ui/PageHeader";
 import { PageLayout } from "../components/ui/PageLayout";
 import { items, lastFetched } from "../lib/item-db";
 import type { DateFilterValue } from "../lib/item-utils";

@@ -48,6 +48,8 @@ describe("Item Detail Crash Reproduction", () => {
     await router.navigate({ to: "/" });
 
     // Expect no crash and we should see navigation
-    await expect.element(page.getByRole("link", { name: "Home" })).toBeInTheDocument();
+    await expect
+      .element(page.getByRole("link", { name: "Home" }))
+      .toBeInTheDocument();
   });
 });

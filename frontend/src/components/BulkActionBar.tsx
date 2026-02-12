@@ -1,7 +1,7 @@
-import { ActionButton } from "./ui/ActionButton";
+import { Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
-import { Show } from "solid-js";
+import { ActionButton } from "./ui/ActionButton";
 
 interface BulkActionBarProps {
   selectedCount: number;
@@ -45,11 +45,7 @@ export function BulkActionBar(props: BulkActionBarProps) {
           {props.selectedCount} items selected
         </span>
         <div class={flex({ gap: "2" })}>
-          <ActionButton
-            size="sm"
-            variant="secondary"
-            onClick={props.onClear}
-          >
+          <ActionButton size="sm" variant="secondary" onClick={props.onClear}>
             Clear
           </ActionButton>
           <ActionButton

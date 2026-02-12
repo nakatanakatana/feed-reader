@@ -5,7 +5,6 @@ import { AddFeedForm } from "../components/AddFeedForm";
 import { FeedList } from "../components/FeedList";
 import { ImportOpmlModal } from "../components/ImportOpmlModal";
 import { ActionButton } from "../components/ui/ActionButton";
-import { PageHeader } from "../components/ui/PageHeader";
 import { PageLayout } from "../components/ui/PageLayout";
 
 export const Route = createFileRoute("/feeds")({

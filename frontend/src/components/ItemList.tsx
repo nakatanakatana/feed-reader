@@ -1,16 +1,15 @@
 import { count, eq, useLiveQuery } from "@tanstack/solid-db";
 import { useNavigate } from "@tanstack/solid-router";
-import { createEffect, createSignal, For, Show } from "solid-js";
+import { createEffect, createSignal, For, type JSX, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { feedTag, items, itemsUnreadQuery, tags } from "../lib/db";
 import { itemStore } from "../lib/item-store";
 import { type DateFilterValue, formatUnreadCount } from "../lib/item-utils";
+import { BulkActionBar } from "./BulkActionBar";
 import { DateFilterSelector } from "./DateFilterSelector";
 import { ItemRow } from "./ItemRow";
-import { ActionButton } from "./ui/ActionButton";
 import { Badge } from "./ui/Badge";
-import { BulkActionBar } from "./BulkActionBar";
 import { EmptyState } from "./ui/EmptyState";
 import { HorizontalScrollList } from "./ui/HorizontalScrollList";
 import { TagChip } from "./ui/TagChip";
@@ -135,8 +134,21 @@ export function ItemList(props: ItemListProps) {
   const controls = (
     <div class={stack({ gap: "2", width: "full" })}>
       {/* Row 1: Tag Filters */}
-      <div class={flex({ gap: "2", alignItems: "center", width: "full", minWidth: 0 })}>
-        <span class={css({ fontSize: "sm", color: "gray.600", whiteSpace: "nowrap" })}>
+      <div
+        class={flex({
+          gap: "2",
+          alignItems: "center",
+          width: "full",
+          minWidth: 0,
+        })}
+      >
+        <span
+          class={css({
+            fontSize: "sm",
+            color: "gray.600",
+            whiteSpace: "nowrap",
+          })}
+        >
           Filter by Tag:
         </span>
         <HorizontalScrollList>

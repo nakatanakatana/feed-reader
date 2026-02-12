@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { css } from "../../styled-system/css";
 import { TagManagement } from "../components/TagManagement";
-import { PageHeader } from "../components/ui/PageHeader";
 import { PageLayout } from "../components/ui/PageLayout";
 
 export const Route = createFileRoute("/tags")({
