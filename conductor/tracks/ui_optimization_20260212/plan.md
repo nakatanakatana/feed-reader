@@ -21,8 +21,8 @@ Goal: Consolidate tag lists into a single row with horizontal scrolling and arro
 ## Phase 3: Improved Bulk Action UI
 Goal: Move bulk action buttons to a floating bottom bar to prevent layout shifts.
 
-- [ ] Task: Create a floating action bar for bulk operations
-    - [ ] Write Vitest tests to verify the action bar is rendered at the bottom and uses fixed/absolute positioning
-    - [ ] Implement the `BulkActionBar` component (or update existing logic)
-    - [ ] Ensure the list of items does not shift when the bar appears
+- [x] Task: Create a floating action bar for bulk operations 8c9c22f
+    - [x] Write Vitest tests to verify the action bar is rendered at the bottom and uses fixed/absolute positioning
+    - [x] Implement the `BulkActionBar` component (or update existing logic)
+    - [x] Ensure the list of items does not shift when the bar appears
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Improved Bulk Action UI' (Protocol in workflow.md)
