@@ -20,6 +20,9 @@ export default defineConfig({
         short_name: "Feed Reader",
         description: "A simple PWA Feed Reader",
         theme_color: "#ffffff",
+        background_color: "#ffffff",
+        display: "standalone",
+        start_url: "/",
         icons: [
           {
             src: "pwa-192x192.png",
