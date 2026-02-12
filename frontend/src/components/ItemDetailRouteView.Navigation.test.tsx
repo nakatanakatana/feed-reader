@@ -361,10 +361,8 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
     await userEvent.keyboard("j");
 
     // NEW BEHAVIOR:
-    // It should navigate to Item 2 because it's in the collection, 
+    // It should navigate to Item 2 because it's in the collection,
     // even if it's already read, to match ItemList visibility.
-    await expect
-      .poll(() => history.location.pathname)
-      .toBe("/items/2");
+    await expect.poll(() => history.location.pathname).toBe("/items/2");
   });
 });
