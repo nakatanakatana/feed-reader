@@ -17,6 +17,7 @@ interface ItemListProps {
   tagId?: string;
   dateFilter?: DateFilterValue;
   fixedControls?: boolean;
+  headerActions?: JSX.Element;
 }
 
 export function ItemList(props: ItemListProps) {
@@ -139,7 +140,7 @@ export function ItemList(props: ItemListProps) {
           gap: "4",
         })}
       >
-        <div class={flex({ gap: "2", flexWrap: "wrap", alignItems: "center" })}>
+        <div class={flex({ gap: "2", flexWrap: "wrap", alignItems: "center", flex: 1 })}>
           <span class={css({ fontSize: "sm", color: "gray.600" })}>
             Filter by Tag:
           </span>
@@ -180,6 +181,8 @@ export function ItemList(props: ItemListProps) {
             )}
           </For>
         </div>
+
+        {props.headerActions}
 
         <div class={flex({ gap: "2", alignItems: "center" })}>
           <div

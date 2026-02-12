@@ -3,7 +3,7 @@ import { css } from "../../../styled-system/css";
 import { flex, stack } from "../../../styled-system/patterns";
 
 interface PageHeaderProps {
-  title: string;
+  title?: string;
   description?: string;
   actions?: JSX.Element;
 }
@@ -11,12 +11,18 @@ interface PageHeaderProps {
 export function PageHeader(props: PageHeaderProps) {
   return (
     <div
-      class={flex({ justifyContent: "space-between", alignItems: "center" })}
+      class={flex({
+        justifyContent: "space-between",
+        alignItems: "center",
+        minHeight: props.title || props.actions ? "auto" : "0",
+      })}
     >
       <div class={stack({ gap: "1" })}>
-        <h1 class={css({ fontSize: "2xl", fontWeight: "bold" })}>
-          {props.title}
-        </h1>
+        {props.title && (
+          <h1 class={css({ fontSize: "2xl", fontWeight: "bold" })}>
+            {props.title}
+          </h1>
+        )}
         {props.description ? (
           <p class={css({ fontSize: "sm", color: "gray.600" })}>
             {props.description}

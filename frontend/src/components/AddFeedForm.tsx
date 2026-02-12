@@ -1,5 +1,5 @@
 import { useLiveQuery } from "@tanstack/solid-db";
-import { createSignal, For } from "solid-js";
+import { createSignal, For, JSX, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
 import { feedInsert } from "../lib/db";
@@ -7,7 +7,11 @@ import { tagsFeedQuery } from "../lib/tag-db";
 import { ActionButton } from "./ui/ActionButton";
 import { TagChip } from "./ui/TagChip";
 
-export function AddFeedForm() {
+interface AddFeedFormProps {
+  headerActions?: JSX.Element;
+}
+
+export function AddFeedForm(props: AddFeedFormProps) {
   const [url, setUrl] = createSignal("");
   const [selectedTagIds, setSelectedTagIds] = createSignal<string[]>([]);
   const [isPending, setIsPending] = createSignal(false);
@@ -47,21 +51,27 @@ export function AddFeedForm() {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      class={flex({
-        gap: "4",
-        alignItems: "flex-start",
-        flexDirection: "column",
-        width: "full",
-        bg: "white",
-        p: "4",
-        rounded: "md",
-        shadow: "sm",
-        border: "1px solid",
-        borderColor: "gray.200",
-      })}
-    >
+    <div class={flex({ flexDirection: "column", gap: "2", width: "full" })}>
+      <Show when={props.headerActions}>
+        <div class={flex({ justifyContent: "flex-end" })}>
+          {props.headerActions}
+        </div>
+      </Show>
+      <form
+        onSubmit={handleSubmit}
+        class={flex({
+          gap: "4",
+          alignItems: "flex-start",
+          flexDirection: "column",
+          width: "full",
+          bg: "white",
+          p: "4",
+          rounded: "md",
+          shadow: "sm",
+          border: "1px solid",
+          borderColor: "gray.200",
+        })}
+      >
       <div class={flex({ gap: "2", width: "full" })}>
         <input
           type="text"
@@ -103,5 +113,6 @@ export function AddFeedForm() {
         </p>
       )}
     </form>
+    </div>
   );
 }

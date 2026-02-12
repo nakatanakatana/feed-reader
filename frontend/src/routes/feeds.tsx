@@ -17,9 +17,8 @@ function FeedsComponent() {
 
   return (
     <PageLayout>
-      <PageHeader
-        title="Feed Management"
-        actions={
+      <AddFeedForm
+        headerActions={
           <ActionButton
             variant="ghost"
             onClick={() => setIsImportModalOpen(true)}
@@ -28,7 +27,6 @@ function FeedsComponent() {
           </ActionButton>
         }
       />
-      <AddFeedForm />
       <hr class={css({ borderColor: "gray.200" })} />
       <div class={css({ flex: "1", minHeight: 0, display: "flex" })}>
         <FeedList />
