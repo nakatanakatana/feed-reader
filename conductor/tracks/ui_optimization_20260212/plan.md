@@ -10,7 +10,7 @@ Goal: Remove redundant page titles and increase the number of visible items by r
     - [ ] Update `AllItems` (or similar) component to remove "All Items" header
     - [ ] Update `FeedManagement` component to remove "Feed Management" header
     - [ ] Verify that navigation links in the sidebar clearly indicate the active route
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Header Refinement & Information Density' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Phase 1: Header Refinement & Information Density' (Protocol in workflow.md)
 
 ## Phase 2: Horizontal Scrolling for Tag Lists
 Goal: Consolidate tag lists into a single row with horizontal scrolling and arrow indicators.
