@@ -35,6 +35,7 @@
     "@bufbuild/protoc-gen-es": "^2.2.2",
     "@pandacss/dev": "^1.7.2",
     "@types/markdown-it": "^14.1.2",
+    "@types/node": "^25.2.3",
     "@vitest/browser-playwright": "^4.0.16",
     "@vitest/coverage-v8": "^4.0.16",
     "fast-check": "^4.5.3",
