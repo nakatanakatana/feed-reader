@@ -1,0 +1,8 @@
+{
+  "track_id": "item_detail_warning_20260212",
+  "type": "bug",
+  "status": "new",
+  "created_at": "2026-02-12T10:00:00Z",
+  "updated_at": "2026-02-12T10:00:00Z",
+  "description": "ItemDetailModal: Fix SolidJS computation warning during keyboard navigation"
+}
