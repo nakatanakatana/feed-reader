@@ -2,6 +2,7 @@ import { eq, useLiveQuery } from "@tanstack/solid-db";
 import { useNavigate } from "@tanstack/solid-router";
 import { createEffect, createMemo } from "solid-js";
 import { feedTag, items } from "../lib/db";
+import { getPrefetchIds, prefetchItems } from "../lib/item-prefetch";
 import { itemStore } from "../lib/item-store";
 import type { DateFilterValue } from "../lib/item-utils";
 import { ItemDetailModal } from "./ItemDetailModal";
@@ -18,6 +19,15 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
   createEffect(() => {
     if (props.since) {
       itemStore.setDateFilter(props.since);
+    }
+  });
+
+  createEffect(() => {
+    const idx = currentIndex();
+    const all = filteredItems();
+    if (idx >= 0) {
+      const ids = getPrefetchIds(idx, all);
+      prefetchItems(ids);
     }
   });
 
