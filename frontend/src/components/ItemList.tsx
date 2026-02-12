@@ -11,6 +11,7 @@ import { ItemRow } from "./ItemRow";
 import { ActionButton } from "./ui/ActionButton";
 import { Badge } from "./ui/Badge";
 import { EmptyState } from "./ui/EmptyState";
+import { HorizontalScrollList } from "./ui/HorizontalScrollList";
 import { TagChip } from "./ui/TagChip";
 
 interface ItemListProps {
@@ -131,19 +132,13 @@ export function ItemList(props: ItemListProps) {
   };
 
   const controls = (
-    <>
-      <div
-        class={flex({
-          justifyContent: "space-between",
-          alignItems: "center",
-          flexWrap: "wrap",
-          gap: "4",
-        })}
-      >
-        <div class={flex({ gap: "2", flexWrap: "wrap", alignItems: "center", flex: 1 })}>
-          <span class={css({ fontSize: "sm", color: "gray.600" })}>
-            Filter by Tag:
-          </span>
+    <div class={stack({ gap: "2", width: "full" })}>
+      {/* Row 1: Tag Filters */}
+      <div class={flex({ gap: "2", alignItems: "center", width: "full", minWidth: 0 })}>
+        <span class={css({ fontSize: "sm", color: "gray.600", whiteSpace: "nowrap" })}>
+          Filter by Tag:
+        </span>
+        <HorizontalScrollList>
           <TagChip
             selected={props.tagId === undefined}
             onClick={() => handleTagClick(undefined)}
@@ -180,22 +175,30 @@ export function ItemList(props: ItemListProps) {
               </TagChip>
             )}
           </For>
+        </HorizontalScrollList>
+      </div>
+
+      {/* Row 2: Actions and other filters */}
+      <div
+        class={flex({
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: "4",
+        })}
+      >
+        <div class={flex({ gap: "2", alignItems: "center" })}>
+          {props.headerActions}
         </div>
 
-        {props.headerActions}
-
-        <div class={flex({ gap: "2", alignItems: "center" })}>
-          <div
-            class={flex({ gap: "2", alignItems: "center", marginRight: "4" })}
-          >
+        <div class={flex({ gap: "4", alignItems: "center", flexWrap: "wrap" })}>
+          <div class={flex({ gap: "2", alignItems: "center" })}>
             <DateFilterSelector
               value={itemStore.state.since}
               onSelect={handleDateFilterSelect}
             />
           </div>
-          <div
-            class={flex({ gap: "2", alignItems: "center", marginRight: "4" })}
-          >
+          <div class={flex({ gap: "2", alignItems: "center" })}>
             <input
               id="show-read-toggle"
               type="checkbox"
@@ -214,23 +217,25 @@ export function ItemList(props: ItemListProps) {
               Show Read
             </label>
           </div>
-          <input
-            id="select-all-checkbox"
-            type="checkbox"
-            checked={isAllSelected()}
-            onChange={(e) => handleToggleAll(e.currentTarget.checked)}
-            class={css({ cursor: "pointer" })}
-          />
-          <label
-            for="select-all-checkbox"
-            class={css({
-              fontSize: "sm",
-              color: "gray.600",
-              cursor: "pointer",
-            })}
-          >
-            Select All
-          </label>
+          <div class={flex({ gap: "2", alignItems: "center" })}>
+            <input
+              id="select-all-checkbox"
+              type="checkbox"
+              checked={isAllSelected()}
+              onChange={(e) => handleToggleAll(e.currentTarget.checked)}
+              class={css({ cursor: "pointer" })}
+            />
+            <label
+              for="select-all-checkbox"
+              class={css({
+                fontSize: "sm",
+                color: "gray.600",
+                cursor: "pointer",
+              })}
+            >
+              Select All
+            </label>
+          </div>
         </div>
       </div>
 
@@ -278,7 +283,7 @@ export function ItemList(props: ItemListProps) {
           </div>
         </div>
       </Show>
-    </>
+    </div>
   );
 
   const listBody = (

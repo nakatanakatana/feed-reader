@@ -133,4 +133,26 @@ describe("ItemList", () => {
 
     expect(document.body.innerHTML).toMatchSnapshot();
   });
+
+  it("renders tag filters in a horizontal scroll list", async () => {
+    setLastFetched(new Date("2026-01-20T19:00:00Z"));
+    setupMockData([]);
+    const history = createMemoryHistory({ initialEntries: ["/"] });
+    const router = createRouter({ routeTree, history });
+
+    dispose = render(
+      () => (
+        <TransportProvider transport={transport}>
+          <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} />
+          </QueryClientProvider>
+        </TransportProvider>
+      ),
+      document.body,
+    );
+
+    // Check for the horizontal scroll container
+    const scrollContainer = page.getByTestId("horizontal-scroll-container");
+    await expect.element(scrollContainer).toBeInTheDocument();
+  });
 });
