@@ -4,21 +4,16 @@
 Goal: Remove redundant page titles and increase the number of visible items by reducing vertical padding.
 
 - [x] Task: Reduce vertical padding in item list rows 0f54bde
-    - [ ] Write Vitest tests to verify CSS class or style properties for item row height
-    - [ ] Adjust CSS (e.g., in `frontend/src/styles.css` or component-specific styles) to reduce padding
-- [x] Task: Remove page titles from All Items and Feed Management views 09faa0d
-    - [ ] Update `AllItems` (or similar) component to remove "All Items" header
-    - [ ] Update `FeedManagement` component to remove "Feed Management" header
-    - [ ] Verify that navigation links in the sidebar clearly indicate the active route
-- [~] Task: Conductor - User Manual Verification 'Phase 1: Header Refinement & Information Density' (Protocol in workflow.md)
+- [x] Task: Remove page titles from All Items and Feed Management views 09faa0d, a58d546
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Header Refinement & Information Density' (Protocol in workflow.md) b04c2cf
 
 ## Phase 2: Horizontal Scrolling for Tag Lists
 Goal: Consolidate tag lists into a single row with horizontal scrolling and arrow indicators.
 
-- [ ] Task: Implement horizontal scroll for All Items tag filters
-    - [ ] Write Vitest tests for the `TagList` or filter component to verify single-row layout
-    - [ ] Update layout to `flex-nowrap` with `overflow-x-auto`
-    - [ ] Add left/right arrow buttons that appear when scrolling is possible
+- [x] Task: Implement horizontal scroll for All Items tag filters 6723074
+    - [x] Write Vitest tests for the `TagList` or filter component to verify single-row layout
+    - [x] Update layout to `flex-nowrap` with `overflow-x-auto`
+    - [x] Add left/right arrow buttons that appear when scrolling is possible
 - [ ] Task: Implement horizontal scroll for Feed Management tags
     - [ ] Apply similar horizontal scroll and arrow button logic to the tags under the "Add Feed" form
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Horizontal Scrolling for Tag Lists' (Protocol in workflow.md)
