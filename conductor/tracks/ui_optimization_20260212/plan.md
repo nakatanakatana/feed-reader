@@ -3,7 +3,7 @@
 ## Phase 1: Header Refinement & Information Density
 Goal: Remove redundant page titles and increase the number of visible items by reducing vertical padding.
 
-- [ ] Task: Reduce vertical padding in item list rows
+- [x] Task: Reduce vertical padding in item list rows 0f54bde
     - [ ] Write Vitest tests to verify CSS class or style properties for item row height
     - [ ] Adjust CSS (e.g., in `frontend/src/styles.css` or component-specific styles) to reduce padding
 - [ ] Task: Remove page titles from All Items and Feed Management views
