@@ -32,6 +32,7 @@ The primary target audience is individuals and organizations seeking control ove
 
 
 - **Article Management:** Retrieve articles with flexible filtering and sorting. Track article status including read/unread. Features an information-dense list view displaying key metadata (publication/creation dates, snippets). Includes date-based filtering (e.g., Past 24 hours, Past 7 days, Past 30 days, Past 90 days, or Past 365 days) and a visibility toggle to easily show or hide read items. Supports bulk operations, such as marking multiple articles as read simultaneously for improved efficiency.
+  - **Floating Bulk Actions:** Selecting multiple items triggers a floating action bar at the bottom of the screen, providing a stable and ergonomically accessible UI for bulk operations without causing layout shifts.
 
 
 - **Content Reading:** Clean, distraction-free modal interface for reading full article content. Supports rich HTML rendering, images, and categories. Features robust, keyboard-centric navigation between items with automatic pagination and read-status management, intentionally omitting redundant on-screen navigation buttons to maximize focus on content. Includes a virtual placeholder at the end of lists to provide a clear terminal point and streamline marking the final item as read. Implements standard modal interactions including Escape key and backdrop dismissal. Full URL synchronization (deep linking) for direct access and browser history support, ensuring that active filters (tags and date ranges) are preserved when returning to the list view.
@@ -41,6 +42,7 @@ The primary target audience is individuals and organizations seeking control ove
 
 
 - **Tagging System:** Create and manage custom tags to categorize feeds. Features a robust bulk tagging UI to efficiently organize multiple subscriptions at once. Filter both the feed list and article stream by selected tags for organized content discovery, with unread counts displayed per tag to prioritize reading.
+  - **Responsive Tag Lists:** Tag filters are consolidated into a single row with horizontal scrolling and arrow indicators, maximizing vertical space while maintaining easy access to all categories.
 
 
 
@@ -55,6 +57,7 @@ The primary target audience is individuals and organizations seeking control ove
 - **Standard Compliance:** Supports standard RSS and Atom feed formats.
 -   **Responsive Design:** Accessible on desktop and mobile devices with a tailored experience. Features adaptive headers that prioritize content on small screens and Floating Action Buttons (FAB) for ergonomic access to primary actions like tag management.
 -   **Background Deferral:** To ensure high responsiveness, newly added feeds (via manual entry or OPML import) initially register metadata only. Article content is deferred to the background scheduler for the first crawl.
+  - **Maximized Viewport:** Redundant page titles (e.g., "All Items") are omitted in favor of active navigation states, allowing more content to be visible immediately on both desktop and mobile.
 
 ### Success Metrics
 -   **User Engagement:** Regular usage of the application for daily reading.
