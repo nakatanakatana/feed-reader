@@ -10,6 +10,7 @@ import { DateFilterSelector } from "./DateFilterSelector";
 import { ItemRow } from "./ItemRow";
 import { ActionButton } from "./ui/ActionButton";
 import { Badge } from "./ui/Badge";
+import { BulkActionBar } from "./BulkActionBar";
 import { EmptyState } from "./ui/EmptyState";
 import { HorizontalScrollList } from "./ui/HorizontalScrollList";
 import { TagChip } from "./ui/TagChip";
@@ -239,50 +240,12 @@ export function ItemList(props: ItemListProps) {
         </div>
       </div>
 
-      <Show when={selectedItemIds().size > 0}>
-        <div
-          class={flex({
-            position: "sticky",
-            top: "0",
-            zIndex: 10,
-            backgroundColor: "blue.50",
-            border: "1px solid",
-            borderColor: "blue.200",
-            borderRadius: "md",
-            padding: "3",
-            justifyContent: "space-between",
-            alignItems: "center",
-            boxShadow: "sm",
-          })}
-        >
-          <span
-            class={css({
-              fontSize: "sm",
-              fontWeight: "medium",
-              color: "blue.800",
-            })}
-          >
-            {selectedItemIds().size} items selected
-          </span>
-          <div class={flex({ gap: "2" })}>
-            <ActionButton
-              size="sm"
-              variant="secondary"
-              onClick={() => setSelectedItemIds(new Set())}
-            >
-              Clear
-            </ActionButton>
-            <ActionButton
-              size="sm"
-              variant="primary"
-              onClick={handleBulkMarkAsRead}
-              disabled={isBulkMarking()}
-            >
-              {isBulkMarking() ? "Processing..." : "Mark as Read"}
-            </ActionButton>
-          </div>
-        </div>
-      </Show>
+      <BulkActionBar
+        selectedCount={selectedItemIds().size}
+        onClear={() => setSelectedItemIds(new Set())}
+        onMarkAsRead={handleBulkMarkAsRead}
+        isProcessing={isBulkMarking()}
+      />
     </div>
   );
 
