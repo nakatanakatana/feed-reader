@@ -48,6 +48,7 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
 
   const filteredItems = createMemo(() => {
     const all = itemsQuery();
+    if (!all) return [];
     if (itemStore.state.showRead) return all;
     // Filter out read items, but:
     // 1. ALWAYS keep the current item so its index remains stable.
@@ -62,14 +63,25 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
     );
   });
 
-  const currentIndex = () =>
-    props.itemId ? filteredItems().findIndex((i) => i.id === props.itemId) : -1;
-  const prevItem = () =>
-    currentIndex() > 0 ? filteredItems()[currentIndex() - 1] : undefined;
-  const nextItem = () =>
-    currentIndex() >= 0 && currentIndex() < filteredItems().length - 1
-      ? filteredItems()[currentIndex() + 1]
+  const currentIndex = () => {
+    const items = filteredItems();
+    if (!items) return -1;
+    return props.itemId ? items.findIndex((i) => i.id === props.itemId) : -1;
+  };
+
+  const prevItem = () => {
+    const items = filteredItems();
+    const index = currentIndex();
+    return items && index > 0 ? items[index - 1] : undefined;
+  };
+
+  const nextItem = () => {
+    const items = filteredItems();
+    const index = currentIndex();
+    return items && index >= 0 && index < items.length - 1
+      ? items[index + 1]
       : undefined;
+  };
 
   const handleNext = () => {
     markCurrentAsRead();
@@ -86,7 +98,7 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
           search: linkProps.search,
         });
       }
-    } else if (currentIndex() === filteredItems().length - 1) {
+    } else if (currentIndex() === (filteredItems()?.length ?? 0) - 1) {
       // Transition to virtual end-of-list state
       const linkProps = getLinkProps("end-of-list");
       if (linkProps) {
@@ -103,7 +115,8 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
   const handlePrev = () => {
     markCurrentAsRead();
     if (isEndOfList()) {
-      const lastItem = filteredItems()[filteredItems().length - 1];
+      const items = filteredItems();
+      const lastItem = items ? items[items.length - 1] : undefined;
       if (lastItem) {
         const linkProps = getLinkProps(lastItem.id);
         if (linkProps) {
@@ -141,13 +154,15 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
 
   const prevItemIdMemo = createMemo(() => {
     if (isEndOfList()) {
-      return filteredItems()[filteredItems().length - 1]?.id;
+      const items = filteredItems();
+      return items && items.length > 0 ? items[items.length - 1]?.id : undefined;
     }
     return prevItem()?.id;
   });
 
   const nextItemIdMemo = createMemo(() => {
-    if (!isEndOfList() && currentIndex() === filteredItems().length - 1) {
+    const items = filteredItems();
+    if (!isEndOfList() && items && currentIndex() === items.length - 1) {
       return "end-of-list";
     }
     return nextItem()?.id;

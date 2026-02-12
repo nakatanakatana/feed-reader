@@ -21,8 +21,8 @@ Address the `computations created outside a createRoot` warning during keyboard 
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Fix Implementation' (Protocol in workflow.md) f061cff
 
 ## Phase 3: Final Verification and Cleanup
-- [ ] Task: Run all frontend tests
-    - [ ] Execute `npm test` in the `frontend` directory to ensure no regressions.
-- [ ] Task: Check for memory leaks
-    - [ ] Briefly monitor memory usage in browser devtools to ensure stability after multiple navigations.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Final Verification and Cleanup' (Protocol in workflow.md)
+- [x] Task: Run all frontend tests 475b300
+    - [x] Execute `npm test` in the `frontend` directory to ensure no regressions.
+- [x] Task: Check for memory leaks 475b300
+    - [x] Briefly monitor memory usage in browser devtools to ensure stability after multiple navigations. f061cff
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Final Verification and Cleanup' (Protocol in workflow.md) ccfa830
