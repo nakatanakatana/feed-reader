@@ -139,6 +139,20 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
     });
   };
 
+  const prevItemIdMemo = createMemo(() => {
+    if (isEndOfList()) {
+      return filteredItems()[filteredItems().length - 1]?.id;
+    }
+    return prevItem()?.id;
+  });
+
+  const nextItemIdMemo = createMemo(() => {
+    if (!isEndOfList() && currentIndex() === filteredItems().length - 1) {
+      return "end-of-list";
+    }
+    return nextItem()?.id;
+  });
+
   return (
     <ItemDetailModal
       itemId={props.itemId}
@@ -151,16 +165,8 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
           },
         });
       }}
-      prevItemId={
-        isEndOfList()
-          ? filteredItems()[filteredItems().length - 1]?.id
-          : prevItem()?.id
-      }
-      nextItemId={
-        !isEndOfList() && currentIndex() === filteredItems().length - 1
-          ? "end-of-list"
-          : nextItem()?.id
-      }
+      prevItemId={prevItemIdMemo()}
+      nextItemId={nextItemIdMemo()}
       onPrev={handlePrev}
       onNext={handleNext}
     />
