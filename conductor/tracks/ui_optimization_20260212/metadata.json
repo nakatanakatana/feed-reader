@@ -1,8 +1,0 @@
-{
-  "track_id": "ui_optimization_20260212",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-02-12T12:00:00Z",
-  "updated_at": "2026-02-12T12:00:00Z",
-  "description": "全体的に1画面に出せる情報量を増やしたり、モバイル端末などの画面が狭い端末用のUIの調整を行います"
-}
