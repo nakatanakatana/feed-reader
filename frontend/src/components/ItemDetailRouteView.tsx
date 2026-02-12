@@ -57,19 +57,7 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
   });
 
   const filteredItems = createMemo(() => {
-    const all = itemsQuery();
-    if (itemStore.state.showRead) return all;
-    // Filter out read items, but:
-    // 1. ALWAYS keep the current item so its index remains stable.
-    // 2. If we are at the end-of-list, keep the last item from the original list
-    //    so we can navigate back to it.
-    const lastItem = all[all.length - 1];
-    return all.filter(
-      (i) =>
-        !i.isRead ||
-        i.id === props.itemId ||
-        (isEndOfList() && i.id === lastItem?.id),
-    );
+    return itemsQuery();
   });
 
   const currentIndex = () =>

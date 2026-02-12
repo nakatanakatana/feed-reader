@@ -360,11 +360,11 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
 
     await userEvent.keyboard("j");
 
-    // BUG REPRODUCTION:
-    // It should go to end-of-list because Item 2 is read and should be filtered out.
-    // However, if the bug exists, it will navigate to /items/2.
+    // NEW BEHAVIOR:
+    // It should navigate to Item 2 because it's in the collection, 
+    // even if it's already read, to match ItemList visibility.
     await expect
       .poll(() => history.location.pathname)
-      .toBe("/items/end-of-list");
+      .toBe("/items/2");
   });
 });
