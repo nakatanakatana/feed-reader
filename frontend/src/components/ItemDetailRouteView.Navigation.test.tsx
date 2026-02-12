@@ -337,7 +337,8 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
     );
 
     // Initial state: showRead is false (default)
-    // We expect Item 1 to be the only item in the navigation sequence.
+    // Even if showRead is false, we expect Item 2 to be in the navigation sequence
+    // because it is present in the collection, matching ItemList visibility.
     const history = createMemoryHistory({
       initialEntries: ["/items/1?tagId=tag-1"],
     });
@@ -360,11 +361,9 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
 
     await userEvent.keyboard("j");
 
-    // BUG REPRODUCTION:
-    // It should go to end-of-list because Item 2 is read and should be filtered out.
-    // However, if the bug exists, it will navigate to /items/2.
-    await expect
-      .poll(() => history.location.pathname)
-      .toBe("/items/end-of-list");
+    // NEW BEHAVIOR:
+    // It should navigate to Item 2 because it's in the collection,
+    // even if it's already read, to match ItemList visibility.
+    await expect.poll(() => history.location.pathname).toBe("/items/2");
   });
 });

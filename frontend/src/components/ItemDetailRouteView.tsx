@@ -2,6 +2,7 @@ import { eq, useLiveQuery } from "@tanstack/solid-db";
 import { useNavigate } from "@tanstack/solid-router";
 import { createEffect, createMemo } from "solid-js";
 import { feedTag, items } from "../lib/db";
+import { getPrefetchIds, prefetchItems } from "../lib/item-prefetch";
 import { itemStore } from "../lib/item-store";
 import type { DateFilterValue } from "../lib/item-utils";
 import { ItemDetailModal } from "./ItemDetailModal";
@@ -18,6 +19,15 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
   createEffect(() => {
     if (props.since) {
       itemStore.setDateFilter(props.since);
+    }
+  });
+
+  createEffect(() => {
+    const idx = currentIndexMemo();
+    const all = filteredItems();
+    if (idx >= 0 && all && all.length > 0) {
+      const ids = getPrefetchIds(idx, all);
+      prefetchItems(ids);
     }
   });
 
@@ -49,18 +59,7 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
   const filteredItems = createMemo(() => {
     const all = itemsQuery();
     if (!all) return [];
-    if (itemStore.state.showRead) return all;
-    // Filter out read items, but:
-    // 1. ALWAYS keep the current item so its index remains stable.
-    // 2. If we are at the end-of-list, keep the last item from the original list
-    //    so we can navigate back to it.
-    const lastItem = all[all.length - 1];
-    return all.filter(
-      (i) =>
-        !i.isRead ||
-        i.id === props.itemId ||
-        (isEndOfList() && i.id === lastItem?.id),
-    );
+    return all;
   });
 
   const currentIndexMemo = createMemo(() => {
