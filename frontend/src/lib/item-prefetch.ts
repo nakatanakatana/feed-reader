@@ -29,7 +29,7 @@ export async function prefetchItems(itemIds: string[]) {
 
 /**
  * Calculates the IDs of items to prefetch based on the current index.
- * Returns up to 3 items before and 3 items after the current index.
+ * Returns up to 5 items after the current index.
  * @param currentIndex The index of the item currently being viewed.
  * @param allItems The full list of items in the current view.
  * @returns Array of item IDs to prefetch.
@@ -48,16 +48,7 @@ export function getPrefetchIds(
   }
 
   const ids: string[] = [];
-  const prefetchWindow = 3;
-
-  // Items before
-  for (
-    let i = Math.max(0, currentIndex - prefetchWindow);
-    i < currentIndex;
-    i++
-  ) {
-    ids.push(allItems[i].id);
-  }
+  const prefetchWindow = 5;
 
   // Items after
   for (

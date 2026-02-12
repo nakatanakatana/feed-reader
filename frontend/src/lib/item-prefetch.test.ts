@@ -59,44 +59,46 @@ describe("prefetchItems", () => {
 
 describe("getPrefetchIds", () => {
   const items = [
-    { id: "0" },
-    { id: "1" },
-    { id: "2" },
-    { id: "3" },
-    { id: "4" },
-    { id: "5" },
-    { id: "6" },
-    { id: "7" },
-    { id: "8" },
-    { id: "9" },
+    { id: "a" },
+    { id: "b" },
+    { id: "c" },
+    { id: "d" },
+    { id: "e" },
+    { id: "f" },
+    { id: "g" },
+    { id: "h" },
+    { id: "i" },
+    { id: "j" },
+    { id: "k" },
+    { id: "l" },
   ];
 
-  it("returns up to 3 items before and after the current index", async () => {
+  it("returns up to 5 items after the current index", async () => {
     const { getPrefetchIds } = await import("./item-prefetch");
     const ids = getPrefetchIds(5, items);
-    // 2, 3, 4 (before) and 6, 7, 8 (after)
-    expect(ids).toEqual(["2", "3", "4", "6", "7", "8"]);
+    // f is 5. Next 5: g, h, i, j, k
+    expect(ids).toEqual(["g", "h", "i", "j", "k"]);
   });
 
   it("handles start of list", async () => {
     const { getPrefetchIds } = await import("./item-prefetch");
     const ids = getPrefetchIds(0, items);
-    // nothing before, 1, 2, 3 (after)
-    expect(ids).toEqual(["1", "2", "3"]);
+    // a is 0. Next 5: b, c, d, e, f
+    expect(ids).toEqual(["b", "c", "d", "e", "f"]);
   });
 
   it("handles end of list", async () => {
     const { getPrefetchIds } = await import("./item-prefetch");
-    const ids = getPrefetchIds(9, items);
-    // 6, 7, 8 (before), nothing after
-    expect(ids).toEqual(["6", "7", "8"]);
+    const ids = getPrefetchIds(11, items);
+    // nothing after
+    expect(ids).toEqual([]);
   });
 
-  it("handles near start of list", async () => {
+  it("handles near end of list", async () => {
     const { getPrefetchIds } = await import("./item-prefetch");
-    const ids = getPrefetchIds(1, items);
-    // 0 (before), 2, 3, 4 (after)
-    expect(ids).toEqual(["0", "2", "3", "4"]);
+    const ids = getPrefetchIds(8, items);
+    // i is 8. Next 5 but only 3 left: j, k, l
+    expect(ids).toEqual(["j", "k", "l"]);
   });
 
   it("handles empty items", async () => {

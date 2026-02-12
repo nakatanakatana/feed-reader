@@ -37,7 +37,13 @@ describe("ItemDetailRouteView Prefetching", () => {
 
   const setupMockData = (count = 10) => {
     const mockItems = Array.from({ length: count }, (_, i) =>
-      create(ListItemSchema, { id: `${i}`, title: `Item ${i}`, isRead: false }),
+      create(ListItemSchema, {
+        id: `item-${i.toString().padStart(3, "0")}`,
+        title: `Item ${i}`,
+        isRead: false,
+        createdAt: new Date().toISOString(),
+        publishedAt: new Date().toISOString(),
+      }),
     );
 
     worker.use(
@@ -79,10 +85,12 @@ describe("ItemDetailRouteView Prefetching", () => {
   };
 
   it("prefetches neighboring items when an item is displayed", async () => {
-    setupMockData(10);
+    setupMockData(20);
     const prefetchSpy = vi.spyOn(queryClient, "prefetchQuery");
 
-    const history = createMemoryHistory({ initialEntries: ["/items/5"] });
+    const history = createMemoryHistory({
+      initialEntries: ["/items/item-005"],
+    });
     const router = createRouter({ routeTree, history });
 
     dispose = render(
@@ -98,19 +106,25 @@ describe("ItemDetailRouteView Prefetching", () => {
 
     // Wait for content
     await expect
-      .element(page.getByRole("heading", { name: "Item 5" }))
+      .element(page.getByRole("heading", { name: "Item item-005" }))
       .toBeInTheDocument();
 
-    // Should prefetch 2, 3, 4 and 6, 7, 8
+    await vi.waitFor(() => {
+      const prefetchedIds = prefetchSpy.mock.calls.map(
+        (call) => call[0].queryKey?.[1],
+      );
+      // item-005 is index 5. Next 5: item-006, item-007, item-008, item-009, item-010
+      expect(prefetchedIds).toContain("item-006");
+      expect(prefetchedIds).toContain("item-007");
+      expect(prefetchedIds).toContain("item-008");
+      expect(prefetchedIds).toContain("item-009");
+      expect(prefetchedIds).toContain("item-010");
+    });
+
     const prefetchedIds = prefetchSpy.mock.calls.map(
       (call) => call[0].queryKey?.[1],
     );
-
-    expect(prefetchedIds).toContain("2");
-    expect(prefetchedIds).toContain("3");
-    expect(prefetchedIds).toContain("4");
-    expect(prefetchedIds).toContain("6");
-    expect(prefetchedIds).toContain("7");
-    expect(prefetchedIds).toContain("8");
+    expect(prefetchedIds).not.toContain("item-011");
+    expect(prefetchedIds).not.toContain("item-004");
   });
 });
