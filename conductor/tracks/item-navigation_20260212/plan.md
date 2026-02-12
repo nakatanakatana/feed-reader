@@ -16,7 +16,7 @@ This plan outlines the steps to modify the item navigation logic in `ItemDetailM
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Implementation of Navigation Logic' (Protocol in workflow.md) e5fafb1
 
 ## Phase 3: UI/UX Verification and Refinement
-- [~] Task: Manually verify navigation in the browser, ensuring "Previous" works for just-read items.
-- [ ] Task: Check edge cases: navigation at the start/end of the list, and navigation when filters are active.
-- [ ] Task: Run existing tests to ensure no regressions in `ItemDetailModal` or `ItemList`.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: UI/UX Verification and Refinement' (Protocol in workflow.md)
+- [x] Task: Manually verify navigation in the browser, ensuring "Previous" works for just-read items. 3f78cef
+- [x] Task: Check edge cases: navigation at the start/end of the list, and navigation when filters are active. 3f78cef
+- [x] Task: Run existing tests to ensure no regressions in `ItemDetailModal` or `ItemList`. 3f78cef
+- [x] Task: Conductor - User Manual Verification 'Phase 3: UI/UX Verification and Refinement' (Protocol in workflow.md) 3f78cef
