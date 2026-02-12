@@ -119,7 +119,8 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
     markCurrentAsRead();
     if (isEndOfList()) {
       const items = filteredItems();
-      const lastItem = items && items.length > 0 ? items[items.length - 1] : undefined;
+      const lastItem =
+        items && items.length > 0 ? items[items.length - 1] : undefined;
       if (lastItem) {
         const linkProps = getLinkProps(lastItem.id);
         if (linkProps) {
@@ -158,7 +159,9 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
   const prevItemIdMemo = createMemo(() => {
     if (isEndOfList()) {
       const items = filteredItems();
-      return items && items.length > 0 ? items[items.length - 1]?.id : undefined;
+      return items && items.length > 0
+        ? items[items.length - 1]?.id
+        : undefined;
     }
     return prevItem()?.id;
   });
