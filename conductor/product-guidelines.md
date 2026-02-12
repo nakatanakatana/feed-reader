@@ -31,6 +31,8 @@ As a self-hosted tool focused on data and content, the tone should inspire confi
 -   Use intuitive gestures (swiping to mark read/unread) that feel natural in a mobile browser.
 -   Responsive layouts must adapt gracefully from desktop density to mobile focus. On narrow screens, prioritize high-value information (like unread counts) and move complex header actions into accessible Floating Action Buttons (FAB).
 -   Minimize UI chrome on mobile to maximize content space, such as hiding non-essential titles or static headers when space is at a premium.
+-   Use horizontal scrolling for list-based filters (like tags) to keep them in a single row, preserving vertical space for the primary content stream.
+-   Prefer floating, overlay-style UI for transient actions (like bulk selection) to maintain layout stability and prevent content jumping.
 
 ## 4. Content Presentation: Magazine/Card View
 Articles should be presented in a visual grid to allow for engaging browsing.

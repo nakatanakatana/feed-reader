@@ -4,7 +4,6 @@ import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
 import { ItemList } from "../components/ItemList";
 import { ActionButton } from "../components/ui/ActionButton";
-import { PageHeader } from "../components/ui/PageHeader";
 import { PageLayout } from "../components/ui/PageLayout";
 import { items, lastFetched } from "../lib/item-db";
 import type { DateFilterValue } from "../lib/item-utils";
@@ -54,32 +53,6 @@ function ItemsLayout() {
 
   return (
     <PageLayout>
-      <PageHeader
-        title="All Items"
-        actions={
-          <div class={flex({ gap: "2", alignItems: "center" })}>
-            {lastFetched() && (
-              <span class={css({ fontSize: "sm", color: "gray.500" })}>
-                {lastFetched()?.toLocaleTimeString()}
-              </span>
-            )}
-            <ActionButton
-              size="sm"
-              variant="secondary"
-              onClick={() => itemsCollection.utils.refetch()}
-              disabled={
-                (itemsCollection as unknown as { isFetching: boolean })
-                  .isFetching
-              }
-            >
-              {(itemsCollection as unknown as { isFetching: boolean })
-                .isFetching
-                ? "Refreshing..."
-                : "Refresh"}
-            </ActionButton>
-          </div>
-        }
-      />
       <div
         class={css({
           flex: "1",
@@ -93,6 +66,29 @@ function ItemsLayout() {
           tagId={search()?.tagId}
           dateFilter={search()?.since}
           fixedControls
+          headerActions={
+            <div class={flex({ gap: "2", alignItems: "center" })}>
+              {lastFetched() && (
+                <span class={css({ fontSize: "sm", color: "gray.500" })}>
+                  {lastFetched()?.toLocaleTimeString()}
+                </span>
+              )}
+              <ActionButton
+                size="sm"
+                variant="secondary"
+                onClick={() => itemsCollection.utils.refetch()}
+                disabled={
+                  (itemsCollection as unknown as { isFetching: boolean })
+                    .isFetching
+                }
+              >
+                {(itemsCollection as unknown as { isFetching: boolean })
+                  .isFetching
+                  ? "Refreshing..."
+                  : "Refresh"}
+              </ActionButton>
+            </div>
+          }
         />
         <Outlet />
       </div>

@@ -5,7 +5,6 @@ import { AddFeedForm } from "../components/AddFeedForm";
 import { FeedList } from "../components/FeedList";
 import { ImportOpmlModal } from "../components/ImportOpmlModal";
 import { ActionButton } from "../components/ui/ActionButton";
-import { PageHeader } from "../components/ui/PageHeader";
 import { PageLayout } from "../components/ui/PageLayout";
 
 export const Route = createFileRoute("/feeds")({
@@ -17,9 +16,8 @@ function FeedsComponent() {
 
   return (
     <PageLayout>
-      <PageHeader
-        title="Feed Management"
-        actions={
+      <AddFeedForm
+        headerActions={
           <ActionButton
             variant="ghost"
             onClick={() => setIsImportModalOpen(true)}
@@ -28,7 +26,6 @@ function FeedsComponent() {
           </ActionButton>
         }
       />
-      <AddFeedForm />
       <hr class={css({ borderColor: "gray.200" })} />
       <div class={css({ flex: "1", minHeight: 0, display: "flex" })}>
         <FeedList />

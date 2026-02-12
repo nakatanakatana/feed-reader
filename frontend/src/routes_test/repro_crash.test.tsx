@@ -47,7 +47,9 @@ describe("Item Detail Crash Reproduction", () => {
     // Now navigate away to home
     await router.navigate({ to: "/" });
 
-    // Expect no crash and we should see "All Items"
-    await expect.element(page.getByText("All Items")).toBeInTheDocument();
+    // Expect no crash and we should see navigation
+    await expect
+      .element(page.getByRole("link", { name: "Home" }))
+      .toBeInTheDocument();
   });
 });

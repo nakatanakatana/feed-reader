@@ -1,22 +1,24 @@
 import { count, eq, useLiveQuery } from "@tanstack/solid-db";
 import { useNavigate } from "@tanstack/solid-router";
-import { createEffect, createSignal, For, Show } from "solid-js";
+import { createEffect, createSignal, For, type JSX, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { feedTag, items, itemsUnreadQuery, tags } from "../lib/db";
 import { itemStore } from "../lib/item-store";
 import { type DateFilterValue, formatUnreadCount } from "../lib/item-utils";
+import { BulkActionBar } from "./BulkActionBar";
 import { DateFilterSelector } from "./DateFilterSelector";
 import { ItemRow } from "./ItemRow";
-import { ActionButton } from "./ui/ActionButton";
 import { Badge } from "./ui/Badge";
 import { EmptyState } from "./ui/EmptyState";
+import { HorizontalScrollList } from "./ui/HorizontalScrollList";
 import { TagChip } from "./ui/TagChip";
 
 interface ItemListProps {
   tagId?: string;
   dateFilter?: DateFilterValue;
   fixedControls?: boolean;
+  headerActions?: JSX.Element;
 }
 
 export function ItemList(props: ItemListProps) {
@@ -130,19 +132,26 @@ export function ItemList(props: ItemListProps) {
   };
 
   const controls = (
-    <>
+    <div class={stack({ gap: "2", width: "full" })}>
+      {/* Row 1: Tag Filters */}
       <div
         class={flex({
-          justifyContent: "space-between",
+          gap: "2",
           alignItems: "center",
-          flexWrap: "wrap",
-          gap: "4",
+          width: "full",
+          minWidth: 0,
         })}
       >
-        <div class={flex({ gap: "2", flexWrap: "wrap", alignItems: "center" })}>
-          <span class={css({ fontSize: "sm", color: "gray.600" })}>
-            Filter by Tag:
-          </span>
+        <span
+          class={css({
+            fontSize: "sm",
+            color: "gray.600",
+            whiteSpace: "nowrap",
+          })}
+        >
+          Filter by Tag:
+        </span>
+        <HorizontalScrollList>
           <TagChip
             selected={props.tagId === undefined}
             onClick={() => handleTagClick(undefined)}
@@ -179,20 +188,30 @@ export function ItemList(props: ItemListProps) {
               </TagChip>
             )}
           </For>
+        </HorizontalScrollList>
+      </div>
+
+      {/* Row 2: Actions and other filters */}
+      <div
+        class={flex({
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: "4",
+        })}
+      >
+        <div class={flex({ gap: "2", alignItems: "center" })}>
+          {props.headerActions}
         </div>
 
-        <div class={flex({ gap: "2", alignItems: "center" })}>
-          <div
-            class={flex({ gap: "2", alignItems: "center", marginRight: "4" })}
-          >
+        <div class={flex({ gap: "4", alignItems: "center", flexWrap: "wrap" })}>
+          <div class={flex({ gap: "2", alignItems: "center" })}>
             <DateFilterSelector
               value={itemStore.state.since}
               onSelect={handleDateFilterSelect}
             />
           </div>
-          <div
-            class={flex({ gap: "2", alignItems: "center", marginRight: "4" })}
-          >
+          <div class={flex({ gap: "2", alignItems: "center" })}>
             <input
               id="show-read-toggle"
               type="checkbox"
@@ -211,75 +230,45 @@ export function ItemList(props: ItemListProps) {
               Show Read
             </label>
           </div>
-          <input
-            id="select-all-checkbox"
-            type="checkbox"
-            checked={isAllSelected()}
-            onChange={(e) => handleToggleAll(e.currentTarget.checked)}
-            class={css({ cursor: "pointer" })}
-          />
-          <label
-            for="select-all-checkbox"
-            class={css({
-              fontSize: "sm",
-              color: "gray.600",
-              cursor: "pointer",
-            })}
-          >
-            Select All
-          </label>
+          <div class={flex({ gap: "2", alignItems: "center" })}>
+            <input
+              id="select-all-checkbox"
+              type="checkbox"
+              checked={isAllSelected()}
+              onChange={(e) => handleToggleAll(e.currentTarget.checked)}
+              class={css({ cursor: "pointer" })}
+            />
+            <label
+              for="select-all-checkbox"
+              class={css({
+                fontSize: "sm",
+                color: "gray.600",
+                cursor: "pointer",
+              })}
+            >
+              Select All
+            </label>
+          </div>
         </div>
       </div>
 
-      <Show when={selectedItemIds().size > 0}>
-        <div
-          class={flex({
-            position: "sticky",
-            top: "0",
-            zIndex: 10,
-            backgroundColor: "blue.50",
-            border: "1px solid",
-            borderColor: "blue.200",
-            borderRadius: "md",
-            padding: "3",
-            justifyContent: "space-between",
-            alignItems: "center",
-            boxShadow: "sm",
-          })}
-        >
-          <span
-            class={css({
-              fontSize: "sm",
-              fontWeight: "medium",
-              color: "blue.800",
-            })}
-          >
-            {selectedItemIds().size} items selected
-          </span>
-          <div class={flex({ gap: "2" })}>
-            <ActionButton
-              size="sm"
-              variant="secondary"
-              onClick={() => setSelectedItemIds(new Set())}
-            >
-              Clear
-            </ActionButton>
-            <ActionButton
-              size="sm"
-              variant="primary"
-              onClick={handleBulkMarkAsRead}
-              disabled={isBulkMarking()}
-            >
-              {isBulkMarking() ? "Processing..." : "Mark as Read"}
-            </ActionButton>
-          </div>
-        </div>
-      </Show>
-    </>
+      <BulkActionBar
+        selectedCount={selectedItemIds().size}
+        onClear={() => setSelectedItemIds(new Set())}
+        onMarkAsRead={handleBulkMarkAsRead}
+        isProcessing={isBulkMarking()}
+      />
+    </div>
   );
 
   const listBody = (
-    <div class={stack({ gap: "4", padding: "0" })}>
+    <div
+      class={stack({
+        gap: "4",
+        padding: "0",
+        paddingBottom: selectedItemIds().size > 0 ? "24" : "0",
+      })}
+    >
       <div class={stack({ gap: "2", padding: "0" })}>
         <For each={itemQuery()}>
           {(item) => (
