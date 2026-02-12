@@ -76,4 +76,11 @@ describe("AddFeedForm", () => {
       .element(page.getByText(/Error: .*Invalid feed URL.*/))
       .toBeInTheDocument();
   });
+
+  it("renders tags in a horizontal scroll list", async () => {
+    dispose = render(() => <TestWrapper />, document.body);
+
+    const scrollContainer = page.getByTestId("horizontal-scroll-container");
+    await expect.element(scrollContainer).toBeInTheDocument();
+  });
 });

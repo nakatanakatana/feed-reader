@@ -5,6 +5,7 @@ import { flex } from "../../styled-system/patterns";
 import { feedInsert } from "../lib/db";
 import { tagsFeedQuery } from "../lib/tag-db";
 import { ActionButton } from "./ui/ActionButton";
+import { HorizontalScrollList } from "./ui/HorizontalScrollList";
 import { TagChip } from "./ui/TagChip";
 
 interface AddFeedFormProps {
@@ -93,18 +94,20 @@ export function AddFeedForm(props: AddFeedFormProps) {
         </ActionButton>
       </div>
 
-      <div class={flex({ gap: "2", flexWrap: "wrap", alignItems: "center" })}>
-        <span class={css({ fontSize: "sm", color: "gray.600" })}>Tags:</span>
-        <For each={tagsQuery()}>
-          {(tag) => (
-            <TagChip
-              selected={selectedTagIds().includes(tag.id)}
-              onClick={() => toggleTag(tag.id)}
-            >
-              {tag.name}
-            </TagChip>
-          )}
-        </For>
+      <div class={flex({ gap: "2", alignItems: "center", width: "full", minWidth: 0 })}>
+        <span class={css({ fontSize: "sm", color: "gray.600", whiteSpace: "nowrap" })}>Tags:</span>
+        <HorizontalScrollList>
+          <For each={tagsQuery()}>
+            {(tag) => (
+              <TagChip
+                selected={selectedTagIds().includes(tag.id)}
+                onClick={() => toggleTag(tag.id)}
+              >
+                {tag.name}
+              </TagChip>
+            )}
+          </For>
+        </HorizontalScrollList>
       </div>
 
       {error() && (
