@@ -11,7 +11,6 @@ export const Route = createFileRoute("/tags")({
 function TagsComponent() {
   return (
     <PageLayout>
-      <PageHeader title="Tag Management" />
       <div class={css({ flex: "1", minHeight: 0, overflow: "auto" })}>
         <TagManagement />
       </div>
