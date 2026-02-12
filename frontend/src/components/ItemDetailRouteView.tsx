@@ -155,7 +155,9 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
   const prevItemIdMemo = createMemo(() => {
     if (isEndOfList()) {
       const items = filteredItems();
-      return items && items.length > 0 ? items[items.length - 1]?.id : undefined;
+      return items && items.length > 0
+        ? items[items.length - 1]?.id
+        : undefined;
     }
     return prevItem()?.id;
   });
