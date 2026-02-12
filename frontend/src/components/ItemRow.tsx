@@ -98,7 +98,8 @@ export function ItemRow(props: ItemRowProps) {
           class={stack({
             gap: "1",
             flex: 1,
-            padding: "3",
+            paddingX: "3",
+            paddingY: "1.5",
             textAlign: "left",
             cursor: "pointer",
           })}
