@@ -68,7 +68,8 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
       e.key === "h" ||
       e.key === "H"
     ) {
-      if (props.onPrev && props.prevItemId) props.onPrev();
+      const prevId = props.prevItemId;
+      if (props.onPrev && prevId) props.onPrev();
     } else if (
       e.key === "ArrowRight" ||
       e.key === "j" ||
@@ -76,7 +77,8 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
       e.key === "l" ||
       e.key === "L"
     ) {
-      if (!isEndOfList() && props.onNext && props.nextItemId) props.onNext();
+      const nextId = props.nextItemId;
+      if (!isEndOfList() && props.onNext && nextId) props.onNext();
     }
   };
 

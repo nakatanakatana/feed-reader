@@ -23,9 +23,9 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
   });
 
   createEffect(() => {
-    const idx = currentIndex();
+    const idx = currentIndexMemo();
     const all = filteredItems();
-    if (idx >= 0) {
+    if (idx >= 0 && all && all.length > 0) {
       const ids = getPrefetchIds(idx, all);
       prefetchItems(ids);
     }
@@ -57,17 +57,30 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
   });
 
   const filteredItems = createMemo(() => {
-    return itemsQuery();
+    const all = itemsQuery();
+    if (!all) return [];
+    return all;
   });
 
-  const currentIndex = () =>
-    props.itemId ? filteredItems().findIndex((i) => i.id === props.itemId) : -1;
-  const prevItem = () =>
-    currentIndex() > 0 ? filteredItems()[currentIndex() - 1] : undefined;
-  const nextItem = () =>
-    currentIndex() >= 0 && currentIndex() < filteredItems().length - 1
-      ? filteredItems()[currentIndex() + 1]
+  const currentIndexMemo = createMemo(() => {
+    const items = filteredItems();
+    if (!items || items.length === 0 || !props.itemId) return -1;
+    return items.findIndex((i) => i.id === props.itemId);
+  });
+
+  const prevItem = () => {
+    const items = filteredItems();
+    const index = currentIndexMemo();
+    return items && index > 0 ? items[index - 1] : undefined;
+  };
+
+  const nextItem = () => {
+    const items = filteredItems();
+    const index = currentIndexMemo();
+    return items && index >= 0 && index < items.length - 1
+      ? items[index + 1]
       : undefined;
+  };
 
   const handleNext = () => {
     markCurrentAsRead();
@@ -84,16 +97,20 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
           search: linkProps.search,
         });
       }
-    } else if (currentIndex() === filteredItems().length - 1) {
-      // Transition to virtual end-of-list state
-      const linkProps = getLinkProps("end-of-list");
-      if (linkProps) {
-        navigate({
-          to: linkProps.to,
-          // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
-          params: linkProps.params as any,
-          search: linkProps.search,
-        });
+    } else {
+      const items = filteredItems();
+      const index = currentIndexMemo();
+      if (items && items.length > 0 && index === items.length - 1) {
+        // Transition to virtual end-of-list state
+        const linkProps = getLinkProps("end-of-list");
+        if (linkProps) {
+          navigate({
+            to: linkProps.to,
+            // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
+            params: linkProps.params as any,
+            search: linkProps.search,
+          });
+        }
       }
     }
   };
@@ -101,7 +118,9 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
   const handlePrev = () => {
     markCurrentAsRead();
     if (isEndOfList()) {
-      const lastItem = filteredItems()[filteredItems().length - 1];
+      const items = filteredItems();
+      const lastItem =
+        items && items.length > 0 ? items[items.length - 1] : undefined;
       if (lastItem) {
         const linkProps = getLinkProps(lastItem.id);
         if (linkProps) {
@@ -137,6 +156,29 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
     });
   };
 
+  const prevItemIdMemo = createMemo(() => {
+    if (isEndOfList()) {
+      const items = filteredItems();
+      return items && items.length > 0
+        ? items[items.length - 1]?.id
+        : undefined;
+    }
+    return prevItem()?.id;
+  });
+
+  const nextItemIdMemo = createMemo(() => {
+    const items = filteredItems();
+    if (
+      !isEndOfList() &&
+      items &&
+      items.length > 0 &&
+      currentIndexMemo() === items.length - 1
+    ) {
+      return "end-of-list";
+    }
+    return nextItem()?.id;
+  });
+
   return (
     <ItemDetailModal
       itemId={props.itemId}
@@ -149,16 +191,8 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
           },
         });
       }}
-      prevItemId={
-        isEndOfList()
-          ? filteredItems()[filteredItems().length - 1]?.id
-          : prevItem()?.id
-      }
-      nextItemId={
-        !isEndOfList() && currentIndex() === filteredItems().length - 1
-          ? "end-of-list"
-          : nextItem()?.id
-      }
+      prevItemId={prevItemIdMemo()}
+      nextItemId={nextItemIdMemo()}
       onPrev={handlePrev}
       onNext={handleNext}
     />
