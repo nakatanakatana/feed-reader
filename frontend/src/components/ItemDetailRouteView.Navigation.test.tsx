@@ -337,7 +337,8 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
     );
 
     // Initial state: showRead is false (default)
-    // We expect Item 1 to be the only item in the navigation sequence.
+    // Even if showRead is false, we expect Item 2 to be in the navigation sequence
+    // because it is present in the collection, matching ItemList visibility.
     const history = createMemoryHistory({
       initialEntries: ["/items/1?tagId=tag-1"],
     });
