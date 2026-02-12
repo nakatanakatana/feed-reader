@@ -6,7 +6,7 @@ Goal: Remove redundant page titles and increase the number of visible items by r
 - [x] Task: Reduce vertical padding in item list rows 0f54bde
     - [ ] Write Vitest tests to verify CSS class or style properties for item row height
     - [ ] Adjust CSS (e.g., in `frontend/src/styles.css` or component-specific styles) to reduce padding
-- [ ] Task: Remove page titles from All Items and Feed Management views
+- [x] Task: Remove page titles from All Items and Feed Management views 09faa0d
     - [ ] Update `AllItems` (or similar) component to remove "All Items" header
     - [ ] Update `FeedManagement` component to remove "Feed Management" header
     - [ ] Verify that navigation links in the sidebar clearly indicate the active route
