@@ -262,7 +262,13 @@ export function ItemList(props: ItemListProps) {
   );
 
   const listBody = (
-    <div class={stack({ gap: "4", padding: "0" })}>
+    <div
+      class={stack({
+        gap: "4",
+        padding: "0",
+        paddingBottom: selectedItemIds().size > 0 ? "24" : "0",
+      })}
+    >
       <div class={stack({ gap: "2", padding: "0" })}>
         <For each={itemQuery()}>
           {(item) => (

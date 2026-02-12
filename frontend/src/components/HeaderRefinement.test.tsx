@@ -5,18 +5,26 @@ import {
   RouterProvider,
 } from "@tanstack/solid-router";
 import { render } from "solid-js/web";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { page } from "vitest/browser";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
 
 describe("Header Refinement", () => {
+  let dispose: () => void;
+
+  afterEach(() => {
+    dispose?.();
+    document.body.innerHTML = "";
+    queryClient.clear();
+  });
+
   it("does not display 'All Items' title on the home page", async () => {
     const history = createMemoryHistory({ initialEntries: ["/"] });
     const router = createRouter({ routeTree, history });
 
-    render(
+    dispose = render(
       () => (
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>
@@ -36,7 +44,7 @@ describe("Header Refinement", () => {
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
     const router = createRouter({ routeTree, history });
 
-    render(
+    dispose = render(
       () => (
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>

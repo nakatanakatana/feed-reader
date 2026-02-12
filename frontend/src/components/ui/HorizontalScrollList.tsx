@@ -1,5 +1,5 @@
 import { createSignal, type JSX, onCleanup, onMount, Show } from "solid-js";
-import { css } from "../../../styled-system/css";
+import { css, cx } from "../../../styled-system/css";
 import { flex } from "../../../styled-system/patterns";
 
 interface HorizontalScrollListProps {
@@ -8,7 +8,7 @@ interface HorizontalScrollListProps {
 }
 
 export function HorizontalScrollList(props: HorizontalScrollListProps) {
-  let scrollContainer: HTMLDivElement | undefined;
+  let scrollContainer: HTMLElement | undefined;
   const [showLeftArrow, setShowLeftArrow] = createSignal(false);
   const [showRightArrow, setShowRightArrow] = createSignal(false);
 
@@ -41,13 +41,16 @@ export function HorizontalScrollList(props: HorizontalScrollListProps) {
 
   return (
     <div
-      class={css({
-        position: "relative",
-        width: "full",
-        display: "flex",
-        alignItems: "center",
-        minWidth: 0,
-      })}
+      class={cx(
+        css({
+          position: "relative",
+          width: "full",
+          display: "flex",
+          alignItems: "center",
+          minWidth: 0,
+        }),
+        props.class,
+      )}
     >
       <Show when={showLeftArrow()}>
         <button

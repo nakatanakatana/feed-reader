@@ -1,12 +1,20 @@
 import { QueryClientProvider } from "@tanstack/solid-query";
 import { render } from "solid-js/web";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { page } from "vitest/browser";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { ItemRow } from "./ItemRow";
 
 describe("ItemRow Density", () => {
+  let dispose: () => void;
+
+  afterEach(() => {
+    dispose?.();
+    document.body.innerHTML = "";
+    queryClient.clear();
+  });
+
   const mockItem = {
     id: "1",
     title: "Test Article Title",
@@ -18,7 +26,7 @@ describe("ItemRow Density", () => {
   };
 
   it("has reduced vertical padding", async () => {
-    render(
+    dispose = render(
       () => (
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>
@@ -34,12 +42,11 @@ describe("ItemRow Density", () => {
 
     const style = window.getComputedStyle(button.element());
 
-    // Initial padding: "3" which is 12px.
-    // We want to reduce it, e.g., to "2" (8px) or "1.5" (6px).
+    // Verify reduced vertical padding.
+    // We expect it to be less than 10px (previously it was 12px / "3" units).
     const paddingTop = parseInt(style.paddingTop, 10);
     const paddingBottom = parseInt(style.paddingBottom, 10);
 
-    // This should fail initially as 12 >= 10
     expect(paddingTop).toBeLessThan(10);
     expect(paddingBottom).toBeLessThan(10);
   });
