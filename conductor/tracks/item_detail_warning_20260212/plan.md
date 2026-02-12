@@ -20,7 +20,7 @@ Address the `computations created outside a createRoot` warning during keyboard 
     - [x] Confirm the warning is gone in the browser console.
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Fix Implementation' (Protocol in workflow.md) 33fd2f7
 
-## Phase 3: Final Verification and Cleanup
+## Phase 3: Final Verification and Cleanup [checkpoint: 754b759]
 - [x] Task: Run all frontend tests 33fd2f7
     - [x] Execute `npm test` in the `frontend` directory to ensure no regressions.
 - [x] Task: Check for memory leaks 33fd2f7
