@@ -1,12 +1,12 @@
 # Implementation Plan: address_pr167_review_20260214
 
 # Phase 1: Test Infrastructure and Refactoring
-1.  **[ ] Task: Refactor Test Utilities**
-    -   [ ] Extract `dispatchTouch` and related touch simulation logic from `ItemDetailModal.Swipe.test.tsx` and `use-swipe.test.ts` into a shared utility file (e.g., `frontend/src/test-utils/touch.ts`).
-    -   [ ] Update `Touch` identifier to use a deterministic incremental counter.
-2.  **[ ] Task: Verify Existing Tests**
-    -   [ ] Run existing swipe-related tests to ensure refactoring didn't break anything.
-    -   [ ] Task: Conductor - User Manual Verification 'Phase 1: Test Infrastructure and Refactoring' (Protocol in workflow.md)
+1.  **[x] Task: Refactor Test Utilities** dbbfa02
+    -   [x] Extract `dispatchTouch` and related touch simulation logic from `ItemDetailModal.Swipe.test.tsx` and `use-swipe.test.ts` into a shared utility file (e.g., `frontend/src/test-utils/touch.ts`).
+    -   [x] Update `Touch` identifier to use a deterministic incremental counter.
+2.  **[x] Task: Verify Existing Tests** dbbfa02
+    -   [x] Run existing swipe-related tests to ensure refactoring didn't break anything.
+    -   [x] Task: Conductor - User Manual Verification 'Phase 1: Test Infrastructure and Refactoring' (Protocol in workflow.md)
 
 # Phase 2: Core Logic Enhancements (`use-swipe.ts`)
 1.  **[ ] Task: Implement `touchcancel` and `preventDefault`**
