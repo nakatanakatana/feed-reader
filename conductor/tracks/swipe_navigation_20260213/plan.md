@@ -12,7 +12,7 @@ Implement the core logic for detecting swipe gestures and calculating horizontal
     - [ ] Apply `transform: translateX()` to the article content container.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Touch Interaction Hook & Logic' (Protocol in workflow.md)
 
-## Phase 2: Navigation Integration
+## Phase 2: Navigation Integration [checkpoint: d653f6d]
 Connect the swipe gesture results to the existing item navigation logic.
 
 - [x] Task: Implement navigation trigger on `touchend`. 16ff907
