@@ -12,6 +12,7 @@ import { page, userEvent } from "vitest/browser";
 import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
 import {
   GetItemResponseSchema,
+  ItemSchema,
   ListItemSchema,
   ListItemsResponseSchema,
 } from "../gen/item/v1/item_pb";
@@ -46,7 +47,7 @@ describe("Item History Navigation", () => {
           const id = body.id;
           const item = items.find((i) => i.id === id) || items[0];
           const msg = create(GetItemResponseSchema, {
-            item: create(ListItemSchema, item),
+            item: create(ItemSchema, item),
           });
           return HttpResponse.json(toJson(GetItemResponseSchema, msg));
         });
@@ -157,14 +158,18 @@ describe("Item History Navigation", () => {
     await expect.element(item1).toBeInTheDocument();
     await item1.click();
 
-    await expect.element(page.getByRole("heading", { name: "Item 1" })).toBeInTheDocument();
+    await expect
+      .element(page.getByRole("heading", { name: "Item 1" }))
+      .toBeInTheDocument();
     expect(history.location.pathname).toBe("/items/1");
     expect(history.length).toBe(2);
 
     // Simulate keyboard 'j' to go to next item
     await userEvent.keyboard("j");
 
-    await expect.element(page.getByRole("heading", { name: "Item 2" })).toBeInTheDocument();
+    await expect
+      .element(page.getByRole("heading", { name: "Item 2" }))
+      .toBeInTheDocument();
     expect(history.location.pathname).toBe("/items/2");
 
     // History length should STAY at 2 because we used replace
@@ -172,40 +177,54 @@ describe("Item History Navigation", () => {
   });
 
   it("should return to list view when back button is pressed", async () => {
-      const fixedDate = "2026-01-20T19:00:00Z";
-      setupMockData([
-        { id: "1", title: "Item 1", publishedAt: fixedDate, createdAt: fixedDate, isRead: false },
-        { id: "2", title: "Item 2", publishedAt: fixedDate, createdAt: fixedDate, isRead: false },
-      ]);
+    const fixedDate = "2026-01-20T19:00:00Z";
+    setupMockData([
+      {
+        id: "1",
+        title: "Item 1",
+        publishedAt: fixedDate,
+        createdAt: fixedDate,
+        isRead: false,
+      },
+      {
+        id: "2",
+        title: "Item 2",
+        publishedAt: fixedDate,
+        createdAt: fixedDate,
+        isRead: false,
+      },
+    ]);
 
-      const history = createMemoryHistory({ initialEntries: ["/"] });
-      const router = createRouter({ routeTree, history });
+    const history = createMemoryHistory({ initialEntries: ["/"] });
+    const router = createRouter({ routeTree, history });
 
-      dispose = render(
-        () => (
-          <TransportProvider transport={transport}>
-            <QueryClientProvider client={queryClient}>
-              <RouterProvider router={router} />
-            </QueryClientProvider>
-          </TransportProvider>
-        ),
-        document.body,
-      );
+    dispose = render(
+      () => (
+        <TransportProvider transport={transport}>
+          <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} />
+          </QueryClientProvider>
+        </TransportProvider>
+      ),
+      document.body,
+    );
 
-      // Navigate to item 1
-      await page.getByText("Item 1").click();
-      await expect.element(page.getByRole("dialog")).toBeInTheDocument();
+    // Navigate to item 1
+    await page.getByText("Item 1").click();
+    await expect.element(page.getByRole("dialog")).toBeInTheDocument();
 
-      // Navigate to item 2
-      await userEvent.keyboard("j");
-      await expect.element(page.getByRole("heading", { name: "Item 2" })).toBeInTheDocument();
+    // Navigate to item 2
+    await userEvent.keyboard("j");
+    await expect
+      .element(page.getByRole("heading", { name: "Item 2" }))
+      .toBeInTheDocument();
 
-      // Go back
-      history.go(-1);
+    // Go back
+    history.go(-1);
 
-      // If we used replace, we should be at "/"
-      // If we used push, we are at "/items/1"
-      expect(history.location.pathname).toBe("/");
-      await expect.element(page.getByRole("dialog")).not.toBeInTheDocument();
+    // If we used replace, we should be at "/"
+    // If we used push, we are at "/items/1"
+    expect(history.location.pathname).toBe("/");
+    await expect.element(page.getByRole("dialog")).not.toBeInTheDocument();
   });
 });
