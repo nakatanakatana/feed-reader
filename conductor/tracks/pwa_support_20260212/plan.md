@@ -21,6 +21,6 @@ Ensure the Service Worker is correctly registered and the PWA behaves as expecte
 ## Phase 3: Verification and Polishing
 Final checks to ensure the app meets PWA standards and works across devices.
 
-- [ ] Task: Run a production build and verify PWA installability using Chrome DevTools.
-- [ ] Task: Test the "Auto Update" behavior by simulating a version change.
+- [x] Task: Run a production build and verify PWA installability using Chrome DevTools. f3f52a9
+- [x] Task: Test the "Auto Update" behavior by simulating a version change. a8b1c4e
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Verification and Polishing' (Protocol in workflow.md)
