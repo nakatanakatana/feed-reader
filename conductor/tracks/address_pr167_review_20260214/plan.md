@@ -1,6 +1,6 @@
 # Implementation Plan: address_pr167_review_20260214
 
-# Phase 1: Test Infrastructure and Refactoring
+# Phase 1: Test Infrastructure and Refactoring [checkpoint: 0024b4b]
 1.  **[x] Task: Refactor Test Utilities** dbbfa02
     -   [x] Extract `dispatchTouch` and related touch simulation logic from `ItemDetailModal.Swipe.test.tsx` and `use-swipe.test.ts` into a shared utility file (e.g., `frontend/src/test-utils/touch.ts`).
     -   [x] Update `Touch` identifier to use a deterministic incremental counter.
