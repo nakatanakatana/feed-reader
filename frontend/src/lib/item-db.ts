@@ -6,7 +6,7 @@ import {
   eq,
   useLiveQuery,
 } from "@tanstack/solid-db";
-import { createMemo, createRoot, createSignal } from "solid-js";
+import { type Accessor, createMemo, createRoot, createSignal } from "solid-js";
 import { ItemService, type ListItem } from "../gen/item/v1/item_pb";
 import { itemStore } from "./item-store";
 import {
@@ -118,12 +118,13 @@ export const itemsUnreadQuery = createRoot(() =>
 );
 
 export function useSortedLiveQuery<T extends { createdAt: string }>(
+  // biome-ignore lint/suspicious/noExplicitAny: TanStack DB query builder types are complex
   callback: (q: any) => any,
 ) {
   const query = useLiveQuery(callback);
 
   const sortedData = createMemo(() => {
-    const data = query();
+    const data = (query() || []) as T[];
     return [...data].sort((a, b) => {
       const aTime = new Date(a.createdAt).getTime();
       const bTime = new Date(b.createdAt).getTime();
@@ -131,17 +132,32 @@ export function useSortedLiveQuery<T extends { createdAt: string }>(
     });
   });
 
-  return Object.assign(sortedData, {
-    get isLoading() {
-      return query.isLoading;
+  const wrapped = () => sortedData();
+
+  Object.defineProperties(wrapped, {
+    isLoading: {
+      // biome-ignore lint/suspicious/noExplicitAny: Accessing isLoading from useLiveQuery result
+      get: () => (query as any).isLoading,
+      enumerable: true,
     },
-    get isError() {
-      return query.isError;
+    isError: {
+      // biome-ignore lint/suspicious/noExplicitAny: Accessing isError from useLiveQuery result
+      get: () => (query as any).isError,
+      enumerable: true,
     },
-    get error() {
-      return query.error;
+    // Also include isPending for compatibility
+    isPending: {
+      // biome-ignore lint/suspicious/noExplicitAny: Accessing isPending from useLiveQuery result
+      get: () => (query as any).isPending,
+      enumerable: true,
     },
-  }) as typeof query;
+  });
+
+  return wrapped as Accessor<T[]> & {
+    isLoading: boolean;
+    isError: boolean;
+    isPending: boolean;
+  };
 }
 
 export const getItem = async (id: string) => {

@@ -1,7 +1,6 @@
-import { useLiveQuery } from "@tanstack/solid-db";
 import { createRoot } from "solid-js";
 import { describe, expect, it } from "vitest";
-import { items, useSortedLiveQuery } from "./item-db";
+import { type Item, items, useSortedLiveQuery } from "./item-db";
 import { itemStore } from "./item-store";
 
 // Mock dependencies if needed, but for now we rely on the real item-db
@@ -40,7 +39,10 @@ describe("items collection", () => {
   describe("sorting", () => {
     it("should sort items by createdAt in ascending order", async () => {
       await createRoot(async () => {
-        const query = useSortedLiveQuery((q: any) => q.from({ item: items() }));
+        const query = useSortedLiveQuery<Item>(
+          // biome-ignore lint/suspicious/noExplicitAny: TanStack DB query builder
+          (q: any) => q.from({ item: items() }),
+        );
 
         // Wait for data to load with a timeout
         const success = await new Promise((resolve) => {
