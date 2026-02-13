@@ -1,8 +1,8 @@
 import { render } from "solid-js/web";
 import "solid-devtools";
+import { registerSW } from "virtual:pwa-register";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import { createRouter, RouterProvider } from "@tanstack/solid-router";
-import { registerSW } from "virtual:pwa-register";
 import { routeTree } from "./routeTree.gen";
 import "./styles.css";
 import { config } from "./config";

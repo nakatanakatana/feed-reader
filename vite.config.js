@@ -61,7 +61,14 @@ export default defineConfig({
       viewport: { width: 1280, height: 720 },
       headless: true,
     },
-    exclude: ["**/pwa-infrastructure.test.ts", "**/node_modules/**", "**/dist/**", "**/cypress/**", "**/.{idea,git,cache,output,temp}/**", "**/{karma,rollup,webpack,vite,vitest}.config.*"],
+    exclude: [
+      "**/pwa-infrastructure.test.ts",
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/cypress/**",
+      "**/.{idea,git,cache,output,temp}/**",
+      "**/{karma,rollup,webpack,vite,vitest}.config.*",
+    ],
     setupFiles: ["./src/vitest-setup.ts"],
     globals: true,
     coverage: {

@@ -1,23 +1,23 @@
-import { defineWorkspace } from 'vitest/config'
+import { defineWorkspace } from "vitest/config";
 
 export default defineWorkspace([
   {
-    extends: 'vite.config.js',
+    extends: "vite.config.js",
     test: {
-      name: 'browser',
+      name: "browser",
       browser: {
         enabled: true,
-        instances: [{ browser: 'chromium' }],
+        instances: [{ browser: "chromium" }],
       },
-      include: ['frontend/src/**/*.test.{ts,tsx}'],
-      exclude: ['frontend/src/pwa-infrastructure.test.ts'],
+      include: ["frontend/src/**/*.test.{ts,tsx}"],
+      exclude: ["frontend/src/pwa-infrastructure.test.ts"],
     },
   },
   {
-    extends: 'frontend/vitest.node.config.js',
+    extends: "frontend/vitest.node.config.js",
     test: {
-      name: 'node',
-      include: ['frontend/src/pwa-infrastructure.test.ts'],
+      name: "node",
+      include: ["frontend/src/pwa-infrastructure.test.ts"],
     },
   },
-])
+]);
