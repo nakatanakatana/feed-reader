@@ -1,0 +1,37 @@
+# Implementation Plan: address_pr167_review_20260214
+
+# Phase 1: Test Infrastructure and Refactoring
+1.  **[ ] Task: Refactor Test Utilities**
+    -   [ ] Extract `dispatchTouch` and related touch simulation logic from `ItemDetailModal.Swipe.test.tsx` and `use-swipe.test.ts` into a shared utility file (e.g., `frontend/src/test-utils/touch.ts`).
+    -   [ ] Update `Touch` identifier to use a deterministic incremental counter.
+2.  **[ ] Task: Verify Existing Tests**
+    -   [ ] Run existing swipe-related tests to ensure refactoring didn't break anything.
+    -   [ ] Task: Conductor - User Manual Verification 'Phase 1: Test Infrastructure and Refactoring' (Protocol in workflow.md)
+
+# Phase 2: Core Logic Enhancements (`use-swipe.ts`)
+1.  **[ ] Task: Implement `touchcancel` and `preventDefault`**
+    -   [ ] **Write Tests:** Add a test case in `use-swipe.test.ts` for `touchcancel` and verify state reset.
+    -   [ ] **Implement:** Add `touchcancel` handler to `use-swipe.ts`.
+    -   [ ] **Implement:** Add `e.preventDefault()` in `touchmove` when horizontal swipe is confirmed.
+2.  **[ ] Task: Adjust Thresholds and Boundary Behavior**
+    -   [ ] **Write Tests:** Add tests for the 50px vertical cancellation threshold.
+    -   [ ] **Implement:** Update `verticalThreshold` in `use-swipe.ts`.
+    -   [ ] **Implement:** Add a mechanism to conditionally disable dragging (for list boundaries).
+    -   [ ] Task: Conductor - User Manual Verification 'Phase 2: Core Logic Enhancements' (Protocol in workflow.md)
+
+# Phase 3: UI/UX and Accessibility (`ItemDetailModal.tsx`)
+1.  **[ ] Task: Boundary Navigation and State Optimization**
+    -   [ ] **Implement:** Apply the boundary check (`itemId !== "end-of-list"`) to `onSwipeLeft` / `onSwipeRight`.
+    -   [ ] **Implement:** Conditionally apply `will-change: transform` only when `x() !== 0`.
+    -   [ ] **Implement:** Adjust `transition` logic to avoid jarring jumps during item navigation.
+2.  **[ ] Task: Accessibility and Visual Affordance**
+    -   [ ] **Implement:** Add ARIA labels/hidden text describing swipe navigation to the modal.
+    -   [ ] **Implement:** Add a subtle visual hint (e.g., edge bounce) on first mount or during swipe.
+    -   [ ] Task: Conductor - User Manual Verification 'Phase 3: UI/UX and Accessibility' (Protocol in workflow.md)
+
+# Phase 4: Final Verification and Documentation
+1.  **[ ] Task: Full Regression Testing**
+    -   [ ] Run all frontend tests (`npm test`).
+2.  **[ ] Task: Documentation Polish**
+    -   [ ] Ensure `spec.md` and `tracks.md` reflect the final implementation details (e.g., the 50px threshold).
+    -   [ ] Task: Conductor - User Manual Verification 'Phase 4: Final Verification and Documentation' (Protocol in workflow.md)
