@@ -19,15 +19,15 @@
     -   [x] **Implement:** Add a mechanism to conditionally disable dragging (for list boundaries).
     -   [x] Task: Conductor - User Manual Verification 'Phase 2: Core Logic Enhancements' (Protocol in workflow.md)
 
-# Phase 3: UI/UX and Accessibility (`ItemDetailModal.tsx`)
-1.  **[ ] Task: Boundary Navigation and State Optimization**
-    -   [ ] **Implement:** Apply the boundary check (`itemId !== "end-of-list"`) to `onSwipeLeft` / `onSwipeRight`.
-    -   [ ] **Implement:** Conditionally apply `will-change: transform` only when `x() !== 0`.
-    -   [ ] **Implement:** Adjust `transition` logic to avoid jarring jumps during item navigation.
-2.  **[ ] Task: Accessibility and Visual Affordance**
-    -   [ ] **Implement:** Add ARIA labels/hidden text describing swipe navigation to the modal.
-    -   [ ] **Implement:** Add a subtle visual hint (e.g., edge bounce) on first mount or during swipe.
-    -   [ ] Task: Conductor - User Manual Verification 'Phase 3: UI/UX and Accessibility' (Protocol in workflow.md)
+# Phase 3: UI/UX and Accessibility (`ItemDetailModal.tsx`) [checkpoint: 16c658f]
+1.  **[x] Task: Boundary Navigation and State Optimization** 16c658f
+    -   [x] **Implement:** Apply the boundary check (`itemId !== "end-of-list"`) to `onSwipeLeft` / `onSwipeRight`.
+    -   [x] **Implement:** Conditionally apply `will-change: transform` only when `x() !== 0`.
+    -   [x] **Implement:** Adjust `transition` logic to avoid jarring jumps during item navigation.
+2.  **[x] Task: Accessibility and Visual Affordance** 16c658f
+    -   [x] **Implement:** Add ARIA labels/hidden text describing swipe navigation to the modal.
+    -   [x] **Implement:** Add a subtle visual hint (e.g., edge bounce) on first mount or during swipe.
+    -   [x] Task: Conductor - User Manual Verification 'Phase 3: UI/UX and Accessibility' (Protocol in workflow.md)
 
 # Phase 4: Final Verification and Documentation
 1.  **[ ] Task: Full Regression Testing**
