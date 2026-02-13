@@ -1,9 +1,16 @@
-import { count, eq, useLiveQuery } from "@tanstack/solid-db";
+import { count, eq } from "@tanstack/solid-db";
 import { useNavigate } from "@tanstack/solid-router";
 import { createEffect, createSignal, For, type JSX, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
-import { feedTag, items, itemsUnreadQuery, tags } from "../lib/db";
+import {
+  feedTag,
+  items,
+  itemsUnreadQuery,
+  tags,
+  useSortedLiveQuery,
+} from "../lib/db";
+import { useLiveQuery } from "@tanstack/solid-db";
 import { itemStore } from "../lib/item-store";
 import { type DateFilterValue, formatUnreadCount } from "../lib/item-utils";
 import { BulkActionBar } from "./BulkActionBar";
@@ -34,19 +41,21 @@ export function ItemList(props: ItemListProps) {
     }
   });
 
-  const itemQuery = useLiveQuery((q) => {
+  const itemQuery = useSortedLiveQuery((q: any) => {
     let query = q.from({ item: items() });
     if (props.tagId) {
       query = query
-        .innerJoin({ ft: feedTag }, ({ item, ft }) =>
+        .innerJoin({ ft: feedTag }, ({ item, ft }: any) =>
           eq(item.feedId, ft.feedId),
         )
-        .where(({ ft }) => eq(ft.tagId, props.tagId));
+        .where(({ ft }: any) => eq(ft.tagId, props.tagId));
     }
-    return query.select(({ item }) => ({ ...item }));
+    return query.select(({ item }: any) => ({ ...item }));
   });
 
-  const totalUnread = useLiveQuery((q) => q.from({ item: itemsUnreadQuery() }));
+  const totalUnread = useSortedLiveQuery((q: any) =>
+    q.from({ item: itemsUnreadQuery() }),
+  );
 
   const tagsQuery = useLiveQuery((q) => {
     return q

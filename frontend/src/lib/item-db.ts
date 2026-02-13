@@ -4,6 +4,7 @@ import {
   createCollection,
   createLiveQueryCollection,
   eq,
+  useLiveQuery,
 } from "@tanstack/solid-db";
 import { createMemo, createRoot, createSignal } from "solid-js";
 import { ItemService, type ListItem } from "../gen/item/v1/item_pb";
@@ -115,6 +116,33 @@ export const itemsUnreadQuery = createRoot(() =>
     ),
   ),
 );
+
+export function useSortedLiveQuery<T extends { createdAt: string }>(
+  callback: (q: any) => any,
+) {
+  const query = useLiveQuery(callback);
+
+  const sortedData = createMemo(() => {
+    const data = query();
+    return [...data].sort((a, b) => {
+      const aTime = new Date(a.createdAt).getTime();
+      const bTime = new Date(b.createdAt).getTime();
+      return aTime - bTime;
+    });
+  });
+
+  return Object.assign(sortedData, {
+    get isLoading() {
+      return query.isLoading;
+    },
+    get isError() {
+      return query.isError;
+    },
+    get error() {
+      return query.error;
+    },
+  }) as typeof query;
+}
 
 export const getItem = async (id: string) => {
   const response = await itemClient.getItem({ id });

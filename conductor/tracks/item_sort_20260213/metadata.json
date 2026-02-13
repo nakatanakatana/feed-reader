@@ -1,0 +1,8 @@
+{
+  "track_id": "item_sort_20260213",
+  "type": "feature",
+  "status": "completed",
+  "created_at": "2026-02-13T20:08:00Z",
+  "updated_at": "2026-02-13T20:08:00Z",
+  "description": "Fix items to be sorted by created_at ascending and unify via common LiveQueryCollection in item-db.ts"
+}
