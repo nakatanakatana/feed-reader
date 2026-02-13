@@ -1,7 +1,7 @@
 import { eq, useLiveQuery } from "@tanstack/solid-db";
 import { useNavigate } from "@tanstack/solid-router";
 import { createEffect, createMemo } from "solid-js";
-import { feedTag, items } from "../lib/db";
+import { feedTag, type Item, items, sortedItems } from "../lib/db";
 import { getPrefetchIds, prefetchItems } from "../lib/item-prefetch";
 import { itemStore } from "../lib/item-store";
 import type { DateFilterValue } from "../lib/item-utils";
@@ -41,25 +41,30 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
 
   const isEndOfList = () => props.itemId === "end-of-list";
 
-  // Use useLiveQuery with the items Collection and respect tag filtering.
+  // Use useLiveQuery with the sortedItems Collection and respect tag filtering.
   // items() applies the global showRead filter; items that become read remain
   // in the local collection so indices stay stable during navigation transitions.
   const itemsQuery = useLiveQuery((q) => {
-    let query = q.from({ item: items() });
+    // biome-ignore lint/suspicious/noExplicitAny: TanStack DB query builder types
+    let query = q.from({ item: sortedItems() }) as any;
     if (props.tagId) {
       query = query
-        .innerJoin({ ft: feedTag }, ({ item, ft }) =>
-          eq(item.feedId, ft.feedId),
+        .innerJoin(
+          { ft: feedTag },
+          // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
+          ({ item, ft }: any) => eq(item.feedId, ft.feedId),
         )
-        .where(({ ft }) => eq(ft.tagId, props.tagId));
+        // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
+        .where(({ ft }: any) => eq(ft.tagId, props.tagId));
     }
-    return query.select(({ item }) => ({ ...item }));
+    // biome-ignore lint/suspicious/noExplicitAny: TanStack DB select types
+    return query.select(({ item }: any) => ({ ...item }));
   });
 
   const filteredItems = createMemo(() => {
     const all = itemsQuery();
     if (!all) return [];
-    return all;
+    return all as Item[];
   });
 
   const currentIndexMemo = createMemo(() => {

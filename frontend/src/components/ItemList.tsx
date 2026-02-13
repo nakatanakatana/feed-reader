@@ -3,7 +3,14 @@ import { useNavigate } from "@tanstack/solid-router";
 import { createEffect, createSignal, For, type JSX, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
-import { feedTag, items, itemsUnreadQuery, tags } from "../lib/db";
+import {
+  feedTag,
+  type Item,
+  items,
+  itemsUnreadQuery,
+  sortedItems,
+  tags,
+} from "../lib/db";
 import { itemStore } from "../lib/item-store";
 import { type DateFilterValue, formatUnreadCount } from "../lib/item-utils";
 import { BulkActionBar } from "./BulkActionBar";
@@ -35,18 +42,27 @@ export function ItemList(props: ItemListProps) {
   });
 
   const itemQuery = useLiveQuery((q) => {
-    let query = q.from({ item: items() });
+    // biome-ignore lint/suspicious/noExplicitAny: TanStack DB query builder types
+    let query = q.from({ item: sortedItems() }) as any;
     if (props.tagId) {
       query = query
-        .innerJoin({ ft: feedTag }, ({ item, ft }) =>
-          eq(item.feedId, ft.feedId),
+        .innerJoin(
+          { ft: feedTag },
+          // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
+          ({ item, ft }: any) => eq(item.feedId, ft.feedId),
         )
-        .where(({ ft }) => eq(ft.tagId, props.tagId));
+        // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
+        .where(({ ft }: any) => eq(ft.tagId, props.tagId));
     }
-    return query.select(({ item }) => ({ ...item }));
+    // biome-ignore lint/suspicious/noExplicitAny: TanStack DB select types
+    return query.select(({ item }: any) => ({ ...item }));
   });
 
-  const totalUnread = useLiveQuery((q) => q.from({ item: itemsUnreadQuery() }));
+  const totalUnread = useLiveQuery((q) =>
+    q
+      .from({ i: itemsUnreadQuery() })
+      .select(({ i }) => ({ total: count(i.id) })),
+  );
 
   const tagsQuery = useLiveQuery((q) => {
     return q
@@ -157,12 +173,12 @@ export function ItemList(props: ItemListProps) {
             onClick={() => handleTagClick(undefined)}
           >
             All
-            <Show when={totalUnread().length > 0n}>
+            <Show when={(totalUnread()[0]?.total ?? 0n) > 0n}>
               <Badge
                 variant={props.tagId === undefined ? "primary" : "neutral"}
                 class={css({ ml: "1.5", fontSize: "10px", minWidth: "1.5rem" })}
               >
-                {formatUnreadCount(Number(totalUnread().length))}
+                {formatUnreadCount(Number(totalUnread()[0].total))}
               </Badge>
             </Show>
           </TagChip>
@@ -270,7 +286,7 @@ export function ItemList(props: ItemListProps) {
       })}
     >
       <div class={stack({ gap: "2", padding: "0" })}>
-        <For each={itemQuery()}>
+        <For each={itemQuery() as Item[]}>
           {(item) => (
             <ItemRow
               item={item}
