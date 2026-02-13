@@ -26,8 +26,8 @@ Connect the swipe gesture results to the existing item navigation logic.
 ## Phase 3: Refinement & Mobile UX
 Polish the animation and ensure a high-quality feel on actual mobile devices.
 
-- [~] Task: Performance optimization.
+- [x] Task: Performance optimization. ade4ca9
     - [ ] Verify use of `will-change: transform` or other CSS optimizations for smooth 60fps movement.
-- [ ] Task: Final UI/UX review on mobile.
+- [~] Task: Final UI/UX review on mobile.
     - [ ] Ensure swipe sensitivity feels "right" (tuning the 25% threshold if necessary).
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Refinement & Mobile UX' (Protocol in workflow.md)
