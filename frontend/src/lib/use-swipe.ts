@@ -29,7 +29,6 @@ export function useSwipe(options: UseSwipeOptions = {}) {
     const diffY = currentY - startY;
 
     // If movement is mostly vertical, cancel swipe
-    // We use a small buffer (10px) to avoid accidental cancellation
     if (Math.abs(diffY) > Math.abs(diffX) && Math.abs(diffY) > 10) {
       isCancelled = true;
       setX(0);
@@ -62,9 +61,9 @@ export function useSwipe(options: UseSwipeOptions = {}) {
   return {
     x,
     handlers: {
-      touchstart,
-      touchmove,
-      touchend,
+      ontouchstart: touchstart,
+      ontouchmove: touchmove,
+      ontouchend: touchend,
     },
   };
 }

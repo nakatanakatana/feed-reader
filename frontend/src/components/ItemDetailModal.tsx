@@ -4,6 +4,7 @@ import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
 import { getItem, items } from "../lib/item-db";
 import { formatDate, normalizeCategories } from "../lib/item-utils";
+import { useSwipe } from "../lib/use-swipe";
 import { MarkdownRenderer } from "./MarkdownRenderer";
 import { ActionButton } from "./ui/ActionButton";
 import { Modal } from "./ui/Modal";
@@ -20,6 +21,20 @@ interface ItemDetailModalProps {
 
 export function ItemDetailModal(props: ItemDetailModalProps) {
   let modalRef: HTMLDivElement | undefined;
+
+  const { x, handlers } = useSwipe({
+    onSwipeLeft: () => {
+      if (props.onNext && props.nextItemId) {
+        props.onNext();
+      }
+    },
+    onSwipeRight: () => {
+      if (props.onPrev && props.prevItemId) {
+        props.onPrev();
+      }
+    },
+    threshold: 100, // Default threshold, can be refined later
+  });
 
   createEffect(() => {
     // Track itemId and item data to trigger re-focus when content changes
@@ -162,6 +177,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
           </ActionButton>
         </div>
         <div
+          data-testid="swipe-container"
           class={flex({
             flexDirection: "column",
             gap: "4",
@@ -169,6 +185,12 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             overflowY: "auto",
             height: "full",
           })}
+          style={{
+            transform: `translateX(${x()}px)`,
+            transition: x() === 0 ? "transform 0.2s ease-out" : "none",
+            "will-change": "transform",
+          }}
+          {...handlers}
         >
           <Show when={isEndOfList()}>
             <div

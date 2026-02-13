@@ -8,21 +8,21 @@ describe("useSwipe", () => {
       const { x, handlers } = useSwipe();
 
       // Start touch at 100
-      handlers.touchstart({
+      handlers.ontouchstart({
         touches: [{ clientX: 100, clientY: 100 }],
       } as unknown as TouchEvent);
 
       expect(x()).toBe(0);
 
       // Move to 150
-      handlers.touchmove({
+      handlers.ontouchmove({
         touches: [{ clientX: 150, clientY: 100 }],
       } as unknown as TouchEvent);
 
       expect(x()).toBe(50);
 
       // Move to 30
-      handlers.touchmove({
+      handlers.ontouchmove({
         touches: [{ clientX: 30, clientY: 100 }],
       } as unknown as TouchEvent);
 
@@ -40,15 +40,15 @@ describe("useSwipe", () => {
         threshold: 50,
       });
 
-      handlers.touchstart({
+      handlers.ontouchstart({
         touches: [{ clientX: 100, clientY: 100 }],
       } as unknown as TouchEvent);
 
-      handlers.touchmove({
+      handlers.ontouchmove({
         touches: [{ clientX: 160, clientY: 100 }],
       } as unknown as TouchEvent);
 
-      handlers.touchend({} as unknown as TouchEvent);
+      handlers.ontouchend({} as unknown as TouchEvent);
 
       expect(onSwipeRight).toHaveBeenCalled();
       dispose();
@@ -63,15 +63,15 @@ describe("useSwipe", () => {
         threshold: 50,
       });
 
-      handlers.touchstart({
+      handlers.ontouchstart({
         touches: [{ clientX: 100, clientY: 100 }],
       } as unknown as TouchEvent);
 
-      handlers.touchmove({
+      handlers.ontouchmove({
         touches: [{ clientX: 40, clientY: 100 }],
       } as unknown as TouchEvent);
 
-      handlers.touchend({} as unknown as TouchEvent);
+      handlers.ontouchend({} as unknown as TouchEvent);
 
       expect(onSwipeLeft).toHaveBeenCalled();
       dispose();
@@ -88,15 +88,15 @@ describe("useSwipe", () => {
         threshold: 50,
       });
 
-      handlers.touchstart({
+      handlers.ontouchstart({
         touches: [{ clientX: 100, clientY: 100 }],
       } as unknown as TouchEvent);
 
-      handlers.touchmove({
+      handlers.ontouchmove({
         touches: [{ clientX: 120, clientY: 100 }],
       } as unknown as TouchEvent);
 
-      handlers.touchend({} as unknown as TouchEvent);
+      handlers.ontouchend({} as unknown as TouchEvent);
 
       expect(onSwipeLeft).not.toHaveBeenCalled();
       expect(onSwipeRight).not.toHaveBeenCalled();
@@ -108,17 +108,17 @@ describe("useSwipe", () => {
     createRoot((dispose) => {
       const { x, handlers } = useSwipe();
 
-      handlers.touchstart({
+      handlers.ontouchstart({
         touches: [{ clientX: 100, clientY: 100 }],
       } as unknown as TouchEvent);
 
-      handlers.touchmove({
+      handlers.ontouchmove({
         touches: [{ clientX: 150, clientY: 100 }],
       } as unknown as TouchEvent);
 
       expect(x()).toBe(50);
 
-      handlers.touchend({} as unknown as TouchEvent);
+      handlers.ontouchend({} as unknown as TouchEvent);
 
       expect(x()).toBe(0);
       dispose();
@@ -129,11 +129,11 @@ describe("useSwipe", () => {
     createRoot((dispose) => {
       const { x, handlers } = useSwipe();
 
-      handlers.touchstart({
+      handlers.ontouchstart({
         touches: [{ clientX: 100 }, { clientX: 200 }],
       } as unknown as TouchEvent);
 
-      handlers.touchmove({
+      handlers.ontouchmove({
         touches: [{ clientX: 150 }, { clientX: 250 }],
       } as unknown as TouchEvent);
 
@@ -146,12 +146,12 @@ describe("useSwipe", () => {
     createRoot((dispose) => {
       const { x, handlers } = useSwipe();
 
-      handlers.touchstart({
+      handlers.ontouchstart({
         touches: [{ clientX: 100, clientY: 100 }],
       } as unknown as TouchEvent);
 
       // Move slightly horizontally (10px) but mostly vertically (50px)
-      handlers.touchmove({
+      handlers.ontouchmove({
         touches: [{ clientX: 110, clientY: 150 }],
       } as unknown as TouchEvent);
 
