@@ -28,6 +28,6 @@ Polish the animation and ensure a high-quality feel on actual mobile devices.
 
 - [x] Task: Performance optimization. ade4ca9
     - [ ] Verify use of `will-change: transform` or other CSS optimizations for smooth 60fps movement.
-- [~] Task: Final UI/UX review on mobile.
+- [x] Task: Final UI/UX review on mobile. fcfb40f
     - [ ] Ensure swipe sensitivity feels "right" (tuning the 25% threshold if necessary).
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Refinement & Mobile UX' (Protocol in workflow.md)
