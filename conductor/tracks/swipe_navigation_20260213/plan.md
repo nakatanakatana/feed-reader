@@ -3,7 +3,7 @@
 ## Phase 1: Touch Interaction Hook & Logic
 Implement the core logic for detecting swipe gestures and calculating horizontal displacement.
 
-- [ ] Task: Create `useSwipe` hook (or similar utility) to handle touch events.
+- [x] Task: Create `useSwipe` hook (or similar utility) to handle touch events. 357c58c
     - [ ] Write unit tests for `useSwipe` to verify displacement calculation and threshold detection.
     - [ ] Implement `touchstart`, `touchmove`, and `touchend` event handlers.
     - [ ] Ensure vertical scrolling is not hindered by horizontal swipe detection.
