@@ -24,7 +24,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
 
   const { x, handlers } = useSwipe({
     onSwipeLeft: () => {
-      if (props.onNext && props.nextItemId) {
+      if (props.onNext && props.nextItemId && props.itemId !== "end-of-list") {
         props.onNext();
       }
     },
@@ -33,7 +33,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
         props.onPrev();
       }
     },
-    threshold: 100, // Default threshold, can be refined later
+    threshold: 100, // Use a higher threshold than the hook default (50px) to reduce accidental swipes
   });
 
   createEffect(() => {
@@ -187,8 +187,8 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
           })}
           style={{
             transform: `translateX(${x()}px)`,
-            transition: x() === 0 ? "transform 0.2s ease-out" : "none",
-            "will-change": "transform",
+            transition: "none",
+            "will-change": x() !== 0 ? "transform" : undefined,
           }}
           {...handlers}
         >

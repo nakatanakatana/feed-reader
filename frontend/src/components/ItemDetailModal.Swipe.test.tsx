@@ -69,10 +69,11 @@ describe("ItemDetailModal Swipe Integration", () => {
     // If it doesn't exist yet, the test will fail here, which is fine for Red phase
     expect(container).not.toBeNull();
 
+    let touchIdentifier = 0;
     const dispatchTouch = (type: string, x: number, y: number) => {
       if (!container) throw new Error("Container not found");
       const touch = new Touch({
-        identifier: Date.now(),
+        identifier: ++touchIdentifier,
         target: container,
         clientX: x,
         clientY: y,

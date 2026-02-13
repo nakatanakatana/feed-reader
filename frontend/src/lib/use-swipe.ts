@@ -35,6 +35,8 @@ export function useSwipe(options: UseSwipeOptions = {}) {
       return;
     }
 
+    // Prevent default browser gestures (e.g., navigation, pull-to-refresh)
+    e.preventDefault();
     setX(diffX);
   };
 
@@ -58,12 +60,20 @@ export function useSwipe(options: UseSwipeOptions = {}) {
     isSwiping = false;
   };
 
+  const touchcancel = (_e: TouchEvent) => {
+    // Reset swipe state if the browser cancels the touch sequence
+    setX(0);
+    isSwiping = false;
+    isCancelled = false;
+  };
+
   return {
     x,
     handlers: {
       ontouchstart: touchstart,
       ontouchmove: touchmove,
       ontouchend: touchend,
+      ontouchcancel: touchcancel,
     },
   };
 }
