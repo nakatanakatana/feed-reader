@@ -92,4 +92,144 @@ describe("ItemDetailModal Swipe Integration", () => {
     dispatchTouch("touchend", 150, 100);
     expect(container?.style.transform).toContain("translateX(0px)");
   });
+
+  it("calls onNext when swiping left beyond threshold", async () => {
+    setupMockData("test-id");
+    const onNext = vi.fn();
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal
+            itemId="test-id"
+            onClose={() => {}}
+            nextItemId="next-id"
+            onNext={onNext}
+          />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    await expect.element(page.getByText("Test Item")).toBeInTheDocument();
+    const container = document.querySelector('[data-testid="swipe-container"]') as HTMLElement;
+
+    const dispatchTouch = (type: string, x: number, y: number) => {
+      const touch = new Touch({
+        identifier: Date.now(),
+        target: container!,
+        clientX: x,
+        clientY: y,
+      });
+      const event = new TouchEvent(type, {
+        touches: [touch],
+        targetTouches: [touch],
+        changedTouches: [touch],
+        bubbles: true,
+        cancelable: true,
+      });
+      container?.dispatchEvent(event);
+    };
+
+    dispatchTouch("touchstart", 200, 100);
+    dispatchTouch("touchmove", 50, 100); // Swipe left (-150px)
+    dispatchTouch("touchend", 50, 100);
+
+    expect(onNext).toHaveBeenCalled();
+  });
+
+  it("calls onPrev when swiping right beyond threshold", async () => {
+    setupMockData("test-id");
+    const onPrev = vi.fn();
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal
+            itemId="test-id"
+            onClose={() => {}}
+            prevItemId="prev-id"
+            onPrev={onPrev}
+          />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    await expect.element(page.getByText("Test Item")).toBeInTheDocument();
+    const container = document.querySelector('[data-testid="swipe-container"]') as HTMLElement;
+
+    const dispatchTouch = (type: string, x: number, y: number) => {
+      const touch = new Touch({
+        identifier: Date.now(),
+        target: container!,
+        clientX: x,
+        clientY: y,
+      });
+      const event = new TouchEvent(type, {
+        touches: [touch],
+        targetTouches: [touch],
+        changedTouches: [touch],
+        bubbles: true,
+        cancelable: true,
+      });
+      container?.dispatchEvent(event);
+    };
+
+    dispatchTouch("touchstart", 100, 100);
+    dispatchTouch("touchmove", 250, 100); // Swipe right (+150px)
+    dispatchTouch("touchend", 250, 100);
+
+    expect(onPrev).toHaveBeenCalled();
+  });
+
+  it("does not call navigation callbacks if boundary is reached", async () => {
+    setupMockData("test-id");
+    const onPrev = vi.fn();
+    const onNext = vi.fn();
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal
+            itemId="test-id"
+            onClose={() => {}}
+            // No prevItemId or nextItemId
+            onPrev={onPrev}
+            onNext={onNext}
+          />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    await expect.element(page.getByText("Test Item")).toBeInTheDocument();
+    const container = document.querySelector('[data-testid="swipe-container"]') as HTMLElement;
+
+    const dispatchTouch = (type: string, x: number, y: number) => {
+      const touch = new Touch({
+        identifier: Date.now(),
+        target: container!,
+        clientX: x,
+        clientY: y,
+      });
+      const event = new TouchEvent(type, {
+        touches: [touch],
+        targetTouches: [touch],
+        changedTouches: [touch],
+        bubbles: true,
+        cancelable: true,
+      });
+      container?.dispatchEvent(event);
+    };
+
+    // Swipe right
+    dispatchTouch("touchstart", 100, 100);
+    dispatchTouch("touchmove", 250, 100);
+    dispatchTouch("touchend", 250, 100);
+    expect(onPrev).not.toHaveBeenCalled();
+
+    // Swipe left
+    dispatchTouch("touchstart", 200, 100);
+    dispatchTouch("touchmove", 50, 100);
+    dispatchTouch("touchend", 50, 100);
+    expect(onNext).not.toHaveBeenCalled();
+  });
 });
