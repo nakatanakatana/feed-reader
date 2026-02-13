@@ -9,6 +9,7 @@ interface UseSwipeOptions {
 
 export function useSwipe(options: UseSwipeOptions = {}) {
   const [x, setX] = createSignal(0);
+  const [isSwipingSignal, setIsSwipingSignal] = createSignal(false);
   let startX = 0;
   let startY = 0;
   let isSwiping = false;
@@ -19,6 +20,7 @@ export function useSwipe(options: UseSwipeOptions = {}) {
     startX = e.touches[0].clientX;
     startY = e.touches[0].clientY;
     isSwiping = true;
+    setIsSwipingSignal(true);
     isCancelled = false;
   };
 
@@ -35,6 +37,7 @@ export function useSwipe(options: UseSwipeOptions = {}) {
       Math.abs(diffY) > 50
     ) {
       isCancelled = true;
+      setIsSwipingSignal(false);
       setX(0);
       return;
     }
@@ -48,6 +51,7 @@ export function useSwipe(options: UseSwipeOptions = {}) {
     if (!isSwiping || isCancelled) {
       setX(0);
       isSwiping = false;
+      setIsSwipingSignal(false);
       return;
     }
 
@@ -62,17 +66,20 @@ export function useSwipe(options: UseSwipeOptions = {}) {
 
     setX(0);
     isSwiping = false;
+    setIsSwipingSignal(false);
   };
 
   const touchcancel = (_e: TouchEvent) => {
     // Reset swipe state if the browser cancels the touch sequence
     setX(0);
     isSwiping = false;
+    setIsSwipingSignal(false);
     isCancelled = false;
   };
 
   return {
     x,
+    isSwiping: isSwipingSignal,
     handlers: {
       ontouchstart: touchstart,
       ontouchmove: touchmove,

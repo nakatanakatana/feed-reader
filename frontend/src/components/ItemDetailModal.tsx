@@ -22,7 +22,7 @@ interface ItemDetailModalProps {
 export function ItemDetailModal(props: ItemDetailModalProps) {
   let modalRef: HTMLDivElement | undefined;
 
-  const { x, handlers } = useSwipe({
+  const { x, isSwiping, handlers } = useSwipe({
     onSwipeLeft: () => {
       if (props.onNext && props.nextItemId && props.itemId !== "end-of-list") {
         props.onNext();
@@ -34,9 +34,21 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
       }
     },
     threshold: 100, // Use a higher threshold than the hook default (50px) to reduce accidental swipes
-    disabled:
-      (!props.prevItemId && !props.nextItemId) || props.itemId === "end-of-list",
+    disabled: props.itemId === "end-of-list",
   });
+
+  // Determine if we can navigate
+  const canSwipeLeft = () =>
+    !!(props.onNext && props.nextItemId && props.itemId !== "end-of-list");
+  const canSwipeRight = () => !!(props.onPrev && props.prevItemId);
+
+  // Apply a "bounce" effect at boundaries (resist dragging)
+  const displayX = () => {
+    const rawX = x();
+    if (rawX > 0 && !canSwipeRight()) return Math.pow(rawX, 0.7);
+    if (rawX < 0 && !canSwipeLeft()) return -Math.pow(Math.abs(rawX), 0.7);
+    return rawX;
+  };
 
   createEffect(() => {
     // Track itemId and item data to trigger re-focus when content changes
@@ -178,8 +190,33 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             Close
           </ActionButton>
         </div>
+
+        {/* Accessibility instruction for screen readers */}
+        <div
+          id="swipe-instruction"
+          class={css({
+            position: "absolute",
+            width: "1px",
+            height: "1px",
+            padding: "0",
+            margin: "-1px",
+            overflow: "hidden",
+            clip: "rect(0, 0, 0, 0)",
+            whiteSpace: "nowrap",
+            borderWidth: "0",
+          })}
+        >
+          <Show
+            when={canSwipeLeft() || canSwipeRight()}
+            fallback="Swipe navigation not available."
+          >
+            Swipe left for next item, right for previous.
+          </Show>
+        </div>
+
         <div
           data-testid="swipe-container"
+          aria-describedby="swipe-instruction"
           class={flex({
             flexDirection: "column",
             gap: "4",
@@ -188,9 +225,9 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             height: "full",
           })}
           style={{
-            transform: `translateX(${x()}px)`,
-            transition: "none",
-            "will-change": x() !== 0 ? "transform" : undefined,
+            transform: `translateX(${displayX()}px)`,
+            transition: isSwiping() ? "none" : "transform 0.2s ease-out",
+            "will-change": displayX() !== 0 ? "transform" : undefined,
           }}
           {...handlers}
         >

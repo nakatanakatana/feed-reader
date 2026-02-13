@@ -63,6 +63,8 @@ describe("ItemDetailModal Swipe Integration", () => {
             onClose={() => {}}
             prevItemId="prev-id"
             nextItemId="next-id"
+            onPrev={() => {}}
+            onNext={() => {}}
           />
         </Wrapper>
       ),
@@ -86,6 +88,7 @@ describe("ItemDetailModal Swipe Integration", () => {
 
     dispatchTouch(container, "touchend", 150, 100);
     expect(container?.style.transform).toContain("translateX(0px)");
+    expect(container?.style.transition).toContain("transform 0.2s ease-out");
   });
 
   it("calls onNext when swiping left beyond threshold", async () => {
@@ -183,7 +186,7 @@ describe("ItemDetailModal Swipe Integration", () => {
     expect(onNext).not.toHaveBeenCalled();
   });
 
-  it("disables dragging when no navigation is available", async () => {
+  it("applies resistance when no navigation is available", async () => {
     setupMockData("test-id");
     dispose = render(
       () => (
@@ -204,9 +207,14 @@ describe("ItemDetailModal Swipe Integration", () => {
     ) as HTMLElement;
 
     dispatchTouch(container, "touchstart", 100, 100);
-    dispatchTouch(container, "touchmove", 150, 100);
+    dispatchTouch(container, "touchmove", 150, 100); // 50px raw move
 
-    // Should NOT have translateX because dragging is disabled
-    expect(container?.style.transform).toContain("translateX(0px)");
+    // 50^0.7 is approx 15.46. Let's check it's much less than 50
+    const transform = container?.style.transform || "";
+    const match = transform.match(/translateX\(([\d.]+)px\)/);
+    const value = match ? parseFloat(match[1]) : 0;
+    
+    expect(value).toBeGreaterThan(0);
+    expect(value).toBeLessThan(20);
   });
 });
