@@ -1,6 +1,6 @@
 # Implementation Plan: Swipe Navigation for ItemDetailModal
 
-## Phase 1: Touch Interaction Hook & Logic
+## Phase 1: Touch Interaction Hook & Logic [checkpoint: ac2dc85]
 Implement the core logic for detecting swipe gestures and calculating horizontal displacement.
 
 - [x] Task: Create `useSwipe` hook (or similar utility) to handle touch events. 357c58c
