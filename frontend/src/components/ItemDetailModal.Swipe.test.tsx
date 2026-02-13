@@ -62,15 +62,18 @@ describe("ItemDetailModal Swipe Integration", () => {
     await expect.element(page.getByText("Test Item")).toBeInTheDocument();
 
     // The content container should have data-testid="swipe-container" (we'll add this)
-    const container = document.querySelector('[data-testid="swipe-container"]') as HTMLElement;
-    
+    const container = document.querySelector(
+      '[data-testid="swipe-container"]',
+    ) as HTMLElement;
+
     // If it doesn't exist yet, the test will fail here, which is fine for Red phase
     expect(container).not.toBeNull();
 
     const dispatchTouch = (type: string, x: number, y: number) => {
+      if (!container) throw new Error("Container not found");
       const touch = new Touch({
         identifier: Date.now(),
-        target: container!,
+        target: container,
         clientX: x,
         clientY: y,
       });
@@ -111,12 +114,15 @@ describe("ItemDetailModal Swipe Integration", () => {
     );
 
     await expect.element(page.getByText("Test Item")).toBeInTheDocument();
-    const container = document.querySelector('[data-testid="swipe-container"]') as HTMLElement;
+    const container = document.querySelector(
+      '[data-testid="swipe-container"]',
+    ) as HTMLElement;
 
     const dispatchTouch = (type: string, x: number, y: number) => {
+      if (!container) throw new Error("Container not found");
       const touch = new Touch({
         identifier: Date.now(),
-        target: container!,
+        target: container,
         clientX: x,
         clientY: y,
       });
@@ -155,12 +161,15 @@ describe("ItemDetailModal Swipe Integration", () => {
     );
 
     await expect.element(page.getByText("Test Item")).toBeInTheDocument();
-    const container = document.querySelector('[data-testid="swipe-container"]') as HTMLElement;
+    const container = document.querySelector(
+      '[data-testid="swipe-container"]',
+    ) as HTMLElement;
 
     const dispatchTouch = (type: string, x: number, y: number) => {
+      if (!container) throw new Error("Container not found");
       const touch = new Touch({
         identifier: Date.now(),
-        target: container!,
+        target: container,
         clientX: x,
         clientY: y,
       });
@@ -201,12 +210,15 @@ describe("ItemDetailModal Swipe Integration", () => {
     );
 
     await expect.element(page.getByText("Test Item")).toBeInTheDocument();
-    const container = document.querySelector('[data-testid="swipe-container"]') as HTMLElement;
+    const container = document.querySelector(
+      '[data-testid="swipe-container"]',
+    ) as HTMLElement;
 
     const dispatchTouch = (type: string, x: number, y: number) => {
+      if (!container) throw new Error("Container not found");
       const touch = new Touch({
         identifier: Date.now(),
-        target: container!,
+        target: container,
         clientX: x,
         clientY: y,
       });
