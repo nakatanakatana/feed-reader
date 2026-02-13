@@ -15,10 +15,9 @@
 - [x] Task: Update routing logic to ensure sequential navigation within the modal also uses replacement 548764d
     - [x] Analyze `ItemDetailRouteView.tsx` or relevant route components to ensure `navigate` calls use `replace: true`
 - [x] Task: Verify implementation with tests (Green Phase) 548764d
-    - [x] Run `vitest` and ensure all new tests pass
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Implementation' (Protocol in workflow.md) 548764d
 
 ## Phase 3: Refactoring and Quality Check
-- [ ] Task: Refactor and optimize navigation logic if necessary
-- [ ] Task: Ensure all Quality Gates are met (linting, type safety, mobile responsiveness)
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Refactoring and Quality Check' (Protocol in workflow.md)
+- [x] Task: Refactor and optimize navigation logic if necessary 9373bd9
+- [x] Task: Ensure all Quality Gates are met (linting, type safety, mobile responsiveness) 9373bd9
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Refactoring and Quality Check' (Protocol in workflow.md) 9373bd9
