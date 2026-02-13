@@ -22,13 +22,13 @@ This track addresses outstanding review comments and improvement requests from P
     -   Add test coverage for the `touchcancel` event.
 
 # Acceptance Criteria
-- [ ] Content resets to position 0 immediately upon a `touchcancel` event.
-- [ ] Native browser navigation gestures are suppressed during an active horizontal swipe.
-- [ ] Swiping is canceled if vertical movement exceeds 50px.
-- [ ] No visual dragging occurs when attempting to swipe past the list boundaries.
-- [ ] Screen readers announce the availability of swipe navigation.
-- [ ] All unit and integration tests pass with deterministic touch identifiers.
-- [ ] Documentation (`tracks.md`, etc.) is updated and consistent.
+- [x] Content resets to position 0 immediately upon a `touchcancel` event.
+- [x] Native browser navigation gestures are suppressed during an active horizontal swipe.
+- [x] Swiping is canceled if vertical movement exceeds 50px.
+- [x] A resistance bounce effect occurs when attempting to swipe past the list boundaries.
+- [x] Screen readers announce the availability of swipe navigation.
+- [x] All unit and integration tests pass with deterministic touch identifiers.
+- [x] Documentation (`tracks.md`, etc.) is updated and consistent.
 
 # Out of Scope
 - Mouse-based swipe emulation (feature remains touch-exclusive).

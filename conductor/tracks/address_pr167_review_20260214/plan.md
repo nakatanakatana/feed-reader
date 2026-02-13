@@ -30,8 +30,8 @@
     -   [x] Task: Conductor - User Manual Verification 'Phase 3: UI/UX and Accessibility' (Protocol in workflow.md)
 
 # Phase 4: Final Verification and Documentation
-1.  **[ ] Task: Full Regression Testing**
-    -   [ ] Run all frontend tests (`npm test`).
-2.  **[ ] Task: Documentation Polish**
-    -   [ ] Ensure `spec.md` and `tracks.md` reflect the final implementation details (e.g., the 50px threshold).
-    -   [ ] Task: Conductor - User Manual Verification 'Phase 4: Final Verification and Documentation' (Protocol in workflow.md)
+1.  **[x] Task: Full Regression Testing** 16c658f
+    -   [x] Run all frontend tests (`npm test`).
+2.  **[x] Task: Documentation Polish**
+    -   [x] Ensure `spec.md` and `tracks.md` reflect the final implementation details (e.g., the 50px threshold).
+    -   [x] Task: Conductor - User Manual Verification 'Phase 4: Final Verification and Documentation' (Protocol in workflow.md)
