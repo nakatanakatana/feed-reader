@@ -9,8 +9,8 @@ export default defineWorkspace([
         enabled: true,
         instances: [{ browser: "chromium" }],
       },
-      include: ["frontend/src/**/*.test.{ts,tsx}"],
-      exclude: ["frontend/src/pwa-infrastructure.test.ts"],
+      include: ["src/**/*.test.{ts,tsx}"],
+      exclude: ["src/pwa-infrastructure.test.ts"],
     },
   },
   {

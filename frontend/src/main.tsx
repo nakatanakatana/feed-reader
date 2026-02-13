@@ -1,8 +1,8 @@
 import { render } from "solid-js/web";
 import "solid-devtools";
-import { registerSW } from "virtual:pwa-register";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import { createRouter, RouterProvider } from "@tanstack/solid-router";
+import { initPWA } from "./pwa";
 import { routeTree } from "./routeTree.gen";
 import "./styles.css";
 import { config } from "./config";
@@ -11,7 +11,7 @@ import { TransportProvider } from "./lib/transport-context";
 import { initMocks } from "./mocks/init";
 
 // Set up Service Worker
-registerSW({ immediate: true });
+initPWA();
 
 // Set up a Router instance
 const router = createRouter({
