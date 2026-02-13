@@ -3,7 +3,12 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "types": ["vitest/globals", "vite/client", "node"],
+    "types": [
+      "vitest/globals",
+      "vite/client",
+      "vite-plugin-pwa/client",
+      "node"
+    ],
 
     // General
     "jsx": "preserve",
