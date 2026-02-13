@@ -1,30 +1,46 @@
 import { createRoot } from "solid-js";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  createTouch,
+  createTouchEvent,
+  resetTouchIdentifier,
+} from "../test-utils/touch";
 import { useSwipe } from "./use-swipe";
 
 describe("useSwipe", () => {
+  beforeEach(() => {
+    resetTouchIdentifier();
+  });
+
   it("calculates displacement correctly during touchmove", () => {
     createRoot((dispose) => {
       const { x, handlers } = useSwipe();
+      const target = document.createElement("div");
 
       // Start touch at 100
-      handlers.ontouchstart({
-        touches: [{ clientX: 100, clientY: 100 }],
-      } as unknown as TouchEvent);
+      handlers.ontouchstart(
+        createTouchEvent("touchstart", target, [
+          createTouch(target, { x: 100, y: 100 }),
+        ]),
+      );
 
       expect(x()).toBe(0);
 
       // Move to 150
-      handlers.ontouchmove({
-        touches: [{ clientX: 150, clientY: 100 }],
-      } as unknown as TouchEvent);
+      handlers.ontouchmove(
+        createTouchEvent("touchmove", target, [
+          createTouch(target, { x: 150, y: 100 }),
+        ]),
+      );
 
       expect(x()).toBe(50);
 
       // Move to 30
-      handlers.ontouchmove({
-        touches: [{ clientX: 30, clientY: 100 }],
-      } as unknown as TouchEvent);
+      handlers.ontouchmove(
+        createTouchEvent("touchmove", target, [
+          createTouch(target, { x: 30, y: 100 }),
+        ]),
+      );
 
       expect(x()).toBe(-70);
 
@@ -39,16 +55,21 @@ describe("useSwipe", () => {
         onSwipeRight,
         threshold: 50,
       });
+      const target = document.createElement("div");
 
-      handlers.ontouchstart({
-        touches: [{ clientX: 100, clientY: 100 }],
-      } as unknown as TouchEvent);
+      handlers.ontouchstart(
+        createTouchEvent("touchstart", target, [
+          createTouch(target, { x: 100, y: 100 }),
+        ]),
+      );
 
-      handlers.ontouchmove({
-        touches: [{ clientX: 160, clientY: 100 }],
-      } as unknown as TouchEvent);
+      handlers.ontouchmove(
+        createTouchEvent("touchmove", target, [
+          createTouch(target, { x: 160, y: 100 }),
+        ]),
+      );
 
-      handlers.ontouchend({} as unknown as TouchEvent);
+      handlers.ontouchend(createTouchEvent("touchend", target, []));
 
       expect(onSwipeRight).toHaveBeenCalled();
       dispose();
@@ -62,16 +83,21 @@ describe("useSwipe", () => {
         onSwipeLeft,
         threshold: 50,
       });
+      const target = document.createElement("div");
 
-      handlers.ontouchstart({
-        touches: [{ clientX: 100, clientY: 100 }],
-      } as unknown as TouchEvent);
+      handlers.ontouchstart(
+        createTouchEvent("touchstart", target, [
+          createTouch(target, { x: 100, y: 100 }),
+        ]),
+      );
 
-      handlers.ontouchmove({
-        touches: [{ clientX: 40, clientY: 100 }],
-      } as unknown as TouchEvent);
+      handlers.ontouchmove(
+        createTouchEvent("touchmove", target, [
+          createTouch(target, { x: 40, y: 100 }),
+        ]),
+      );
 
-      handlers.ontouchend({} as unknown as TouchEvent);
+      handlers.ontouchend(createTouchEvent("touchend", target, []));
 
       expect(onSwipeLeft).toHaveBeenCalled();
       dispose();
@@ -87,16 +113,21 @@ describe("useSwipe", () => {
         onSwipeRight,
         threshold: 50,
       });
+      const target = document.createElement("div");
 
-      handlers.ontouchstart({
-        touches: [{ clientX: 100, clientY: 100 }],
-      } as unknown as TouchEvent);
+      handlers.ontouchstart(
+        createTouchEvent("touchstart", target, [
+          createTouch(target, { x: 100, y: 100 }),
+        ]),
+      );
 
-      handlers.ontouchmove({
-        touches: [{ clientX: 120, clientY: 100 }],
-      } as unknown as TouchEvent);
+      handlers.ontouchmove(
+        createTouchEvent("touchmove", target, [
+          createTouch(target, { x: 120, y: 100 }),
+        ]),
+      );
 
-      handlers.ontouchend({} as unknown as TouchEvent);
+      handlers.ontouchend(createTouchEvent("touchend", target, []));
 
       expect(onSwipeLeft).not.toHaveBeenCalled();
       expect(onSwipeRight).not.toHaveBeenCalled();
@@ -107,18 +138,23 @@ describe("useSwipe", () => {
   it("resets x to 0 after touchend", () => {
     createRoot((dispose) => {
       const { x, handlers } = useSwipe();
+      const target = document.createElement("div");
 
-      handlers.ontouchstart({
-        touches: [{ clientX: 100, clientY: 100 }],
-      } as unknown as TouchEvent);
+      handlers.ontouchstart(
+        createTouchEvent("touchstart", target, [
+          createTouch(target, { x: 100, y: 100 }),
+        ]),
+      );
 
-      handlers.ontouchmove({
-        touches: [{ clientX: 150, clientY: 100 }],
-      } as unknown as TouchEvent);
+      handlers.ontouchmove(
+        createTouchEvent("touchmove", target, [
+          createTouch(target, { x: 150, y: 100 }),
+        ]),
+      );
 
       expect(x()).toBe(50);
 
-      handlers.ontouchend({} as unknown as TouchEvent);
+      handlers.ontouchend(createTouchEvent("touchend", target, []));
 
       expect(x()).toBe(0);
       dispose();
@@ -128,14 +164,21 @@ describe("useSwipe", () => {
   it("ignores multi-touch", () => {
     createRoot((dispose) => {
       const { x, handlers } = useSwipe();
+      const target = document.createElement("div");
 
-      handlers.ontouchstart({
-        touches: [{ clientX: 100 }, { clientX: 200 }],
-      } as unknown as TouchEvent);
+      handlers.ontouchstart(
+        createTouchEvent("touchstart", target, [
+          createTouch(target, { x: 100, y: 100 }),
+          createTouch(target, { x: 200, y: 100 }),
+        ]),
+      );
 
-      handlers.ontouchmove({
-        touches: [{ clientX: 150 }, { clientX: 250 }],
-      } as unknown as TouchEvent);
+      handlers.ontouchmove(
+        createTouchEvent("touchmove", target, [
+          createTouch(target, { x: 150, y: 100 }),
+          createTouch(target, { x: 250, y: 100 }),
+        ]),
+      );
 
       expect(x()).toBe(0);
       dispose();
@@ -145,15 +188,20 @@ describe("useSwipe", () => {
   it("cancels swipe if vertical movement is dominant", () => {
     createRoot((dispose) => {
       const { x, handlers } = useSwipe();
+      const target = document.createElement("div");
 
-      handlers.ontouchstart({
-        touches: [{ clientX: 100, clientY: 100 }],
-      } as unknown as TouchEvent);
+      handlers.ontouchstart(
+        createTouchEvent("touchstart", target, [
+          createTouch(target, { x: 100, y: 100 }),
+        ]),
+      );
 
       // Move slightly horizontally (10px) but mostly vertically (50px)
-      handlers.ontouchmove({
-        touches: [{ clientX: 110, clientY: 150 }],
-      } as unknown as TouchEvent);
+      handlers.ontouchmove(
+        createTouchEvent("touchmove", target, [
+          createTouch(target, { x: 110, y: 150 }),
+        ]),
+      );
 
       expect(x()).toBe(0);
       dispose();

@@ -3,16 +3,21 @@ import { QueryClientProvider } from "@tanstack/solid-query";
 import { HttpResponse, http } from "msw";
 import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { GetItemResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
+import { dispatchTouch, resetTouchIdentifier } from "../test-utils/touch";
 import { ItemDetailModal } from "./ItemDetailModal";
 
 describe("ItemDetailModal Swipe Integration", () => {
   let dispose: () => void;
+
+  beforeEach(() => {
+    resetTouchIdentifier();
+  });
 
   afterEach(() => {
     if (dispose) dispose();
@@ -69,31 +74,12 @@ describe("ItemDetailModal Swipe Integration", () => {
     // If it doesn't exist yet, the test will fail here, which is fine for Red phase
     expect(container).not.toBeNull();
 
-    let touchIdentifier = 0;
-    const dispatchTouch = (type: string, x: number, y: number) => {
-      if (!container) throw new Error("Container not found");
-      const touch = new Touch({
-        identifier: ++touchIdentifier,
-        target: container,
-        clientX: x,
-        clientY: y,
-      });
-      const event = new TouchEvent(type, {
-        touches: [touch],
-        targetTouches: [touch],
-        changedTouches: [touch],
-        bubbles: true,
-        cancelable: true,
-      });
-      container?.dispatchEvent(event);
-    };
-
-    dispatchTouch("touchstart", 100, 100);
-    dispatchTouch("touchmove", 150, 100);
+    dispatchTouch(container, "touchstart", 100, 100);
+    dispatchTouch(container, "touchmove", 150, 100);
 
     expect(container?.style.transform).toContain("translateX(50px)");
 
-    dispatchTouch("touchend", 150, 100);
+    dispatchTouch(container, "touchend", 150, 100);
     expect(container?.style.transform).toContain("translateX(0px)");
   });
 
@@ -119,27 +105,9 @@ describe("ItemDetailModal Swipe Integration", () => {
       '[data-testid="swipe-container"]',
     ) as HTMLElement;
 
-    const dispatchTouch = (type: string, x: number, y: number) => {
-      if (!container) throw new Error("Container not found");
-      const touch = new Touch({
-        identifier: Date.now(),
-        target: container,
-        clientX: x,
-        clientY: y,
-      });
-      const event = new TouchEvent(type, {
-        touches: [touch],
-        targetTouches: [touch],
-        changedTouches: [touch],
-        bubbles: true,
-        cancelable: true,
-      });
-      container?.dispatchEvent(event);
-    };
-
-    dispatchTouch("touchstart", 200, 100);
-    dispatchTouch("touchmove", 50, 100); // Swipe left (-150px)
-    dispatchTouch("touchend", 50, 100);
+    dispatchTouch(container, "touchstart", 200, 100);
+    dispatchTouch(container, "touchmove", 50, 100); // Swipe left (-150px)
+    dispatchTouch(container, "touchend", 50, 100);
 
     expect(onNext).toHaveBeenCalled();
   });
@@ -166,27 +134,9 @@ describe("ItemDetailModal Swipe Integration", () => {
       '[data-testid="swipe-container"]',
     ) as HTMLElement;
 
-    const dispatchTouch = (type: string, x: number, y: number) => {
-      if (!container) throw new Error("Container not found");
-      const touch = new Touch({
-        identifier: Date.now(),
-        target: container,
-        clientX: x,
-        clientY: y,
-      });
-      const event = new TouchEvent(type, {
-        touches: [touch],
-        targetTouches: [touch],
-        changedTouches: [touch],
-        bubbles: true,
-        cancelable: true,
-      });
-      container?.dispatchEvent(event);
-    };
-
-    dispatchTouch("touchstart", 100, 100);
-    dispatchTouch("touchmove", 250, 100); // Swipe right (+150px)
-    dispatchTouch("touchend", 250, 100);
+    dispatchTouch(container, "touchstart", 100, 100);
+    dispatchTouch(container, "touchmove", 250, 100); // Swipe right (+150px)
+    dispatchTouch(container, "touchend", 250, 100);
 
     expect(onPrev).toHaveBeenCalled();
   });
@@ -215,34 +165,16 @@ describe("ItemDetailModal Swipe Integration", () => {
       '[data-testid="swipe-container"]',
     ) as HTMLElement;
 
-    const dispatchTouch = (type: string, x: number, y: number) => {
-      if (!container) throw new Error("Container not found");
-      const touch = new Touch({
-        identifier: Date.now(),
-        target: container,
-        clientX: x,
-        clientY: y,
-      });
-      const event = new TouchEvent(type, {
-        touches: [touch],
-        targetTouches: [touch],
-        changedTouches: [touch],
-        bubbles: true,
-        cancelable: true,
-      });
-      container?.dispatchEvent(event);
-    };
-
     // Swipe right
-    dispatchTouch("touchstart", 100, 100);
-    dispatchTouch("touchmove", 250, 100);
-    dispatchTouch("touchend", 250, 100);
+    dispatchTouch(container, "touchstart", 100, 100);
+    dispatchTouch(container, "touchmove", 250, 100);
+    dispatchTouch(container, "touchend", 250, 100);
     expect(onPrev).not.toHaveBeenCalled();
 
     // Swipe left
-    dispatchTouch("touchstart", 200, 100);
-    dispatchTouch("touchmove", 50, 100);
-    dispatchTouch("touchend", 50, 100);
+    dispatchTouch(container, "touchstart", 200, 100);
+    dispatchTouch(container, "touchmove", 50, 100);
+    dispatchTouch(container, "touchend", 50, 100);
     expect(onNext).not.toHaveBeenCalled();
   });
 });
