@@ -23,7 +23,7 @@ Connect the swipe gesture results to the existing item navigation logic.
     - [ ] Ensure swiping doesn't cause errors or weird visual states at the list boundaries.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Navigation Integration' (Protocol in workflow.md)
 
-## Phase 3: Refinement & Mobile UX
+## Phase 3: Refinement & Mobile UX [checkpoint: 469f5bc]
 Polish the animation and ensure a high-quality feel on actual mobile devices.
 
 - [x] Task: Performance optimization. ade4ca9
