@@ -26,7 +26,7 @@ The frontend is a modern Single Page Application (SPA) designed for speed and re
 
 -   **Framework:** SolidJS (Fine-grained reactivity)
 -   **Routing:** TanStack Router (Type-safe routing)
--   **State & Data Management:** TanStack Query (Efficient server-state management), TanStack DB (Local data synchronization), **SolidJS Store** (Centralized reactive application state)
+-   **State & Data Management:** TanStack Query (Efficient server-state management), TanStack DB (Local data synchronization with centralized sorting via reactive hooks), **SolidJS Store** (Centralized reactive application state)
 -   **Language:** TypeScript (Type safety)
 -   **Markdown Rendering:** `markdown-it` (Safe client-side rendering)
 -   **Styling:** Panda CSS (CSS-in-JS with build-time generation)
