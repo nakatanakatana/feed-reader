@@ -8,16 +8,16 @@
     -   [x] Run existing swipe-related tests to ensure refactoring didn't break anything.
     -   [x] Task: Conductor - User Manual Verification 'Phase 1: Test Infrastructure and Refactoring' (Protocol in workflow.md)
 
-# Phase 2: Core Logic Enhancements (`use-swipe.ts`)
-1.  **[ ] Task: Implement `touchcancel` and `preventDefault`**
-    -   [ ] **Write Tests:** Add a test case in `use-swipe.test.ts` for `touchcancel` and verify state reset.
-    -   [ ] **Implement:** Add `touchcancel` handler to `use-swipe.ts`.
-    -   [ ] **Implement:** Add `e.preventDefault()` in `touchmove` when horizontal swipe is confirmed.
-2.  **[ ] Task: Adjust Thresholds and Boundary Behavior**
-    -   [ ] **Write Tests:** Add tests for the 50px vertical cancellation threshold.
-    -   [ ] **Implement:** Update `verticalThreshold` in `use-swipe.ts`.
-    -   [ ] **Implement:** Add a mechanism to conditionally disable dragging (for list boundaries).
-    -   [ ] Task: Conductor - User Manual Verification 'Phase 2: Core Logic Enhancements' (Protocol in workflow.md)
+# Phase 2: Core Logic Enhancements (`use-swipe.ts`) [checkpoint: 53e9808]
+1.  **[x] Task: Implement `touchcancel` and `preventDefault`** 1220516
+    -   [x] **Write Tests:** Add a test case in `use-swipe.test.ts` for `touchcancel` and verify state reset.
+    -   [x] **Implement:** Add `touchcancel` handler to `use-swipe.ts`.
+    -   [x] **Implement:** Add `e.preventDefault()` in `touchmove` when horizontal swipe is confirmed.
+2.  **[x] Task: Adjust Thresholds and Boundary Behavior** 1220516
+    -   [x] **Write Tests:** Add tests for the 50px vertical cancellation threshold.
+    -   [x] **Implement:** Update `verticalThreshold` in `use-swipe.ts`.
+    -   [x] **Implement:** Add a mechanism to conditionally disable dragging (for list boundaries).
+    -   [x] Task: Conductor - User Manual Verification 'Phase 2: Core Logic Enhancements' (Protocol in workflow.md)
 
 # Phase 3: UI/UX and Accessibility (`ItemDetailModal.tsx`)
 1.  **[ ] Task: Boundary Navigation and State Optimization**
