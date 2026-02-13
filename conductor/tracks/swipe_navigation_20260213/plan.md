@@ -7,7 +7,7 @@ Implement the core logic for detecting swipe gestures and calculating horizontal
     - [ ] Write unit tests for `useSwipe` to verify displacement calculation and threshold detection.
     - [ ] Implement `touchstart`, `touchmove`, and `touchend` event handlers.
     - [ ] Ensure vertical scrolling is not hindered by horizontal swipe detection.
-- [ ] Task: Integrate swipe displacement into `ItemDetailModal` state.
+- [x] Task: Integrate swipe displacement into `ItemDetailModal` state. 8396dc9
     - [ ] Add reactive state for `translateX` in `ItemDetailModal`.
     - [ ] Apply `transform: translateX()` to the article content container.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Touch Interaction Hook & Logic' (Protocol in workflow.md)
