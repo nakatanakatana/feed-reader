@@ -95,6 +95,7 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
           // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
           params: linkProps.params as any,
           search: linkProps.search,
+          replace: true,
         });
       }
     } else {
@@ -109,6 +110,7 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
             // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
             params: linkProps.params as any,
             search: linkProps.search,
+            replace: true,
           });
         }
       }
@@ -129,6 +131,7 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
             // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
             params: linkProps.params as any,
             search: linkProps.search,
+            replace: true,
           });
         }
       }
@@ -144,6 +147,7 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
           // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
           params: linkProps.params as any,
           search: linkProps.search,
+          replace: true,
         });
       }
     }
@@ -189,6 +193,7 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
             tagId: props.tagId,
             since: props.since,
           },
+          replace: true,
         });
       }}
       prevItemId={prevItemIdMemo()}
