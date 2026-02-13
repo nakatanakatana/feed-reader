@@ -4,9 +4,8 @@ import {
   createCollection,
   createLiveQueryCollection,
   eq,
-  useLiveQuery,
 } from "@tanstack/solid-db";
-import { type Accessor, createMemo, createRoot, createSignal } from "solid-js";
+import { createMemo, createRoot, createSignal } from "solid-js";
 import { ItemService, type ListItem } from "../gen/item/v1/item_pb";
 import { itemStore } from "./item-store";
 import {
@@ -100,11 +99,14 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
   );
 };
 
-export const items = createRoot(() =>
-  createMemo(() =>
+export const items = createRoot(() => {
+  const col = createMemo(() =>
     createItems(itemStore.state.showRead, itemStore.state.since),
-  ),
-);
+  );
+  // @ts-expect-error: mock support
+  col.__data = col;
+  return col;
+});
 
 export const itemsUnreadQuery = createRoot(() =>
   createMemo(() =>
@@ -117,48 +119,20 @@ export const itemsUnreadQuery = createRoot(() =>
   ),
 );
 
-export function useSortedLiveQuery<T extends { createdAt: string }>(
-  // biome-ignore lint/suspicious/noExplicitAny: TanStack DB query builder types are complex
-  callback: (q: any) => any,
-) {
-  const query = useLiveQuery(callback);
-
-  const sortedData = createMemo(() => {
-    const data = (query() || []) as T[];
-    return [...data].sort((a, b) => {
-      const aTime = new Date(a.createdAt).getTime();
-      const bTime = new Date(b.createdAt).getTime();
-      return aTime - bTime;
-    });
-  });
-
-  const wrapped = () => sortedData();
-
-  Object.defineProperties(wrapped, {
-    isLoading: {
-      // biome-ignore lint/suspicious/noExplicitAny: Accessing isLoading from useLiveQuery result
-      get: () => (query as any).isLoading,
-      enumerable: true,
-    },
-    isError: {
-      // biome-ignore lint/suspicious/noExplicitAny: Accessing isError from useLiveQuery result
-      get: () => (query as any).isError,
-      enumerable: true,
-    },
-    // Also include isPending for compatibility
-    isPending: {
-      // biome-ignore lint/suspicious/noExplicitAny: Accessing isPending from useLiveQuery result
-      get: () => (query as any).isPending,
-      enumerable: true,
-    },
-  });
-
-  return wrapped as Accessor<T[]> & {
-    isLoading: boolean;
-    isError: boolean;
-    isPending: boolean;
-  };
-}
+/**
+ * A reactive collection of all items sorted by createdAt in ascending order.
+ * This should be the primary way to access items in the UI to ensure consistent ordering.
+ */
+export const sortedItems = createRoot(() =>
+  createMemo(() =>
+    createLiveQueryCollection((q) =>
+      q
+        .from({ item: items() })
+        .orderBy(({ item }) => item.createdAt, "asc")
+        .select(({ item }) => ({ ...item })),
+    ),
+  ),
+);
 
 export const getItem = async (id: string) => {
   const response = await itemClient.getItem({ id });

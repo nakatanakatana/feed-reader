@@ -8,8 +8,8 @@ import {
   type Item,
   items,
   itemsUnreadQuery,
+  sortedItems,
   tags,
-  useSortedLiveQuery,
 } from "../lib/db";
 import { itemStore } from "../lib/item-store";
 import { type DateFilterValue, formatUnreadCount } from "../lib/item-utils";
@@ -41,29 +41,24 @@ export function ItemList(props: ItemListProps) {
     }
   });
 
-  const itemQuery = useSortedLiveQuery<Item>(
+  const itemQuery = useLiveQuery((q) => {
     // biome-ignore lint/suspicious/noExplicitAny: TanStack DB query builder types
-    (q: any) => {
-      let query = q.from({ item: items() });
-      if (props.tagId) {
-        query = query
-          .innerJoin(
-            { ft: feedTag },
-            // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
-            ({ item, ft }: any) => eq(item.feedId, ft.feedId),
-          )
-          // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
-          .where(({ ft }: any) => eq(ft.tagId, props.tagId));
-      }
-      // biome-ignore lint/suspicious/noExplicitAny: TanStack DB select types
-      return query.select(({ item }: any) => ({ ...item }));
-    },
-  );
+    let query = q.from({ item: sortedItems() }) as any;
+    if (props.tagId) {
+      query = query
+        .innerJoin(
+          { ft: feedTag },
+          // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
+          ({ item, ft }: any) => eq(item.feedId, ft.feedId),
+        )
+        // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
+        .where(({ ft }: any) => eq(ft.tagId, props.tagId));
+    }
+    // biome-ignore lint/suspicious/noExplicitAny: TanStack DB select types
+    return query.select(({ item }: any) => ({ ...item }));
+  });
 
-  const totalUnread = useSortedLiveQuery<Item>(
-    // biome-ignore lint/suspicious/noExplicitAny: TanStack DB query builder
-    (q: any) => q.from({ item: itemsUnreadQuery() }),
-  );
+  const totalUnread = useLiveQuery((q) => q.from({ item: itemsUnreadQuery() }));
 
   const tagsQuery = useLiveQuery((q) => {
     return q
@@ -287,7 +282,7 @@ export function ItemList(props: ItemListProps) {
       })}
     >
       <div class={stack({ gap: "2", padding: "0" })}>
-        <For each={itemQuery()}>
+        <For each={itemQuery() as Item[]}>
           {(item) => (
             <ItemRow
               item={item}

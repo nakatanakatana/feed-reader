@@ -1,7 +1,7 @@
-import { eq } from "@tanstack/solid-db";
+import { eq, useLiveQuery } from "@tanstack/solid-db";
 import { useNavigate } from "@tanstack/solid-router";
 import { createEffect, createMemo } from "solid-js";
-import { feedTag, type Item, items, useSortedLiveQuery } from "../lib/db";
+import { feedTag, type Item, items, sortedItems } from "../lib/db";
 import { getPrefetchIds, prefetchItems } from "../lib/item-prefetch";
 import { itemStore } from "../lib/item-store";
 import type { DateFilterValue } from "../lib/item-utils";
@@ -41,32 +41,30 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
 
   const isEndOfList = () => props.itemId === "end-of-list";
 
-  // Use useSortedLiveQuery with the items Collection and respect tag filtering.
+  // Use useLiveQuery with the sortedItems Collection and respect tag filtering.
   // items() applies the global showRead filter; items that become read remain
   // in the local collection so indices stay stable during navigation transitions.
-  const itemsQuery = useSortedLiveQuery<Item>(
+  const itemsQuery = useLiveQuery((q) => {
     // biome-ignore lint/suspicious/noExplicitAny: TanStack DB query builder types
-    (q: any) => {
-      let query = q.from({ item: items() });
-      if (props.tagId) {
-        query = query
-          .innerJoin(
-            { ft: feedTag },
-            // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
-            ({ item, ft }: any) => eq(item.feedId, ft.feedId),
-          )
-          // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
-          .where(({ ft }: any) => eq(ft.tagId, props.tagId));
-      }
-      // biome-ignore lint/suspicious/noExplicitAny: TanStack DB select types
-      return query.select(({ item }: any) => ({ ...item }));
-    },
-  );
+    let query = q.from({ item: sortedItems() }) as any;
+    if (props.tagId) {
+      query = query
+        .innerJoin(
+          { ft: feedTag },
+          // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
+          ({ item, ft }: any) => eq(item.feedId, ft.feedId),
+        )
+        // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
+        .where(({ ft }: any) => eq(ft.tagId, props.tagId));
+    }
+    // biome-ignore lint/suspicious/noExplicitAny: TanStack DB select types
+    return query.select(({ item }: any) => ({ ...item }));
+  });
 
   const filteredItems = createMemo(() => {
     const all = itemsQuery();
     if (!all) return [];
-    return all;
+    return all as Item[];
   });
 
   const currentIndexMemo = createMemo(() => {
