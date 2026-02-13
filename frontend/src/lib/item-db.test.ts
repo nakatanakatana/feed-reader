@@ -1,12 +1,22 @@
 import { createRoot } from "solid-js";
-import { describe, expect, it } from "vitest";
-import { type Item, items, sortedItems } from "./item-db";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { items, sortedItems } from "./item-db";
 import { itemStore } from "./item-store";
 
 describe("items collection", () => {
+  beforeEach(() => {
+    itemStore.setShowRead(false);
+    itemStore.setDateFilter("30d");
+  });
+
+  afterEach(() => {
+    itemStore.setShowRead(false);
+    itemStore.setDateFilter("30d");
+  });
+
   describe("reactivity", () => {
     it("should return a new collection when filters change", () => {
-      createRoot(() => {
+      const dispose = createRoot((dispose) => {
         const collection1 = items();
 
         // Change store state
@@ -21,25 +31,32 @@ describe("items collection", () => {
 
         const collection3 = items();
         expect(collection3).not.toBe(collection2);
+
+        return dispose;
       });
+      dispose();
     });
 
     it("should return the same collection if filters are the same", () => {
-      createRoot(() => {
+      const dispose = createRoot((dispose) => {
         const collection1 = items();
         const collection2 = items();
         expect(collection1).toBe(collection2);
+        return dispose;
       });
+      dispose();
     });
   });
 
   describe("sorting", () => {
     it("should be defined as a reactive collection", () => {
       expect(sortedItems).toBeDefined();
-      createRoot(() => {
+      const dispose = createRoot((dispose) => {
         const col = sortedItems();
         expect(col).toBeDefined();
+        return dispose;
       });
+      dispose();
     });
   });
 });

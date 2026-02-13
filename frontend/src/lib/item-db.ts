@@ -103,8 +103,11 @@ export const items = createRoot(() => {
   const col = createMemo(() =>
     createItems(itemStore.state.showRead, itemStore.state.since),
   );
-  // @ts-expect-error: mock support
-  col.__data = col;
+  // Attach test-only mock support without affecting production typings.
+  if (process.env.NODE_ENV === "test") {
+    // @ts-expect-error: mock support
+    col.__data = col;
+  }
   return col;
 });
 

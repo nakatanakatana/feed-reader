@@ -58,7 +58,11 @@ export function ItemList(props: ItemListProps) {
     return query.select(({ item }: any) => ({ ...item }));
   });
 
-  const totalUnread = useLiveQuery((q) => q.from({ item: itemsUnreadQuery() }));
+  const totalUnread = useLiveQuery((q) =>
+    q
+      .from({ i: itemsUnreadQuery() })
+      .select(({ i }) => ({ total: count(i.id) })),
+  );
 
   const tagsQuery = useLiveQuery((q) => {
     return q
@@ -169,12 +173,12 @@ export function ItemList(props: ItemListProps) {
             onClick={() => handleTagClick(undefined)}
           >
             All
-            <Show when={totalUnread().length > 0n}>
+            <Show when={(totalUnread()[0]?.total ?? 0n) > 0n}>
               <Badge
                 variant={props.tagId === undefined ? "primary" : "neutral"}
                 class={css({ ml: "1.5", fontSize: "10px", minWidth: "1.5rem" })}
               >
-                {formatUnreadCount(Number(totalUnread().length))}
+                {formatUnreadCount(Number(totalUnread()[0].total))}
               </Badge>
             </Show>
           </TagChip>
