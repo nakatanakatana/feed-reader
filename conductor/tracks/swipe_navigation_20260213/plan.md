@@ -15,11 +15,11 @@ Implement the core logic for detecting swipe gestures and calculating horizontal
 ## Phase 2: Navigation Integration
 Connect the swipe gesture results to the existing item navigation logic.
 
-- [ ] Task: Implement navigation trigger on `touchend`.
+- [x] Task: Implement navigation trigger on `touchend`. 16ff907
     - [ ] Write tests to verify that `onNext` and `onPrevious` are called when threshold is exceeded.
     - [ ] Implement logic to trigger existing `goToNext` / `goToPrevious` functions from `ItemDetailModal`.
     - [ ] Add smooth transition animation when switching items or snapping back.
-- [ ] Task: Handle boundary cases (first/last items).
+- [x] Task: Handle boundary cases (first/last items). 16ff907
     - [ ] Ensure swiping doesn't cause errors or weird visual states at the list boundaries.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Navigation Integration' (Protocol in workflow.md)
 
