@@ -18,6 +18,8 @@ The primary target audience is individuals and organizations seeking control ove
 
 - **Full-Stack Application:** Includes both a backend API and a web frontend.
 
+- **Progressive Web App (PWA):** Fully installable on mobile and desktop devices. Features automatic background updates and a standalone display mode for a native-like app experience.
+
 - **Single Binary Distribution:** Both the backend API and the frontend Web UI are bundled into a single executable for simplified deployment and distribution.
 
 - **Containerization:** Official Docker support using multi-stage builds and distroless images for secure, lightweight, and consistent deployment.
