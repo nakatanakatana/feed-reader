@@ -58,7 +58,12 @@ describe("ItemDetailModal Swipe Integration", () => {
     dispose = render(
       () => (
         <Wrapper>
-          <ItemDetailModal itemId="test-id" onClose={() => {}} />
+          <ItemDetailModal
+            itemId="test-id"
+            onClose={() => {}}
+            prevItemId="prev-id"
+            nextItemId="next-id"
+          />
         </Wrapper>
       ),
       document.body,
@@ -176,5 +181,32 @@ describe("ItemDetailModal Swipe Integration", () => {
     dispatchTouch(container, "touchmove", 50, 100);
     dispatchTouch(container, "touchend", 50, 100);
     expect(onNext).not.toHaveBeenCalled();
+  });
+
+  it("disables dragging when no navigation is available", async () => {
+    setupMockData("test-id");
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal
+            itemId="test-id"
+            onClose={() => {}}
+            // No prevItemId or nextItemId
+          />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    await expect.element(page.getByText("Test Item")).toBeInTheDocument();
+    const container = document.querySelector(
+      '[data-testid="swipe-container"]',
+    ) as HTMLElement;
+
+    dispatchTouch(container, "touchstart", 100, 100);
+    dispatchTouch(container, "touchmove", 150, 100);
+
+    // Should NOT have translateX because dragging is disabled
+    expect(container?.style.transform).toContain("translateX(0px)");
   });
 });

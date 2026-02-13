@@ -4,6 +4,7 @@ interface UseSwipeOptions {
   threshold?: number;
   onSwipeLeft?: () => void;
   onSwipeRight?: () => void;
+  disabled?: boolean;
 }
 
 export function useSwipe(options: UseSwipeOptions = {}) {
@@ -14,7 +15,7 @@ export function useSwipe(options: UseSwipeOptions = {}) {
   let isCancelled = false;
 
   const touchstart = (e: TouchEvent) => {
-    if (e.touches.length !== 1) return;
+    if (options.disabled || e.touches.length !== 1) return;
     startX = e.touches[0].clientX;
     startY = e.touches[0].clientY;
     isSwiping = true;
@@ -28,8 +29,11 @@ export function useSwipe(options: UseSwipeOptions = {}) {
     const diffX = currentX - startX;
     const diffY = currentY - startY;
 
-    // If movement is mostly vertical, cancel swipe
-    if (Math.abs(diffY) > Math.abs(diffX) && Math.abs(diffY) > 10) {
+    // If movement is mostly vertical, or exceeds vertical threshold (50px), cancel swipe
+    if (
+      (Math.abs(diffY) > Math.abs(diffX) && Math.abs(diffY) > 10) ||
+      Math.abs(diffY) > 50
+    ) {
       isCancelled = true;
       setX(0);
       return;

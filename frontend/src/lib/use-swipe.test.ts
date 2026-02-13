@@ -207,4 +207,130 @@ describe("useSwipe", () => {
       dispose();
     });
   });
+
+  it("resets x to 0 and stops swiping on touchcancel", () => {
+    createRoot((dispose) => {
+      const { x, handlers } = useSwipe();
+      const target = document.createElement("div");
+
+      handlers.ontouchstart(
+        createTouchEvent("touchstart", target, [
+          createTouch(target, { x: 100, y: 100 }),
+        ]),
+      );
+
+      handlers.ontouchmove(
+        createTouchEvent("touchmove", target, [
+          createTouch(target, { x: 150, y: 100 }),
+        ]),
+      );
+
+      expect(x()).toBe(50);
+
+      handlers.ontouchcancel(createTouchEvent("touchcancel", target, []));
+
+      expect(x()).toBe(0);
+
+      // Subsequent moves should be ignored
+      handlers.ontouchmove(
+        createTouchEvent("touchmove", target, [
+          createTouch(target, { x: 160, y: 100 }),
+        ]),
+      );
+      expect(x()).toBe(0);
+
+      dispose();
+    });
+  });
+
+  it("calls preventDefault during horizontal swipe", () => {
+    createRoot((dispose) => {
+      const { handlers } = useSwipe();
+      const target = document.createElement("div");
+
+      handlers.ontouchstart(
+        createTouchEvent("touchstart", target, [
+          createTouch(target, { x: 100, y: 100 }),
+        ]),
+      );
+
+      const moveEvent = createTouchEvent("touchmove", target, [
+        createTouch(target, { x: 110, y: 100 }),
+      ]);
+      const preventDefaultSpy = vi.spyOn(moveEvent, "preventDefault");
+
+      handlers.ontouchmove(moveEvent);
+
+      expect(preventDefaultSpy).toHaveBeenCalled();
+      dispose();
+    });
+  });
+
+  it("cancels swipe if vertical movement exceeds 50px", () => {
+    createRoot((dispose) => {
+      const { x, handlers } = useSwipe();
+      const target = document.createElement("div");
+
+      handlers.ontouchstart(
+        createTouchEvent("touchstart", target, [
+          createTouch(target, { x: 100, y: 100 }),
+        ]),
+      );
+
+      // Horizontal movement 10px, Vertical 51px
+      handlers.ontouchmove(
+        createTouchEvent("touchmove", target, [
+          createTouch(target, { x: 110, y: 151 }),
+        ]),
+      );
+
+      expect(x()).toBe(0);
+      dispose();
+    });
+  });
+
+  it("cancels swipe if vertical movement exceeds 50px even if horizontal is larger", () => {
+    createRoot((dispose) => {
+      const { x, handlers } = useSwipe();
+      const target = document.createElement("div");
+
+      handlers.ontouchstart(
+        createTouchEvent("touchstart", target, [
+          createTouch(target, { x: 100, y: 100 }),
+        ]),
+      );
+
+      // Horizontal movement 100px, Vertical 51px
+      handlers.ontouchmove(
+        createTouchEvent("touchmove", target, [
+          createTouch(target, { x: 200, y: 151 }),
+        ]),
+      );
+
+      expect(x()).toBe(0);
+      dispose();
+    });
+  });
+
+  it("does not start swiping if disabled", () => {
+    createRoot((dispose) => {
+      const { x, handlers } = useSwipe({ disabled: true });
+      const target = document.createElement("div");
+
+      handlers.ontouchstart(
+        createTouchEvent("touchstart", target, [
+          createTouch(target, { x: 100, y: 100 }),
+        ]),
+      );
+
+      handlers.ontouchmove(
+        createTouchEvent("touchmove", target, [
+          createTouch(target, { x: 150, y: 100 }),
+        ]),
+      );
+
+      expect(x()).toBe(0);
+      dispose();
+    });
+  });
 });

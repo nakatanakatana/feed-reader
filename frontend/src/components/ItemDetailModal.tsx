@@ -34,6 +34,8 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
       }
     },
     threshold: 100, // Use a higher threshold than the hook default (50px) to reduce accidental swipes
+    disabled:
+      (!props.prevItemId && !props.nextItemId) || props.itemId === "end-of-list",
   });
 
   createEffect(() => {
