@@ -1,0 +1,8 @@
+{
+  "track_id": "item_detail_history_20260214",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-02-14T12:00:00Z",
+  "updated_at": "2026-02-14T12:00:00Z",
+  "description": "ItemDetailModalでの移動(item/<id>)はブラウザのhistoryに積まれないようにして、戻るときはItemの一覧ページに戻れるようにしてください"
+}
