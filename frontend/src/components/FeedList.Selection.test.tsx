@@ -143,4 +143,42 @@ describe("FeedList Selection", () => {
     await expect.element(bulkActionBar).toBeVisible();
     await expect.element(page.getByText("1 feeds selected")).toBeInTheDocument();
   });
+
+  it("performs bulk tagging for multiple feeds", async () => {
+    vi.useRealTimers();
+    const history = createMemoryHistory({ initialEntries: ["/feeds"] });
+    const router = createRouter({ routeTree, history });
+
+    dispose = render(
+      () => (
+        <TestWrapper>
+          <RouterProvider router={router} />
+        </TestWrapper>
+      ),
+      document.body,
+    );
+
+    await expect.element(page.getByText("Example Feed 1")).toBeInTheDocument();
+    
+    // Select all feeds
+    const selectAllCheckbox = page.getByRole("checkbox", { name: "Select all visible feeds" });
+    await selectAllCheckbox.click();
+
+    // Click Manage Tags in BulkActionBar
+    const manageButton = page.getByRole("button", { name: /Manage Tags/i });
+    await manageButton.click();
+
+    await expect.element(page.getByText("Manage Tags for 2 feeds")).toBeInTheDocument();
+
+    // Add a tag (Tech)
+    const addButton = page.getByRole("button", { name: "Add", exact: true }).nth(0);
+    await addButton.click();
+
+    // Save changes
+    const saveButton = page.getByRole("button", { name: "Save Changes" });
+    await saveButton.click();
+
+    // Modal should close
+    await expect.element(page.getByText("Manage Tags for 2 feeds")).not.toBeInTheDocument();
+  });
 });
