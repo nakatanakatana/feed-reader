@@ -25,6 +25,8 @@ The primary target audience is individuals and organizations seeking control ove
 - **Containerization:** Official Docker support using multi-stage builds and distroless images for secure, lightweight, and consistent deployment.
 
 - **Feed Management:** Add, organize, and manage RSS/Atom feeds via the UI. Supports sorting by update time and bulk operations like tagging multiple feeds simultaneously.
+  - **Bulk Selection:** Features a "Select All" capability in the feed list that respects active filters and sorting, allowing for rapid management of visible feeds.
+  - **Floating Bulk Actions:** Consistent with the article management experience, selecting multiple feeds triggers a floating action bar at the bottom of the screen for unified bulk operations.
 
 
 - **Manual Feed Refresh:** Trigger immediate updates for one or more feeds directly from the UI, bypassing the background scheduler. Includes real-time feedback with loading indicators and error reporting at the individual feed level.
