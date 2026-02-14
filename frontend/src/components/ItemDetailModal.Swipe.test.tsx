@@ -217,4 +217,39 @@ describe("ItemDetailModal Swipe Integration", () => {
     expect(value).toBeGreaterThan(0);
     expect(value).toBeLessThan(20);
   });
+
+  it("allows vertical scrolling without triggering horizontal navigation", async () => {
+    setupMockData("test-id");
+    const onPrev = vi.fn();
+    const onNext = vi.fn();
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal
+            itemId="test-id"
+            onClose={() => {}}
+            prevItemId="prev-id"
+            nextItemId="next-id"
+            onPrev={onPrev}
+            onNext={onNext}
+          />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    await expect.element(page.getByText("Test Item")).toBeInTheDocument();
+    const container = document.querySelector(
+      '[data-testid="swipe-container"]',
+    ) as HTMLElement;
+
+    // Perform a predominantly vertical gesture inside the swipe container.
+    dispatchTouch(container, "touchstart", 150, 150);
+    dispatchTouch(container, "touchmove", 150, 300); // Large vertical move, minimal horizontal delta
+    dispatchTouch(container, "touchend", 150, 300);
+
+    // Vertical scrolling should not trigger horizontal swipe navigation.
+    expect(onPrev).not.toHaveBeenCalled();
+    expect(onNext).not.toHaveBeenCalled();
+  });
 });
