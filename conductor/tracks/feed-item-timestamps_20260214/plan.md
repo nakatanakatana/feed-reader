@@ -4,7 +4,7 @@
 - [x] Task: Create database migration d6772f5
     - [ ] Create a new SQL migration file to add `published_at` column to `feed_items` table.
     - [ ] Run `sqlc generate` to update Go models.
-- [ ] Task: Update Feed Fetcher Logic (TDD)
+- [x] Task: Update Feed Fetcher Logic (TDD) c198b1f
     - [ ] Create/Update test in `feed_store_test.go` or `fetcher_test.go` to verify `published_at` is saved to `feed_items`.
     - [ ] Implement logic in `FeedStore` (or wherever `feed_items` are inserted/updated) to save the `published_at` timestamp.
     - [ ] Verify `items.published_at` remains unchanged on subsequent updates (if that's the established behavior) while `feed_items.published_at` is updated.
