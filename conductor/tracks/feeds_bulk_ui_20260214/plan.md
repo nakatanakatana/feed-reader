@@ -24,7 +24,7 @@ Integrate the "Select All" checkbox into the existing Feeds page header refineme
     - [x] Verify the checkbox accurately reflects the selection state (including indeterminate).
 - [x] Task: Conductor - User Manual Verification 'Phase 2: UI Implementation - "Select All" Checkbox' (Protocol in workflow.md) cb614f2
 
-## Phase 3: UI Implementation - Floating Bulk Action Bar
+## Phase 3: UI Implementation - Floating Bulk Action Bar [checkpoint: 7090eda]
 Bring the floating `BulkActionBar` to the Feeds page.
 
 - [x] Task: Integrate `BulkActionBar` into the Feeds page. bbe93bc
@@ -34,7 +34,7 @@ Bring the floating `BulkActionBar` to the Feeds page.
 - [x] Task: TDD - Integration tests for `BulkActionBar` on Feeds page. bbe93bc
     - [x] Verify the bar appears when a feed is selected and disappears when deselected.
     - [x] Verify the bar's position and animation match the Home page.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: UI Implementation - Floating Bulk Action Bar' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: UI Implementation - Floating Bulk Action Bar' (Protocol in workflow.md) 7090eda
 
 ## Phase 4: Bulk Tagging Functionality
 Ensure the bulk tagging action correctly updates multiple feeds.
