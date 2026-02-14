@@ -147,11 +147,14 @@ func (s *FetcherService) fetchAndSaveSync(ctx context.Context, f store.FullFeed)
 		}
 	}
 
-	// Update last_fetched_at
-	now := time.Now().Format(time.RFC3339)
+	// Update last_fetched_at and next_fetch
+	now := time.Now()
+	lastFetched := now.Format(time.RFC3339)
+	nextFetch := now.Add(s.fetchInterval).Format(time.RFC3339)
 	s.writeQueue.Submit(&MarkFetchedJob{
 		Params: store.MarkFeedFetchedParams{
-			LastFetchedAt: &now,
+			LastFetchedAt: &lastFetched,
+			NextFetch:     &nextFetch,
 			FeedID:        f.ID,
 		},
 	})
@@ -159,21 +162,33 @@ func (s *FetcherService) fetchAndSaveSync(ctx context.Context, f store.FullFeed)
 	return result, nil
 }
 
-// FetchAllFeeds initiates the fetching process for all registered feeds.
+// FetchAllFeeds initiates the fetching process for feeds that are due to be fetched.
 func (s *FetcherService) FetchAllFeeds(ctx context.Context) error {
-	s.logger.InfoContext(ctx, "starting background fetch for all feeds")
+	s.logger.InfoContext(ctx, "starting background fetch for due feeds")
 
-	feeds, err := s.store.ListFeeds(ctx, store.ListFeedsParams{})
+	feeds, err := s.store.ListFeedsToFetch(ctx)
 	if err != nil {
-		s.logger.ErrorContext(ctx, "failed to list feeds", "error", err)
+		s.logger.ErrorContext(ctx, "failed to list feeds to fetch", "error", err)
 		return err
 	}
 
-	for _, feed := range feeds {
-		if !s.shouldFetch(feed) {
-			continue
+	for _, row := range feeds {
+		feed := store.FullFeed{
+			ID:            row.ID,
+			Url:           row.Url,
+			Link:          row.Link,
+			Title:         row.Title,
+			Description:   row.Description,
+			Lang:          row.Lang,
+			ImageUrl:      row.ImageUrl,
+			Copyright:     row.Copyright,
+			FeedType:      row.FeedType,
+			FeedVersion:   row.FeedVersion,
+			CreatedAt:     row.CreatedAt,
+			UpdatedAt:     row.UpdatedAt,
+			LastFetchedAt: row.LastFetchedAt,
+			NextFetch:     row.NextFetch,
 		}
-
 		f := feed // capture loop variable
 		s.pool.AddTask(func(ctx context.Context) error {
 			return s.FetchAndSave(ctx, f)
@@ -219,20 +234,6 @@ func (s *FetcherService) FetchFeedsByIDs(ctx context.Context, ids []string) erro
 	return nil
 }
 
-func (s *FetcherService) shouldFetch(f store.FullFeed) bool {
-	if f.LastFetchedAt == nil {
-		return true
-	}
-
-	lastFetched, err := time.Parse(time.RFC3339, *f.LastFetchedAt)
-	if err != nil {
-		s.logger.Warn("failed to parse last_fetched_at", "id", f.ID, "error", err)
-		return true // Fetch if date is invalid
-	}
-
-	return time.Since(lastFetched) >= s.fetchInterval
-}
-
 func (s *FetcherService) FetchAndSave(ctx context.Context, f store.FullFeed) error {
 	s.logger.InfoContext(ctx, "fetching feed", "url", f.Url, "id", f.ID)
 
@@ -246,11 +247,14 @@ func (s *FetcherService) FetchAndSave(ctx context.Context, f store.FullFeed) err
 	if err != nil {
 		if errors.Is(err, ErrNotModified) {
 			s.logger.InfoContext(ctx, "feed not modified, skipping", "url", f.Url, "id", f.ID)
-			// Still update last_fetched_at to avoid immediate re-fetch if interval is small
-			now := time.Now().Format(time.RFC3339)
+			// Still update last_fetched_at and next_fetch to avoid immediate re-fetch
+			now := time.Now()
+			lastFetched := now.Format(time.RFC3339)
+			nextFetch := now.Add(s.fetchInterval).Format(time.RFC3339)
 			s.writeQueue.Submit(&MarkFetchedJob{
 				Params: store.MarkFeedFetchedParams{
-					LastFetchedAt: &now,
+					LastFetchedAt: &lastFetched,
+					NextFetch:     &nextFetch,
 					FeedID:        f.ID,
 				},
 			})
@@ -270,11 +274,14 @@ func (s *FetcherService) FetchAndSave(ctx context.Context, f store.FullFeed) err
 		s.writeQueue.Submit(job)
 	}
 
-	// Update last_fetched_at asynchronously
-	now := time.Now().Format(time.RFC3339)
+	// Update last_fetched_at and next_fetch asynchronously
+	now := time.Now()
+	lastFetched := now.Format(time.RFC3339)
+	nextFetch := now.Add(s.fetchInterval).Format(time.RFC3339)
 	s.writeQueue.Submit(&MarkFetchedJob{
 		Params: store.MarkFeedFetchedParams{
-			LastFetchedAt: &now,
+			LastFetchedAt: &lastFetched,
+			NextFetch:     &nextFetch,
 			FeedID:        f.ID,
 		},
 	})

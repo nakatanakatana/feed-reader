@@ -138,37 +138,51 @@ func TestFetcherService_FetchAllFeeds_Interval(t *testing.T) {
 	go wq.Start(ctx)
 	service := NewFetcherService(s, fetcher, pool, wq, logger, interval)
 
-	// Case 1: Feed fetched recently (should NOT fetch)
-	recentTime := time.Now().Add(-5 * time.Minute).Format(time.RFC3339)
+	// Case 1: Feed scheduled for FUTURE (should NOT fetch)
+	futureTime := time.Now().UTC().Add(1 * time.Hour).Format("2006-01-02T15:04:05Z")
 	feedRecent, _ := queries.CreateFeed(ctx, store.CreateFeedParams{ID: "recent", Url: "http://recent"})
-	_ = queries.MarkFeedFetched(ctx, store.MarkFeedFetchedParams{FeedID: feedRecent.ID, LastFetchedAt: &recentTime})
+	_ = queries.MarkFeedFetched(ctx, store.MarkFeedFetchedParams{FeedID: feedRecent.ID, NextFetch: &futureTime})
 
-	// Case 2: Feed fetched long ago (should fetch)
-	oldTime := time.Now().Add(-60 * time.Minute).Format(time.RFC3339)
+	// Case 2: Feed scheduled for PAST (should fetch)
+	pastTime := time.Now().UTC().Add(-1 * time.Hour).Format("2006-01-02T15:04:05Z")
 	feedOld, _ := queries.CreateFeed(ctx, store.CreateFeedParams{ID: "old", Url: "http://old"})
-	_ = queries.MarkFeedFetched(ctx, store.MarkFeedFetchedParams{FeedID: feedOld.ID, LastFetchedAt: &oldTime})
+	_ = queries.MarkFeedFetched(ctx, store.MarkFeedFetchedParams{FeedID: feedOld.ID, NextFetch: &pastTime})
 
-	// Case 3: Feed never fetched (should fetch)
+	// Case 3: Feed never fetched/scheduled (next_fetch is NULL) (should fetch)
 	feedNew, _ := queries.CreateFeed(ctx, store.CreateFeedParams{ID: "new", Url: "http://new"})
 
 	// Run FetchAllFeeds
+	var dbNow string
+	_ = db.QueryRow("SELECT CURRENT_TIMESTAMP").Scan(&dbNow)
+	t.Logf("DB NOW: %s", dbNow)
+
+	sfeeds, _ := queries.ListFeedsToFetch(ctx)
+	t.Logf("Feeds to fetch count: %d", len(sfeeds))
+	for _, sf := range sfeeds {
+		t.Logf("Due feed: ID=%s, NextFetch=%v", sf.ID, sf.NextFetch)
+	}
+
 	err := service.FetchAllFeeds(ctx)
 	assert.NilError(t, err)
 
 	// Wait for workers to finish
 	pool.Wait()
-	// Wait for WriteQueue to process jobs
-	time.Sleep(50 * time.Millisecond)
+	// Wait for WriteQueue to process jobs (asynchronous update)
+	time.Sleep(200 * time.Millisecond)
 
 	// Verify results
 	fRecent, _ := queries.GetFeed(ctx, feedRecent.ID)
-	assert.Equal(t, *fRecent.LastFetchedAt, recentTime, "Recent feed should not have been fetched")
+	assert.Equal(t, *fRecent.NextFetch, futureTime, "Feed scheduled for future should not have been fetched")
 
 	fOld, _ := queries.GetFeed(ctx, feedOld.ID)
-	assert.Assert(t, *fOld.LastFetchedAt != oldTime, "Old feed should have been fetched and updated")
+	if *fOld.NextFetch == pastTime {
+		t.Errorf("fOld.NextFetch is still %s, expected it to be updated", pastTime)
+	}
+	assert.Assert(t, fOld.LastFetchedAt != nil)
 
 	fNew, _ := queries.GetFeed(ctx, feedNew.ID)
-	assert.Assert(t, fNew.LastFetchedAt != nil, "New feed should have been fetched")
+	assert.Assert(t, fNew.NextFetch != nil, "New feed should have been fetched and scheduled")
+	assert.Assert(t, fNew.LastFetchedAt != nil)
 }
 
 func TestFetcherService_FetchFeedsByIDs(t *testing.T) {

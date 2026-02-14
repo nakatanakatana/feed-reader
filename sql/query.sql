@@ -409,6 +409,6 @@ FROM
 LEFT JOIN
   feed_fetcher ff ON f.id = ff.feed_id
 WHERE
-  ff.next_fetch IS NULL OR ff.next_fetch <= (strftime('%FT%TZ', 'now'))
+  ff.next_fetch IS NULL OR ff.next_fetch <= (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
 ORDER BY
   ff.next_fetch ASC;

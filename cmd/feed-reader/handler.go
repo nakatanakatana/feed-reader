@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 
 	"connectrpc.com/connect"
 	feedv1 "github.com/nakatanakatana/feed-reader/gen/go/feed/v1"
@@ -176,6 +177,17 @@ func (s *FeedServer) createFeedFromURL(ctx context.Context, url string, titleOve
 		Copyright:   strPtr(fetchedFeed.Copyright),
 		FeedType:    strPtr(fetchedFeed.FeedType),
 		FeedVersion: strPtr(fetchedFeed.FeedVersion),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	// Initialize schedule
+	now := time.Now().Format(time.RFC3339)
+	err = s.store.MarkFeedFetched(ctx, store.MarkFeedFetchedParams{
+		FeedID:        feed.ID,
+		LastFetchedAt: nil, // Never fetched yet
+		NextFetch:     &now, // Fetch immediately
 	})
 	if err != nil {
 		return nil, err

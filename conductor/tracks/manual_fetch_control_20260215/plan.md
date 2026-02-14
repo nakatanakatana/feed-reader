@@ -15,7 +15,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md) b510f82
 
 ## Phase 2: Backend Logic Updates
-- [ ] Task: Update Fetcher Service Logic
+- [~] Task: Update Fetcher Service Logic
     - [ ] Modify `FetchAllFeeds` (or equivalent polling function) to query based on `next_fetch <= NOW`.
     - [ ] Update the post-fetch logic to calculate and save the new `next_fetch` (`now + FetchInterval`).
     - [ ] Ensure initial feed addition sets a valid `next_fetch`.
