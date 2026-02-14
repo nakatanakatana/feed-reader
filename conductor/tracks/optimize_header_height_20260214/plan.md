@@ -5,13 +5,13 @@ This plan focuses on increasing the main content display area by minimizing the 
 ## Phase 1: Preparation and Header Refinement
 Focus on reducing the header's vertical footprint by adjusting styles and layout.
 
-- [ ] **Task: Analysis & Styling Setup**
-    - [ ] Review `ItemDetailModal.tsx` and related Panda CSS styles.
-    - [ ] Identify existing padding, margin, and font-size constants used in the header.
-- [ ] **Task: Header Height Minimization (TDD)**
-    - [ ] **Write Tests**: Update or add tests in `ItemDetailModal.UI.test.tsx` to verify the header's reduced height (e.g., checking specific CSS classes or computed styles if possible).
-    - [ ] **Implement**: Modify `ItemDetailModal.tsx` to reduce vertical padding and optimize font sizes in the header section.
-    - [ ] **Verify**: Ensure tests pass and the header occupies less vertical space.
+- [x] **Task: Analysis & Styling Setup**
+    - [x] Review `ItemDetailModal.tsx` and related Panda CSS styles.
+    - [x] Identify existing padding, margin, and font-size constants used in the header.
+- [x] **Task: Header Height Minimization (TDD)** 777cc45
+    - [x] **Write Tests**: Update or add tests in `ItemDetailModal.UI.test.tsx` to verify the header's reduced height (e.g., checking specific CSS classes or computed styles if possible).
+    - [x] **Implement**: Modify `ItemDetailModal.tsx` to reduce vertical padding and optimize font sizes in the header section.
+    - [x] **Verify**: Ensure tests pass and the header occupies less vertical space.
 - [ ] **Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)**
 
 ## Phase 2: Floating Action Button (FAB) Implementation
