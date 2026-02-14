@@ -93,7 +93,6 @@ INSERT INTO items (
 ON CONFLICT(url) DO UPDATE SET
   title = excluded.title,
   description = excluded.description,
-  published_at = excluded.published_at,
   author = excluded.author,
   guid = excluded.guid,
   content = excluded.content,
@@ -105,11 +104,14 @@ RETURNING *;
 -- name: CreateFeedItem :exec
 INSERT INTO feed_items (
   feed_id,
-  item_id
+  item_id,
+  published_at
 ) VALUES (
-  ?, ?
+  ?, ?, ?
 )
-ON CONFLICT(feed_id, item_id) DO NOTHING;
+ON CONFLICT(feed_id, item_id) DO UPDATE SET
+  published_at = excluded.published_at,
+  updated_at = (strftime('%FT%TZ', 'now'));
 
 -- name: CreateItemRead :exec
 INSERT INTO item_reads (

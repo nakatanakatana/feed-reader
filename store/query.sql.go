@@ -255,20 +255,24 @@ func (q *Queries) CreateFeed(ctx context.Context, arg CreateFeedParams) (Feed, e
 const createFeedItem = `-- name: CreateFeedItem :exec
 INSERT INTO feed_items (
   feed_id,
-  item_id
+  item_id,
+  published_at
 ) VALUES (
-  ?, ?
+  ?, ?, ?
 )
-ON CONFLICT(feed_id, item_id) DO NOTHING
+ON CONFLICT(feed_id, item_id) DO UPDATE SET
+  published_at = excluded.published_at,
+  updated_at = (strftime('%FT%TZ', 'now'))
 `
 
 type CreateFeedItemParams struct {
-	FeedID string `json:"feed_id"`
-	ItemID string `json:"item_id"`
+	FeedID      string  `json:"feed_id"`
+	ItemID      string  `json:"item_id"`
+	PublishedAt *string `json:"published_at"`
 }
 
 func (q *Queries) CreateFeedItem(ctx context.Context, arg CreateFeedItemParams) error {
-	_, err := q.db.ExecContext(ctx, createFeedItem, arg.FeedID, arg.ItemID)
+	_, err := q.db.ExecContext(ctx, createFeedItem, arg.FeedID, arg.ItemID, arg.PublishedAt)
 	return err
 }
 
@@ -310,7 +314,6 @@ INSERT INTO items (
 ON CONFLICT(url) DO UPDATE SET
   title = excluded.title,
   description = excluded.description,
-  published_at = excluded.published_at,
   author = excluded.author,
   guid = excluded.guid,
   content = excluded.content,
