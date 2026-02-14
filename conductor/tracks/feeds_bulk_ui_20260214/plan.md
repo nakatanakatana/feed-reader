@@ -27,13 +27,13 @@ Integrate the "Select All" checkbox into the existing Feeds page header refineme
 ## Phase 3: UI Implementation - Floating Bulk Action Bar
 Bring the floating `BulkActionBar` to the Feeds page.
 
-- [ ] Task: Integrate `BulkActionBar` into the Feeds page.
-    - [ ] Reuse the existing `BulkActionBar` component or its patterns.
-    - [ ] Implement the visibility logic (show when `selectedCount > 0`).
-    - [ ] Add a "Tag" action to the bar that opens a bulk tagging dialog (reusing existing tagging logic if possible).
-- [ ] Task: TDD - Integration tests for `BulkActionBar` on Feeds page.
-    - [ ] Verify the bar appears when a feed is selected and disappears when deselected.
-    - [ ] Verify the bar's position and animation match the Home page.
+- [x] Task: Integrate `BulkActionBar` into the Feeds page. bbe93bc
+    - [x] Reuse the existing `BulkActionBar` component or its patterns.
+    - [x] Implement the visibility logic (show when `selectedCount > 0`).
+    - [x] Add a "Tag" action to the bar that opens a bulk tagging dialog (reusing existing tagging logic if possible).
+- [x] Task: TDD - Integration tests for `BulkActionBar` on Feeds page. bbe93bc
+    - [x] Verify the bar appears when a feed is selected and disappears when deselected.
+    - [x] Verify the bar's position and animation match the Home page.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: UI Implementation - Floating Bulk Action Bar' (Protocol in workflow.md)
 
 ## Phase 4: Bulk Tagging Functionality
