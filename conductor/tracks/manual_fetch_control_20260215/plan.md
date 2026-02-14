@@ -30,12 +30,12 @@
 - [x] Task: Update Frontend Client & Types 622c107
     - [x] Regenerate API client (Buf/Connect) to include new RPCs.
     - [x] Update frontend models to reflect the schema change (if necessary for display).
-- [~] Task: Implement Suspend UI
-    - [ ] Update `FeedList` context menu with "Suspend Fetching" options (1 Day, 3 Days, 1 Week, 1 Month).
-    - [ ] Update `BulkActionBar` to include "Suspend" operation for multiple selections.
-    - [ ] Implement the logic to call the `SetFeedSchedule` API.
-    - [ ] Add visual feedback (toast/notification) upon success.
-    - [ ] Write component tests for the new UI actions.
+- [x] Task: Implement Suspend UI 631fb49
+    - [x] Update `FeedList` context menu with "Suspend Fetching" options (1 Day, 3 Days, 1 Week, 1 Month).
+    - [x] Update `BulkActionBar` to include "Suspend" operation for multiple selections.
+    - [x] Implement the logic to call the `SetFeedSchedule` API.
+    - [x] Add visual feedback (toast/notification) upon success.
+    - [x] Write component tests for the new UI actions.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)
 
 ## Phase 4: Verification & Cleanup
