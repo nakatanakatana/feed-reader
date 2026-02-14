@@ -2,7 +2,7 @@ import { createRootRoute, Link, Outlet } from "@tanstack/solid-router";
 import { useLiveQuery } from "@tanstack/solid-db";
 import { css } from "../../styled-system/css";
 import { DynamicFavicon } from "../components/DynamicFavicon";
-import { itemsUnreadQuery } from "../lib/db";
+import { itemsUnreadQuery } from "../lib/item-db";
 
 export const Route = createRootRoute({
   component: RootComponent,
@@ -18,7 +18,7 @@ export const Route = createRootRoute({
 
 function RootComponent() {
   const unreadItems = useLiveQuery((q) => 
-    q.from({ item: itemsUnreadQuery }).select(({ item }) => ({ id: item.id }))
+    q.from({ item: itemsUnreadQuery() })
   );
 
   const headerStyle = css({

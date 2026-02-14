@@ -84,11 +84,11 @@ describe("Root Favicon Integration", () => {
       expect(svg).toContain('fill="#3b82f6"');
     }, { timeout: 10000 });
 
-    // 5. Mock API to return 200 unread items (Orange)
+    // 5. Mock API to return 25 unread items (Yellow)
     worker.use(
       http.post("*/item.v1.ItemService/ListItems", () => {
         return HttpResponse.json({
-          items: Array.from({ length: 200 }, (_, i) => ({
+          items: Array.from({ length: 25 }, (_, i) => ({
             id: `item-${i}`,
             title: `Item ${i}`,
             isRead: false,
@@ -96,7 +96,7 @@ describe("Root Favicon Integration", () => {
             createdAt: new Date().toISOString(),
             feedId: "feed-1",
           })),
-          totalCount: 200,
+          totalCount: 25,
         });
       }),
     );
@@ -108,15 +108,15 @@ describe("Root Favicon Integration", () => {
       const link = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
       const base64 = link.href.split(',')[1];
       const svg = atob(base64);
-      // Orange color is #f97316
-      expect(svg).toContain('fill="#f97316"');
+      // Yellow color is #eab308
+      expect(svg).toContain('fill="#eab308"');
     }, { timeout: 10000 });
 
-    // 6. Mock API to return 1000 unread items (Red)
+    // 6. Mock API to return 100 unread items (Red)
     worker.use(
       http.post("*/item.v1.ItemService/ListItems", () => {
         return HttpResponse.json({
-          items: Array.from({ length: 1000 }, (_, i) => ({
+          items: Array.from({ length: 100 }, (_, i) => ({
             id: `item-${i}`,
             title: `Item ${i}`,
             isRead: false,
@@ -124,7 +124,7 @@ describe("Root Favicon Integration", () => {
             createdAt: new Date().toISOString(),
             feedId: "feed-1",
           })),
-          totalCount: 1000,
+          totalCount: 100,
         });
       }),
     );

@@ -105,14 +105,15 @@ export const items = createRoot(() => {
   );
 });
 
-export const itemsUnreadQuery = createRoot(() =>
-  createLiveQueryCollection((q) =>
+export const itemsUnreadQuery = createRoot(() => {
+  const collection = createLiveQueryCollection((q) =>
     q
       .from({ item: items() })
       .where(({ item }) => eq(item.isRead, false))
       .select(({ item }) => ({ ...item })),
-  ),
-);
+  );
+  return () => collection;
+});
 
 export const getItem = async (id: string) => {
   const response = await itemClient.getItem({ id });
