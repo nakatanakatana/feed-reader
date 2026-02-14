@@ -20,10 +20,10 @@
     - [x] Update the post-fetch logic to calculate and save the new `next_fetch` (`now + FetchInterval`).
     - [x] Ensure initial feed addition sets a valid `next_fetch`.
     - [x] Write unit tests for scheduling logic.
-- [~] Task: Implement API for Manual Scheduling
-    - [ ] Define Proto RPC `SetFeedSchedule` (or similar) accepting feed IDs and a timestamp (or duration).
-    - [ ] Implement the RPC handler to update `next_fetch` in the DB.
-    - [ ] Write integration tests for the API.
+- [x] Task: Implement API for Manual Scheduling 1617515
+    - [x] Define Proto RPC `SetFeedSchedule` (or similar) accepting feed IDs and a timestamp (or duration).
+    - [x] Implement the RPC handler to update `next_fetch` in the DB.
+    - [x] Write integration tests for the API.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)
 
 ## Phase 3: Frontend Implementation
