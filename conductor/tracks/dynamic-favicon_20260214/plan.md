@@ -10,10 +10,10 @@
 - [x] Task: Conductor - User Manual Verification 'Core Logic & Utilities' (Protocol in workflow.md)
 
 ## Phase 2: SolidJS Integration
-- [ ] Task: Create DynamicFavicon Component/Hook
-    - [ ] Create `frontend/src/components/DynamicFavicon.test.tsx`.
-    - [ ] Implement `frontend/src/components/DynamicFavicon.tsx` which accepts `unreadCount` as a prop and updates the document head.
-    - [ ] Ensure it handles cleanup (restoring default) if unmounted.
+- [x] Task: Create DynamicFavicon Component/Hook f97bb72
+    - [x] Create `frontend/src/components/DynamicFavicon.test.tsx`.
+    - [x] Implement `frontend/src/components/DynamicFavicon.tsx` which accepts `unreadCount` as a prop and updates the document head.
+    - [x] Ensure it handles cleanup (restoring default) if unmounted.
 - [ ] Task: Conductor - User Manual Verification 'SolidJS Integration' (Protocol in workflow.md)
 
 ## Phase 3: Application Wiring
