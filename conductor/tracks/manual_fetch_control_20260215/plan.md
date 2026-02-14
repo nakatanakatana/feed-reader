@@ -1,17 +1,17 @@
 # Implementation Plan - Manual Feed Fetch Control
 
 ## Phase 1: Database Schema & Backend Migration
-- [~] Task: Create SQL migration for schema changes
-    - [ ] Create `feed_fetcher` table (consolidating `feed_fetcher_cache`).
-    - [ ] Add `next_fetch` and move `last_fetched_at`.
-    - [ ] Migrate existing data from `feeds` and `feed_fetcher_cache`.
-    - [ ] Drop `last_fetched_at` from `feeds` (or ignore it).
-    - [ ] Update `query.sql` to reflect new schema.
-    - [ ] Run `sqlc generate` to update Go code.
-- [ ] Task: Update Backend Store Layer
-    - [ ] Update `FeedStore` methods to read/write `last_fetched_at` and `next_fetch` from the new table.
-    - [ ] Fix any broken references to `feeds.last_fetched_at` in the codebase.
-    - [ ] Write unit tests for the new store queries.
+- [x] Task: Create SQL migration for schema changes f15f054
+    - [x] Create `feed_fetcher` table (consolidating `feed_fetcher_cache`).
+    - [x] Add `next_fetch` and move `last_fetched_at`.
+    - [x] Migrate existing data from `feeds` and `feed_fetcher_cache`.
+    - [x] Drop `last_fetched_at` from `feeds` (or ignore it).
+    - [x] Update `query.sql` to reflect new schema.
+    - [x] Run `sqlc generate` to update Go code.
+- [x] Task: Update Backend Store Layer f15f054
+    - [x] Update `FeedStore` methods to read/write `last_fetched_at` and `next_fetch` from the new table.
+    - [x] Fix any broken references to `feeds.last_fetched_at` in the codebase.
+    - [x] Write unit tests for the new store queries.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)
 
 ## Phase 2: Backend Logic Updates
