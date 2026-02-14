@@ -62,16 +62,16 @@ describe("ImportOpmlModal", () => {
 
     // Wait for result
     await expect
-      .element(page.getByText("Import Completed!"))
+      .element(page.getByText("Import Summary"))
       .toBeInTheDocument();
     await expect
-      .element(page.getByText("Total feeds found: 10"))
+      .element(page.getByText("Total: 10"))
       .toBeInTheDocument();
     await expect
-      .element(page.getByText("Successfully imported: 8"))
+      .element(page.getByText("Success: 8"))
       .toBeInTheDocument();
     await expect
-      .element(page.getByText("Skipped (already exists): 2"))
+      .element(page.getByText("Skipped: 2"))
       .toBeInTheDocument();
   });
 
