@@ -28,6 +28,10 @@ func (s *Store) ListFeeds(ctx context.Context, params ListFeedsParams) ([]Feed, 
 	return s.Queries.ListFeeds(ctx, params.TagID)
 }
 
+func (s *Store) ListFeedsByIDs(ctx context.Context, ids []string) ([]Feed, error) {
+	return s.Queries.ListFeedsByIDs(ctx, ids)
+}
+
 // WithTransaction executes the given function within a transaction, retrying on SQLite busy errors.
 func (s *Store) WithTransaction(ctx context.Context, fn func(q *Queries) error) error {
 	return WithRetry(ctx, func() error {
