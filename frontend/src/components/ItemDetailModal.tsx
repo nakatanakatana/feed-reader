@@ -433,12 +433,13 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                       "& p": {
                         marginBottom: "4",
                       },
-                      "& p:has(img + img)": {
-                        display: "flex",
-                        flexWrap: "wrap",
-                        gap: "2",
-                        alignItems: "center",
-                      },
+                      "& p:has(img + img), & p:has(a + a), & p:has(img + a), & p:has(a + img)":
+                        {
+                          display: "flex",
+                          flexWrap: "wrap",
+                          gap: "2",
+                          alignItems: "center",
+                        },
                       "& img": { maxWidth: "full", height: "auto", my: "4" },
                       "& pre": {
                         overflowX: "auto",

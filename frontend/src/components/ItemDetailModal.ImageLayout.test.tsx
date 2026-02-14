@@ -77,6 +77,60 @@ describe("ItemDetailModal Image Layout", () => {
     await expect.element(p).toHaveStyle({ gap: "8px" });
   });
 
+  it("applies flex layout to paragraphs with multiple linked images", async () => {
+    // Markdown with two linked images in one paragraph
+    const markdownContent = `[![img1](https://example.com/img1.png)](https://example.com/link1) [![img2](https://example.com/img2.png)](https://example.com/link2)`;
+
+    setupMockDataWithContent("test-linked-images", markdownContent);
+
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal itemId="test-linked-images" onClose={() => {}} />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    // Wait for content to render
+    await expect.element(page.getByAltText("img1")).toBeInTheDocument();
+    await expect.element(page.getByAltText("img2")).toBeInTheDocument();
+
+    // Find the paragraph containing the images
+    const p = page.getByRole("paragraph");
+
+    await expect.element(p).toHaveStyle({ display: "flex" });
+    await expect.element(p).toHaveStyle({ flexWrap: "wrap" });
+    await expect.element(p).toHaveStyle({ gap: "8px" });
+  });
+
+  it("applies flex layout to paragraphs with mixed images and linked images", async () => {
+    // Markdown with an image and a linked image in one paragraph
+    const markdownContent = `![img1](https://example.com/img1.png) [![img2](https://example.com/img2.png)](https://example.com/link2)`;
+
+    setupMockDataWithContent("test-mixed-images", markdownContent);
+
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal itemId="test-mixed-images" onClose={() => {}} />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    // Wait for content to render
+    await expect.element(page.getByAltText("img1")).toBeInTheDocument();
+    await expect.element(page.getByAltText("img2")).toBeInTheDocument();
+
+    // Find the paragraph containing the images
+    const p = page.getByRole("paragraph");
+
+    await expect.element(p).toHaveStyle({ display: "flex" });
+    await expect.element(p).toHaveStyle({ flexWrap: "wrap" });
+    await expect.element(p).toHaveStyle({ gap: "8px" });
+  });
+
   it("does NOT apply flex layout to paragraphs with a single image", async () => {
     const markdownContent = `![img1](https://example.com/img1.png)`;
 
