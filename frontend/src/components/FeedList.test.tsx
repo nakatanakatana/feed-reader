@@ -121,7 +121,9 @@ describe("FeedList", () => {
 
     // Bulk action bar should show selected count
 
-    await expect.element(page.getByText("2 feeds selected")).toBeInTheDocument();
+    await expect
+      .element(page.getByText("2 feeds selected"))
+      .toBeInTheDocument();
   });
 
   it("manages tags for selected feeds", async () => {

@@ -45,8 +45,10 @@ describe("FeedList Selection", () => {
 
     // Wait for feeds to load
     await expect.element(page.getByText("Example Feed 1")).toBeInTheDocument();
-    
-    const selectAllCheckbox = page.getByRole("checkbox", { name: "Select all visible feeds" });
+
+    const selectAllCheckbox = page.getByRole("checkbox", {
+      name: "Select all visible feeds",
+    });
     await expect.element(selectAllCheckbox).toBeInTheDocument();
 
     await selectAllCheckbox.click();
@@ -55,12 +57,14 @@ describe("FeedList Selection", () => {
     const checkboxes = page.getByRole("checkbox");
     // 1 (select all) + 2 (feeds) = 3 checkboxes
     await expect.poll(async () => (await checkboxes.all()).length).toBe(3);
-    
+
     for (const checkbox of await checkboxes.all()) {
-        await expect.element(checkbox).toBeChecked();
+      await expect.element(checkbox).toBeChecked();
     }
 
-    await expect.element(page.getByText("2 feeds selected")).toBeInTheDocument();
+    await expect
+      .element(page.getByText("2 feeds selected"))
+      .toBeInTheDocument();
   });
 
   it("shows indeterminate state when some feeds are selected", async () => {
@@ -77,19 +81,23 @@ describe("FeedList Selection", () => {
     );
 
     await expect.element(page.getByText("Example Feed 1")).toBeInTheDocument();
-    
+
     const feedCheckboxes = page.getByRole("checkbox").all();
     // Wait for feed checkboxes to appear
-    await expect.poll(async () => (await feedCheckboxes).length).toBeGreaterThan(1);
-    
+    await expect
+      .poll(async () => (await feedCheckboxes).length)
+      .toBeGreaterThan(1);
+
     // Select the first feed checkbox (index 1, as index 0 will be "Select All")
     const firstFeedCheckbox = (await feedCheckboxes)[1];
     await firstFeedCheckbox.click();
 
-    const selectAllCheckbox = page.getByRole("checkbox", { name: "Select all visible feeds" });
-    // In Solid/HTML, indeterminate is a property, not an attribute that can be easily checked via ARIA in some cases, 
+    const selectAllCheckbox = page.getByRole("checkbox", {
+      name: "Select all visible feeds",
+    });
+    // In Solid/HTML, indeterminate is a property, not an attribute that can be easily checked via ARIA in some cases,
     // but vitest-browser might handle it or we can check the property.
-    const selectAllEl = await selectAllCheckbox.element();
+    const selectAllEl = (await selectAllCheckbox.element()) as HTMLInputElement;
     expect(selectAllEl.indeterminate).toBe(true);
   });
 
@@ -107,15 +115,19 @@ describe("FeedList Selection", () => {
     );
 
     await expect.element(page.getByText("Example Feed 1")).toBeInTheDocument();
-    
-    const selectAllCheckbox = page.getByRole("checkbox", { name: "Select all visible feeds" });
+
+    const selectAllCheckbox = page.getByRole("checkbox", {
+      name: "Select all visible feeds",
+    });
     await selectAllCheckbox.click(); // Select all
     await expect.element(selectAllCheckbox).toBeChecked();
 
     await selectAllCheckbox.click(); // Deselect all
 
     await expect.element(selectAllCheckbox).not.toBeChecked();
-    await expect.element(page.getByTestId("bulk-action-bar")).not.toBeInTheDocument();
+    await expect
+      .element(page.getByTestId("bulk-action-bar"))
+      .not.toBeInTheDocument();
   });
 
   it("shows BulkActionBar when at least one feed is selected", async () => {
@@ -132,16 +144,20 @@ describe("FeedList Selection", () => {
     );
 
     await expect.element(page.getByText("Example Feed 1")).toBeInTheDocument();
-    
+
     const checkboxes = page.getByRole("checkbox");
-    await expect.poll(async () => (await checkboxes.all()).length).toBeGreaterThan(1);
-    
+    await expect
+      .poll(async () => (await checkboxes.all()).length)
+      .toBeGreaterThan(1);
+
     await checkboxes.nth(1).click();
 
     // Bulk action bar should be visible
     const bulkActionBar = page.getByTestId("bulk-action-bar");
     await expect.element(bulkActionBar).toBeVisible();
-    await expect.element(page.getByText("1 feeds selected")).toBeInTheDocument();
+    await expect
+      .element(page.getByText("1 feeds selected"))
+      .toBeInTheDocument();
   });
 
   it("performs bulk tagging for multiple feeds", async () => {
@@ -159,19 +175,25 @@ describe("FeedList Selection", () => {
     );
 
     await expect.element(page.getByText("Example Feed 1")).toBeInTheDocument();
-    
+
     // Select all feeds
-    const selectAllCheckbox = page.getByRole("checkbox", { name: "Select all visible feeds" });
+    const selectAllCheckbox = page.getByRole("checkbox", {
+      name: "Select all visible feeds",
+    });
     await selectAllCheckbox.click();
 
     // Click Manage Tags in BulkActionBar
     const manageButton = page.getByRole("button", { name: /Manage Tags/i });
     await manageButton.click();
 
-    await expect.element(page.getByText("Manage Tags for 2 feeds")).toBeInTheDocument();
+    await expect
+      .element(page.getByText("Manage Tags for 2 feeds"))
+      .toBeInTheDocument();
 
     // Add a tag (Tech)
-    const addButton = page.getByRole("button", { name: "Add", exact: true }).nth(0);
+    const addButton = page
+      .getByRole("button", { name: "Add", exact: true })
+      .nth(0);
     await addButton.click();
 
     // Save changes
@@ -179,6 +201,8 @@ describe("FeedList Selection", () => {
     await saveButton.click();
 
     // Modal should close
-    await expect.element(page.getByText("Manage Tags for 2 feeds")).not.toBeInTheDocument();
+    await expect
+      .element(page.getByText("Manage Tags for 2 feeds"))
+      .not.toBeInTheDocument();
   });
 });

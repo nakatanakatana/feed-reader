@@ -14,12 +14,9 @@ describe("BulkActionBar", () => {
   it("renders at the bottom as a floating bar when items are selected", async () => {
     dispose = render(
       () => (
-        <BulkActionBar
-          selectedCount={5}
-          onClear={() => {}}
-          onMarkAsRead={() => {}}
-          isProcessing={false}
-        />
+        <BulkActionBar selectedCount={5} onClear={() => {}}>
+          <button type="button">Action</button>
+        </BulkActionBar>
       ),
       document.body,
     );
@@ -39,12 +36,9 @@ describe("BulkActionBar", () => {
   it("does not render when no items are selected", async () => {
     dispose = render(
       () => (
-        <BulkActionBar
-          selectedCount={0}
-          onClear={() => {}}
-          onMarkAsRead={() => {}}
-          isProcessing={false}
-        />
+        <BulkActionBar selectedCount={0} onClear={() => {}}>
+          <button type="button">Action</button>
+        </BulkActionBar>
       ),
       document.body,
     );
