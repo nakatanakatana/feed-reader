@@ -43,8 +43,8 @@ describe("Item History Navigation", () => {
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),
       http.post("*/item.v1.ItemService/GetItem", ({ request }) => {
-        return request.json().then((body: any) => {
-          const id = body.id;
+        return request.json().then((body) => {
+          const { id } = body as { id: string };
           const item = items.find((i) => i.id === id) || items[0];
           const msg = create(GetItemResponseSchema, {
             item: create(ItemSchema, item),
