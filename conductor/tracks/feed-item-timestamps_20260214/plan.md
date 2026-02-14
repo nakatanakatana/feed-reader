@@ -10,7 +10,7 @@
     - [ ] Verify `items.published_at` remains unchanged on subsequent updates (if that's the established behavior) while `feed_items.published_at` is updated.
 - [x] Task: Conductor - User Manual Verification 'Database & Backend Logic' (Protocol in workflow.md)
 
-## Phase 2: API Implementation (RPC) [checkpoint: 05e9f40]
+## Phase 2: API Implementation (RPC) [checkpoint: 2aa4bb5]
 - [x] Task: Define RPC Protobuf d6e04da
     - [x] Update `proto/item/v1/item_service.proto` (check exact path) to add `GetItemFeeds` method and messages.
     - [x] Run `buf generate` to create Go and TypeScript code.
@@ -18,7 +18,7 @@
     - [x] Create test in `item_service_test.go` for `GetItemFeeds`.
     - [x] Implement `GetItemFeeds` in `ItemService`.
     - [x] Ensure it queries `feed_items` joining with `feeds` to get titles and timestamps.
-- [ ] Task: Conductor - User Manual Verification 'API Implementation (RPC)' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'API Implementation (RPC)' (Protocol in workflow.md) 2aa4bb5
 
 ## Phase 3: Frontend Implementation
 - [~] Task: Update Frontend Client
