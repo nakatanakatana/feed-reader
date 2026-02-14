@@ -5,12 +5,12 @@ This plan outlines the steps to implement a "Select All" checkbox and a floating
 ## Phase 1: Preparation and Selection Logic
 Focus on extending the state management to support "Select All" and ensuring the selection logic correctly handles filtered views.
 
-- [ ] Task: Extend `FeedList` component state to handle "Select All" logic.
-    - [ ] Add a derived signal or memo to determine the "Select All" state (unselected, indeterminate, or selected) based on currently visible feeds.
-    - [ ] Implement a toggle function that selects or deselects all currently visible feeds.
-- [ ] Task: TDD - Unit tests for selection logic in `FeedList`.
-    - [ ] Write tests to verify that "Select All" only affects visible feeds.
-    - [ ] Write tests to verify the indeterminate state calculation.
+- [x] Task: Extend `FeedList` component state to handle "Select All" logic. f06bb58
+    - [x] Add a derived signal or memo to determine the "Select All" state (unselected, indeterminate, or selected) based on currently visible feeds.
+    - [x] Implement a toggle function that selects or deselects all currently visible feeds.
+- [x] Task: TDD - Unit tests for selection logic in `FeedList`. f06bb58
+    - [x] Write tests to verify that "Select All" only affects visible feeds.
+    - [x] Write tests to verify the indeterminate state calculation.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Preparation and Selection Logic' (Protocol in workflow.md)
 
 ## Phase 2: UI Implementation - "Select All" Checkbox
