@@ -111,23 +111,17 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     }
   };
 
-  const footer = props.footerExtras ?? (
-    <>
-      <Show when={!isEndOfList()}>
-        <ActionButton
-          variant={item()?.isRead ? "secondary" : "ghost"}
-          onClick={handleToggleRead}
-        >
-          {item()?.isRead ? "Mark as Unread" : "Mark as Read"}
-        </ActionButton>
-      </Show>
-      <Show when={isEndOfList()}>
+  const footer = () => {
+    if (props.footerExtras) return props.footerExtras;
+    if (isEndOfList()) {
+      return (
         <ActionButton variant="primary" onClick={props.onClose}>
           Back to List
         </ActionButton>
-      </Show>
-    </>
-  );
+      );
+    }
+    return undefined;
+  };
 
   return (
     <Show when={props.itemId}>
@@ -142,20 +136,20 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
         ariaLabel={isEndOfList() ? "End of list reached" : "Item details"}
         onKeyDown={handleKeyDown}
         bodyPadding={false}
-        footer={footer}
+        footer={footer()}
       >
         <div
           class={flex({
             justifyContent: "space-between",
             alignItems: "center",
-            padding: "4",
+            padding: "2",
             borderBottom: "1px solid",
             borderColor: "gray.100",
           })}
         >
           <h2
             class={css({
-              fontSize: "lg",
+              fontSize: "md",
               fontWeight: "bold",
               truncate: true,
               flex: 1,
@@ -191,6 +185,82 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
           </ActionButton>
         </div>
 
+        <Show when={!isEndOfList() && item()}>
+          <div
+            class={css({
+              position: "absolute",
+              bottom: { base: "6", md: "8" },
+              right: { base: "6", md: "8" },
+              zIndex: 10,
+            })}
+          >
+            <button
+              type="button"
+              onClick={handleToggleRead}
+              title={item()?.isRead ? "Mark as Unread" : "Mark as Read"}
+              aria-label={item()?.isRead ? "Mark as Unread" : "Mark as Read"}
+              aria-pressed={item()?.isRead ?? false}
+              class={css({
+                width: "14",
+                height: "14",
+                borderRadius: "full",
+                bg: item()?.isRead ? "white" : "blue.600",
+                color: item()?.isRead ? "blue.600" : "white",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                boxShadow: "lg",
+                cursor: "pointer",
+                border: "1px solid",
+                borderColor: item()?.isRead ? "blue.600" : "transparent",
+                transition: "all 0.2s",
+                _hover: {
+                  transform: "scale(1.05)",
+                  bg: item()?.isRead ? "blue.50" : "blue.700",
+                },
+                _active: {
+                  transform: "scale(0.95)",
+                },
+              })}
+            >
+              <Show
+                when={item()?.isRead}
+                fallback={
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M20 6L9 17l-5-5" />
+                  </svg>
+                }
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+              </Show>
+            </button>
+          </div>
+        </Show>
+
         {/* Accessibility instruction for screen readers */}
         <div
           id="swipe-instruction"
@@ -221,6 +291,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             flexDirection: "column",
             gap: "4",
             padding: "6",
+            pb: "24",
             overflowY: "auto",
             height: "full",
           })}

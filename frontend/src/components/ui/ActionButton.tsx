@@ -1,4 +1,4 @@
-import type { JSX } from "solid-js";
+import { type JSX, Show } from "solid-js";
 import { css, cx } from "../../../styled-system/css";
 
 type ActionButtonVariant = "primary" | "secondary" | "ghost" | "danger";
@@ -11,6 +11,8 @@ type NativeButtonProps = Omit<
 
 interface ActionButtonProps extends NativeButtonProps {
   children: JSX.Element;
+  icon?: JSX.Element;
+  hideTextOnMobile?: boolean;
   onClick?: (event?: MouseEvent) => void;
   type?: "button" | "submit" | "reset";
   variant?: ActionButtonVariant;
@@ -95,7 +97,16 @@ export function ActionButton(props: ActionButtonProps) {
         props.class,
       )}
     >
-      {props.children}
+      {props.icon}
+      <Show when={props.hideTextOnMobile} fallback={props.children}>
+        <span
+          class={css({
+            display: { base: "none", md: "inline" },
+          })}
+        >
+          {props.children}
+        </span>
+      </Show>
     </button>
   );
 }

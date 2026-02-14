@@ -31,33 +31,33 @@
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/golangci/golangci-lint/v2.8.0/golangci-lint-2.8.0-darwin-amd64.tar.gz",
-      "checksum": "164C72806D0E31AB19DA4F08FFF748A3FDC57E241851279B666C945ED9B91830",
+      "id": "github_release/github.com/golangci/golangci-lint/v2.9.0/golangci-lint-2.9.0-darwin-amd64.tar.gz",
+      "checksum": "BA29A353BE54A74C45946763983808DC8305EEECA73DB1761B5AB112F87F8157",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/golangci/golangci-lint/v2.8.0/golangci-lint-2.8.0-darwin-arm64.tar.gz",
-      "checksum": "6F8979A83117E0607D4B85FF486382EF0404440BBF54F0E6F003CEAB6CCF641E",
+      "id": "github_release/github.com/golangci/golangci-lint/v2.9.0/golangci-lint-2.9.0-darwin-arm64.tar.gz",
+      "checksum": "A86EABBA3507DEDDD21F2A01A1DF2A0EE5BC5C8178D4165CDCAAAD8597358760",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/golangci/golangci-lint/v2.8.0/golangci-lint-2.8.0-linux-amd64.tar.gz",
-      "checksum": "7048BC6B25C9515ED092C83F9FA8709CA97937EAD52D9FF317A143299EE97A50",
+      "id": "github_release/github.com/golangci/golangci-lint/v2.9.0/golangci-lint-2.9.0-linux-amd64.tar.gz",
+      "checksum": "493AAACA2EBA6C8BCEF847D92716BBD91BBAC4B22CDBB0AB5B6A581B32946091",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/golangci/golangci-lint/v2.8.0/golangci-lint-2.8.0-linux-arm64.tar.gz",
-      "checksum": "2A58388DB8AF5AB9330791CEA0EBDD4100723CD05AD7185D92FEBAAEE272EC9A",
+      "id": "github_release/github.com/golangci/golangci-lint/v2.9.0/golangci-lint-2.9.0-linux-arm64.tar.gz",
+      "checksum": "94E80CDB51C73C20A313BD3AFA1FB23137728813C19FD730248A1E8678FCC46D",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/golangci/golangci-lint/v2.8.0/golangci-lint-2.8.0-windows-amd64.zip",
-      "checksum": "22428168A9406F79853BF9A198B66E88DED9FAA57CF85E5D225361F457F33513",
+      "id": "github_release/github.com/golangci/golangci-lint/v2.9.0/golangci-lint-2.9.0-windows-amd64.zip",
+      "checksum": "130FCA8FA959EB840267C5E231F030A948E0DE1E768BF6A31785505D1061632C",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/golangci/golangci-lint/v2.8.0/golangci-lint-2.8.0-windows-arm64.zip",
-      "checksum": "380E8552BCE26CB255A8FD21C0B57FE9241B2AB42E5674D30A84E36130B9C988",
+      "id": "github_release/github.com/golangci/golangci-lint/v2.9.0/golangci-lint-2.9.0-windows-arm64.zip",
+      "checksum": "577CE7E865FDA69D3216BBAEC33ABFA6EDDDB5F4F35A871FE9B58E03D0F52F15",
       "algorithm": "sha256"
     },
     {
@@ -86,33 +86,33 @@
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/k1LoW/octocov/v0.74.4/octocov_v0.74.4_darwin_amd64.zip",
-      "checksum": "32C71ECC9A3FD401A4479CA55C73C02F0F9F7F2B6B4BE059A5EAD33465AE66D9",
+      "id": "github_release/github.com/k1LoW/octocov/v0.74.5/octocov_v0.74.5_darwin_amd64.zip",
+      "checksum": "229929B014E7A02C4E21A63880F354C1534C56A7E1DEED0CE40E125CEFB8155E",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/k1LoW/octocov/v0.74.4/octocov_v0.74.4_darwin_arm64.zip",
-      "checksum": "70BD8C31F4BF0FF2C4DD1976241DB9EA86C7AA74631E057A33B7E3C53A1F9521",
+      "id": "github_release/github.com/k1LoW/octocov/v0.74.5/octocov_v0.74.5_darwin_arm64.zip",
+      "checksum": "B45DAED935BC8CCF536A3A1E8B69E65ED56BD2F62643F095DD30D20671BDBEF0",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/k1LoW/octocov/v0.74.4/octocov_v0.74.4_linux_amd64.tar.gz",
-      "checksum": "958503F7A6E25C140C962D2BC663B212018FC4EED742CB939D976FEAD8343341",
+      "id": "github_release/github.com/k1LoW/octocov/v0.74.5/octocov_v0.74.5_linux_amd64.tar.gz",
+      "checksum": "F5ACB8FCCC00BE54138CB684CBF7A2E4129AD452B34D2F6A9A2AB22A07F7F0AB",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/k1LoW/octocov/v0.74.4/octocov_v0.74.4_linux_arm64.tar.gz",
-      "checksum": "80CD3E2381D19832EDF1BB2A2E2ABF03AA971DDA5AEB9012AE44F34CD59E5178",
+      "id": "github_release/github.com/k1LoW/octocov/v0.74.5/octocov_v0.74.5_linux_arm64.tar.gz",
+      "checksum": "00FD0F35E837FB182480473E626329E29F508208CBA9E49A7C5804C1B01F2BDD",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/k1LoW/octocov/v0.74.4/octocov_v0.74.4_windows_amd64.zip",
-      "checksum": "8864FD981EA926729B1F7FD217CFC9F2FB36D9E6D7879D70F93EB98CE33F5313",
+      "id": "github_release/github.com/k1LoW/octocov/v0.74.5/octocov_v0.74.5_windows_amd64.zip",
+      "checksum": "1D7BEFFFBBFC9C20CD3B22A4826FF03E8CA57886B907D10E3ED0D4D1F76F429B",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/k1LoW/octocov/v0.74.4/octocov_v0.74.4_windows_arm64.zip",
-      "checksum": "6208A2EB6240E8CD58A7A53A5382A6137287AAF5F5760A80B9AD40BE0FF8B7C7",
+      "id": "github_release/github.com/k1LoW/octocov/v0.74.5/octocov_v0.74.5_windows_arm64.zip",
+      "checksum": "5892564757951FCAA02D47C7A6D7185373ECE38899B1556A9FEFCB97C4E27AB3",
       "algorithm": "sha256"
     },
     {
@@ -171,8 +171,8 @@
       "algorithm": "sha256"
     },
     {
-      "id": "registries/github_content/github.com/aquaproj/aqua-registry/v4.467.0/registry.yaml",
-      "checksum": "47DE6912F9862173CB7208F20605CF014CE477645A32230F90D7994E202F5A925EA5D5DC507EDE8206A3898A54FF35AD70749A9EC85D8A6EA79C670658731871",
+      "id": "registries/github_content/github.com/aquaproj/aqua-registry/v4.470.0/registry.yaml",
+      "checksum": "BA837D2CF685EC8F3ED0A1246C1A69D4033EDAE930FF3E94D1C05822B00216049D163AB67C7586E57081115159A12E11271C0EC867D6BC535F4C574F070F8AA2",
       "algorithm": "sha512"
     }
   ]
