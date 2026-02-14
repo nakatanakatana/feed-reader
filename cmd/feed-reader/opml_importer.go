@@ -90,6 +90,24 @@ func (i *OPMLImporter) ImportSync(ctx context.Context, opmlContent []byte) (*Imp
 			continue
 		}
 
+		// Persist tags
+		if len(f.Tags) > 0 {
+			var tagIDs []string
+			for _, tagName := range f.Tags {
+				tag, err := i.store.GetOrCreateTag(ctx, tagName, i.uuidGen)
+				if err != nil {
+					i.logger.ErrorContext(ctx, "failed to get or create tag", "tag", tagName, "error", err)
+					continue
+				}
+				tagIDs = append(tagIDs, tag.ID)
+			}
+			if len(tagIDs) > 0 {
+				if err := i.store.SetFeedTags(ctx, feedID, tagIDs); err != nil {
+					i.logger.ErrorContext(ctx, "failed to set feed tags", "feedID", feedID, "error", err)
+				}
+			}
+		}
+
 		results.Success++
 	}
 

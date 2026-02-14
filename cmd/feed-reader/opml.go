@@ -8,6 +8,7 @@ import (
 type OpmlFeed struct {
 	Title string
 	URL   string
+	Tags  []string
 }
 
 type ExportFeed struct {
@@ -49,25 +50,46 @@ func ParseOPML(content []byte) ([]OpmlFeed, error) {
 	}
 
 	var feeds []OpmlFeed
-	var extract func([]opmlOutline)
-	extract = func(outlines []opmlOutline) {
+	var extract func([]opmlOutline, []string)
+	extract = func(outlines []opmlOutline, parentTags []string) {
 		for _, o := range outlines {
 			if o.XMLURL != "" {
 				title := o.Title
 				if title == "" {
 					title = o.Text
 				}
+
+				tags := append([]string{}, parentTags...)
+				if o.Category != "" {
+					cats := strings.Split(o.Category, ",")
+					for _, c := range cats {
+						c = strings.TrimSpace(c)
+						if c != "" {
+							tags = append(tags, c)
+						}
+					}
+				}
+
 				feeds = append(feeds, OpmlFeed{
 					Title: title,
 					URL:   o.XMLURL,
+					Tags:  tags,
 				})
 			}
 			if len(o.Outlines) > 0 {
-				extract(o.Outlines)
+				newParentTags := append([]string{}, parentTags...)
+				folderName := o.Title
+				if folderName == "" {
+					folderName = o.Text
+				}
+				if folderName != "" {
+					newParentTags = append(newParentTags, folderName)
+				}
+				extract(o.Outlines, newParentTags)
 			}
 		}
 	}
-	extract(doc.Body.Outlines)
+	extract(doc.Body.Outlines, []string{})
 	return feeds, nil
 }
 
