@@ -12,19 +12,19 @@ Focus on reducing the header's vertical footprint by adjusting styles and layout
     - [x] **Write Tests**: Update or add tests in `ItemDetailModal.UI.test.tsx` to verify the header's reduced height (e.g., checking specific CSS classes or computed styles if possible).
     - [x] **Implement**: Modify `ItemDetailModal.tsx` to reduce vertical padding and optimize font sizes in the header section.
     - [x] **Verify**: Ensure tests pass and the header occupies less vertical space.
-- [ ] **Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)**
+- [x] **Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)**
 
-## Phase 2: Floating Action Button (FAB) Implementation
+## Phase 2: Floating Action Button (FAB) Implementation [checkpoint: 4ec8f87]
 Relocate the "Mark as read" button from the header to a FAB.
 
-- [ ] **Task: Create/Update FAB Component (TDD)**
-    - [ ] **Write Tests**: Create tests for a FAB component or update `ItemDetailModal.Logic.test.tsx` to ensure the "Mark as read" action is triggered by a button with FAB-like properties (position: fixed/absolute at bottom-right).
-    - [ ] **Implement**: Create or update the button component to be a FAB. Update `ItemDetailModal.tsx` to remove the button from the header and place it as a FAB.
-    - [ ] **Verify**: Ensure clicking the FAB still marks the item as read and navigates appropriately if configured.
-- [ ] **Task: Responsive Polishing (TDD)**
-    - [ ] **Write Tests**: Update `ItemDetailModal.Responsive.test.tsx` to verify FAB placement and header compactness on both mobile and desktop viewports.
-    - [ ] **Implement**: Adjust Panda CSS styles to ensure the FAB doesn't obscure content and the header remains thin across all breakpoints.
-    - [ ] **Verify**: Run responsive tests in Vitest browser mode.
+- [x] **Task: Create/Update FAB Component (TDD)** ae8db6f
+    - [x] **Write Tests**: Create tests for a FAB component or update `ItemDetailModal.Logic.test.tsx` to ensure the "Mark as read" action is triggered by a button with FAB-like properties (position: fixed/absolute at bottom-right).
+    - [x] **Implement**: Create or update the button component to be a FAB. Update `ItemDetailModal.tsx` to remove the button from the header and place it as a FAB.
+    - [x] **Verify**: Ensure clicking the FAB still marks the item as read and navigates appropriately if configured.
+- [x] **Task: Responsive Polishing (TDD)** ae8db6f
+    - [x] **Write Tests**: Update `ItemDetailModal.Responsive.test.tsx` to verify FAB placement and header compactness on both mobile and desktop viewports.
+    - [x] **Implement**: Adjust Panda CSS styles to ensure the FAB doesn't obscure content and the header remains thin across all breakpoints.
+    - [x] **Verify**: Run responsive tests in Vitest browser mode.
 - [ ] **Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)**
 
 ## Phase 3: Final Verification and Cleanup
