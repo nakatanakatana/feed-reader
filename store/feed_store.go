@@ -84,8 +84,9 @@ func (s *Store) SaveFetchedItem(ctx context.Context, params SaveFetchedItemParam
 
 		// 2. Link to Feed
 		err = qtx.CreateFeedItem(ctx, CreateFeedItemParams{
-			FeedID: params.FeedID,
-			ItemID: item.ID,
+			FeedID:      params.FeedID,
+			ItemID:      item.ID,
+			PublishedAt: params.PublishedAt,
 		})
 		if err != nil {
 			return fmt.Errorf("failed to link feed and item: %w", err)

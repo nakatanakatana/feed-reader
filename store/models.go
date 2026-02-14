@@ -29,10 +29,11 @@ type FeedFetcherCache struct {
 }
 
 type FeedItem struct {
-	FeedID    string `json:"feed_id"`
-	ItemID    string `json:"item_id"`
-	CreatedAt string `json:"created_at"`
-	UpdatedAt string `json:"updated_at"`
+	FeedID      string  `json:"feed_id"`
+	ItemID      string  `json:"item_id"`
+	PublishedAt *string `json:"published_at"`
+	CreatedAt   string  `json:"created_at"`
+	UpdatedAt   string  `json:"updated_at"`
 }
 
 type FeedTag struct {
