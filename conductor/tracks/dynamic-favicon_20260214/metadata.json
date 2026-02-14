@@ -1,8 +1,0 @@
-{
-  "track_id": "dynamic-favicon_20260214",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-02-14T00:00:00Z",
-  "updated_at": "2026-02-14T00:00:00Z",
-  "description": "Change favicon color based on unread item count"
-}
