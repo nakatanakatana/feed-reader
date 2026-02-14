@@ -213,7 +213,7 @@ describe("ItemDetailModal Swipe Integration", () => {
     const transform = container?.style.transform || "";
     const match = transform.match(/translateX\(([\d.]+)px\)/);
     const value = match ? parseFloat(match[1]) : 0;
-    
+
     expect(value).toBeGreaterThan(0);
     expect(value).toBeLessThan(20);
   });
