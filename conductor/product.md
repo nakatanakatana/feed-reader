@@ -45,7 +45,22 @@ The primary target audience is individuals and organizations seeking control ove
 
 
 - **Tagging System:** Create and manage custom tags to categorize feeds. Features a robust bulk tagging UI to efficiently organize multiple subscriptions at once. Filter both the feed list and article stream by selected tags for organized content discovery, with unread counts displayed per tag to prioritize reading.
+
+
+
   - **Responsive Tag Lists:** Tag filters are consolidated into a single row with horizontal scrolling and arrow indicators, maximizing vertical space while maintaining easy access to all categories.
+
+
+
+
+
+
+
+- **Dynamic Favicon:** The browser tab's favicon dynamically updates its color based on the total unread count (Gray for 0, Blue for 1-10, Yellow for 11-50, Red for 51+), providing a passive, at-a-glance status update even when the application is in the background.
+
+
+
+
 
 
 
