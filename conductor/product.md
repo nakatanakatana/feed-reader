@@ -56,7 +56,7 @@ The primary target audience is individuals and organizations seeking control ove
 
 
 
-- **Dynamic Favicon:** The browser tab's favicon dynamically updates its color based on the total unread count (Gray for 0, Blue for 1-10, Yellow for 11-50, Red for 51+), providing a passive, at-a-glance status update even when the application is in the background.
+- **Dynamic Favicon:** The browser tab's favicon dynamically updates its color based on the total unread count (Blue for 0-199, Orange for 200-999, Red for 1000+), providing a passive, at-a-glance status update even when the application is in the background.
 
 
 
