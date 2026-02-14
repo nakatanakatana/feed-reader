@@ -44,6 +44,7 @@ function FeedsComponent() {
               onClick={() => setIsImportModalOpen(true)}
               icon={<ImportIcon />}
               hideTextOnMobile
+              ariaLabel="Import OPML"
             >
               Import OPML
             </ActionButton>

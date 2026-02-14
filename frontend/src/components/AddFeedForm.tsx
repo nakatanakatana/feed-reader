@@ -116,6 +116,7 @@ export function AddFeedForm(props: AddFeedFormProps) {
             disabled={isPending()}
             icon={<PlusIcon />}
             hideTextOnMobile
+            ariaLabel="Add Feed"
           >
             {isPending() ? "Adding..." : "Add Feed"}
           </ActionButton>
