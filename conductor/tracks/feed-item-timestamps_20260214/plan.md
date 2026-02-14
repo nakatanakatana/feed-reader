@@ -21,7 +21,7 @@
 - [ ] Task: Conductor - User Manual Verification 'API Implementation (RPC)' (Protocol in workflow.md)
 
 ## Phase 3: Frontend Implementation
-- [ ] Task: Update Frontend Client
+- [~] Task: Update Frontend Client
     - [ ] Ensure `buf generate` (from Phase 2) updated the frontend client code in `frontend/gen` or similar.
 - [ ] Task: Implement Tooltip UI (TDD/Component Test)
     - [ ] Create a new component or update `ItemDetailModal` to include the tooltip logic.
