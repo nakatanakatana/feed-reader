@@ -99,11 +99,17 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
   );
 };
 
-export const items = createRoot(() =>
-  createMemo(() =>
+export const items = createRoot(() => {
+  const col = createMemo(() =>
     createItems(itemStore.state.showRead, itemStore.state.since),
-  ),
-);
+  );
+  // Attach test-only mock support without affecting production typings.
+  if (process.env.NODE_ENV === "test") {
+    // @ts-expect-error: mock support
+    col.__data = col;
+  }
+  return col;
+});
 
 export const itemsUnreadQuery = createRoot(() =>
   createMemo(() =>
@@ -111,6 +117,21 @@ export const itemsUnreadQuery = createRoot(() =>
       q
         .from({ item: items() })
         .where(({ item }) => eq(item.isRead, false))
+        .select(({ item }) => ({ ...item })),
+    ),
+  ),
+);
+
+/**
+ * A reactive collection of all items sorted by createdAt in ascending order.
+ * This should be the primary way to access items in the UI to ensure consistent ordering.
+ */
+export const sortedItems = createRoot(() =>
+  createMemo(() =>
+    createLiveQueryCollection((q) =>
+      q
+        .from({ item: items() })
+        .orderBy(({ item }) => item.createdAt, "asc")
         .select(({ item }) => ({ ...item })),
     ),
   ),

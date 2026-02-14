@@ -18,6 +18,8 @@ The primary target audience is individuals and organizations seeking control ove
 
 - **Full-Stack Application:** Includes both a backend API and a web frontend.
 
+- **Progressive Web App (PWA):** Fully installable on mobile and desktop devices. Features automatic background updates and a standalone display mode for a native-like app experience.
+
 - **Single Binary Distribution:** Both the backend API and the frontend Web UI are bundled into a single executable for simplified deployment and distribution.
 
 - **Containerization:** Official Docker support using multi-stage builds and distroless images for secure, lightweight, and consistent deployment.
@@ -31,7 +33,7 @@ The primary target audience is individuals and organizations seeking control ove
 - **OPML Import:** Bulk import existing subscriptions from other RSS readers using the standard OPML format, with automatic deduplication. Synchronous processing provides immediate feedback on the import results, including success and failure counts.
 
 
-- **Article Management:** Retrieve articles with flexible filtering and sorting. Track article status including read/unread. Features an information-dense list view displaying key metadata (publication/creation dates, snippets). Includes date-based filtering (e.g., Past 24 hours, Past 7 days, Past 30 days, Past 90 days, or Past 365 days) and a visibility toggle to easily show or hide read items. Supports bulk operations, such as marking multiple articles as read simultaneously for improved efficiency.
+- **Article Management:** Retrieve articles with flexible filtering. Items are consistently sorted by creation date in ascending order (oldest first) across all views to ensure a predictable reading sequence. Track article status including read/unread. Features an information-dense list view displaying key metadata (publication/creation dates, snippets). Includes date-based filtering (e.g., Past 24 hours, Past 7 days, Past 30 days, Past 90 days, or Past 365 days) and a visibility toggle to easily show or hide read items. Supports bulk operations, such as marking multiple articles as read simultaneously for improved efficiency.
   - **Floating Bulk Actions:** Selecting multiple items triggers a floating action bar at the bottom of the screen, providing a stable and ergonomically accessible UI for bulk operations without causing layout shifts.
 
 
