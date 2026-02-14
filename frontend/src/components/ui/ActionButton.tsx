@@ -101,8 +101,7 @@ export function ActionButton(props: ActionButtonProps) {
       <Show when={props.hideTextOnMobile} fallback={props.children}>
         <span
           class={css({
-            base: { display: "none" },
-            md: { display: "inline" },
+            display: { base: "none", md: "inline" },
           })}
         >
           {props.children}

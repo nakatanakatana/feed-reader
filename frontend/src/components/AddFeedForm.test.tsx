@@ -1,6 +1,7 @@
 import { QueryClientProvider } from "@tanstack/solid-query";
 import { HttpResponse, http } from "msw";
-import { type JSX, render } from "solid-js/web";
+import type { JSX } from "solid-js";
+import { render } from "solid-js/web";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { queryClient, transport } from "../lib/query";
@@ -83,7 +84,9 @@ describe("AddFeedForm", () => {
       () => (
         <TestWrapper
           headerActions={
-            <button data-testid="test-action">Import</button>
+            <button type="button" data-testid="test-action">
+              Import
+            </button>
           }
         />
       ),
@@ -98,7 +101,11 @@ describe("AddFeedForm", () => {
     dispose = render(
       () => (
         <TestWrapper
-          headerActions={<button data-testid="test-action">Import</button>}
+          headerActions={
+            <button type="button" data-testid="test-action">
+              Import
+            </button>
+          }
         />
       ),
       document.body,
