@@ -357,3 +357,58 @@ func (s *FeedServer) toProtoFeed(ctx context.Context, f store.Feed) (*feedv1.Fee
 		Tags:          protoTags,
 	}, nil
 }
+
+func (s *FeedServer) ExportOpml(ctx context.Context, req *connect.Request[feedv1.ExportOpmlRequest]) (*connect.Response[feedv1.ExportOpmlResponse], error) {
+	ids := req.Msg.Ids
+
+	var feeds []store.Feed
+	var err error
+	if len(ids) > 0 {
+		feeds, err = s.store.ListFeedsByIDs(ctx, ids)
+	} else {
+		feeds, err = s.store.ListFeeds(ctx, store.ListFeedsParams{})
+	}
+
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	exportFeeds := make([]ExportFeed, len(feeds))
+	for i, f := range feeds {
+		tags, err := s.store.ListTagsByFeedId(ctx, f.ID)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, err)
+		}
+
+		tagNames := make([]string, len(tags))
+		for j, t := range tags {
+			tagNames[j] = t.Name
+		}
+
+		title := ""
+		if f.Title != nil {
+			title = *f.Title
+		}
+
+		link := ""
+		if f.Link != nil {
+			link = *f.Link
+		}
+
+		exportFeeds[i] = ExportFeed{
+			Title:   title,
+			XmlURL:  f.Url,
+			HtmlURL: link,
+			Tags:    tagNames,
+		}
+	}
+
+	opmlContent, err := ExportOPML(exportFeeds)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	return connect.NewResponse(&feedv1.ExportOpmlResponse{
+		OpmlContent: opmlContent,
+	}), nil
+}
