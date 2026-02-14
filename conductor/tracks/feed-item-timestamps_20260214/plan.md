@@ -1,6 +1,6 @@
 # Implementation Plan - Per-Feed Timestamps
 
-## Phase 1: Database & Backend Logic
+## Phase 1: Database & Backend Logic [checkpoint: bbacfc8]
 - [x] Task: Create database migration d6772f5
     - [ ] Create a new SQL migration file to add `published_at` column to `feed_items` table.
     - [ ] Run `sqlc generate` to update Go models.
@@ -8,7 +8,7 @@
     - [ ] Create/Update test in `feed_store_test.go` or `fetcher_test.go` to verify `published_at` is saved to `feed_items`.
     - [ ] Implement logic in `FeedStore` (or wherever `feed_items` are inserted/updated) to save the `published_at` timestamp.
     - [ ] Verify `items.published_at` remains unchanged on subsequent updates (if that's the established behavior) while `feed_items.published_at` is updated.
-- [ ] Task: Conductor - User Manual Verification 'Database & Backend Logic' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Database & Backend Logic' (Protocol in workflow.md)
 
 ## Phase 2: API Implementation (RPC)
 - [ ] Task: Define RPC Protobuf
