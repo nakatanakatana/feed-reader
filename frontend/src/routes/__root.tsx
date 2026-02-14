@@ -1,5 +1,7 @@
 import { createRootRoute, Link, Outlet } from "@tanstack/solid-router";
 import { css } from "../../styled-system/css";
+import { DynamicFavicon } from "../components/DynamicFavicon";
+import { unreadCount } from "../lib/db";
 
 export const Route = createRootRoute({
   component: RootComponent,
@@ -57,6 +59,7 @@ function RootComponent() {
 
   return (
     <>
+      <DynamicFavicon unreadCount={unreadCount()} />
       <header class={headerStyle}>
         <Link
           to="/"
