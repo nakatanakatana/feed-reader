@@ -205,4 +205,30 @@ describe("FeedList Selection", () => {
       .element(page.getByText("Manage Tags for 2 feeds"))
       .not.toBeInTheDocument();
   });
+
+  it("renders Export OPML button in BulkActionBar", async () => {
+    const history = createMemoryHistory({ initialEntries: ["/feeds"] });
+    const router = createRouter({ routeTree, history });
+
+    dispose = render(
+      () => (
+        <TestWrapper>
+          <RouterProvider router={router} />
+        </TestWrapper>
+      ),
+      document.body,
+    );
+
+    await expect.element(page.getByText("Example Feed 1")).toBeInTheDocument();
+
+    const checkboxes = page.getByRole("checkbox");
+    await expect
+      .poll(async () => (await checkboxes.all()).length)
+      .toBeGreaterThan(1);
+
+    await checkboxes.nth(1).click();
+
+    const exportButton = page.getByRole("button", { name: /Export OPML/i });
+    await expect.element(exportButton).toBeVisible();
+  });
 });
