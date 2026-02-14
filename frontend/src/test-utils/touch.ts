@@ -17,7 +17,10 @@ interface TouchOptions {
 /**
  * Creates a Touch object. Fallback to a plain object if Touch constructor is not available.
  */
-export const createTouch = (target: EventTarget, options: TouchOptions): Touch => {
+export const createTouch = (
+  target: EventTarget,
+  options: TouchOptions,
+): Touch => {
   const identifier = options.id ?? ++touchIdentifier;
   if (typeof Touch !== "undefined") {
     try {
@@ -29,7 +32,7 @@ export const createTouch = (target: EventTarget, options: TouchOptions): Touch =
         pageX: options.x,
         pageY: options.y,
       });
-    } catch (e) {
+    } catch (_e) {
       // Some environments might have Touch defined but not a constructor
     }
   }
@@ -48,7 +51,7 @@ export const createTouch = (target: EventTarget, options: TouchOptions): Touch =
  */
 export const createTouchEvent = (
   type: string,
-  target: EventTarget,
+  _target: EventTarget,
   touches: Touch[],
 ): TouchEvent => {
   if (typeof TouchEvent !== "undefined") {
@@ -60,7 +63,7 @@ export const createTouchEvent = (
         bubbles: true,
         cancelable: true,
       });
-    } catch (e) {
+    } catch (_e) {
       // Fallback
     }
   }

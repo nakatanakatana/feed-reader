@@ -45,8 +45,8 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   // Apply a "bounce" effect at boundaries (resist dragging)
   const displayX = () => {
     const rawX = x();
-    if (rawX > 0 && !canSwipeRight()) return Math.pow(rawX, 0.7);
-    if (rawX < 0 && !canSwipeLeft()) return -Math.pow(Math.abs(rawX), 0.7);
+    if (rawX > 0 && !canSwipeRight()) return rawX ** 0.7;
+    if (rawX < 0 && !canSwipeLeft()) return -(Math.abs(rawX) ** 0.7);
     return rawX;
   };
 
