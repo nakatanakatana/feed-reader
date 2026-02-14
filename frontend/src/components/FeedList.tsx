@@ -1,6 +1,6 @@
 import { eq, isUndefined, useLiveQuery } from "@tanstack/solid-db";
 import { useMutation } from "@tanstack/solid-query";
-import { createSignal, For, Show } from "solid-js";
+import { createEffect, createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { type Feed, feedDelete, feeds, feedTag, refreshFeeds } from "../lib/db";
@@ -55,6 +55,42 @@ export function FeedList() {
       ...feed,
     }));
   });
+
+  const allVisibleSelected = () => {
+    const visibleFeeds = feedListQuery();
+    if (visibleFeeds.length === 0) return false;
+    return visibleFeeds.every((f) => selectedFeedIds().includes(f.id));
+  };
+
+  const isIndeterminate = () => {
+    const visibleFeeds = feedListQuery();
+    if (visibleFeeds.length === 0) return false;
+    const selectedCount = visibleFeeds.filter((f) =>
+      selectedFeedIds().includes(f.id),
+    ).length;
+    return selectedCount > 0 && selectedCount < visibleFeeds.length;
+  };
+
+  const toggleSelectAll = () => {
+    const visibleFeeds = feedListQuery();
+    if (allVisibleSelected()) {
+      // Deselect all visible
+      const visibleIds = visibleFeeds.map((f) => f.id);
+      setSelectedFeedIds(
+        selectedFeedIds().filter((id) => !visibleIds.includes(id)),
+      );
+    } else {
+      // Select all visible
+      const currentSelected = selectedFeedIds();
+      const newSelected = [...currentSelected];
+      for (const f of visibleFeeds) {
+        if (!newSelected.includes(f.id)) {
+          newSelected.push(f.id);
+        }
+      }
+      setSelectedFeedIds(newSelected);
+    }
+  };
 
   const [deleteError, setDeleteError] = createSignal<Error | null>(null);
 
@@ -166,6 +202,21 @@ export function FeedList() {
             },
           })}
         >
+          <div class={flex({ gap: "2", alignItems: "center", mr: "auto" })}>
+            <input
+              type="checkbox"
+              id="select-all-visible"
+              aria-label="Select all visible feeds"
+              checked={allVisibleSelected()}
+              ref={(el) => {
+                createEffect(() => {
+                  el.indeterminate = isIndeterminate();
+                });
+              }}
+              onChange={() => toggleSelectAll()}
+              class={css({ cursor: "pointer" })}
+            />
+          </div>
           <label
             for="sort-by"
             class={css({ fontSize: "sm", color: "gray.600" })}
