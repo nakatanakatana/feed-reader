@@ -112,13 +112,11 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   };
 
   const footer = props.footerExtras ?? (
-    <>
-      <Show when={isEndOfList()}>
-        <ActionButton variant="primary" onClick={props.onClose}>
-          Back to List
-        </ActionButton>
-      </Show>
-    </>
+    <Show when={isEndOfList()}>
+      <ActionButton variant="primary" onClick={props.onClose}>
+        Back to List
+      </ActionButton>
+    </Show>
   );
 
   return (
@@ -233,6 +231,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                     stroke-width="2"
                     stroke-linecap="round"
                     stroke-linejoin="round"
+                    aria-hidden="true"
                   >
                     <path d="M20 6L9 17l-5-5" />
                   </svg>
@@ -248,6 +247,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                   stroke-width="2"
                   stroke-linecap="round"
                   stroke-linejoin="round"
+                  aria-hidden="true"
                 >
                   <path d="M18 6L6 18M6 6l12 12" />
                 </svg>

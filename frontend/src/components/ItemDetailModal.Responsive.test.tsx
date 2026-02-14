@@ -116,11 +116,13 @@ describe("ItemDetailModal Responsive", () => {
     await expect.element(page.getByText("Test Item")).toBeInTheDocument();
     const mobileFab = page.getByRole("button", { name: /Mark as read/i });
     await expect.element(mobileFab).toBeInTheDocument();
-    
-    let fabStyle = window.getComputedStyle(mobileFab.element().parentElement!);
+
+    const mobileFabParent = mobileFab.element().parentElement;
+    expect(mobileFabParent).not.toBeNull();
+    let fabStyle = window.getComputedStyle(mobileFabParent as HTMLElement);
     expect(fabStyle.position).toBe("absolute");
-    expect(parseInt(fabStyle.bottom)).toBeGreaterThan(0);
-    expect(parseInt(fabStyle.right)).toBeGreaterThan(0);
+    expect(parseInt(fabStyle.bottom, 10)).toBeGreaterThan(0);
+    expect(parseInt(fabStyle.right, 10)).toBeGreaterThan(0);
 
     dispose();
     document.body.innerHTML = "";
@@ -142,9 +144,11 @@ describe("ItemDetailModal Responsive", () => {
     const desktopFab = page.getByRole("button", { name: /Mark as read/i });
     await expect.element(desktopFab).toBeInTheDocument();
 
-    fabStyle = window.getComputedStyle(desktopFab.element().parentElement!);
+    const desktopFabParent = desktopFab.element().parentElement;
+    expect(desktopFabParent).not.toBeNull();
+    fabStyle = window.getComputedStyle(desktopFabParent as HTMLElement);
     expect(fabStyle.position).toBe("absolute");
-    expect(parseInt(fabStyle.bottom)).toBeGreaterThan(0);
-    expect(parseInt(fabStyle.right)).toBeGreaterThan(0);
+    expect(parseInt(fabStyle.bottom, 10)).toBeGreaterThan(0);
+    expect(parseInt(fabStyle.right, 10)).toBeGreaterThan(0);
   });
 });
