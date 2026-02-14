@@ -1,8 +1,0 @@
-{
-  "track_id": "feeds_bulk_ui_20260214",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-02-14T12:00:00Z",
-  "updated_at": "2026-02-14T12:00:00Z",
-  "description": "Feedsのページの一括操作のUIの調整を行います。表示中のすべてを一括でチェックするためのボタンを配置し、チェックした後に出るボタンはHomeのページに合わせる。"
-}
