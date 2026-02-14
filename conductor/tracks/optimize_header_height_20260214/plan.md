@@ -25,13 +25,13 @@ Relocate the "Mark as read" button from the header to a FAB.
     - [x] **Write Tests**: Update `ItemDetailModal.Responsive.test.tsx` to verify FAB placement and header compactness on both mobile and desktop viewports.
     - [x] **Implement**: Adjust Panda CSS styles to ensure the FAB doesn't obscure content and the header remains thin across all breakpoints.
     - [x] **Verify**: Run responsive tests in Vitest browser mode.
-- [ ] **Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)**
+- [x] **Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)**
 
-## Phase 3: Final Verification and Cleanup
+## Phase 3: Final Verification and Cleanup [checkpoint: dc75ae2]
 Ensure overall quality and adherence to project standards.
 
-- [ ] **Task: Regression Testing**
-    - [ ] Run all tests in `frontend/src/components/ItemDetailModal.*.test.tsx` to ensure no functionality (swipe, navigation, auto-read) was broken.
-- [ ] **Task: Final UI Review**
-    - [ ] Check accessibility (ARIA labels for FAB) and visual consistency with the rest of the application.
-- [ ] **Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)**
+- [x] **Task: Regression Testing** eacdeac
+    - [x] Run all tests in `frontend/src/components/ItemDetailModal.*.test.tsx` to ensure no functionality (swipe, navigation, auto-read) was broken.
+- [x] **Task: Final UI Review** eacdeac
+    - [x] Check accessibility (ARIA labels for FAB) and visual consistency with the rest of the application.
+- [x] **Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)**
