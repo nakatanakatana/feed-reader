@@ -125,7 +125,7 @@ describe("ItemDetailRouteView Reactivity", () => {
     itemStore.setDateFilter("24h");
 
     // Wait for the re-fetch to complete and the component to update.
-    // Since Item 1 is already in the document, we wait a bit to ensure 
+    // Since Item 1 is already in the document, we wait a bit to ensure
     // the internal items list has been updated and Item 2 is gone.
     await new Promise((resolve) => setTimeout(resolve, 200));
 
