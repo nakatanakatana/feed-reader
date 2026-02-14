@@ -148,14 +148,14 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
           class={flex({
             justifyContent: "space-between",
             alignItems: "center",
-            padding: "4",
+            padding: "2",
             borderBottom: "1px solid",
             borderColor: "gray.100",
           })}
         >
           <h2
             class={css({
-              fontSize: "lg",
+              fontSize: "md",
               fontWeight: "bold",
               truncate: true,
               flex: 1,
