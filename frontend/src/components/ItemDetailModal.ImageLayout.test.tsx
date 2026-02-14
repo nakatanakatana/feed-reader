@@ -73,7 +73,7 @@ describe("ItemDetailModal Image Layout", () => {
     // This is expected to fail initially as we haven't implemented flex layout yet
     await expect.element(p).toHaveStyle({ display: "flex" });
     await expect.element(p).toHaveStyle({ flexWrap: "wrap" });
-    // Check for gap (using 8px as an example, we'll decide on exact value later)
+    // Check that the expected 8px gap is applied
     await expect.element(p).toHaveStyle({ gap: "8px" });
   });
 
