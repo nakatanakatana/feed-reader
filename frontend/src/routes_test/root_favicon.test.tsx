@@ -88,11 +88,11 @@ describe("Root Favicon Integration", () => {
       { timeout: 10000 },
     );
 
-    // 5. Mock API to return 25 unread items (Yellow)
+    // 5. Mock API to return 250 unread items (Orange)
     worker.use(
       http.post("*/item.v1.ItemService/ListItems", () => {
         return HttpResponse.json({
-          items: Array.from({ length: 25 }, (_, i) => ({
+          items: Array.from({ length: 250 }, (_, i) => ({
             id: `item-${i}`,
             title: `Item ${i}`,
             isRead: false,
@@ -100,7 +100,7 @@ describe("Root Favicon Integration", () => {
             createdAt: new Date().toISOString(),
             feedId: "feed-1",
           })),
-          totalCount: 25,
+          totalCount: 250,
         });
       }),
     );
@@ -115,17 +115,17 @@ describe("Root Favicon Integration", () => {
         ) as HTMLLinkElement;
         const base64 = link.href.split(",")[1];
         const svg = atob(base64);
-        // Yellow color is #eab308
-        expect(svg).toContain('fill="#eab308"');
+        // Orange color is #f97316
+        expect(svg).toContain('fill="#f97316"');
       },
       { timeout: 10000 },
     );
 
-    // 6. Mock API to return 100 unread items (Red)
+    // 6. Mock API to return 1000 unread items (Red)
     worker.use(
       http.post("*/item.v1.ItemService/ListItems", () => {
         return HttpResponse.json({
-          items: Array.from({ length: 100 }, (_, i) => ({
+          items: Array.from({ length: 1000 }, (_, i) => ({
             id: `item-${i}`,
             title: `Item ${i}`,
             isRead: false,
@@ -133,7 +133,7 @@ describe("Root Favicon Integration", () => {
             createdAt: new Date().toISOString(),
             feedId: "feed-1",
           })),
-          totalCount: 100,
+          totalCount: 1000,
         });
       }),
     );
@@ -154,7 +154,7 @@ describe("Root Favicon Integration", () => {
       { timeout: 10000 },
     );
 
-    // 7. Mock API to return 0 unread items (Neutral)
+    // 7. Mock API to return 0 unread items (Blue)
     worker.use(
       http.post("*/item.v1.ItemService/ListItems", () => {
         return HttpResponse.json({
@@ -174,8 +174,8 @@ describe("Root Favicon Integration", () => {
         ) as HTMLLinkElement;
         const base64 = link.href.split(",")[1];
         const svg = atob(base64);
-        // Neutral color is #6b7280
-        expect(svg).toContain('fill="#6b7280"');
+        // Blue color is #3b82f6
+        expect(svg).toContain('fill="#3b82f6"');
       },
       { timeout: 10000 },
     );

@@ -26,29 +26,29 @@ describe("DynamicFavicon", () => {
     }
   });
 
-  it("updates favicon to neutral when unreadCount is 0", async () => {
+  it("updates favicon to blue when unreadCount is 0", async () => {
     dispose = render(() => <DynamicFavicon unreadCount={0} />, document.body);
-
-    const link = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
-    expect(link.href).toBe(generateFaviconUri(FaviconColor.Neutral));
-  });
-
-  it("updates favicon to blue when unreadCount is 5", async () => {
-    dispose = render(() => <DynamicFavicon unreadCount={5} />, document.body);
 
     const link = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
     expect(link.href).toBe(generateFaviconUri(FaviconColor.Blue));
   });
 
-  it("updates favicon to yellow when unreadCount is 25", async () => {
-    dispose = render(() => <DynamicFavicon unreadCount={25} />, document.body);
+  it("updates favicon to blue when unreadCount is 199", async () => {
+    dispose = render(() => <DynamicFavicon unreadCount={199} />, document.body);
 
     const link = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
-    expect(link.href).toBe(generateFaviconUri(FaviconColor.Yellow));
+    expect(link.href).toBe(generateFaviconUri(FaviconColor.Blue));
   });
 
-  it("updates favicon to red when unreadCount is 100", async () => {
-    dispose = render(() => <DynamicFavicon unreadCount={100} />, document.body);
+  it("updates favicon to orange when unreadCount is 200", async () => {
+    dispose = render(() => <DynamicFavicon unreadCount={200} />, document.body);
+
+    const link = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
+    expect(link.href).toBe(generateFaviconUri(FaviconColor.Orange));
+  });
+
+  it("updates favicon to red when unreadCount is 1000", async () => {
+    dispose = render(() => <DynamicFavicon unreadCount={1000} />, document.body);
 
     const link = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
     expect(link.href).toBe(generateFaviconUri(FaviconColor.Red));
