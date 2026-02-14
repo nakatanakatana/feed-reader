@@ -1,6 +1,7 @@
 # Implementation Plan - OPML Management Enhancements
 
 ## Phase 1: Backend - OPML Export Logic (Go)
+- [x] Task: Define ExportOpml RPC in proto 3d27209
 - [ ] Task: Create reproduction test case for OPML Export
     - [ ] Create `cmd/feed-reader/opml_export_test.go`
     - [ ] Define test cases for exporting feeds with and without tags
