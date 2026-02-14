@@ -227,7 +227,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
           style={{
             transform: `translateX(${displayX()}px)`,
             transition: isSwiping() ? "none" : "transform 0.2s ease-out",
-            "will-change": displayX() !== 0 ? "transform" : undefined,
+            "will-change": canSwipeLeft() || canSwipeRight() ? "transform" : undefined,
           }}
           {...handlers}
         >
