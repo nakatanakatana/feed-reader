@@ -1,8 +1,0 @@
-{
-  "track_id": "item_detail_img_layout_20260214",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-02-14T00:00:00Z",
-  "updated_at": "2026-02-14T00:00:00Z",
-  "description": "ItemDetailModalで表示する時のスタイルの調整をしてください * p > img が複数並んでいるときにflexのスタイルが当たって横に並ぶようにする"
-}
