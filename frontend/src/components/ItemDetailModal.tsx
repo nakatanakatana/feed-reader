@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/solid-query";
-import { createEffect, For, type JSX, Show } from "solid-js";
+import { createEffect, For, type JSX, onCleanup, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
 import { getItem, items } from "../lib/item-db";
@@ -57,13 +57,13 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     const loading = isLoading();
 
     if (id && !loading && itemData && modalRef) {
-      requestAnimationFrame(() => {
-        if (modalRef) {
-          modalRef.focus();
-        }
+      const currentModalRef = modalRef;
+      const cleanupTasks: (() => void)[] = [];
 
-        const currentModalRef = modalRef;
-        if (!currentModalRef) return;
+      requestAnimationFrame(() => {
+        if (currentModalRef) {
+          currentModalRef.focus();
+        }
 
         // Detect image layout and set data-layout attribute
         const imgs = currentModalRef.querySelectorAll("img");
@@ -89,8 +89,15 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             updateLayout();
           } else {
             img.addEventListener("load", updateLayout, { once: true });
+            cleanupTasks.push(() =>
+              img.removeEventListener("load", updateLayout),
+            );
           }
         }
+      });
+
+      onCleanup(() => {
+        for (const task of cleanupTasks) task();
       });
     }
   });

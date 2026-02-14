@@ -70,7 +70,6 @@ describe("ItemDetailModal Image Layout", () => {
     // Find the paragraph containing the images
     const p = page.getByRole("paragraph");
 
-
     await expect.element(p).toHaveStyle({ display: "flex" });
     await expect.element(p).toHaveStyle({ flexWrap: "wrap" });
     // Check that the expected 8px gap is applied
