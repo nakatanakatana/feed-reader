@@ -767,6 +767,55 @@ func (q *Queries) ListFeedsByIDs(ctx context.Context, ids []string) ([]Feed, err
 	return items, nil
 }
 
+const listItemFeeds = `-- name: ListItemFeeds :many
+SELECT
+  fi.feed_id,
+  f.title AS feed_title,
+  fi.published_at,
+  fi.created_at
+FROM
+  feed_items fi
+JOIN
+  feeds f ON fi.feed_id = f.id
+WHERE
+  fi.item_id = ?
+`
+
+type ListItemFeedsRow struct {
+	FeedID      string  `json:"feed_id"`
+	FeedTitle   *string `json:"feed_title"`
+	PublishedAt *string `json:"published_at"`
+	CreatedAt   string  `json:"created_at"`
+}
+
+func (q *Queries) ListItemFeeds(ctx context.Context, itemID string) ([]ListItemFeedsRow, error) {
+	rows, err := q.db.QueryContext(ctx, listItemFeeds, itemID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListItemFeedsRow
+	for rows.Next() {
+		var i ListItemFeedsRow
+		if err := rows.Scan(
+			&i.FeedID,
+			&i.FeedTitle,
+			&i.PublishedAt,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listItems = `-- name: ListItems :many
 SELECT
   i.id,

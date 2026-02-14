@@ -128,6 +128,35 @@ func (s *ItemServer) UpdateItemStatus(ctx context.Context, req *connect.Request[
 	return connect.NewResponse(&itemv1.UpdateItemStatusResponse{}), nil
 }
 
+func (s *ItemServer) ListItemFeeds(ctx context.Context, req *connect.Request[itemv1.ListItemFeedsRequest]) (*connect.Response[itemv1.ListItemFeedsResponse], error) {
+	rows, err := s.store.ListItemFeeds(ctx, req.Msg.ItemId)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	protoFeeds := make([]*itemv1.ItemFeed, len(rows))
+	for i, row := range rows {
+		var title string
+		if row.FeedTitle != nil {
+			title = *row.FeedTitle
+		}
+		var pubAt string
+		if row.PublishedAt != nil {
+			pubAt = *row.PublishedAt
+		}
+		protoFeeds[i] = &itemv1.ItemFeed{
+			FeedId:    row.FeedID,
+			FeedTitle: title,
+			PublishedAt: pubAt,
+			CreatedAt: row.CreatedAt,
+		}
+	}
+
+	return connect.NewResponse(&itemv1.ListItemFeedsResponse{
+		Feeds: protoFeeds,
+	}), nil
+}
+
 func GetItemRowFromListItemsRow(row store.ListItemsRow) store.GetItemRow {
 	return store.GetItemRow{
 		ID:          row.ID,

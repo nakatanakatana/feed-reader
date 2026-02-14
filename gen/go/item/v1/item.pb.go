@@ -566,6 +566,162 @@ func (*UpdateItemStatusResponse) Descriptor() ([]byte, []int) {
 	return file_item_v1_item_proto_rawDescGZIP(), []int{7}
 }
 
+type ListItemFeedsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ItemId        string                 `protobuf:"bytes,1,opt,name=item_id,json=itemId,proto3" json:"item_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListItemFeedsRequest) Reset() {
+	*x = ListItemFeedsRequest{}
+	mi := &file_item_v1_item_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListItemFeedsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListItemFeedsRequest) ProtoMessage() {}
+
+func (x *ListItemFeedsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_item_v1_item_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListItemFeedsRequest.ProtoReflect.Descriptor instead.
+func (*ListItemFeedsRequest) Descriptor() ([]byte, []int) {
+	return file_item_v1_item_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *ListItemFeedsRequest) GetItemId() string {
+	if x != nil {
+		return x.ItemId
+	}
+	return ""
+}
+
+type ItemFeed struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	FeedId        string                 `protobuf:"bytes,1,opt,name=feed_id,json=feedId,proto3" json:"feed_id,omitempty"`
+	FeedTitle     string                 `protobuf:"bytes,2,opt,name=feed_title,json=feedTitle,proto3" json:"feed_title,omitempty"`
+	PublishedAt   string                 `protobuf:"bytes,3,opt,name=published_at,json=publishedAt,proto3" json:"published_at,omitempty"`
+	CreatedAt     string                 `protobuf:"bytes,4,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ItemFeed) Reset() {
+	*x = ItemFeed{}
+	mi := &file_item_v1_item_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ItemFeed) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ItemFeed) ProtoMessage() {}
+
+func (x *ItemFeed) ProtoReflect() protoreflect.Message {
+	mi := &file_item_v1_item_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ItemFeed.ProtoReflect.Descriptor instead.
+func (*ItemFeed) Descriptor() ([]byte, []int) {
+	return file_item_v1_item_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *ItemFeed) GetFeedId() string {
+	if x != nil {
+		return x.FeedId
+	}
+	return ""
+}
+
+func (x *ItemFeed) GetFeedTitle() string {
+	if x != nil {
+		return x.FeedTitle
+	}
+	return ""
+}
+
+func (x *ItemFeed) GetPublishedAt() string {
+	if x != nil {
+		return x.PublishedAt
+	}
+	return ""
+}
+
+func (x *ItemFeed) GetCreatedAt() string {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return ""
+}
+
+type ListItemFeedsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Feeds         []*ItemFeed            `protobuf:"bytes,1,rep,name=feeds,proto3" json:"feeds,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListItemFeedsResponse) Reset() {
+	*x = ListItemFeedsResponse{}
+	mi := &file_item_v1_item_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListItemFeedsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListItemFeedsResponse) ProtoMessage() {}
+
+func (x *ListItemFeedsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_item_v1_item_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListItemFeedsResponse.ProtoReflect.Descriptor instead.
+func (*ListItemFeedsResponse) Descriptor() ([]byte, []int) {
+	return file_item_v1_item_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *ListItemFeedsResponse) GetFeeds() []*ItemFeed {
+	if x != nil {
+		return x.Feeds
+	}
+	return nil
+}
+
 var File_item_v1_item_proto protoreflect.FileDescriptor
 
 const file_item_v1_item_proto_rawDesc = "" +
@@ -624,11 +780,23 @@ const file_item_v1_item_proto_rawDesc = "" +
 	"\ais_read\x18\x02 \x01(\bH\x00R\x06isRead\x88\x01\x01B\n" +
 	"\n" +
 	"\b_is_read\"\x1a\n" +
-	"\x18UpdateItemStatusResponse2\xe8\x01\n" +
+	"\x18UpdateItemStatusResponse\"/\n" +
+	"\x14ListItemFeedsRequest\x12\x17\n" +
+	"\aitem_id\x18\x01 \x01(\tR\x06itemId\"\x84\x01\n" +
+	"\bItemFeed\x12\x17\n" +
+	"\afeed_id\x18\x01 \x01(\tR\x06feedId\x12\x1d\n" +
+	"\n" +
+	"feed_title\x18\x02 \x01(\tR\tfeedTitle\x12!\n" +
+	"\fpublished_at\x18\x03 \x01(\tR\vpublishedAt\x12\x1d\n" +
+	"\n" +
+	"created_at\x18\x04 \x01(\tR\tcreatedAt\"@\n" +
+	"\x15ListItemFeedsResponse\x12'\n" +
+	"\x05feeds\x18\x01 \x03(\v2\x11.item.v1.ItemFeedR\x05feeds2\xb8\x02\n" +
 	"\vItemService\x12<\n" +
 	"\aGetItem\x12\x17.item.v1.GetItemRequest\x1a\x18.item.v1.GetItemResponse\x12B\n" +
 	"\tListItems\x12\x19.item.v1.ListItemsRequest\x1a\x1a.item.v1.ListItemsResponse\x12W\n" +
-	"\x10UpdateItemStatus\x12 .item.v1.UpdateItemStatusRequest\x1a!.item.v1.UpdateItemStatusResponseB=Z;github.com/nakatanakatana/feed-reader/gen/go/item/v1;itemv1b\x06proto3"
+	"\x10UpdateItemStatus\x12 .item.v1.UpdateItemStatusRequest\x1a!.item.v1.UpdateItemStatusResponse\x12N\n" +
+	"\rListItemFeeds\x12\x1d.item.v1.ListItemFeedsRequest\x1a\x1e.item.v1.ListItemFeedsResponseB=Z;github.com/nakatanakatana/feed-reader/gen/go/item/v1;itemv1b\x06proto3"
 
 var (
 	file_item_v1_item_proto_rawDescOnce sync.Once
@@ -642,7 +810,7 @@ func file_item_v1_item_proto_rawDescGZIP() []byte {
 	return file_item_v1_item_proto_rawDescData
 }
 
-var file_item_v1_item_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_item_v1_item_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_item_v1_item_proto_goTypes = []any{
 	(*Item)(nil),                     // 0: item.v1.Item
 	(*ListItem)(nil),                 // 1: item.v1.ListItem
@@ -652,23 +820,29 @@ var file_item_v1_item_proto_goTypes = []any{
 	(*ListItemsResponse)(nil),        // 5: item.v1.ListItemsResponse
 	(*UpdateItemStatusRequest)(nil),  // 6: item.v1.UpdateItemStatusRequest
 	(*UpdateItemStatusResponse)(nil), // 7: item.v1.UpdateItemStatusResponse
-	(*timestamppb.Timestamp)(nil),    // 8: google.protobuf.Timestamp
+	(*ListItemFeedsRequest)(nil),     // 8: item.v1.ListItemFeedsRequest
+	(*ItemFeed)(nil),                 // 9: item.v1.ItemFeed
+	(*ListItemFeedsResponse)(nil),    // 10: item.v1.ListItemFeedsResponse
+	(*timestamppb.Timestamp)(nil),    // 11: google.protobuf.Timestamp
 }
 var file_item_v1_item_proto_depIdxs = []int32{
-	0, // 0: item.v1.GetItemResponse.item:type_name -> item.v1.Item
-	8, // 1: item.v1.ListItemsRequest.since:type_name -> google.protobuf.Timestamp
-	1, // 2: item.v1.ListItemsResponse.items:type_name -> item.v1.ListItem
-	2, // 3: item.v1.ItemService.GetItem:input_type -> item.v1.GetItemRequest
-	4, // 4: item.v1.ItemService.ListItems:input_type -> item.v1.ListItemsRequest
-	6, // 5: item.v1.ItemService.UpdateItemStatus:input_type -> item.v1.UpdateItemStatusRequest
-	3, // 6: item.v1.ItemService.GetItem:output_type -> item.v1.GetItemResponse
-	5, // 7: item.v1.ItemService.ListItems:output_type -> item.v1.ListItemsResponse
-	7, // 8: item.v1.ItemService.UpdateItemStatus:output_type -> item.v1.UpdateItemStatusResponse
-	6, // [6:9] is the sub-list for method output_type
-	3, // [3:6] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	0,  // 0: item.v1.GetItemResponse.item:type_name -> item.v1.Item
+	11, // 1: item.v1.ListItemsRequest.since:type_name -> google.protobuf.Timestamp
+	1,  // 2: item.v1.ListItemsResponse.items:type_name -> item.v1.ListItem
+	9,  // 3: item.v1.ListItemFeedsResponse.feeds:type_name -> item.v1.ItemFeed
+	2,  // 4: item.v1.ItemService.GetItem:input_type -> item.v1.GetItemRequest
+	4,  // 5: item.v1.ItemService.ListItems:input_type -> item.v1.ListItemsRequest
+	6,  // 6: item.v1.ItemService.UpdateItemStatus:input_type -> item.v1.UpdateItemStatusRequest
+	8,  // 7: item.v1.ItemService.ListItemFeeds:input_type -> item.v1.ListItemFeedsRequest
+	3,  // 8: item.v1.ItemService.GetItem:output_type -> item.v1.GetItemResponse
+	5,  // 9: item.v1.ItemService.ListItems:output_type -> item.v1.ListItemsResponse
+	7,  // 10: item.v1.ItemService.UpdateItemStatus:output_type -> item.v1.UpdateItemStatusResponse
+	10, // 11: item.v1.ItemService.ListItemFeeds:output_type -> item.v1.ListItemFeedsResponse
+	8,  // [8:12] is the sub-list for method output_type
+	4,  // [4:8] is the sub-list for method input_type
+	4,  // [4:4] is the sub-list for extension type_name
+	4,  // [4:4] is the sub-list for extension extendee
+	0,  // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_item_v1_item_proto_init() }
@@ -684,7 +858,7 @@ func file_item_v1_item_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_item_v1_item_proto_rawDesc), len(file_item_v1_item_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   8,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

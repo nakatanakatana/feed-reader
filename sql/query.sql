@@ -323,6 +323,19 @@ WHERE
 ORDER BY
   t.name ASC;
 
+-- name: ListItemFeeds :many
+SELECT
+  fi.feed_id,
+  f.title AS feed_title,
+  fi.published_at,
+  fi.created_at
+FROM
+  feed_items fi
+JOIN
+  feeds f ON fi.feed_id = f.id
+WHERE
+  fi.item_id = ?;
+
 -- name: ListFeedTags :many
 SELECT
   feed_id,

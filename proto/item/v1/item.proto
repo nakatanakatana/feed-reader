@@ -10,6 +10,7 @@ service ItemService {
   rpc GetItem(GetItemRequest) returns (GetItemResponse);
   rpc ListItems(ListItemsRequest) returns (ListItemsResponse);
   rpc UpdateItemStatus(UpdateItemStatusRequest) returns (UpdateItemStatusResponse);
+  rpc ListItemFeeds(ListItemFeedsRequest) returns (ListItemFeedsResponse);
 }
 
 message Item {
@@ -67,3 +68,18 @@ message UpdateItemStatusRequest {
 }
 
 message UpdateItemStatusResponse {}
+
+message ListItemFeedsRequest {
+  string item_id = 1;
+}
+
+message ItemFeed {
+  string feed_id = 1;
+  string feed_title = 2;
+  string published_at = 3;
+  string created_at = 4;
+}
+
+message ListItemFeedsResponse {
+  repeated ItemFeed feeds = 1;
+}

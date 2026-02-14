@@ -40,6 +40,9 @@ const (
 	// ItemServiceUpdateItemStatusProcedure is the fully-qualified name of the ItemService's
 	// UpdateItemStatus RPC.
 	ItemServiceUpdateItemStatusProcedure = "/item.v1.ItemService/UpdateItemStatus"
+	// ItemServiceListItemFeedsProcedure is the fully-qualified name of the ItemService's ListItemFeeds
+	// RPC.
+	ItemServiceListItemFeedsProcedure = "/item.v1.ItemService/ListItemFeeds"
 )
 
 // ItemServiceClient is a client for the item.v1.ItemService service.
@@ -47,6 +50,7 @@ type ItemServiceClient interface {
 	GetItem(context.Context, *connect.Request[v1.GetItemRequest]) (*connect.Response[v1.GetItemResponse], error)
 	ListItems(context.Context, *connect.Request[v1.ListItemsRequest]) (*connect.Response[v1.ListItemsResponse], error)
 	UpdateItemStatus(context.Context, *connect.Request[v1.UpdateItemStatusRequest]) (*connect.Response[v1.UpdateItemStatusResponse], error)
+	ListItemFeeds(context.Context, *connect.Request[v1.ListItemFeedsRequest]) (*connect.Response[v1.ListItemFeedsResponse], error)
 }
 
 // NewItemServiceClient constructs a client for the item.v1.ItemService service. By default, it uses
@@ -78,6 +82,12 @@ func NewItemServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(itemServiceMethods.ByName("UpdateItemStatus")),
 			connect.WithClientOptions(opts...),
 		),
+		listItemFeeds: connect.NewClient[v1.ListItemFeedsRequest, v1.ListItemFeedsResponse](
+			httpClient,
+			baseURL+ItemServiceListItemFeedsProcedure,
+			connect.WithSchema(itemServiceMethods.ByName("ListItemFeeds")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -86,6 +96,7 @@ type itemServiceClient struct {
 	getItem          *connect.Client[v1.GetItemRequest, v1.GetItemResponse]
 	listItems        *connect.Client[v1.ListItemsRequest, v1.ListItemsResponse]
 	updateItemStatus *connect.Client[v1.UpdateItemStatusRequest, v1.UpdateItemStatusResponse]
+	listItemFeeds    *connect.Client[v1.ListItemFeedsRequest, v1.ListItemFeedsResponse]
 }
 
 // GetItem calls item.v1.ItemService.GetItem.
@@ -103,11 +114,17 @@ func (c *itemServiceClient) UpdateItemStatus(ctx context.Context, req *connect.R
 	return c.updateItemStatus.CallUnary(ctx, req)
 }
 
+// ListItemFeeds calls item.v1.ItemService.ListItemFeeds.
+func (c *itemServiceClient) ListItemFeeds(ctx context.Context, req *connect.Request[v1.ListItemFeedsRequest]) (*connect.Response[v1.ListItemFeedsResponse], error) {
+	return c.listItemFeeds.CallUnary(ctx, req)
+}
+
 // ItemServiceHandler is an implementation of the item.v1.ItemService service.
 type ItemServiceHandler interface {
 	GetItem(context.Context, *connect.Request[v1.GetItemRequest]) (*connect.Response[v1.GetItemResponse], error)
 	ListItems(context.Context, *connect.Request[v1.ListItemsRequest]) (*connect.Response[v1.ListItemsResponse], error)
 	UpdateItemStatus(context.Context, *connect.Request[v1.UpdateItemStatusRequest]) (*connect.Response[v1.UpdateItemStatusResponse], error)
+	ListItemFeeds(context.Context, *connect.Request[v1.ListItemFeedsRequest]) (*connect.Response[v1.ListItemFeedsResponse], error)
 }
 
 // NewItemServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -135,6 +152,12 @@ func NewItemServiceHandler(svc ItemServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(itemServiceMethods.ByName("UpdateItemStatus")),
 		connect.WithHandlerOptions(opts...),
 	)
+	itemServiceListItemFeedsHandler := connect.NewUnaryHandler(
+		ItemServiceListItemFeedsProcedure,
+		svc.ListItemFeeds,
+		connect.WithSchema(itemServiceMethods.ByName("ListItemFeeds")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/item.v1.ItemService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case ItemServiceGetItemProcedure:
@@ -143,6 +166,8 @@ func NewItemServiceHandler(svc ItemServiceHandler, opts ...connect.HandlerOption
 			itemServiceListItemsHandler.ServeHTTP(w, r)
 		case ItemServiceUpdateItemStatusProcedure:
 			itemServiceUpdateItemStatusHandler.ServeHTTP(w, r)
+		case ItemServiceListItemFeedsProcedure:
+			itemServiceListItemFeedsHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -162,4 +187,8 @@ func (UnimplementedItemServiceHandler) ListItems(context.Context, *connect.Reque
 
 func (UnimplementedItemServiceHandler) UpdateItemStatus(context.Context, *connect.Request[v1.UpdateItemStatusRequest]) (*connect.Response[v1.UpdateItemStatusResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("item.v1.ItemService.UpdateItemStatus is not implemented"))
+}
+
+func (UnimplementedItemServiceHandler) ListItemFeeds(context.Context, *connect.Request[v1.ListItemFeedsRequest]) (*connect.Response[v1.ListItemFeedsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("item.v1.ItemService.ListItemFeeds is not implemented"))
 }
