@@ -131,6 +131,48 @@ describe("ItemDetailModal Image Layout", () => {
     await expect.element(p).toHaveStyle({ gap: "8px" });
   });
 
+  it("initially hides images and shows them only after layout is determined", async () => {
+    setupMockDataWithContent(
+      "test-visibility",
+      "![loading](https://example.com/loading.png)",
+    );
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal itemId="test-visibility" onClose={() => {}} />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    const img = page.getByAltText("loading");
+    await expect.element(img).toBeInTheDocument();
+
+    // Initially should be transparent and have default maxHeight
+    await expect.element(img).toHaveStyle({ opacity: "0" });
+    await expect.element(img).toHaveStyle({ maxHeight: "10vh" });
+
+    // Mock naturalWidth/Height and trigger load
+    const imgEl = document.querySelector(
+      'img[alt="loading"]',
+    ) as HTMLImageElement;
+    if (imgEl) {
+      Object.defineProperty(imgEl, "naturalWidth", {
+        value: 1200,
+        configurable: true,
+      });
+      Object.defineProperty(imgEl, "naturalHeight", {
+        value: 600,
+        configurable: true,
+      });
+      imgEl.dispatchEvent(new Event("load"));
+    }
+
+    // Now should be visible and have hero maxHeight
+    await expect.element(img).toHaveStyle({ opacity: "1" });
+    await expect.element(img).toHaveStyle({ maxHeight: "30vh" });
+  });
+
   describe("Image height limits", () => {
     it("applies 30vh max-height to hero images (landscape)", async () => {
       setupMockDataWithContent(

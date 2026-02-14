@@ -445,6 +445,13 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                           height: "auto",
                           borderRadius: "md",
                           boxShadow: "sm",
+                          opacity: 0,
+                          transition: "opacity 0.2s",
+                          maxHeight: "10vh",
+                          "&[data-layout]": { opacity: 1 },
+                          "&[data-layout='hero']": { maxHeight: "30vh" },
+                          "&[data-layout='icon']": { maxHeight: "5vh" },
+                          "&[data-layout='other']": { maxHeight: "10vh" },
                         })}
                       />
                     </div>
@@ -468,6 +475,10 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                         maxWidth: "full",
                         height: "auto",
                         my: "4",
+                        opacity: 0,
+                        transition: "opacity 0.2s",
+                        maxHeight: "10vh",
+                        "&[data-layout]": { opacity: 1 },
                         "&[data-layout='hero']": { maxHeight: "30vh" },
                         "&[data-layout='icon']": { maxHeight: "5vh" },
                         "&[data-layout='other']": { maxHeight: "10vh" },
