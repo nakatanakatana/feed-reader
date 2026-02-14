@@ -111,13 +111,17 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     }
   };
 
-  const footer = props.footerExtras ?? (
-    <Show when={isEndOfList()}>
-      <ActionButton variant="primary" onClick={props.onClose}>
-        Back to List
-      </ActionButton>
-    </Show>
-  );
+  const footer = () => {
+    if (props.footerExtras) return props.footerExtras;
+    if (isEndOfList()) {
+      return (
+        <ActionButton variant="primary" onClick={props.onClose}>
+          Back to List
+        </ActionButton>
+      );
+    }
+    return undefined;
+  };
 
   return (
     <Show when={props.itemId}>
@@ -132,7 +136,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
         ariaLabel={isEndOfList() ? "End of list reached" : "Item details"}
         onKeyDown={handleKeyDown}
         bodyPadding={false}
-        footer={isEndOfList() ? footer : undefined}
+        footer={footer()}
       >
         <div
           class={flex({
@@ -195,6 +199,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
               onClick={handleToggleRead}
               title={item()?.isRead ? "Mark as Unread" : "Mark as Read"}
               aria-label={item()?.isRead ? "Mark as Unread" : "Mark as Read"}
+              aria-pressed={item()?.isRead ?? false}
               class={css({
                 width: "14",
                 height: "14",
@@ -286,6 +291,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             flexDirection: "column",
             gap: "4",
             padding: "6",
+            pb: "24",
             overflowY: "auto",
             height: "full",
           })}
