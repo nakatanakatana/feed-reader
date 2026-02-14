@@ -17,8 +17,8 @@
 - [x] Task: Conductor - User Manual Verification 'SolidJS Integration' (Protocol in workflow.md) a903183
 
 ## Phase 3: Application Wiring
-- [ ] Task: Connect to Application State
-    - [ ] Identify global unread count source (likely in a Store or Context).
-    - [ ] Instantiate `<DynamicFavicon />` in the root provider or Main Layout.
-    - [ ] Pass the real reactive unread count to the component.
+- [x] Task: Connect to Application State ec21988
+    - [x] Identify global unread count source (likely in a Store or Context).
+    - [x] Instantiate `<DynamicFavicon />` in the root provider or Main Layout.
+    - [x] Pass the real reactive unread count to the component.
 - [ ] Task: Conductor - User Manual Verification 'Application Wiring' (Protocol in workflow.md)
