@@ -32,6 +32,7 @@ CREATE TABLE items (
 CREATE TABLE feed_items (
   feed_id    TEXT NOT NULL,
   item_id    TEXT NOT NULL,
+  published_at TEXT,
   created_at TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now')),
   updated_at TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now')),
   PRIMARY KEY (feed_id, item_id),
