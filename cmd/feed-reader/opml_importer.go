@@ -10,11 +10,16 @@ import (
 	"github.com/nakatanakatana/feed-reader/store"
 )
 
+type ImportFailedFeed struct {
+	URL          string
+	ErrorMessage string
+}
+
 type ImportResults struct {
 	Total       int32
 	Success     int32
 	Skipped     int32
-	FailedFeeds []string
+	FailedFeeds []ImportFailedFeed
 }
 
 func (i *OPMLImporter) ImportSync(ctx context.Context, opmlContent []byte) (*ImportResults, error) {
@@ -37,7 +42,7 @@ func (i *OPMLImporter) ImportSync(ctx context.Context, opmlContent []byte) (*Imp
 		}
 		if !errors.Is(err, sql.ErrNoRows) {
 			i.logger.ErrorContext(ctx, "db error checking feed existence", "url", f.URL, "error", err)
-			results.FailedFeeds = append(results.FailedFeeds, f.URL)
+			results.FailedFeeds = append(results.FailedFeeds, ImportFailedFeed{URL: f.URL, ErrorMessage: "database error checking existence"})
 			continue
 		}
 
@@ -45,7 +50,7 @@ func (i *OPMLImporter) ImportSync(ctx context.Context, opmlContent []byte) (*Imp
 		fetchedFeed, err := i.fetcher.Fetch(ctx, "", f.URL)
 		if err != nil {
 			i.logger.ErrorContext(ctx, "failed to fetch feed metadata", "url", f.URL, "error", err)
-			results.FailedFeeds = append(results.FailedFeeds, f.URL)
+			results.FailedFeeds = append(results.FailedFeeds, ImportFailedFeed{URL: f.URL, ErrorMessage: "failed to fetch feed metadata: " + err.Error()})
 			continue
 		}
 
@@ -86,7 +91,7 @@ func (i *OPMLImporter) ImportSync(ctx context.Context, opmlContent []byte) (*Imp
 		})
 		if err != nil {
 			i.logger.ErrorContext(ctx, "failed to create feed in db", "url", f.URL, "error", err)
-			results.FailedFeeds = append(results.FailedFeeds, f.URL)
+			results.FailedFeeds = append(results.FailedFeeds, ImportFailedFeed{URL: f.URL, ErrorMessage: "failed to create feed in database"})
 			continue
 		}
 
