@@ -9,12 +9,12 @@
     - [x] Implement `generateFaviconUri(color)` in `frontend/src/lib/favicon.ts` (using a template string for the SVG).
 - [x] Task: Conductor - User Manual Verification 'Core Logic & Utilities' (Protocol in workflow.md)
 
-## Phase 2: SolidJS Integration
+## Phase 2: SolidJS Integration [checkpoint: a903183]
 - [x] Task: Create DynamicFavicon Component/Hook f97bb72
-    - [x] Create `frontend/src/components/DynamicFavicon.test.tsx`.
+    - [x] Create `frontend/src/components/AddFeedForm.test.tsx` (Note: should have been DynamicFavicon.test.tsx, correcting in implementation).
     - [x] Implement `frontend/src/components/DynamicFavicon.tsx` which accepts `unreadCount` as a prop and updates the document head.
     - [x] Ensure it handles cleanup (restoring default) if unmounted.
-- [ ] Task: Conductor - User Manual Verification 'SolidJS Integration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'SolidJS Integration' (Protocol in workflow.md) a903183
 
 ## Phase 3: Application Wiring
 - [ ] Task: Connect to Application State
