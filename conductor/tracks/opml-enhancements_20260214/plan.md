@@ -6,10 +6,10 @@
     - [x] Create `cmd/feed-reader/opml_export_test.go`
     - [ ] Define test cases for exporting feeds with and without tags
     - [ ] Assert that tags are correctly mapped to the `category` attribute
-- [ ] Task: Implement OPML Export logic
-    - [ ] Update `cmd/feed-reader/opml.go` to include `ExportOPML` function
-    - [ ] Implement logic to fetch feeds and their tags from the database
-    - [ ] Map internal feed models to OPML structure, flattening tags into `category` attribute
+- [x] Task: Implement OPML Export logic 8c48a64
+    - [x] Update `cmd/feed-reader/opml.go` to include `ExportOPML` function
+    - [x] Implement logic to fetch feeds and their tags from the database
+    - [x] Map internal feed models to OPML structure, flattening tags into `category` attribute
 - [ ] Task: Create HTTP Handler for OPML Export
     - [ ] Update `cmd/feed-reader/handler.go` to add `exportOpml` endpoint
     - [ ] Ensure endpoint handles feed selection (e.g., via query IDs or POST body)
