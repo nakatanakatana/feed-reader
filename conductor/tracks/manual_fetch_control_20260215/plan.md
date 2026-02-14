@@ -14,7 +14,7 @@
     - [x] Write unit tests for the new store queries.
 - [x] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md) b510f82
 
-## Phase 2: Backend Logic Updates
+## Phase 2: Backend Logic Updates [checkpoint: 6795819]
 - [x] Task: Update Fetcher Service Logic aee5d55
     - [x] Modify `FetchAllFeeds` (or equivalent polling function) to query based on `next_fetch <= NOW`.
     - [x] Update the post-fetch logic to calculate and save the new `next_fetch` (`now + FetchInterval`).
@@ -24,7 +24,7 @@
     - [x] Define Proto RPC `SetFeedSchedule` (or similar) accepting feed IDs and a timestamp (or duration).
     - [x] Implement the RPC handler to update `next_fetch` in the DB.
     - [x] Write integration tests for the API.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md) df387cb
 
 ## Phase 3: Frontend Implementation
 - [ ] Task: Update Frontend Client & Types
