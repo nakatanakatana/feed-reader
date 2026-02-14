@@ -51,13 +51,25 @@ export function AddFeedForm(props: AddFeedFormProps) {
     }
   };
 
+  const PlusIcon = () => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <line x1="12" y1="5" x2="12" y2="19" />
+      <line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
+  );
+
   return (
     <div class={flex({ flexDirection: "column", gap: "2", width: "full" })}>
-      <Show when={props.headerActions}>
-        <div class={flex({ justifyContent: "flex-end" })}>
-          {props.headerActions}
-        </div>
-      </Show>
       <form
         onSubmit={handleSubmit}
         class={flex({
@@ -73,7 +85,14 @@ export function AddFeedForm(props: AddFeedFormProps) {
           borderColor: "gray.200",
         })}
       >
-        <div class={flex({ gap: "2", width: "full" })}>
+        <div
+          class={flex({
+            gap: "2",
+            width: "full",
+            flexDirection: "row",
+            alignItems: "center",
+          })}
+        >
           <input
             type="text"
             placeholder="Feed URL"
@@ -86,12 +105,20 @@ export function AddFeedForm(props: AddFeedFormProps) {
               padding: "2",
               borderRadius: "md",
               flex: "1",
+              minWidth: 0,
               _disabled: { opacity: 0.5 },
             })}
           />
-          <ActionButton type="submit" variant="primary" disabled={isPending()}>
+          <ActionButton
+            type="submit"
+            variant="primary"
+            disabled={isPending()}
+            icon={<PlusIcon />}
+            hideTextOnMobile
+          >
             {isPending() ? "Adding..." : "Add Feed"}
           </ActionButton>
+          <Show when={props.headerActions}>{props.headerActions}</Show>
         </div>
 
         <div
