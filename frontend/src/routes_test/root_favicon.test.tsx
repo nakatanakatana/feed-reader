@@ -4,10 +4,9 @@ import {
   createRouter,
   RouterProvider,
 } from "@tanstack/solid-router";
-import { http, HttpResponse } from "msw";
+import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { page } from "vitest/browser";
 import { worker } from "../mocks/browser";
 import { Route as RootRoute } from "../routes/__root";
 import "../styles.css";
@@ -22,11 +21,11 @@ describe("Root Favicon Integration", () => {
     // Ensure we have a favicon link in the head
     let link = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
     if (!link) {
-      link = document.createElement('link');
-      link.rel = 'icon';
+      link = document.createElement("link");
+      link.rel = "icon";
       document.head.appendChild(link);
     }
-    link.href = '/favicon.svg';
+    link.href = "/favicon.svg";
   });
 
   afterEach(() => {
@@ -36,7 +35,7 @@ describe("Root Favicon Integration", () => {
     // Reset favicon
     const link = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
     if (link) {
-      link.href = '/favicon.svg';
+      link.href = "/favicon.svg";
     }
   });
 
@@ -76,13 +75,18 @@ describe("Root Favicon Integration", () => {
     dispose = render(() => <RouterProvider router={router} />, document.body);
 
     // 4. Wait for favicon to update (color Blue for count 5)
-    await vi.waitFor(() => {
-      const link = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
-      const base64 = link.href.split(',')[1];
-      const svg = atob(base64);
-      // Blue color is #3b82f6
-      expect(svg).toContain('fill="#3b82f6"');
-    }, { timeout: 10000 });
+    await vi.waitFor(
+      () => {
+        const link = document.querySelector(
+          'link[rel="icon"]',
+        ) as HTMLLinkElement;
+        const base64 = link.href.split(",")[1];
+        const svg = atob(base64);
+        // Blue color is #3b82f6
+        expect(svg).toContain('fill="#3b82f6"');
+      },
+      { timeout: 10000 },
+    );
 
     // 5. Mock API to return 25 unread items (Yellow)
     worker.use(
@@ -104,13 +108,18 @@ describe("Root Favicon Integration", () => {
     // Trigger a refetch
     resetDatabase();
 
-    await vi.waitFor(() => {
-      const link = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
-      const base64 = link.href.split(',')[1];
-      const svg = atob(base64);
-      // Yellow color is #eab308
-      expect(svg).toContain('fill="#eab308"');
-    }, { timeout: 10000 });
+    await vi.waitFor(
+      () => {
+        const link = document.querySelector(
+          'link[rel="icon"]',
+        ) as HTMLLinkElement;
+        const base64 = link.href.split(",")[1];
+        const svg = atob(base64);
+        // Yellow color is #eab308
+        expect(svg).toContain('fill="#eab308"');
+      },
+      { timeout: 10000 },
+    );
 
     // 6. Mock API to return 100 unread items (Red)
     worker.use(
@@ -132,13 +141,18 @@ describe("Root Favicon Integration", () => {
     // Trigger a refetch
     resetDatabase();
 
-    await vi.waitFor(() => {
-      const link = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
-      const base64 = link.href.split(',')[1];
-      const svg = atob(base64);
-      // Red color is #ef4444
-      expect(svg).toContain('fill="#ef4444"');
-    }, { timeout: 10000 });
+    await vi.waitFor(
+      () => {
+        const link = document.querySelector(
+          'link[rel="icon"]',
+        ) as HTMLLinkElement;
+        const base64 = link.href.split(",")[1];
+        const svg = atob(base64);
+        // Red color is #ef4444
+        expect(svg).toContain('fill="#ef4444"');
+      },
+      { timeout: 10000 },
+    );
 
     // 7. Mock API to return 0 unread items (Neutral)
     worker.use(
@@ -153,12 +167,17 @@ describe("Root Favicon Integration", () => {
     // Trigger a refetch
     resetDatabase();
 
-    await vi.waitFor(() => {
-      const link = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
-      const base64 = link.href.split(',')[1];
-      const svg = atob(base64);
-      // Neutral color is #6b7280
-      expect(svg).toContain('fill="#6b7280"');
-    }, { timeout: 10000 });
+    await vi.waitFor(
+      () => {
+        const link = document.querySelector(
+          'link[rel="icon"]',
+        ) as HTMLLinkElement;
+        const base64 = link.href.split(",")[1];
+        const svg = atob(base64);
+        // Neutral color is #6b7280
+        expect(svg).toContain('fill="#6b7280"');
+      },
+      { timeout: 10000 },
+    );
   });
 });

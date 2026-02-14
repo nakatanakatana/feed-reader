@@ -1,5 +1,5 @@
 import { createEffect, onCleanup } from "solid-js";
-import { getFaviconColor, generateFaviconUri } from "../lib/favicon";
+import { generateFaviconUri, getFaviconColor } from "../lib/favicon";
 
 interface DynamicFaviconProps {
   unreadCount: number;

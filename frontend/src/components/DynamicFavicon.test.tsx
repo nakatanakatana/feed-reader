@@ -1,7 +1,7 @@
 import { render } from "solid-js/web";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { DynamicFavicon } from "./DynamicFavicon";
 import { FaviconColor, generateFaviconUri } from "../lib/favicon";
+import { DynamicFavicon } from "./DynamicFavicon";
 
 describe("DynamicFavicon", () => {
   let dispose: () => void;
@@ -10,11 +10,11 @@ describe("DynamicFavicon", () => {
     // Ensure we have a favicon link in the head
     let link = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
     if (!link) {
-      link = document.createElement('link');
-      link.rel = 'icon';
+      link = document.createElement("link");
+      link.rel = "icon";
       document.head.appendChild(link);
     }
-    link.href = '/favicon.svg';
+    link.href = "/favicon.svg";
   });
 
   afterEach(() => {
@@ -22,7 +22,7 @@ describe("DynamicFavicon", () => {
     // Reset favicon
     const link = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
     if (link) {
-      link.href = '/favicon.svg';
+      link.href = "/favicon.svg";
     }
   });
 
@@ -61,6 +61,6 @@ describe("DynamicFavicon", () => {
     expect(link.href).toBe(generateFaviconUri(FaviconColor.Blue));
 
     dispose();
-    expect(link.getAttribute('href')).toBe('/favicon.svg');
+    expect(link.getAttribute("href")).toBe("/favicon.svg");
   });
 });

@@ -1,15 +1,15 @@
 export enum FaviconColor {
-  Neutral = 'neutral',
-  Blue = 'blue',
-  Yellow = 'yellow',
-  Red = 'red',
+  Neutral = "neutral",
+  Blue = "blue",
+  Yellow = "yellow",
+  Red = "red",
 }
 
 export const FAVICON_COLORS: Record<FaviconColor, string> = {
-  [FaviconColor.Neutral]: '#6b7280', // Gray-500
-  [FaviconColor.Blue]: '#3b82f6',    // Blue-500
-  [FaviconColor.Yellow]: '#eab308',  // Yellow-500
-  [FaviconColor.Red]: '#ef4444',     // Red-500
+  [FaviconColor.Neutral]: "#6b7280", // Gray-500
+  [FaviconColor.Blue]: "#3b82f6", // Blue-500
+  [FaviconColor.Yellow]: "#eab308", // Yellow-500
+  [FaviconColor.Red]: "#ef4444", // Red-500
 };
 
 export function getFaviconColor(unreadCount: number): FaviconColor {
