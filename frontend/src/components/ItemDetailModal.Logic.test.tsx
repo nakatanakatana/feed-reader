@@ -5,7 +5,6 @@ import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page, userEvent } from "vitest/browser";
 import { GetItemResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
-import * as itemDb from "../lib/item-db";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
@@ -77,12 +76,12 @@ describe("ItemDetailModal Navigation Logic", () => {
   it("renders 'Mark as read' as a Floating Action Button (FAB) and handles clicks", async () => {
     setupMockData("10");
 
-    const mockUpdate = vi.fn();
+    const _mockUpdate = vi.fn();
     // Spy on items() and mock the update method
     // NOTE: In Vitest Browser mode with ESM, we can't easily spy on exported functions.
     // We'll rely on the fact that handleToggleRead was already manually verified,
     // and just verify UI properties here to avoid the ESM mocking headache.
-    
+
     dispose = render(
       () => (
         <TransportProvider transport={transport}>
@@ -113,7 +112,7 @@ describe("ItemDetailModal Navigation Logic", () => {
 
     // Verify aria-pressed
     await expect.element(fab).toHaveAttribute("aria-pressed", "false");
-    
+
     // Verify icons (SVG) are aria-hidden
     const svg = fab.element().querySelector("svg");
     expect(svg).not.toBeNull();
