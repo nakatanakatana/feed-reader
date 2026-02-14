@@ -587,3 +587,35 @@ func TestFeedServer_ManageFeedTags(t *testing.T) {
 		assert.Equal(t, res2.Msg.Feed.Tags[0].Id, "t2")
 	})
 }
+
+func TestFeedServer_SuspendFeeds(t *testing.T) {
+	ctx := context.Background()
+	_, db := setupTestDB(t)
+	server, _ := setupServer(t, db, nil, &mockFetcher{}, &mockItemFetcher{})
+
+	// Setup: create a feed
+	res, _ := server.CreateFeed(ctx, connect.NewRequest(&feedv1.CreateFeedRequest{Url: "u1", Title: proto.String("f1")}))
+	id := res.Msg.Feed.Id
+
+	t.Run("Suspend for 1 hour", func(t *testing.T) {
+		suspendSeconds := int64(3600)
+		_, err := server.SuspendFeeds(ctx, connect.NewRequest(&feedv1.SuspendFeedsRequest{
+			Ids:            []string{id},
+			SuspendSeconds: suspendSeconds,
+		}))
+		assert.NilError(t, err)
+
+		// Verify next_fetch
+		res, err := server.GetFeed(ctx, connect.NewRequest(&feedv1.GetFeedRequest{Id: id}))
+		assert.NilError(t, err)
+		assert.Assert(t, res.Msg.Feed.NextFetch != nil)
+
+		nextFetch, err := time.Parse(time.RFC3339, *res.Msg.Feed.NextFetch)
+		assert.NilError(t, err)
+
+		// Should be roughly now + 1 hour
+		expected := time.Now().Add(time.Hour)
+		assert.Assert(t, nextFetch.After(expected.Add(-10*time.Second)))
+		assert.Assert(t, nextFetch.Before(expected.Add(10*time.Second)))
+	})
+}

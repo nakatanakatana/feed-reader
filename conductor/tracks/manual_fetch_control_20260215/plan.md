@@ -20,7 +20,7 @@
     - [x] Update the post-fetch logic to calculate and save the new `next_fetch` (`now + FetchInterval`).
     - [x] Ensure initial feed addition sets a valid `next_fetch`.
     - [x] Write unit tests for scheduling logic.
-- [ ] Task: Implement API for Manual Scheduling
+- [~] Task: Implement API for Manual Scheduling
     - [ ] Define Proto RPC `SetFeedSchedule` (or similar) accepting feed IDs and a timestamp (or duration).
     - [ ] Implement the RPC handler to update `next_fetch` in the DB.
     - [ ] Write integration tests for the API.

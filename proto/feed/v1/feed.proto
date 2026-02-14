@@ -20,6 +20,8 @@ service FeedService {
   rpc ListFeedTags(ListFeedTagsRequest) returns (ListFeedTagsResponse);
   rpc SetFeedTags(SetFeedTagsRequest) returns (SetFeedTagsResponse);
   rpc ManageFeedTags(ManageFeedTagsRequest) returns (ManageFeedTagsResponse);
+
+  rpc SuspendFeeds(SuspendFeedsRequest) returns (SuspendFeedsResponse);
 }
 
 message Feed {
@@ -34,10 +36,11 @@ message Feed {
   optional string feed_type = 9;
   optional string feed_version = 10;
   optional string last_fetched_at = 11;
-  string created_at = 12;
-  string updated_at = 13;
-  repeated tag.v1.Tag tags = 14;
-  int64 unread_count = 15;
+  optional string next_fetch = 12;
+  string created_at = 13;
+  string updated_at = 14;
+  repeated tag.v1.Tag tags = 15;
+  int64 unread_count = 16;
 }
 
 message ListFeed {
@@ -48,6 +51,7 @@ message ListFeed {
   repeated tag.v1.Tag tags = 5;
   optional string link = 6;
   optional string last_fetched_at = 7;
+  optional string next_fetch = 8;
 }
 
 message GetFeedRequest {
@@ -164,3 +168,12 @@ message ListFeedTagsRequest {
 message ListFeedTagsResponse {
   repeated FeedTag feed_tags = 1;
 }
+
+message SuspendFeedsRequest {
+  repeated string ids = 1;
+  // Suspend duration in seconds.
+  // 0 means resume immediately.
+  int64 suspend_seconds = 2;
+}
+
+message SuspendFeedsResponse {}

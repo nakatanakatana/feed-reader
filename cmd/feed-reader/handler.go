@@ -112,12 +112,33 @@ func (s *FeedServer) ListFeeds(ctx context.Context, req *connect.Request[feedv1.
 			Tags:          protoTags,
 			Link:          f.Link,
 			LastFetchedAt: f.LastFetchedAt,
+			NextFetch:     f.NextFetch,
 		}
 	}
 
 	return connect.NewResponse(&feedv1.ListFeedsResponse{
 		Feeds: protoFeeds,
 	}), nil
+}
+
+func (s *FeedServer) SuspendFeeds(ctx context.Context, req *connect.Request[feedv1.SuspendFeedsRequest]) (*connect.Response[feedv1.SuspendFeedsResponse], error) {
+	if len(req.Msg.Ids) == 0 {
+		return connect.NewResponse(&feedv1.SuspendFeedsResponse{}), nil
+	}
+
+	nextFetch := time.Now().Add(time.Duration(req.Msg.SuspendSeconds) * time.Second).Format(time.RFC3339)
+
+	for _, id := range req.Msg.Ids {
+		err := s.store.MarkFeedFetched(ctx, store.MarkFeedFetchedParams{
+			FeedID:    id,
+			NextFetch: &nextFetch,
+		})
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, err)
+		}
+	}
+
+	return connect.NewResponse(&feedv1.SuspendFeedsResponse{}), nil
 }
 
 func (s *FeedServer) CreateFeed(ctx context.Context, req *connect.Request[feedv1.CreateFeedRequest]) (*connect.Response[feedv1.CreateFeedResponse], error) {
@@ -363,6 +384,7 @@ func (s *FeedServer) toProtoFeed(ctx context.Context, f store.FullFeed) (*feedv1
 		FeedType:      f.FeedType,
 		FeedVersion:   f.FeedVersion,
 		LastFetchedAt: f.LastFetchedAt,
+		NextFetch:     f.NextFetch,
 		CreatedAt:     f.CreatedAt,
 		UpdatedAt:     f.UpdatedAt,
 		Tags:          protoTags,
