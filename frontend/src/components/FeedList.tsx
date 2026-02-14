@@ -1,12 +1,13 @@
 import { eq, isUndefined, useLiveQuery } from "@tanstack/solid-db";
 import { useMutation } from "@tanstack/solid-query";
-import { createSignal, For, Show } from "solid-js";
+import { createEffect, createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { type Feed, feedDelete, feeds, feedTag, refreshFeeds } from "../lib/db";
 import { fetchingState } from "../lib/fetching-state";
 import { formatDate, formatUnreadCount } from "../lib/item-utils";
 import { tagsFeedQuery } from "../lib/tag-db";
+import { BulkActionBar } from "./BulkActionBar";
 import { ManageTagsModal } from "./ManageTagsModal";
 import { ActionButton } from "./ui/ActionButton";
 import { Badge } from "./ui/Badge";
@@ -55,6 +56,42 @@ export function FeedList() {
       ...feed,
     }));
   });
+
+  const allVisibleSelected = () => {
+    const visibleFeeds = feedListQuery();
+    if (visibleFeeds.length === 0) return false;
+    return visibleFeeds.every((f) => selectedFeedIds().includes(f.id));
+  };
+
+  const isIndeterminate = () => {
+    const visibleFeeds = feedListQuery();
+    if (visibleFeeds.length === 0) return false;
+    const selectedCount = visibleFeeds.filter((f) =>
+      selectedFeedIds().includes(f.id),
+    ).length;
+    return selectedCount > 0 && selectedCount < visibleFeeds.length;
+  };
+
+  const toggleSelectAll = () => {
+    const visibleFeeds = feedListQuery();
+    if (allVisibleSelected()) {
+      // Deselect all visible
+      const visibleIds = visibleFeeds.map((f) => f.id);
+      setSelectedFeedIds(
+        selectedFeedIds().filter((id) => !visibleIds.includes(id)),
+      );
+    } else {
+      // Select all visible
+      const currentSelected = selectedFeedIds();
+      const newSelected = [...currentSelected];
+      for (const f of visibleFeeds) {
+        if (!newSelected.includes(f.id)) {
+          newSelected.push(f.id);
+        }
+      }
+      setSelectedFeedIds(newSelected);
+    }
+  };
 
   const [deleteError, setDeleteError] = createSignal<Error | null>(null);
 
@@ -110,51 +147,6 @@ export function FeedList() {
         <div
           class={css({
             display: "flex",
-            gap: "4",
-            alignItems: "stretch",
-            justifyContent: "flex-end",
-            flexDirection: "column",
-            sm: {
-              alignItems: "center",
-              flexDirection: "row",
-            },
-          })}
-        >
-          <div
-            class={flex({ gap: "2", alignItems: "center" })}
-            style={{
-              "min-height": "2rem",
-              visibility: selectedFeedIds().length > 0 ? "visible" : "hidden",
-              "pointer-events": selectedFeedIds().length > 0 ? "auto" : "none",
-            }}
-          >
-            <div class={css({ display: "none", sm: { display: "block" } })}>
-              <ActionButton
-                size="sm"
-                variant="secondary"
-                onClick={() => refreshMutation.mutate(selectedFeedIds())}
-                disabled={refreshMutation.isPending}
-              >
-                {refreshMutation.isPending ? "Fetching..." : "Fetch Selected"}
-              </ActionButton>
-            </div>
-            <div
-              class={css({ display: "none", sm: { display: "block" } })}
-              data-role="header-manage-tags"
-            >
-              <ActionButton
-                size="sm"
-                variant="primary"
-                onClick={() => setIsManageModalOpen(true)}
-              >
-                Manage Tags ({selectedFeedIds().length})
-              </ActionButton>
-            </div>
-          </div>
-        </div>
-        <div
-          class={css({
-            display: "flex",
             gap: "2",
             alignItems: "center",
             flexWrap: "nowrap",
@@ -166,6 +158,21 @@ export function FeedList() {
             },
           })}
         >
+          <div class={flex({ gap: "2", alignItems: "center", mr: "auto" })}>
+            <input
+              type="checkbox"
+              id="select-all-visible"
+              aria-label="Select all visible feeds"
+              checked={allVisibleSelected()}
+              ref={(el) => {
+                createEffect(() => {
+                  el.indeterminate = isIndeterminate();
+                });
+              }}
+              onChange={() => toggleSelectAll()}
+              class={css({ cursor: "pointer" })}
+            />
+          </div>
           <label
             for="sort-by"
             class={css({ fontSize: "sm", color: "gray.600" })}
@@ -416,83 +423,27 @@ export function FeedList() {
         feedIds={selectedFeedIds()}
       />
 
-      <Show when={selectedFeedIds().length > 0}>
-        <div
-          class={css({
-            display: "block",
-            sm: { display: "none" },
-            position: "fixed",
-            bottom: "6",
-            right: "6",
-            zIndex: 100,
-          })}
-          style={{ position: "fixed" }}
+      <BulkActionBar
+        selectedCount={selectedFeedIds().length}
+        unit="feeds"
+        onClear={() => setSelectedFeedIds([])}
+      >
+        <ActionButton
+          size="sm"
+          variant="secondary"
+          onClick={() => refreshMutation.mutate(selectedFeedIds())}
+          disabled={refreshMutation.isPending}
         >
-          <div class={stack({ gap: "2", alignItems: "flex-end" })}>
-            <ActionButton
-              variant="secondary"
-              onClick={() => refreshMutation.mutate(selectedFeedIds())}
-              disabled={refreshMutation.isPending}
-              ariaLabel="Fetch Selected"
-              class={css({
-                padding: "4",
-                borderRadius: "full",
-                boxShadow: "lg",
-              })}
-            >
-              <div class={flex({ gap: "2", alignItems: "center" })}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <title>Manual refresh</title>
-                  <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
-                  <path d="M21 3v5h-5" />
-                </svg>
-                <span>
-                  {refreshMutation.isPending ? "Fetching..." : "Fetch"}
-                </span>
-              </div>
-            </ActionButton>
-            <ActionButton
-              variant="primary"
-              onClick={() => setIsManageModalOpen(true)}
-              ariaLabel="Manage Tags"
-              class={css({
-                padding: "4",
-                borderRadius: "full",
-                boxShadow: "lg",
-              })}
-            >
-              <div class={flex({ gap: "2", alignItems: "center" })}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z" />
-                  <path d="M7 7h.01" />
-                </svg>
-                <span>Tags ({selectedFeedIds().length})</span>
-              </div>
-            </ActionButton>
-          </div>
-        </div>
-      </Show>
+          {refreshMutation.isPending ? "Fetching..." : "Fetch Selected"}
+        </ActionButton>
+        <ActionButton
+          size="sm"
+          variant="primary"
+          onClick={() => setIsManageModalOpen(true)}
+        >
+          Manage Tags
+        </ActionButton>
+      </BulkActionBar>
     </div>
   );
 }

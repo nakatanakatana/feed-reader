@@ -9,6 +9,7 @@ import { type DateFilterValue, formatUnreadCount } from "../lib/item-utils";
 import { BulkActionBar } from "./BulkActionBar";
 import { DateFilterSelector } from "./DateFilterSelector";
 import { ItemRow } from "./ItemRow";
+import { ActionButton } from "./ui/ActionButton";
 import { Badge } from "./ui/Badge";
 import { EmptyState } from "./ui/EmptyState";
 import { HorizontalScrollList } from "./ui/HorizontalScrollList";
@@ -272,9 +273,16 @@ export function ItemList(props: ItemListProps) {
       <BulkActionBar
         selectedCount={selectedItemIds().size}
         onClear={() => setSelectedItemIds(new Set())}
-        onMarkAsRead={handleBulkMarkAsRead}
-        isProcessing={isBulkMarking()}
-      />
+      >
+        <ActionButton
+          size="sm"
+          variant="primary"
+          onClick={handleBulkMarkAsRead}
+          disabled={isBulkMarking()}
+        >
+          {isBulkMarking() ? "Processing..." : "Mark as Read"}
+        </ActionButton>
+      </BulkActionBar>
     </div>
   );
 
