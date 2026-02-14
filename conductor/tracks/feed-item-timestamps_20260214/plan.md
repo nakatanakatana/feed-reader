@@ -23,9 +23,9 @@
 ## Phase 3: Frontend Implementation
 - [x] Task: Update Frontend Client cfb209c
     - [x] Ensure `buf generate` (from Phase 2) updated the frontend client code in `frontend/gen` or similar.
-- [ ] Task: Implement Tooltip UI (TDD/Component Test)
-    - [ ] Create a new component or update `ItemDetailModal` to include the tooltip logic.
-    - [ ] Write a test (Vitest/Testing Library) for the hover interaction and data fetching (mocking the RPC response).
-    - [ ] Implement the hover state, API call (using TanStack Query), and Tooltip UI.
-    - [ ] Display `feed_title`, `published_at`, and `created_at` in the tooltip.
+- [x] Task: Implement Tooltip UI (TDD/Component Test) 981edf6
+    - [x] Create a new component or update `ItemDetailModal` to include the tooltip logic.
+    - [x] Write a test (Vitest/Testing Library) for the hover interaction and data fetching (mocking the RPC response).
+    - [x] Implement the hover state, API call (using TanStack Query), and Tooltip UI.
+    - [x] Display `feed_title`, `published_at`, and `created_at` in the tooltip.
 - [ ] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md)
