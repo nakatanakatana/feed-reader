@@ -1,6 +1,6 @@
 import { createRoot } from "solid-js";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { items, sortedItems } from "./item-db";
+import { items } from "./item-db";
 import { itemStore } from "./item-store";
 
 describe("items collection", () => {
@@ -42,18 +42,6 @@ describe("items collection", () => {
         const collection1 = items();
         const collection2 = items();
         expect(collection1).toBe(collection2);
-        return dispose;
-      });
-      dispose();
-    });
-  });
-
-  describe("sorting", () => {
-    it("should be defined as a reactive collection", () => {
-      expect(sortedItems).toBeDefined();
-      const dispose = createRoot((dispose) => {
-        const col = sortedItems();
-        expect(col).toBeDefined();
         return dispose;
       });
       dispose();

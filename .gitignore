@@ -1,6 +1,8 @@
 /dist/
 /feed-reader
 *.db
+*.db-wal
+*.db-shm
 *.db-journal
 
 .wrangler

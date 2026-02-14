@@ -3,14 +3,7 @@ import { useLocation, useNavigate } from "@tanstack/solid-router";
 import { createEffect, createSignal, For, type JSX, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
-import {
-  feedTag,
-  type Item,
-  items,
-  itemsUnreadQuery,
-  sortedItems,
-  tags,
-} from "../lib/db";
+import { feedTag, type Item, items, itemsUnreadQuery, tags } from "../lib/db";
 import { itemStore } from "../lib/item-store";
 import { type DateFilterValue, formatUnreadCount } from "../lib/item-utils";
 import { BulkActionBar } from "./BulkActionBar";
@@ -43,8 +36,13 @@ export function ItemList(props: ItemListProps) {
   });
 
   const itemQuery = useLiveQuery((q) => {
-    // biome-ignore lint/suspicious/noExplicitAny: TanStack DB query builder types
-    let query = q.from({ item: sortedItems() }) as any;
+    let query = q
+      .from({ item: items() })
+      .orderBy(({ item }) => item.publishedAt, {
+        direction: "asc",
+        nulls: "last",
+      })
+      .orderBy(({ item }) => item.createdAt, "asc");
     if (props.tagId) {
       query = query
         .innerJoin(
