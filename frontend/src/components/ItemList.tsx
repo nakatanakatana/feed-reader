@@ -272,9 +272,16 @@ export function ItemList(props: ItemListProps) {
       <BulkActionBar
         selectedCount={selectedItemIds().size}
         onClear={() => setSelectedItemIds(new Set())}
-        onMarkAsRead={handleBulkMarkAsRead}
-        isProcessing={isBulkMarking()}
-      />
+      >
+        <ActionButton
+          size="sm"
+          variant="primary"
+          onClick={handleBulkMarkAsRead}
+          disabled={isBulkMarking()}
+        >
+          {isBulkMarking() ? "Processing..." : "Mark as Read"}
+        </ActionButton>
+      </BulkActionBar>
     </div>
   );
 
