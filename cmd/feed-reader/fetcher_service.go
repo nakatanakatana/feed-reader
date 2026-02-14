@@ -55,9 +55,25 @@ func (s *FetcherService) FetchFeedsByIDsSync(ctx context.Context, ids []string) 
 	results := make([]FeedFetchResult, len(feeds))
 	var wg sync.WaitGroup
 
-	for i, feed := range feeds {
+	for i, row := range feeds {
+		feed := store.FullFeed{
+			ID:            row.ID,
+			Url:           row.Url,
+			Link:          row.Link,
+			Title:         row.Title,
+			Description:   row.Description,
+			Lang:          row.Lang,
+			ImageUrl:      row.ImageUrl,
+			Copyright:     row.Copyright,
+			FeedType:      row.FeedType,
+			FeedVersion:   row.FeedVersion,
+			CreatedAt:     row.CreatedAt,
+			UpdatedAt:     row.UpdatedAt,
+			LastFetchedAt: row.LastFetchedAt,
+			NextFetch:     row.NextFetch,
+		}
 		wg.Add(1)
-		go func(idx int, f store.Feed) {
+		go func(idx int, f store.FullFeed) {
 			defer wg.Done()
 
 			// Check if already fetching
@@ -88,7 +104,7 @@ func (s *FetcherService) FetchFeedsByIDsSync(ctx context.Context, ids []string) 
 	return results, nil
 }
 
-func (s *FetcherService) fetchAndSaveSync(ctx context.Context, f store.Feed) (*FeedFetchResult, error) {
+func (s *FetcherService) fetchAndSaveSync(ctx context.Context, f store.FullFeed) (*FeedFetchResult, error) {
 	s.logger.DebugContext(ctx, "fetching feed sync", "url", f.Url, "id", f.ID)
 
 	parsedFeed, err := s.fetcher.Fetch(ctx, f.ID, f.Url)
@@ -136,7 +152,7 @@ func (s *FetcherService) fetchAndSaveSync(ctx context.Context, f store.Feed) (*F
 	s.writeQueue.Submit(&MarkFetchedJob{
 		Params: store.MarkFeedFetchedParams{
 			LastFetchedAt: &now,
-			ID:            f.ID,
+			FeedID:        f.ID,
 		},
 	})
 
@@ -177,7 +193,23 @@ func (s *FetcherService) FetchFeedsByIDs(ctx context.Context, ids []string) erro
 		return err
 	}
 
-	for _, feed := range feeds {
+	for _, row := range feeds {
+		feed := store.FullFeed{
+			ID:            row.ID,
+			Url:           row.Url,
+			Link:          row.Link,
+			Title:         row.Title,
+			Description:   row.Description,
+			Lang:          row.Lang,
+			ImageUrl:      row.ImageUrl,
+			Copyright:     row.Copyright,
+			FeedType:      row.FeedType,
+			FeedVersion:   row.FeedVersion,
+			CreatedAt:     row.CreatedAt,
+			UpdatedAt:     row.UpdatedAt,
+			LastFetchedAt: row.LastFetchedAt,
+			NextFetch:     row.NextFetch,
+		}
 		f := feed // capture loop variable
 		s.pool.AddTask(func(ctx context.Context) error {
 			return s.FetchAndSave(ctx, f)
@@ -187,7 +219,7 @@ func (s *FetcherService) FetchFeedsByIDs(ctx context.Context, ids []string) erro
 	return nil
 }
 
-func (s *FetcherService) shouldFetch(f store.Feed) bool {
+func (s *FetcherService) shouldFetch(f store.FullFeed) bool {
 	if f.LastFetchedAt == nil {
 		return true
 	}
@@ -201,7 +233,7 @@ func (s *FetcherService) shouldFetch(f store.Feed) bool {
 	return time.Since(lastFetched) >= s.fetchInterval
 }
 
-func (s *FetcherService) FetchAndSave(ctx context.Context, f store.Feed) error {
+func (s *FetcherService) FetchAndSave(ctx context.Context, f store.FullFeed) error {
 	s.logger.InfoContext(ctx, "fetching feed", "url", f.Url, "id", f.ID)
 
 	if _, loaded := s.fetching.LoadOrStore(f.ID, struct{}{}); loaded {
@@ -219,7 +251,7 @@ func (s *FetcherService) FetchAndSave(ctx context.Context, f store.Feed) error {
 			s.writeQueue.Submit(&MarkFetchedJob{
 				Params: store.MarkFeedFetchedParams{
 					LastFetchedAt: &now,
-					ID:            f.ID,
+					FeedID:        f.ID,
 				},
 			})
 			return nil
@@ -243,7 +275,7 @@ func (s *FetcherService) FetchAndSave(ctx context.Context, f store.Feed) error {
 	s.writeQueue.Submit(&MarkFetchedJob{
 		Params: store.MarkFeedFetchedParams{
 			LastFetchedAt: &now,
-			ID:            f.ID,
+			FeedID:        f.ID,
 		},
 	})
 

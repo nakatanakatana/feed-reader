@@ -124,7 +124,7 @@ func TestGofeedFetcher_ConditionalFetch(t *testing.T) {
 	t.Run("Sends headers and handles 304", func(t *testing.T) {
 		etag := "etag1"
 		lastMod := "mod1"
-		_, err := s.UpsertFeedFetcherCache(context.Background(), store.UpsertFeedFetcherCacheParams{
+		_, err := s.UpsertFeedFetcher(context.Background(), store.UpsertFeedFetcherParams{
 			FeedID:       feedID,
 			Etag:         &etag,
 			LastModified: &lastMod,
@@ -158,7 +158,7 @@ func TestGofeedFetcher_ConditionalFetch(t *testing.T) {
 		_, err := f.Fetch(context.Background(), feedID, server.URL)
 		assert.NilError(t, err)
 
-		cache, err := s.GetFeedFetcherCache(context.Background(), feedID)
+		cache, err := s.GetFeedFetcher(context.Background(), feedID)
 		assert.NilError(t, err)
 		assert.Equal(t, *cache.Etag, newEtag)
 		assert.Equal(t, *cache.LastModified, newLastMod)
@@ -167,7 +167,7 @@ func TestGofeedFetcher_ConditionalFetch(t *testing.T) {
 	t.Run("Deletes cache on 5xx", func(t *testing.T) {
 		// Pre-create cache
 		etag := "to-be-deleted"
-		_, err := s.UpsertFeedFetcherCache(context.Background(), store.UpsertFeedFetcherCacheParams{
+		_, err := s.UpsertFeedFetcher(context.Background(), store.UpsertFeedFetcherParams{
 			FeedID: feedID,
 			Etag:   &etag,
 		})
@@ -181,7 +181,7 @@ func TestGofeedFetcher_ConditionalFetch(t *testing.T) {
 		_, err = f.Fetch(context.Background(), feedID, server.URL)
 		assert.Assert(t, err != nil)
 
-		cache, err := s.GetFeedFetcherCache(context.Background(), feedID)
+		cache, err := s.GetFeedFetcher(context.Background(), feedID)
 		assert.Assert(t, err != nil, "expected error, but got cache: %+v", cache)
 		assert.ErrorIs(t, err, sql.ErrNoRows)
 	})

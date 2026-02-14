@@ -9,3 +9,6 @@ sql:
         out: store
         emit_json_tags: true
         emit_pointers_for_null_types: true
+        overrides:
+          - db_table: feeds
+            go_struct_name: RawFeed

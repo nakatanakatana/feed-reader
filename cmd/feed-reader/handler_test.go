@@ -108,7 +108,7 @@ type mockItemFetcher struct {
 	ids    []string
 }
 
-func (m *mockItemFetcher) FetchAndSave(ctx context.Context, f store.Feed) error {
+func (m *mockItemFetcher) FetchAndSave(ctx context.Context, f store.FullFeed) error {
 	m.called = true
 	return m.err
 }

@@ -98,7 +98,10 @@ func TestFetcherService_FetchAndSave(t *testing.T) {
 	go wq.Start(ctx)
 	service := NewFetcherService(s, fetcher, nil, wq, logger, 30*time.Minute)
 
-	err = service.FetchAndSave(ctx, feed)
+	err = service.FetchAndSave(ctx, store.FullFeed{
+		ID:  feed.ID,
+		Url: feed.Url,
+	})
 	assert.NilError(t, err)
 
 	// Wait for WriteQueue to process jobs
@@ -138,12 +141,12 @@ func TestFetcherService_FetchAllFeeds_Interval(t *testing.T) {
 	// Case 1: Feed fetched recently (should NOT fetch)
 	recentTime := time.Now().Add(-5 * time.Minute).Format(time.RFC3339)
 	feedRecent, _ := queries.CreateFeed(ctx, store.CreateFeedParams{ID: "recent", Url: "http://recent"})
-	_ = queries.MarkFeedFetched(ctx, store.MarkFeedFetchedParams{ID: feedRecent.ID, LastFetchedAt: &recentTime})
+	_ = queries.MarkFeedFetched(ctx, store.MarkFeedFetchedParams{FeedID: feedRecent.ID, LastFetchedAt: &recentTime})
 
 	// Case 2: Feed fetched long ago (should fetch)
 	oldTime := time.Now().Add(-60 * time.Minute).Format(time.RFC3339)
 	feedOld, _ := queries.CreateFeed(ctx, store.CreateFeedParams{ID: "old", Url: "http://old"})
-	_ = queries.MarkFeedFetched(ctx, store.MarkFeedFetchedParams{ID: feedOld.ID, LastFetchedAt: &oldTime})
+	_ = queries.MarkFeedFetched(ctx, store.MarkFeedFetchedParams{FeedID: feedOld.ID, LastFetchedAt: &oldTime})
 
 	// Case 3: Feed never fetched (should fetch)
 	feedNew, _ := queries.CreateFeed(ctx, store.CreateFeedParams{ID: "new", Url: "http://new"})
@@ -186,7 +189,7 @@ func TestFetcherService_FetchFeedsByIDs(t *testing.T) {
 	// Create a feed that was fetched recently (so normally wouldn't be fetched)
 	recentTime := time.Now().Add(-1 * time.Minute).Format(time.RFC3339)
 	feed, _ := queries.CreateFeed(ctx, store.CreateFeedParams{ID: "forced", Url: "http://forced"})
-	_ = queries.MarkFeedFetched(ctx, store.MarkFeedFetchedParams{ID: feed.ID, LastFetchedAt: &recentTime})
+	_ = queries.MarkFeedFetched(ctx, store.MarkFeedFetchedParams{FeedID: feed.ID, LastFetchedAt: &recentTime})
 
 	// Force refresh
 	err := service.FetchFeedsByIDs(ctx, []string{feed.ID})

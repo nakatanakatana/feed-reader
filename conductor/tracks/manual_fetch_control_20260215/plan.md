@@ -1,7 +1,7 @@
 # Implementation Plan - Manual Feed Fetch Control
 
 ## Phase 1: Database Schema & Backend Migration
-- [ ] Task: Create SQL migration for schema changes
+- [~] Task: Create SQL migration for schema changes
     - [ ] Create `feed_fetcher` table (consolidating `feed_fetcher_cache`).
     - [ ] Add `next_fetch` and move `last_fetched_at`.
     - [ ] Migrate existing data from `feeds` and `feed_fetcher_cache`.

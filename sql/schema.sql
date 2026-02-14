@@ -9,7 +9,6 @@ CREATE TABLE feeds (
   copyright       TEXT,
   feed_type       TEXT,
   feed_version    TEXT,
-  last_fetched_at TEXT,
   created_at      TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now')),
   updated_at      TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now'))
 );
@@ -67,10 +66,12 @@ CREATE TABLE feed_tags (
   FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
 );
 
-CREATE TABLE feed_fetcher_cache (
+CREATE TABLE feed_fetcher (
   feed_id       TEXT PRIMARY KEY,
   etag          TEXT,
   last_modified TEXT,
+  last_fetched_at TEXT,
+  next_fetch    TEXT,
   created_at    TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now')),
   updated_at    TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now')),
   FOREIGN KEY (feed_id) REFERENCES feeds(id) ON DELETE CASCADE
@@ -79,3 +80,4 @@ CREATE TABLE feed_fetcher_cache (
 CREATE INDEX idx_feeds_updated_at ON feeds(updated_at);
 CREATE INDEX idx_tags_updated_at ON tags(updated_at);
 CREATE INDEX idx_items_created_at ON items(created_at);
+CREATE INDEX idx_feed_fetcher_next_fetch ON feed_fetcher(next_fetch);

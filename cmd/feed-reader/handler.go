@@ -22,7 +22,7 @@ type FeedServer struct {
 }
 
 type ItemFetcher interface {
-	FetchAndSave(ctx context.Context, f store.Feed) error
+	FetchAndSave(ctx context.Context, f store.FullFeed) error
 	FetchFeedsByIDs(ctx context.Context, ids []string) error
 	FetchFeedsByIDsSync(ctx context.Context, ids []string) ([]FeedFetchResult, error)
 }
@@ -135,7 +135,7 @@ func (s *FeedServer) CreateFeed(ctx context.Context, req *connect.Request[feedv1
 	}), nil
 }
 
-func (s *FeedServer) createFeedFromURL(ctx context.Context, url string, titleOverride *string, tagIds []string) (*store.Feed, error) {
+func (s *FeedServer) createFeedFromURL(ctx context.Context, url string, titleOverride *string, tagIds []string) (*store.FullFeed, error) {
 	fetchedFeed, err := s.fetcher.Fetch(ctx, "", url)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch feed: %w", err)
@@ -192,16 +192,15 @@ func (s *FeedServer) createFeedFromURL(ctx context.Context, url string, titleOve
 
 func (s *FeedServer) UpdateFeed(ctx context.Context, req *connect.Request[feedv1.UpdateFeedRequest]) (*connect.Response[feedv1.UpdateFeedResponse], error) {
 	feed, err := s.store.UpdateFeed(ctx, store.UpdateFeedParams{
-		Link:          req.Msg.Link,
-		Title:         req.Msg.Title,
-		Description:   req.Msg.Description,
-		Lang:          req.Msg.Lang,
-		ImageUrl:      req.Msg.ImageUrl,
-		Copyright:     req.Msg.Copyright,
-		FeedType:      req.Msg.FeedType,
-		FeedVersion:   req.Msg.FeedVersion,
-		LastFetchedAt: req.Msg.LastFetchedAt,
-		ID:            req.Msg.Id,
+		Link:        req.Msg.Link,
+		Title:       req.Msg.Title,
+		Description: req.Msg.Description,
+		Lang:        req.Msg.Lang,
+		ImageUrl:    req.Msg.ImageUrl,
+		Copyright:   req.Msg.Copyright,
+		FeedType:    req.Msg.FeedType,
+		FeedVersion: req.Msg.FeedVersion,
+		ID:          req.Msg.Id,
 	})
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -319,7 +318,7 @@ func (s *FeedServer) ListFeedTags(ctx context.Context, req *connect.Request[feed
 	}), nil
 }
 
-func (s *FeedServer) toProtoFeed(ctx context.Context, f store.Feed) (*feedv1.Feed, error) {
+func (s *FeedServer) toProtoFeed(ctx context.Context, f store.FullFeed) (*feedv1.Feed, error) {
 	var title string
 	if f.Title != nil {
 		title = *f.Title
