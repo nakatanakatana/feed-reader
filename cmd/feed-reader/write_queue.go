@@ -44,6 +44,11 @@ func (s *WriteQueueService) Submit(job WriteQueueJob) {
 	s.jobs <- job
 }
 
+// Stop closes the jobs channel.
+func (s *WriteQueueService) Stop() {
+	close(s.jobs)
+}
+
 // Start runs the background worker loop.
 func (s *WriteQueueService) Start(ctx context.Context) {
 	s.logger.InfoContext(ctx, "starting write queue service",
@@ -57,20 +62,14 @@ func (s *WriteQueueService) Start(ctx context.Context) {
 	for {
 		select {
 		case <-ctx.Done():
-			// Drain remaining jobs from the channel
-			drain := true
-			for drain {
-				select {
-				case job := <-s.jobs:
-					batch = append(batch, job)
-				default:
-					drain = false
-				}
+			// We continue to run even if ctx is canceled to allow Stop() to be called
+			// and jobs to be drained. We only stop when the jobs channel is closed.
+		case job, ok := <-s.jobs:
+			if !ok {
+				s.logger.InfoContext(ctx, "shutting down write queue service, flushing remaining jobs", "count", len(batch))
+				s.flush(context.Background(), batch)
+				return
 			}
-			s.logger.InfoContext(ctx, "shutting down write queue service, flushing remaining jobs", "count", len(batch))
-			s.flush(context.Background(), batch)
-			return
-		case job := <-s.jobs:
 			batch = append(batch, job)
 			if len(batch) >= s.config.MaxBatchSize {
 				s.flush(ctx, batch)

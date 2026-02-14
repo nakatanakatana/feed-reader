@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 	"time"
 
@@ -76,7 +77,12 @@ func main() {
 		MaxBatchSize:  cfg.WriteQueueMaxBatchSize,
 		FlushInterval: cfg.WriteQueueFlushInterval,
 	}, logger)
-	go writeQueue.Start(ctx)
+	var writeQueueWg sync.WaitGroup
+	writeQueueWg.Add(1)
+	go func() {
+		defer writeQueueWg.Done()
+		writeQueue.Start(ctx)
+	}()
 
 	// 4. Initialize Fetcher components
 	fetcher := NewGofeedFetcher(s)
@@ -126,15 +132,19 @@ func main() {
 	<-ctx.Done()
 	logger.InfoContext(ctx, "shutting down gracefully...")
 
-	// Shutdown HTTP server
+	// 1. Shutdown HTTP server (stops new API requests and potential writes)
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := server.Shutdown(shutdownCtx); err != nil {
 		logger.ErrorContext(ctx, "server forced to shutdown", "error", err)
 	}
 
-	// Wait for worker pool to finish current tasks
+	// 2. Wait for worker pool (finishes ongoing fetches and their write submissions)
 	pool.Wait()
+
+	// 3. Stop write queue and wait for final flush (ensures all pending writes are committed)
+	writeQueue.Stop()
+	writeQueueWg.Wait()
 
 	logger.InfoContext(ctx, "shutdown complete")
 }
