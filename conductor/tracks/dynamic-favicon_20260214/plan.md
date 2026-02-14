@@ -1,9 +1,9 @@
 # Implementation Plan - Dynamic Favicon
 
 ## Phase 1: Core Logic & Utilities
-- [ ] Task: Implement Color Tier Logic
-    - [ ] Create `frontend/src/lib/favicon.test.ts` to test tier thresholds (0, 1-10, 11-50, 51+).
-    - [ ] Implement `frontend/src/lib/favicon.ts` with `getFaviconColor(count)` and constant definitions.
+- [x] Task: Implement Color Tier Logic 034607c
+    - [x] Create `frontend/src/lib/favicon.test.ts` to test tier thresholds (0, 1-10, 11-50, 51+).
+    - [x] Implement `frontend/src/lib/favicon.ts` with `getFaviconColor(count)` and constant definitions.
 - [ ] Task: Implement SVG Manipulation Utility
     - [ ] Update `frontend/src/lib/favicon.test.ts` to test SVG string generation/replacement.
     - [ ] Implement `generateFaviconUri(color)` in `frontend/src/lib/favicon.ts` (using a template string for the SVG).
