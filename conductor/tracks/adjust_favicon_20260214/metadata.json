@@ -1,0 +1,8 @@
+{
+  "track_id": "adjust_favicon_20260214",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-02-14T22:15:00Z",
+  "updated_at": "2026-02-14T22:15:00Z",
+  "description": "Adjust dynamic favicon colors and thresholds (0-199: Blue, 200-999: Orange, 1000+: Red)"
+}
