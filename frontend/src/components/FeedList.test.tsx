@@ -113,15 +113,17 @@ describe("FeedList", () => {
 
     const checkboxes = page.getByRole("checkbox");
 
-    await expect.poll(async () => (await checkboxes.all()).length).toBe(2);
+    await expect.poll(async () => (await checkboxes.all()).length).toBe(3);
 
-    await checkboxes.first().click();
+    await checkboxes.nth(1).click();
 
-    await checkboxes.last().click();
+    await checkboxes.nth(2).click();
 
-    // Header buttons should show selected count
+    // Bulk action bar should show selected count
 
-    await expect.element(page.getByText("Manage Tags (2)")).toBeInTheDocument();
+    await expect
+      .element(page.getByText("2 feeds selected"))
+      .toBeInTheDocument();
   });
 
   it("manages tags for selected feeds", async () => {
@@ -141,14 +143,14 @@ describe("FeedList", () => {
     );
 
     const checkboxes = page.getByRole("checkbox");
-    await expect.poll(async () => (await checkboxes.all()).length).toBe(2);
+    await expect.poll(async () => (await checkboxes.all()).length).toBe(3);
 
-    // Select first feed
-    await checkboxes.first().click();
+    // Select first feed (checkbox at index 1, index 0 is select all)
+    await checkboxes.nth(1).click();
 
     // Click Manage Tags button
     const manageButton = page.getByRole("button", {
-      name: /Manage Tags \(1\)/i,
+      name: /Manage Tags/i,
     });
     await expect.element(manageButton).toBeInTheDocument();
     await manageButton.click();

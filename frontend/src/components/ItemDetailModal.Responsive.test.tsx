@@ -98,4 +98,57 @@ describe("ItemDetailModal Responsive", () => {
     // The implementation might have changed or uses different units
     expect(rect.width).toBeGreaterThan(1500);
   });
+
+  it("should display the FAB correctly on both mobile and desktop", async () => {
+    // Mobile
+    await page.viewport(375, 667);
+    setupMockData("mobile-id");
+
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal itemId="mobile-id" onClose={() => {}} />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    await expect.element(page.getByText("Test Item")).toBeInTheDocument();
+    const mobileFab = page.getByRole("button", { name: /Mark as read/i });
+    await expect.element(mobileFab).toBeInTheDocument();
+
+    const mobileFabParent = mobileFab.element().parentElement;
+    expect(mobileFabParent).not.toBeNull();
+    let fabStyle = window.getComputedStyle(mobileFabParent as HTMLElement);
+    expect(fabStyle.position).toBe("absolute");
+    expect(parseInt(fabStyle.bottom, 10)).toBeGreaterThan(0);
+    expect(parseInt(fabStyle.right, 10)).toBeGreaterThan(0);
+
+    dispose();
+    document.body.innerHTML = "";
+
+    // Desktop
+    await page.viewport(1280, 800);
+    setupMockData("desktop-id");
+
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal itemId="desktop-id" onClose={() => {}} />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    await expect.element(page.getByText("Test Item")).toBeInTheDocument();
+    const desktopFab = page.getByRole("button", { name: /Mark as read/i });
+    await expect.element(desktopFab).toBeInTheDocument();
+
+    const desktopFabParent = desktopFab.element().parentElement;
+    expect(desktopFabParent).not.toBeNull();
+    fabStyle = window.getComputedStyle(desktopFabParent as HTMLElement);
+    expect(fabStyle.position).toBe("absolute");
+    expect(parseInt(fabStyle.bottom, 10)).toBeGreaterThan(0);
+    expect(parseInt(fabStyle.right, 10)).toBeGreaterThan(0);
+  });
 });

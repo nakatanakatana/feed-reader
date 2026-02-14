@@ -112,6 +112,7 @@ describe("ItemDetailRouteView Reactivity", () => {
       .toBeInTheDocument();
 
     // Navigate back to Item 1 using 'k'
+    await userEvent.click(page.getByRole("heading", { name: "Item 2" }));
     await userEvent.keyboard("k");
     await expect.poll(() => history.location.pathname).toBe("/items/1");
     await expect
@@ -123,6 +124,12 @@ describe("ItemDetailRouteView Reactivity", () => {
 
     // Change filter state to trigger a fresh query key
     itemStore.setDateFilter("24h");
+
+    // Wait for the re-fetch to complete and the component to update.
+    // Since Item 1 is already in the document, we wait a bit to ensure
+    // the internal items list has been updated and Item 2 is gone.
+    await new Promise((resolve) => setTimeout(resolve, 200));
+
     await expect
       .element(page.getByRole("heading", { name: "Item 1" }))
       .toBeInTheDocument();

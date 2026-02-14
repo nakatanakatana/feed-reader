@@ -1,4 +1,4 @@
-import { Show } from "solid-js";
+import { type JSX, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
 import { ActionButton } from "./ui/ActionButton";
@@ -6,8 +6,8 @@ import { ActionButton } from "./ui/ActionButton";
 interface BulkActionBarProps {
   selectedCount: number;
   onClear: () => void;
-  onMarkAsRead: () => void;
-  isProcessing: boolean;
+  children?: JSX.Element;
+  unit?: string;
 }
 
 export function BulkActionBar(props: BulkActionBarProps) {
@@ -42,20 +42,13 @@ export function BulkActionBar(props: BulkActionBarProps) {
             whiteSpace: "nowrap",
           })}
         >
-          {props.selectedCount} items selected
+          {props.selectedCount} {props.unit || "items"} selected
         </span>
         <div class={flex({ gap: "2" })}>
           <ActionButton size="sm" variant="secondary" onClick={props.onClear}>
             Clear
           </ActionButton>
-          <ActionButton
-            size="sm"
-            variant="primary"
-            onClick={props.onMarkAsRead}
-            disabled={props.isProcessing}
-          >
-            {props.isProcessing ? "Processing..." : "Mark as Read"}
-          </ActionButton>
+          {props.children}
         </div>
       </div>
     </Show>

@@ -255,20 +255,24 @@ func (q *Queries) CreateFeed(ctx context.Context, arg CreateFeedParams) (Feed, e
 const createFeedItem = `-- name: CreateFeedItem :exec
 INSERT INTO feed_items (
   feed_id,
-  item_id
+  item_id,
+  published_at
 ) VALUES (
-  ?, ?
+  ?, ?, ?
 )
-ON CONFLICT(feed_id, item_id) DO NOTHING
+ON CONFLICT(feed_id, item_id) DO UPDATE SET
+  published_at = excluded.published_at,
+  updated_at = (strftime('%FT%TZ', 'now'))
 `
 
 type CreateFeedItemParams struct {
-	FeedID string `json:"feed_id"`
-	ItemID string `json:"item_id"`
+	FeedID      string  `json:"feed_id"`
+	ItemID      string  `json:"item_id"`
+	PublishedAt *string `json:"published_at"`
 }
 
 func (q *Queries) CreateFeedItem(ctx context.Context, arg CreateFeedItemParams) error {
-	_, err := q.db.ExecContext(ctx, createFeedItem, arg.FeedID, arg.ItemID)
+	_, err := q.db.ExecContext(ctx, createFeedItem, arg.FeedID, arg.ItemID, arg.PublishedAt)
 	return err
 }
 
@@ -310,7 +314,6 @@ INSERT INTO items (
 ON CONFLICT(url) DO UPDATE SET
   title = excluded.title,
   description = excluded.description,
-  published_at = excluded.published_at,
   author = excluded.author,
   guid = excluded.guid,
   content = excluded.content,
@@ -750,6 +753,55 @@ func (q *Queries) ListFeedsByIDs(ctx context.Context, ids []string) ([]Feed, err
 			&i.LastFetchedAt,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listItemFeeds = `-- name: ListItemFeeds :many
+SELECT
+  fi.feed_id,
+  f.title AS feed_title,
+  fi.published_at,
+  fi.created_at
+FROM
+  feed_items fi
+JOIN
+  feeds f ON fi.feed_id = f.id
+WHERE
+  fi.item_id = ?
+`
+
+type ListItemFeedsRow struct {
+	FeedID      string  `json:"feed_id"`
+	FeedTitle   *string `json:"feed_title"`
+	PublishedAt *string `json:"published_at"`
+	CreatedAt   string  `json:"created_at"`
+}
+
+func (q *Queries) ListItemFeeds(ctx context.Context, itemID string) ([]ListItemFeedsRow, error) {
+	rows, err := q.db.QueryContext(ctx, listItemFeeds, itemID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListItemFeedsRow
+	for rows.Next() {
+		var i ListItemFeedsRow
+		if err := rows.Scan(
+			&i.FeedID,
+			&i.FeedTitle,
+			&i.PublishedAt,
+			&i.CreatedAt,
 		); err != nil {
 			return nil, err
 		}
