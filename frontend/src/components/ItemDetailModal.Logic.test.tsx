@@ -73,7 +73,7 @@ describe("ItemDetailModal Navigation Logic", () => {
   });
 
   it("renders 'Mark as read' as a Floating Action Button (FAB)", async () => {
-    let updateCalled = false;
+    let _updateCalled = false;
     worker.use(
       http.post("*/item.v1.ItemService/GetItem", () => {
         const msg = create(GetItemResponseSchema, {
@@ -86,7 +86,7 @@ describe("ItemDetailModal Navigation Logic", () => {
         return HttpResponse.json(toJson(GetItemResponseSchema, msg));
       }),
       http.post("*/item.v1.ItemService/UpdateItemStatus", () => {
-        updateCalled = true;
+        _updateCalled = true;
         return HttpResponse.json({});
       }),
     );
