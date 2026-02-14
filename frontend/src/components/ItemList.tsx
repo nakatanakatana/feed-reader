@@ -1,5 +1,5 @@
 import { count, eq, useLiveQuery } from "@tanstack/solid-db";
-import { useNavigate } from "@tanstack/solid-router";
+import { useLocation, useNavigate } from "@tanstack/solid-router";
 import { createEffect, createSignal, For, type JSX, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
@@ -30,6 +30,7 @@ interface ItemListProps {
 
 export function ItemList(props: ItemListProps) {
   const navigate = useNavigate();
+  const location = useLocation();
   const [selectedItemIds, setSelectedItemIds] = createSignal<Set<string>>(
     new Set(),
   );
@@ -112,6 +113,7 @@ export function ItemList(props: ItemListProps) {
   };
 
   const handleItemClick = (itemId: string) => {
+    const isItemDetailOpen = location().pathname.includes("/items/");
     navigate({
       to: "/items/$itemId",
       params: { itemId },
@@ -119,6 +121,7 @@ export function ItemList(props: ItemListProps) {
         tagId: props.tagId,
         since: props.dateFilter,
       },
+      replace: isItemDetailOpen,
     });
   };
 
