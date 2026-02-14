@@ -120,8 +120,3 @@ export const getItem = async (id: string) => {
   const response = await itemClient.getItem({ id });
   return response.item;
 };
-
-export const listItemFeeds = async (itemId: string) => {
-  const response = await itemClient.listItemFeeds({ itemId });
-  return response.feeds;
-};

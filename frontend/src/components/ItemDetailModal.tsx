@@ -6,7 +6,6 @@ import { getItem, items } from "../lib/item-db";
 import { formatDate, normalizeCategories } from "../lib/item-utils";
 import { useSwipe } from "../lib/use-swipe";
 import { MarkdownRenderer } from "./MarkdownRenderer";
-import { ItemFeedsTooltip } from "./ItemFeedsTooltip";
 import { ActionButton } from "./ui/ActionButton";
 import { Modal } from "./ui/Modal";
 
@@ -375,16 +374,12 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                       alignItems: "center",
                     })}
                   >
-                    <ItemFeedsTooltip itemId={itemData().id}>
-                      <div class={flex({ gap: "4", cursor: "help" })}>
-                        <Show when={!!itemData().publishedAt}>
-                          <span>
-                            Published: {formatDate(itemData().publishedAt)}
-                          </span>
-                        </Show>
-                        <span>Received: {formatDate(itemData().createdAt)}</span>
-                      </div>
-                    </ItemFeedsTooltip>
+                    <Show when={!!itemData().publishedAt}>
+                      <span>
+                        Published: {formatDate(itemData().publishedAt)}
+                      </span>
+                    </Show>
+                    <span>Received: {formatDate(itemData().createdAt)}</span>
                     <Show when={itemData().author}>
                       <span>By {itemData().author}</span>
                     </Show>
