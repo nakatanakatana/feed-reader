@@ -71,4 +71,52 @@ describe("ItemDetailModal Navigation Logic", () => {
     await userEvent.keyboard("k");
     expect(onPrev).toHaveBeenCalled();
   });
+
+  it("renders 'Mark as read' as a Floating Action Button (FAB)", async () => {
+    let updateCalled = false;
+    worker.use(
+      http.post("*/item.v1.ItemService/GetItem", () => {
+        const msg = create(GetItemResponseSchema, {
+          item: create(ItemSchema, {
+            id: "10",
+            title: "Test Item 10",
+            isRead: false,
+          }),
+        });
+        return HttpResponse.json(toJson(GetItemResponseSchema, msg));
+      }),
+      http.post("*/item.v1.ItemService/UpdateItemStatus", () => {
+        updateCalled = true;
+        return HttpResponse.json({});
+      }),
+    );
+
+    dispose = render(
+      () => (
+        <TransportProvider transport={transport}>
+          <QueryClientProvider client={queryClient}>
+            <ItemDetailModal itemId="10" onClose={() => {}} />
+          </QueryClientProvider>
+        </TransportProvider>
+      ),
+      document.body,
+    );
+
+    // Wait for content
+    const title = page.getByText("Test Item 10");
+    await expect.element(title).toBeInTheDocument();
+
+    const fab = page.getByRole("button", { name: /Mark as read/i });
+    await expect.element(fab).toBeInTheDocument();
+
+    const fabContainer = fab.element().parentElement;
+    expect(fabContainer).not.toBeNull();
+
+    if (fabContainer) {
+      const style = window.getComputedStyle(fabContainer);
+      expect(["fixed", "absolute"]).toContain(style.position);
+      expect(style.bottom).not.toBe("auto");
+      expect(style.right).not.toBe("auto");
+    }
+  });
 });
