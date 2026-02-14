@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/solid-query";
 import { createEffect, createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
-import { type Feed, feedDelete, feeds, feedTag, refreshFeeds } from "../lib/db";
+import { type Feed, feedDelete, feeds, feedTag, refreshFeeds, suspendFeeds } from "../lib/db";
 import { fetchingState } from "../lib/fetching-state";
 import { formatDate, formatUnreadCount } from "../lib/item-utils";
 import { tagsFeedQuery } from "../lib/tag-db";
@@ -16,6 +16,10 @@ import { EmptyState } from "./ui/EmptyState";
 export function FeedList() {
   const refreshMutation = useMutation(() => ({
     mutationFn: refreshFeeds,
+  }));
+  const suspendMutation = useMutation(() => ({
+    mutationFn: (params: { ids: string[]; seconds: number }) =>
+      suspendFeeds(params.ids, params.seconds),
   }));
   const [selectedTagId, setSelectedTagId] = createSignal<
     string | undefined | null
@@ -103,6 +107,14 @@ export function FeedList() {
       setDeleteError(
         e instanceof Error ? e : new Error("Failed to delete feed"),
       );
+    }
+  };
+
+  const handleSuspend = async (ids: string[], seconds: number) => {
+    try {
+      await suspendMutation.mutateAsync({ ids, seconds });
+    } catch (e) {
+      console.error("Failed to suspend feeds:", e);
     }
   };
 
@@ -380,9 +392,45 @@ export function FeedList() {
                           ? formatDate(feed.lastFetchedAt)
                           : "Not fetched yet"}
                       </span>
+                      <Show when={feed.nextFetch && new Date(feed.nextFetch) > new Date()}>
+                        <span class={css({ fontSize: "xs", color: "orange.600", fontWeight: "medium" })}>
+                          Next fetch: {formatDate(feed.nextFetch!)}
+                        </span>
+                      </Show>
                     </div>
                   </div>
                   <div class={flex({ gap: "2", alignItems: "center" })}>
+                    <div class={css({ position: "relative" })}>
+                      <select
+                        aria-label="Suspend fetching"
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          const seconds = Number(e.currentTarget.value);
+                          if (seconds > 0) {
+                            handleSuspend([feed.id], seconds);
+                          }
+                          e.currentTarget.value = "0"; // reset
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        class={css({
+                          fontSize: "xs",
+                          px: "2",
+                          py: "1.5",
+                          rounded: "md",
+                          border: "1px solid",
+                          borderColor: "gray.300",
+                          bg: "white",
+                          cursor: "pointer",
+                          _hover: { borderColor: "gray.400" },
+                        })}
+                      >
+                        <option value="0">Suspend...</option>
+                        <option value="86400">1 Day</option>
+                        <option value="259200">3 Days</option>
+                        <option value="604800">1 Week</option>
+                        <option value="2592000">1 Month</option>
+                      </select>
+                    </div>
                     <ActionButton
                       size="sm"
                       variant="ghost"
@@ -428,6 +476,35 @@ export function FeedList() {
         unit="feeds"
         onClear={() => setSelectedFeedIds([])}
       >
+        <div class={flex({ gap: "2", alignItems: "center" })}>
+          <select
+            aria-label="Suspend selected feeds"
+            onChange={(e) => {
+              const seconds = Number(e.currentTarget.value);
+              if (seconds > 0) {
+                handleSuspend(selectedFeedIds(), seconds);
+                setSelectedFeedIds([]);
+              }
+              e.currentTarget.value = "0";
+            }}
+            class={css({
+              fontSize: "xs",
+              px: "2",
+              py: "1.5",
+              rounded: "md",
+              border: "1px solid",
+              borderColor: "gray.300",
+              bg: "white",
+              cursor: "pointer",
+            })}
+          >
+            <option value="0">Suspend Selected...</option>
+            <option value="86400">1 Day</option>
+            <option value="259200">3 Days</option>
+            <option value="604800">1 Week</option>
+            <option value="2592000">1 Month</option>
+          </select>
+        </div>
         <ActionButton
           size="sm"
           variant="secondary"
