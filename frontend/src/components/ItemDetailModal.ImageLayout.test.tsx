@@ -131,6 +131,113 @@ describe("ItemDetailModal Image Layout", () => {
     await expect.element(p).toHaveStyle({ gap: "8px" });
   });
 
+  describe("Image height limits", () => {
+    it("applies 30vh max-height to hero images (landscape)", async () => {
+      setupMockDataWithContent(
+        "test-hero",
+        "![hero](https://example.com/hero.png)",
+      );
+      dispose = render(
+        () => (
+          <Wrapper>
+            <ItemDetailModal itemId="test-hero" onClose={() => {}} />
+          </Wrapper>
+        ),
+        document.body,
+      );
+
+      await expect.element(page.getByAltText("hero")).toBeInTheDocument();
+
+      // Trigger layout detection
+      const img = document.querySelector('img[alt="hero"]') as HTMLImageElement;
+      if (img) {
+        Object.defineProperty(img, "naturalWidth", {
+          value: 1200,
+          configurable: true,
+        });
+        Object.defineProperty(img, "naturalHeight", {
+          value: 600,
+          configurable: true,
+        });
+        img.dispatchEvent(new Event("load"));
+      }
+
+      await expect
+        .element(page.getByAltText("hero"))
+        .toHaveStyle({ maxHeight: "30vh" });
+    });
+
+    it("applies 5vh max-height to icon images (square)", async () => {
+      setupMockDataWithContent(
+        "test-icon",
+        "![icon](https://example.com/icon.png)",
+      );
+      dispose = render(
+        () => (
+          <Wrapper>
+            <ItemDetailModal itemId="test-icon" onClose={() => {}} />
+          </Wrapper>
+        ),
+        document.body,
+      );
+
+      await expect.element(page.getByAltText("icon")).toBeInTheDocument();
+
+      const img = document.querySelector('img[alt="icon"]') as HTMLImageElement;
+      if (img) {
+        Object.defineProperty(img, "naturalWidth", {
+          value: 32,
+          configurable: true,
+        });
+        Object.defineProperty(img, "naturalHeight", {
+          value: 32,
+          configurable: true,
+        });
+        img.dispatchEvent(new Event("load"));
+      }
+
+      await expect
+        .element(page.getByAltText("icon"))
+        .toHaveStyle({ maxHeight: "5vh" });
+    });
+
+    it("applies 10vh max-height to other images (portrait)", async () => {
+      setupMockDataWithContent(
+        "test-other",
+        "![other](https://example.com/other.png)",
+      );
+      dispose = render(
+        () => (
+          <Wrapper>
+            <ItemDetailModal itemId="test-other" onClose={() => {}} />
+          </Wrapper>
+        ),
+        document.body,
+      );
+
+      await expect.element(page.getByAltText("other")).toBeInTheDocument();
+
+      const img = document.querySelector(
+        'img[alt="other"]',
+      ) as HTMLImageElement;
+      if (img) {
+        Object.defineProperty(img, "naturalWidth", {
+          value: 600,
+          configurable: true,
+        });
+        Object.defineProperty(img, "naturalHeight", {
+          value: 1200,
+          configurable: true,
+        });
+        img.dispatchEvent(new Event("load"));
+      }
+
+      await expect
+        .element(page.getByAltText("other"))
+        .toHaveStyle({ maxHeight: "10vh" });
+    });
+  });
+
   it("does NOT apply flex layout to paragraphs with a single image", async () => {
     const markdownContent = `![img1](https://example.com/img1.png)`;
 

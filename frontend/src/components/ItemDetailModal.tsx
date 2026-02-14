@@ -61,6 +61,30 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
         if (modalRef) {
           modalRef.focus();
         }
+
+        const currentModalRef = modalRef;
+        if (!currentModalRef) return;
+
+        // Detect image layout and set data-layout attribute
+        const imgs = currentModalRef.querySelectorAll("img");
+        for (const img of imgs) {
+          const updateLayout = () => {
+            const ratio = img.naturalWidth / img.naturalHeight;
+            let layout = "other";
+            if (ratio > 1.1) {
+              layout = "hero";
+            } else if (ratio >= 0.9 && ratio <= 1.1) {
+              layout = "icon";
+            }
+            img.setAttribute("data-layout", layout);
+          };
+
+          if (img.complete) {
+            updateLayout();
+          } else {
+            img.addEventListener("load", updateLayout, { once: true });
+          }
+        }
       });
     }
   });
@@ -440,7 +464,14 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                           gap: "2",
                           alignItems: "center",
                         },
-                      "& img": { maxWidth: "full", height: "auto", my: "4" },
+                      "& img": {
+                        maxWidth: "full",
+                        height: "auto",
+                        my: "4",
+                        "&[data-layout='hero']": { maxHeight: "30vh" },
+                        "&[data-layout='icon']": { maxHeight: "5vh" },
+                        "&[data-layout='other']": { maxHeight: "10vh" },
+                      },
                       "& pre": {
                         overflowX: "auto",
                         maxWidth: "full",
