@@ -1,7 +1,7 @@
 import { eq, useLiveQuery } from "@tanstack/solid-db";
 import { useNavigate } from "@tanstack/solid-router";
 import { createEffect, createMemo } from "solid-js";
-import { feedTag, type Item, items, sortedItems } from "../lib/db";
+import { feedTag, type Item, items } from "../lib/db";
 import { getPrefetchIds, prefetchItems } from "../lib/item-prefetch";
 import { itemStore } from "../lib/item-store";
 import type { DateFilterValue } from "../lib/item-utils";
@@ -41,12 +41,14 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
 
   const isEndOfList = () => props.itemId === "end-of-list";
 
-  // Use useLiveQuery with the sortedItems Collection and respect tag filtering.
-  // items() applies the global showRead filter; items that become read remain
-  // in the local collection so indices stay stable during navigation transitions.
   const itemsQuery = useLiveQuery((q) => {
-    // biome-ignore lint/suspicious/noExplicitAny: TanStack DB query builder types
-    let query = q.from({ item: sortedItems() }) as any;
+    let query = q
+      .from({ item: items() })
+      .orderBy(({ item }) => item.publishedAt, {
+        direction: "asc",
+        nulls: "last",
+      })
+      .orderBy(({ item }) => item.createdAt, "asc");
     if (props.tagId) {
       query = query
         .innerJoin(
