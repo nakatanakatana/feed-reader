@@ -218,6 +218,38 @@ describe("ItemDetailModal Swipe Integration", () => {
     expect(value).toBeLessThan(20);
   });
 
+  it("does not call navigation callbacks when itemId is end-of-list", async () => {
+    setupMockData("end-of-list");
+    const onPrev = vi.fn();
+    const onNext = vi.fn();
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal
+            itemId="end-of-list"
+            onClose={() => {}}
+            onPrev={onPrev}
+            onNext={onNext}
+          />
+        </Wrapper>
+      ),
+      document.body,
+    );
+    const container = document.querySelector(
+      '[data-testid="swipe-container"]',
+    ) as HTMLElement;
+    // Swipe right (would normally trigger onPrev)
+    dispatchTouch(container, "touchstart", 100, 100);
+    dispatchTouch(container, "touchmove", 250, 100);
+    dispatchTouch(container, "touchend", 250, 100);
+    // Swipe left (would normally trigger onNext)
+    dispatchTouch(container, "touchstart", 200, 100);
+    dispatchTouch(container, "touchmove", 50, 100);
+    dispatchTouch(container, "touchend", 50, 100);
+    expect(onPrev).not.toHaveBeenCalled();
+    expect(onNext).not.toHaveBeenCalled();
+  });
+
   it("allows vertical scrolling without triggering horizontal navigation", async () => {
     setupMockData("test-id");
     const onPrev = vi.fn();
