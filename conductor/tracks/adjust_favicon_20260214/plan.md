@@ -3,11 +3,9 @@
 ## Phase 1: Update Core Logic and Constants
 In this phase, we will modify the constants and the logic responsible for determining the favicon color based on the unread count.
 
-- [ ] Task: Update `FaviconColor` enum and `FAVICON_COLORS` constant in `frontend/src/lib/favicon.ts`.
-    - Replace `Yellow` with `Orange` and set it to `#f97316`.
-    - Remove `Neutral` if it's no longer used.
-- [ ] Task: Update `getFaviconColor` function logic in `frontend/src/lib/favicon.ts` to match the new thresholds.
-- [ ] Task: Write/Update unit tests for `getFaviconColor` in `frontend/src/lib/favicon.test.ts`.
+- [x] Task: Update `FaviconColor` enum and `FAVICON_COLORS` constant in `frontend/src/lib/favicon.ts`. f61f3da
+- [x] Task: Update `getFaviconColor` function logic in `frontend/src/lib/favicon.ts` to match the new thresholds. f61f3da
+- [x] Task: Write/Update unit tests for `getFaviconColor` in `frontend/src/lib/favicon.test.ts`. f61f3da
 - [ ] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)
 
 ## Phase 2: Update Components and Integration Tests
