@@ -125,6 +125,7 @@ describe("ItemList Bulk Actions", () => {
     const bulkMarkBtn = page
       .getByRole("button", { name: "Mark as Read" })
       .first();
+    await expect.element(bulkMarkBtn).toBeVisible({ timeout: 5000 });
     await bulkMarkBtn.click();
 
     // Selection should be cleared
