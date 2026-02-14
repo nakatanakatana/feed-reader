@@ -27,8 +27,8 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md) df387cb
 
 ## Phase 3: Frontend Implementation
-- [ ] Task: Update Frontend Client & Types
-    - [ ] Regenerate API client (Buf/Connect) to include new RPCs.
+- [~] Task: Update Frontend Client & Types
+    - [x] Regenerate API client (Buf/Connect) to include new RPCs.
     - [ ] Update frontend models to reflect the schema change (if necessary for display).
 - [ ] Task: Implement Suspend UI
     - [ ] Update `FeedList` context menu with "Suspend Fetching" options (1 Day, 3 Days, 1 Week, 1 Month).

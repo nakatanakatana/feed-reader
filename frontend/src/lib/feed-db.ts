@@ -14,6 +14,7 @@ export interface Feed {
   title: string;
   unreadCount?: bigint;
   lastFetchedAt?: string;
+  nextFetch?: string;
   tags?: Tag[];
 }
 
@@ -65,6 +66,17 @@ export const refreshFeeds = async (feedIds: string[]) => {
   }
 };
 
+export const suspendFeeds = async (
+  feedIds: string[],
+  suspendSeconds: number,
+) => {
+  await feedClient.suspendFeeds({
+    ids: feedIds,
+    suspendSeconds: BigInt(suspendSeconds),
+  });
+  queryClient.invalidateQueries({ queryKey: ["feeds"] });
+};
+
 export const feeds = createCollection(
   queryCollectionOptions({
     id: "feeds",
@@ -79,6 +91,7 @@ export const feeds = createCollection(
         link: feed.link,
         title: feed.title,
         lastFetchedAt: feed.lastFetchedAt,
+        nextFetch: feed.nextFetch,
         tags: feed.tags,
       }));
     },
