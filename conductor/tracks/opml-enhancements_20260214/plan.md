@@ -16,18 +16,18 @@
 - [ ] Task: Conductor - User Manual Verification 'Backend - OPML Export Logic (Go)' (Protocol in workflow.md)
 
 ## Phase 2: Backend - OPML Import with Tags (Go)
-- [ ] Task: Create reproduction test case for OPML Import with Tags
-    - [ ] Create `cmd/feed-reader/opml_import_tags_test.go`
-    - [ ] Create sample OPML content with `category` attributes and nested folders
-    - [ ] Define expectations for tag creation and association
-- [ ] Task: Update OPML Parser
-    - [ ] Modify `cmd/feed-reader/opml.go` (or `opml_importer.go`) to extract `category` attributes
-    - [ ] Modify parser to traverse nested `<outline>` elements and treat parent folders as tags
-- [ ] Task: Update Import Logic to Persist Tags
-    - [ ] Update `cmd/feed-reader/opml_importer.go` to handle tag persistence
-    - [ ] Ensure new tags are created and existing tags are reused
-    - [ ] Link imported feeds to their respective tags
-- [ ] Task: Conductor - User Manual Verification 'Backend - OPML Import with Tags (Go)' (Protocol in workflow.md)
+- [x] Task: Create reproduction test case for OPML Import with Tags 2bf172d
+    - [x] Create `cmd/feed-reader/opml_import_tags_test.go`
+    - [x] Create sample OPML content with `category` attributes and nested folders
+    - [x] Define expectations for tag creation and association
+- [x] Task: Update OPML Parser 9236d27
+    - [x] Modify `cmd/feed-reader/opml.go` (or `opml_importer.go`) to extract `category` attributes
+    - [x] Modify parser to traverse nested `<outline>` elements and treat parent folders as tags
+- [x] Task: Update Import Logic to Persist Tags 9236d27
+    - [x] Update `cmd/feed-reader/opml_importer.go` to handle tag persistence
+    - [x] Ensure new tags are created and existing tags are reused
+    - [x] Link imported feeds to their respective tags
+- [~] Task: Conductor - User Manual Verification 'Backend - OPML Import with Tags (Go)' (Protocol in workflow.md)
 
 ## Phase 3: Frontend - Export UI & Integration
 - [ ] Task: Add "Export OPML" button to Bulk Action Bar
