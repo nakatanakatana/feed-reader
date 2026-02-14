@@ -1,8 +1,0 @@
-{
-  "track_id": "optimize_header_height_20260214",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-02-14T00:00:00Z",
-  "updated_at": "2026-02-14T00:00:00Z",
-  "description": "ItemDetailModalのTitleとMark as readのボタンを置いている部分の高さを調整してメインコンテンツの表示領域を増やしてください"
-}
