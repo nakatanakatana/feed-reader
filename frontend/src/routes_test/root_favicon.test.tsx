@@ -75,21 +75,72 @@ describe("Root Favicon Integration", () => {
     // 3. Render
     dispose = render(() => <RouterProvider router={router} />, document.body);
 
-    // 4. Wait for favicon to update (any dynamic update)
+    // 4. Wait for favicon to update (color Blue for count 5)
     await vi.waitFor(() => {
       const link = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
-      // It should NOT be the default anymore
-      expect(link.href).toContain('data:image/svg+xml;base64,');
+      const base64 = link.href.split(',')[1];
+      const svg = atob(base64);
+      // Blue color is #3b82f6
+      expect(svg).toContain('fill="#3b82f6"');
     }, { timeout: 10000 });
 
-    // 5. Verify it's NOT Neutral if there are items (count will be at least 5)
-    const link = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
-    const base64 = link.href.split(',')[1];
-    const svg = atob(base64);
-    // Neutral color is #6b7280. Blue is #3b82f6. Red is #ef4444.
-    expect(svg).not.toContain('fill="#6b7280"');
+    // 5. Mock API to return 200 unread items (Orange)
+    worker.use(
+      http.post("*/item.v1.ItemService/ListItems", () => {
+        return HttpResponse.json({
+          items: Array.from({ length: 200 }, (_, i) => ({
+            id: `item-${i}`,
+            title: `Item ${i}`,
+            isRead: false,
+            publishedAt: new Date().toISOString(),
+            createdAt: new Date().toISOString(),
+            feedId: "feed-1",
+          })),
+          totalCount: 200,
+        });
+      }),
+    );
 
-    // 6. Mock API to return 0 unread items
+    // Trigger a refetch
+    resetDatabase();
+
+    await vi.waitFor(() => {
+      const link = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
+      const base64 = link.href.split(',')[1];
+      const svg = atob(base64);
+      // Orange color is #f97316
+      expect(svg).toContain('fill="#f97316"');
+    }, { timeout: 10000 });
+
+    // 6. Mock API to return 1000 unread items (Red)
+    worker.use(
+      http.post("*/item.v1.ItemService/ListItems", () => {
+        return HttpResponse.json({
+          items: Array.from({ length: 1000 }, (_, i) => ({
+            id: `item-${i}`,
+            title: `Item ${i}`,
+            isRead: false,
+            publishedAt: new Date().toISOString(),
+            createdAt: new Date().toISOString(),
+            feedId: "feed-1",
+          })),
+          totalCount: 1000,
+        });
+      }),
+    );
+
+    // Trigger a refetch
+    resetDatabase();
+
+    await vi.waitFor(() => {
+      const link = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
+      const base64 = link.href.split(',')[1];
+      const svg = atob(base64);
+      // Red color is #ef4444
+      expect(svg).toContain('fill="#ef4444"');
+    }, { timeout: 10000 });
+
+    // 7. Mock API to return 0 unread items (Neutral)
     worker.use(
       http.post("*/item.v1.ItemService/ListItems", () => {
         return HttpResponse.json({
@@ -99,15 +150,14 @@ describe("Root Favicon Integration", () => {
       }),
     );
 
-    // Trigger a refetch via a state change or manual reset
-    // Resetting database is the most reliable way to clear the 'append' behavior in tests
+    // Trigger a refetch
     resetDatabase();
 
     await vi.waitFor(() => {
       const link = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
       const base64 = link.href.split(',')[1];
       const svg = atob(base64);
-      // Neutral color is #6b7280 for count 0
+      // Neutral color is #6b7280
       expect(svg).toContain('fill="#6b7280"');
     }, { timeout: 10000 });
   });

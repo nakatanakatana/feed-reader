@@ -1,14 +1,14 @@
 export enum FaviconColor {
   Neutral = 'neutral',
   Blue = 'blue',
-  Yellow = 'yellow',
+  Orange = 'orange',
   Red = 'red',
 }
 
 export const FAVICON_COLORS: Record<FaviconColor, string> = {
   [FaviconColor.Neutral]: '#6b7280', // Gray-500
   [FaviconColor.Blue]: '#3b82f6',    // Blue-500
-  [FaviconColor.Yellow]: '#eab308',  // Yellow-500
+  [FaviconColor.Orange]: '#f97316',  // Orange-500
   [FaviconColor.Red]: '#ef4444',     // Red-500
 };
 
@@ -16,11 +16,11 @@ export function getFaviconColor(unreadCount: number): FaviconColor {
   if (unreadCount <= 0) {
     return FaviconColor.Neutral;
   }
-  if (unreadCount <= 10) {
+  if (unreadCount < 200) {
     return FaviconColor.Blue;
   }
-  if (unreadCount <= 50) {
-    return FaviconColor.Yellow;
+  if (unreadCount < 1000) {
+    return FaviconColor.Orange;
   }
   return FaviconColor.Red;
 }

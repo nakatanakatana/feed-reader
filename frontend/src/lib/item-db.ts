@@ -1,11 +1,9 @@
 import { createClient } from "@connectrpc/connect";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import {
-  count,
   createCollection,
   createLiveQueryCollection,
   eq,
-  useLiveQuery,
 } from "@tanstack/solid-db";
 import { createMemo, createRoot, createSignal } from "solid-js";
 import { ItemService, type ListItem } from "../gen/item/v1/item_pb";
@@ -108,25 +106,13 @@ export const items = createRoot(() => {
 });
 
 export const itemsUnreadQuery = createRoot(() =>
-  createMemo(() =>
-    createLiveQueryCollection((q) =>
-      q
-        .from({ item: items() })
-        .where(({ item }) => eq(item.isRead, false))
-        .select(({ item }) => ({ ...item })),
-    ),
-  ),
-);
-
-export const unreadCount = createRoot(() => {
-  const query = useLiveQuery((q) =>
+  createLiveQueryCollection((q) =>
     q
       .from({ item: items() })
       .where(({ item }) => eq(item.isRead, false))
-      .select(({ item }) => ({ total: count(item.id) })),
-  );
-  return () => Number(query()[0]?.total ?? 0n);
-});
+      .select(({ item }) => ({ ...item })),
+  ),
+);
 
 export const getItem = async (id: string) => {
   const response = await itemClient.getItem({ id });
