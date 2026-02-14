@@ -10,9 +10,9 @@
     - [x] Update `cmd/feed-reader/opml.go` to include `ExportOPML` function
     - [x] Implement logic to fetch feeds and their tags from the database
     - [x] Map internal feed models to OPML structure, flattening tags into `category` attribute
-- [ ] Task: Create HTTP Handler for OPML Export
-    - [ ] Update `cmd/feed-reader/handler.go` to add `exportOpml` endpoint
-    - [ ] Ensure endpoint handles feed selection (e.g., via query IDs or POST body)
+- [x] Task: Create gRPC Handler for OPML Export b6c7203
+    - [x] Implement `ExportOpml` method in `cmd/feed-reader/handler.go`
+    - [x] Ensure handler handles feed selection
 - [ ] Task: Conductor - User Manual Verification 'Backend - OPML Export Logic (Go)' (Protocol in workflow.md)
 
 ## Phase 2: Backend - OPML Import with Tags (Go)
