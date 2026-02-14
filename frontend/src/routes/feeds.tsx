@@ -35,7 +35,7 @@ function FeedsComponent() {
 
   return (
     <PageLayout>
-      <div class={stack({ gap: { base: "2", md: "4" }, flex: "1", minHeight: 0 })}>
+      <div class={stack({ gap: "2", flex: "1", minHeight: 0 })}>
         <AddFeedForm
           headerActions={
             <ActionButton

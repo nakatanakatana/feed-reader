@@ -73,12 +73,12 @@ export function AddFeedForm(props: AddFeedFormProps) {
       <form
         onSubmit={handleSubmit}
         class={flex({
-          gap: "4",
+          gap: { base: "2", md: "4" },
           alignItems: "flex-start",
           flexDirection: "column",
           width: "full",
           bg: "white",
-          p: "4",
+          p: { base: "2", md: "4" },
           rounded: "md",
           shadow: "sm",
           border: "1px solid",
