@@ -6,6 +6,7 @@ import { ActionButton } from "./ui/ActionButton";
 interface BulkActionBarProps {
   selectedCount: number;
   onClear: () => void;
+  onExport?: () => void;
   children?: JSX.Element;
   unit?: string;
 }
@@ -48,6 +49,15 @@ export function BulkActionBar(props: BulkActionBarProps) {
           <ActionButton size="sm" variant="secondary" onClick={props.onClear}>
             Clear
           </ActionButton>
+          <Show when={props.onExport}>
+            <ActionButton
+              size="sm"
+              variant="secondary"
+              onClick={() => props.onExport?.()}
+            >
+              Export OPML
+            </ActionButton>
+          </Show>
           {props.children}
         </div>
       </div>

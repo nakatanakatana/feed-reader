@@ -65,6 +65,19 @@ export const refreshFeeds = async (feedIds: string[]) => {
   }
 };
 
+export const exportFeeds = async (feedIds: string[]) => {
+  const res = await feedClient.exportOpml({ ids: feedIds });
+  const blob = new Blob([res.opmlContent], { type: "application/xml" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "feeds.opml";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
+
 export const feeds = createCollection(
   queryCollectionOptions({
     id: "feeds",
