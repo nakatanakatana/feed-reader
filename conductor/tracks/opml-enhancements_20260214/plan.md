@@ -30,14 +30,14 @@
 - [~] Task: Conductor - User Manual Verification 'Backend - OPML Import with Tags (Go)' (Protocol in workflow.md)
 
 ## Phase 3: Frontend - Export UI & Integration
-- [ ] Task: Add "Export OPML" button to Bulk Action Bar
-    - [ ] Create/Update `frontend/src/components/BulkActionBar.test.tsx` to verify button presence
-    - [ ] Update `frontend/src/components/BulkActionBar.tsx` to include the Export button
-    - [ ] Ensure button is only visible/active when feeds are selected
-- [ ] Task: Implement Export API Integration
-    - [ ] Implement service method in `frontend/src/lib/api.ts` (or similar) to call the export endpoint
-    - [ ] Handle file download in the browser upon successful response
-- [ ] Task: Conductor - User Manual Verification 'Frontend - Export UI & Integration' (Protocol in workflow.md)
+- [x] Task: Add "Export OPML" button to Bulk Action Bar 9208d07
+    - [x] Create/Update `frontend/src/components/BulkActionBar.test.tsx` to verify button presence
+    - [x] Update `frontend/src/components/BulkActionBar.tsx` to include the Export button
+    - [x] Ensure button is only visible/active when feeds are selected
+- [x] Task: Implement Export API Integration 9208d07
+    - [x] Implement service method in `frontend/src/lib/api.ts` (or similar) to call the export endpoint
+    - [x] Handle file download in the browser upon successful response
+- [~] Task: Conductor - User Manual Verification 'Frontend - Export UI & Integration' (Protocol in workflow.md)
 
 ## Phase 4: Frontend - Enhanced Import Error Handling
 - [ ] Task: Design and Test Error Display Component
