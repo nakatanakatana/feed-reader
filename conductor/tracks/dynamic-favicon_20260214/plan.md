@@ -1,13 +1,13 @@
 # Implementation Plan - Dynamic Favicon
 
-## Phase 1: Core Logic & Utilities
+## Phase 1: Core Logic & Utilities [checkpoint: 9553748]
 - [x] Task: Implement Color Tier Logic 034607c
     - [x] Create `frontend/src/lib/favicon.test.ts` to test tier thresholds (0, 1-10, 11-50, 51+).
     - [x] Implement `frontend/src/lib/favicon.ts` with `getFaviconColor(count)` and constant definitions.
-- [ ] Task: Implement SVG Manipulation Utility
-    - [ ] Update `frontend/src/lib/favicon.test.ts` to test SVG string generation/replacement.
-    - [ ] Implement `generateFaviconUri(color)` in `frontend/src/lib/favicon.ts` (using a template string for the SVG).
-- [ ] Task: Conductor - User Manual Verification 'Core Logic & Utilities' (Protocol in workflow.md)
+- [x] Task: Implement SVG Manipulation Utility 35edab3
+    - [x] Update `frontend/src/lib/favicon.test.ts` to test SVG string generation/replacement.
+    - [x] Implement `generateFaviconUri(color)` in `frontend/src/lib/favicon.ts` (using a template string for the SVG).
+- [x] Task: Conductor - User Manual Verification 'Core Logic & Utilities' (Protocol in workflow.md)
 
 ## Phase 2: SolidJS Integration
 - [ ] Task: Create DynamicFavicon Component/Hook
