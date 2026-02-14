@@ -2,7 +2,7 @@
 
 This plan outlines the steps to implement a "Select All" checkbox and a floating bulk action bar on the Feeds page, consistent with the Home page's UI.
 
-## Phase 1: Preparation and Selection Logic
+## Phase 1: Preparation and Selection Logic [checkpoint: 9b1bcaf]
 Focus on extending the state management to support "Select All" and ensuring the selection logic correctly handles filtered views.
 
 - [x] Task: Extend `FeedList` component state to handle "Select All" logic. f06bb58
@@ -11,7 +11,7 @@ Focus on extending the state management to support "Select All" and ensuring the
 - [x] Task: TDD - Unit tests for selection logic in `FeedList`. f06bb58
     - [x] Write tests to verify that "Select All" only affects visible feeds.
     - [x] Write tests to verify the indeterminate state calculation.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Preparation and Selection Logic' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Preparation and Selection Logic' (Protocol in workflow.md) 9b1bcaf
 
 ## Phase 2: UI Implementation - "Select All" Checkbox
 Integrate the "Select All" checkbox into the existing Feeds page header refinement.
