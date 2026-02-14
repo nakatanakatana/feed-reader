@@ -2,6 +2,8 @@ package store
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 )
 
@@ -99,4 +101,34 @@ func (s *Store) ManageFeedTags(ctx context.Context, feedIDs []string, addTagIDs 
 		}
 		return nil
 	})
+}
+
+// GetOrCreateTag returns a tag by name, creating it if it doesn't exist.
+func (s *Store) GetOrCreateTag(ctx context.Context, name string, uuidGen UUIDGenerator) (*Tag, error) {
+	tag, err := s.Queries.GetTagByName(ctx, name)
+	if err == nil {
+		return &tag, nil
+	}
+	if !errors.Is(err, sql.ErrNoRows) {
+		return nil, err
+	}
+
+	if uuidGen == nil {
+		return nil, fmt.Errorf("uuidGen is required to create a new tag")
+	}
+
+	newUUID, err := uuidGen.NewRandom()
+	if err != nil {
+		return nil, err
+	}
+
+	newTag, err := s.Queries.CreateTag(ctx, CreateTagParams{
+		ID:   newUUID.String(),
+		Name: name,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &newTag, nil
 }

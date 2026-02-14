@@ -276,6 +276,14 @@ INSERT INTO tags (
 )
 RETURNING *;
 
+-- name: GetTagByName :one
+SELECT
+  *
+FROM
+  tags
+WHERE
+  name = ?;
+
 -- name: ListTags :many
 SELECT
   *
