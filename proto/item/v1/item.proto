@@ -75,8 +75,8 @@ message ListItemFeedsRequest {
 
 message ItemFeed {
   string feed_id = 1;
-  string feed_title = 2;
-  string published_at = 3;
+  optional string feed_title = 2;
+  optional string published_at = 3;
   string created_at = 4;
 }
 

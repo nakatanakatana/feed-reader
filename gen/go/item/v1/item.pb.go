@@ -613,8 +613,8 @@ func (x *ListItemFeedsRequest) GetItemId() string {
 type ItemFeed struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	FeedId        string                 `protobuf:"bytes,1,opt,name=feed_id,json=feedId,proto3" json:"feed_id,omitempty"`
-	FeedTitle     string                 `protobuf:"bytes,2,opt,name=feed_title,json=feedTitle,proto3" json:"feed_title,omitempty"`
-	PublishedAt   string                 `protobuf:"bytes,3,opt,name=published_at,json=publishedAt,proto3" json:"published_at,omitempty"`
+	FeedTitle     *string                `protobuf:"bytes,2,opt,name=feed_title,json=feedTitle,proto3,oneof" json:"feed_title,omitempty"`
+	PublishedAt   *string                `protobuf:"bytes,3,opt,name=published_at,json=publishedAt,proto3,oneof" json:"published_at,omitempty"`
 	CreatedAt     string                 `protobuf:"bytes,4,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -658,15 +658,15 @@ func (x *ItemFeed) GetFeedId() string {
 }
 
 func (x *ItemFeed) GetFeedTitle() string {
-	if x != nil {
-		return x.FeedTitle
+	if x != nil && x.FeedTitle != nil {
+		return *x.FeedTitle
 	}
 	return ""
 }
 
 func (x *ItemFeed) GetPublishedAt() string {
-	if x != nil {
-		return x.PublishedAt
+	if x != nil && x.PublishedAt != nil {
+		return *x.PublishedAt
 	}
 	return ""
 }
@@ -782,14 +782,16 @@ const file_item_v1_item_proto_rawDesc = "" +
 	"\b_is_read\"\x1a\n" +
 	"\x18UpdateItemStatusResponse\"/\n" +
 	"\x14ListItemFeedsRequest\x12\x17\n" +
-	"\aitem_id\x18\x01 \x01(\tR\x06itemId\"\x84\x01\n" +
+	"\aitem_id\x18\x01 \x01(\tR\x06itemId\"\xae\x01\n" +
 	"\bItemFeed\x12\x17\n" +
-	"\afeed_id\x18\x01 \x01(\tR\x06feedId\x12\x1d\n" +
+	"\afeed_id\x18\x01 \x01(\tR\x06feedId\x12\"\n" +
 	"\n" +
-	"feed_title\x18\x02 \x01(\tR\tfeedTitle\x12!\n" +
-	"\fpublished_at\x18\x03 \x01(\tR\vpublishedAt\x12\x1d\n" +
+	"feed_title\x18\x02 \x01(\tH\x00R\tfeedTitle\x88\x01\x01\x12&\n" +
+	"\fpublished_at\x18\x03 \x01(\tH\x01R\vpublishedAt\x88\x01\x01\x12\x1d\n" +
 	"\n" +
-	"created_at\x18\x04 \x01(\tR\tcreatedAt\"@\n" +
+	"created_at\x18\x04 \x01(\tR\tcreatedAtB\r\n" +
+	"\v_feed_titleB\x0f\n" +
+	"\r_published_at\"@\n" +
 	"\x15ListItemFeedsResponse\x12'\n" +
 	"\x05feeds\x18\x01 \x03(\v2\x11.item.v1.ItemFeedR\x05feeds2\xb8\x02\n" +
 	"\vItemService\x12<\n" +
@@ -852,6 +854,7 @@ func file_item_v1_item_proto_init() {
 	}
 	file_item_v1_item_proto_msgTypes[4].OneofWrappers = []any{}
 	file_item_v1_item_proto_msgTypes[6].OneofWrappers = []any{}
+	file_item_v1_item_proto_msgTypes[9].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

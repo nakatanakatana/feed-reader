@@ -136,19 +136,11 @@ func (s *ItemServer) ListItemFeeds(ctx context.Context, req *connect.Request[ite
 
 	protoFeeds := make([]*itemv1.ItemFeed, len(rows))
 	for i, row := range rows {
-		var title string
-		if row.FeedTitle != nil {
-			title = *row.FeedTitle
-		}
-		var pubAt string
-		if row.PublishedAt != nil {
-			pubAt = *row.PublishedAt
-		}
 		protoFeeds[i] = &itemv1.ItemFeed{
-			FeedId:    row.FeedID,
-			FeedTitle: title,
-			PublishedAt: pubAt,
-			CreatedAt: row.CreatedAt,
+			FeedId:      row.FeedID,
+			FeedTitle:   row.FeedTitle,
+			PublishedAt: row.PublishedAt,
+			CreatedAt:   row.CreatedAt,
 		}
 	}
 

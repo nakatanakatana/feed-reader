@@ -48,7 +48,9 @@ func TestListItemFeeds(t *testing.T) {
 		assert.NilError(t, err)
 		assert.Equal(t, len(res.Msg.Feeds), 1)
 		assert.Equal(t, res.Msg.Feeds[0].FeedId, feedID)
-		assert.Equal(t, res.Msg.Feeds[0].FeedTitle, "Example Feed")
-		assert.Equal(t, res.Msg.Feeds[0].PublishedAt, pubAt)
+		assert.Assert(t, res.Msg.Feeds[0].FeedTitle != nil)
+		assert.Equal(t, *res.Msg.Feeds[0].FeedTitle, "Example Feed")
+		assert.Assert(t, res.Msg.Feeds[0].PublishedAt != nil)
+		assert.Equal(t, *res.Msg.Feeds[0].PublishedAt, pubAt)
 	})
 }
