@@ -36,13 +36,13 @@ Bring the floating `BulkActionBar` to the Feeds page.
     - [x] Verify the bar's position and animation match the Home page.
 - [x] Task: Conductor - User Manual Verification 'Phase 3: UI Implementation - Floating Bulk Action Bar' (Protocol in workflow.md) 7090eda
 
-## Phase 4: Bulk Tagging Functionality
+## Phase 4: Bulk Tagging Functionality [checkpoint: fc9b050]
 Ensure the bulk tagging action correctly updates multiple feeds.
 
-- [ ] Task: Implement bulk tagging logic.
-    - [ ] Ensure the tagging service/API can handle multiple feed IDs.
-    - [ ] Connect the `BulkActionBar` "Tag" action to the backend update logic.
-- [ ] Task: TDD - Integration tests for bulk tagging.
-    - [ ] Verify that tags are correctly applied to all selected feeds.
-    - [ ] Verify that tags are correctly removed from all selected feeds.
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Bulk Tagging Functionality' (Protocol in workflow.md)
+- [x] Task: Implement bulk tagging logic. bbe93bc
+    - [x] Ensure the tagging service/API can handle multiple feed IDs.
+    - [x] Connect the `BulkActionBar` "Tag" action to the backend update logic.
+- [x] Task: TDD - Integration tests for bulk tagging. bbe93bc
+    - [x] Verify that tags are correctly applied to all selected feeds.
+    - [x] Verify that tags are correctly removed from all selected feeds.
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Bulk Tagging Functionality' (Protocol in workflow.md) fc9b050
