@@ -28,7 +28,7 @@ As a self-hosted tool focused on data and content, the tone should inspire confi
 
 ### Mobile-First Intuition
 -   Ensure all interactive elements are touch-friendly with appropriate hit targets (minimum 44x44px).
--   Use intuitive gestures (swiping to mark read/unread) that feel natural in a mobile browser.
+- Use intuitive gestures (swiping to mark read/unread or to navigate between items) that feel natural in a mobile browser.
 -   Responsive layouts must adapt gracefully from desktop density to mobile focus. On narrow screens, prioritize high-value information (like unread counts) and move complex header actions into accessible Floating Action Buttons (FAB).
 -   Minimize UI chrome on mobile to maximize content space, such as hiding non-essential titles or static headers when space is at a premium.
 -   Use horizontal scrolling for list-based filters (like tags) to keep them in a single row, preserving vertical space for the primary content stream.
