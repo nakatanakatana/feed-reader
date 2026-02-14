@@ -69,8 +69,14 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
         const imgs = currentModalRef.querySelectorAll("img");
         for (const img of imgs) {
           const updateLayout = () => {
-            const ratio = img.naturalWidth / img.naturalHeight;
+            const naturalHeight = img.naturalHeight;
             let layout = "other";
+            // Avoid division by zero or invalid ratios for malformed/edge-case images
+            if (!naturalHeight) {
+              img.setAttribute("data-layout", layout);
+              return;
+            }
+            const ratio = img.naturalWidth / naturalHeight;
             if (ratio > 1.1) {
               layout = "hero";
             } else if (ratio >= 0.9 && ratio <= 1.1) {
