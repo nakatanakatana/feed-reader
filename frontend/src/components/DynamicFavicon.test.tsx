@@ -48,7 +48,10 @@ describe("DynamicFavicon", () => {
   });
 
   it("updates favicon to red when unreadCount is 1000", async () => {
-    dispose = render(() => <DynamicFavicon unreadCount={1000} />, document.body);
+    dispose = render(
+      () => <DynamicFavicon unreadCount={1000} />,
+      document.body,
+    );
 
     const link = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
     expect(link.href).toBe(generateFaviconUri(FaviconColor.Red));
