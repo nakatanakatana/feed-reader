@@ -11,13 +11,13 @@
 - [x] Task: Conductor - User Manual Verification 'Database & Backend Logic' (Protocol in workflow.md)
 
 ## Phase 2: API Implementation (RPC)
-- [ ] Task: Define RPC Protobuf
-    - [ ] Update `proto/item/v1/item_service.proto` (check exact path) to add `GetItemFeeds` method and messages.
-    - [ ] Run `buf generate` to create Go and TypeScript code.
-- [ ] Task: Implement RPC Method (TDD)
-    - [ ] Create test in `item_service_test.go` for `GetItemFeeds`.
-    - [ ] Implement `GetItemFeeds` in `ItemService`.
-    - [ ] Ensure it queries `feed_items` joining with `feeds` to get titles and timestamps.
+- [x] Task: Define RPC Protobuf d6e04da
+    - [x] Update `proto/item/v1/item_service.proto` (check exact path) to add `GetItemFeeds` method and messages.
+    - [x] Run `buf generate` to create Go and TypeScript code.
+- [x] Task: Implement RPC Method (TDD) d6e04da
+    - [x] Create test in `item_service_test.go` for `GetItemFeeds`.
+    - [x] Implement `GetItemFeeds` in `ItemService`.
+    - [x] Ensure it queries `feed_items` joining with `feeds` to get titles and timestamps.
 - [ ] Task: Conductor - User Manual Verification 'API Implementation (RPC)' (Protocol in workflow.md)
 
 ## Phase 3: Frontend Implementation
