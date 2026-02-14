@@ -13,16 +13,16 @@ Focus on extending the state management to support "Select All" and ensuring the
     - [x] Write tests to verify the indeterminate state calculation.
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Preparation and Selection Logic' (Protocol in workflow.md) 9b1bcaf
 
-## Phase 2: UI Implementation - "Select All" Checkbox
+## Phase 2: UI Implementation - "Select All" Checkbox [checkpoint: cb614f2]
 Integrate the "Select All" checkbox into the existing Feeds page header refinement.
 
-- [ ] Task: Update the `FeedList` header/controls area.
-    - [ ] Add the "Select All" checkbox component next to the sort/filter controls.
-    - [ ] Connect the checkbox to the selection logic developed in Phase 1.
-- [ ] Task: TDD - UI tests for "Select All" checkbox.
-    - [ ] Verify the checkbox is correctly positioned in the sort/filter row.
-    - [ ] Verify the checkbox accurately reflects the selection state (including indeterminate).
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: UI Implementation - "Select All" Checkbox' (Protocol in workflow.md)
+- [x] Task: Update the `FeedList` header/controls area. f06bb58
+    - [x] Add the "Select All" checkbox component next to the sort/filter controls.
+    - [x] Connect the checkbox to the selection logic developed in Phase 1.
+- [x] Task: TDD - UI tests for "Select All" checkbox. f06bb58
+    - [x] Verify the checkbox is correctly positioned in the sort/filter row.
+    - [x] Verify the checkbox accurately reflects the selection state (including indeterminate).
+- [x] Task: Conductor - User Manual Verification 'Phase 2: UI Implementation - "Select All" Checkbox' (Protocol in workflow.md) cb614f2
 
 ## Phase 3: UI Implementation - Floating Bulk Action Bar
 Bring the floating `BulkActionBar` to the Feeds page.
