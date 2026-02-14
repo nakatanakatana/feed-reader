@@ -1,6 +1,6 @@
 # Implementation Plan - Manual Feed Fetch Control
 
-## Phase 1: Database Schema & Backend Migration
+## Phase 1: Database Schema & Backend Migration [checkpoint: 46f78fd]
 - [x] Task: Create SQL migration for schema changes f15f054
     - [x] Create `feed_fetcher` table (consolidating `feed_fetcher_cache`).
     - [x] Add `next_fetch` and move `last_fetched_at`.
@@ -12,7 +12,7 @@
     - [x] Update `FeedStore` methods to read/write `last_fetched_at` and `next_fetch` from the new table.
     - [x] Fix any broken references to `feeds.last_fetched_at` in the codebase.
     - [x] Write unit tests for the new store queries.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md) b510f82
 
 ## Phase 2: Backend Logic Updates
 - [ ] Task: Update Fetcher Service Logic
