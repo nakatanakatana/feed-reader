@@ -112,6 +112,7 @@ describe("ItemDetailRouteView Reactivity", () => {
       .toBeInTheDocument();
 
     // Navigate back to Item 1 using 'k'
+    await userEvent.click(page.getByRole("heading", { name: "Item 2" }));
     await userEvent.keyboard("k");
     await expect.poll(() => history.location.pathname).toBe("/items/1");
     await expect
