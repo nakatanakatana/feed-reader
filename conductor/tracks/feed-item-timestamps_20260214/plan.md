@@ -1,7 +1,7 @@
 # Implementation Plan - Per-Feed Timestamps
 
 ## Phase 1: Database & Backend Logic
-- [ ] Task: Create database migration
+- [x] Task: Create database migration d6772f5
     - [ ] Create a new SQL migration file to add `published_at` column to `feed_items` table.
     - [ ] Run `sqlc generate` to update Go models.
 - [ ] Task: Update Feed Fetcher Logic (TDD)
