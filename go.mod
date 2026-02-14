@@ -13,7 +13,7 @@ require (
 	golang.org/x/net v0.50.0
 	google.golang.org/protobuf v1.36.11
 	gotest.tools/v3 v3.5.2
-	modernc.org/sqlite v1.44.3
+	modernc.org/sqlite v1.45.0
 	pgregory.net/rapid v1.2.0
 )
 
