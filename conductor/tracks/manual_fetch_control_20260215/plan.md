@@ -15,11 +15,11 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md) b510f82
 
 ## Phase 2: Backend Logic Updates
-- [~] Task: Update Fetcher Service Logic
-    - [ ] Modify `FetchAllFeeds` (or equivalent polling function) to query based on `next_fetch <= NOW`.
-    - [ ] Update the post-fetch logic to calculate and save the new `next_fetch` (`now + FetchInterval`).
-    - [ ] Ensure initial feed addition sets a valid `next_fetch`.
-    - [ ] Write unit tests for scheduling logic.
+- [x] Task: Update Fetcher Service Logic aee5d55
+    - [x] Modify `FetchAllFeeds` (or equivalent polling function) to query based on `next_fetch <= NOW`.
+    - [x] Update the post-fetch logic to calculate and save the new `next_fetch` (`now + FetchInterval`).
+    - [x] Ensure initial feed addition sets a valid `next_fetch`.
+    - [x] Write unit tests for scheduling logic.
 - [ ] Task: Implement API for Manual Scheduling
     - [ ] Define Proto RPC `SetFeedSchedule` (or similar) accepting feed IDs and a timestamp (or duration).
     - [ ] Implement the RPC handler to update `next_fetch` in the DB.
