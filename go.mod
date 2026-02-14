@@ -10,7 +10,7 @@ require (
 	github.com/hashicorp/go-retryablehttp v0.7.8
 	github.com/mmcdole/gofeed v1.3.0
 	github.com/sqldef/sqldef/v3 v3.9.7
-	golang.org/x/net v0.49.0
+	golang.org/x/net v0.50.0
 	google.golang.org/protobuf v1.36.11
 	gotest.tools/v3 v3.5.2
 	modernc.org/sqlite v1.44.3
@@ -34,8 +34,8 @@ require (
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	golang.org/x/exp v0.0.0-20260112195511-716be5621a96 // indirect
 	golang.org/x/sync v0.19.0 // indirect
-	golang.org/x/sys v0.40.0 // indirect
-	golang.org/x/text v0.33.0 // indirect
+	golang.org/x/sys v0.41.0 // indirect
+	golang.org/x/text v0.34.0 // indirect
 	modernc.org/libc v1.67.7 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
