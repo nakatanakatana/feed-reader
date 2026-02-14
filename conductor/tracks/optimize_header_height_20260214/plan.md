@@ -2,7 +2,7 @@
 
 This plan focuses on increasing the main content display area by minimizing the header and converting the "Mark as read" button into a Floating Action Button (FAB) in the `ItemDetailModal`.
 
-## Phase 1: Preparation and Header Refinement
+## Phase 1: Preparation and Header Refinement [checkpoint: da6a53d]
 Focus on reducing the header's vertical footprint by adjusting styles and layout.
 
 - [x] **Task: Analysis & Styling Setup**
