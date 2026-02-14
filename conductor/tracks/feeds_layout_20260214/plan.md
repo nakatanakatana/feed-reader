@@ -21,3 +21,6 @@ Ensure the layout is consistent and performant across devices.
 - [x] Task: Verify responsiveness on mobile screen sizes (1f76a6f)
     - [x] Use Vitest Browser Mode or manual check to ensure the `Import OPML` button becomes an icon on narrow screens.
 - [x] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md) (de84768)
+
+## Phase: Review Fixes
+- [x] Task: Apply review suggestions (6c2d372)
