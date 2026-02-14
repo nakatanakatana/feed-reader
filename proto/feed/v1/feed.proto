@@ -14,6 +14,7 @@ service FeedService {
   rpc DeleteFeed(DeleteFeedRequest) returns (DeleteFeedResponse);
   rpc RefreshFeeds(RefreshFeedsRequest) returns (RefreshFeedsResponse);
   rpc ImportOpml(ImportOpmlRequest) returns (ImportOpmlResponse);
+  rpc ExportOpml(ExportOpmlRequest) returns (ExportOpmlResponse);
 
 
   // Tag management
@@ -132,6 +133,14 @@ message ImportOpmlResponse {
   int32 skipped = 3;
   repeated string failed_feeds = 4;
 
+}
+
+message ExportOpmlRequest {
+  repeated string ids = 1;
+}
+
+message ExportOpmlResponse {
+  bytes opml_content = 1;
 }
 
 
