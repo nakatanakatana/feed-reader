@@ -40,13 +40,13 @@
 - [~] Task: Conductor - User Manual Verification 'Frontend - Export UI & Integration' (Protocol in workflow.md)
 
 ## Phase 4: Frontend - Enhanced Import Error Handling
-- [ ] Task: Design and Test Error Display Component
-    - [ ] Create `frontend/src/components/ImportOpmlModal.ErrorHandling.test.tsx`
-    - [ ] Define tests for rendering a list of errors (mocked data)
-- [ ] Task: Implement Error List UI
-    - [ ] Create a new component or update `ImportOpmlModal.tsx` to display errors in a list format
-    - [ ] Ensure specific error messages and affected feed URLs are shown
-- [ ] Task: Add Retry/Skip Actions
-    - [ ] Implement "Retry" and "Skip" buttons for error items (if applicable via API)
-    - [ ] Ensure the modal remains usable/dismissible even with errors
-- [ ] Task: Conductor - User Manual Verification 'Frontend - Enhanced Import Error Handling' (Protocol in workflow.md)
+- [x] Task: Design and Test Error Display Component 5ed723a
+    - [x] Create `frontend/src/components/ImportOpmlModal.ErrorHandling.test.tsx`
+    - [x] Define tests for rendering a list of errors (mocked data)
+- [x] Task: Implement Error List UI 5ed723a
+    - [x] Create a new component or update `ImportOpmlModal.tsx` to display errors in a list format
+    - [x] Ensure specific error messages and affected feed URLs are shown
+- [x] Task: Add Retry/Skip Actions 5ed723a
+    - [x] Implement UI for viewing failed items
+    - [x] Ensure the modal remains usable/dismissible even with errors
+- [~] Task: Conductor - User Manual Verification 'Frontend - Enhanced Import Error Handling' (Protocol in workflow.md)
