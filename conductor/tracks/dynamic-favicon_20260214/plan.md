@@ -16,7 +16,7 @@
     - [x] Ensure it handles cleanup (restoring default) if unmounted.
 - [x] Task: Conductor - User Manual Verification 'SolidJS Integration' (Protocol in workflow.md) a903183
 
-## Phase 3: Application Wiring
+## Phase 3: Application Wiring [checkpoint: 26cd35f]
 - [x] Task: Connect to Application State ec21988
     - [x] Identify global unread count source (likely in a Store or Context).
     - [x] Instantiate `<DynamicFavicon />` in the root provider or Main Layout.
