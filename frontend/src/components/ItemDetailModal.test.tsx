@@ -27,7 +27,7 @@ describe("ItemDetailModal", () => {
           item: create(ItemSchema, {
             id: itemId,
             title: "Test Item",
-            description: "<p>Test Content</p>",
+            description: "Test Content",
             publishedAt: "2026-01-24T10:00:00Z",
             createdAt: "2026-01-24T09:00:00Z",
             author: "Test Author",

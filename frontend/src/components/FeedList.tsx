@@ -59,6 +59,10 @@ export function FeedList() {
 
     if (currentSort === "title_desc") {
       query = query.orderBy(({ feed }) => feed.title, "desc");
+    } else if (currentSort === "last_fetched") {
+      query = query
+        .orderBy(({ feed }) => feed.lastFetchedAt || "", "asc")
+        .orderBy(({ feed }) => feed.title, "asc");
     } else {
       query = query.orderBy(({ feed }) => feed.title, "asc");
     }
@@ -215,6 +219,7 @@ export function FeedList() {
           >
             <option value="title_asc">Title (A-Z)</option>
             <option value="title_desc">Title (Z-A)</option>
+            <option value="last_fetched">Last Fetched</option>
           </select>
           <span class={css({ fontSize: "sm", color: "gray.600", ml: "2" })}>
             Filter:

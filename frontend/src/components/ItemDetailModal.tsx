@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/solid-query";
-import { createEffect, For, type JSX, Show } from "solid-js";
+import { createEffect, For, type JSX, onCleanup, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
 import { getItem, items } from "../lib/item-db";
@@ -57,10 +57,47 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     const loading = isLoading();
 
     if (id && !loading && itemData && modalRef) {
+      const currentModalRef = modalRef;
+      const cleanupTasks: (() => void)[] = [];
+
       requestAnimationFrame(() => {
-        if (modalRef) {
-          modalRef.focus();
+        if (currentModalRef) {
+          currentModalRef.focus();
         }
+
+        // Detect image layout and set data-layout attribute
+        const imgs = currentModalRef.querySelectorAll("img");
+        for (const img of imgs) {
+          const updateLayout = () => {
+            const naturalHeight = img.naturalHeight;
+            let layout = "other";
+            // Avoid division by zero or invalid ratios for malformed/edge-case images
+            if (!naturalHeight) {
+              img.setAttribute("data-layout", layout);
+              return;
+            }
+            const ratio = img.naturalWidth / naturalHeight;
+            if (ratio > 1.1) {
+              layout = "hero";
+            } else if (ratio >= 0.9 && ratio <= 1.1) {
+              layout = "icon";
+            }
+            img.setAttribute("data-layout", layout);
+          };
+
+          if (img.complete) {
+            updateLayout();
+          } else {
+            img.addEventListener("load", updateLayout, { once: true });
+            cleanupTasks.push(() =>
+              img.removeEventListener("load", updateLayout),
+            );
+          }
+        }
+      });
+
+      onCleanup(() => {
+        for (const task of cleanupTasks) task();
       });
     }
   });
@@ -421,6 +458,13 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                           height: "auto",
                           borderRadius: "md",
                           boxShadow: "sm",
+                          opacity: 0,
+                          transition: "opacity 0.2s",
+                          maxHeight: "10vh",
+                          "&[data-layout]": { opacity: 1 },
+                          "&[data-layout='hero']": { maxHeight: "30vh" },
+                          "&[data-layout='icon']": { maxHeight: "5vh" },
+                          "&[data-layout='other']": { maxHeight: "10vh" },
                         })}
                       />
                     </div>
@@ -430,8 +474,28 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                     class={css({
                       lineHeight: "relaxed",
                       "& a": { color: "blue.600", textDecoration: "underline" },
-                      "& p": { marginBottom: "4" },
-                      "& img": { maxWidth: "full", height: "auto", my: "4" },
+                      "& p": {
+                        marginBottom: "4",
+                      },
+                      "& p:has(img + img), & p:has(a + a), & p:has(img + a), & p:has(a + img)":
+                        {
+                          display: "flex",
+                          flexWrap: "wrap",
+                          gap: "2",
+                          alignItems: "center",
+                        },
+                      "& img": {
+                        maxWidth: "full",
+                        height: "auto",
+                        my: "4",
+                        opacity: 0,
+                        transition: "opacity 0.2s",
+                        maxHeight: "10vh",
+                        "&[data-layout]": { opacity: 1 },
+                        "&[data-layout='hero']": { maxHeight: "30vh" },
+                        "&[data-layout='icon']": { maxHeight: "5vh" },
+                        "&[data-layout='other']": { maxHeight: "10vh" },
+                      },
                       "& pre": {
                         overflowX: "auto",
                         maxWidth: "full",
@@ -454,6 +518,36 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                         padding: 0,
                         borderRadius: 0,
                         fontSize: "sm",
+                      },
+                      // Target images inside links with color mode markers
+                      // Support both raw (#gh-*) and URL-encoded (%23gh-*) variants
+                      '& a:is([href*="#gh-light-mode-only"], [href*="%23gh-light-mode-only"]) img':
+                        {
+                          display: "inline-block",
+                        },
+                      '& a:is([href*="#gh-dark-mode-only"], [href*="%23gh-dark-mode-only"]) img':
+                        {
+                          display: "none",
+                        },
+                      "@media (prefers-color-scheme: dark)": {
+                        '& a:is([href*="#gh-light-mode-only"], [href*="%23gh-light-mode-only"]) img':
+                          {
+                            display: "none !important",
+                          },
+                        '& a:is([href*="#gh-dark-mode-only"], [href*="%23gh-dark-mode-only"]) img':
+                          {
+                            display: "inline-block !important",
+                          },
+                      },
+                      "@media (prefers-color-scheme: light)": {
+                        '& a:is([href*="#gh-light-mode-only"], [href*="%23gh-light-mode-only"]) img':
+                          {
+                            display: "inline-block !important",
+                          },
+                        '& a:is([href*="#gh-dark-mode-only"], [href*="%23gh-dark-mode-only"]) img':
+                          {
+                            display: "none !important",
+                          },
                       },
                     })}
                   >
