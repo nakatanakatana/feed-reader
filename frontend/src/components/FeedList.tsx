@@ -13,7 +13,11 @@ import {
   suspendFeeds,
 } from "../lib/db";
 import { fetchingState } from "../lib/fetching-state";
-import { formatDate, formatUnreadCount } from "../lib/item-utils";
+import {
+  formatDate,
+  formatRelativeDate,
+  formatUnreadCount,
+} from "../lib/item-utils";
 import { tagsFeedQuery } from "../lib/tag-db";
 import { BulkActionBar } from "./BulkActionBar";
 import { ManageTagsModal } from "./ManageTagsModal";
@@ -63,6 +67,10 @@ export function FeedList() {
     } else if (currentSort === "last_fetched") {
       query = query
         .orderBy(({ feed }) => feed.lastFetchedAt || "", "asc")
+        .orderBy(({ feed }) => feed.title, "asc");
+    } else if (currentSort === "next_fetch") {
+      query = query
+        .orderBy(({ feed }) => feed.nextFetch || "", "asc")
         .orderBy(({ feed }) => feed.title, "asc");
     } else {
       query = query.orderBy(({ feed }) => feed.title, "asc");
@@ -221,6 +229,7 @@ export function FeedList() {
             <option value="title_asc">Title (A-Z)</option>
             <option value="title_desc">Title (Z-A)</option>
             <option value="last_fetched">Last Fetched</option>
+            <option value="next_fetch">Next Fetch</option>
           </select>
           <span class={css({ fontSize: "sm", color: "gray.600", ml: "2" })}>
             Filter:
@@ -468,7 +477,7 @@ export function FeedList() {
                               fontWeight: "medium",
                             })}
                           >
-                            Next fetch: {formatDate(feed.nextFetch ?? "")}
+                            Next fetch: {formatRelativeDate(feed.nextFetch ?? "")}
                           </span>
                         </Show>
                       </div>

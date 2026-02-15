@@ -63,6 +63,45 @@ export const formatDate = (dateString: string) => {
   }
 };
 
+export const formatRelativeDate = (dateString: string) => {
+  if (!dateString) return "";
+  try {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInSeconds = Math.floor((date.getTime() - now.getTime()) / 1000);
+    const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: "auto" });
+
+    const absDiffInSeconds = Math.abs(diffInSeconds);
+    if (absDiffInSeconds < 60) {
+      return rtf.format(diffInSeconds, "second");
+    }
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    const absDiffInMinutes = Math.abs(diffInMinutes);
+    if (absDiffInMinutes < 60) {
+      return rtf.format(diffInMinutes, "minute");
+    }
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    const absDiffInHours = Math.abs(diffInHours);
+    if (absDiffInHours < 24) {
+      return rtf.format(diffInHours, "hour");
+    }
+    const diffInDays = Math.floor(diffInHours / 24);
+    const absDiffInDays = Math.abs(diffInDays);
+    if (absDiffInDays < 30) {
+      return rtf.format(diffInDays, "day");
+    }
+    const diffInMonths = Math.floor(diffInDays / 30);
+    const absDiffInMonths = Math.abs(diffInMonths);
+    if (absDiffInMonths < 12) {
+      return rtf.format(diffInMonths, "month");
+    }
+    const diffInYears = Math.floor(diffInMonths / 12);
+    return rtf.format(diffInYears, "year");
+  } catch (_e) {
+    return dateString;
+  }
+};
+
 export const normalizeCategories = (categories: string): string[] => {
   if (!categories) return [];
   const trimmed = categories.trim();
