@@ -197,9 +197,9 @@ func TestGofeedFetcher_UserAgent(t *testing.T) {
 
 	f := NewGofeedFetcher(s)
 
-	var receivedUA string
+	uaChan := make(chan string, 1)
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		receivedUA = r.Header.Get("User-Agent")
+		uaChan <- r.Header.Get("User-Agent")
 		w.Header().Set("Content-Type", "application/xml")
 		_, _ = fmt.Fprint(w, `<?xml version="1.0" encoding="UTF-8" ?><rss version="2.0"><channel><title>T</title></channel></rss>`)
 	}))
@@ -208,5 +208,11 @@ func TestGofeedFetcher_UserAgent(t *testing.T) {
 	_, err = f.Fetch(context.Background(), "", server.URL)
 	assert.NilError(t, err)
 
-	assert.Equal(t, receivedUA, "FeedFetcher/1.0")
+	var receivedUA string
+	select {
+	case receivedUA = <-uaChan:
+	default:
+		t.Fatal("User-Agent not received")
+	}
+	assert.Equal(t, receivedUA, UserAgent)
 }

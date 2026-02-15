@@ -51,8 +51,14 @@ type userAgentTransport struct {
 }
 
 func (t *userAgentTransport) RoundTrip(req *http.Request) (*http.Response, error) {
-	req.Header.Set("User-Agent", t.ua)
-	return t.base.RoundTrip(req)
+	// Clone the request to avoid mutating the original, as required by the
+	// http.RoundTripper contract.
+	req2 := req.Clone(req.Context())
+	if req2.Header == nil {
+		req2.Header = make(http.Header)
+	}
+	req2.Header.Set("User-Agent", t.ua)
+	return t.base.RoundTrip(req2)
 }
 
 // ErrNotModified is returned when the feed has not been modified.
