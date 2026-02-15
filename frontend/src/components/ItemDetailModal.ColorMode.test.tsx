@@ -143,7 +143,7 @@ describe("ItemDetailModal Color Mode Support", () => {
             )
               hasDarkImgSelector = true;
           }
-        } catch (e) {
+        } catch (_e) {
           // Ignore cross-origin stylesheet access errors
         }
       }
