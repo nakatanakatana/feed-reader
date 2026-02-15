@@ -30,15 +30,14 @@ describe("MarkdownRenderer", () => {
     expect(document.body.innerHTML).toMatchSnapshot();
   });
 
-  it("disables raw HTML rendering (XSS protection)", () => {
-    const content = '<script>alert("xss")</script>**Safe**';
+  it("enables raw HTML rendering", () => {
+    const content = '<div id="test">Raw HTML</div>**Safe**';
     const container = document.createElement("div");
     document.body.appendChild(container);
     dispose = render(() => <MarkdownRenderer content={content} />, container);
 
-    // script tag should be escaped/not rendered as an element INSIDE the container
-    expect(container.querySelector("script")).toBeNull();
-    expect(container.innerHTML).toMatchSnapshot();
+    expect(container.querySelector("#test")).not.toBeNull();
+    expect(container.innerHTML).toContain("Raw HTML");
   });
 
   it("handles empty content", () => {
