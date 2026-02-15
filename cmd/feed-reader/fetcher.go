@@ -11,6 +11,9 @@ import (
 	"github.com/nakatanakatana/feed-reader/store"
 )
 
+// UserAgent is the User-Agent header used for fetching feeds.
+const UserAgent = "FeedFetcher/1.0"
+
 // FeedFetcher defines the interface for fetching RSS/Atom feeds.
 type FeedFetcher interface {
 	Fetch(ctx context.Context, feedID string, url string) (*gofeed.Feed, error)
@@ -30,10 +33,26 @@ func NewGofeedFetcher(s *store.Store) *GofeedFetcher {
 	retryClient.RetryWaitMax = 5 * time.Second
 	retryClient.Logger = nil // Disable verbose logging by default
 
+	client := retryClient.StandardClient()
+	client.Transport = &userAgentTransport{
+		base: client.Transport,
+		ua:   UserAgent,
+	}
+
 	return &GofeedFetcher{
-		client: retryClient.StandardClient(),
+		client: client,
 		store:  s,
 	}
+}
+
+type userAgentTransport struct {
+	base http.RoundTripper
+	ua   string
+}
+
+func (t *userAgentTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	req.Header.Set("User-Agent", t.ua)
+	return t.base.RoundTrip(req)
 }
 
 // ErrNotModified is returned when the feed has not been modified.
