@@ -157,4 +157,105 @@ describe("FeedList Sorting", () => {
       })
       .toBeTruthy();
   });
+
+  it("sorts feeds correctly by last fetched", async () => {
+    worker.use(
+      http.post("*/feed.v1.FeedService/ListFeeds", () => {
+        const msg = create(ListFeedsResponseSchema, {
+          feeds: [
+            create(ListFeedSchema, {
+              id: "1",
+              title: "Middle",
+              url: "url1",
+              lastFetchedAt: "2023-10-01T00:00:00Z",
+              tags: [],
+            }),
+            create(ListFeedSchema, {
+              id: "2",
+              title: "Oldest",
+              url: "url2",
+              lastFetchedAt: "2023-01-01T00:00:00Z",
+              tags: [],
+            }),
+            create(ListFeedSchema, {
+              id: "3",
+              title: "Newest",
+              url: "url3",
+              lastFetchedAt: "2023-12-31T00:00:00Z",
+              tags: [],
+            }),
+            create(ListFeedSchema, {
+              id: "4",
+              title: "A Unfetched",
+              url: "url4",
+              tags: [],
+            }),
+            create(ListFeedSchema, {
+              id: "5",
+              title: "Z Unfetched",
+              url: "url5",
+              tags: [],
+            }),
+          ],
+        });
+        return HttpResponse.json(toJson(ListFeedsResponseSchema, msg));
+      }),
+      http.post("*/tag.v1.TagService/ListTags", () => {
+        return HttpResponse.json(
+          toJson(
+            ListTagsResponseSchema,
+            create(ListTagsResponseSchema, { tags: [] }),
+          ),
+        );
+      }),
+      http.post("*/feed.v1.FeedService/ListFeedTags", () => {
+        return HttpResponse.json(
+          toJson(
+            ListFeedTagsResponseSchema,
+            create(ListFeedTagsResponseSchema, { feedTags: [] }),
+          ),
+        );
+      }),
+    );
+
+    const history = createMemoryHistory({ initialEntries: ["/feeds"] });
+    const router = createRouter({ routeTree, history });
+
+    dispose = render(
+      () => (
+        <TestWrapper>
+          <RouterProvider router={router} />
+        </TestWrapper>
+      ),
+      document.body,
+    );
+
+    const sortSelect = page.getByRole("combobox", { name: /sort by/i });
+    await expect.element(sortSelect).toBeInTheDocument();
+
+    // Select "Last Fetched"
+    await sortSelect.selectOptions("last_fetched");
+
+    // Expected order:
+    // 1. A Unfetched (undefined)
+    // 2. Z Unfetched (undefined) - tied with A, so sort by title
+    // 3. Oldest (2023-01-01)
+    // 4. Middle (2023-10-01)
+    // 5. Newest (2023-12-31)
+
+    await expect
+      .poll(() => {
+        const feedItems = document.querySelectorAll("li");
+        if (feedItems.length !== 5) return false;
+        
+        return (
+          feedItems[0].textContent?.includes("A Unfetched") &&
+          feedItems[1].textContent?.includes("Z Unfetched") &&
+          feedItems[2].textContent?.includes("Oldest") &&
+          feedItems[3].textContent?.includes("Middle") &&
+          feedItems[4].textContent?.includes("Newest")
+        );
+      })
+      .toBeTruthy();
+  });
 });
