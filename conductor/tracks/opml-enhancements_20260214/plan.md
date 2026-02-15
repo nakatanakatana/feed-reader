@@ -1,6 +1,6 @@
 # Implementation Plan - OPML Management Enhancements
 
-## Phase 1: Backend - OPML Export Logic (Go)
+## Phase 1: Backend - OPML Export Logic (Go) [checkpoint: 27ccc4d]
 - [x] Task: Define ExportOpml RPC in proto 3d27209
 - [x] Task: Create reproduction test case for OPML Export a6994c7
     - [x] Create `cmd/feed-reader/opml_export_test.go`
