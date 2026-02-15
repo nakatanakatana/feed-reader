@@ -118,14 +118,19 @@ func ExportOPML(feeds []ExportFeed) ([]byte, error) {
 			feedType = "rss" // Default to rss if unknown
 		}
 
-		outlines[i] = opmlOutline{
-			Text:     f.Title,
-			Title:    f.Title,
-			XMLURL:   f.XmlURL,
-			HTMLURL:  f.HtmlURL,
-			Category: strings.Join(f.Tags, ","),
-			Type:     feedType,
+		outline := opmlOutline{
+			Text:    f.Title,
+			Title:   f.Title,
+			XMLURL:  f.XmlURL,
+			HTMLURL: f.HtmlURL,
+			Type:    feedType,
 		}
+
+		if len(f.Tags) > 0 {
+			outline.Category = strings.Join(f.Tags, ",")
+		}
+
+		outlines[i] = outline
 	}
 
 	doc := opmlDoc{
