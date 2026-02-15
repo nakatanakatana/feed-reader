@@ -47,11 +47,10 @@ describe("ItemDetailModal Color Mode Support", () => {
     </TransportProvider>
   );
 
-  const content = `<div>
-<p>Test content with images:</p>
-<a href="https://example.com/image.png#gh-light-mode-only"><img src="https://example.com/light.png" alt="Light Mode Image"></a>
-<a href="https://example.com/image.png#gh-dark-mode-only"><img src="https://example.com/dark.png" alt="Dark Mode Image"></a>
-</div>`;
+  const content = `Test content with images:
+
+[![](https://example.com/light.png)](https://example.com/image.png#gh-light-mode-only)
+[![](https://example.com/dark.png)](https://example.com/image.png#gh-dark-mode-only)`;
 
   it("renders content with color mode links and images in the DOM", async () => {
     setupMockData(content);

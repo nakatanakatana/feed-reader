@@ -6,7 +6,7 @@ interface MarkdownRendererProps {
 }
 
 const md = new MarkdownIt({
-  html: true, // Enable HTML to support github-style color mode elements
+  html: false, // Disable raw HTML for security
   linkify: true, // Automatically convert URL-like text to links
 });
 
