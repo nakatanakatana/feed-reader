@@ -186,3 +186,33 @@ func TestGofeedFetcher_ConditionalFetch(t *testing.T) {
 		assert.ErrorIs(t, err, sql.ErrNoRows)
 	})
 }
+
+func TestGofeedFetcher_UserAgent(t *testing.T) {
+	db, err := sql.Open("sqlite", ":memory:")
+	assert.NilError(t, err)
+	defer func() { _ = db.Close() }()
+	_, err = db.Exec(schema.Schema)
+	assert.NilError(t, err)
+	s := store.NewStore(db)
+
+	f := NewGofeedFetcher(s)
+
+	uaChan := make(chan string, 1)
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		uaChan <- r.Header.Get("User-Agent")
+		w.Header().Set("Content-Type", "application/xml")
+		_, _ = fmt.Fprint(w, `<?xml version="1.0" encoding="UTF-8" ?><rss version="2.0"><channel><title>T</title></channel></rss>`)
+	}))
+	defer server.Close()
+
+	_, err = f.Fetch(context.Background(), "", server.URL)
+	assert.NilError(t, err)
+
+	var receivedUA string
+	select {
+	case receivedUA = <-uaChan:
+	default:
+		t.Fatal("User-Agent not received")
+	}
+	assert.Equal(t, receivedUA, UserAgent)
+}
