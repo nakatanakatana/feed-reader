@@ -519,25 +519,25 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                         borderRadius: 0,
                         fontSize: "sm",
                       },
-                      "& #gh-light-mode-only": {
-                        display: "block",
+                      '& a[href*="#gh-light-mode-only"]': {
+                        display: "inline",
                       },
-                      "& #gh-dark-mode-only": {
+                      '& a[href*="#gh-dark-mode-only"]': {
                         display: "none",
                       },
                       "@media (prefers-color-scheme: dark)": {
-                        "& #gh-light-mode-only": {
+                        '& a[href*="#gh-light-mode-only"]': {
                           display: "none !important",
                         },
-                        "& #gh-dark-mode-only": {
-                          display: "block !important",
+                        '& a[href*="#gh-dark-mode-only"]': {
+                          display: "inline !important",
                         },
                       },
                       "@media (prefers-color-scheme: light)": {
-                        "& #gh-light-mode-only": {
-                          display: "block !important",
+                        '& a[href*="#gh-light-mode-only"]': {
+                          display: "inline !important",
                         },
-                        "& #gh-dark-mode-only": {
+                        '& a[href*="#gh-dark-mode-only"]': {
                           display: "none !important",
                         },
                       },

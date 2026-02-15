@@ -49,11 +49,11 @@ describe("ItemDetailModal Color Mode Support", () => {
   );
 
   const content = `<div>
-<p id="gh-light-mode-only">Light Mode Only Content</p>
-<p id="gh-dark-mode-only">Dark Mode Only Content</p>
+<a href="https://example.com/image.png#gh-light-mode-only">Light Mode Image</a>
+<a href="https://example.com/image-dark.png#gh-dark-mode-only">Dark Mode Image</a>
 </div>`;
 
-  it("renders both elements in the DOM", async () => {
+  it("renders both links in the DOM", async () => {
     setupMockData(content);
 
     dispose = render(
@@ -65,14 +65,16 @@ describe("ItemDetailModal Color Mode Support", () => {
       document.body,
     );
 
-    await expect.element(page.getByText("Light Mode Only Content")).toBeInTheDocument();
-    await expect.element(page.getByText("Dark Mode Only Content")).toBeInTheDocument();
+    await expect
+      .element(page.getByText("Light Mode Image"))
+      .toBeInTheDocument();
+    await expect.element(page.getByText("Dark Mode Image")).toBeInTheDocument();
 
-    const lightElement = document.getElementById("gh-light-mode-only");
-    const darkElement = document.getElementById("gh-dark-mode-only");
+    const lightLink = document.querySelector('a[href*="#gh-light-mode-only"]');
+    const darkLink = document.querySelector('a[href*="#gh-dark-mode-only"]');
 
-    expect(lightElement).not.toBeNull();
-    expect(darkElement).not.toBeNull();
+    expect(lightLink).not.toBeNull();
+    expect(darkLink).not.toBeNull();
   });
 
   it("verifies that CSS media queries are applied in the component styles", async () => {
@@ -87,24 +89,45 @@ describe("ItemDetailModal Color Mode Support", () => {
       document.body,
     );
 
-    await expect.element(page.getByText("Light Mode Only Content")).toBeInTheDocument();
+    await expect
+      .element(page.getByText("Light Mode Image"))
+      .toBeInTheDocument();
 
     // Check if any style tag or stylesheet contains the media queries we added
     const styleTags = Array.from(document.querySelectorAll("style"));
-    let hasLightMediaQuery = styleTags.some(s => s.innerHTML.includes("prefers-color-scheme: light"));
-    let hasDarkMediaQuery = styleTags.some(s => s.innerHTML.includes("prefers-color-scheme: dark"));
-    let hasLightId = styleTags.some(s => s.innerHTML.includes("#gh-light-mode-only"));
-    let hasDarkId = styleTags.some(s => s.innerHTML.includes("#gh-dark-mode-only"));
+    let hasLightMediaQuery = styleTags.some((s) =>
+      s.innerHTML.includes("prefers-color-scheme: light"),
+    );
+    let hasDarkMediaQuery = styleTags.some((s) =>
+      s.innerHTML.includes("prefers-color-scheme: dark"),
+    );
+    let hasLightHrefSelector = styleTags.some((s) =>
+      s.innerHTML.includes('href*="#gh-light-mode-only"'),
+    );
+    let hasDarkHrefSelector = styleTags.some((s) =>
+      s.innerHTML.includes('href*="#gh-dark-mode-only"'),
+    );
 
-    if (!(hasLightMediaQuery && hasDarkMediaQuery && hasLightId && hasDarkId)) {
+    if (
+      !(
+        hasLightMediaQuery &&
+        hasDarkMediaQuery &&
+        hasLightHrefSelector &&
+        hasDarkHrefSelector
+      )
+    ) {
       for (const sheet of Array.from(document.styleSheets)) {
         try {
           for (const rule of Array.from(sheet.cssRules)) {
             const cssText = rule.cssText;
-            if (cssText.includes("prefers-color-scheme: light")) hasLightMediaQuery = true;
-            if (cssText.includes("prefers-color-scheme: dark")) hasDarkMediaQuery = true;
-            if (cssText.includes("#gh-light-mode-only")) hasLightId = true;
-            if (cssText.includes("#gh-dark-mode-only")) hasDarkId = true;
+            if (cssText.includes("prefers-color-scheme: light"))
+              hasLightMediaQuery = true;
+            if (cssText.includes("prefers-color-scheme: dark"))
+              hasDarkMediaQuery = true;
+            if (cssText.includes("#gh-light-mode-only"))
+              hasLightHrefSelector = true;
+            if (cssText.includes("#gh-dark-mode-only"))
+              hasDarkHrefSelector = true;
           }
         } catch (e) {
           // Ignore cross-origin stylesheet access errors
@@ -114,7 +137,7 @@ describe("ItemDetailModal Color Mode Support", () => {
 
     expect(hasLightMediaQuery).toBe(true);
     expect(hasDarkMediaQuery).toBe(true);
-    expect(hasLightId).toBe(true);
-    expect(hasDarkId).toBe(true);
+    expect(hasLightHrefSelector).toBe(true);
+    expect(hasDarkHrefSelector).toBe(true);
   });
 });
