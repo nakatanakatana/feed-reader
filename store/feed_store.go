@@ -31,22 +31,7 @@ func (s *Store) ListFeeds(ctx context.Context, params ListFeedsParams) ([]FullFe
 	}
 	feeds := make([]FullFeed, len(rows))
 	for i, r := range rows {
-		feeds[i] = FullFeed{
-			ID:            r.ID,
-			Url:           r.Url,
-			Link:          r.Link,
-			Title:         r.Title,
-			Description:   r.Description,
-			Lang:          r.Lang,
-			ImageUrl:      r.ImageUrl,
-			Copyright:     r.Copyright,
-			FeedType:      r.FeedType,
-			FeedVersion:   r.FeedVersion,
-			CreatedAt:     r.CreatedAt,
-			UpdatedAt:     r.UpdatedAt,
-			LastFetchedAt: r.LastFetchedAt,
-			NextFetch:     r.NextFetch,
-		}
+		feeds[i] = FullFeed(r)
 	}
 	return feeds, nil
 }
@@ -56,22 +41,7 @@ func (s *Store) GetFeed(ctx context.Context, id string) (FullFeed, error) {
 	if err != nil {
 		return FullFeed{}, err
 	}
-	return FullFeed{
-		ID:            r.ID,
-		Url:           r.Url,
-		Link:          r.Link,
-		Title:         r.Title,
-		Description:   r.Description,
-		Lang:          r.Lang,
-		ImageUrl:      r.ImageUrl,
-		Copyright:     r.Copyright,
-		FeedType:      r.FeedType,
-		FeedVersion:   r.FeedVersion,
-		CreatedAt:     r.CreatedAt,
-		UpdatedAt:     r.UpdatedAt,
-		LastFetchedAt: r.LastFetchedAt,
-		NextFetch:     r.NextFetch,
-	}, nil
+	return FullFeed(r), nil
 }
 
 func (s *Store) GetFeedByURL(ctx context.Context, url string) (FullFeed, error) {
@@ -79,22 +49,7 @@ func (s *Store) GetFeedByURL(ctx context.Context, url string) (FullFeed, error) 
 	if err != nil {
 		return FullFeed{}, err
 	}
-	return FullFeed{
-		ID:            r.ID,
-		Url:           r.Url,
-		Link:          r.Link,
-		Title:         r.Title,
-		Description:   r.Description,
-		Lang:          r.Lang,
-		ImageUrl:      r.ImageUrl,
-		Copyright:     r.Copyright,
-		FeedType:      r.FeedType,
-		FeedVersion:   r.FeedVersion,
-		CreatedAt:     r.CreatedAt,
-		UpdatedAt:     r.UpdatedAt,
-		LastFetchedAt: r.LastFetchedAt,
-		NextFetch:     r.NextFetch,
-	}, nil
+	return FullFeed(r), nil
 }
 
 func (s *Store) CreateFeed(ctx context.Context, params CreateFeedParams) (FullFeed, error) {

@@ -34,7 +34,7 @@ func Migrate(ctx context.Context, dbPath string, desiredSchema string, dryRun bo
 	if !dryRun {
 		rawDB, err := sql.Open("sqlite", dbPath)
 		if err == nil {
-			defer rawDB.Close()
+			defer func() { _ = rawDB.Close() }()
 
 			// Check if we need to migrate from feed_fetcher_cache to feed_fetcher
 			var count int

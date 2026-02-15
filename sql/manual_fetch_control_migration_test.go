@@ -51,7 +51,7 @@ CREATE TABLE feed_fetcher_cache (
 	assert.NilError(t, err)
 	_, err = db.Exec(`INSERT INTO feed_fetcher_cache (feed_id, etag, last_modified) VALUES ('feed1', 'etag1', 'lastmod1')`)
 	assert.NilError(t, err)
-	db.Close()
+	_ = db.Close()
 
 	// 3. Run Migration with New Schema
 	err = Migrate(ctx, dbPath, Schema, false)
@@ -60,7 +60,7 @@ CREATE TABLE feed_fetcher_cache (
 	// 4. Verify Data Migration
 	db, err = sql.Open("sqlite", dbPath)
 	assert.NilError(t, err)
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	var etag, lastFetchedAt, nextFetch string
 	err = db.QueryRow("SELECT etag, last_fetched_at, next_fetch FROM feed_fetcher WHERE feed_id = 'feed1'").Scan(&etag, &lastFetchedAt, &nextFetch)

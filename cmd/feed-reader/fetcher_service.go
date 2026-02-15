@@ -56,22 +56,7 @@ func (s *FetcherService) FetchFeedsByIDsSync(ctx context.Context, ids []string) 
 	var wg sync.WaitGroup
 
 	for i, row := range feeds {
-		feed := store.FullFeed{
-			ID:            row.ID,
-			Url:           row.Url,
-			Link:          row.Link,
-			Title:         row.Title,
-			Description:   row.Description,
-			Lang:          row.Lang,
-			ImageUrl:      row.ImageUrl,
-			Copyright:     row.Copyright,
-			FeedType:      row.FeedType,
-			FeedVersion:   row.FeedVersion,
-			CreatedAt:     row.CreatedAt,
-			UpdatedAt:     row.UpdatedAt,
-			LastFetchedAt: row.LastFetchedAt,
-			NextFetch:     row.NextFetch,
-		}
+		feed := store.FullFeed(row)
 		wg.Add(1)
 		go func(idx int, f store.FullFeed) {
 			defer wg.Done()
@@ -209,22 +194,7 @@ func (s *FetcherService) FetchFeedsByIDs(ctx context.Context, ids []string) erro
 	}
 
 	for _, row := range feeds {
-		feed := store.FullFeed{
-			ID:            row.ID,
-			Url:           row.Url,
-			Link:          row.Link,
-			Title:         row.Title,
-			Description:   row.Description,
-			Lang:          row.Lang,
-			ImageUrl:      row.ImageUrl,
-			Copyright:     row.Copyright,
-			FeedType:      row.FeedType,
-			FeedVersion:   row.FeedVersion,
-			CreatedAt:     row.CreatedAt,
-			UpdatedAt:     row.UpdatedAt,
-			LastFetchedAt: row.LastFetchedAt,
-			NextFetch:     row.NextFetch,
-		}
+		feed := store.FullFeed(row)
 		f := feed // capture loop variable
 		s.pool.AddTask(func(ctx context.Context) error {
 			return s.FetchAndSave(ctx, f)

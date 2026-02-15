@@ -7,7 +7,7 @@ import {
 import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { page, userEvent } from "vitest/browser";
+import { page } from "vitest/browser";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
@@ -61,7 +61,9 @@ describe("FeedList Suspend", () => {
 
     await expect.element(page.getByText("Example Feed 1")).toBeInTheDocument();
 
-    const suspendSelect = page.getByRole("combobox", { name: "Suspend fetching" }).first();
+    const suspendSelect = page
+      .getByRole("combobox", { name: "Suspend fetching" })
+      .first();
     await expect.element(suspendSelect).toBeInTheDocument();
 
     // Select 1 Day (86400 seconds)
@@ -91,15 +93,21 @@ describe("FeedList Suspend", () => {
     // Select all visible feeds
     await checkboxes.nth(0).click();
 
-    await expect.element(page.getByText("2 feeds selected")).toBeInTheDocument();
+    await expect
+      .element(page.getByText("2 feeds selected"))
+      .toBeInTheDocument();
 
-    const bulkSuspendSelect = page.getByRole("combobox", { name: "Suspend selected feeds" });
+    const bulkSuspendSelect = page.getByRole("combobox", {
+      name: "Suspend selected feeds",
+    });
     await expect.element(bulkSuspendSelect).toBeInTheDocument();
 
     // Select 1 Week
     await bulkSuspendSelect.selectOptions("604800");
 
     // All feeds should show Next fetch
-    await expect.poll(async () => (await page.getByText(/Next fetch:/).all()).length).toBe(2);
+    await expect
+      .poll(async () => (await page.getByText(/Next fetch:/).all()).length)
+      .toBe(2);
   });
 });

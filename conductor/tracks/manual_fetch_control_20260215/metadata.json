@@ -1,8 +1,0 @@
-{
-  "track_id": "manual_fetch_control_20260215",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-02-15T00:00:00Z",
-  "updated_at": "2026-02-15T00:00:00Z",
-  "description": "Feedの取得タイミングをデータとしてDBに持ち、手動で調整（サスペンド）する機能を追加する"
-}

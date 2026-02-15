@@ -22,7 +22,7 @@ func TestCleanMigration(t *testing.T) {
 	// 2. Verify all tables exist
 	db, err := sql.Open("sqlite", dbPath)
 	assert.NilError(t, err)
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	tables := []string{"feeds", "items", "feed_items", "item_reads", "tags", "feed_tags", "feed_fetcher"}
 	for _, table := range tables {

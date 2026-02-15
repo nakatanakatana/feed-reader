@@ -28,7 +28,7 @@ func TestPollingRespectsSchedule(t *testing.T) {
 	defer cancel()
 
 	_, db := setupTestDB(t)
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	s := store.NewStore(db)
 	fetcher := &pollingMockFetcher{}
