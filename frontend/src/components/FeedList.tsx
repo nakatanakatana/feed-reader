@@ -396,31 +396,84 @@ export function FeedList() {
                           </Show>
                         </div>
                       </div>
-                      <span class={css({ fontSize: "xs", color: "gray.500" })}>
-                        {feed.url}
-                      </span>
-                      <span class={css({ fontSize: "xs", color: "gray.500" })}>
-                        Last fetched:{" "}
-                        {feed.lastFetchedAt
-                          ? formatDate(feed.lastFetchedAt)
-                          : "Not fetched yet"}
-                      </span>
-                      <Show
-                        when={
-                          feed.nextFetch &&
-                          new Date(feed.nextFetch) > new Date()
-                        }
-                      >
-                        <span
+                      <div class={flex({ gap: "2", alignItems: "center" })}>
+                        <span class={css({ fontSize: "xs", color: "gray.500" })}>
+                          {feed.url}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigator.clipboard.writeText(feed.url);
+                            const btn = e.currentTarget;
+                            const originalHTML = btn.innerHTML;
+                            btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><polyline points="20 6 9 17 4 12"/></svg>`;
+                            btn.classList.add(css({ color: "green.600!" }));
+                            setTimeout(() => {
+                              btn.innerHTML = originalHTML;
+                              btn.classList.remove(
+                                css({ color: "green.600!" }),
+                              );
+                            }, 2000);
+                          }}
+                          title="Copy URL"
                           class={css({
-                            fontSize: "xs",
-                            color: "orange.600",
-                            fontWeight: "medium",
+                            color: "gray.400",
+                            cursor: "pointer",
+                            _hover: { color: "gray.600" },
+                            display: "inline-flex",
+                            alignItems: "center",
+                            transition: "all 0.2s",
                           })}
                         >
-                          Next fetch: {formatDate(feed.nextFetch ?? "")}
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="12"
+                            height="12"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          >
+                            <title>Copy URL</title>
+                            <rect
+                              width="14"
+                              height="14"
+                              x="8"
+                              y="8"
+                              rx="2"
+                              ry="2"
+                            />
+                            <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+                          </svg>
+                        </button>
+                      </div>
+                      <div class={flex({ gap: "4", alignItems: "center" })}>
+                        <span class={css({ fontSize: "xs", color: "gray.500" })}>
+                          Last fetched:{" "}
+                          {feed.lastFetchedAt
+                            ? formatDate(feed.lastFetchedAt)
+                            : "Not fetched yet"}
                         </span>
-                      </Show>
+                        <Show
+                          when={
+                            feed.nextFetch &&
+                            new Date(feed.nextFetch) > new Date()
+                          }
+                        >
+                          <span
+                            class={css({
+                              fontSize: "xs",
+                              color: "orange.600",
+                              fontWeight: "medium",
+                            })}
+                          >
+                            Next fetch: {formatDate(feed.nextFetch ?? "")}
+                          </span>
+                        </Show>
+                      </div>
                     </div>
                   </div>
                   <div class={flex({ gap: "2", alignItems: "center" })}>
