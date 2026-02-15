@@ -204,7 +204,7 @@ INSERT INTO feeds (
 ) VALUES (
   ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 )
-RETURNING id, url, link, title, description, lang, image_url, copyright, feed_type, feed_version, last_fetched_at, created_at, updated_at
+RETURNING id, url, link, title, description, lang, image_url, copyright, feed_type, feed_version, created_at, updated_at
 `
 
 type CreateFeedParams struct {
@@ -245,7 +245,6 @@ func (q *Queries) CreateFeed(ctx context.Context, arg CreateFeedParams) (Feed, e
 		&i.Copyright,
 		&i.FeedType,
 		&i.FeedVersion,
-		&i.LastFetchedAt,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -420,15 +419,15 @@ func (q *Queries) DeleteFeed(ctx context.Context, id string) error {
 	return err
 }
 
-const deleteFeedFetcherCache = `-- name: DeleteFeedFetcherCache :exec
+const deleteFeedFetcher = `-- name: DeleteFeedFetcher :exec
 DELETE FROM
-  feed_fetcher_cache
+  feed_fetcher
 WHERE
   feed_id = ?
 `
 
-func (q *Queries) DeleteFeedFetcherCache(ctx context.Context, feedID string) error {
-	_, err := q.db.ExecContext(ctx, deleteFeedFetcherCache, feedID)
+func (q *Queries) DeleteFeedFetcher(ctx context.Context, feedID string) error {
+	_, err := q.db.ExecContext(ctx, deleteFeedFetcher, feedID)
 	return err
 }
 
@@ -475,16 +474,37 @@ func (q *Queries) DeleteTag(ctx context.Context, id string) error {
 
 const getFeed = `-- name: GetFeed :one
 SELECT
-  id, url, link, title, description, lang, image_url, copyright, feed_type, feed_version, last_fetched_at, created_at, updated_at
+  f.id, f.url, f.link, f.title, f.description, f.lang, f.image_url, f.copyright, f.feed_type, f.feed_version, f.created_at, f.updated_at,
+  ff.last_fetched_at,
+  ff.next_fetch
 FROM
-  feeds
+  feeds f
+LEFT JOIN
+  feed_fetcher ff ON f.id = ff.feed_id
 WHERE
-  id = ?
+  f.id = ?
 `
 
-func (q *Queries) GetFeed(ctx context.Context, id string) (Feed, error) {
+type GetFeedRow struct {
+	ID            string  `json:"id"`
+	Url           string  `json:"url"`
+	Link          *string `json:"link"`
+	Title         *string `json:"title"`
+	Description   *string `json:"description"`
+	Lang          *string `json:"lang"`
+	ImageUrl      *string `json:"image_url"`
+	Copyright     *string `json:"copyright"`
+	FeedType      *string `json:"feed_type"`
+	FeedVersion   *string `json:"feed_version"`
+	CreatedAt     string  `json:"created_at"`
+	UpdatedAt     string  `json:"updated_at"`
+	LastFetchedAt *string `json:"last_fetched_at"`
+	NextFetch     *string `json:"next_fetch"`
+}
+
+func (q *Queries) GetFeed(ctx context.Context, id string) (GetFeedRow, error) {
 	row := q.db.QueryRowContext(ctx, getFeed, id)
-	var i Feed
+	var i GetFeedRow
 	err := row.Scan(
 		&i.ID,
 		&i.Url,
@@ -496,25 +516,47 @@ func (q *Queries) GetFeed(ctx context.Context, id string) (Feed, error) {
 		&i.Copyright,
 		&i.FeedType,
 		&i.FeedVersion,
-		&i.LastFetchedAt,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.LastFetchedAt,
+		&i.NextFetch,
 	)
 	return i, err
 }
 
 const getFeedByURL = `-- name: GetFeedByURL :one
 SELECT
-  id, url, link, title, description, lang, image_url, copyright, feed_type, feed_version, last_fetched_at, created_at, updated_at
+  f.id, f.url, f.link, f.title, f.description, f.lang, f.image_url, f.copyright, f.feed_type, f.feed_version, f.created_at, f.updated_at,
+  ff.last_fetched_at,
+  ff.next_fetch
 FROM
-  feeds
+  feeds f
+LEFT JOIN
+  feed_fetcher ff ON f.id = ff.feed_id
 WHERE
-  url = ?
+  f.url = ?
 `
 
-func (q *Queries) GetFeedByURL(ctx context.Context, url string) (Feed, error) {
+type GetFeedByURLRow struct {
+	ID            string  `json:"id"`
+	Url           string  `json:"url"`
+	Link          *string `json:"link"`
+	Title         *string `json:"title"`
+	Description   *string `json:"description"`
+	Lang          *string `json:"lang"`
+	ImageUrl      *string `json:"image_url"`
+	Copyright     *string `json:"copyright"`
+	FeedType      *string `json:"feed_type"`
+	FeedVersion   *string `json:"feed_version"`
+	CreatedAt     string  `json:"created_at"`
+	UpdatedAt     string  `json:"updated_at"`
+	LastFetchedAt *string `json:"last_fetched_at"`
+	NextFetch     *string `json:"next_fetch"`
+}
+
+func (q *Queries) GetFeedByURL(ctx context.Context, url string) (GetFeedByURLRow, error) {
 	row := q.db.QueryRowContext(ctx, getFeedByURL, url)
-	var i Feed
+	var i GetFeedByURLRow
 	err := row.Scan(
 		&i.ID,
 		&i.Url,
@@ -526,29 +568,32 @@ func (q *Queries) GetFeedByURL(ctx context.Context, url string) (Feed, error) {
 		&i.Copyright,
 		&i.FeedType,
 		&i.FeedVersion,
-		&i.LastFetchedAt,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.LastFetchedAt,
+		&i.NextFetch,
 	)
 	return i, err
 }
 
-const getFeedFetcherCache = `-- name: GetFeedFetcherCache :one
+const getFeedFetcher = `-- name: GetFeedFetcher :one
 SELECT
-  feed_id, etag, last_modified, created_at, updated_at
+  feed_id, etag, last_modified, last_fetched_at, next_fetch, created_at, updated_at
 FROM
-  feed_fetcher_cache
+  feed_fetcher
 WHERE
   feed_id = ?
 `
 
-func (q *Queries) GetFeedFetcherCache(ctx context.Context, feedID string) (FeedFetcherCache, error) {
-	row := q.db.QueryRowContext(ctx, getFeedFetcherCache, feedID)
-	var i FeedFetcherCache
+func (q *Queries) GetFeedFetcher(ctx context.Context, feedID string) (FeedFetcher, error) {
+	row := q.db.QueryRowContext(ctx, getFeedFetcher, feedID)
+	var i FeedFetcher
 	err := row.Scan(
 		&i.FeedID,
 		&i.Etag,
 		&i.LastModified,
+		&i.LastFetchedAt,
+		&i.NextFetch,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -684,26 +729,47 @@ func (q *Queries) ListFeedTags(ctx context.Context, arg ListFeedTagsParams) ([]L
 
 const listFeeds = `-- name: ListFeeds :many
 SELECT
-  f.id, f.url, f.link, f.title, f.description, f.lang, f.image_url, f.copyright, f.feed_type, f.feed_version, f.last_fetched_at, f.created_at, f.updated_at
+  f.id, f.url, f.link, f.title, f.description, f.lang, f.image_url, f.copyright, f.feed_type, f.feed_version, f.created_at, f.updated_at,
+  ff.last_fetched_at,
+  ff.next_fetch
 FROM
   feeds f
+LEFT JOIN
+  feed_fetcher ff ON f.id = ff.feed_id
 WHERE
   (?1 IS NULL OR EXISTS (
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = f.id AND ft.tag_id = ?1
   ))
 ORDER BY
-  updated_at ASC
+  f.updated_at ASC
 `
 
-func (q *Queries) ListFeeds(ctx context.Context, tagID interface{}) ([]Feed, error) {
+type ListFeedsRow struct {
+	ID            string  `json:"id"`
+	Url           string  `json:"url"`
+	Link          *string `json:"link"`
+	Title         *string `json:"title"`
+	Description   *string `json:"description"`
+	Lang          *string `json:"lang"`
+	ImageUrl      *string `json:"image_url"`
+	Copyright     *string `json:"copyright"`
+	FeedType      *string `json:"feed_type"`
+	FeedVersion   *string `json:"feed_version"`
+	CreatedAt     string  `json:"created_at"`
+	UpdatedAt     string  `json:"updated_at"`
+	LastFetchedAt *string `json:"last_fetched_at"`
+	NextFetch     *string `json:"next_fetch"`
+}
+
+func (q *Queries) ListFeeds(ctx context.Context, tagID interface{}) ([]ListFeedsRow, error) {
 	rows, err := q.db.QueryContext(ctx, listFeeds, tagID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Feed
+	var items []ListFeedsRow
 	for rows.Next() {
-		var i Feed
+		var i ListFeedsRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Url,
@@ -715,9 +781,10 @@ func (q *Queries) ListFeeds(ctx context.Context, tagID interface{}) ([]Feed, err
 			&i.Copyright,
 			&i.FeedType,
 			&i.FeedVersion,
-			&i.LastFetchedAt,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.LastFetchedAt,
+			&i.NextFetch,
 		); err != nil {
 			return nil, err
 		}
@@ -734,14 +801,35 @@ func (q *Queries) ListFeeds(ctx context.Context, tagID interface{}) ([]Feed, err
 
 const listFeedsByIDs = `-- name: ListFeedsByIDs :many
 SELECT
-  id, url, link, title, description, lang, image_url, copyright, feed_type, feed_version, last_fetched_at, created_at, updated_at
+  f.id, f.url, f.link, f.title, f.description, f.lang, f.image_url, f.copyright, f.feed_type, f.feed_version, f.created_at, f.updated_at,
+  ff.last_fetched_at,
+  ff.next_fetch
 FROM
-  feeds
+  feeds f
+LEFT JOIN
+  feed_fetcher ff ON f.id = ff.feed_id
 WHERE
-  id IN (/*SLICE:ids*/?)
+  f.id IN (/*SLICE:ids*/?)
 `
 
-func (q *Queries) ListFeedsByIDs(ctx context.Context, ids []string) ([]Feed, error) {
+type ListFeedsByIDsRow struct {
+	ID            string  `json:"id"`
+	Url           string  `json:"url"`
+	Link          *string `json:"link"`
+	Title         *string `json:"title"`
+	Description   *string `json:"description"`
+	Lang          *string `json:"lang"`
+	ImageUrl      *string `json:"image_url"`
+	Copyright     *string `json:"copyright"`
+	FeedType      *string `json:"feed_type"`
+	FeedVersion   *string `json:"feed_version"`
+	CreatedAt     string  `json:"created_at"`
+	UpdatedAt     string  `json:"updated_at"`
+	LastFetchedAt *string `json:"last_fetched_at"`
+	NextFetch     *string `json:"next_fetch"`
+}
+
+func (q *Queries) ListFeedsByIDs(ctx context.Context, ids []string) ([]ListFeedsByIDsRow, error) {
 	query := listFeedsByIDs
 	var queryParams []interface{}
 	if len(ids) > 0 {
@@ -757,9 +845,9 @@ func (q *Queries) ListFeedsByIDs(ctx context.Context, ids []string) ([]Feed, err
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Feed
+	var items []ListFeedsByIDsRow
 	for rows.Next() {
-		var i Feed
+		var i ListFeedsByIDsRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Url,
@@ -771,9 +859,86 @@ func (q *Queries) ListFeedsByIDs(ctx context.Context, ids []string) ([]Feed, err
 			&i.Copyright,
 			&i.FeedType,
 			&i.FeedVersion,
-			&i.LastFetchedAt,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.LastFetchedAt,
+			&i.NextFetch,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listFeedsToFetch = `-- name: ListFeedsToFetch :many
+SELECT
+  f.id, f.url, f.link, f.title, f.description, f.lang, f.image_url, f.copyright, f.feed_type, f.feed_version, f.created_at, f.updated_at,
+  ff.last_fetched_at,
+  ff.next_fetch,
+  ff.etag,
+  ff.last_modified
+FROM
+  feeds f
+LEFT JOIN
+  feed_fetcher ff ON f.id = ff.feed_id
+WHERE
+  ff.next_fetch IS NULL OR ff.next_fetch <= (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
+ORDER BY
+  ff.next_fetch ASC
+`
+
+type ListFeedsToFetchRow struct {
+	ID            string  `json:"id"`
+	Url           string  `json:"url"`
+	Link          *string `json:"link"`
+	Title         *string `json:"title"`
+	Description   *string `json:"description"`
+	Lang          *string `json:"lang"`
+	ImageUrl      *string `json:"image_url"`
+	Copyright     *string `json:"copyright"`
+	FeedType      *string `json:"feed_type"`
+	FeedVersion   *string `json:"feed_version"`
+	CreatedAt     string  `json:"created_at"`
+	UpdatedAt     string  `json:"updated_at"`
+	LastFetchedAt *string `json:"last_fetched_at"`
+	NextFetch     *string `json:"next_fetch"`
+	Etag          *string `json:"etag"`
+	LastModified  *string `json:"last_modified"`
+}
+
+func (q *Queries) ListFeedsToFetch(ctx context.Context) ([]ListFeedsToFetchRow, error) {
+	rows, err := q.db.QueryContext(ctx, listFeedsToFetch)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListFeedsToFetchRow
+	for rows.Next() {
+		var i ListFeedsToFetchRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Url,
+			&i.Link,
+			&i.Title,
+			&i.Description,
+			&i.Lang,
+			&i.ImageUrl,
+			&i.Copyright,
+			&i.FeedType,
+			&i.FeedVersion,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.LastFetchedAt,
+			&i.NextFetch,
+			&i.Etag,
+			&i.LastModified,
 		); err != nil {
 			return nil, err
 		}
@@ -1072,22 +1237,27 @@ func (q *Queries) ListTagsByFeedId(ctx context.Context, feedID string) ([]Tag, e
 }
 
 const markFeedFetched = `-- name: MarkFeedFetched :exec
-UPDATE
-  feeds
-SET
-  last_fetched_at = ?,
+INSERT INTO feed_fetcher (
+  feed_id,
+  last_fetched_at,
+  next_fetch
+) VALUES (
+  ?, ?, ?
+)
+ON CONFLICT(feed_id) DO UPDATE SET
+  last_fetched_at = COALESCE(excluded.last_fetched_at, feed_fetcher.last_fetched_at),
+  next_fetch = COALESCE(excluded.next_fetch, feed_fetcher.next_fetch),
   updated_at = (strftime('%FT%TZ', 'now'))
-WHERE
-  id = ?
 `
 
 type MarkFeedFetchedParams struct {
+	FeedID        string  `json:"feed_id"`
 	LastFetchedAt *string `json:"last_fetched_at"`
-	ID            string  `json:"id"`
+	NextFetch     *string `json:"next_fetch"`
 }
 
 func (q *Queries) MarkFeedFetched(ctx context.Context, arg MarkFeedFetchedParams) error {
-	_, err := q.db.ExecContext(ctx, markFeedFetched, arg.LastFetchedAt, arg.ID)
+	_, err := q.db.ExecContext(ctx, markFeedFetched, arg.FeedID, arg.LastFetchedAt, arg.NextFetch)
 	return err
 }
 
@@ -1137,24 +1307,22 @@ SET
   copyright = ?,
   feed_type = ?,
   feed_version = ?,
-  last_fetched_at = ?,
   updated_at = (strftime('%FT%TZ', 'now'))
 WHERE
   id = ?
-RETURNING id, url, link, title, description, lang, image_url, copyright, feed_type, feed_version, last_fetched_at, created_at, updated_at
+RETURNING id, url, link, title, description, lang, image_url, copyright, feed_type, feed_version, created_at, updated_at
 `
 
 type UpdateFeedParams struct {
-	Link          *string `json:"link"`
-	Title         *string `json:"title"`
-	Description   *string `json:"description"`
-	Lang          *string `json:"lang"`
-	ImageUrl      *string `json:"image_url"`
-	Copyright     *string `json:"copyright"`
-	FeedType      *string `json:"feed_type"`
-	FeedVersion   *string `json:"feed_version"`
-	LastFetchedAt *string `json:"last_fetched_at"`
-	ID            string  `json:"id"`
+	Link        *string `json:"link"`
+	Title       *string `json:"title"`
+	Description *string `json:"description"`
+	Lang        *string `json:"lang"`
+	ImageUrl    *string `json:"image_url"`
+	Copyright   *string `json:"copyright"`
+	FeedType    *string `json:"feed_type"`
+	FeedVersion *string `json:"feed_version"`
+	ID          string  `json:"id"`
 }
 
 func (q *Queries) UpdateFeed(ctx context.Context, arg UpdateFeedParams) (Feed, error) {
@@ -1167,7 +1335,6 @@ func (q *Queries) UpdateFeed(ctx context.Context, arg UpdateFeedParams) (Feed, e
 		arg.Copyright,
 		arg.FeedType,
 		arg.FeedVersion,
-		arg.LastFetchedAt,
 		arg.ID,
 	)
 	var i Feed
@@ -1182,41 +1349,54 @@ func (q *Queries) UpdateFeed(ctx context.Context, arg UpdateFeedParams) (Feed, e
 		&i.Copyright,
 		&i.FeedType,
 		&i.FeedVersion,
-		&i.LastFetchedAt,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
 	return i, err
 }
 
-const upsertFeedFetcherCache = `-- name: UpsertFeedFetcherCache :one
-INSERT INTO feed_fetcher_cache (
+const upsertFeedFetcher = `-- name: UpsertFeedFetcher :one
+INSERT INTO feed_fetcher (
   feed_id,
   etag,
-  last_modified
+  last_modified,
+  last_fetched_at,
+  next_fetch
 ) VALUES (
-  ?, ?, ?
+  ?, ?, ?, ?, ?
 )
 ON CONFLICT(feed_id) DO UPDATE SET
   etag = excluded.etag,
   last_modified = excluded.last_modified,
+  last_fetched_at = COALESCE(excluded.last_fetched_at, feed_fetcher.last_fetched_at),
+  next_fetch = COALESCE(excluded.next_fetch, feed_fetcher.next_fetch),
   updated_at = (strftime('%FT%TZ', 'now'))
-RETURNING feed_id, etag, last_modified, created_at, updated_at
+RETURNING feed_id, etag, last_modified, last_fetched_at, next_fetch, created_at, updated_at
 `
 
-type UpsertFeedFetcherCacheParams struct {
-	FeedID       string  `json:"feed_id"`
-	Etag         *string `json:"etag"`
-	LastModified *string `json:"last_modified"`
+type UpsertFeedFetcherParams struct {
+	FeedID        string  `json:"feed_id"`
+	Etag          *string `json:"etag"`
+	LastModified  *string `json:"last_modified"`
+	LastFetchedAt *string `json:"last_fetched_at"`
+	NextFetch     *string `json:"next_fetch"`
 }
 
-func (q *Queries) UpsertFeedFetcherCache(ctx context.Context, arg UpsertFeedFetcherCacheParams) (FeedFetcherCache, error) {
-	row := q.db.QueryRowContext(ctx, upsertFeedFetcherCache, arg.FeedID, arg.Etag, arg.LastModified)
-	var i FeedFetcherCache
+func (q *Queries) UpsertFeedFetcher(ctx context.Context, arg UpsertFeedFetcherParams) (FeedFetcher, error) {
+	row := q.db.QueryRowContext(ctx, upsertFeedFetcher,
+		arg.FeedID,
+		arg.Etag,
+		arg.LastModified,
+		arg.LastFetchedAt,
+		arg.NextFetch,
+	)
+	var i FeedFetcher
 	err := row.Scan(
 		&i.FeedID,
 		&i.Etag,
 		&i.LastModified,
+		&i.LastFetchedAt,
+		&i.NextFetch,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

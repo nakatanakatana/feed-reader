@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 
 	"connectrpc.com/connect"
 	feedv1 "github.com/nakatanakatana/feed-reader/gen/go/feed/v1"
@@ -22,7 +23,7 @@ type FeedServer struct {
 }
 
 type ItemFetcher interface {
-	FetchAndSave(ctx context.Context, f store.Feed) error
+	FetchAndSave(ctx context.Context, f store.FullFeed) error
 	FetchFeedsByIDs(ctx context.Context, ids []string) error
 	FetchFeedsByIDsSync(ctx context.Context, ids []string) ([]FeedFetchResult, error)
 }
@@ -111,12 +112,33 @@ func (s *FeedServer) ListFeeds(ctx context.Context, req *connect.Request[feedv1.
 			Tags:          protoTags,
 			Link:          f.Link,
 			LastFetchedAt: f.LastFetchedAt,
+			NextFetch:     f.NextFetch,
 		}
 	}
 
 	return connect.NewResponse(&feedv1.ListFeedsResponse{
 		Feeds: protoFeeds,
 	}), nil
+}
+
+func (s *FeedServer) SuspendFeeds(ctx context.Context, req *connect.Request[feedv1.SuspendFeedsRequest]) (*connect.Response[feedv1.SuspendFeedsResponse], error) {
+	if len(req.Msg.Ids) == 0 {
+		return connect.NewResponse(&feedv1.SuspendFeedsResponse{}), nil
+	}
+
+	nextFetch := time.Now().UTC().Add(time.Duration(req.Msg.SuspendSeconds) * time.Second).Format(time.RFC3339)
+
+	for _, id := range req.Msg.Ids {
+		err := s.store.MarkFeedFetched(ctx, store.MarkFeedFetchedParams{
+			FeedID:    id,
+			NextFetch: &nextFetch,
+		})
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, err)
+		}
+	}
+
+	return connect.NewResponse(&feedv1.SuspendFeedsResponse{}), nil
 }
 
 func (s *FeedServer) CreateFeed(ctx context.Context, req *connect.Request[feedv1.CreateFeedRequest]) (*connect.Response[feedv1.CreateFeedResponse], error) {
@@ -135,7 +157,7 @@ func (s *FeedServer) CreateFeed(ctx context.Context, req *connect.Request[feedv1
 	}), nil
 }
 
-func (s *FeedServer) createFeedFromURL(ctx context.Context, url string, titleOverride *string, tagIds []string) (*store.Feed, error) {
+func (s *FeedServer) createFeedFromURL(ctx context.Context, url string, titleOverride *string, tagIds []string) (*store.FullFeed, error) {
 	fetchedFeed, err := s.fetcher.Fetch(ctx, "", url)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch feed: %w", err)
@@ -181,27 +203,42 @@ func (s *FeedServer) createFeedFromURL(ctx context.Context, url string, titleOve
 		return nil, err
 	}
 
+	// Initialize schedule
+	now := time.Now().UTC().Format(time.RFC3339)
+	err = s.store.MarkFeedFetched(ctx, store.MarkFeedFetchedParams{
+		FeedID:        feed.ID,
+		LastFetchedAt: nil, // Never fetched yet
+		NextFetch:     &now, // Fetch immediately
+	})
+	if err != nil {
+		return nil, err
+	}
+
 	if len(tagIds) > 0 {
 		if err := s.store.SetFeedTags(ctx, feed.ID, tagIds); err != nil {
 			return nil, connect.NewError(connect.CodeInternal, err)
 		}
 	}
 
-	return &feed, nil
+	// Reload feed to ensure scheduling fields (e.g., NextFetch, LastFetchedAt) are up to date
+	feedWithSchedule, err := s.store.GetFeed(ctx, feed.ID)
+	if err != nil {
+		return nil, err
+	}
+	return &feedWithSchedule, nil
 }
 
 func (s *FeedServer) UpdateFeed(ctx context.Context, req *connect.Request[feedv1.UpdateFeedRequest]) (*connect.Response[feedv1.UpdateFeedResponse], error) {
 	feed, err := s.store.UpdateFeed(ctx, store.UpdateFeedParams{
-		Link:          req.Msg.Link,
-		Title:         req.Msg.Title,
-		Description:   req.Msg.Description,
-		Lang:          req.Msg.Lang,
-		ImageUrl:      req.Msg.ImageUrl,
-		Copyright:     req.Msg.Copyright,
-		FeedType:      req.Msg.FeedType,
-		FeedVersion:   req.Msg.FeedVersion,
-		LastFetchedAt: req.Msg.LastFetchedAt,
-		ID:            req.Msg.Id,
+		Link:        req.Msg.Link,
+		Title:       req.Msg.Title,
+		Description: req.Msg.Description,
+		Lang:        req.Msg.Lang,
+		ImageUrl:    req.Msg.ImageUrl,
+		Copyright:   req.Msg.Copyright,
+		FeedType:    req.Msg.FeedType,
+		FeedVersion: req.Msg.FeedVersion,
+		ID:          req.Msg.Id,
 	})
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -327,7 +364,7 @@ func (s *FeedServer) ListFeedTags(ctx context.Context, req *connect.Request[feed
 	}), nil
 }
 
-func (s *FeedServer) toProtoFeed(ctx context.Context, f store.Feed) (*feedv1.Feed, error) {
+func (s *FeedServer) toProtoFeed(ctx context.Context, f store.FullFeed) (*feedv1.Feed, error) {
 	var title string
 	if f.Title != nil {
 		title = *f.Title
@@ -360,6 +397,7 @@ func (s *FeedServer) toProtoFeed(ctx context.Context, f store.Feed) (*feedv1.Fee
 		FeedType:      f.FeedType,
 		FeedVersion:   f.FeedVersion,
 		LastFetchedAt: f.LastFetchedAt,
+		NextFetch:     f.NextFetch,
 		CreatedAt:     f.CreatedAt,
 		UpdatedAt:     f.UpdatedAt,
 		Tags:          protoTags,

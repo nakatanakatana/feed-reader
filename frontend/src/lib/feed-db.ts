@@ -14,6 +14,7 @@ export interface Feed {
   title: string;
   unreadCount?: bigint;
   lastFetchedAt?: string;
+  nextFetch?: string;
   tags?: Tag[];
 }
 
@@ -65,6 +66,17 @@ export const refreshFeeds = async (feedIds: string[]) => {
   }
 };
 
+export const suspendFeeds = async (
+  feedIds: string[],
+  suspendSeconds: number,
+) => {
+  await feedClient.suspendFeeds({
+    ids: feedIds,
+    suspendSeconds: BigInt(suspendSeconds),
+  });
+  queryClient.invalidateQueries({ queryKey: ["feeds"] });
+};
+
 export const exportFeeds = async (feedIds: string[]) => {
   const res = await feedClient.exportOpml({ ids: feedIds });
   const blob = new Blob([res.opmlContent as BlobPart], {
@@ -94,6 +106,7 @@ export const feeds = createCollection(
         link: feed.link,
         title: feed.title,
         lastFetchedAt: feed.lastFetchedAt,
+        nextFetch: feed.nextFetch,
         tags: feed.tags,
       }));
     },

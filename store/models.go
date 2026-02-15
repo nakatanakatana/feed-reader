@@ -5,27 +5,28 @@
 package store
 
 type Feed struct {
-	ID            string  `json:"id"`
-	Url           string  `json:"url"`
-	Link          *string `json:"link"`
-	Title         *string `json:"title"`
-	Description   *string `json:"description"`
-	Lang          *string `json:"lang"`
-	ImageUrl      *string `json:"image_url"`
-	Copyright     *string `json:"copyright"`
-	FeedType      *string `json:"feed_type"`
-	FeedVersion   *string `json:"feed_version"`
-	LastFetchedAt *string `json:"last_fetched_at"`
-	CreatedAt     string  `json:"created_at"`
-	UpdatedAt     string  `json:"updated_at"`
+	ID          string  `json:"id"`
+	Url         string  `json:"url"`
+	Link        *string `json:"link"`
+	Title       *string `json:"title"`
+	Description *string `json:"description"`
+	Lang        *string `json:"lang"`
+	ImageUrl    *string `json:"image_url"`
+	Copyright   *string `json:"copyright"`
+	FeedType    *string `json:"feed_type"`
+	FeedVersion *string `json:"feed_version"`
+	CreatedAt   string  `json:"created_at"`
+	UpdatedAt   string  `json:"updated_at"`
 }
 
-type FeedFetcherCache struct {
-	FeedID       string  `json:"feed_id"`
-	Etag         *string `json:"etag"`
-	LastModified *string `json:"last_modified"`
-	CreatedAt    string  `json:"created_at"`
-	UpdatedAt    string  `json:"updated_at"`
+type FeedFetcher struct {
+	FeedID        string  `json:"feed_id"`
+	Etag          *string `json:"etag"`
+	LastModified  *string `json:"last_modified"`
+	LastFetchedAt *string `json:"last_fetched_at"`
+	NextFetch     *string `json:"next_fetch"`
+	CreatedAt     string  `json:"created_at"`
+	UpdatedAt     string  `json:"updated_at"`
 }
 
 type FeedItem struct {

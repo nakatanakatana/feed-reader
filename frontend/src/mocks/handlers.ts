@@ -10,6 +10,7 @@ import {
   ListFeedTagsResponseSchema,
   ManageFeedTagsResponseSchema,
   SetFeedTagsResponseSchema,
+  SuspendFeedsResponseSchema,
   UpdateFeedResponseSchema,
 } from "../gen/feed/v1/feed_pb";
 import {
@@ -130,9 +131,26 @@ export const handlers = [
           unreadCount: feed.unreadCount ?? 0n,
           link: feed.link,
           lastFetchedAt: feed.lastFetchedAt,
+          nextFetch: feed.nextFetch,
         }),
       );
       return create(ListFeedsResponseSchema, { feeds: listFeeds });
+    },
+  }),
+
+  mockConnectWeb(FeedService)({
+    method: "suspendFeeds",
+    handler: (req) => {
+      const nextFetch = new Date(
+        Date.now() + Number(req.suspendSeconds) * 1000,
+      ).toISOString();
+      for (const id of req.ids || []) {
+        const feed = feeds.find((f) => f.id === id);
+        if (feed) {
+          feed.nextFetch = nextFetch;
+        }
+      }
+      return create(SuspendFeedsResponseSchema, {});
     },
   }),
 

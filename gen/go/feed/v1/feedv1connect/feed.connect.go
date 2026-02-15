@@ -58,6 +58,9 @@ const (
 	// FeedServiceManageFeedTagsProcedure is the fully-qualified name of the FeedService's
 	// ManageFeedTags RPC.
 	FeedServiceManageFeedTagsProcedure = "/feed.v1.FeedService/ManageFeedTags"
+	// FeedServiceSuspendFeedsProcedure is the fully-qualified name of the FeedService's SuspendFeeds
+	// RPC.
+	FeedServiceSuspendFeedsProcedure = "/feed.v1.FeedService/SuspendFeeds"
 )
 
 // FeedServiceClient is a client for the feed.v1.FeedService service.
@@ -74,6 +77,7 @@ type FeedServiceClient interface {
 	ListFeedTags(context.Context, *connect.Request[v1.ListFeedTagsRequest]) (*connect.Response[v1.ListFeedTagsResponse], error)
 	SetFeedTags(context.Context, *connect.Request[v1.SetFeedTagsRequest]) (*connect.Response[v1.SetFeedTagsResponse], error)
 	ManageFeedTags(context.Context, *connect.Request[v1.ManageFeedTagsRequest]) (*connect.Response[v1.ManageFeedTagsResponse], error)
+	SuspendFeeds(context.Context, *connect.Request[v1.SuspendFeedsRequest]) (*connect.Response[v1.SuspendFeedsResponse], error)
 }
 
 // NewFeedServiceClient constructs a client for the feed.v1.FeedService service. By default, it uses
@@ -153,6 +157,12 @@ func NewFeedServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(feedServiceMethods.ByName("ManageFeedTags")),
 			connect.WithClientOptions(opts...),
 		),
+		suspendFeeds: connect.NewClient[v1.SuspendFeedsRequest, v1.SuspendFeedsResponse](
+			httpClient,
+			baseURL+FeedServiceSuspendFeedsProcedure,
+			connect.WithSchema(feedServiceMethods.ByName("SuspendFeeds")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -169,6 +179,7 @@ type feedServiceClient struct {
 	listFeedTags   *connect.Client[v1.ListFeedTagsRequest, v1.ListFeedTagsResponse]
 	setFeedTags    *connect.Client[v1.SetFeedTagsRequest, v1.SetFeedTagsResponse]
 	manageFeedTags *connect.Client[v1.ManageFeedTagsRequest, v1.ManageFeedTagsResponse]
+	suspendFeeds   *connect.Client[v1.SuspendFeedsRequest, v1.SuspendFeedsResponse]
 }
 
 // GetFeed calls feed.v1.FeedService.GetFeed.
@@ -226,6 +237,11 @@ func (c *feedServiceClient) ManageFeedTags(ctx context.Context, req *connect.Req
 	return c.manageFeedTags.CallUnary(ctx, req)
 }
 
+// SuspendFeeds calls feed.v1.FeedService.SuspendFeeds.
+func (c *feedServiceClient) SuspendFeeds(ctx context.Context, req *connect.Request[v1.SuspendFeedsRequest]) (*connect.Response[v1.SuspendFeedsResponse], error) {
+	return c.suspendFeeds.CallUnary(ctx, req)
+}
+
 // FeedServiceHandler is an implementation of the feed.v1.FeedService service.
 type FeedServiceHandler interface {
 	GetFeed(context.Context, *connect.Request[v1.GetFeedRequest]) (*connect.Response[v1.GetFeedResponse], error)
@@ -240,6 +256,7 @@ type FeedServiceHandler interface {
 	ListFeedTags(context.Context, *connect.Request[v1.ListFeedTagsRequest]) (*connect.Response[v1.ListFeedTagsResponse], error)
 	SetFeedTags(context.Context, *connect.Request[v1.SetFeedTagsRequest]) (*connect.Response[v1.SetFeedTagsResponse], error)
 	ManageFeedTags(context.Context, *connect.Request[v1.ManageFeedTagsRequest]) (*connect.Response[v1.ManageFeedTagsResponse], error)
+	SuspendFeeds(context.Context, *connect.Request[v1.SuspendFeedsRequest]) (*connect.Response[v1.SuspendFeedsResponse], error)
 }
 
 // NewFeedServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -315,6 +332,12 @@ func NewFeedServiceHandler(svc FeedServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(feedServiceMethods.ByName("ManageFeedTags")),
 		connect.WithHandlerOptions(opts...),
 	)
+	feedServiceSuspendFeedsHandler := connect.NewUnaryHandler(
+		FeedServiceSuspendFeedsProcedure,
+		svc.SuspendFeeds,
+		connect.WithSchema(feedServiceMethods.ByName("SuspendFeeds")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/feed.v1.FeedService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case FeedServiceGetFeedProcedure:
@@ -339,6 +362,8 @@ func NewFeedServiceHandler(svc FeedServiceHandler, opts ...connect.HandlerOption
 			feedServiceSetFeedTagsHandler.ServeHTTP(w, r)
 		case FeedServiceManageFeedTagsProcedure:
 			feedServiceManageFeedTagsHandler.ServeHTTP(w, r)
+		case FeedServiceSuspendFeedsProcedure:
+			feedServiceSuspendFeedsHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -390,4 +415,8 @@ func (UnimplementedFeedServiceHandler) SetFeedTags(context.Context, *connect.Req
 
 func (UnimplementedFeedServiceHandler) ManageFeedTags(context.Context, *connect.Request[v1.ManageFeedTagsRequest]) (*connect.Response[v1.ManageFeedTagsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("feed.v1.FeedService.ManageFeedTags is not implemented"))
+}
+
+func (UnimplementedFeedServiceHandler) SuspendFeeds(context.Context, *connect.Request[v1.SuspendFeedsRequest]) (*connect.Response[v1.SuspendFeedsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("feed.v1.FeedService.SuspendFeeds is not implemented"))
 }

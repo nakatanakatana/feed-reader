@@ -10,9 +10,10 @@ import {
   feeds,
   feedTag,
   refreshFeeds,
+  suspendFeeds,
 } from "../lib/db";
 import { fetchingState } from "../lib/fetching-state";
-import { formatDate, formatUnreadCount } from "../lib/item-utils";
+import { formatDate, formatRelativeDate } from "../lib/item-utils";
 import { tagsFeedQuery } from "../lib/tag-db";
 import { BulkActionBar } from "./BulkActionBar";
 import { ManageTagsModal } from "./ManageTagsModal";
@@ -23,6 +24,10 @@ import { EmptyState } from "./ui/EmptyState";
 export function FeedList() {
   const refreshMutation = useMutation(() => ({
     mutationFn: refreshFeeds,
+  }));
+  const suspendMutation = useMutation(() => ({
+    mutationFn: (params: { ids: string[]; seconds: number }) =>
+      suspendFeeds(params.ids, params.seconds),
   }));
   const [selectedTagId, setSelectedTagId] = createSignal<
     string | undefined | null
@@ -58,6 +63,10 @@ export function FeedList() {
     } else if (currentSort === "last_fetched") {
       query = query
         .orderBy(({ feed }) => feed.lastFetchedAt || "", "asc")
+        .orderBy(({ feed }) => feed.title, "asc");
+    } else if (currentSort === "next_fetch") {
+      query = query
+        .orderBy(({ feed }) => feed.nextFetch || "", "asc")
         .orderBy(({ feed }) => feed.title, "asc");
     } else {
       query = query.orderBy(({ feed }) => feed.title, "asc");
@@ -114,6 +123,14 @@ export function FeedList() {
       setDeleteError(
         e instanceof Error ? e : new Error("Failed to delete feed"),
       );
+    }
+  };
+
+  const handleSuspend = async (ids: string[], seconds: number) => {
+    try {
+      await suspendMutation.mutateAsync({ ids, seconds });
+    } catch (e) {
+      console.error("Failed to suspend feeds:", e);
     }
   };
 
@@ -208,6 +225,7 @@ export function FeedList() {
             <option value="title_asc">Title (A-Z)</option>
             <option value="title_desc">Title (Z-A)</option>
             <option value="last_fetched">Last Fetched</option>
+            <option value="next_fetch">Next Fetch</option>
           </select>
           <span class={css({ fontSize: "sm", color: "gray.600", ml: "2" })}>
             Filter:
@@ -242,9 +260,7 @@ export function FeedList() {
               {(tag) => (
                 <option value={tag.id}>
                   {tag.name}
-                  {tag.unreadCount && tag.unreadCount > 0n
-                    ? ` (${formatUnreadCount(Number(tag.unreadCount))})`
-                    : " (0)"}
+                  {` (${tag.feedCount ?? 0})`}
                 </option>
               )}
             </For>
@@ -383,18 +399,123 @@ export function FeedList() {
                           </Show>
                         </div>
                       </div>
-                      <span class={css({ fontSize: "xs", color: "gray.500" })}>
-                        {feed.url}
-                      </span>
-                      <span class={css({ fontSize: "xs", color: "gray.500" })}>
-                        Last fetched:{" "}
-                        {feed.lastFetchedAt
-                          ? formatDate(feed.lastFetchedAt)
-                          : "Not fetched yet"}
-                      </span>
+                      <div class={flex({ gap: "2", alignItems: "center" })}>
+                        <span
+                          class={css({ fontSize: "xs", color: "gray.500" })}
+                        >
+                          {feed.url}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigator.clipboard.writeText(feed.url);
+                            const btn = e.currentTarget;
+                            const originalHTML = btn.innerHTML;
+                            btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><polyline points="20 6 9 17 4 12"/></svg>`;
+                            btn.classList.add(css({ color: "green.600!" }));
+                            setTimeout(() => {
+                              btn.innerHTML = originalHTML;
+                              btn.classList.remove(
+                                css({ color: "green.600!" }),
+                              );
+                            }, 2000);
+                          }}
+                          title="Copy URL"
+                          class={css({
+                            color: "gray.400",
+                            cursor: "pointer",
+                            _hover: { color: "gray.600" },
+                            display: "inline-flex",
+                            alignItems: "center",
+                            transition: "all 0.2s",
+                          })}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="12"
+                            height="12"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          >
+                            <title>Copy URL</title>
+                            <rect
+                              width="14"
+                              height="14"
+                              x="8"
+                              y="8"
+                              rx="2"
+                              ry="2"
+                            />
+                            <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+                          </svg>
+                        </button>
+                      </div>
+                      <div class={flex({ gap: "4", alignItems: "center" })}>
+                        <span
+                          class={css({ fontSize: "xs", color: "gray.500" })}
+                        >
+                          Last fetched:{" "}
+                          {feed.lastFetchedAt
+                            ? formatDate(feed.lastFetchedAt)
+                            : "Not fetched yet"}
+                        </span>
+                        <Show
+                          when={
+                            feed.nextFetch &&
+                            new Date(feed.nextFetch) > new Date()
+                          }
+                        >
+                          <span
+                            class={css({
+                              fontSize: "xs",
+                              color: "orange.600",
+                              fontWeight: "medium",
+                            })}
+                          >
+                            Next fetch:{" "}
+                            {formatRelativeDate(feed.nextFetch ?? "")}
+                          </span>
+                        </Show>
+                      </div>
                     </div>
                   </div>
                   <div class={flex({ gap: "2", alignItems: "center" })}>
+                    <div class={css({ position: "relative" })}>
+                      <select
+                        aria-label="Suspend fetching"
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          const seconds = Number(e.currentTarget.value);
+                          if (seconds > 0) {
+                            handleSuspend([feed.id], seconds);
+                          }
+                          e.currentTarget.value = "0"; // reset
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        class={css({
+                          fontSize: "xs",
+                          px: "2",
+                          py: "1.5",
+                          rounded: "md",
+                          border: "1px solid",
+                          borderColor: "gray.300",
+                          bg: "white",
+                          cursor: "pointer",
+                          _hover: { borderColor: "gray.400" },
+                        })}
+                      >
+                        <option value="0">Suspend...</option>
+                        <option value="86400">1 Day</option>
+                        <option value="259200">3 Days</option>
+                        <option value="604800">1 Week</option>
+                        <option value="2592000">1 Month</option>
+                      </select>
+                    </div>
                     <ActionButton
                       size="sm"
                       variant="ghost"
@@ -447,6 +568,35 @@ export function FeedList() {
           }
         }}
       >
+        <div class={flex({ gap: "2", alignItems: "center" })}>
+          <select
+            aria-label="Suspend selected feeds"
+            onChange={(e) => {
+              const seconds = Number(e.currentTarget.value);
+              if (seconds > 0) {
+                handleSuspend(selectedFeedIds(), seconds);
+                setSelectedFeedIds([]);
+              }
+              e.currentTarget.value = "0";
+            }}
+            class={css({
+              fontSize: "xs",
+              px: "2",
+              py: "1.5",
+              rounded: "md",
+              border: "1px solid",
+              borderColor: "gray.300",
+              bg: "white",
+              cursor: "pointer",
+            })}
+          >
+            <option value="0">Suspend Selected...</option>
+            <option value="86400">1 Day</option>
+            <option value="259200">3 Days</option>
+            <option value="604800">1 Week</option>
+            <option value="2592000">1 Month</option>
+          </select>
+        </div>
         <ActionButton
           size="sm"
           variant="secondary"

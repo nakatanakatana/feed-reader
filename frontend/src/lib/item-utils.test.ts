@@ -1,6 +1,7 @@
 import * as fc from "fast-check";
 import { describe, expect, it, vi } from "vitest";
 import {
+  formatRelativeDate,
   formatUnreadCount,
   getPublishedSince,
   normalizeCategories,
@@ -197,6 +198,54 @@ describe("item-utils", () => {
         }),
         { numRuns: 100 },
       );
+    });
+  });
+
+  describe("formatRelativeDate", () => {
+    it("should format relative dates correctly", () => {
+      const mockNow = new Date("2026-02-15T12:00:00Z");
+      vi.setSystemTime(mockNow);
+
+      const tests = [
+        {
+          input: "2026-02-15T12:00:05Z",
+          expected: /in 5 seconds|5秒後/,
+        },
+        {
+          input: "2026-02-15T12:05:00Z",
+          expected: /in 5 minutes|5分後/,
+        },
+        {
+          input: "2026-02-15T14:00:00Z",
+          expected: /in 2 hours|2時間後/,
+        },
+        {
+          input: "2026-02-17T12:00:00Z",
+          expected: /in 2 days|2日後/,
+        },
+        {
+          input: "2026-02-15T11:59:55Z",
+          expected: /5 seconds ago|5秒前/,
+        },
+        {
+          input: "2026-02-15T11:55:00Z",
+          expected: /5 minutes ago|5分前/,
+        },
+        {
+          input: "2026-02-15T10:00:00Z",
+          expected: /2 hours ago|2時間前/,
+        },
+        {
+          input: "2026-02-13T12:00:00Z",
+          expected: /2 days ago|2日前/,
+        },
+      ];
+
+      for (const { input, expected } of tests) {
+        expect(formatRelativeDate(input)).toMatch(expected);
+      }
+
+      vi.useRealTimers();
     });
   });
 });

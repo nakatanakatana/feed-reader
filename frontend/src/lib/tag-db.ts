@@ -15,6 +15,7 @@ export interface Tag {
   id: string;
   name: string;
   unreadCount?: bigint;
+  feedCount?: bigint;
 }
 
 const tagClient = createClient(TagService, transport);
@@ -30,6 +31,7 @@ export const tags = createCollection(
         id: tag.id,
         name: tag.name,
         unreadCount: tag.unreadCount,
+        feedCount: tag.feedCount,
       }));
     },
     onInsert: async ({ transaction }) => {
@@ -54,11 +56,11 @@ export const tagsFeedQuery = createLiveQueryCollection((q) =>
   q
     .from({ tag: tagsBaseQuery })
     .leftJoin({ ft: feedTag }, ({ tag, ft }) => eq(tag.id, ft.tagId))
-    .groupBy(({ tag }) => [tag.id, tag.name, tag.unreadCount])
+    .groupBy(({ tag }) => [tag.id, tag.name, tag.unreadCount, tag.feedCount])
     .select(({ tag, ft }) => ({
       id: tag.id,
       name: tag.name,
       unreadCount: tag.unreadCount,
-      feedCount: count(ft?.feedId),
+      feedCount: tag.feedCount ?? count(ft?.feedId),
     })),
 );

@@ -1,38 +1,54 @@
 -- name: GetFeed :one
 SELECT
-  *
+  f.*,
+  ff.last_fetched_at,
+  ff.next_fetch
 FROM
-  feeds
+  feeds f
+LEFT JOIN
+  feed_fetcher ff ON f.id = ff.feed_id
 WHERE
-  id = ?;
+  f.id = ?;
 
 -- name: GetFeedByURL :one
 SELECT
-  *
+  f.*,
+  ff.last_fetched_at,
+  ff.next_fetch
 FROM
-  feeds
+  feeds f
+LEFT JOIN
+  feed_fetcher ff ON f.id = ff.feed_id
 WHERE
-  url = ?;
+  f.url = ?;
 
 -- name: ListFeeds :many
 SELECT
-  f.*
+  f.*,
+  ff.last_fetched_at,
+  ff.next_fetch
 FROM
   feeds f
+LEFT JOIN
+  feed_fetcher ff ON f.id = ff.feed_id
 WHERE
   (sqlc.narg('tag_id') IS NULL OR EXISTS (
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = f.id AND ft.tag_id = sqlc.narg('tag_id')
   ))
 ORDER BY
-  updated_at ASC;
+  f.updated_at ASC;
 
 -- name: ListFeedsByIDs :many
 SELECT
-  *
+  f.*,
+  ff.last_fetched_at,
+  ff.next_fetch
 FROM
-  feeds
+  feeds f
+LEFT JOIN
+  feed_fetcher ff ON f.id = ff.feed_id
 WHERE
-  id IN (sqlc.slice('ids'));
+  f.id IN (sqlc.slice('ids'));
 
 -- name: CreateFeed :one
 INSERT INTO feeds (
@@ -63,7 +79,6 @@ SET
   copyright = ?,
   feed_type = ?,
   feed_version = ?,
-  last_fetched_at = ?,
   updated_at = (strftime('%FT%TZ', 'now'))
 WHERE
   id = ?
@@ -122,13 +137,17 @@ INSERT INTO item_reads (
 ON CONFLICT(item_id) DO NOTHING;
 
 -- name: MarkFeedFetched :exec
-UPDATE
-  feeds
-SET
-  last_fetched_at = ?,
-  updated_at = (strftime('%FT%TZ', 'now'))
-WHERE
-  id = ?;
+INSERT INTO feed_fetcher (
+  feed_id,
+  last_fetched_at,
+  next_fetch
+) VALUES (
+  ?, ?, ?
+)
+ON CONFLICT(feed_id) DO UPDATE SET
+  last_fetched_at = COALESCE(excluded.last_fetched_at, feed_fetcher.last_fetched_at),
+  next_fetch = COALESCE(excluded.next_fetch, feed_fetcher.next_fetch),
+  updated_at = (strftime('%FT%TZ', 'now'));
 
 -- name: GetItem :one
 SELECT
@@ -367,30 +386,50 @@ WHERE
   (sqlc.narg('feed_id') IS NULL OR feed_id = sqlc.narg('feed_id'))
   AND (sqlc.narg('tag_id') IS NULL OR tag_id = sqlc.narg('tag_id'));
 
--- name: GetFeedFetcherCache :one
+-- name: GetFeedFetcher :one
 SELECT
   *
 FROM
-  feed_fetcher_cache
+  feed_fetcher
 WHERE
   feed_id = ?;
 
--- name: UpsertFeedFetcherCache :one
-INSERT INTO feed_fetcher_cache (
+-- name: UpsertFeedFetcher :one
+INSERT INTO feed_fetcher (
   feed_id,
   etag,
-  last_modified
+  last_modified,
+  last_fetched_at,
+  next_fetch
 ) VALUES (
-  ?, ?, ?
+  ?, ?, ?, ?, ?
 )
 ON CONFLICT(feed_id) DO UPDATE SET
   etag = excluded.etag,
   last_modified = excluded.last_modified,
+  last_fetched_at = COALESCE(excluded.last_fetched_at, feed_fetcher.last_fetched_at),
+  next_fetch = COALESCE(excluded.next_fetch, feed_fetcher.next_fetch),
   updated_at = (strftime('%FT%TZ', 'now'))
 RETURNING *;
 
--- name: DeleteFeedFetcherCache :exec
+-- name: DeleteFeedFetcher :exec
 DELETE FROM
-  feed_fetcher_cache
+  feed_fetcher
 WHERE
   feed_id = ?;
+
+-- name: ListFeedsToFetch :many
+SELECT
+  f.*,
+  ff.last_fetched_at,
+  ff.next_fetch,
+  ff.etag,
+  ff.last_modified
+FROM
+  feeds f
+LEFT JOIN
+  feed_fetcher ff ON f.id = ff.feed_id
+WHERE
+  ff.next_fetch IS NULL OR ff.next_fetch <= (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
+ORDER BY
+  ff.next_fetch ASC;

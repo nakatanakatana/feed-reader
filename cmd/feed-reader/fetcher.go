@@ -43,7 +43,7 @@ var ErrNotModified = fmt.Errorf("feed not modified")
 func (f *GofeedFetcher) Fetch(ctx context.Context, feedID string, url string) (*gofeed.Feed, error) {
 	var etag, lastModified string
 	if feedID != "" {
-		cache, err := f.store.GetFeedFetcherCache(ctx, feedID)
+		cache, err := f.store.GetFeedFetcher(ctx, feedID)
 		if err == nil {
 			if cache.Etag != nil {
 				etag = *cache.Etag
@@ -69,7 +69,7 @@ func (f *GofeedFetcher) Fetch(ctx context.Context, feedID string, url string) (*
 	resp, err := f.client.Do(req)
 	if err != nil {
 		if feedID != "" {
-			_ = f.store.DeleteFeedFetcherCache(ctx, feedID)
+			_ = f.store.DeleteFeedFetcher(ctx, feedID)
 		}
 		return nil, err
 	}
@@ -81,7 +81,7 @@ func (f *GofeedFetcher) Fetch(ctx context.Context, feedID string, url string) (*
 
 	if resp.StatusCode >= 500 {
 		if feedID != "" {
-			_ = f.store.DeleteFeedFetcherCache(ctx, feedID)
+			_ = f.store.DeleteFeedFetcher(ctx, feedID)
 		}
 		return nil, fmt.Errorf("server error: %d", resp.StatusCode)
 	}
@@ -95,7 +95,7 @@ func (f *GofeedFetcher) Fetch(ctx context.Context, feedID string, url string) (*
 		newEtag := resp.Header.Get("ETag")
 		newLastModified := resp.Header.Get("Last-Modified")
 		if newEtag != "" || newLastModified != "" {
-			arg := store.UpsertFeedFetcherCacheParams{
+			arg := store.UpsertFeedFetcherParams{
 				FeedID: feedID,
 			}
 			if newEtag != "" {
@@ -104,7 +104,7 @@ func (f *GofeedFetcher) Fetch(ctx context.Context, feedID string, url string) (*
 			if newLastModified != "" {
 				arg.LastModified = &newLastModified
 			}
-			_, _ = f.store.UpsertFeedFetcherCache(ctx, arg)
+			_, _ = f.store.UpsertFeedFetcher(ctx, arg)
 		}
 	}
 

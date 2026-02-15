@@ -27,19 +27,19 @@ func TestFeedFetcherCache(t *testing.T) {
 
 	t.Run("Upsert and Get Cache", func(t *testing.T) {
 		// Create
-		arg := store.UpsertFeedFetcherCacheParams{
+		arg := store.UpsertFeedFetcherParams{
 			FeedID:       feedID,
 			Etag:         &etag,
 			LastModified: &lastModified,
 		}
-		cache, err := s.UpsertFeedFetcherCache(ctx, arg)
+		cache, err := s.UpsertFeedFetcher(ctx, arg)
 		assert.NilError(t, err)
 		assert.Equal(t, cache.FeedID, feedID)
 		assert.Equal(t, *cache.Etag, etag)
 		assert.Equal(t, *cache.LastModified, lastModified)
 
 		// Get
-		cache, err = s.GetFeedFetcherCache(ctx, feedID)
+		cache, err = s.GetFeedFetcher(ctx, feedID)
 		assert.NilError(t, err)
 		assert.Equal(t, *cache.Etag, etag)
 		assert.Equal(t, *cache.LastModified, lastModified)
@@ -47,25 +47,25 @@ func TestFeedFetcherCache(t *testing.T) {
 
 	t.Run("Update Cache", func(t *testing.T) {
 		newEtag := "etag-456"
-		arg := store.UpsertFeedFetcherCacheParams{
+		arg := store.UpsertFeedFetcherParams{
 			FeedID:       feedID,
 			Etag:         &newEtag,
 			LastModified: nil,
 		}
-		_, err := s.UpsertFeedFetcherCache(ctx, arg)
+		_, err := s.UpsertFeedFetcher(ctx, arg)
 		assert.NilError(t, err)
 
-		cache, err := s.GetFeedFetcherCache(ctx, feedID)
+		cache, err := s.GetFeedFetcher(ctx, feedID)
 		assert.NilError(t, err)
 		assert.Equal(t, *cache.Etag, newEtag)
 		assert.Assert(t, cache.LastModified == nil)
 	})
 
 	t.Run("Delete Cache", func(t *testing.T) {
-		err := s.DeleteFeedFetcherCache(ctx, feedID)
+		err := s.DeleteFeedFetcher(ctx, feedID)
 		assert.NilError(t, err)
 
-		_, err = s.GetFeedFetcherCache(ctx, feedID)
+		_, err = s.GetFeedFetcher(ctx, feedID)
 		assert.Assert(t, err != nil)
 	})
 }
