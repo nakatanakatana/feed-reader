@@ -29,7 +29,7 @@
     - [x] Link imported feeds to their respective tags
 - [x] Task: Conductor - User Manual Verification 'Backend - OPML Import with Tags (Go)' (Protocol in workflow.md) c6f4a05
 
-## Phase 3: Frontend - Export UI & Integration
+## Phase 3: Frontend - Export UI & Integration [checkpoint: 30a21f3]
 - [x] Task: Add "Export OPML" button to Bulk Action Bar 9208d07
     - [x] Create/Update `frontend/src/components/BulkActionBar.test.tsx` to verify button presence
     - [x] Update `frontend/src/components/BulkActionBar.tsx` to include the Export button
@@ -37,7 +37,7 @@
 - [x] Task: Implement Export API Integration 9208d07
     - [x] Implement service method in `frontend/src/lib/api.ts` (or similar) to call the export endpoint
     - [x] Handle file download in the browser upon successful response
-- [~] Task: Conductor - User Manual Verification 'Frontend - Export UI & Integration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Frontend - Export UI & Integration' (Protocol in workflow.md) 30a21f3
 
 ## Phase 4: Frontend - Enhanced Import Error Handling
 - [x] Task: Design and Test Error Display Component 5ed723a
