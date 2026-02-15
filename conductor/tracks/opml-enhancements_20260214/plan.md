@@ -15,7 +15,7 @@
     - [x] Ensure handler handles feed selection
 - [x] Task: Conductor - User Manual Verification 'Backend - OPML Export Logic (Go)' (Protocol in workflow.md) 0fa52ae
 
-## Phase 2: Backend - OPML Import with Tags (Go)
+## Phase 2: Backend - OPML Import with Tags (Go) [checkpoint: c6f4a05]
 - [x] Task: Create reproduction test case for OPML Import with Tags 2bf172d
     - [x] Create `cmd/feed-reader/opml_import_tags_test.go`
     - [x] Create sample OPML content with `category` attributes and nested folders
@@ -27,7 +27,7 @@
     - [x] Update `cmd/feed-reader/opml_importer.go` to handle tag persistence
     - [x] Ensure new tags are created and existing tags are reused
     - [x] Link imported feeds to their respective tags
-- [~] Task: Conductor - User Manual Verification 'Backend - OPML Import with Tags (Go)' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Backend - OPML Import with Tags (Go)' (Protocol in workflow.md) c6f4a05
 
 ## Phase 3: Frontend - Export UI & Integration
 - [x] Task: Add "Export OPML" button to Bulk Action Bar 9208d07
