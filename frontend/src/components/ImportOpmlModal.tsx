@@ -1,7 +1,7 @@
 import { createClient } from "@connectrpc/connect";
-import { createSignal, Show } from "solid-js";
+import { createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
-import { stack } from "../../styled-system/patterns";
+import { flex, stack } from "../../styled-system/patterns";
 import { FeedService } from "../gen/feed/v1/feed_pb";
 import { queryClient } from "../lib/query";
 import { useTransport } from "../lib/transport-context";
@@ -14,11 +14,16 @@ interface ImportOpmlModalProps {
   onClose: () => void;
 }
 
+interface ImportFailedFeed {
+  url: string;
+  errorMessage: string;
+}
+
 interface ImportResult {
   total: number;
   success: number;
   skipped: number;
-  failedFeeds: string[];
+  failedFeeds: ImportFailedFeed[];
 }
 
 export function ImportOpmlModal(props: ImportOpmlModalProps) {
@@ -56,7 +61,10 @@ export function ImportOpmlModal(props: ImportOpmlModalProps) {
         total: res.total,
         success: res.success,
         skipped: res.skipped,
-        failedFeeds: res.failedFeeds,
+        failedFeeds: res.failedFeeds.map((f) => ({
+          url: f.url,
+          errorMessage: f.errorMessage,
+        })),
       });
 
       // Invalidate feeds list query
@@ -110,46 +118,96 @@ export function ImportOpmlModal(props: ImportOpmlModalProps) {
 
       <Show when={result()}>
         {(res) => (
-          <div class={stack({ gap: "2" })}>
-            <p class={css({ fontWeight: "medium", color: "green.600" })}>
-              Import Completed!
-            </p>
-            <ul
-              class={stack({
-                gap: "1",
-                fontSize: "sm",
-                color: "gray.700",
+          <div class={stack({ gap: "4" })}>
+            <div
+              class={css({
+                padding: "3",
+                backgroundColor: "blue.50",
+                borderRadius: "md",
+                border: "1px solid",
+                borderColor: "blue.100",
               })}
             >
-              <li>Total feeds found: {res().total}</li>
-              <li>Successfully imported: {res().success}</li>
-              <li>Skipped (already exists): {res().skipped}</li>
-            </ul>
+              <p
+                class={css({
+                  fontWeight: "bold",
+                  color: "blue.800",
+                  marginBottom: "2",
+                })}
+              >
+                Import Summary
+              </p>
+              <ul
+                class={flex({
+                  gap: "4",
+                  fontSize: "sm",
+                  color: "blue.700",
+                  flexWrap: "wrap",
+                })}
+              >
+                <li>Total: {res().total}</li>
+                <li>Success: {res().success}</li>
+                <li>Skipped: {res().skipped}</li>
+                <li>Failed: {res().failedFeeds.length}</li>
+              </ul>
+            </div>
+
             <Show when={res().failedFeeds.length > 0}>
-              <div class={stack({ gap: "1", marginTop: "2" })}>
+              <div class={stack({ gap: "2" })}>
                 <p
                   class={css({
                     fontSize: "sm",
-                    fontWeight: "medium",
-                    color: "red.500",
+                    fontWeight: "bold",
+                    color: "red.600",
                   })}
                 >
-                  Failed to import:
+                  Failed Items
                 </p>
-                <ul
-                  class={css({
-                    fontSize: "xs",
-                    color: "red.400",
-                    maxHeight: "20",
+                <div
+                  class={stack({
+                    gap: "2",
+                    maxHeight: "60",
                     overflowY: "auto",
+                    padding: "1",
                   })}
                 >
-                  {res().failedFeeds.map((url) => (
-                    <li>{url}</li>
-                  ))}
-                </ul>
+                  <For each={res().failedFeeds}>
+                    {(failed) => (
+                      <div
+                        class={css({
+                          padding: "3",
+                          border: "1px solid",
+                          borderColor: "red.100",
+                          borderRadius: "md",
+                          backgroundColor: "red.50",
+                        })}
+                      >
+                        <p
+                          class={css({
+                            fontSize: "xs",
+                            fontWeight: "medium",
+                            color: "red.800",
+                            wordBreak: "break-all",
+                          })}
+                        >
+                          {failed.url}
+                        </p>
+                        <p
+                          class={css({
+                            fontSize: "xs",
+                            color: "red.600",
+                            marginTop: "1",
+                          })}
+                        >
+                          {failed.errorMessage}
+                        </p>
+                      </div>
+                    )}
+                  </For>
+                </div>
               </div>
             </Show>
+
             <ActionButton variant="primary" onClick={props.onClose}>
               Done
             </ActionButton>

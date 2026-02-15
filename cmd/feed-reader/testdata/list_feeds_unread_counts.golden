@@ -2,15 +2,15 @@
   "feeds": [
     {
       "id": "f1",
-      "url": "u1",
       "title": "Feed 1",
-      "unreadCount": "1"
+      "unreadCount": "1",
+      "url": "u1"
     },
     {
       "id": "f2",
-      "url": "u2",
       "title": "Feed 2",
-      "unreadCount": "1"
+      "unreadCount": "1",
+      "url": "u2"
     }
   ]
 }

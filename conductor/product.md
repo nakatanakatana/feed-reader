@@ -30,7 +30,9 @@ The primary target audience is individuals and organizations seeking control ove
 
 - **Manual Feed Refresh:** Trigger immediate updates for one or more feeds directly from the UI, bypassing the background scheduler. Includes real-time feedback with loading indicators and error reporting at the individual feed level.
 
-- **OPML Import:** Bulk import existing subscriptions from other RSS readers using the standard OPML format, with automatic deduplication. Synchronous processing provides immediate feedback on the import results, including success and failure counts.
+- **OPML Import:** Bulk import existing subscriptions from other RSS readers using the standard OPML format, with automatic deduplication. Synchronous processing provides immediate feedback on the import results, including success and failure counts. Features advanced tagging support, automatically extracting tags from OPML folders and `category` attributes. Includes an enhanced error handling UI that displays detailed lists of failed items for easy troubleshooting.
+
+- **OPML Export:** Export selected feeds to a standard OPML 2.0 file. Tags associated with feeds are preserved using the `category` attribute, ensuring portability across different feed readers.
 
 - **Article Management:** Retrieve articles with flexible filtering. Items are consistently sorted by creation date in ascending order (oldest first) across all views to ensure a predictable reading sequence. Track article status including read/unread. Features an information-dense list view displaying key metadata (publication/creation dates, snippets). Includes date-based filtering (e.g., Past 24 hours, Past 7 days, Past 30 days, Past 90 days, or Past 365 days) and a visibility toggle to easily show or hide read items. Supports bulk operations, such as marking multiple articles as read simultaneously for improved efficiency.
   - **Floating Bulk Actions:** Selecting multiple items triggers a floating action bar at the bottom of the screen, providing a stable and ergonomically accessible UI for bulk operations without causing layout shifts.

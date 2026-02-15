@@ -3,6 +3,9 @@
   "Success": 1,
   "Skipped": 1,
   "FailedFeeds": [
-    "https://example.com/fail"
+    {
+      "URL": "https://example.com/fail",
+      "ErrorMessage": "failed to fetch feed metadata: fetch error"
+    }
   ]
 }

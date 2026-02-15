@@ -3,7 +3,14 @@ import { useMutation } from "@tanstack/solid-query";
 import { createEffect, createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
-import { type Feed, feedDelete, feeds, feedTag, refreshFeeds } from "../lib/db";
+import {
+  exportFeeds,
+  type Feed,
+  feedDelete,
+  feeds,
+  feedTag,
+  refreshFeeds,
+} from "../lib/db";
 import { fetchingState } from "../lib/fetching-state";
 import { formatDate, formatUnreadCount } from "../lib/item-utils";
 import { tagsFeedQuery } from "../lib/tag-db";
@@ -432,6 +439,13 @@ export function FeedList() {
         selectedCount={selectedFeedIds().length}
         unit="feeds"
         onClear={() => setSelectedFeedIds([])}
+        onExport={async () => {
+          try {
+            await exportFeeds(selectedFeedIds());
+          } catch (e) {
+            alert(`Failed to export feeds: ${e}`);
+          }
+        }}
       >
         <ActionButton
           size="sm"

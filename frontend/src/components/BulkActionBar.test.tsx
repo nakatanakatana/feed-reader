@@ -46,4 +46,24 @@ describe("BulkActionBar", () => {
     const actionBar = page.getByTestId("bulk-action-bar");
     await expect.element(actionBar).not.toBeInTheDocument();
   });
+
+  it("renders Export OPML button when onExport is provided", async () => {
+    const onExport = vi.fn();
+    dispose = render(
+      () => (
+        <BulkActionBar
+          selectedCount={1}
+          onClear={() => {}}
+          onExport={onExport}
+        />
+      ),
+      document.body,
+    );
+
+    const exportButton = page.getByRole("button", { name: /Export OPML/i });
+    await expect.element(exportButton).toBeVisible();
+
+    await exportButton.click();
+    expect(onExport).toHaveBeenCalled();
+  });
 });

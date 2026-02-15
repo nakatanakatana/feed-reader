@@ -2,6 +2,8 @@ package store
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 )
 
@@ -99,4 +101,52 @@ func (s *Store) ManageFeedTags(ctx context.Context, feedIDs []string, addTagIDs 
 		}
 		return nil
 	})
+}
+
+func (s *Store) ListTagsByFeedId(ctx context.Context, feedID string) ([]Tag, error) {
+	return s.Queries.ListTagsByFeedId(ctx, feedID)
+}
+
+func (s *Store) ListTagsByFeedIDs(ctx context.Context, feedIDs []string) ([]ListTagsByFeedIDsRow, error) {
+	return s.Queries.ListTagsByFeedIDs(ctx, feedIDs)
+}
+
+// GetOrCreateTag returns a tag by name, creating it if it doesn't exist.
+func (s *Store) GetOrCreateTag(ctx context.Context, name string, uuidGen UUIDGenerator) (*Tag, error) {
+	tag, err := s.GetTagByName(ctx, name)
+	if err == nil {
+		return &tag, nil
+	}
+	if !errors.Is(err, sql.ErrNoRows) {
+		return nil, err
+	}
+
+	if uuidGen == nil {
+		return nil, fmt.Errorf("uuidGen is required to create a new tag")
+	}
+
+	newUUID, err := uuidGen.NewRandom()
+	if err != nil {
+		return nil, err
+	}
+
+	newTag, err := s.CreateTag(ctx, CreateTagParams{
+		ID:   newUUID.String(),
+		Name: name,
+	})
+	if err != nil {
+		// Handle possible race where another request created the tag concurrently.
+		existingTag, getErr := s.GetTagByName(ctx, name)
+		if getErr == nil {
+			return &existingTag, nil
+		}
+		if errors.Is(getErr, sql.ErrNoRows) {
+			// Tag still does not exist; return the original create error.
+			return nil, err
+		}
+		// Unexpected error when re-fetching; include both errors for debugging.
+		return nil, fmt.Errorf("GetTagByName after CreateTag error failed: %w (original create error: %v)", getErr, err)
+	}
+
+	return &newTag, nil
 }
