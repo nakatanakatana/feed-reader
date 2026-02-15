@@ -519,27 +519,35 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                         borderRadius: 0,
                         fontSize: "sm",
                       },
-                      '& a[href*="#gh-light-mode-only"]': {
-                        display: "inline",
-                      },
-                      '& a[href*="#gh-dark-mode-only"]': {
-                        display: "none",
-                      },
+                      // Target images inside links with color mode markers
+                      // Support both raw (#gh-*) and URL-encoded (%23gh-*) variants
+                      '& a:is([href*="#gh-light-mode-only"], [href*="%23gh-light-mode-only"]) img':
+                        {
+                          display: "inline-block",
+                        },
+                      '& a:is([href*="#gh-dark-mode-only"], [href*="%23gh-dark-mode-only"]) img':
+                        {
+                          display: "none",
+                        },
                       "@media (prefers-color-scheme: dark)": {
-                        '& a[href*="#gh-light-mode-only"]': {
-                          display: "none !important",
-                        },
-                        '& a[href*="#gh-dark-mode-only"]': {
-                          display: "inline !important",
-                        },
+                        '& a:is([href*="#gh-light-mode-only"], [href*="%23gh-light-mode-only"]) img':
+                          {
+                            display: "none !important",
+                          },
+                        '& a:is([href*="#gh-dark-mode-only"], [href*="%23gh-dark-mode-only"]) img':
+                          {
+                            display: "inline-block !important",
+                          },
                       },
                       "@media (prefers-color-scheme: light)": {
-                        '& a[href*="#gh-light-mode-only"]': {
-                          display: "inline !important",
-                        },
-                        '& a[href*="#gh-dark-mode-only"]': {
-                          display: "none !important",
-                        },
+                        '& a:is([href*="#gh-light-mode-only"], [href*="%23gh-light-mode-only"]) img':
+                          {
+                            display: "inline-block !important",
+                          },
+                        '& a:is([href*="#gh-dark-mode-only"], [href*="%23gh-dark-mode-only"]) img':
+                          {
+                            display: "none !important",
+                          },
                       },
                     })}
                   >
