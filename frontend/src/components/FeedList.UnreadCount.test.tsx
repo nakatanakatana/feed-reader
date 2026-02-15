@@ -81,7 +81,7 @@ describe("FeedList Unread Counts", () => {
     await expect.element(page.getByText("Feed 1")).toBeInTheDocument();
   });
 
-  it("displays unread counts for tags in filter bar", async () => {
+  it("displays feed counts for tags in filter bar", async () => {
     worker.use(
       http.post("*/tag.v1.TagService/ListTags", () => {
         const msg = create(ListTagsResponseSchema, {
@@ -96,7 +96,7 @@ describe("FeedList Unread Counts", () => {
               id: "tag-2",
               name: "News",
               unreadCount: 0n,
-              feedCount: 1n,
+              feedCount: 2n,
             }),
           ],
         });
@@ -133,14 +133,14 @@ describe("FeedList Unread Counts", () => {
     await expect.element(filterSelect).toBeInTheDocument();
 
     await expect
-      .element(page.getByRole("option", { name: "Tech (5)" }))
+      .element(page.getByRole("option", { name: "Tech (1)" }))
       .toBeInTheDocument();
     await expect
-      .element(page.getByRole("option", { name: "News (0)" }))
+      .element(page.getByRole("option", { name: "News (2)" }))
       .toBeInTheDocument();
   });
 
-  it("formats unread counts of 1000 or more as '999+'", async () => {
+  it("displays feed counts correctly regardless of unread counts", async () => {
     worker.use(
       http.post("*/tag.v1.TagService/ListTags", () => {
         const msg = create(ListTagsResponseSchema, {
@@ -149,7 +149,7 @@ describe("FeedList Unread Counts", () => {
               id: "tag-1",
               name: "Big",
               unreadCount: 1500n,
-              feedCount: 1n,
+              feedCount: 10n,
             }),
           ],
         });
@@ -173,7 +173,7 @@ describe("FeedList Unread Counts", () => {
     await expect.element(filterSelect).toBeInTheDocument();
 
     await expect
-      .element(page.getByRole("option", { name: "Big (999+)" }))
+      .element(page.getByRole("option", { name: "Big (10)" }))
       .toBeInTheDocument();
   });
 });

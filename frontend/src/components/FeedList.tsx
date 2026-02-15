@@ -255,9 +255,7 @@ export function FeedList() {
               {(tag) => (
                 <option value={tag.id}>
                   {tag.name}
-                  {tag.unreadCount && tag.unreadCount > 0n
-                    ? ` (${formatUnreadCount(Number(tag.unreadCount))})`
-                    : " (0)"}
+                  {` (${tag.feedCount ?? 0})`}
                 </option>
               )}
             </For>
