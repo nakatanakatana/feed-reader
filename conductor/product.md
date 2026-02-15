@@ -30,6 +30,10 @@ The primary target audience is individuals and organizations seeking control ove
 
 - **Manual Feed Refresh:** Trigger immediate updates for one or more feeds directly from the UI, bypassing the background scheduler. Includes real-time feedback with loading indicators and error reporting at the individual feed level.
 
+- **Fetch Scheduling & Suspend:** Take control of feed updates with a database-backed scheduling system.
+  - **Manual Suspend:** Temporarily halt updates for specific feeds for a set duration (1 Day, 3 Days, 1 Week, or 1 Month) directly from the context menu or bulk action bar.
+  - **Visual Scheduling:** View the scheduled "Next fetch" time for each feed in the list view, providing transparency into the background fetch cycle.
+
 - **OPML Import:** Bulk import existing subscriptions from other RSS readers using the standard OPML format, with automatic deduplication. Synchronous processing provides immediate feedback on the import results, including success and failure counts.
 
 - **Article Management:** Retrieve articles with flexible filtering. Items are consistently sorted by creation date in ascending order (oldest first) across all views to ensure a predictable reading sequence. Track article status including read/unread. Features an information-dense list view displaying key metadata (publication/creation dates, snippets). Includes date-based filtering (e.g., Past 24 hours, Past 7 days, Past 30 days, Past 90 days, or Past 365 days) and a visibility toggle to easily show or hide read items. Supports bulk operations, such as marking multiple articles as read simultaneously for improved efficiency.
@@ -45,7 +49,7 @@ The primary target audience is individuals and organizations seeking control ove
 
 - **Dynamic Favicon:** The browser tab's favicon dynamically updates its color based on the total unread count (Blue for 0-199, Orange for 200-999, Red for 1000+), providing a passive, at-a-glance status update even when the application is in the background.
 
-- **Background Fetching:** Periodically fetches and updates feeds in the background with adaptive scheduling and jitter to ensure content is always fresh without overloading servers.
+- **Background Fetching:** Periodically fetches and updates feeds in the background using a robust scheduling system that respects both global intervals and manual suspensions.
 
 - **Deduplication & Storage:** Efficiently stores and retrieves articles with URL-based deduplication and normalized data structures, ensuring unique presentation even when items are associated with multiple feeds. Tracks per-feed metadata, including original publication and discovery timestamps for each association.
 
