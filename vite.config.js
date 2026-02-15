@@ -15,6 +15,9 @@ export default defineConfig({
     solid(),
     VitePWA({
       registerType: "autoUpdate",
+      workbox: {
+        globPatterns: ["**/*.{js,css,png,svg,ico}"],
+      },
       manifest: {
         name: "Feed Reader",
         short_name: "Feed Reader",
