@@ -29,12 +29,12 @@ func TestParseOPML_WithTags(t *testing.T) {
 	// Hacker News: Tags from folder "Tech News" and category "News,Social"
 	assert.Equal(t, feeds[0].Title, "Hacker News")
 	assert.Equal(t, feeds[0].URL, "https://news.ycombinator.com/rss")
-	assert.DeepEqual(t, feeds[0].Tags, []string{"Tech News", "News", "Social"})
+	assert.DeepEqual(t, feeds[0].Tags, []string{"News", "Social", "Tech News"})
 
 	// Go Blog: Tags from folder "Tech News" and category "Programming"
 	assert.Equal(t, feeds[1].Title, "Go Blog")
 	assert.Equal(t, feeds[1].URL, "https://go.dev/blog/feed.atom")
-	assert.DeepEqual(t, feeds[1].Tags, []string{"Tech News", "Programming"})
+	assert.DeepEqual(t, feeds[1].Tags, []string{"Programming", "Tech News"})
 
 	// Uncategorized Feed: Category "General"
 	assert.Equal(t, feeds[2].Title, "Uncategorized Feed")

@@ -96,21 +96,36 @@ func (i *OPMLImporter) ImportSync(ctx context.Context, opmlContent []byte) (*Imp
 		}
 
 		// Persist tags
+		tagsFailed := false
 		if len(f.Tags) > 0 {
 			var tagIDs []string
+			seenTagIDs := make(map[string]struct{})
 			for _, tagName := range f.Tags {
 				tag, err := i.store.GetOrCreateTag(ctx, tagName, i.uuidGen)
 				if err != nil {
 					i.logger.ErrorContext(ctx, "failed to get or create tag", "tag", tagName, "error", err)
-					continue
+					tagsFailed = true
+					break
 				}
-				tagIDs = append(tagIDs, tag.ID)
+				if _, ok := seenTagIDs[tag.ID]; !ok {
+					seenTagIDs[tag.ID] = struct{}{}
+					tagIDs = append(tagIDs, tag.ID)
+				}
 			}
-			if len(tagIDs) > 0 {
+			if !tagsFailed && len(tagIDs) > 0 {
 				if err := i.store.SetFeedTags(ctx, feedID, tagIDs); err != nil {
 					i.logger.ErrorContext(ctx, "failed to set feed tags", "feedID", feedID, "error", err)
+					tagsFailed = true
 				}
 			}
+		}
+
+		if tagsFailed {
+			results.FailedFeeds = append(results.FailedFeeds, ImportFailedFeed{
+				URL:          f.URL,
+				ErrorMessage: "failed to persist tags for feed",
+			})
+			continue
 		}
 
 		results.Success++

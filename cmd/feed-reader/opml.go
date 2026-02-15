@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/xml"
+	"sort"
 	"strings"
 )
 
@@ -16,6 +17,7 @@ type ExportFeed struct {
 	XmlURL  string
 	HtmlURL string
 	Tags    []string
+	Type    string
 }
 
 type opmlOutline struct {
@@ -24,7 +26,7 @@ type opmlOutline struct {
 	XMLURL   string        `xml:"xmlUrl,attr"`
 	HTMLURL  string        `xml:"htmlUrl,attr,omitempty"`
 	Category string        `xml:"category,attr,omitempty"`
-	Type     string        `xml:"type,attr"`
+	Type     string        `xml:"type,attr,omitempty"`
 	Outlines []opmlOutline `xml:"outline,omitempty"`
 }
 
@@ -59,16 +61,30 @@ func ParseOPML(content []byte) ([]OpmlFeed, error) {
 					title = o.Text
 				}
 
-				tags := append([]string{}, parentTags...)
+				// Deduplicate and trim tags
+				tagSet := make(map[string]struct{})
+				for _, t := range parentTags {
+					t = strings.TrimSpace(t)
+					if t != "" {
+						tagSet[t] = struct{}{}
+					}
+				}
+
 				if o.Category != "" {
 					cats := strings.Split(o.Category, ",")
 					for _, c := range cats {
 						c = strings.TrimSpace(c)
 						if c != "" {
-							tags = append(tags, c)
+							tagSet[c] = struct{}{}
 						}
 					}
 				}
+
+				var tags []string = []string{}
+				for t := range tagSet {
+					tags = append(tags, t)
+				}
+				sort.Strings(tags)
 
 				feeds = append(feeds, OpmlFeed{
 					Title: title,
@@ -82,6 +98,7 @@ func ParseOPML(content []byte) ([]OpmlFeed, error) {
 				if folderName == "" {
 					folderName = o.Text
 				}
+				folderName = strings.TrimSpace(folderName)
 				if folderName != "" {
 					newParentTags = append(newParentTags, folderName)
 				}
@@ -96,13 +113,18 @@ func ParseOPML(content []byte) ([]OpmlFeed, error) {
 func ExportOPML(feeds []ExportFeed) ([]byte, error) {
 	outlines := make([]opmlOutline, len(feeds))
 	for i, f := range feeds {
+		feedType := f.Type
+		if feedType == "" {
+			feedType = "rss" // Default to rss if unknown
+		}
+
 		outlines[i] = opmlOutline{
 			Text:     f.Title,
 			Title:    f.Title,
 			XMLURL:   f.XmlURL,
 			HTMLURL:  f.HtmlURL,
 			Category: strings.Join(f.Tags, ","),
-			Type:     "rss",
+			Type:     feedType,
 		}
 	}
 

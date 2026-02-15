@@ -14,18 +14,21 @@ func TestExportOPML(t *testing.T) {
 			XmlURL:  "https://news.ycombinator.com/rss",
 			HtmlURL: "https://news.ycombinator.com/",
 			Tags:    []string{"Tech", "News"},
+			Type:    "rss",
 		},
 		{
 			Title:   "Go Blog",
 			XmlURL:  "https://go.dev/blog/feed.atom",
 			HtmlURL: "https://go.dev/blog/",
 			Tags:    []string{"Go", "Programming"},
+			Type:    "atom",
 		},
 		{
 			Title:   "No Tags Feed",
 			XmlURL:  "https://example.com/feed.xml",
 			HtmlURL: "https://example.com/",
 			Tags:    []string{},
+			Type:    "rss",
 		},
 	}
 

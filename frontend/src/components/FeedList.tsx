@@ -434,7 +434,13 @@ export function FeedList() {
         selectedCount={selectedFeedIds().length}
         unit="feeds"
         onClear={() => setSelectedFeedIds([])}
-        onExport={() => exportFeeds(selectedFeedIds())}
+        onExport={async () => {
+          try {
+            await exportFeeds(selectedFeedIds());
+          } catch (e) {
+            alert("Failed to export feeds: " + e);
+          }
+        }}
       >
         <ActionButton
           size="sm"

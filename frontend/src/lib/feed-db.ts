@@ -77,7 +77,7 @@ export const exportFeeds = async (feedIds: string[]) => {
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  setTimeout(() => URL.revokeObjectURL(url), 100);
 };
 
 export const feeds = createCollection(

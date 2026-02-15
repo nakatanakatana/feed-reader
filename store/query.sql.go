@@ -978,6 +978,58 @@ func (q *Queries) ListTags(ctx context.Context) ([]Tag, error) {
 	return items, nil
 }
 
+const listTagsByFeedIDs = `-- name: ListTagsByFeedIDs :many
+SELECT
+  ft.feed_id,
+  t.name
+FROM
+  tags t
+JOIN
+  feed_tags ft ON t.id = ft.tag_id
+WHERE
+  ft.feed_id IN (/*SLICE:feed_ids*/?)
+ORDER BY
+  t.name ASC
+`
+
+type ListTagsByFeedIDsRow struct {
+	FeedID string `json:"feed_id"`
+	Name   string `json:"name"`
+}
+
+func (q *Queries) ListTagsByFeedIDs(ctx context.Context, feedIds []string) ([]ListTagsByFeedIDsRow, error) {
+	query := listTagsByFeedIDs
+	var queryParams []interface{}
+	if len(feedIds) > 0 {
+		for _, v := range feedIds {
+			queryParams = append(queryParams, v)
+		}
+		query = strings.Replace(query, "/*SLICE:feed_ids*/?", strings.Repeat(",?", len(feedIds))[1:], 1)
+	} else {
+		query = strings.Replace(query, "/*SLICE:feed_ids*/?", "NULL", 1)
+	}
+	rows, err := q.db.QueryContext(ctx, query, queryParams...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListTagsByFeedIDsRow
+	for rows.Next() {
+		var i ListTagsByFeedIDsRow
+		if err := rows.Scan(&i.FeedID, &i.Name); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listTagsByFeedId = `-- name: ListTagsByFeedId :many
 SELECT
   t.id, t.name, t.created_at, t.updated_at
