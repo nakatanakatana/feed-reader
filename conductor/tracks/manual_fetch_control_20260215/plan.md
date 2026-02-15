@@ -26,7 +26,7 @@
     - [x] Write integration tests for the API.
 - [x] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md) df387cb
 
-## Phase 3: Frontend Implementation
+## Phase 3: Frontend Implementation [checkpoint: 4dd0e3d]
 - [x] Task: Update Frontend Client & Types 622c107
     - [x] Regenerate API client (Buf/Connect) to include new RPCs.
     - [x] Update frontend models to reflect the schema change (if necessary for display).
