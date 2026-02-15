@@ -67,7 +67,9 @@ export const refreshFeeds = async (feedIds: string[]) => {
 
 export const exportFeeds = async (feedIds: string[]) => {
   const res = await feedClient.exportOpml({ ids: feedIds });
-  const blob = new Blob([res.opmlContent], { type: "application/xml" });
+  const blob = new Blob([res.opmlContent as BlobPart], {
+    type: "application/xml",
+  });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;

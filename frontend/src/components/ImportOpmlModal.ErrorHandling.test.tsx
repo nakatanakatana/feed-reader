@@ -26,7 +26,10 @@ describe("ImportOpmlModal Error Handling", () => {
             skipped: 0,
             failedFeedsV2: [
               { url: "https://example.com/fail1", errorMessage: "Invalid URL" },
-              { url: "https://example.com/fail2", errorMessage: "Network timeout" },
+              {
+                url: "https://example.com/fail2",
+                errorMessage: "Network timeout",
+              },
             ],
           });
         },
@@ -42,18 +45,24 @@ describe("ImportOpmlModal Error Handling", () => {
       document.body,
     );
 
-    const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const input = document.querySelector(
+      'input[type="file"]',
+    ) as HTMLInputElement;
     const file = new File(["mock content"], "test.opml", { type: "text/xml" });
     Object.defineProperty(input, "files", { value: [file] });
     input.dispatchEvent(new Event("change", { bubbles: true }));
 
     // Wait for result
     await expect.element(page.getByText("Import Summary")).toBeInTheDocument();
-    
+
     // Check for error details
-    await expect.element(page.getByText("https://example.com/fail1")).toBeInTheDocument();
+    await expect
+      .element(page.getByText("https://example.com/fail1"))
+      .toBeInTheDocument();
     await expect.element(page.getByText("Invalid URL")).toBeInTheDocument();
-    await expect.element(page.getByText("https://example.com/fail2")).toBeInTheDocument();
+    await expect
+      .element(page.getByText("https://example.com/fail2"))
+      .toBeInTheDocument();
     await expect.element(page.getByText("Network timeout")).toBeInTheDocument();
   });
 });
