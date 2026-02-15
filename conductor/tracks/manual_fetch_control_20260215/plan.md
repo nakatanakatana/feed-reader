@@ -38,7 +38,7 @@
     - [x] Write component tests for the new UI actions.
 - [x] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md) 71d8e55
 
-## Phase 4: Verification & Cleanup
+## Phase 4: Verification & Cleanup [checkpoint: 312173a]
 - [x] Task: Verify Migration on clean and existing DBs. 81514a2
 - [x] Task: Verify Polling respects the schedule. 01e7bd4
 - [x] Task: Conductor - User Manual Verification 'Phase 4' (Protocol in workflow.md) 6c30e3c
