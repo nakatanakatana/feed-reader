@@ -39,6 +39,6 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md) 71d8e55
 
 ## Phase 4: Verification & Cleanup
-- [ ] Task: Verify Migration on clean and existing DBs.
+- [x] Task: Verify Migration on clean and existing DBs. 81514a2
 - [ ] Task: Verify Polling respects the schedule.
 - [ ] Task: Conductor - User Manual Verification 'Phase 4' (Protocol in workflow.md)
