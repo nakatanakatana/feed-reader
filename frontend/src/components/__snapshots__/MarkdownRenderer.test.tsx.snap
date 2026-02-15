@@ -1,10 +1,5 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`MarkdownRenderer > disables raw HTML rendering (XSS protection) 1`] = `
-"<div><p>&lt;script&gt;alert("xss")&lt;/script&gt;<strong>Safe</strong></p>
-</div>"
-`;
-
 exports[`MarkdownRenderer > handles empty content 1`] = `"<div></div>"`;
 
 exports[`MarkdownRenderer > renders basic markdown 1`] = `

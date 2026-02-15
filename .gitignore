@@ -43,3 +43,4 @@ frontend/coverage/
 .agentfs/
 cmd/feed-reader/dist/
 .playwright-cli/
+.opencode/

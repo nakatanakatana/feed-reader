@@ -11,4 +11,4 @@
     - [ ] Ensure selectors are strictly scoped to the article content container.
 - [x] Task: Verify Implementation e940d7d
     - [ ] Run the tests again to confirm they pass with the new styles applied.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Implementation' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Phase 1: Implementation' (Protocol in workflow.md)
