@@ -13,11 +13,7 @@ import {
   suspendFeeds,
 } from "../lib/db";
 import { fetchingState } from "../lib/fetching-state";
-import {
-  formatDate,
-  formatRelativeDate,
-  formatUnreadCount,
-} from "../lib/item-utils";
+import { formatDate, formatRelativeDate } from "../lib/item-utils";
 import { tagsFeedQuery } from "../lib/tag-db";
 import { BulkActionBar } from "./BulkActionBar";
 import { ManageTagsModal } from "./ManageTagsModal";
@@ -404,7 +400,9 @@ export function FeedList() {
                         </div>
                       </div>
                       <div class={flex({ gap: "2", alignItems: "center" })}>
-                        <span class={css({ fontSize: "xs", color: "gray.500" })}>
+                        <span
+                          class={css({ fontSize: "xs", color: "gray.500" })}
+                        >
                           {feed.url}
                         </span>
                         <button
@@ -458,7 +456,9 @@ export function FeedList() {
                         </button>
                       </div>
                       <div class={flex({ gap: "4", alignItems: "center" })}>
-                        <span class={css({ fontSize: "xs", color: "gray.500" })}>
+                        <span
+                          class={css({ fontSize: "xs", color: "gray.500" })}
+                        >
                           Last fetched:{" "}
                           {feed.lastFetchedAt
                             ? formatDate(feed.lastFetchedAt)
@@ -477,7 +477,8 @@ export function FeedList() {
                               fontWeight: "medium",
                             })}
                           >
-                            Next fetch: {formatRelativeDate(feed.nextFetch ?? "")}
+                            Next fetch:{" "}
+                            {formatRelativeDate(feed.nextFetch ?? "")}
                           </span>
                         </Show>
                       </div>

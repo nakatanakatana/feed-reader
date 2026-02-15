@@ -20,7 +20,12 @@ export const TagManagement = () => {
     e.preventDefault();
     if (!newTagName()) return;
 
-    tags.insert({ id: "dummy", name: newTagName(), unreadCount: 0n });
+    tags.insert({
+      id: "dummy",
+      name: newTagName(),
+      unreadCount: 0n,
+      feedCount: 0n,
+    });
     setNewTagName("");
   };
 
@@ -139,7 +144,7 @@ export const TagManagement = () => {
                     <span class={css({ fontWeight: "medium" })}>
                       {tag.name}
                     </span>
-                    <Badge>feed: {tag.feedCount}</Badge>
+                    <Badge>feed: {tag.feedCount.toString()}</Badge>
                     <ActionButton
                       variant="danger"
                       size="sm"
