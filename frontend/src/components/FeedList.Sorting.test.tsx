@@ -247,7 +247,7 @@ describe("FeedList Sorting", () => {
       .poll(() => {
         const feedItems = document.querySelectorAll("li");
         if (feedItems.length !== 5) return false;
-        
+
         return (
           feedItems[0].textContent?.includes("A Unfetched") &&
           feedItems[1].textContent?.includes("Z Unfetched") &&
