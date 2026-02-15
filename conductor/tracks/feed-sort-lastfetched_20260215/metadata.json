@@ -1,8 +1,0 @@
-{
-  "track_id": "feed-sort-lastfetched_20260215",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-02-15T00:00:00Z",
-  "updated_at": "2026-02-15T00:00:00Z",
-  "description": "Feedsの画面でのFeedのソート順にlastFetchedの古い順を利用できるようにしてください"
-}
