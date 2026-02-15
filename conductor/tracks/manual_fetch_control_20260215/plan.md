@@ -36,7 +36,7 @@
     - [x] Implement the logic to call the `SetFeedSchedule` API.
     - [x] Add visual feedback (toast/notification) upon success.
     - [x] Write component tests for the new UI actions.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)
 
 ## Phase 4: Verification & Cleanup
 - [ ] Task: Verify Migration on clean and existing DBs.
