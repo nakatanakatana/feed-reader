@@ -13,7 +13,7 @@
 - [x] Task: Create gRPC Handler for OPML Export b6c7203
     - [x] Implement `ExportOpml` method in `cmd/feed-reader/handler.go`
     - [x] Ensure handler handles feed selection
-- [ ] Task: Conductor - User Manual Verification 'Backend - OPML Export Logic (Go)' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Backend - OPML Export Logic (Go)' (Protocol in workflow.md)
 
 ## Phase 2: Backend - OPML Import with Tags (Go)
 - [x] Task: Create reproduction test case for OPML Import with Tags 2bf172d

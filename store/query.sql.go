@@ -617,6 +617,27 @@ func (q *Queries) GetItem(ctx context.Context, id string) (GetItemRow, error) {
 	return i, err
 }
 
+const getTagByName = `-- name: GetTagByName :one
+SELECT
+  id, name, created_at, updated_at
+FROM
+  tags
+WHERE
+  name = ?
+`
+
+func (q *Queries) GetTagByName(ctx context.Context, name string) (Tag, error) {
+	row := q.db.QueryRowContext(ctx, getTagByName, name)
+	var i Tag
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const listFeedTags = `-- name: ListFeedTags :many
 SELECT
   feed_id,
