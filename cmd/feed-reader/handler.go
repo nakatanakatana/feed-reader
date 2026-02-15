@@ -268,22 +268,19 @@ func (s *FeedServer) ImportOpml(ctx context.Context, req *connect.Request[feedv1
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	failedFeedsV2 := make([]*feedv1.ImportFailedFeed, len(results.FailedFeeds))
-	failedFeedsLegacy := make([]string, len(results.FailedFeeds))
+	failedFeeds := make([]*feedv1.ImportFailedFeed, len(results.FailedFeeds))
 	for i, f := range results.FailedFeeds {
-		failedFeedsV2[i] = &feedv1.ImportFailedFeed{
+		failedFeeds[i] = &feedv1.ImportFailedFeed{
 			Url:          f.URL,
 			ErrorMessage: f.ErrorMessage,
 		}
-		failedFeedsLegacy[i] = f.URL
 	}
 
 	return connect.NewResponse(&feedv1.ImportOpmlResponse{
-		Total:         results.Total,
-		Success:       results.Success,
-		Skipped:       results.Skipped,
-		FailedFeeds:   failedFeedsLegacy,
-		FailedFeedsV2: failedFeedsV2,
+		Total:       results.Total,
+		Success:     results.Success,
+		Skipped:     results.Skipped,
+		FailedFeeds: failedFeeds,
 	}), nil
 }
 

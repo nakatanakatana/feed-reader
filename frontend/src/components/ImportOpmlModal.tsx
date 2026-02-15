@@ -61,13 +61,7 @@ export function ImportOpmlModal(props: ImportOpmlModalProps) {
         total: res.total,
         success: res.success,
         skipped: res.skipped,
-        failedFeeds: (res.failedFeedsV2 && res.failedFeedsV2.length > 0
-          ? res.failedFeedsV2
-          : res.failedFeeds.map((url) => ({
-              url,
-              errorMessage: "Import failed (legacy error)",
-            }))
-        ).map((f) => ({
+        failedFeeds: res.failedFeeds.map((f) => ({
           url: f.url,
           errorMessage: f.errorMessage,
         })),

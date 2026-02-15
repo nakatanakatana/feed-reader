@@ -1055,13 +1055,11 @@ func (x *ImportOpmlRequest) GetOpmlContent() []byte {
 }
 
 type ImportOpmlResponse struct {
-	state   protoimpl.MessageState `protogen:"open.v1"`
-	Total   int32                  `protobuf:"varint,1,opt,name=total,proto3" json:"total,omitempty"`
-	Success int32                  `protobuf:"varint,2,opt,name=success,proto3" json:"success,omitempty"`
-	Skipped int32                  `protobuf:"varint,3,opt,name=skipped,proto3" json:"skipped,omitempty"`
-	// Deprecated: Marked as deprecated in feed/v1/feed.proto.
-	FailedFeeds   []string            `protobuf:"bytes,4,rep,name=failed_feeds,json=failedFeeds,proto3" json:"failed_feeds,omitempty"`
-	FailedFeedsV2 []*ImportFailedFeed `protobuf:"bytes,5,rep,name=failed_feeds_v2,json=failedFeedsV2,proto3" json:"failed_feeds_v2,omitempty"`
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Total         int32                  `protobuf:"varint,1,opt,name=total,proto3" json:"total,omitempty"`
+	Success       int32                  `protobuf:"varint,2,opt,name=success,proto3" json:"success,omitempty"`
+	Skipped       int32                  `protobuf:"varint,3,opt,name=skipped,proto3" json:"skipped,omitempty"`
+	FailedFeeds   []*ImportFailedFeed    `protobuf:"bytes,4,rep,name=failed_feeds,json=failedFeeds,proto3" json:"failed_feeds,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1117,17 +1115,9 @@ func (x *ImportOpmlResponse) GetSkipped() int32 {
 	return 0
 }
 
-// Deprecated: Marked as deprecated in feed/v1/feed.proto.
-func (x *ImportOpmlResponse) GetFailedFeeds() []string {
+func (x *ImportOpmlResponse) GetFailedFeeds() []*ImportFailedFeed {
 	if x != nil {
 		return x.FailedFeeds
-	}
-	return nil
-}
-
-func (x *ImportOpmlResponse) GetFailedFeedsV2() []*ImportFailedFeed {
-	if x != nil {
-		return x.FailedFeedsV2
 	}
 	return nil
 }
@@ -1724,13 +1714,12 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"\x14RefreshFeedsResponse\x122\n" +
 	"\aresults\x18\x01 \x03(\v2\x18.feed.v1.FeedFetchStatusR\aresults\"6\n" +
 	"\x11ImportOpmlRequest\x12!\n" +
-	"\fopml_content\x18\x01 \x01(\fR\vopmlContent\"\xc8\x01\n" +
+	"\fopml_content\x18\x01 \x01(\fR\vopmlContent\"\x9c\x01\n" +
 	"\x12ImportOpmlResponse\x12\x14\n" +
 	"\x05total\x18\x01 \x01(\x05R\x05total\x12\x18\n" +
 	"\asuccess\x18\x02 \x01(\x05R\asuccess\x12\x18\n" +
-	"\askipped\x18\x03 \x01(\x05R\askipped\x12%\n" +
-	"\ffailed_feeds\x18\x04 \x03(\tB\x02\x18\x01R\vfailedFeeds\x12A\n" +
-	"\x0ffailed_feeds_v2\x18\x05 \x03(\v2\x19.feed.v1.ImportFailedFeedR\rfailedFeedsV2\"I\n" +
+	"\askipped\x18\x03 \x01(\x05R\askipped\x12<\n" +
+	"\ffailed_feeds\x18\x04 \x03(\v2\x19.feed.v1.ImportFailedFeedR\vfailedFeeds\"I\n" +
 	"\x10ImportFailedFeed\x12\x10\n" +
 	"\x03url\x18\x01 \x01(\tR\x03url\x12#\n" +
 	"\rerror_message\x18\x02 \x01(\tR\ferrorMessage\"%\n" +
@@ -1827,7 +1816,7 @@ var file_feed_v1_feed_proto_depIdxs = []int32{
 	0,  // 4: feed.v1.CreateFeedResponse.feed:type_name -> feed.v1.Feed
 	0,  // 5: feed.v1.UpdateFeedResponse.feed:type_name -> feed.v1.Feed
 	13, // 6: feed.v1.RefreshFeedsResponse.results:type_name -> feed.v1.FeedFetchStatus
-	17, // 7: feed.v1.ImportOpmlResponse.failed_feeds_v2:type_name -> feed.v1.ImportFailedFeed
+	17, // 7: feed.v1.ImportOpmlResponse.failed_feeds:type_name -> feed.v1.ImportFailedFeed
 	24, // 8: feed.v1.ListFeedTagsResponse.feed_tags:type_name -> feed.v1.FeedTag
 	2,  // 9: feed.v1.FeedService.GetFeed:input_type -> feed.v1.GetFeedRequest
 	4,  // 10: feed.v1.FeedService.ListFeeds:input_type -> feed.v1.ListFeedsRequest

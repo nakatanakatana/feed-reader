@@ -131,8 +131,7 @@ message ImportOpmlResponse {
   int32 total = 1;
   int32 success = 2;
   int32 skipped = 3;
-  repeated string failed_feeds = 4 [deprecated = true];
-  repeated ImportFailedFeed failed_feeds_v2 = 5;
+  repeated ImportFailedFeed failed_feeds = 4;
 }
 
 message ImportFailedFeed {

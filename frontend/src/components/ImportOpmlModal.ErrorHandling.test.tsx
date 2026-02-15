@@ -24,7 +24,7 @@ describe("ImportOpmlModal Error Handling", () => {
             total: 3,
             success: 1,
             skipped: 0,
-            failedFeedsV2: [
+            failedFeeds: [
               { url: "https://example.com/fail1", errorMessage: "Invalid URL" },
               {
                 url: "https://example.com/fail2",
