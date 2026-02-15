@@ -438,7 +438,7 @@ export function FeedList() {
           try {
             await exportFeeds(selectedFeedIds());
           } catch (e) {
-            alert("Failed to export feeds: " + e);
+            alert(`Failed to export feeds: ${e}`);
           }
         }}
       >

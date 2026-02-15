@@ -540,8 +540,8 @@ func TestFeedServer_ImportOpml_Sync(t *testing.T) {
 	assert.Equal(t, res.Msg.Total, int32(3))
 	assert.Equal(t, res.Msg.Success, int32(1))
 	assert.Equal(t, res.Msg.Skipped, int32(1))
-	assert.Assert(t, cmp.Len(res.Msg.FailedFeeds, 1))
-	assert.Equal(t, res.Msg.FailedFeeds[0], "https://example.com/fail")
+	assert.Assert(t, cmp.Len(res.Msg.FailedFeedsV2, 1))
+	assert.Equal(t, res.Msg.FailedFeedsV2[0].Url, "https://example.com/fail")
 
 	// Verify DB
 	feeds, _ := queries.ListFeeds(ctx, nil)

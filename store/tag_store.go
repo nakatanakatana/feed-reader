@@ -113,7 +113,7 @@ func (s *Store) ListTagsByFeedIDs(ctx context.Context, feedIDs []string) ([]List
 
 // GetOrCreateTag returns a tag by name, creating it if it doesn't exist.
 func (s *Store) GetOrCreateTag(ctx context.Context, name string, uuidGen UUIDGenerator) (*Tag, error) {
-	tag, err := s.Queries.GetTagByName(ctx, name)
+	tag, err := s.GetTagByName(ctx, name)
 	if err == nil {
 		return &tag, nil
 	}
@@ -130,13 +130,13 @@ func (s *Store) GetOrCreateTag(ctx context.Context, name string, uuidGen UUIDGen
 		return nil, err
 	}
 
-	newTag, err := s.Queries.CreateTag(ctx, CreateTagParams{
+	newTag, err := s.CreateTag(ctx, CreateTagParams{
 		ID:   newUUID.String(),
 		Name: name,
 	})
 	if err != nil {
 		// Handle possible race where another request created the tag concurrently.
-		existingTag, getErr := s.Queries.GetTagByName(ctx, name)
+		existingTag, getErr := s.GetTagByName(ctx, name)
 		if getErr == nil {
 			return &existingTag, nil
 		}

@@ -80,7 +80,7 @@ func ParseOPML(content []byte) ([]OpmlFeed, error) {
 					}
 				}
 
-				var tags []string = []string{}
+				tags := []string{}
 				for t := range tagSet {
 					tags = append(tags, t)
 				}
