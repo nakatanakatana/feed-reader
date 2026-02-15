@@ -39,7 +39,7 @@
     - [x] Handle file download in the browser upon successful response
 - [x] Task: Conductor - User Manual Verification 'Frontend - Export UI & Integration' (Protocol in workflow.md) 30a21f3
 
-## Phase 4: Frontend - Enhanced Import Error Handling
+## Phase 4: Frontend - Enhanced Import Error Handling [checkpoint: db0fd2d]
 - [x] Task: Design and Test Error Display Component 5ed723a
     - [x] Create `frontend/src/components/ImportOpmlModal.ErrorHandling.test.tsx`
     - [x] Define tests for rendering a list of errors (mocked data)
@@ -49,4 +49,4 @@
 - [x] Task: Add Retry/Skip Actions 5ed723a
     - [x] Implement UI for viewing failed items
     - [x] Ensure the modal remains usable/dismissible even with errors
-- [~] Task: Conductor - User Manual Verification 'Frontend - Enhanced Import Error Handling' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Frontend - Enhanced Import Error Handling' (Protocol in workflow.md) db0fd2d
