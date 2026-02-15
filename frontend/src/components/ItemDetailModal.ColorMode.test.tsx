@@ -65,13 +65,14 @@ describe("ItemDetailModal Color Mode Support", () => {
     );
 
     // Wait for content to load
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await expect
+      .poll(() => document.querySelector('a[href*="#gh-light-mode-only"]'))
+      .not.toBeNull();
 
     // Verify links exist with correct href patterns
     const lightLink = document.querySelector('a[href*="#gh-light-mode-only"]');
     const darkLink = document.querySelector('a[href*="#gh-dark-mode-only"]');
 
-    expect(lightLink).not.toBeNull();
     expect(darkLink).not.toBeNull();
 
     // Verify images exist inside the links
@@ -94,8 +95,10 @@ describe("ItemDetailModal Color Mode Support", () => {
       document.body,
     );
 
-    // Wait for content to load
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    // Wait for content to load (style tags should be present)
+    await expect
+      .poll(() => document.querySelectorAll("style").length)
+      .toBeGreaterThan(0);
 
     // Check if any style tag or stylesheet contains the media queries we added
     const styleTags = Array.from(document.querySelectorAll("style"));
