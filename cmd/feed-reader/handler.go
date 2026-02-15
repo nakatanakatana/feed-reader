@@ -126,7 +126,7 @@ func (s *FeedServer) SuspendFeeds(ctx context.Context, req *connect.Request[feed
 		return connect.NewResponse(&feedv1.SuspendFeedsResponse{}), nil
 	}
 
-	nextFetch := time.Now().Add(time.Duration(req.Msg.SuspendSeconds) * time.Second).Format(time.RFC3339)
+	nextFetch := time.Now().UTC().Add(time.Duration(req.Msg.SuspendSeconds) * time.Second).Format(time.RFC3339)
 
 	for _, id := range req.Msg.Ids {
 		err := s.store.MarkFeedFetched(ctx, store.MarkFeedFetchedParams{
@@ -204,7 +204,7 @@ func (s *FeedServer) createFeedFromURL(ctx context.Context, url string, titleOve
 	}
 
 	// Initialize schedule
-	now := time.Now().Format(time.RFC3339)
+	now := time.Now().UTC().Format(time.RFC3339)
 	err = s.store.MarkFeedFetched(ctx, store.MarkFeedFetchedParams{
 		FeedID:        feed.ID,
 		LastFetchedAt: nil, // Never fetched yet
@@ -220,7 +220,12 @@ func (s *FeedServer) createFeedFromURL(ctx context.Context, url string, titleOve
 		}
 	}
 
-	return &feed, nil
+	// Reload feed to ensure scheduling fields (e.g., NextFetch, LastFetchedAt) are up to date
+	feedWithSchedule, err := s.store.GetFeed(ctx, feed.ID)
+	if err != nil {
+		return nil, err
+	}
+	return &feedWithSchedule, nil
 }
 
 func (s *FeedServer) UpdateFeed(ctx context.Context, req *connect.Request[feedv1.UpdateFeedRequest]) (*connect.Response[feedv1.UpdateFeedResponse], error) {

@@ -35,11 +35,11 @@ type Feed struct {
 	FeedType      *string                `protobuf:"bytes,9,opt,name=feed_type,json=feedType,proto3,oneof" json:"feed_type,omitempty"`
 	FeedVersion   *string                `protobuf:"bytes,10,opt,name=feed_version,json=feedVersion,proto3,oneof" json:"feed_version,omitempty"`
 	LastFetchedAt *string                `protobuf:"bytes,11,opt,name=last_fetched_at,json=lastFetchedAt,proto3,oneof" json:"last_fetched_at,omitempty"`
-	NextFetch     *string                `protobuf:"bytes,12,opt,name=next_fetch,json=nextFetch,proto3,oneof" json:"next_fetch,omitempty"`
-	CreatedAt     string                 `protobuf:"bytes,13,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt     string                 `protobuf:"bytes,14,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	Tags          []*v1.Tag              `protobuf:"bytes,15,rep,name=tags,proto3" json:"tags,omitempty"`
-	UnreadCount   int64                  `protobuf:"varint,16,opt,name=unread_count,json=unreadCount,proto3" json:"unread_count,omitempty"`
+	CreatedAt     string                 `protobuf:"bytes,12,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt     string                 `protobuf:"bytes,13,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	Tags          []*v1.Tag              `protobuf:"bytes,14,rep,name=tags,proto3" json:"tags,omitempty"`
+	UnreadCount   int64                  `protobuf:"varint,15,opt,name=unread_count,json=unreadCount,proto3" json:"unread_count,omitempty"`
+	NextFetch     *string                `protobuf:"bytes,16,opt,name=next_fetch,json=nextFetch,proto3,oneof" json:"next_fetch,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -151,13 +151,6 @@ func (x *Feed) GetLastFetchedAt() string {
 	return ""
 }
 
-func (x *Feed) GetNextFetch() string {
-	if x != nil && x.NextFetch != nil {
-		return *x.NextFetch
-	}
-	return ""
-}
-
 func (x *Feed) GetCreatedAt() string {
 	if x != nil {
 		return x.CreatedAt
@@ -184,6 +177,13 @@ func (x *Feed) GetUnreadCount() int64 {
 		return x.UnreadCount
 	}
 	return 0
+}
+
+func (x *Feed) GetNextFetch() string {
+	if x != nil && x.NextFetch != nil {
+		return *x.NextFetch
+	}
+	return ""
 }
 
 type ListFeed struct {
@@ -633,7 +633,6 @@ type UpdateFeedRequest struct {
 	Copyright     *string                `protobuf:"bytes,8,opt,name=copyright,proto3,oneof" json:"copyright,omitempty"`
 	FeedType      *string                `protobuf:"bytes,9,opt,name=feed_type,json=feedType,proto3,oneof" json:"feed_type,omitempty"`
 	FeedVersion   *string                `protobuf:"bytes,10,opt,name=feed_version,json=feedVersion,proto3,oneof" json:"feed_version,omitempty"`
-	LastFetchedAt *string                `protobuf:"bytes,11,opt,name=last_fetched_at,json=lastFetchedAt,proto3,oneof" json:"last_fetched_at,omitempty"`
 	TagIds        []string               `protobuf:"bytes,12,rep,name=tag_ids,json=tagIds,proto3" json:"tag_ids,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -728,13 +727,6 @@ func (x *UpdateFeedRequest) GetFeedType() string {
 func (x *UpdateFeedRequest) GetFeedVersion() string {
 	if x != nil && x.FeedVersion != nil {
 		return *x.FeedVersion
-	}
-	return ""
-}
-
-func (x *UpdateFeedRequest) GetLastFetchedAt() string {
-	if x != nil && x.LastFetchedAt != nil {
-		return *x.LastFetchedAt
 	}
 	return ""
 }
@@ -1577,15 +1569,15 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"\tfeed_type\x18\t \x01(\tH\x05R\bfeedType\x88\x01\x01\x12&\n" +
 	"\ffeed_version\x18\n" +
 	" \x01(\tH\x06R\vfeedVersion\x88\x01\x01\x12+\n" +
-	"\x0flast_fetched_at\x18\v \x01(\tH\aR\rlastFetchedAt\x88\x01\x01\x12\"\n" +
+	"\x0flast_fetched_at\x18\v \x01(\tH\aR\rlastFetchedAt\x88\x01\x01\x12\x1d\n" +
 	"\n" +
-	"next_fetch\x18\f \x01(\tH\bR\tnextFetch\x88\x01\x01\x12\x1d\n" +
+	"created_at\x18\f \x01(\tR\tcreatedAt\x12\x1d\n" +
 	"\n" +
-	"created_at\x18\r \x01(\tR\tcreatedAt\x12\x1d\n" +
+	"updated_at\x18\r \x01(\tR\tupdatedAt\x12\x1f\n" +
+	"\x04tags\x18\x0e \x03(\v2\v.tag.v1.TagR\x04tags\x12!\n" +
+	"\funread_count\x18\x0f \x01(\x03R\vunreadCount\x12\"\n" +
 	"\n" +
-	"updated_at\x18\x0e \x01(\tR\tupdatedAt\x12\x1f\n" +
-	"\x04tags\x18\x0f \x03(\v2\v.tag.v1.TagR\x04tags\x12!\n" +
-	"\funread_count\x18\x10 \x01(\x03R\vunreadCountB\a\n" +
+	"next_fetch\x18\x10 \x01(\tH\bR\tnextFetch\x88\x01\x01B\a\n" +
 	"\x05_linkB\x0e\n" +
 	"\f_descriptionB\a\n" +
 	"\x05_langB\f\n" +
@@ -1644,7 +1636,7 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"_feed_typeB\x0f\n" +
 	"\r_feed_version\"7\n" +
 	"\x12CreateFeedResponse\x12!\n" +
-	"\x04feed\x18\x01 \x01(\v2\r.feed.v1.FeedR\x04feed\"\xe7\x03\n" +
+	"\x04feed\x18\x01 \x01(\v2\r.feed.v1.FeedR\x04feed\"\xac\x03\n" +
 	"\x11UpdateFeedRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
 	"\x05title\x18\x03 \x01(\tH\x00R\x05title\x88\x01\x01\x12\x17\n" +
@@ -1655,8 +1647,7 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"\tcopyright\x18\b \x01(\tH\x05R\tcopyright\x88\x01\x01\x12 \n" +
 	"\tfeed_type\x18\t \x01(\tH\x06R\bfeedType\x88\x01\x01\x12&\n" +
 	"\ffeed_version\x18\n" +
-	" \x01(\tH\aR\vfeedVersion\x88\x01\x01\x12+\n" +
-	"\x0flast_fetched_at\x18\v \x01(\tH\bR\rlastFetchedAt\x88\x01\x01\x12\x17\n" +
+	" \x01(\tH\aR\vfeedVersion\x88\x01\x01\x12\x17\n" +
 	"\atag_ids\x18\f \x03(\tR\x06tagIdsB\b\n" +
 	"\x06_titleB\a\n" +
 	"\x05_linkB\x0e\n" +
@@ -1668,8 +1659,7 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"_copyrightB\f\n" +
 	"\n" +
 	"_feed_typeB\x0f\n" +
-	"\r_feed_versionB\x12\n" +
-	"\x10_last_fetched_at\"7\n" +
+	"\r_feed_versionJ\x04\b\v\x10\f\"7\n" +
 	"\x12UpdateFeedResponse\x12!\n" +
 	"\x04feed\x18\x01 \x01(\v2\r.feed.v1.FeedR\x04feed\"#\n" +
 	"\x11DeleteFeedRequest\x12\x0e\n" +

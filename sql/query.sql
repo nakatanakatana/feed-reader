@@ -145,8 +145,8 @@ INSERT INTO feed_fetcher (
   ?, ?, ?
 )
 ON CONFLICT(feed_id) DO UPDATE SET
-  last_fetched_at = excluded.last_fetched_at,
-  next_fetch = excluded.next_fetch,
+  last_fetched_at = COALESCE(excluded.last_fetched_at, feed_fetcher.last_fetched_at),
+  next_fetch = COALESCE(excluded.next_fetch, feed_fetcher.next_fetch),
   updated_at = (strftime('%FT%TZ', 'now'));
 
 -- name: GetItem :one

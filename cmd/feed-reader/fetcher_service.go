@@ -133,7 +133,7 @@ func (s *FetcherService) fetchAndSaveSync(ctx context.Context, f store.FullFeed)
 	}
 
 	// Update last_fetched_at and next_fetch
-	now := time.Now()
+	now := time.Now().UTC()
 	lastFetched := now.Format(time.RFC3339)
 	nextFetch := now.Add(s.fetchInterval).Format(time.RFC3339)
 	s.writeQueue.Submit(&MarkFetchedJob{
@@ -218,7 +218,7 @@ func (s *FetcherService) FetchAndSave(ctx context.Context, f store.FullFeed) err
 		if errors.Is(err, ErrNotModified) {
 			s.logger.InfoContext(ctx, "feed not modified, skipping", "url", f.Url, "id", f.ID)
 			// Still update last_fetched_at and next_fetch to avoid immediate re-fetch
-			now := time.Now()
+			now := time.Now().UTC()
 			lastFetched := now.Format(time.RFC3339)
 			nextFetch := now.Add(s.fetchInterval).Format(time.RFC3339)
 			s.writeQueue.Submit(&MarkFetchedJob{
@@ -245,7 +245,7 @@ func (s *FetcherService) FetchAndSave(ctx context.Context, f store.FullFeed) err
 	}
 
 	// Update last_fetched_at and next_fetch asynchronously
-	now := time.Now()
+	now := time.Now().UTC()
 	lastFetched := now.Format(time.RFC3339)
 	nextFetch := now.Add(s.fetchInterval).Format(time.RFC3339)
 	s.writeQueue.Submit(&MarkFetchedJob{
