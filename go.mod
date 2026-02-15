@@ -1,6 +1,6 @@
 module github.com/nakatanakatana/feed-reader
 
-go 1.25.5
+go 1.26
 
 require (
 	connectrpc.com/connect v1.19.1
@@ -9,7 +9,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/hashicorp/go-retryablehttp v0.7.8
 	github.com/mmcdole/gofeed v1.3.0
-	github.com/sqldef/sqldef/v3 v3.9.7
+	github.com/sqldef/sqldef/v3 v3.9.8
 	golang.org/x/net v0.50.0
 	google.golang.org/protobuf v1.36.11
 	gotest.tools/v3 v3.5.2
