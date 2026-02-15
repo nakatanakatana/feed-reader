@@ -9,7 +9,6 @@ import (
 	"github.com/sqldef/sqldef/v3/database/sqlite3"
 	"github.com/sqldef/sqldef/v3/parser"
 	sqlschema "github.com/sqldef/sqldef/v3/schema"
-	_ "modernc.org/sqlite"
 )
 
 // Migrate performs database migration using sqldef.
