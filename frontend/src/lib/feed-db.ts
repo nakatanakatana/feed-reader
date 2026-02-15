@@ -77,6 +77,21 @@ export const suspendFeeds = async (
   queryClient.invalidateQueries({ queryKey: ["feeds"] });
 };
 
+export const exportFeeds = async (feedIds: string[]) => {
+  const res = await feedClient.exportOpml({ ids: feedIds });
+  const blob = new Blob([res.opmlContent as BlobPart], {
+    type: "application/xml",
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "feeds.opml";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 100);
+};
+
 export const feeds = createCollection(
   queryCollectionOptions({
     id: "feeds",

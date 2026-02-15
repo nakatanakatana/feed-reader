@@ -295,6 +295,14 @@ INSERT INTO tags (
 )
 RETURNING *;
 
+-- name: GetTagByName :one
+SELECT
+  *
+FROM
+  tags
+WHERE
+  name = ?;
+
 -- name: ListTags :many
 SELECT
   *
@@ -339,6 +347,19 @@ JOIN
   feed_tags ft ON t.id = ft.tag_id
 WHERE
   ft.feed_id = ?
+ORDER BY
+  t.name ASC;
+
+-- name: ListTagsByFeedIDs :many
+SELECT
+  ft.feed_id,
+  t.name
+FROM
+  tags t
+JOIN
+  feed_tags ft ON t.id = ft.tag_id
+WHERE
+  ft.feed_id IN (sqlc.slice('feed_ids'))
 ORDER BY
   t.name ASC;
 

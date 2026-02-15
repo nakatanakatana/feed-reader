@@ -305,11 +305,19 @@ func (s *FeedServer) ImportOpml(ctx context.Context, req *connect.Request[feedv1
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
+	failedFeeds := make([]*feedv1.ImportFailedFeed, len(results.FailedFeeds))
+	for i, f := range results.FailedFeeds {
+		failedFeeds[i] = &feedv1.ImportFailedFeed{
+			Url:          f.URL,
+			ErrorMessage: f.ErrorMessage,
+		}
+	}
+
 	return connect.NewResponse(&feedv1.ImportOpmlResponse{
 		Total:       results.Total,
 		Success:     results.Success,
 		Skipped:     results.Skipped,
-		FailedFeeds: results.FailedFeeds,
+		FailedFeeds: failedFeeds,
 	}), nil
 }
 
@@ -394,4 +402,68 @@ func (s *FeedServer) toProtoFeed(ctx context.Context, f store.FullFeed) (*feedv1
 		UpdatedAt:     f.UpdatedAt,
 		Tags:          protoTags,
 	}, nil
+}
+
+func (s *FeedServer) ExportOpml(ctx context.Context, req *connect.Request[feedv1.ExportOpmlRequest]) (*connect.Response[feedv1.ExportOpmlResponse], error) {
+	ids := req.Msg.Ids
+
+	if len(ids) == 0 {
+		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("ids must not be empty"))
+	}
+
+	feeds, err := s.store.ListFeedsByIDs(ctx, ids)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	// Fetch all tags for these feeds in one go to avoid N+1 queries
+	tagRows, err := s.store.ListTagsByFeedIDs(ctx, ids)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	tagsByFeed := make(map[string][]string)
+	for _, row := range tagRows {
+		tagsByFeed[row.FeedID] = append(tagsByFeed[row.FeedID], row.Name)
+	}
+
+	exportFeeds := make([]ExportFeed, len(feeds))
+	for i, f := range feeds {
+		tagNames := tagsByFeed[f.ID]
+		if tagNames == nil {
+			tagNames = []string{}
+		}
+
+		title := f.Url
+		if f.Title != nil && *f.Title != "" {
+			title = *f.Title
+		}
+
+		link := ""
+		if f.Link != nil {
+			link = *f.Link
+		}
+
+		feedType := "rss"
+		if f.FeedType != nil {
+			feedType = *f.FeedType
+		}
+
+		exportFeeds[i] = ExportFeed{
+			Title:   title,
+			XmlURL:  f.Url,
+			HtmlURL: link,
+			Tags:    tagNames,
+			Type:    feedType,
+		}
+	}
+
+	opmlContent, err := ExportOPML(exportFeeds)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	return connect.NewResponse(&feedv1.ExportOpmlResponse{
+		OpmlContent: opmlContent,
+	}), nil
 }

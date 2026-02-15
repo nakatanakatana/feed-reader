@@ -1,10 +1,13 @@
 package main
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+	"github.com/nakatanakatana/feed-reader/store"
+)
 
 // UUIDGenerator generates UUIDs.
 type UUIDGenerator interface {
-	NewRandom() (uuid.UUID, error)
+	store.UUIDGenerator
 }
 
 type realUUIDGenerator struct{}

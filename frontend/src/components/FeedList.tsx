@@ -4,6 +4,7 @@ import { createEffect, createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import {
+  exportFeeds,
   type Feed,
   feedDelete,
   feeds,
@@ -498,6 +499,13 @@ export function FeedList() {
         selectedCount={selectedFeedIds().length}
         unit="feeds"
         onClear={() => setSelectedFeedIds([])}
+        onExport={async () => {
+          try {
+            await exportFeeds(selectedFeedIds());
+          } catch (e) {
+            alert(`Failed to export feeds: ${e}`);
+          }
+        }}
       >
         <div class={flex({ gap: "2", alignItems: "center" })}>
           <select

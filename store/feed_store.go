@@ -94,6 +94,18 @@ func (s *Store) UpdateFeed(ctx context.Context, params UpdateFeedParams) (FullFe
 	}, nil
 }
 
+func (s *Store) ListFeedsByIDs(ctx context.Context, ids []string) ([]FullFeed, error) {
+	rows, err := s.Queries.ListFeedsByIDs(ctx, ids)
+	if err != nil {
+		return nil, err
+	}
+	feeds := make([]FullFeed, len(rows))
+	for i, r := range rows {
+		feeds[i] = FullFeed(r)
+	}
+	return feeds, nil
+}
+
 // WithTransaction executes the given function within a transaction, retrying on SQLite busy errors.
 func (s *Store) WithTransaction(ctx context.Context, fn func(q *Queries) error) error {
 	return WithRetry(ctx, func() error {

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"log/slog"
 	"regexp"
@@ -28,16 +29,22 @@ import (
 func assertResponseGolden(t *testing.T, m proto.Message, goldenFile string) {
 	t.Helper()
 	options := protojson.MarshalOptions{
-		Multiline:       true,
-		Indent:          "  ",
 		EmitUnpopulated: false,
 	}
 	b, err := options.Marshal(m)
 	assert.NilError(t, err)
 
+	// Re-marshal with encoding/json for stable formatting
+	var jsonObj interface{}
+	err = json.Unmarshal(b, &jsonObj)
+	assert.NilError(t, err)
+
+	formatted, err := json.MarshalIndent(jsonObj, "", "  ")
+	assert.NilError(t, err)
+
 	// Replace dynamic IDs and timestamps for stability
 	// This is a simple regex-based replacement for this example
-	s := string(b)
+	s := string(formatted)
 	// Mask UUIDs
 	reUUID := regexp.MustCompile(`[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}`)
 	s = reUUID.ReplaceAllString(s, "00000000-0000-0000-0000-000000000000")
@@ -541,7 +548,7 @@ func TestFeedServer_ImportOpml_Sync(t *testing.T) {
 	assert.Equal(t, res.Msg.Success, int32(1))
 	assert.Equal(t, res.Msg.Skipped, int32(1))
 	assert.Assert(t, cmp.Len(res.Msg.FailedFeeds, 1))
-	assert.Equal(t, res.Msg.FailedFeeds[0], "https://example.com/fail")
+	assert.Equal(t, res.Msg.FailedFeeds[0].Url, "https://example.com/fail")
 
 	// Verify DB
 	feeds, _ := queries.ListFeeds(ctx, nil)

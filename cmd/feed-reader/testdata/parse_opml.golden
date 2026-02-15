@@ -1,14 +1,21 @@
 [
   {
     "Title": "Hacker News",
-    "URL": "https://news.ycombinator.com/rss"
+    "URL": "https://news.ycombinator.com/rss",
+    "Tags": [
+      "Tech"
+    ]
   },
   {
     "Title": "Go Blog",
-    "URL": "https://go.dev/blog/feed.atom"
+    "URL": "https://go.dev/blog/feed.atom",
+    "Tags": [
+      "Tech"
+    ]
   },
   {
     "Title": "Another Feed",
-    "URL": "https://example.com/feed.xml"
+    "URL": "https://example.com/feed.xml",
+    "Tags": []
   }
 ]
