@@ -116,17 +116,19 @@ func (s *Store) ListRecentItemPublishedDates(ctx context.Context, feedID string,
 		return nil, err
 	}
 
-	dates := make([]time.Time, 0, len(rows))
+	dates := make([]time.Time, len(rows))
+	n := 0
 	for _, r := range rows {
 		if r == nil {
 			continue
 		}
 		t, err := time.Parse(time.RFC3339, *r)
 		if err == nil {
-			dates = append(dates, t)
+			dates[n] = t
+			n++
 		}
 	}
-	return dates, nil
+	return dates[:n], nil
 }
 
 // WithTransaction executes the given function within a transaction, retrying on SQLite busy errors.

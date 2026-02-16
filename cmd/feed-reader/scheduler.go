@@ -77,13 +77,7 @@ func CalculateAdaptiveInterval(pubDates []time.Time, defaultInterval, minInterva
 		count = 10
 	}
 
-	var totalInterval time.Duration
-	for i := 0; i < count-1; i++ {
-		interval := dates[i].Sub(dates[i+1])
-		totalInterval += interval
-	}
-
-	avgInterval := totalInterval / time.Duration(count-1)
+	avgInterval := dates[0].Sub(dates[count-1]) / time.Duration(count-1)
 
 	if avgInterval < minInterval {
 		return minInterval
