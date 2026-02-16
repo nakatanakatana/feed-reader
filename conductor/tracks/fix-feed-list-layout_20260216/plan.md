@@ -12,10 +12,10 @@ Confirm existing layout implementation and set up regression tests to catch hori
 ## Phase 2: Implement Layout Fixes
 Apply CSS changes to ensure titles truncate and the layout remains stable without horizontal overflow.
 
-- [ ] Task: Update Feed List item CSS to implement ellipsis truncation for long titles.
-- [ ] Task: Apply CSS constraints to ensure container stability and prevent horizontal overflow (`min-width: 0`, `overflow: hidden`).
-- [ ] Task: Verify truncation and layout integrity via the previously created tests.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Implement Layout Fixes' (Protocol in workflow.md)
+- [x] Task: Update Feed List item CSS to implement ellipsis truncation for long titles.
+- [x] Task: Apply CSS constraints to ensure container stability and prevent horizontal overflow (`min-width: 0`, `overflow: hidden`).
+- [x] Task: Verify truncation and layout integrity via the previously created tests.
+- [~] Task: Conductor - User Manual Verification 'Phase 2: Implement Layout Fixes' (Protocol in workflow.md)
 
 ## Phase 3: Responsive Action Buttons (Kebab Menu)
 Consolidate action buttons into a kebab menu for narrow viewports.
