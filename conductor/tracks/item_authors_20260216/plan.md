@@ -2,7 +2,7 @@
 
 This plan outlines the steps to overhaul the item author storage mechanism, moving from a single-string format to a robust many-to-many relationship using a dedicated `authors` table.
 
-## Phase 1: Schema and Data Access Layer
+## Phase 1: Schema and Data Access Layer [checkpoint: 7358dd4]
 Goal: Define the new database schema and generate type-safe data access code using `sqlc`.
 
 - [x] Task: Create a new SQL migration to add `authors` and `item_authors` tables. <sha:bf980eb>
@@ -14,7 +14,7 @@ Goal: Define the new database schema and generate type-safe data access code usi
     - [x] Add query to link an item and an author in `item_authors`.
     - [x] Add query to list authors for a specific item.
 - [x] Task: Run `make gen` (or equivalent) to update `sqlc` generated code. <sha:bf980eb>
-- [~] Task: Conductor - User Manual Verification 'Schema and Data Access Layer' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Schema and Data Access Layer' (Protocol in workflow.md) <sha:7358dd4>
 
 ## Phase 2: Protobuf and API Definitions
 Goal: Update the communication contract to support multiple authors per item.
