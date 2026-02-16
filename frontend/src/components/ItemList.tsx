@@ -6,6 +6,8 @@ import {
   createSignal,
   For,
   type JSX,
+  onCleanup,
+  onMount,
   Show,
 } from "solid-js";
 import { css } from "../../styled-system/css";
@@ -36,6 +38,18 @@ export function ItemList(props: ItemListProps) {
     new Set(),
   );
   const [isBulkMarking, setIsBulkMarking] = createSignal(false);
+  const [showMoreActions, setShowMoreActions] = createSignal(false);
+  let moreActionsRef: HTMLDivElement | undefined;
+
+  onMount(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (moreActionsRef && !moreActionsRef.contains(e.target as Node)) {
+        setShowMoreActions(false);
+      }
+    };
+    document.addEventListener("click", handleClickOutside);
+    onCleanup(() => document.removeEventListener("click", handleClickOutside));
+  });
 
   createEffect(() => {
     if (props.dateFilter) {
@@ -235,16 +249,36 @@ export function ItemList(props: ItemListProps) {
         class={flex({
           justifyContent: "space-between",
           alignItems: "center",
-          flexWrap: "wrap",
-          gap: "4",
+          gap: "2",
+          flexWrap: "nowrap",
         })}
       >
-        <div class={flex({ gap: "2", alignItems: "center" })}>
+        <div
+          class={flex({
+            gap: "2",
+            alignItems: "center",
+            flexShrink: 0,
+            minW: 0,
+          })}
+        >
           {props.headerActions}
         </div>
 
-        <div class={flex({ gap: "4", alignItems: "center", flexWrap: "wrap" })}>
-          <div class={flex({ gap: "2", alignItems: "center" })}>
+        <div
+          class={flex({
+            gap: { base: "2", md: "4" },
+            alignItems: "center",
+            flexShrink: 0,
+          })}
+        >
+          {/* Desktop Actions */}
+          <div
+            class={flex({
+              display: { base: "none", md: "flex" },
+              gap: "4",
+              alignItems: "center",
+            })}
+          >
             <ActionButton
               size="sm"
               variant="secondary"
@@ -253,50 +287,183 @@ export function ItemList(props: ItemListProps) {
             >
               Clear Read Items
             </ActionButton>
-          </div>
-          <div class={flex({ gap: "2", alignItems: "center" })}>
             <DateFilterSelector
               value={itemStore.state.since}
               onSelect={handleDateFilterSelect}
             />
+            <div class={flex({ gap: "2", alignItems: "center" })}>
+              <input
+                id="show-read-toggle"
+                type="checkbox"
+                checked={itemStore.state.showRead}
+                onChange={(e) => itemStore.setShowRead(e.currentTarget.checked)}
+                class={css({ cursor: "pointer" })}
+              />
+              <label
+                for="show-read-toggle"
+                class={css({
+                  fontSize: "sm",
+                  color: "gray.600",
+                  cursor: "pointer",
+                  whiteSpace: "nowrap",
+                })}
+              >
+                Show Read
+              </label>
+            </div>
+            <div class={flex({ gap: "2", alignItems: "center" })}>
+              <input
+                id="select-all-checkbox"
+                type="checkbox"
+                checked={isAllSelected()}
+                onChange={(e) => handleToggleAll(e.currentTarget.checked)}
+                class={css({ cursor: "pointer" })}
+              />
+              <label
+                for="select-all-checkbox"
+                class={css({
+                  fontSize: "sm",
+                  color: "gray.600",
+                  cursor: "pointer",
+                  whiteSpace: "nowrap",
+                })}
+              >
+                Select All
+              </label>
+            </div>
           </div>
-          <div class={flex({ gap: "2", alignItems: "center" })}>
-            <input
-              id="show-read-toggle"
-              type="checkbox"
-              checked={itemStore.state.showRead}
-              onChange={(e) => itemStore.setShowRead(e.currentTarget.checked)}
-              class={css({ cursor: "pointer" })}
+
+          {/* Mobile Actions */}
+          <div
+            class={flex({
+              display: { base: "flex", md: "none" },
+              gap: "2",
+              alignItems: "center",
+            })}
+          >
+            <DateFilterSelector
+              value={itemStore.state.since}
+              onSelect={handleDateFilterSelect}
             />
-            <label
-              for="show-read-toggle"
-              class={css({
-                fontSize: "sm",
-                color: "gray.600",
-                cursor: "pointer",
-              })}
-            >
-              Show Read
-            </label>
-          </div>
-          <div class={flex({ gap: "2", alignItems: "center" })}>
-            <input
-              id="select-all-checkbox"
-              type="checkbox"
-              checked={isAllSelected()}
-              onChange={(e) => handleToggleAll(e.currentTarget.checked)}
-              class={css({ cursor: "pointer" })}
-            />
-            <label
-              for="select-all-checkbox"
-              class={css({
-                fontSize: "sm",
-                color: "gray.600",
-                cursor: "pointer",
-              })}
-            >
-              Select All
-            </label>
+            <div class={css({ position: "relative" })} ref={moreActionsRef}>
+              <ActionButton
+                size="sm"
+                variant="secondary"
+                onClick={() => setShowMoreActions(!showMoreActions())}
+                aria-label="More actions"
+                icon={
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <title>More actions</title>
+                    <circle cx="12" cy="12" r="1" />
+                    <circle cx="12" cy="5" r="1" />
+                    <circle cx="12" cy="19" r="1" />
+                  </svg>
+                }
+              >
+                More
+              </ActionButton>
+              <Show when={showMoreActions()}>
+                <div
+                  class={css({
+                    position: "absolute",
+                    top: "100%",
+                    right: 0,
+                    mt: "1",
+                    bg: "white",
+                    border: "1px solid",
+                    borderColor: "gray.200",
+                    borderRadius: "md",
+                    boxShadow: "lg",
+                    zIndex: 100,
+                    minW: "160px",
+                    display: "flex",
+                    flexDirection: "column",
+                    padding: "1",
+                    gap: "1",
+                  })}
+                >
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleClearReadItems();
+                      setShowMoreActions(false);
+                    }}
+                    class={css({
+                      display: "flex",
+                      alignItems: "center",
+                      px: "3",
+                      py: "2",
+                      fontSize: "sm",
+                      color: "gray.700",
+                      borderRadius: "sm",
+                      textAlign: "left",
+                      cursor: "pointer",
+                      _hover: { bg: "gray.50" },
+                    })}
+                  >
+                    Clear Read Items
+                  </button>
+                  <label
+                    class={css({
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "2",
+                      px: "3",
+                      py: "2",
+                      fontSize: "sm",
+                      color: "gray.700",
+                      borderRadius: "sm",
+                      cursor: "pointer",
+                      _hover: { bg: "gray.50" },
+                    })}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={itemStore.state.showRead}
+                      onChange={(e) => {
+                        itemStore.setShowRead(e.currentTarget.checked);
+                      }}
+                      class={css({ cursor: "pointer" })}
+                    />
+                    <span>Show Read</span>
+                  </label>
+                  <label
+                    class={css({
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "2",
+                      px: "3",
+                      py: "2",
+                      fontSize: "sm",
+                      color: "gray.700",
+                      borderRadius: "sm",
+                      cursor: "pointer",
+                      _hover: { bg: "gray.50" },
+                    })}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isAllSelected()}
+                      onChange={(e) => {
+                        handleToggleAll(e.currentTarget.checked);
+                      }}
+                      class={css({ cursor: "pointer" })}
+                    />
+                    <span>Select All</span>
+                  </label>
+                </div>
+              </Show>
+            </div>
           </div>
         </div>
       </div>
