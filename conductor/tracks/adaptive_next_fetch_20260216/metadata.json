@@ -1,8 +1,0 @@
-{
-  "track_id": "adaptive_next_fetch_20260216",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-02-16T10:00:00Z",
-  "updated_at": "2026-02-16T10:00:00Z",
-  "description": "Feedの取得後の次回取得日時のnextFetchをFeedのitemの更新頻度によって適切に設定する機能を追加したいです"
-}
