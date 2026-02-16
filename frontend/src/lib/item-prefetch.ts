@@ -1,7 +1,6 @@
 import { getItem } from "./item-db";
+import { ITEM_STALE_TIME } from "./item-query-constants";
 import { queryClient } from "./query";
-
-export const ITEM_STALE_TIME = 5 * 60 * 1000; // Consider item data fresh for 5 minutes
 
 /**
  * Prefetches item data for the given item IDs to improve navigation speed.

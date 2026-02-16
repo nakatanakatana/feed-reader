@@ -3,7 +3,7 @@ import { QueryClientProvider } from "@tanstack/solid-query";
 import { HttpResponse, http } from "msw";
 import { createSignal } from "solid-js";
 import { render } from "solid-js/web";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ItemDetailModal } from "../components/ItemDetailModal";
 import { GetItemResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
 import { worker } from "../mocks/browser";
@@ -63,14 +63,13 @@ describe("Prefetch Verification", () => {
       document.body,
     );
 
-    // Wait for Solid-js and TanStack Query to settle
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    // Wait for Solid-js and TanStack Query to settle by checking for rendered content
+    await vi.waitFor(() => {
+      expect(document.body.innerHTML).toContain("Test Item");
+    });
 
     // fetchCount should STILL be 1 because it should use the cached data
     // thanks to ITEM_STALE_TIME synchronization.
     expect(fetchCount).toBe(1);
-
-    // Just to be sure the component actually rendered
-    expect(document.body.innerHTML).toContain("Test Item");
   });
 });
