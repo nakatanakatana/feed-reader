@@ -5,8 +5,8 @@ This plan focuses on making the feed list responsive, ensuring titles are trunca
 ## Phase 1: Investigation & Test Setup
 Confirm existing layout implementation and set up regression tests to catch horizontal overflow and overlapping elements.
 
-- [ ] Task: Identify the CSS and components responsible for the Feed List item layout.
-- [ ] Task: Create integration tests in `frontend/src/components/FeedList.Responsive.test.tsx` that simulate narrow viewports (e.g., 320px) and check for horizontal scrolling or element overlap.
+- [x] Task: Identify the CSS and components responsible for the Feed List item layout.
+- [x] Task: Create integration tests in `frontend/src/components/FeedList.Responsive.test.tsx` that simulate narrow viewports (e.g., 320px) and check for horizontal scrolling or element overlap.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Investigation & Test Setup' (Protocol in workflow.md)
 
 ## Phase 2: Implement Layout Fixes

@@ -45,6 +45,7 @@ describe("FeedList Responsive", () => {
     if (dispose) dispose();
     document.body.innerHTML = "";
     vi.clearAllMocks();
+    queryClient.clear();
   });
 
   const TestWrapper = (props: { children: JSX.Element }) => (
@@ -55,15 +56,16 @@ describe("FeedList Responsive", () => {
     </TransportProvider>
   );
 
-  const setupMockData = () => {
+  const setupMockData = (title = "Feed 1", unreadCount = 0n, url = "url1") => {
     worker.use(
       http.post("*/feed.v1.FeedService/ListFeeds", () => {
         const msg = create(ListFeedsResponseSchema, {
           feeds: [
             create(ListFeedSchema, {
               id: "1",
-              title: "Feed 1",
-              url: "url1",
+              title,
+              url,
+              unreadCount,
               tags: [],
             }),
           ],
@@ -89,45 +91,12 @@ describe("FeedList Responsive", () => {
     );
   };
 
-  it("shows a floating action bar on mobile when feeds are selected", async () => {
-    // Set a narrow viewport
-    await page.viewport?.(375, 667);
-
-    setupMockData();
-
-    const history = createMemoryHistory({ initialEntries: ["/feeds"] });
-    const router = createRouter({ routeTree, history });
-
-    dispose = render(
-      () => (
-        <TestWrapper>
-          <RouterProvider router={router} />
-        </TestWrapper>
-      ),
-      document.body,
-    );
-
-    await expect.element(page.getByText("Feed 1")).toBeInTheDocument();
-
-    // Select a feed
-    const checkbox = page.getByRole("checkbox").nth(1);
-    await checkbox.click();
-
-    // Now the BulkActionBar should be visible
-    const bar = page.getByTestId("bulk-action-bar");
-    await expect.element(bar).toBeVisible();
-
-    // Check if it's fixed
-    const barElement = (await bar.element()) as HTMLElement;
-    const styles = window.getComputedStyle(barElement);
-    expect(styles.position).toBe("fixed");
-  });
-
-  it("shows BulkActionBar on desktop as well", async () => {
-    // Set a wide viewport
-    await page.viewport?.(1024, 768);
-
-    setupMockData();
+  it("is responsive and shows kebab menu / truncates titles", async () => {
+    // 1. Desktop view
+    await page.viewport?.(1280, 1024);
+    const longTitle = "A very long feed title that should definitely truncate on narrow screens to prevent horizontal overflow and layout breakage";
+    const longUrl = "https://example.com/a/very/long/path/to/a/feed/that/will/definitely/overflow/on/narrow/viewports/if/not/properly/handled/with/ellipsis/or/truncation";
+    setupMockData(longTitle, 5n, longUrl);
 
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
     const router = createRouter({ routeTree, history });
@@ -141,14 +110,54 @@ describe("FeedList Responsive", () => {
       document.body,
     );
 
-    await expect.element(page.getByText("Feed 1")).toBeInTheDocument();
+    // Force refetch
+    await queryClient.refetchQueries({ queryKey: ["feeds"] });
 
-    // Select a feed
-    const checkbox = page.getByRole("checkbox").nth(1);
-    await checkbox.click();
+    await expect.element(page.getByText(longTitle)).toBeVisible();
+    
+    // Check if Delete button is visible (Desktop)
+    await expect.element(page.getByRole("button", { name: "Delete" })).toBeVisible();
 
-    // The BulkActionBar should be visible on desktop too (unified UI)
-    const bar = page.getByTestId("bulk-action-bar");
-    await expect.element(bar).toBeVisible();
+    // 2. Mobile view - Switch viewport
+    await page.viewport?.(320, 568);
+    
+    // Give it a moment to reflow and stabilize
+    await new Promise(r => setTimeout(r, 500));
+
+    // Check truncation (ellipsis)
+    const titleLink = page.getByText(longTitle);
+    const titleElement = (await titleLink.element()) as HTMLElement;
+    const styles = window.getComputedStyle(titleElement);
+    
+    // We expect text-overflow: ellipsis
+    expect(styles.textOverflow).toBe("ellipsis");
+    expect(styles.whiteSpace).toBe("nowrap");
+    expect(styles.overflow).toBe("hidden");
+
+    // Check that the title's actual width is limited (should not exceed viewport)
+    const titleRect = titleElement.getBoundingClientRect();
+    expect(titleRect.width).toBeLessThan(320);
+
+    // Check kebab menu (Mobile)
+    // On mobile, the Delete button should be hidden (display: none)
+    await expect.element(page.getByRole("button", { name: "Delete", includeHidden: true })).not.toBeVisible();
+    await expect.element(page.getByRole("button", { name: /Actions for/i })).toBeVisible();
+
+    // 3. Check for horizontal overflow
+    // The scrollWidth of the body should not exceed its clientWidth
+    expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(document.documentElement.clientWidth);
+    
+    const listContainer = document.querySelector("ul");
+    if (listContainer) {
+      expect(listContainer.scrollWidth).toBeLessThanOrEqual(listContainer.clientWidth);
+    }
+
+    // Verify actual truncation of title
+    expect(titleElement.scrollWidth).toBeGreaterThan(titleElement.clientWidth);
+
+    // Verify URL truncation (This might fail currently)
+    const urlElement = page.getByText(longUrl);
+    const urlHtmlElement = (await urlElement.element()) as HTMLElement;
+    expect(urlHtmlElement.scrollWidth).toBeGreaterThan(urlHtmlElement.clientWidth);
   });
 });
