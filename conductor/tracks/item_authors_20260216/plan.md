@@ -25,7 +25,7 @@ Goal: Update the communication contract to support multiple authors per item.
 - [x] Task: Run `buf generate` to update generated Go and TypeScript code. <sha:19593ef>
 - [x] Task: Conductor - User Manual Verification 'Protobuf and API Definitions' (Protocol in workflow.md) <sha:c88048a>
 
-## Phase 3: Backend Implementation (TDD)
+## Phase 3: Backend Implementation (TDD) [checkpoint: 1446857]
 Goal: Implement the logic to persist and retrieve authors, ensuring correctness through tests.
 
 - [x] Task: Update `store/item_store.go` and related repository logic. <sha:611672a>
@@ -38,7 +38,7 @@ Goal: Implement the logic to persist and retrieve authors, ensuring correctness 
     - [x] Update the fetcher to map `gofeed.Authors` to the new database structure.
 - [x] Task: Update the Connect RPC handler in `cmd/feed-reader/item_handler.go`. <sha:611672a>
     - [x] Ensure the API response correctly populates the new `authors` field in the `Item` message.
-- [~] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md) <sha:1446857>
 
 ## Phase 4: Frontend Integration (Optional/Minimal)
 Goal: Ensure the frontend can at least handle the new data structure without breaking, and optionally display authors.
