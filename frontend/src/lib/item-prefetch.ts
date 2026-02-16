@@ -1,4 +1,5 @@
 import { getItem } from "./item-db";
+import { ITEM_STALE_TIME } from "./item-query-constants";
 import { queryClient } from "./query";
 
 /**
@@ -20,7 +21,7 @@ export async function prefetchItems(itemIds: string[]) {
         queryFn: async () => {
           return await getItem(id);
         },
-        staleTime: 5 * 60 * 1000, // Consider prefetched data fresh for 5 minutes
+        staleTime: ITEM_STALE_TIME,
       });
     });
 
