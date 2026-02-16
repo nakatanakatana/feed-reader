@@ -236,6 +236,7 @@ func (s *FetcherService) FetchAndSave(ctx context.Context, f store.FullFeed) err
 
 	if len(parsedFeed.Items) > 0 {
 		job := &SaveItemsJob{
+			Store: s.store,
 			Items: make([]store.SaveFetchedItemParams, 0, len(parsedFeed.Items)),
 		}
 		for _, item := range parsedFeed.Items {
@@ -280,7 +281,6 @@ func (s *FetcherService) normalizeItem(feedID string, item *gofeed.Item) store.S
 		if a.Email != "" {
 			author.Email = a.Email
 		}
-		// ...
 		params.Authors = append(params.Authors, author)
 	}
 

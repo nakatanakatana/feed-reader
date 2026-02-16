@@ -165,7 +165,11 @@ func (s *Store) SaveFetchedItemWithQueries(ctx context.Context, qtx *Queries, pa
 		return fmt.Errorf("failed to create/update item: %w", err)
 	}
 
-	// 2. Save Authors and Link to Item
+	// 2. Clear existing associations and save new Authors
+	if err := qtx.DeleteItemAuthors(ctx, item.ID); err != nil {
+		return fmt.Errorf("failed to clear existing authors: %w", err)
+	}
+
 	for _, author := range params.Authors {
 		a, err := qtx.CreateAuthor(ctx, CreateAuthorParams{
 			ID:    uuid.NewString(),

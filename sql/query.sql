@@ -452,6 +452,12 @@ INSERT INTO item_authors (
 )
 ON CONFLICT(item_id, author_id) DO NOTHING;
 
+-- name: DeleteItemAuthors :exec
+DELETE FROM
+  item_authors
+WHERE
+  item_id = ?;
+
 -- name: ListItemAuthors :many
 SELECT
   a.id,

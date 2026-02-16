@@ -43,7 +43,7 @@ func TestFetcherService_normalizeItem_PBT(t *testing.T) {
 		}
 
 		params := s.normalizeItem(feedID, item)
-		
+
 		// Filter out invalid authors for expectation
 		var expectedAuthors []*gofeed.Person
 		for _, a := range item.Authors {

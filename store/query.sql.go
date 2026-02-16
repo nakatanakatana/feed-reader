@@ -515,6 +515,18 @@ func (q *Queries) DeleteFeedTags(ctx context.Context, feedID string) error {
 	return err
 }
 
+const deleteItemAuthors = `-- name: DeleteItemAuthors :exec
+DELETE FROM
+  item_authors
+WHERE
+  item_id = ?
+`
+
+func (q *Queries) DeleteItemAuthors(ctx context.Context, itemID string) error {
+	_, err := q.db.ExecContext(ctx, deleteItemAuthors, itemID)
+	return err
+}
+
 const deleteTag = `-- name: DeleteTag :exec
 DELETE FROM
   tags

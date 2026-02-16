@@ -171,10 +171,12 @@ func toProtoItem(item store.ItemWithAuthors) *itemv1.Item {
 			Name: a.Name,
 		}
 		if a.Email != "" {
-			author.Email = &a.Email
+			email := a.Email
+			author.Email = &email
 		}
 		if a.Uri != "" {
-			author.Uri = &a.Uri
+			uri := a.Uri
+			author.Uri = &uri
 		}
 		protoAuthors[i] = author
 	}

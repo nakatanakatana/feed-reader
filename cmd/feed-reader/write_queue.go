@@ -92,14 +92,6 @@ func (s *WriteQueueService) flush(ctx context.Context, batch []WriteQueueJob) {
 
 	err := s.store.WithTransaction(ctx, func(qtx *store.Queries) error {
 		for _, job := range batch {
-			// Pass the store to the job if needed, or let the job use the store from the service.
-			// However, WriteQueueJob.Execute takes *store.Queries.
-			// Let's modify SaveItemsJob to hold a reference to the Store if needed,
-			// or just call the helper directly if it's available.
-			if sj, ok := job.(*SaveItemsJob); ok {
-				sj.Store = s.store
-			}
-
 			if err := job.Execute(ctx, qtx); err != nil {
 				s.logger.ErrorContext(ctx, "failed to execute job in batch", "error", err)
 				return err
@@ -115,7 +107,7 @@ func (s *WriteQueueService) flush(ctx context.Context, batch []WriteQueueJob) {
 
 // SaveItemsJob represents a job to save multiple items for a feed.
 type SaveItemsJob struct {
-	Store      *store.Store // Added to avoid partial initialization
+	Store      *store.Store
 	Items      []store.SaveFetchedItemParams
 	ResultChan chan SaveItemsResult
 }
