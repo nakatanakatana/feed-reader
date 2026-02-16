@@ -28,6 +28,6 @@ Consolidate action buttons into a kebab menu for narrow viewports.
 ## Phase 4: Final Verification
 Ensure everything works across various screen sizes and meets the "No Horizontal Overflow" requirement.
 
-- [ ] Task: Run all frontend tests to ensure no regressions in Feed List functionality.
-- [ ] Task: Perform manual responsive testing (320px to 1200px) to verify smooth transitions and lack of horizontal scroll.
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Final Verification' (Protocol in workflow.md)
+- [x] Task: Run all frontend tests to ensure no regressions in Feed List functionality.
+- [x] Task: Perform manual responsive testing (320px to 1200px) to verify smooth transitions and lack of horizontal scroll.
+- [~] Task: Conductor - User Manual Verification 'Phase 4: Final Verification' (Protocol in workflow.md)
