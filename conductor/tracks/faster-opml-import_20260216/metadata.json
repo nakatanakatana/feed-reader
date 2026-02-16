@@ -1,0 +1,8 @@
+{
+  "track_id": "faster-opml-import_20260216",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-02-16T00:00:00Z",
+  "updated_at": "2026-02-16T00:00:00Z",
+  "description": "OPMLインポートが実行に時間がかかるので原因の調査と改善をおこなってください"
+}
