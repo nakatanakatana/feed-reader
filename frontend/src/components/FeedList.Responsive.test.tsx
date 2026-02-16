@@ -94,8 +94,10 @@ describe("FeedList Responsive", () => {
   it("is responsive and shows kebab menu / truncates titles", async () => {
     // 1. Desktop view
     await page.viewport?.(1280, 1024);
-    const longTitle = "A very long feed title that should definitely truncate on narrow screens to prevent horizontal overflow and layout breakage";
-    const longUrl = "https://example.com/a/very/long/path/to/a/feed/that/will/definitely/overflow/on/narrow/viewports/if/not/properly/handled/with/ellipsis/or/truncation";
+    const longTitle =
+      "A very long feed title that should definitely truncate on narrow screens to prevent horizontal overflow and layout breakage";
+    const longUrl =
+      "https://example.com/a/very/long/path/to/a/feed/that/will/definitely/overflow/on/narrow/viewports/if/not/properly/handled/with/ellipsis/or/truncation";
     setupMockData(longTitle, 5n, longUrl);
 
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
@@ -114,21 +116,23 @@ describe("FeedList Responsive", () => {
     await queryClient.refetchQueries({ queryKey: ["feeds"] });
 
     await expect.element(page.getByText(longTitle)).toBeVisible();
-    
+
     // Check if Delete button is visible (Desktop)
-    await expect.element(page.getByRole("button", { name: "Delete" })).toBeVisible();
+    await expect
+      .element(page.getByRole("button", { name: "Delete" }))
+      .toBeVisible();
 
     // 2. Mobile view - Switch viewport
     await page.viewport?.(320, 568);
-    
+
     // Give it a moment to reflow and stabilize
-    await new Promise(r => setTimeout(r, 500));
+    await new Promise((r) => setTimeout(r, 500));
 
     // Check truncation (ellipsis)
     const titleLink = page.getByText(longTitle);
     const titleElement = (await titleLink.element()) as HTMLElement;
     const styles = window.getComputedStyle(titleElement);
-    
+
     // We expect text-overflow: ellipsis
     expect(styles.textOverflow).toBe("ellipsis");
     expect(styles.whiteSpace).toBe("nowrap");
@@ -140,26 +144,40 @@ describe("FeedList Responsive", () => {
 
     // Check kebab menu (Mobile)
     // On mobile, the Delete button should be hidden (display: none)
-    await expect.element(page.getByRole("button", { name: "Delete", includeHidden: true })).not.toBeVisible();
+    await expect
+      .element(
+        page.getByRole("button", { name: "Delete", includeHidden: true }),
+      )
+      .not.toBeVisible();
     const kebabButton = page.getByRole("button", { name: /Actions for/i });
     await expect.element(kebabButton).toBeVisible();
 
     // Open kebab menu
     await kebabButton.click();
-    await expect.element(page.getByRole("button", { name: "Suspend 1 Day" })).toBeInTheDocument();
-    await expect.element(page.getByRole("button", { name: "Suspend 3 Days" })).toBeInTheDocument();
-    
+    await expect
+      .element(page.getByRole("button", { name: "Suspend 1 Day" }))
+      .toBeInTheDocument();
+    await expect
+      .element(page.getByRole("button", { name: "Suspend 3 Days" }))
+      .toBeInTheDocument();
+
     // Close with Escape
     await userEvent.keyboard("{Escape}");
-    await expect.element(page.getByRole("button", { name: "Suspend 1 Day" })).not.toBeInTheDocument();
+    await expect
+      .element(page.getByRole("button", { name: "Suspend 1 Day" }))
+      .not.toBeInTheDocument();
 
     // 3. Check for horizontal overflow
     // The scrollWidth of the body should not exceed its clientWidth
-    expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(document.documentElement.clientWidth);
-    
+    expect(document.documentElement.scrollWidth).toBeLessThanOrEqual(
+      document.documentElement.clientWidth,
+    );
+
     const listContainer = document.querySelector("ul");
     if (listContainer) {
-      expect(listContainer.scrollWidth).toBeLessThanOrEqual(listContainer.clientWidth);
+      expect(listContainer.scrollWidth).toBeLessThanOrEqual(
+        listContainer.clientWidth,
+      );
     }
 
     // Verify actual truncation of title
@@ -168,6 +186,8 @@ describe("FeedList Responsive", () => {
     // Verify URL truncation (This might fail currently)
     const urlElement = page.getByText(longUrl);
     const urlHtmlElement = (await urlElement.element()) as HTMLElement;
-    expect(urlHtmlElement.scrollWidth).toBeGreaterThan(urlHtmlElement.clientWidth);
+    expect(urlHtmlElement.scrollWidth).toBeGreaterThan(
+      urlHtmlElement.clientWidth,
+    );
   });
 });

@@ -96,10 +96,12 @@ describe("FeedList", () => {
     await queryClient.refetchQueries({ queryKey: ["feeds"] });
 
     // Wait for the feed to disappear
-    await expect.poll(async () => {
-      const elements = await page.getByText("Example Feed 1").all();
-      return elements.length;
-    }).toBe(0);
+    await expect
+      .poll(async () => {
+        const elements = await page.getByText("Example Feed 1").all();
+        return elements.length;
+      })
+      .toBe(0);
   });
 
   it("supports bulk selection", async () => {

@@ -52,23 +52,14 @@ export function KebabMenu(props: KebabMenuProps) {
     document.removeEventListener("keydown", handleKeyDown);
   });
 
-  const [coords, setCoords] = createSignal({ top: 0, left: 0 });
-
-  const updateCoords = () => {
-    if (buttonRef) {
-      const rect = buttonRef.getBoundingClientRect();
-      setCoords({
-        top: rect.bottom + window.scrollY,
-        left: rect.right + window.scrollX - 160, // approximate width
-      });
-    }
+  const getMenuPosition = () => {
+    if (!buttonRef) return { top: "0px", left: "0px" };
+    const rect = buttonRef.getBoundingClientRect();
+    return {
+      top: `${rect.bottom + window.scrollY + 4}px`,
+      left: `${rect.right + window.scrollX - 160}px`,
+    };
   };
-
-  createSignal(() => {
-    if (isOpen()) {
-      updateCoords();
-    }
-  });
 
   return (
     <div class={css({ position: "relative", display: "inline-block" })}>
@@ -83,8 +74,8 @@ export function KebabMenu(props: KebabMenuProps) {
           cursor: "pointer",
           _hover: { bg: "gray.100" },
           display: "flex",
-          ai: "center",
-          jc: "center",
+          alignItems: "center",
+          justifyContent: "center",
         })}
       >
         <svg
@@ -98,6 +89,7 @@ export function KebabMenu(props: KebabMenuProps) {
           stroke-linecap="round"
           stroke-linejoin="round"
         >
+          <title>More actions</title>
           <circle cx="12" cy="12" r="1" />
           <circle cx="12" cy="5" r="1" />
           <circle cx="12" cy="19" r="1" />
@@ -119,10 +111,7 @@ export function KebabMenu(props: KebabMenuProps) {
               minWidth: "160px",
               py: "1",
             })}
-            style={{
-              top: `${buttonRef?.getBoundingClientRect().bottom! + window.scrollY + 4}px`,
-              left: `${buttonRef?.getBoundingClientRect().right! + window.scrollX - 160}px`,
-            }}
+            style={getMenuPosition()}
           >
             <For each={props.actions}>
               {(action) => (

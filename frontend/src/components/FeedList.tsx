@@ -21,7 +21,6 @@ import { ActionButton } from "./ui/ActionButton";
 import { Badge } from "./ui/Badge";
 import { EmptyState } from "./ui/EmptyState";
 import { KebabMenu } from "./ui/KebabMenu";
-import { cx } from "../../styled-system/css";
 
 export function FeedList() {
   const refreshMutation = useMutation(() => ({
@@ -325,7 +324,12 @@ export function FeedList() {
                   })}
                 >
                   <div
-                    class={flex({ gap: "3", alignItems: "center", flex: 1, minWidth: 0 })}
+                    class={flex({
+                      gap: "3",
+                      alignItems: "center",
+                      flex: 1,
+                      minWidth: 0,
+                    })}
                   >
                     <input
                       type="checkbox"
@@ -529,8 +533,20 @@ export function FeedList() {
                       </div>
                     </div>
                   </div>
-                  <div class={flex({ gap: "2", alignItems: "center", flexShrink: 0 })}>
-                    <div class={cx("show-on-desktop", flex({ gap: "2", alignItems: "center" }))}>
+                  <div
+                    class={flex({
+                      gap: "2",
+                      alignItems: "center",
+                      flexShrink: 0,
+                    })}
+                  >
+                    <div
+                      class={flex({
+                        gap: "2",
+                        alignItems: "center",
+                        display: { base: "none", md: "flex" },
+                      })}
+                    >
                       <div class={css({ position: "relative" })}>
                         <select
                           aria-label="Suspend fetching"
@@ -586,7 +602,11 @@ export function FeedList() {
                         Delete
                       </ActionButton>
                     </div>
-                    <div class="hide-on-desktop">
+                    <div
+                      class={css({
+                        display: { base: "block", md: "none" },
+                      })}
+                    >
                       <KebabMenu
                         ariaLabel={`Actions for ${feed.title}`}
                         actions={[

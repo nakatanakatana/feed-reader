@@ -1,8 +1,0 @@
-{
-  "track_id": "fix-feed-list-layout_20260216",
-  "type": "bug",
-  "status": "new",
-  "created_at": "2026-02-16T10:00:00Z",
-  "updated_at": "2026-02-16T10:00:00Z",
-  "description": "Feed一覧の画面が表示領域が狭いときに崩れているので調整してください"
-}
