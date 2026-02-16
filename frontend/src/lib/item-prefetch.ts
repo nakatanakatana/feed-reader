@@ -1,6 +1,8 @@
 import { getItem } from "./item-db";
 import { queryClient } from "./query";
 
+export const ITEM_STALE_TIME = 5 * 60 * 1000; // Consider item data fresh for 5 minutes
+
 /**
  * Prefetches item data for the given item IDs to improve navigation speed.
  * Uses TanStack Query's prefetchQuery to cache the data.
@@ -20,7 +22,7 @@ export async function prefetchItems(itemIds: string[]) {
         queryFn: async () => {
           return await getItem(id);
         },
-        staleTime: 5 * 60 * 1000, // Consider prefetched data fresh for 5 minutes
+        staleTime: ITEM_STALE_TIME,
       });
     });
 
