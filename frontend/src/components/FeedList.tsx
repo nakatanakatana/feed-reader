@@ -601,8 +601,16 @@ export function FeedList() {
                             onClick: () => handleSuspend([feed.id], 86400),
                           },
                           {
+                            label: "Suspend 3 Days",
+                            onClick: () => handleSuspend([feed.id], 259200),
+                          },
+                          {
                             label: "Suspend 1 Week",
                             onClick: () => handleSuspend([feed.id], 604800),
+                          },
+                          {
+                            label: "Suspend 1 Month",
+                            onClick: () => handleSuspend([feed.id], 2592000),
                           },
                           {
                             label: "Delete",

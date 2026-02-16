@@ -20,10 +20,10 @@ Apply CSS changes to ensure titles truncate and the layout remains stable withou
 ## Phase 3: Responsive Action Buttons (Kebab Menu)
 Consolidate action buttons into a kebab menu for narrow viewports.
 
-- [ ] Task: Create or integrate a Kebab Menu (⋮) component for feed actions (Edit, Delete, etc.).
-- [ ] Task: Update the Feed List item to show the kebab menu and hide individual buttons on narrow screens (using CSS media queries or SolidJS conditional rendering).
-- [ ] Task: Ensure the kebab menu is accessible and functional.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Responsive Action Buttons' (Protocol in workflow.md)
+- [x] Task: Create or integrate a Kebab Menu (⋮) component for feed actions (Edit, Delete, etc.).
+- [x] Task: Update the Feed List item to show the kebab menu and hide individual buttons on narrow screens (using CSS media queries or SolidJS conditional rendering).
+- [x] Task: Ensure the kebab menu is accessible and functional.
+- [~] Task: Conductor - User Manual Verification 'Phase 3: Responsive Action Buttons' (Protocol in workflow.md)
 
 ## Phase 4: Final Verification
 Ensure everything works across various screen sizes and meets the "No Horizontal Overflow" requirement.

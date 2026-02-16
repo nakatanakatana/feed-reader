@@ -7,7 +7,7 @@ import {
 import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { page } from "vitest/browser";
+import { page, userEvent } from "vitest/browser";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
@@ -141,7 +141,17 @@ describe("FeedList Responsive", () => {
     // Check kebab menu (Mobile)
     // On mobile, the Delete button should be hidden (display: none)
     await expect.element(page.getByRole("button", { name: "Delete", includeHidden: true })).not.toBeVisible();
-    await expect.element(page.getByRole("button", { name: /Actions for/i })).toBeVisible();
+    const kebabButton = page.getByRole("button", { name: /Actions for/i });
+    await expect.element(kebabButton).toBeVisible();
+
+    // Open kebab menu
+    await kebabButton.click();
+    await expect.element(page.getByRole("button", { name: "Suspend 1 Day" })).toBeInTheDocument();
+    await expect.element(page.getByRole("button", { name: "Suspend 3 Days" })).toBeInTheDocument();
+    
+    // Close with Escape
+    await userEvent.keyboard("{Escape}");
+    await expect.element(page.getByRole("button", { name: "Suspend 1 Day" })).not.toBeInTheDocument();
 
     // 3. Check for horizontal overflow
     // The scrollWidth of the body should not exceed its clientWidth
