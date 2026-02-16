@@ -411,14 +411,21 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                       alignItems: "center",
                     })}
                   >
-                    <Show when={!!itemData().publishedAt}>
+                    <Show when={itemData().publishedAt}>
                       <span>
                         Published: {formatDate(itemData().publishedAt)}
                       </span>
                     </Show>
                     <span>Received: {formatDate(itemData().createdAt)}</span>
-                    <Show when={itemData().author}>
-                      <span>By {itemData().author}</span>
+                    <Show
+                      when={itemData().authors && itemData().authors.length > 0}
+                    >
+                      <span>
+                        By{" "}
+                        {itemData()
+                          .authors.map((a) => a.name)
+                          .join(", ")}
+                      </span>
                     </Show>
                     <Show when={itemData().categories}>
                       <div class={flex({ gap: "1", flexWrap: "wrap" })}>

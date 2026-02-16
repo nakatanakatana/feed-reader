@@ -43,6 +43,6 @@ Goal: Implement the logic to persist and retrieve authors, ensuring correctness 
 ## Phase 4: Frontend Integration (Optional/Minimal)
 Goal: Ensure the frontend can at least handle the new data structure without breaking, and optionally display authors.
 
-- [ ] Task: Update frontend types and services to reflect the new `authors` array in items.
+- [~] Task: Update frontend types and services to reflect the new `authors` array in items.
 - [ ] Task: (Optional) Update `ItemDetailModal.tsx` or item list components to display the authors.
 - [ ] Task: Conductor - User Manual Verification 'Frontend Integration' (Protocol in workflow.md)

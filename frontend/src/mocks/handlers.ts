@@ -100,7 +100,7 @@ export const resetState = () => {
         createdAt: date.toISOString(),
         isRead: false,
         description: `<p>Full content for item ${id}</p>`,
-        author: "Mock Author",
+        authors: [{ name: "Mock Author" }],
         url: `https://example.com/item${id}`,
       }),
     );

@@ -29,7 +29,7 @@ describe("ItemDetailModal Color Mode Support", () => {
             description: content,
             publishedAt: "2026-01-24T10:00:00Z",
             createdAt: "2026-01-24T09:00:00Z",
-            author: "Test Author",
+            authors: [{ name: "Test Author" }],
             url: "http://example.com",
             isRead: false,
           }),
