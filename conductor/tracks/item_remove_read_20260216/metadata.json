@@ -1,0 +1,8 @@
+{
+  "track_id": "item_remove_read_20260216",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-02-16T00:00:00Z",
+  "updated_at": "2026-02-16T00:00:00Z",
+  "description": "Add a button to temporarily remove read items from the frontend collection without modifying the backend DB."
+}
