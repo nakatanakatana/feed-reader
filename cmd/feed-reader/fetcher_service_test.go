@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"log/slog"
 	"testing"
 	"time"
@@ -241,4 +242,79 @@ func TestFetcherService_FetchFeedsByIDsSync(t *testing.T) {
 	assert.Equal(t, len(results), 1)
 	assert.Equal(t, results[0].FeedID, feed.ID)
 	assert.Assert(t, results[0].Success)
+}
+
+func TestFetcherService_AdaptiveInterval(t *testing.T) {
+	ctx := context.Background()
+	queries, db := setupTestDB(t)
+	s := store.NewStore(db)
+
+	logger := slog.New(slog.NewJSONHandler(&bytes.Buffer{}, nil))
+	defaultInterval := 1 * time.Hour
+	wq := NewWriteQueueService(s, WriteQueueConfig{MaxBatchSize: 1, FlushInterval: 10 * time.Millisecond}, logger)
+	go wq.Start(ctx)
+	fetcher := &mockFetcher{feed: &gofeed.Feed{}}
+	service := NewFetcherService(s, fetcher, nil, wq, logger, defaultInterval)
+
+	t.Run("frequent updates", func(t *testing.T) {
+		feed, _ := queries.CreateFeed(ctx, store.CreateFeedParams{ID: "frequent", Url: "http://frequent"})
+		now := time.Now()
+		for i := 0; i < 5; i++ {
+			pubAt := now.Add(time.Duration(-5*i) * time.Minute).Format(time.RFC3339)
+			_ = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
+				FeedID:      feed.ID,
+				Url:         fmt.Sprintf("http://frequent/%d", i),
+				PublishedAt: &pubAt,
+			})
+		}
+
+		err := service.FetchAndSave(ctx, store.FullFeed{ID: feed.ID, Url: feed.Url})
+		assert.NilError(t, err)
+		time.Sleep(100 * time.Millisecond)
+
+		updated, _ := queries.GetFeed(ctx, feed.ID)
+		nextFetch, _ := time.Parse(time.RFC3339, *updated.NextFetch)
+		lastFetched, _ := time.Parse(time.RFC3339, *updated.LastFetchedAt)
+		diff := nextFetch.Sub(lastFetched)
+		// Expected 15m (min limit)
+		assert.Assert(t, diff >= 14*time.Minute && diff <= 16*time.Minute, "Expected ~15m interval, got %v", diff)
+	})
+
+	t.Run("rare updates", func(t *testing.T) {
+		feed, _ := queries.CreateFeed(ctx, store.CreateFeedParams{ID: "rare", Url: "http://rare"})
+		now := time.Now()
+		for i := 0; i < 3; i++ {
+			pubAt := now.Add(time.Duration(-48*i) * time.Hour).Format(time.RFC3339)
+			_ = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
+				FeedID:      feed.ID,
+				Url:         fmt.Sprintf("http://rare/%d", i),
+				PublishedAt: &pubAt,
+			})
+		}
+
+		err := service.FetchAndSave(ctx, store.FullFeed{ID: feed.ID, Url: feed.Url})
+		assert.NilError(t, err)
+		time.Sleep(100 * time.Millisecond)
+
+		updated, _ := queries.GetFeed(ctx, feed.ID)
+		nextFetch, _ := time.Parse(time.RFC3339, *updated.NextFetch)
+		lastFetched, _ := time.Parse(time.RFC3339, *updated.LastFetchedAt)
+		diff := nextFetch.Sub(lastFetched)
+		// Expected 24h (max limit)
+		assert.Assert(t, diff >= 23*time.Hour && diff <= 25*time.Hour, "Expected ~24h interval, got %v", diff)
+	})
+
+	t.Run("no items fallback", func(t *testing.T) {
+		feed, _ := queries.CreateFeed(ctx, store.CreateFeedParams{ID: "newbie", Url: "http://newbie"})
+		err := service.FetchAndSave(ctx, store.FullFeed{ID: feed.ID, Url: feed.Url})
+		assert.NilError(t, err)
+		time.Sleep(100 * time.Millisecond)
+
+		updated, _ := queries.GetFeed(ctx, feed.ID)
+		nextFetch, _ := time.Parse(time.RFC3339, *updated.NextFetch)
+		lastFetched, _ := time.Parse(time.RFC3339, *updated.LastFetchedAt)
+		diff := nextFetch.Sub(lastFetched)
+		// Expected defaultInterval (1h)
+		assert.Assert(t, diff >= 59*time.Minute && diff <= 61*time.Minute, "Expected ~1h interval, got %v", diff)
+	})
 }
