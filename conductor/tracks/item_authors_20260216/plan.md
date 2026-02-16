@@ -28,17 +28,17 @@ Goal: Update the communication contract to support multiple authors per item.
 ## Phase 3: Backend Implementation (TDD)
 Goal: Implement the logic to persist and retrieve authors, ensuring correctness through tests.
 
-- [~] Task: Update `store/item_store.go` and related repository logic.
-    - [ ] Write tests in `store/item_store_test.go` for saving multiple authors.
-    - [ ] Implement `CreateItem` (or similar) to handle author persistence and linking.
-    - [ ] Write tests for retrieving items with their associated authors.
-    - [ ] Update retrieval queries to join with `authors` table.
-- [ ] Task: Update `cmd/feed-reader/fetcher.go` (or crawling service).
-    - [ ] Write tests in `cmd/feed-reader/fetcher_test.go` to verify `gofeed.Author` extraction.
-    - [ ] Update the fetcher to map `gofeed.Authors` to the new database structure.
-- [ ] Task: Update the Connect RPC handler in `cmd/feed-reader/item_handler.go`.
-    - [ ] Ensure the API response correctly populates the new `authors` field in the `Item` message.
-- [ ] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md)
+- [x] Task: Update `store/item_store.go` and related repository logic. <sha:611672a>
+    - [x] Write tests in `store/item_store_test.go` for saving multiple authors.
+    - [x] Implement `CreateItem` (or similar) to handle author persistence and linking.
+    - [x] Write tests for retrieving items with their associated authors.
+    - [x] Update retrieval queries to join with `authors` table.
+- [x] Task: Update `cmd/feed-reader/fetcher.go` (or crawling service). <sha:611672a>
+    - [x] Write tests in `cmd/feed-reader/fetcher_test.go` to verify `gofeed.Author` extraction.
+    - [x] Update the fetcher to map `gofeed.Authors` to the new database structure.
+- [x] Task: Update the Connect RPC handler in `cmd/feed-reader/item_handler.go`. <sha:611672a>
+    - [x] Ensure the API response correctly populates the new `authors` field in the `Item` message.
+- [~] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md)
 
 ## Phase 4: Frontend Integration (Optional/Minimal)
 Goal: Ensure the frontend can at least handle the new data structure without breaking, and optionally display authors.
