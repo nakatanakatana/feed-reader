@@ -70,7 +70,7 @@ describe("ItemList Date Filter", () => {
       document.body,
     );
 
-    const dateFilter = page.getByText(/Date:/i);
+    const dateFilter = page.getByText(/Date:/i).first();
     await expect.element(dateFilter).toBeInTheDocument();
   });
 

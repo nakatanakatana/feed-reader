@@ -1,6 +1,15 @@
 import { count, eq, useLiveQuery } from "@tanstack/solid-db";
 import { useLocation, useNavigate } from "@tanstack/solid-router";
-import { createEffect, createSignal, For, type JSX, Show } from "solid-js";
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  For,
+  type JSX,
+  onCleanup,
+  onMount,
+  Show,
+} from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { feedTag, type Item, items, itemsUnreadQuery, tags } from "../lib/db";
@@ -29,6 +38,18 @@ export function ItemList(props: ItemListProps) {
     new Set(),
   );
   const [isBulkMarking, setIsBulkMarking] = createSignal(false);
+  const [showMoreActions, setShowMoreActions] = createSignal(false);
+  let moreActionsRef: HTMLDivElement | undefined;
+
+  onMount(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (moreActionsRef && !moreActionsRef.contains(e.target as Node)) {
+        setShowMoreActions(false);
+      }
+    };
+    document.addEventListener("click", handleClickOutside);
+    onCleanup(() => document.removeEventListener("click", handleClickOutside));
+  });
 
   createEffect(() => {
     if (props.dateFilter) {
@@ -57,6 +78,26 @@ export function ItemList(props: ItemListProps) {
     // biome-ignore lint/suspicious/noExplicitAny: TanStack DB select types
     return query.select(({ item }: any) => ({ ...item }));
   });
+
+  const filteredItems = createMemo(() => {
+    return itemQuery().filter(
+      (item) => !itemStore.state.transientRemovedIds[item.id],
+    );
+  });
+
+  const handleClearReadItems = () => {
+    const readItemIds = filteredItems()
+      .filter((item) => item.isRead)
+      .map((item) => item.id);
+    itemStore.addTransientRemovedIds(readItemIds);
+    setSelectedItemIds((prev) => {
+      const next = new Set(prev);
+      for (const id of readItemIds) {
+        next.delete(id);
+      }
+      return next;
+    });
+  };
 
   const totalUnread = useLiveQuery((q) =>
     q
@@ -91,11 +132,12 @@ export function ItemList(props: ItemListProps) {
   };
 
   const isAllSelected = () =>
-    itemQuery().length > 0 && selectedItemIds().size === itemQuery().length;
+    filteredItems().length > 0 &&
+    selectedItemIds().size === filteredItems().length;
 
   const handleToggleAll = (checked: boolean) => {
     if (checked) {
-      setSelectedItemIds(new Set<string>(itemQuery().map((i) => i.id)));
+      setSelectedItemIds(new Set<string>(filteredItems().map((i) => i.id)));
     } else {
       setSelectedItemIds(new Set<string>());
     }
@@ -214,58 +256,228 @@ export function ItemList(props: ItemListProps) {
         class={flex({
           justifyContent: "space-between",
           alignItems: "center",
-          flexWrap: "wrap",
-          gap: "4",
+          gap: "2",
+          flexWrap: "nowrap",
         })}
       >
-        <div class={flex({ gap: "2", alignItems: "center" })}>
+        <div
+          class={flex({
+            gap: "2",
+            alignItems: "center",
+            flexShrink: 0,
+            minW: 0,
+          })}
+        >
           {props.headerActions}
         </div>
 
-        <div class={flex({ gap: "4", alignItems: "center", flexWrap: "wrap" })}>
-          <div class={flex({ gap: "2", alignItems: "center" })}>
+        <div
+          class={flex({
+            gap: { base: "2", md: "4" },
+            alignItems: "center",
+            flexShrink: 0,
+          })}
+        >
+          {/* Desktop Actions */}
+          <div
+            class={flex({
+              display: { base: "none", md: "flex" },
+              gap: "4",
+              alignItems: "center",
+            })}
+          >
+            <ActionButton
+              size="sm"
+              variant="secondary"
+              onClick={handleClearReadItems}
+              disabled={!filteredItems().some((item) => item.isRead)}
+              aria-label="Clear read items from current view"
+            >
+              Clear Read Items
+            </ActionButton>
             <DateFilterSelector
               value={itemStore.state.since}
               onSelect={handleDateFilterSelect}
             />
+            <div class={flex({ gap: "2", alignItems: "center" })}>
+              <input
+                id="show-read-toggle"
+                type="checkbox"
+                checked={itemStore.state.showRead}
+                onChange={(e) => itemStore.setShowRead(e.currentTarget.checked)}
+                class={css({ cursor: "pointer" })}
+              />
+              <label
+                for="show-read-toggle"
+                class={css({
+                  fontSize: "sm",
+                  color: "gray.600",
+                  cursor: "pointer",
+                  whiteSpace: "nowrap",
+                })}
+              >
+                Show Read
+              </label>
+            </div>
+            <div class={flex({ gap: "2", alignItems: "center" })}>
+              <input
+                id="select-all-checkbox"
+                type="checkbox"
+                checked={isAllSelected()}
+                onChange={(e) => handleToggleAll(e.currentTarget.checked)}
+                class={css({ cursor: "pointer" })}
+              />
+              <label
+                for="select-all-checkbox"
+                class={css({
+                  fontSize: "sm",
+                  color: "gray.600",
+                  cursor: "pointer",
+                  whiteSpace: "nowrap",
+                })}
+              >
+                Select All
+              </label>
+            </div>
           </div>
-          <div class={flex({ gap: "2", alignItems: "center" })}>
-            <input
-              id="show-read-toggle"
-              type="checkbox"
-              checked={itemStore.state.showRead}
-              onChange={(e) => itemStore.setShowRead(e.currentTarget.checked)}
-              class={css({ cursor: "pointer" })}
+
+          {/* Mobile Actions */}
+          <div
+            class={flex({
+              display: { base: "flex", md: "none" },
+              gap: "2",
+              alignItems: "center",
+            })}
+          >
+            <DateFilterSelector
+              value={itemStore.state.since}
+              onSelect={handleDateFilterSelect}
             />
-            <label
-              for="show-read-toggle"
-              class={css({
-                fontSize: "sm",
-                color: "gray.600",
-                cursor: "pointer",
-              })}
-            >
-              Show Read
-            </label>
-          </div>
-          <div class={flex({ gap: "2", alignItems: "center" })}>
-            <input
-              id="select-all-checkbox"
-              type="checkbox"
-              checked={isAllSelected()}
-              onChange={(e) => handleToggleAll(e.currentTarget.checked)}
-              class={css({ cursor: "pointer" })}
-            />
-            <label
-              for="select-all-checkbox"
-              class={css({
-                fontSize: "sm",
-                color: "gray.600",
-                cursor: "pointer",
-              })}
-            >
-              Select All
-            </label>
+            <div class={css({ position: "relative" })} ref={moreActionsRef}>
+              <ActionButton
+                size="sm"
+                variant="secondary"
+                onClick={() => setShowMoreActions(!showMoreActions())}
+                aria-label="More actions"
+                icon={
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <title>More actions</title>
+                    <circle cx="12" cy="12" r="1" />
+                    <circle cx="12" cy="5" r="1" />
+                    <circle cx="12" cy="19" r="1" />
+                  </svg>
+                }
+              >
+                More
+              </ActionButton>
+              <Show when={showMoreActions()}>
+                <div
+                  class={css({
+                    position: "absolute",
+                    top: "100%",
+                    right: 0,
+                    mt: "1",
+                    bg: "white",
+                    border: "1px solid",
+                    borderColor: "gray.200",
+                    borderRadius: "md",
+                    boxShadow: "lg",
+                    zIndex: 100,
+                    minW: "160px",
+                    display: "flex",
+                    flexDirection: "column",
+                    padding: "1",
+                    gap: "1",
+                  })}
+                >
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleClearReadItems();
+                      setShowMoreActions(false);
+                    }}
+                    disabled={!filteredItems().some((item) => item.isRead)}
+                    class={css({
+                      display: "flex",
+                      alignItems: "center",
+                      px: "3",
+                      py: "2",
+                      fontSize: "sm",
+                      color: "gray.700",
+                      borderRadius: "sm",
+                      textAlign: "left",
+                      cursor: "pointer",
+                      _hover: { bg: "gray.50" },
+                      _disabled: {
+                        opacity: 0.5,
+                        cursor: "not-allowed",
+                        _hover: { bg: "transparent" },
+                      },
+                    })}
+                  >
+                    Clear Read Items
+                  </button>
+                  <label
+                    class={css({
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "2",
+                      px: "3",
+                      py: "2",
+                      fontSize: "sm",
+                      color: "gray.700",
+                      borderRadius: "sm",
+                      cursor: "pointer",
+                      _hover: { bg: "gray.50" },
+                    })}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={itemStore.state.showRead}
+                      onChange={(e) => {
+                        itemStore.setShowRead(e.currentTarget.checked);
+                      }}
+                      class={css({ cursor: "pointer" })}
+                    />
+                    <span>Show Read</span>
+                  </label>
+                  <label
+                    class={css({
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "2",
+                      px: "3",
+                      py: "2",
+                      fontSize: "sm",
+                      color: "gray.700",
+                      borderRadius: "sm",
+                      cursor: "pointer",
+                      _hover: { bg: "gray.50" },
+                    })}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isAllSelected()}
+                      onChange={(e) => {
+                        handleToggleAll(e.currentTarget.checked);
+                      }}
+                      class={css({ cursor: "pointer" })}
+                    />
+                    <span>Select All</span>
+                  </label>
+                </div>
+              </Show>
+            </div>
           </div>
         </div>
       </div>
@@ -295,7 +507,7 @@ export function ItemList(props: ItemListProps) {
       })}
     >
       <div class={stack({ gap: "2", padding: "0" })}>
-        <For each={itemQuery() as Item[]}>
+        <For each={filteredItems() as Item[]}>
           {(item) => (
             <ItemRow
               item={item}
@@ -317,7 +529,7 @@ export function ItemList(props: ItemListProps) {
         </div>
       </Show>
 
-      <Show when={!itemQuery.isLoading && itemQuery().length === 0}>
+      <Show when={!itemQuery.isLoading && filteredItems().length === 0}>
         <EmptyState title="No items found." />
       </Show>
     </div>
