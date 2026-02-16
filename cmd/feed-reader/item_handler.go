@@ -156,7 +156,6 @@ func GetItemRowFromListItemsRow(row store.ListItemsRow) store.GetItemRow {
 		Title:       row.Title,
 		Description: &row.Description,
 		PublishedAt: row.PublishedAt,
-		Author:      row.Author,
 		Guid:        row.Guid,
 		Content:     row.Content,
 		ImageUrl:    row.ImageUrl,
@@ -180,10 +179,6 @@ func toProtoItem(row store.GetItemRow) *itemv1.Item {
 	if row.PublishedAt != nil {
 		pubAt = *row.PublishedAt
 	}
-	var author string
-	if row.Author != nil {
-		author = *row.Author
-	}
 	var content string
 	if row.Content != nil {
 		content = *row.Content
@@ -203,13 +198,13 @@ func toProtoItem(row store.GetItemRow) *itemv1.Item {
 		Title:       title,
 		Description: desc,
 		PublishedAt: pubAt,
-		Author:      author,
 		FeedId:      row.FeedID,
 		IsRead:      row.IsRead == 1,
 		Content:     content,
 		ImageUrl:    img,
 		Categories:  cats,
 		CreatedAt:   row.CreatedAt,
+		Authors:     []*itemv1.Author{}, // Temporarily empty
 	}
 }
 

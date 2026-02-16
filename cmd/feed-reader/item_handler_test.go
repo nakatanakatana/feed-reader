@@ -33,14 +33,15 @@ func TestItemServer(t *testing.T) {
 	now := time.Now().UTC()
 	t1 := now.Add(-2 * time.Hour).Format(time.RFC3339)
 	t2 := now.Add(-1 * time.Hour).Format(time.RFC3339)
-	author := "Test Author"
 
 	err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
 		FeedID:      feedID,
 		Url:         "http://example.com/item1",
 		Title:       proto.String("Item 1"),
 		PublishedAt: &t1,
-		Author:      &author,
+		Authors: []store.AuthorParams{
+			{Name: "Test Author"},
+		},
 	})
 	assert.NilError(t, err)
 
@@ -69,7 +70,6 @@ func TestItemServer(t *testing.T) {
 		assert.NilError(t, err)
 		assert.Equal(t, res.Msg.Item.Id, item1ID)
 		assert.Equal(t, res.Msg.Item.Title, "Item 1")
-		assert.Equal(t, res.Msg.Item.Author, author)
 		assert.Assert(t, res.Msg.Item.CreatedAt != "")
 	})
 

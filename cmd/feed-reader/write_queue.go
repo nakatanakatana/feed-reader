@@ -133,7 +133,6 @@ func (j *SaveItemsJob) Execute(ctx context.Context, q *store.Queries) error {
 			Title:       params.Title,
 			Description: params.Description,
 			PublishedAt: params.PublishedAt,
-			Author:      params.Author,
 			Guid:        params.Guid,
 			Content:     params.Content,
 			ImageUrl:    params.ImageUrl,

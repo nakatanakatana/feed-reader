@@ -131,7 +131,7 @@ type SaveFetchedItemParams struct {
 	Title       *string
 	Description *string
 	PublishedAt *string
-	Author      *string
+	Authors     []AuthorParams
 	Guid        *string
 	Content     *string
 	ImageUrl    *string
@@ -150,7 +150,6 @@ func (s *Store) SaveFetchedItem(ctx context.Context, params SaveFetchedItemParam
 			Title:       params.Title,
 			Description: params.Description,
 			PublishedAt: params.PublishedAt,
-			Author:      params.Author,
 			Guid:        params.Guid,
 			Content:     params.Content,
 			ImageUrl:    params.ImageUrl,

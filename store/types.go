@@ -32,3 +32,9 @@ type FullFeed struct {
 type UUIDGenerator interface {
 	NewRandom() (uuid.UUID, error)
 }
+
+type AuthorParams struct {
+	Name  string
+	Email *string
+	Uri   *string
+}

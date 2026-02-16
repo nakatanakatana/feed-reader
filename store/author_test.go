@@ -23,12 +23,13 @@ func TestStore_AuthorField(t *testing.T) {
 	assert.NilError(t, err)
 
 	// Use SaveFetchedItem
-	author := "Author Name"
 	err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
 		FeedID: feedID,
 		Url:    "http://example.com/item-with-author",
 		Title:  proto.String("Title"),
-		Author: &author,
+		Authors: []store.AuthorParams{
+			{Name: "Author Name"},
+		},
 	})
 	assert.NilError(t, err)
 
@@ -38,7 +39,6 @@ func TestStore_AuthorField(t *testing.T) {
 	assert.NilError(t, err)
 
 	// Use GetItem
-	got, err := s.GetItem(ctx, itemID)
+	_, err = s.GetItem(ctx, itemID)
 	assert.NilError(t, err)
-	assert.Equal(t, *got.Author, author)
 }

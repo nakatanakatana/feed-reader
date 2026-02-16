@@ -19,11 +19,11 @@ Goal: Define the new database schema and generate type-safe data access code usi
 ## Phase 2: Protobuf and API Definitions
 Goal: Update the communication contract to support multiple authors per item.
 
-- [~] Task: Modify `proto/item/v1/item.proto` (or relevant proto file).
-    - [ ] Define `Author` message with `name`, `email`, and `uri`.
-    - [ ] Update `Item` message to include a repeated field of `Author`.
-- [ ] Task: Run `buf generate` to update generated Go and TypeScript code.
-- [ ] Task: Conductor - User Manual Verification 'Protobuf and API Definitions' (Protocol in workflow.md)
+- [x] Task: Modify `proto/item/v1/item.proto` (or relevant proto file). <sha:19593ef>
+    - [x] Define `Author` message with `name`, `email`, and `uri`.
+    - [x] Update `Item` message to include a repeated field of `Author`.
+- [x] Task: Run `buf generate` to update generated Go and TypeScript code. <sha:19593ef>
+- [~] Task: Conductor - User Manual Verification 'Protobuf and API Definitions' (Protocol in workflow.md)
 
 ## Phase 3: Backend Implementation (TDD)
 Goal: Implement the logic to persist and retrieve authors, ensuring correctness through tests.
