@@ -206,12 +206,12 @@ func (s *Store) SaveFetchedItemTx(ctx context.Context, qtx *Queries, params Save
 }
 
 func (s *Store) GetItemWithAuthors(ctx context.Context, id string) (ItemWithAuthors, error) {
-	row, err := s.Queries.GetItem(ctx, id)
+	row, err := s.GetItem(ctx, id)
 	if err != nil {
 		return ItemWithAuthors{}, err
 	}
 
-	authors, err := s.Queries.ListItemAuthors(ctx, row.ID)
+	authors, err := s.ListItemAuthors(ctx, row.ID)
 	if err != nil {
 		return ItemWithAuthors{}, err
 	}
@@ -243,7 +243,7 @@ type ListItemsWithAuthorsParams struct {
 }
 
 func (s *Store) ListItemsWithAuthors(ctx context.Context, params ListItemsWithAuthorsParams) ([]ItemWithAuthors, int64, error) {
-	totalCount, err := s.Queries.CountItems(ctx, CountItemsParams{
+	totalCount, err := s.CountItems(ctx, CountItemsParams{
 		FeedID: params.FeedID,
 		IsRead: params.IsRead,
 		TagID:  params.TagID,
@@ -253,7 +253,7 @@ func (s *Store) ListItemsWithAuthors(ctx context.Context, params ListItemsWithAu
 		return nil, 0, err
 	}
 
-	rows, err := s.Queries.ListItems(ctx, ListItemsParams{
+	rows, err := s.ListItems(ctx, ListItemsParams{
 		FeedID: params.FeedID,
 		IsRead: params.IsRead,
 		TagID:  params.TagID,
@@ -274,7 +274,7 @@ func (s *Store) ListItemsWithAuthors(ctx context.Context, params ListItemsWithAu
 		itemIDs[i] = r.ID
 	}
 
-	allAuthors, err := s.Queries.ListItemAuthorsByItemIDs(ctx, itemIDs)
+	allAuthors, err := s.ListItemAuthorsByItemIDs(ctx, itemIDs)
 	if err != nil {
 		return nil, 0, err
 	}
