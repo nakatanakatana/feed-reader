@@ -1,5 +1,25 @@
 @layer reset, base, tokens, recipes, utilities;
 
+@layer utilities {
+  .show-on-desktop {
+    display: none !important;
+  }
+  @media (min-width: 768px) {
+    .show-on-desktop {
+      display: flex !important;
+    }
+  }
+
+  .hide-on-desktop {
+    display: block !important;
+  }
+  @media (min-width: 768px) {
+    .hide-on-desktop {
+      display: none !important;
+    }
+  }
+}
+
 @keyframes spin {
   from {
     transform: rotate(0deg);

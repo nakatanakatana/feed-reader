@@ -99,12 +99,15 @@ export const feeds = createCollection(
     queryKey: ["feeds"],
     gcTime: 5 * 1000,
     queryFn: async () => {
+      console.log("DB: feeds queryFn called");
       const response = await feedClient.listFeeds({});
+      console.log("DB: feeds response", response);
       return response.feeds.map((feed: ListFeed) => ({
         id: feed.id,
         url: feed.url,
         link: feed.link,
         title: feed.title,
+        unreadCount: feed.unreadCount,
         lastFetchedAt: feed.lastFetchedAt,
         nextFetch: feed.nextFetch,
         tags: feed.tags,
