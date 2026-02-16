@@ -454,7 +454,12 @@ ON CONFLICT(item_id, author_id) DO NOTHING;
 
 -- name: ListItemAuthors :many
 SELECT
-  a.*
+  a.id,
+  a.name,
+  CAST(COALESCE(a.email, '') AS TEXT) AS email,
+  CAST(COALESCE(a.uri, '') AS TEXT) AS uri,
+  a.created_at,
+  a.updated_at
 FROM
   authors a
 JOIN
@@ -469,8 +474,8 @@ SELECT
   ia.item_id,
   a.id,
   a.name,
-  a.email,
-  a.uri
+  CAST(COALESCE(a.email, '') AS TEXT) AS email,
+  CAST(COALESCE(a.uri, '') AS TEXT) AS uri
 FROM
   authors a
 JOIN

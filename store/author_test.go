@@ -24,8 +24,8 @@ func TestStore_AuthorField(t *testing.T) {
 
 	// Use SaveFetchedItem
 	authors := []store.AuthorParams{
-		{Name: "Author One", Email: proto.String("one@example.com")},
-		{Name: "Author Two", Uri: proto.String("http://two.example.com")},
+		{Name: "Author One", Email: "one@example.com"},
+		{Name: "Author Two", Uri: "http://two.example.com"},
 	}
 	err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
 		FeedID:  feedID,
@@ -45,9 +45,9 @@ func TestStore_AuthorField(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Equal(t, len(gotAuthors), 2)
 	assert.Equal(t, gotAuthors[0].Name, "Author One")
-	assert.Equal(t, *gotAuthors[0].Email, "one@example.com")
+	assert.Equal(t, gotAuthors[0].Email, "one@example.com")
 	assert.Equal(t, gotAuthors[1].Name, "Author Two")
-	assert.Equal(t, *gotAuthors[1].Uri, "http://two.example.com")
+	assert.Equal(t, gotAuthors[1].Uri, "http://two.example.com")
 }
 
 func TestStore_GetItemWithAuthors(t *testing.T) {

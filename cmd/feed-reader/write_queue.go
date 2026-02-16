@@ -92,11 +92,16 @@ func (s *WriteQueueService) flush(ctx context.Context, batch []WriteQueueJob) {
 
 	err := s.store.WithTransaction(ctx, func(qtx *store.Queries) error {
 		for _, job := range batch {
+			// Pass the store to the job if needed, or let the job use the store from the service.
+			// However, WriteQueueJob.Execute takes *store.Queries.
+			// Let's modify SaveItemsJob to hold a reference to the Store if needed,
+			// or just call the helper directly if it's available.
+			if sj, ok := job.(*SaveItemsJob); ok {
+				sj.Store = s.store
+			}
+
 			if err := job.Execute(ctx, qtx); err != nil {
 				s.logger.ErrorContext(ctx, "failed to execute job in batch", "error", err)
-				// We continue with other jobs in the same transaction for now,
-				// or should we rollback the whole batch?
-				// SQLite transactions are all or nothing, so returning err here rollbacks.
 				return err
 			}
 		}
@@ -110,6 +115,7 @@ func (s *WriteQueueService) flush(ctx context.Context, batch []WriteQueueJob) {
 
 // SaveItemsJob represents a job to save multiple items for a feed.
 type SaveItemsJob struct {
+	Store      *store.Store // Added to avoid partial initialization
 	Items      []store.SaveFetchedItemParams
 	ResultChan chan SaveItemsResult
 }
@@ -122,13 +128,9 @@ type SaveItemsResult struct {
 // Execute performs the save operations.
 func (j *SaveItemsJob) Execute(ctx context.Context, q *store.Queries) error {
 	var newItems int32
-	// We need a Store instance to call the helper, but since we are in cmd/feed-reader,
-	// we can just use a temporary one or move the helper to a more accessible place.
-	// Actually, Store is just a wrapper around Queries.
-	s := &store.Store{Queries: q}
 
 	for _, params := range j.Items {
-		if err := s.SaveFetchedItemTx(ctx, q, params); err != nil {
+		if err := j.Store.SaveFetchedItemWithQueries(ctx, q, params); err != nil {
 			if j.ResultChan != nil {
 				j.ResultChan <- SaveItemsResult{Error: err}
 			}

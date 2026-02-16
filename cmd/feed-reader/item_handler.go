@@ -167,11 +167,16 @@ func toProtoItem(item store.ItemWithAuthors) *itemv1.Item {
 
 	protoAuthors := make([]*itemv1.Author, len(item.Authors))
 	for i, a := range item.Authors {
-		protoAuthors[i] = &itemv1.Author{
-			Name:  a.Name,
-			Email: a.Email,
-			Uri:   a.Uri,
+		author := &itemv1.Author{
+			Name: a.Name,
 		}
+		if a.Email != "" {
+			author.Email = &a.Email
+		}
+		if a.Uri != "" {
+			author.Uri = &a.Uri
+		}
+		protoAuthors[i] = author
 	}
 
 	return &itemv1.Item{

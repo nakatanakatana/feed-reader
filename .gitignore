@@ -44,3 +44,4 @@ frontend/coverage/
 cmd/feed-reader/dist/
 .playwright-cli/
 .opencode/
+*.fail

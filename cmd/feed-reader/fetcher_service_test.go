@@ -43,6 +43,14 @@ func TestFetcherService_normalizeItem_PBT(t *testing.T) {
 		}
 
 		params := s.normalizeItem(feedID, item)
+		
+		// Filter out invalid authors for expectation
+		var expectedAuthors []*gofeed.Person
+		for _, a := range item.Authors {
+			if a != nil && a.Name != "" {
+				expectedAuthors = append(expectedAuthors, a)
+			}
+		}
 
 		assert.Equal(t, params.FeedID, feedID)
 		assert.Equal(t, params.Url, item.Link)
@@ -51,15 +59,10 @@ func TestFetcherService_normalizeItem_PBT(t *testing.T) {
 		assert.Equal(t, *params.Guid, item.GUID)
 		assert.Equal(t, *params.Content, item.Content)
 		assert.Equal(t, *params.ImageUrl, item.Image.URL)
-		assert.Equal(t, len(params.Authors), len(item.Authors))
-		for i, a := range item.Authors {
+		assert.Equal(t, len(params.Authors), len(expectedAuthors))
+		for i, a := range expectedAuthors {
 			assert.Equal(t, params.Authors[i].Name, a.Name)
-			if a.Email != "" {
-				assert.Assert(t, params.Authors[i].Email != nil)
-				assert.Equal(t, *params.Authors[i].Email, a.Email)
-			} else {
-				assert.Assert(t, params.Authors[i].Email == nil)
-			}
+			assert.Equal(t, params.Authors[i].Email, a.Email)
 		}
 
 		if len(item.Categories) > 0 {

@@ -142,12 +142,12 @@ type SaveFetchedItemParams struct {
 // It handles deduplication and ensures atomicity.
 func (s *Store) SaveFetchedItem(ctx context.Context, params SaveFetchedItemParams) error {
 	return s.WithTransaction(ctx, func(qtx *Queries) error {
-		return s.SaveFetchedItemTx(ctx, qtx, params)
+		return s.SaveFetchedItemWithQueries(ctx, qtx, params)
 	})
 }
 
-// SaveFetchedItemTx performs the actual save operations within a provided transaction.
-func (s *Store) SaveFetchedItemTx(ctx context.Context, qtx *Queries, params SaveFetchedItemParams) error {
+// SaveFetchedItemWithQueries performs the actual save operations within a provided transaction (Queries).
+func (s *Store) SaveFetchedItemWithQueries(ctx context.Context, qtx *Queries, params SaveFetchedItemParams) error {
 	// 1. Upsert Item
 	newID := uuid.NewString()
 	item, err := qtx.CreateItem(ctx, CreateItemParams{
@@ -211,9 +211,14 @@ func (s *Store) GetItemWithAuthors(ctx context.Context, id string) (ItemWithAuth
 		return ItemWithAuthors{}, err
 	}
 
-	authors, err := s.ListItemAuthors(ctx, row.ID)
+	authorRows, err := s.ListItemAuthors(ctx, row.ID)
 	if err != nil {
 		return ItemWithAuthors{}, err
+	}
+
+	authors := make([]Author, len(authorRows))
+	for i, a := range authorRows {
+		authors[i] = Author(a)
 	}
 
 	return ItemWithAuthors{
@@ -293,11 +298,12 @@ func (s *Store) ListItemsWithAuthors(ctx context.Context, params ListItemsWithAu
 
 	items := make([]ItemWithAuthors, len(rows))
 	for i, r := range rows {
+		desc := r.Description
 		items[i] = ItemWithAuthors{
 			ID:          r.ID,
 			Url:         r.Url,
 			Title:       r.Title,
-			Description: &r.Description,
+			Description: &desc,
 			PublishedAt: r.PublishedAt,
 			Guid:        r.Guid,
 			Content:     r.Content,

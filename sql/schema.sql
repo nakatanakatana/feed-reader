@@ -30,8 +30,8 @@ CREATE TABLE items (
 CREATE TABLE authors (
   id         TEXT PRIMARY KEY,
   name       TEXT NOT NULL,
-  email      TEXT,
-  uri        TEXT,
+  email      TEXT NOT NULL DEFAULT '',
+  uri        TEXT NOT NULL DEFAULT '',
   created_at TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now')),
   updated_at TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now')),
   UNIQUE(name, email, uri)

@@ -204,10 +204,10 @@ RETURNING id, name, email, uri, created_at, updated_at
 `
 
 type CreateAuthorParams struct {
-	ID    string  `json:"id"`
-	Name  string  `json:"name"`
-	Email *string `json:"email"`
-	Uri   *string `json:"uri"`
+	ID    string `json:"id"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
+	Uri   string `json:"uri"`
 }
 
 func (q *Queries) CreateAuthor(ctx context.Context, arg CreateAuthorParams) (Author, error) {
@@ -1007,7 +1007,12 @@ func (q *Queries) ListFeedsToFetch(ctx context.Context) ([]ListFeedsToFetchRow, 
 
 const listItemAuthors = `-- name: ListItemAuthors :many
 SELECT
-  a.id, a.name, a.email, a.uri, a.created_at, a.updated_at
+  a.id,
+  a.name,
+  CAST(COALESCE(a.email, '') AS TEXT) AS email,
+  CAST(COALESCE(a.uri, '') AS TEXT) AS uri,
+  a.created_at,
+  a.updated_at
 FROM
   authors a
 JOIN
@@ -1018,15 +1023,24 @@ ORDER BY
   a.name ASC
 `
 
-func (q *Queries) ListItemAuthors(ctx context.Context, itemID string) ([]Author, error) {
+type ListItemAuthorsRow struct {
+	ID        string `json:"id"`
+	Name      string `json:"name"`
+	Email     string `json:"email"`
+	Uri       string `json:"uri"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
+}
+
+func (q *Queries) ListItemAuthors(ctx context.Context, itemID string) ([]ListItemAuthorsRow, error) {
 	rows, err := q.db.QueryContext(ctx, listItemAuthors, itemID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Author
+	var items []ListItemAuthorsRow
 	for rows.Next() {
-		var i Author
+		var i ListItemAuthorsRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
@@ -1053,8 +1067,8 @@ SELECT
   ia.item_id,
   a.id,
   a.name,
-  a.email,
-  a.uri
+  CAST(COALESCE(a.email, '') AS TEXT) AS email,
+  CAST(COALESCE(a.uri, '') AS TEXT) AS uri
 FROM
   authors a
 JOIN
@@ -1066,11 +1080,11 @@ ORDER BY
 `
 
 type ListItemAuthorsByItemIDsRow struct {
-	ItemID string  `json:"item_id"`
-	ID     string  `json:"id"`
-	Name   string  `json:"name"`
-	Email  *string `json:"email"`
-	Uri    *string `json:"uri"`
+	ItemID string `json:"item_id"`
+	ID     string `json:"id"`
+	Name   string `json:"name"`
+	Email  string `json:"email"`
+	Uri    string `json:"uri"`
 }
 
 func (q *Queries) ListItemAuthorsByItemIDs(ctx context.Context, itemIds []string) ([]ListItemAuthorsByItemIDsRow, error) {

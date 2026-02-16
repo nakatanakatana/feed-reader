@@ -35,8 +35,8 @@ type UUIDGenerator interface {
 
 type AuthorParams struct {
 	Name  string
-	Email *string
-	Uri   *string
+	Email string
+	Uri   string
 }
 
 type ItemWithAuthors struct {
