@@ -19,13 +19,32 @@ CREATE TABLE items (
   title        TEXT,
   description  TEXT,
   published_at TEXT,
-  author       TEXT,
   guid         TEXT,
   content      TEXT,
   image_url    TEXT,
   categories   TEXT,
   created_at   TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now')),
   updated_at   TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now'))
+);
+
+CREATE TABLE authors (
+  id         TEXT PRIMARY KEY,
+  name       TEXT NOT NULL,
+  email      TEXT,
+  uri        TEXT,
+  created_at TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now')),
+  updated_at TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now')),
+  UNIQUE(name, email, uri)
+);
+
+CREATE TABLE item_authors (
+  item_id    TEXT NOT NULL,
+  author_id  TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now')),
+  updated_at TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now')),
+  PRIMARY KEY (item_id, author_id),
+  FOREIGN KEY (item_id) REFERENCES items(id) ON DELETE CASCADE,
+  FOREIGN KEY (author_id) REFERENCES authors(id) ON DELETE CASCADE
 );
 
 CREATE TABLE feed_items (

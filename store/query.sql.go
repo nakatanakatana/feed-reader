@@ -189,6 +189,46 @@ func (q *Queries) CountUnreadItemsPerTag(ctx context.Context) ([]CountUnreadItem
 	return items, nil
 }
 
+const createAuthor = `-- name: CreateAuthor :one
+INSERT INTO authors (
+  id,
+  name,
+  email,
+  uri
+) VALUES (
+  ?, ?, ?, ?
+)
+ON CONFLICT(name, email, uri) DO UPDATE SET
+  updated_at = (strftime('%FT%TZ', 'now'))
+RETURNING id, name, email, uri, created_at, updated_at
+`
+
+type CreateAuthorParams struct {
+	ID    string  `json:"id"`
+	Name  string  `json:"name"`
+	Email *string `json:"email"`
+	Uri   *string `json:"uri"`
+}
+
+func (q *Queries) CreateAuthor(ctx context.Context, arg CreateAuthorParams) (Author, error) {
+	row := q.db.QueryRowContext(ctx, createAuthor,
+		arg.ID,
+		arg.Name,
+		arg.Email,
+		arg.Uri,
+	)
+	var i Author
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Email,
+		&i.Uri,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const createFeed = `-- name: CreateFeed :one
 INSERT INTO feeds (
   id,
@@ -302,24 +342,22 @@ INSERT INTO items (
   title,
   description,
   published_at,
-  author,
   guid,
   content,
   image_url,
   categories
 ) VALUES (
-  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+  ?, ?, ?, ?, ?, ?, ?, ?, ?
 )
 ON CONFLICT(url) DO UPDATE SET
   title = excluded.title,
   description = excluded.description,
-  author = excluded.author,
   guid = excluded.guid,
   content = excluded.content,
   image_url = excluded.image_url,
   categories = excluded.categories,
   updated_at = (strftime('%FT%TZ', 'now'))
-RETURNING id, url, title, description, published_at, author, guid, content, image_url, categories, created_at, updated_at
+RETURNING id, url, title, description, published_at, guid, content, image_url, categories, created_at, updated_at
 `
 
 type CreateItemParams struct {
@@ -328,7 +366,6 @@ type CreateItemParams struct {
 	Title       *string `json:"title"`
 	Description *string `json:"description"`
 	PublishedAt *string `json:"published_at"`
-	Author      *string `json:"author"`
 	Guid        *string `json:"guid"`
 	Content     *string `json:"content"`
 	ImageUrl    *string `json:"image_url"`
@@ -342,7 +379,6 @@ func (q *Queries) CreateItem(ctx context.Context, arg CreateItemParams) (Item, e
 		arg.Title,
 		arg.Description,
 		arg.PublishedAt,
-		arg.Author,
 		arg.Guid,
 		arg.Content,
 		arg.ImageUrl,
@@ -355,7 +391,6 @@ func (q *Queries) CreateItem(ctx context.Context, arg CreateItemParams) (Item, e
 		&i.Title,
 		&i.Description,
 		&i.PublishedAt,
-		&i.Author,
 		&i.Guid,
 		&i.Content,
 		&i.ImageUrl,
@@ -364,6 +399,26 @@ func (q *Queries) CreateItem(ctx context.Context, arg CreateItemParams) (Item, e
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const createItemAuthor = `-- name: CreateItemAuthor :exec
+INSERT INTO item_authors (
+  item_id,
+  author_id
+) VALUES (
+  ?, ?
+)
+ON CONFLICT(item_id, author_id) DO NOTHING
+`
+
+type CreateItemAuthorParams struct {
+	ItemID   string `json:"item_id"`
+	AuthorID string `json:"author_id"`
+}
+
+func (q *Queries) CreateItemAuthor(ctx context.Context, arg CreateItemAuthorParams) error {
+	_, err := q.db.ExecContext(ctx, createItemAuthor, arg.ItemID, arg.AuthorID)
+	return err
 }
 
 const createItemRead = `-- name: CreateItemRead :exec
@@ -607,7 +662,6 @@ SELECT
   i.title,
   i.description,
   i.published_at,
-  i.author,
   i.guid,
   i.content,
   i.image_url,
@@ -631,7 +685,6 @@ type GetItemRow struct {
 	Title       *string `json:"title"`
 	Description *string `json:"description"`
 	PublishedAt *string `json:"published_at"`
-	Author      *string `json:"author"`
 	Guid        *string `json:"guid"`
 	Content     *string `json:"content"`
 	ImageUrl    *string `json:"image_url"`
@@ -650,7 +703,6 @@ func (q *Queries) GetItem(ctx context.Context, id string) (GetItemRow, error) {
 		&i.Title,
 		&i.Description,
 		&i.PublishedAt,
-		&i.Author,
 		&i.Guid,
 		&i.Content,
 		&i.ImageUrl,
@@ -953,6 +1005,113 @@ func (q *Queries) ListFeedsToFetch(ctx context.Context) ([]ListFeedsToFetchRow, 
 	return items, nil
 }
 
+const listItemAuthors = `-- name: ListItemAuthors :many
+SELECT
+  a.id, a.name, a.email, a.uri, a.created_at, a.updated_at
+FROM
+  authors a
+JOIN
+  item_authors ia ON a.id = ia.author_id
+WHERE
+  ia.item_id = ?
+ORDER BY
+  a.name ASC
+`
+
+func (q *Queries) ListItemAuthors(ctx context.Context, itemID string) ([]Author, error) {
+	rows, err := q.db.QueryContext(ctx, listItemAuthors, itemID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Author
+	for rows.Next() {
+		var i Author
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Email,
+			&i.Uri,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listItemAuthorsByItemIDs = `-- name: ListItemAuthorsByItemIDs :many
+SELECT
+  ia.item_id,
+  a.id,
+  a.name,
+  a.email,
+  a.uri
+FROM
+  authors a
+JOIN
+  item_authors ia ON a.id = ia.author_id
+WHERE
+  ia.item_id IN (/*SLICE:item_ids*/?)
+ORDER BY
+  a.name ASC
+`
+
+type ListItemAuthorsByItemIDsRow struct {
+	ItemID string  `json:"item_id"`
+	ID     string  `json:"id"`
+	Name   string  `json:"name"`
+	Email  *string `json:"email"`
+	Uri    *string `json:"uri"`
+}
+
+func (q *Queries) ListItemAuthorsByItemIDs(ctx context.Context, itemIds []string) ([]ListItemAuthorsByItemIDsRow, error) {
+	query := listItemAuthorsByItemIDs
+	var queryParams []interface{}
+	if len(itemIds) > 0 {
+		for _, v := range itemIds {
+			queryParams = append(queryParams, v)
+		}
+		query = strings.Replace(query, "/*SLICE:item_ids*/?", strings.Repeat(",?", len(itemIds))[1:], 1)
+	} else {
+		query = strings.Replace(query, "/*SLICE:item_ids*/?", "NULL", 1)
+	}
+	rows, err := q.db.QueryContext(ctx, query, queryParams...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListItemAuthorsByItemIDsRow
+	for rows.Next() {
+		var i ListItemAuthorsByItemIDsRow
+		if err := rows.Scan(
+			&i.ItemID,
+			&i.ID,
+			&i.Name,
+			&i.Email,
+			&i.Uri,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listItemFeeds = `-- name: ListItemFeeds :many
 SELECT
   fi.feed_id,
@@ -1009,7 +1168,6 @@ SELECT
   i.title,
   CAST(COALESCE(SUBSTR(i.description, 1, 140), '') AS TEXT) AS description,
   i.published_at,
-  i.author,
   i.guid,
   i.content,
   i.image_url,
@@ -1052,7 +1210,6 @@ type ListItemsRow struct {
 	Title       *string `json:"title"`
 	Description string  `json:"description"`
 	PublishedAt *string `json:"published_at"`
-	Author      *string `json:"author"`
 	Guid        *string `json:"guid"`
 	Content     *string `json:"content"`
 	ImageUrl    *string `json:"image_url"`
@@ -1084,7 +1241,6 @@ func (q *Queries) ListItems(ctx context.Context, arg ListItemsParams) ([]ListIte
 			&i.Title,
 			&i.Description,
 			&i.PublishedAt,
-			&i.Author,
 			&i.Guid,
 			&i.Content,
 			&i.ImageUrl,

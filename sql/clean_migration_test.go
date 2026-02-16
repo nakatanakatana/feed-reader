@@ -24,7 +24,7 @@ func TestCleanMigration(t *testing.T) {
 	assert.NilError(t, err)
 	defer func() { _ = db.Close() }()
 
-	tables := []string{"feeds", "items", "feed_items", "item_reads", "tags", "feed_tags", "feed_fetcher"}
+	tables := []string{"feeds", "items", "feed_items", "item_reads", "tags", "feed_tags", "feed_fetcher", "authors", "item_authors"}
 	for _, table := range tables {
 		var name string
 		err = db.QueryRow("SELECT name FROM sqlite_master WHERE type='table' AND name=?", table).Scan(&name)
@@ -36,4 +36,9 @@ func TestCleanMigration(t *testing.T) {
 	err = db.QueryRow("SELECT count(*) FROM pragma_table_info('feed_fetcher') WHERE name='next_fetch'").Scan(&count)
 	assert.NilError(t, err)
 	assert.Equal(t, count, 1, "next_fetch column should exist")
+
+	// 4. Verify items table does not have author column
+	err = db.QueryRow("SELECT count(*) FROM pragma_table_info('items') WHERE name='author'").Scan(&count)
+	assert.NilError(t, err)
+	assert.Equal(t, count, 0, "author column in items table should be removed")
 }

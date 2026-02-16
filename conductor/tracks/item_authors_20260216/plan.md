@@ -5,16 +5,16 @@ This plan outlines the steps to overhaul the item author storage mechanism, movi
 ## Phase 1: Schema and Data Access Layer
 Goal: Define the new database schema and generate type-safe data access code using `sqlc`.
 
-- [ ] Task: Create a new SQL migration to add `authors` and `item_authors` tables.
-    - [ ] Add `authors` table with `id` (UUID), `name`, `email`, and `uri`.
-    - [ ] Add `item_authors` junction table with `item_id` and `author_id`.
-    - [ ] Remove obsolete author columns from `items` table.
-- [ ] Task: Update `sql/query.sql` with queries for the new tables.
-    - [ ] Add query to insert or retrieve (upsert/get) an author.
-    - [ ] Add query to link an item and an author in `item_authors`.
-    - [ ] Add query to list authors for a specific item.
-- [ ] Task: Run `make gen` (or equivalent) to update `sqlc` generated code.
-- [ ] Task: Conductor - User Manual Verification 'Schema and Data Access Layer' (Protocol in workflow.md)
+- [x] Task: Create a new SQL migration to add `authors` and `item_authors` tables. <sha:5f3c98d>
+    - [x] Add `authors` table with `id` (UUID), `name`, `email`, and `uri`.
+    - [x] Add `item_authors` junction table with `item_id` and `author_id`.
+    - [x] Remove obsolete author columns from `items` table.
+- [x] Task: Update `sql/query.sql` with queries for the new tables. <sha:5f3c98d>
+    - [x] Add query to insert or retrieve (upsert/get) an author.
+    - [x] Add query to link an item and an author in `item_authors`.
+    - [x] Add query to list authors for a specific item.
+- [x] Task: Run `make gen` (or equivalent) to update `sqlc` generated code. <sha:5f3c98d>
+- [~] Task: Conductor - User Manual Verification 'Schema and Data Access Layer' (Protocol in workflow.md)
 
 ## Phase 2: Protobuf and API Definitions
 Goal: Update the communication contract to support multiple authors per item.

@@ -97,18 +97,16 @@ INSERT INTO items (
   title,
   description,
   published_at,
-  author,
   guid,
   content,
   image_url,
   categories
 ) VALUES (
-  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+  ?, ?, ?, ?, ?, ?, ?, ?, ?
 )
 ON CONFLICT(url) DO UPDATE SET
   title = excluded.title,
   description = excluded.description,
-  author = excluded.author,
   guid = excluded.guid,
   content = excluded.content,
   image_url = excluded.image_url,
@@ -156,7 +154,6 @@ SELECT
   i.title,
   i.description,
   i.published_at,
-  i.author,
   i.guid,
   i.content,
   i.image_url,
@@ -180,7 +177,6 @@ SELECT
   i.title,
   CAST(COALESCE(SUBSTR(i.description, 1, 140), '') AS TEXT) AS description,
   i.published_at,
-  i.author,
   i.guid,
   i.content,
   i.image_url,
@@ -433,3 +429,53 @@ WHERE
   ff.next_fetch IS NULL OR ff.next_fetch <= (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
 ORDER BY
   ff.next_fetch ASC;
+
+-- name: CreateAuthor :one
+INSERT INTO authors (
+  id,
+  name,
+  email,
+  uri
+) VALUES (
+  ?, ?, ?, ?
+)
+ON CONFLICT(name, email, uri) DO UPDATE SET
+  updated_at = (strftime('%FT%TZ', 'now'))
+RETURNING *;
+
+-- name: CreateItemAuthor :exec
+INSERT INTO item_authors (
+  item_id,
+  author_id
+) VALUES (
+  ?, ?
+)
+ON CONFLICT(item_id, author_id) DO NOTHING;
+
+-- name: ListItemAuthors :many
+SELECT
+  a.*
+FROM
+  authors a
+JOIN
+  item_authors ia ON a.id = ia.author_id
+WHERE
+  ia.item_id = ?
+ORDER BY
+  a.name ASC;
+
+-- name: ListItemAuthorsByItemIDs :many
+SELECT
+  ia.item_id,
+  a.id,
+  a.name,
+  a.email,
+  a.uri
+FROM
+  authors a
+JOIN
+  item_authors ia ON a.id = ia.author_id
+WHERE
+  ia.item_id IN (sqlc.slice('item_ids'))
+ORDER BY
+  a.name ASC;

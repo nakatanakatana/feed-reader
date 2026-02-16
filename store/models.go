@@ -4,6 +4,15 @@
 
 package store
 
+type Author struct {
+	ID        string  `json:"id"`
+	Name      string  `json:"name"`
+	Email     *string `json:"email"`
+	Uri       *string `json:"uri"`
+	CreatedAt string  `json:"created_at"`
+	UpdatedAt string  `json:"updated_at"`
+}
+
 type Feed struct {
 	ID          string  `json:"id"`
 	Url         string  `json:"url"`
@@ -50,13 +59,19 @@ type Item struct {
 	Title       *string `json:"title"`
 	Description *string `json:"description"`
 	PublishedAt *string `json:"published_at"`
-	Author      *string `json:"author"`
 	Guid        *string `json:"guid"`
 	Content     *string `json:"content"`
 	ImageUrl    *string `json:"image_url"`
 	Categories  *string `json:"categories"`
 	CreatedAt   string  `json:"created_at"`
 	UpdatedAt   string  `json:"updated_at"`
+}
+
+type ItemAuthor struct {
+	ItemID    string `json:"item_id"`
+	AuthorID  string `json:"author_id"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
 }
 
 type ItemRead struct {
