@@ -20,6 +20,7 @@ import { ManageTagsModal } from "./ManageTagsModal";
 import { ActionButton } from "./ui/ActionButton";
 import { Badge } from "./ui/Badge";
 import { EmptyState } from "./ui/EmptyState";
+import { KebabMenu } from "./ui/KebabMenu";
 
 export function FeedList() {
   const refreshMutation = useMutation(() => ({
@@ -294,6 +295,7 @@ export function FeedList() {
             flex: "1",
             minHeight: 0,
             overflowY: "auto",
+            overflowX: "hidden",
             pr: "1",
             width: "100%",
           })}
@@ -322,7 +324,12 @@ export function FeedList() {
                   })}
                 >
                   <div
-                    class={flex({ gap: "3", alignItems: "center", flex: 1 })}
+                    class={flex({
+                      gap: "3",
+                      alignItems: "center",
+                      flex: 1,
+                      minWidth: 0,
+                    })}
                   >
                     <input
                       type="checkbox"
@@ -334,8 +341,14 @@ export function FeedList() {
                       onClick={(e) => e.stopPropagation()}
                       class={css({ cursor: "pointer" })}
                     />
-                    <div class={stack({ gap: "1" })}>
-                      <div class={flex({ gap: "2", alignItems: "center" })}>
+                    <div class={stack({ gap: "1", flex: 1, minWidth: 0 })}>
+                      <div
+                        class={flex({
+                          gap: "2",
+                          alignItems: "center",
+                          width: "full",
+                        })}
+                      >
                         <a
                           href={feed.link || feed.url}
                           target="_blank"
@@ -343,6 +356,10 @@ export function FeedList() {
                           onClick={(e) => e.stopPropagation()}
                           class={css({
                             fontWeight: "medium",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            minWidth: 0,
                             _hover: {
                               textDecoration: "underline",
                               color: "blue.600",
@@ -351,8 +368,20 @@ export function FeedList() {
                         >
                           {feed.title || "Untitled Feed"}
                         </a>
+                        <Show when={feed.unreadCount && feed.unreadCount > 0n}>
+                          <Badge
+                            variant="primary"
+                            class={css({ flexShrink: 0 })}
+                          >
+                            {feed.unreadCount?.toString()}
+                          </Badge>
+                        </Show>
                         <For each={feed.tags}>
-                          {(tag) => <Badge>{tag.name}</Badge>}
+                          {(tag) => (
+                            <Badge class={css({ flexShrink: 0 })}>
+                              {tag.name}
+                            </Badge>
+                          )}
                         </For>
                         <div class={flex({ gap: "2", alignItems: "center" })}>
                           <Show when={fetchingState.isFetching(feed.id)}>
@@ -399,9 +428,22 @@ export function FeedList() {
                           </Show>
                         </div>
                       </div>
-                      <div class={flex({ gap: "2", alignItems: "center" })}>
+                      <div
+                        class={flex({
+                          gap: "2",
+                          alignItems: "center",
+                          minWidth: 0,
+                        })}
+                      >
                         <span
-                          class={css({ fontSize: "xs", color: "gray.500" })}
+                          class={css({
+                            fontSize: "xs",
+                            color: "gray.500",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            minWidth: 0,
+                          })}
                         >
                           {feed.url}
                         </span>
@@ -425,6 +467,7 @@ export function FeedList() {
                           class={css({
                             color: "gray.400",
                             cursor: "pointer",
+                            flexShrink: 0,
                             _hover: { color: "gray.600" },
                             display: "inline-flex",
                             alignItems: "center",
@@ -455,7 +498,13 @@ export function FeedList() {
                           </svg>
                         </button>
                       </div>
-                      <div class={flex({ gap: "4", alignItems: "center" })}>
+                      <div
+                        class={flex({
+                          gap: "4",
+                          alignItems: "center",
+                          flexWrap: "wrap",
+                        })}
+                      >
                         <span
                           class={css({ fontSize: "xs", color: "gray.500" })}
                         >
@@ -484,61 +533,113 @@ export function FeedList() {
                       </div>
                     </div>
                   </div>
-                  <div class={flex({ gap: "2", alignItems: "center" })}>
-                    <div class={css({ position: "relative" })}>
-                      <select
-                        aria-label="Suspend fetching"
-                        onChange={(e) => {
+                  <div
+                    class={flex({
+                      gap: "2",
+                      alignItems: "center",
+                      flexShrink: 0,
+                    })}
+                  >
+                    <div
+                      class={flex({
+                        gap: "2",
+                        alignItems: "center",
+                        display: { base: "none", md: "flex" },
+                      })}
+                    >
+                      <div class={css({ position: "relative" })}>
+                        <select
+                          aria-label="Suspend fetching"
+                          onChange={(e) => {
+                            e.stopPropagation();
+                            const seconds = Number(e.currentTarget.value);
+                            if (seconds > 0) {
+                              handleSuspend([feed.id], seconds);
+                            }
+                            e.currentTarget.value = "0"; // reset
+                          }}
+                          onClick={(e) => e.stopPropagation()}
+                          class={css({
+                            fontSize: "xs",
+                            px: "2",
+                            py: "1.5",
+                            rounded: "md",
+                            border: "1px solid",
+                            borderColor: "gray.300",
+                            bg: "white",
+                            cursor: "pointer",
+                            _hover: { borderColor: "gray.400" },
+                          })}
+                        >
+                          <option value="0">Suspend...</option>
+                          <option value="86400">1 Day</option>
+                          <option value="259200">3 Days</option>
+                          <option value="604800">1 Week</option>
+                          <option value="2592000">1 Month</option>
+                        </select>
+                      </div>
+                      <ActionButton
+                        size="sm"
+                        variant="ghost"
+                        onClickEvent={(e) => {
                           e.stopPropagation();
-                          const seconds = Number(e.currentTarget.value);
-                          if (seconds > 0) {
-                            handleSuspend([feed.id], seconds);
-                          }
-                          e.currentTarget.value = "0"; // reset
+                          refreshMutation.mutate([feed.id]);
                         }}
-                        onClick={(e) => e.stopPropagation()}
-                        class={css({
-                          fontSize: "xs",
-                          px: "2",
-                          py: "1.5",
-                          rounded: "md",
-                          border: "1px solid",
-                          borderColor: "gray.300",
-                          bg: "white",
-                          cursor: "pointer",
-                          _hover: { borderColor: "gray.400" },
-                        })}
+                        disabled={fetchingState.isFetching(feed.id)}
                       >
-                        <option value="0">Suspend...</option>
-                        <option value="86400">1 Day</option>
-                        <option value="259200">3 Days</option>
-                        <option value="604800">1 Week</option>
-                        <option value="2592000">1 Month</option>
-                      </select>
+                        {fetchingState.isFetching(feed.id)
+                          ? "Fetching..."
+                          : "Fetch"}
+                      </ActionButton>
+                      <ActionButton
+                        size="sm"
+                        variant="danger"
+                        onClickEvent={(e) => {
+                          e.stopPropagation();
+                          handleDelete(feed.id);
+                        }}
+                      >
+                        Delete
+                      </ActionButton>
                     </div>
-                    <ActionButton
-                      size="sm"
-                      variant="ghost"
-                      onClickEvent={(e) => {
-                        e.stopPropagation();
-                        refreshMutation.mutate([feed.id]);
-                      }}
-                      disabled={fetchingState.isFetching(feed.id)}
+                    <div
+                      class={css({
+                        display: { base: "block", md: "none" },
+                      })}
                     >
-                      {fetchingState.isFetching(feed.id)
-                        ? "Fetching..."
-                        : "Fetch"}
-                    </ActionButton>
-                    <ActionButton
-                      size="sm"
-                      variant="danger"
-                      onClickEvent={(e) => {
-                        e.stopPropagation();
-                        handleDelete(feed.id);
-                      }}
-                    >
-                      Delete
-                    </ActionButton>
+                      <KebabMenu
+                        ariaLabel={`Actions for ${feed.title}`}
+                        actions={[
+                          {
+                            label: fetchingState.isFetching(feed.id)
+                              ? "Fetching..."
+                              : "Fetch",
+                            onClick: () => refreshMutation.mutate([feed.id]),
+                          },
+                          {
+                            label: "Suspend 1 Day",
+                            onClick: () => handleSuspend([feed.id], 86400),
+                          },
+                          {
+                            label: "Suspend 3 Days",
+                            onClick: () => handleSuspend([feed.id], 259200),
+                          },
+                          {
+                            label: "Suspend 1 Week",
+                            onClick: () => handleSuspend([feed.id], 604800),
+                          },
+                          {
+                            label: "Suspend 1 Month",
+                            onClick: () => handleSuspend([feed.id], 2592000),
+                          },
+                          {
+                            label: "Delete",
+                            variant: "danger",
+                            onClick: () => handleDelete(feed.id),
+                          },
+                        ]}
+                      />
+                    </div>
                   </div>
                 </li>
               )}
