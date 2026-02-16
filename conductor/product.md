@@ -30,7 +30,8 @@ The primary target audience is individuals and organizations seeking control ove
 
 - **Manual Feed Refresh:** Trigger immediate updates for one or more feeds directly from the UI, bypassing the background scheduler. Includes real-time feedback with loading indicators and error reporting at the individual feed level.
 
-- **Fetch Scheduling & Suspend:** Take control of feed updates with a database-backed scheduling system.
+- **Fetch Scheduling & Suspend:** Take control of feed updates with an intelligent, database-backed scheduling system.
+  - **Adaptive Intervals:** Automatically adjusts fetch frequency based on item update history, prioritizing active feeds while reducing load from static ones.
   - **Manual Suspend:** Temporarily halt updates for specific feeds for a set duration (1 Day, 3 Days, 1 Week, or 1 Month) directly from the context menu or bulk action bar.
   - **Visual Scheduling:** View the scheduled "Next fetch" time for each feed in the list view, providing transparency into the background fetch cycle.
 
@@ -52,7 +53,7 @@ The primary target audience is individuals and organizations seeking control ove
 
 - **Dynamic Favicon:** The browser tab's favicon dynamically updates its color based on the total unread count (Blue for 0-199, Orange for 200-999, Red for 1000+), providing a passive, at-a-glance status update even when the application is in the background.
 
-- **Background Fetching:** Periodically fetches and updates feeds in the background using a robust scheduling system that respects both global intervals and manual suspensions.
+- **Adaptive Background Fetching:** Periodically fetches and updates feeds in the background. The system automatically calculates the optimal fetch interval for each feed based on its actual update frequency (averaging the last 10 items), ranging from 15 minutes for high-frequency sources to 24 hours for rare updates. This ensures timely delivery while optimizing resource usage.
 
 - **Deduplication & Storage:** Efficiently stores and retrieves articles with URL-based deduplication and normalized data structures, ensuring unique presentation even when items are associated with multiple feeds. Tracks per-feed metadata, including original publication and discovery timestamps for each association.
 
