@@ -90,6 +90,13 @@ export function ItemList(props: ItemListProps) {
       .filter((item) => item.isRead)
       .map((item) => item.id);
     itemStore.addTransientRemovedIds(readItemIds);
+    setSelectedItemIds((prev) => {
+      const next = new Set(prev);
+      for (const id of readItemIds) {
+        next.delete(id);
+      }
+      return next;
+    });
   };
 
   const totalUnread = useLiveQuery((q) =>
@@ -283,6 +290,7 @@ export function ItemList(props: ItemListProps) {
               size="sm"
               variant="secondary"
               onClick={handleClearReadItems}
+              disabled={!filteredItems().some((item) => item.isRead)}
               aria-label="Clear read items from current view"
             >
               Clear Read Items
@@ -398,6 +406,7 @@ export function ItemList(props: ItemListProps) {
                       handleClearReadItems();
                       setShowMoreActions(false);
                     }}
+                    disabled={!filteredItems().some((item) => item.isRead)}
                     class={css({
                       display: "flex",
                       alignItems: "center",
@@ -409,6 +418,11 @@ export function ItemList(props: ItemListProps) {
                       textAlign: "left",
                       cursor: "pointer",
                       _hover: { bg: "gray.50" },
+                      _disabled: {
+                        opacity: 0.5,
+                        cursor: "not-allowed",
+                        _hover: { bg: "transparent" },
+                      },
                     })}
                   >
                     Clear Read Items
