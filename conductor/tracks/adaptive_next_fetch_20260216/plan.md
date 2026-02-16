@@ -5,14 +5,8 @@ This plan implements an adaptive fetching mechanism that adjusts the `nextFetch`
 ## Phase 1: Logic Implementation & Unit Testing
 Implement the core adaptive scheduling logic as a separate component and verify it with extensive unit tests.
 
-- [ ] Task: Create `AdaptiveScheduler` logic in `cmd/feed-reader/scheduler.go`
-    - Create a struct/functions to calculate the next interval based on item publication dates.
-    - Implement min (15m) and max (24h) constraints.
-- [ ] Task: Write unit tests for `AdaptiveScheduler` in `cmd/feed-reader/scheduler_test.go`
-    - Test with frequent updates (should hit 15m limit).
-    - Test with rare updates (should hit 24h limit).
-    - Test with fewer than 2 items (should fallback to default).
-    - Test with malformed or missing dates.
+- [x] Task: Create `AdaptiveScheduler` logic in `cmd/feed-reader/scheduler.go` d69ee9f
+- [x] Task: Write unit tests for `AdaptiveScheduler` in `cmd/feed-reader/scheduler_test.go` d69ee9f
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Logic Implementation' (Protocol in workflow.md)
 
 ## Phase 2: Integration into FetcherService
