@@ -142,62 +142,67 @@ type SaveFetchedItemParams struct {
 // It handles deduplication and ensures atomicity.
 func (s *Store) SaveFetchedItem(ctx context.Context, params SaveFetchedItemParams) error {
 	return s.WithTransaction(ctx, func(qtx *Queries) error {
-		// 1. Upsert Item
-		newID := uuid.NewString()
-		item, err := qtx.CreateItem(ctx, CreateItemParams{
-			ID:          newID,
-			Url:         params.Url,
-			Title:       params.Title,
-			Description: params.Description,
-			PublishedAt: params.PublishedAt,
-			Guid:        params.Guid,
-			Content:     params.Content,
-			ImageUrl:    params.ImageUrl,
-			Categories:  params.Categories,
-		})
-		if err != nil {
-			return fmt.Errorf("failed to create/update item: %w", err)
-		}
-
-		// 2. Save Authors and Link to Item
-		for _, author := range params.Authors {
-			a, err := qtx.CreateAuthor(ctx, CreateAuthorParams{
-				ID:    uuid.NewString(),
-				Name:  author.Name,
-				Email: author.Email,
-				Uri:   author.Uri,
-			})
-			if err != nil {
-				return fmt.Errorf("failed to create/update author: %w", err)
-			}
-
-			err = qtx.CreateItemAuthor(ctx, CreateItemAuthorParams{
-				ItemID:   item.ID,
-				AuthorID: a.ID,
-			})
-			if err != nil {
-				return fmt.Errorf("failed to link item and author: %w", err)
-			}
-		}
-
-		// 3. Link to Feed
-		err = qtx.CreateFeedItem(ctx, CreateFeedItemParams{
-			FeedID:      params.FeedID,
-			ItemID:      item.ID,
-			PublishedAt: params.PublishedAt,
-		})
-		if err != nil {
-			return fmt.Errorf("failed to link feed and item: %w", err)
-		}
-
-		// 3. Initialize Read Status
-		err = qtx.CreateItemRead(ctx, item.ID)
-		if err != nil {
-			return fmt.Errorf("failed to initialize read status: %w", err)
-		}
-
-		return nil
+		return s.SaveFetchedItemTx(ctx, qtx, params)
 	})
+}
+
+// SaveFetchedItemTx performs the actual save operations within a provided transaction.
+func (s *Store) SaveFetchedItemTx(ctx context.Context, qtx *Queries, params SaveFetchedItemParams) error {
+	// 1. Upsert Item
+	newID := uuid.NewString()
+	item, err := qtx.CreateItem(ctx, CreateItemParams{
+		ID:          newID,
+		Url:         params.Url,
+		Title:       params.Title,
+		Description: params.Description,
+		PublishedAt: params.PublishedAt,
+		Guid:        params.Guid,
+		Content:     params.Content,
+		ImageUrl:    params.ImageUrl,
+		Categories:  params.Categories,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to create/update item: %w", err)
+	}
+
+	// 2. Save Authors and Link to Item
+	for _, author := range params.Authors {
+		a, err := qtx.CreateAuthor(ctx, CreateAuthorParams{
+			ID:    uuid.NewString(),
+			Name:  author.Name,
+			Email: author.Email,
+			Uri:   author.Uri,
+		})
+		if err != nil {
+			return fmt.Errorf("failed to create/update author: %w", err)
+		}
+
+		err = qtx.CreateItemAuthor(ctx, CreateItemAuthorParams{
+			ItemID:   item.ID,
+			AuthorID: a.ID,
+		})
+		if err != nil {
+			return fmt.Errorf("failed to link item and author: %w", err)
+		}
+	}
+
+	// 3. Link to Feed
+	err = qtx.CreateFeedItem(ctx, CreateFeedItemParams{
+		FeedID:      params.FeedID,
+		ItemID:      item.ID,
+		PublishedAt: params.PublishedAt,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to link feed and item: %w", err)
+	}
+
+	// 4. Initialize Read Status
+	err = qtx.CreateItemRead(ctx, item.ID)
+	if err != nil {
+		return fmt.Errorf("failed to initialize read status: %w", err)
+	}
+
+	return nil
 }
 
 func (s *Store) GetItemWithAuthors(ctx context.Context, id string) (ItemWithAuthors, error) {

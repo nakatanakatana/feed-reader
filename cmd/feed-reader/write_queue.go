@@ -2,11 +2,9 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/nakatanakatana/feed-reader/store"
 )
 
@@ -124,45 +122,13 @@ type SaveItemsResult struct {
 // Execute performs the save operations.
 func (j *SaveItemsJob) Execute(ctx context.Context, q *store.Queries) error {
 	var newItems int32
+	// We need a Store instance to call the helper, but since we are in cmd/feed-reader,
+	// we can just use a temporary one or move the helper to a more accessible place.
+	// Actually, Store is just a wrapper around Queries.
+	s := &store.Store{Queries: q}
+
 	for _, params := range j.Items {
-		// 1. Upsert Item
-		newID := uuid.NewString()
-		item, err := q.CreateItem(ctx, store.CreateItemParams{
-			ID:          newID,
-			Url:         params.Url,
-			Title:       params.Title,
-			Description: params.Description,
-			PublishedAt: params.PublishedAt,
-			Guid:        params.Guid,
-			Content:     params.Content,
-			ImageUrl:    params.ImageUrl,
-			Categories:  params.Categories,
-		})
-		if err != nil {
-			err = fmt.Errorf("failed to create/update item: %w", err)
-			if j.ResultChan != nil {
-				j.ResultChan <- SaveItemsResult{Error: err}
-			}
-			return err
-		}
-
-		// 2. Link to Feed
-		err = q.CreateFeedItem(ctx, store.CreateFeedItemParams{
-			FeedID: params.FeedID,
-			ItemID: item.ID,
-		})
-		if err != nil {
-			err = fmt.Errorf("failed to link feed and item: %w", err)
-			if j.ResultChan != nil {
-				j.ResultChan <- SaveItemsResult{Error: err}
-			}
-			return err
-		}
-
-		// 3. Initialize Read Status
-		err = q.CreateItemRead(ctx, item.ID)
-		if err != nil {
-			err = fmt.Errorf("failed to initialize read status: %w", err)
+		if err := s.SaveFetchedItemTx(ctx, q, params); err != nil {
 			if j.ResultChan != nil {
 				j.ResultChan <- SaveItemsResult{Error: err}
 			}
