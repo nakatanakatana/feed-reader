@@ -6,7 +6,7 @@
     - [x] Write a test case that demonstrates `useQuery` triggering a network fetch even if the data exists in the cache (simulating the default `staleTime: 0` behavior).
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Verification and Testing Foundation' (Protocol in workflow.md)
 
-## Phase 2: Implementation of Optimization
+## Phase 2: Implementation of Optimization [checkpoint: 98e4cbe]
 - [x] Task: Unify prefetch configuration
     - [x] Define a shared constant `ITEM_STALE_TIME` in `frontend/src/lib/item-prefetch.ts`.
     - [x] Update `prefetchItems` in `frontend/src/lib/item-prefetch.ts` to use this constant.
