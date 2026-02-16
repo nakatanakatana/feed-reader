@@ -2,7 +2,7 @@
 
 This plan covers the implementation of a "Clear Read Items" button that temporarily removes read items matching current filters from the frontend state.
 
-## Phase 1: Frontend Implementation
+## Phase 1: Frontend Implementation [checkpoint: a08ca26]
 
 ### Task: Prepare Testing Environment
 - [x] Task: Create integration test to verify the "Clear Read Items" logic [342252e]
@@ -28,4 +28,4 @@ This plan covers the implementation of a "Clear Read Items" button that temporar
     - [x] Run `npm test` or specific Vitest command
     - [x] Achieve >80% coverage for the new logic
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Frontend Implementation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Frontend Implementation' (Protocol in workflow.md) [a08ca26]
