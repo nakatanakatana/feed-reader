@@ -13,6 +13,12 @@ service ItemService {
   rpc ListItemFeeds(ListItemFeedsRequest) returns (ListItemFeedsResponse);
 }
 
+message Author {
+  string name = 1;
+  optional string email = 2;
+  optional string uri = 3;
+}
+
 message Item {
   string id = 1;
   string url = 2;
@@ -21,11 +27,12 @@ message Item {
   string published_at = 5;
   string feed_id = 6;
   bool is_read = 7;
-  string author = 9;
+  reserved 9;
   string content = 10;
   string image_url = 11;
   string categories = 12;
   string created_at = 13;
+  repeated Author authors = 14;
 }
 
 message ListItem {
