@@ -2,12 +2,12 @@
 
 This plan implements an adaptive fetching mechanism that adjusts the `nextFetch` time based on the update frequency of feed items, as defined in `spec.md`.
 
-## Phase 1: Logic Implementation & Unit Testing
+## Phase 1: Logic Implementation & Unit Testing [checkpoint: 0751e5b]
 Implement the core adaptive scheduling logic as a separate component and verify it with extensive unit tests.
 
 - [x] Task: Create `AdaptiveScheduler` logic in `cmd/feed-reader/scheduler.go` d69ee9f
 - [x] Task: Write unit tests for `AdaptiveScheduler` in `cmd/feed-reader/scheduler_test.go` d69ee9f
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Logic Implementation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Logic Implementation' (Protocol in workflow.md) 0751e5b
 
 ## Phase 2: Integration into FetcherService
 Integrate the adaptive logic into the existing `FetcherService` and update the database interaction.
