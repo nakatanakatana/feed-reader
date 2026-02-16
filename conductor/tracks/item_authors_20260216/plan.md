@@ -40,9 +40,9 @@ Goal: Implement the logic to persist and retrieve authors, ensuring correctness 
     - [x] Ensure the API response correctly populates the new `authors` field in the `Item` message.
 - [x] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md) <sha:1446857>
 
-## Phase 4: Frontend Integration (Optional/Minimal)
+## Phase 4: Frontend Integration [checkpoint: 3a7ba5f] (Optional/Minimal)
 Goal: Ensure the frontend can at least handle the new data structure without breaking, and optionally display authors.
 
 - [x] Task: Update frontend types and services to reflect the new `authors` array in items. <sha:e3cfb7d>
 - [x] Task: (Optional) Update `ItemDetailModal.tsx` or item list components to display the authors. <sha:e3cfb7d>
-- [~] Task: Conductor - User Manual Verification 'Frontend Integration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Frontend Integration' (Protocol in workflow.md) <sha:3a7ba5f>
