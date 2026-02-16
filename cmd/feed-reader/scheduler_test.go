@@ -159,5 +159,3 @@ func TestCalculateAdaptiveInterval(t *testing.T) {
 		assert.Equal(t, interval, 45*time.Minute)
 	})
 }
-
-
