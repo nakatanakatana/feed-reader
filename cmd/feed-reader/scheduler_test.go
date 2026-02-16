@@ -82,3 +82,82 @@ func TestScheduler_nextDelay_PBT(t *testing.T) {
 		}
 	})
 }
+
+func TestCalculateAdaptiveInterval(t *testing.T) {
+	defaultInterval := 1 * time.Hour
+	minInterval := 15 * time.Minute
+	maxInterval := 24 * time.Hour
+
+	t.Run("frequent updates", func(t *testing.T) {
+		now := time.Now()
+		// Updates every 5 minutes
+		pubDates := []time.Time{
+			now,
+			now.Add(-5 * time.Minute),
+			now.Add(-10 * time.Minute),
+			now.Add(-15 * time.Minute),
+		}
+		interval := CalculateAdaptiveInterval(pubDates, defaultInterval, minInterval, maxInterval)
+		assert.Equal(t, interval, minInterval, "Should be capped at minInterval")
+	})
+
+	t.Run("rare updates", func(t *testing.T) {
+		now := time.Now()
+		// Updates every 2 days
+		pubDates := []time.Time{
+			now,
+			now.Add(-48 * time.Hour),
+			now.Add(-96 * time.Hour),
+		}
+		interval := CalculateAdaptiveInterval(pubDates, defaultInterval, minInterval, maxInterval)
+		assert.Equal(t, interval, maxInterval, "Should be capped at maxInterval")
+	})
+
+	t.Run("fewer than 2 items", func(t *testing.T) {
+		pubDates := []time.Time{time.Now()}
+		interval := CalculateAdaptiveInterval(pubDates, defaultInterval, minInterval, maxInterval)
+		assert.Equal(t, interval, defaultInterval, "Should fallback to defaultInterval")
+
+		interval = CalculateAdaptiveInterval([]time.Time{}, defaultInterval, minInterval, maxInterval)
+		assert.Equal(t, interval, defaultInterval, "Should fallback to defaultInterval")
+	})
+
+	t.Run("average calculation", func(t *testing.T) {
+		now := time.Now()
+		// 30 min, 60 min intervals -> average 45 min
+		pubDates := []time.Time{
+			now,
+			now.Add(-30 * time.Minute),
+			now.Add(-90 * time.Minute),
+		}
+		interval := CalculateAdaptiveInterval(pubDates, defaultInterval, minInterval, maxInterval)
+		assert.Equal(t, interval, 45*time.Minute)
+	})
+
+	t.Run("last 10 items", func(t *testing.T) {
+		now := time.Now()
+		pubDates := make([]time.Time, 15)
+		for i := 0; i < 15; i++ {
+			// Every 30 minutes
+			pubDates[i] = now.Add(time.Duration(-30*i) * time.Minute)
+		}
+		// Even with 15 items, it should calculate based on recent ones.
+		// (though in this case the interval is consistent)
+		interval := CalculateAdaptiveInterval(pubDates, defaultInterval, minInterval, maxInterval)
+		assert.Equal(t, interval, 30*time.Minute)
+	})
+
+	t.Run("unordered dates", func(t *testing.T) {
+		now := time.Now()
+		// 30 min, 60 min intervals, but unordered
+		pubDates := []time.Time{
+			now.Add(-30 * time.Minute),
+			now,
+			now.Add(-90 * time.Minute),
+		}
+		interval := CalculateAdaptiveInterval(pubDates, defaultInterval, minInterval, maxInterval)
+		assert.Equal(t, interval, 45*time.Minute)
+	})
+}
+
+
