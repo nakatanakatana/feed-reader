@@ -1,8 +1,0 @@
-{
-  "track_id": "optimize-item-prefetch_20260216",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-02-16T00:00:00Z",
-  "updated_at": "2026-02-16T00:00:00Z",
-  "description": "Optimize item prefetch logic to prevent redundant network fetches during navigation."
-}
