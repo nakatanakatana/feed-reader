@@ -28,6 +28,12 @@ func TestFetcherService_normalizeItem_PBT(t *testing.T) {
 				URL: rapid.String().Draw(t, "imageUrl"),
 			},
 			Categories: rapid.SliceOf(rapid.String()).Draw(t, "categories"),
+			Authors: rapid.SliceOf(rapid.Custom(func(t *rapid.T) *gofeed.Person {
+				return &gofeed.Person{
+					Name:  rapid.String().Draw(t, "name"),
+					Email: rapid.String().Draw(t, "email"),
+				}
+			})).Draw(t, "authors"),
 		}
 
 		hasPubDate := rapid.Bool().Draw(t, "hasPubDate")
@@ -45,6 +51,16 @@ func TestFetcherService_normalizeItem_PBT(t *testing.T) {
 		assert.Equal(t, *params.Guid, item.GUID)
 		assert.Equal(t, *params.Content, item.Content)
 		assert.Equal(t, *params.ImageUrl, item.Image.URL)
+		assert.Equal(t, len(params.Authors), len(item.Authors))
+		for i, a := range item.Authors {
+			assert.Equal(t, params.Authors[i].Name, a.Name)
+			if a.Email != "" {
+				assert.Assert(t, params.Authors[i].Email != nil)
+				assert.Equal(t, *params.Authors[i].Email, a.Email)
+			} else {
+				assert.Assert(t, params.Authors[i].Email == nil)
+			}
+		}
 
 		if len(item.Categories) > 0 {
 			assert.Assert(t, params.Categories != nil)

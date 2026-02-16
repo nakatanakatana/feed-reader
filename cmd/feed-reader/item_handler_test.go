@@ -70,6 +70,8 @@ func TestItemServer(t *testing.T) {
 		assert.NilError(t, err)
 		assert.Equal(t, res.Msg.Item.Id, item1ID)
 		assert.Equal(t, res.Msg.Item.Title, "Item 1")
+		assert.Equal(t, len(res.Msg.Item.Authors), 1)
+		assert.Equal(t, res.Msg.Item.Authors[0].Name, "Test Author")
 		assert.Assert(t, res.Msg.Item.CreatedAt != "")
 	})
 

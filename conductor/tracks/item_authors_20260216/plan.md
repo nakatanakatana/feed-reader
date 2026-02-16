@@ -28,7 +28,7 @@ Goal: Update the communication contract to support multiple authors per item.
 ## Phase 3: Backend Implementation (TDD)
 Goal: Implement the logic to persist and retrieve authors, ensuring correctness through tests.
 
-- [ ] Task: Update `store/item_store.go` and related repository logic.
+- [~] Task: Update `store/item_store.go` and related repository logic.
     - [ ] Write tests in `store/item_store_test.go` for saving multiple authors.
     - [ ] Implement `CreateItem` (or similar) to handle author persistence and linking.
     - [ ] Write tests for retrieving items with their associated authors.

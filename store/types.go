@@ -38,3 +38,19 @@ type AuthorParams struct {
 	Email *string
 	Uri   *string
 }
+
+type ItemWithAuthors struct {
+	ID          string   `json:"id"`
+	Url         string   `json:"url"`
+	Title       *string  `json:"title"`
+	Description *string  `json:"description"`
+	PublishedAt *string  `json:"published_at"`
+	Guid        *string  `json:"guid"`
+	Content     *string  `json:"content"`
+	ImageUrl    *string  `json:"image_url"`
+	Categories  *string  `json:"categories"`
+	CreatedAt   string   `json:"created_at"`
+	FeedID      string   `json:"feed_id"`
+	IsRead      bool     `json:"is_read"`
+	Authors     []Author `json:"authors"`
+}

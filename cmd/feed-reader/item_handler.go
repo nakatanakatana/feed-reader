@@ -21,7 +21,7 @@ func NewItemServer(s *store.Store) itemv1connect.ItemServiceHandler {
 }
 
 func (s *ItemServer) GetItem(ctx context.Context, req *connect.Request[itemv1.GetItemRequest]) (*connect.Response[itemv1.GetItemResponse], error) {
-	item, err := s.store.GetItem(ctx, req.Msg.Id)
+	item, err := s.store.GetItemWithAuthors(ctx, req.Msg.Id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, connect.NewError(connect.CodeNotFound, err)
@@ -65,17 +65,7 @@ func (s *ItemServer) ListItems(ctx context.Context, req *connect.Request[itemv1.
 	var totalCount int64
 	var err error
 
-	totalCount, err = s.store.CountItems(ctx, store.CountItemsParams{
-		FeedID: feedID,
-		IsRead: isRead,
-		TagID:  tagID,
-		Since:  since,
-	})
-	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, err)
-	}
-
-	rows, err := s.store.ListItems(ctx, store.ListItemsParams{
+	items, totalCount, err := s.store.ListItemsWithAuthors(ctx, store.ListItemsWithAuthorsParams{
 		FeedID: feedID,
 		IsRead: isRead,
 		TagID:  tagID,
@@ -87,9 +77,9 @@ func (s *ItemServer) ListItems(ctx context.Context, req *connect.Request[itemv1.
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	protoItems := make([]*itemv1.ListItem, 0, len(rows))
-	for _, row := range rows {
-		protoItems = append(protoItems, toProtoListItem(GetItemRowFromListItemsRow(row)))
+	protoItems := make([]*itemv1.ListItem, 0, len(items))
+	for _, item := range items {
+		protoItems = append(protoItems, toProtoListItem(item))
 	}
 
 	return connect.NewResponse(&itemv1.ListItemsResponse{
@@ -149,87 +139,79 @@ func (s *ItemServer) ListItemFeeds(ctx context.Context, req *connect.Request[ite
 	}), nil
 }
 
-func GetItemRowFromListItemsRow(row store.ListItemsRow) store.GetItemRow {
-	return store.GetItemRow{
-		ID:          row.ID,
-		Url:         row.Url,
-		Title:       row.Title,
-		Description: &row.Description,
-		PublishedAt: row.PublishedAt,
-		Guid:        row.Guid,
-		Content:     row.Content,
-		ImageUrl:    row.ImageUrl,
-		Categories:  row.Categories,
-		CreatedAt:   row.CreatedAt,
-		FeedID:      row.FeedID,
-		IsRead:      row.IsRead,
-	}
-}
-
-func toProtoItem(row store.GetItemRow) *itemv1.Item {
+func toProtoItem(item store.ItemWithAuthors) *itemv1.Item {
 	var title string
-	if row.Title != nil {
-		title = *row.Title
+	if item.Title != nil {
+		title = *item.Title
 	}
 	var desc string
-	if row.Description != nil {
-		desc = *row.Description
+	if item.Description != nil {
+		desc = *item.Description
 	}
 	var pubAt string
-	if row.PublishedAt != nil {
-		pubAt = *row.PublishedAt
+	if item.PublishedAt != nil {
+		pubAt = *item.PublishedAt
 	}
 	var content string
-	if row.Content != nil {
-		content = *row.Content
+	if item.Content != nil {
+		content = *item.Content
 	}
 	var img string
-	if row.ImageUrl != nil {
-		img = *row.ImageUrl
+	if item.ImageUrl != nil {
+		img = *item.ImageUrl
 	}
 	var cats string
-	if row.Categories != nil {
-		cats = *row.Categories
+	if item.Categories != nil {
+		cats = *item.Categories
+	}
+
+	protoAuthors := make([]*itemv1.Author, len(item.Authors))
+	for i, a := range item.Authors {
+		protoAuthors[i] = &itemv1.Author{
+			Name:  a.Name,
+			Email: a.Email,
+			Uri:   a.Uri,
+		}
 	}
 
 	return &itemv1.Item{
-		Id:          row.ID,
-		Url:         row.Url,
+		Id:          item.ID,
+		Url:         item.Url,
 		Title:       title,
 		Description: desc,
 		PublishedAt: pubAt,
-		FeedId:      row.FeedID,
-		IsRead:      row.IsRead == 1,
+		FeedId:      item.FeedID,
+		IsRead:      item.IsRead,
 		Content:     content,
 		ImageUrl:    img,
 		Categories:  cats,
-		CreatedAt:   row.CreatedAt,
-		Authors:     []*itemv1.Author{}, // Temporarily empty
+		CreatedAt:   item.CreatedAt,
+		Authors:     protoAuthors,
 	}
 }
 
-func toProtoListItem(row store.GetItemRow) *itemv1.ListItem {
+func toProtoListItem(item store.ItemWithAuthors) *itemv1.ListItem {
 	var title string
-	if row.Title != nil {
-		title = *row.Title
+	if item.Title != nil {
+		title = *item.Title
 	}
 	var desc string
-	if row.Description != nil {
-		desc = *row.Description
+	if item.Description != nil {
+		desc = *item.Description
 	}
 	var pubAt string
-	if row.PublishedAt != nil {
-		pubAt = *row.PublishedAt
+	if item.PublishedAt != nil {
+		pubAt = *item.PublishedAt
 	}
 
 	return &itemv1.ListItem{
-		Id:          row.ID,
+		Id:          item.ID,
 		Title:       title,
 		Description: desc,
 		PublishedAt: pubAt,
-		CreatedAt:   row.CreatedAt,
-		IsRead:      row.IsRead == 1,
-		FeedId:      row.FeedID,
-		Url:         row.Url,
+		CreatedAt:   item.CreatedAt,
+		IsRead:      item.IsRead,
+		FeedId:      item.FeedID,
+		Url:         item.Url,
 	}
 }

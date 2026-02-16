@@ -269,6 +269,23 @@ func (s *FetcherService) normalizeItem(feedID string, item *gofeed.Item) store.S
 		Guid:        &item.GUID,
 		Content:     &item.Content,
 	}
+
+	for _, a := range item.Authors {
+		if a == nil {
+			continue
+		}
+		author := store.AuthorParams{
+			Name: a.Name,
+		}
+		if a.Email != "" {
+			author.Email = &a.Email
+		}
+		// gofeed.Person might have Uri in some formats, but it's not standard in Person struct?
+		// Actually gofeed.Person doesn't have Uri field directly in all versions.
+		// Let's check gofeed.Person definition if possible, but usually it's Name/Email.
+		params.Authors = append(params.Authors, author)
+	}
+
 	if item.PublishedParsed != nil {
 		pubAt := item.PublishedParsed.Format(time.RFC3339)
 		params.PublishedAt = &pubAt

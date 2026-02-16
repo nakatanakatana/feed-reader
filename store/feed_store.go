@@ -159,7 +159,28 @@ func (s *Store) SaveFetchedItem(ctx context.Context, params SaveFetchedItemParam
 			return fmt.Errorf("failed to create/update item: %w", err)
 		}
 
-		// 2. Link to Feed
+		// 2. Save Authors and Link to Item
+		for _, author := range params.Authors {
+			a, err := qtx.CreateAuthor(ctx, CreateAuthorParams{
+				ID:    uuid.NewString(),
+				Name:  author.Name,
+				Email: author.Email,
+				Uri:   author.Uri,
+			})
+			if err != nil {
+				return fmt.Errorf("failed to create/update author: %w", err)
+			}
+
+			err = qtx.CreateItemAuthor(ctx, CreateItemAuthorParams{
+				ItemID:   item.ID,
+				AuthorID: a.ID,
+			})
+			if err != nil {
+				return fmt.Errorf("failed to link item and author: %w", err)
+			}
+		}
+
+		// 3. Link to Feed
 		err = qtx.CreateFeedItem(ctx, CreateFeedItemParams{
 			FeedID:      params.FeedID,
 			ItemID:      item.ID,
@@ -177,4 +198,115 @@ func (s *Store) SaveFetchedItem(ctx context.Context, params SaveFetchedItemParam
 
 		return nil
 	})
+}
+
+func (s *Store) GetItemWithAuthors(ctx context.Context, id string) (ItemWithAuthors, error) {
+	row, err := s.Queries.GetItem(ctx, id)
+	if err != nil {
+		return ItemWithAuthors{}, err
+	}
+
+	authors, err := s.Queries.ListItemAuthors(ctx, row.ID)
+	if err != nil {
+		return ItemWithAuthors{}, err
+	}
+
+	return ItemWithAuthors{
+		ID:          row.ID,
+		Url:         row.Url,
+		Title:       row.Title,
+		Description: row.Description,
+		PublishedAt: row.PublishedAt,
+		Guid:        row.Guid,
+		Content:     row.Content,
+		ImageUrl:    row.ImageUrl,
+		Categories:  row.Categories,
+		CreatedAt:   row.CreatedAt,
+		FeedID:      row.FeedID,
+		IsRead:      row.IsRead == 1,
+		Authors:     authors,
+	}, nil
+}
+
+type ListItemsWithAuthorsParams struct {
+	FeedID interface{}
+	IsRead interface{}
+	TagID  interface{}
+	Since  interface{}
+	Limit  int64
+	Offset int64
+}
+
+func (s *Store) ListItemsWithAuthors(ctx context.Context, params ListItemsWithAuthorsParams) ([]ItemWithAuthors, int64, error) {
+	totalCount, err := s.Queries.CountItems(ctx, CountItemsParams{
+		FeedID: params.FeedID,
+		IsRead: params.IsRead,
+		TagID:  params.TagID,
+		Since:  params.Since,
+	})
+	if err != nil {
+		return nil, 0, err
+	}
+
+	rows, err := s.Queries.ListItems(ctx, ListItemsParams{
+		FeedID: params.FeedID,
+		IsRead: params.IsRead,
+		TagID:  params.TagID,
+		Since:  params.Since,
+		Limit:  params.Limit,
+		Offset: params.Offset,
+	})
+	if err != nil {
+		return nil, 0, err
+	}
+
+	if len(rows) == 0 {
+		return nil, totalCount, nil
+	}
+
+	itemIDs := make([]string, len(rows))
+	for i, r := range rows {
+		itemIDs[i] = r.ID
+	}
+
+	allAuthors, err := s.Queries.ListItemAuthorsByItemIDs(ctx, itemIDs)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	authorsMap := make(map[string][]Author)
+	for _, a := range allAuthors {
+		authorsMap[a.ItemID] = append(authorsMap[a.ItemID], Author{
+			ID:        a.ID,
+			Name:      a.Name,
+			Email:     a.Email,
+			Uri:       a.Uri,
+			// CreatedAt/UpdatedAt are not returned by ListItemAuthorsByItemIDs for efficiency,
+			// but we can add them if needed. For now, let's keep it simple.
+		})
+	}
+
+	items := make([]ItemWithAuthors, len(rows))
+	for i, r := range rows {
+		items[i] = ItemWithAuthors{
+			ID:          r.ID,
+			Url:         r.Url,
+			Title:       r.Title,
+			Description: &r.Description,
+			PublishedAt: r.PublishedAt,
+			Guid:        r.Guid,
+			Content:     r.Content,
+			ImageUrl:    r.ImageUrl,
+			Categories:  r.Categories,
+			CreatedAt:   r.CreatedAt,
+			FeedID:      r.FeedID,
+			IsRead:      r.IsRead == 1,
+			Authors:     authorsMap[r.ID],
+		}
+		if items[i].Authors == nil {
+			items[i].Authors = []Author{}
+		}
+	}
+
+	return items, totalCount, nil
 }
