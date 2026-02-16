@@ -12,10 +12,10 @@ Goal: Identify current bottlenecks and establish a baseline for performance meas
 ## Phase 2: Parallelize Feed Processing
 Goal: Use Go goroutines to parallelize the initial processing of feeds extracted from OPML.
 
-- [ ] Task: Write tests for parallel OPML processing to ensure correct data extraction and error handling.
-- [ ] Task: Implement a worker pool or bounded concurrency to process feeds in parallel.
-- [ ] Task: Verify that success/failure counts remain accurate under concurrent processing.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Parallelize Feed Processing' (Protocol in workflow.md)
+- [x] Task: Write tests for parallel OPML processing to ensure correct data extraction and error handling.
+- [x] Task: Implement a worker pool or bounded concurrency to process feeds in parallel.
+- [x] Task: Verify that success/failure counts remain accurate under concurrent processing.
+- [~] Task: Conductor - User Manual Verification 'Phase 2: Parallelize Feed Processing' (Protocol in workflow.md)
 
 ## Phase 3: Optimize Database Operations (Bulk Insertion)
 Goal: Reduce SQLite overhead by batching insertions and optimizing transactions.

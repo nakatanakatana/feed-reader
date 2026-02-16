@@ -6,8 +6,10 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"sync"
 
 	"github.com/nakatanakatana/feed-reader/store"
+	"golang.org/x/sync/errgroup"
 )
 
 type ImportFailedFeed struct {
@@ -32,103 +34,126 @@ func (i *OPMLImporter) ImportSync(ctx context.Context, opmlContent []byte) (*Imp
 		Total: int32(len(opmlFeeds)),
 	}
 
+	var mu sync.Mutex
+	g, ctx := errgroup.WithContext(ctx)
+	g.SetLimit(10) // Limit concurrency to avoid overwhelming resources
+
 	for _, f := range opmlFeeds {
-		// Deduplication
-		_, err := i.store.GetFeedByURL(ctx, f.URL)
-		if err == nil {
-			// Already exists
-			results.Skipped++
-			continue
-		}
-		if !errors.Is(err, sql.ErrNoRows) {
-			i.logger.ErrorContext(ctx, "db error checking feed existence", "url", f.URL, "error", err)
-			results.FailedFeeds = append(results.FailedFeeds, ImportFailedFeed{URL: f.URL, ErrorMessage: "database error checking existence"})
-			continue
-		}
-
-		// Fetch metadata
-		fetchedFeed, err := i.fetcher.Fetch(ctx, "", f.URL)
-		if err != nil {
-			i.logger.ErrorContext(ctx, "failed to fetch feed metadata", "url", f.URL, "error", err)
-			results.FailedFeeds = append(results.FailedFeeds, ImportFailedFeed{URL: f.URL, ErrorMessage: "failed to fetch feed metadata: " + err.Error()})
-			continue
-		}
-
-		newUUID, err := i.uuidGen.NewRandom()
-		if err != nil {
-			return nil, fmt.Errorf("failed to generate UUID: %w", err)
-		}
-		feedID := newUUID.String()
-
-		strPtr := func(s string) *string {
-			if s == "" {
+		f := f // capture variable
+		g.Go(func() error {
+			// Deduplication
+			_, err := i.store.GetFeedByURL(ctx, f.URL)
+			if err == nil {
+				// Already exists
+				mu.Lock()
+				results.Skipped++
+				mu.Unlock()
 				return nil
 			}
-			return &s
-		}
-
-		var imageUrl *string
-		if fetchedFeed.Image != nil {
-			imageUrl = strPtr(fetchedFeed.Image.URL)
-		}
-
-		title := fetchedFeed.Title
-		if f.Title != "" {
-			title = f.Title
-		}
-
-		_, err = i.store.CreateFeed(ctx, store.CreateFeedParams{
-			ID:          feedID,
-			Url:         f.URL,
-			Title:       strPtr(title),
-			Description: strPtr(fetchedFeed.Description),
-			Link:        strPtr(fetchedFeed.Link),
-			Lang:        strPtr(fetchedFeed.Language),
-			ImageUrl:    imageUrl,
-			Copyright:   strPtr(fetchedFeed.Copyright),
-			FeedType:    strPtr(fetchedFeed.FeedType),
-			FeedVersion: strPtr(fetchedFeed.FeedVersion),
-		})
-		if err != nil {
-			i.logger.ErrorContext(ctx, "failed to create feed in db", "url", f.URL, "error", err)
-			results.FailedFeeds = append(results.FailedFeeds, ImportFailedFeed{URL: f.URL, ErrorMessage: "failed to create feed in database"})
-			continue
-		}
-
-		// Persist tags
-		tagsFailed := false
-		if len(f.Tags) > 0 {
-			var tagIDs []string
-			seenTagIDs := make(map[string]struct{})
-			for _, tagName := range f.Tags {
-				tag, err := i.store.GetOrCreateTag(ctx, tagName, i.uuidGen)
-				if err != nil {
-					i.logger.ErrorContext(ctx, "failed to get or create tag", "tag", tagName, "error", err)
-					tagsFailed = true
-					break
-				}
-				if _, ok := seenTagIDs[tag.ID]; !ok {
-					seenTagIDs[tag.ID] = struct{}{}
-					tagIDs = append(tagIDs, tag.ID)
-				}
+			if !errors.Is(err, sql.ErrNoRows) {
+				i.logger.ErrorContext(ctx, "db error checking feed existence", "url", f.URL, "error", err)
+				mu.Lock()
+				results.FailedFeeds = append(results.FailedFeeds, ImportFailedFeed{URL: f.URL, ErrorMessage: "database error checking existence"})
+				mu.Unlock()
+				return nil
 			}
-			if !tagsFailed && len(tagIDs) > 0 {
-				if err := i.store.SetFeedTags(ctx, feedID, tagIDs); err != nil {
-					i.logger.ErrorContext(ctx, "failed to set feed tags", "feedID", feedID, "error", err)
-					tagsFailed = true
-				}
-			}
-		}
 
-		if tagsFailed {
-			results.FailedFeeds = append(results.FailedFeeds, ImportFailedFeed{
-				URL:          f.URL,
-				ErrorMessage: "failed to persist tags for feed",
+			// Fetch metadata
+			fetchedFeed, err := i.fetcher.Fetch(ctx, "", f.URL)
+			if err != nil {
+				i.logger.ErrorContext(ctx, "failed to fetch feed metadata", "url", f.URL, "error", err)
+				mu.Lock()
+				results.FailedFeeds = append(results.FailedFeeds, ImportFailedFeed{URL: f.URL, ErrorMessage: "failed to fetch feed metadata: " + err.Error()})
+				mu.Unlock()
+				return nil
+			}
+
+			newUUID, err := i.uuidGen.NewRandom()
+			if err != nil {
+				return fmt.Errorf("failed to generate UUID: %w", err)
+			}
+			feedID := newUUID.String()
+
+			strPtr := func(s string) *string {
+				if s == "" {
+					return nil
+				}
+				return &s
+			}
+
+			var imageUrl *string
+			if fetchedFeed.Image != nil {
+				imageUrl = strPtr(fetchedFeed.Image.URL)
+			}
+
+			title := fetchedFeed.Title
+			if f.Title != "" {
+				title = f.Title
+			}
+
+			// Note: CreateFeed and tag operations are still one-by-one here.
+			// Bulk insertion will be addressed in Phase 3.
+			_, err = i.store.CreateFeed(ctx, store.CreateFeedParams{
+				ID:          feedID,
+				Url:         f.URL,
+				Title:       strPtr(title),
+				Description: strPtr(fetchedFeed.Description),
+				Link:        strPtr(fetchedFeed.Link),
+				Lang:        strPtr(fetchedFeed.Language),
+				ImageUrl:    imageUrl,
+				Copyright:   strPtr(fetchedFeed.Copyright),
+				FeedType:    strPtr(fetchedFeed.FeedType),
+				FeedVersion: strPtr(fetchedFeed.FeedVersion),
 			})
-			continue
-		}
+			if err != nil {
+				i.logger.ErrorContext(ctx, "failed to create feed in db", "url", f.URL, "error", err)
+				mu.Lock()
+				results.FailedFeeds = append(results.FailedFeeds, ImportFailedFeed{URL: f.URL, ErrorMessage: "failed to create feed in database"})
+				mu.Unlock()
+				return nil
+			}
 
-		results.Success++
+			// Persist tags
+			tagsFailed := false
+			if len(f.Tags) > 0 {
+				var tagIDs []string
+				seenTagIDs := make(map[string]struct{})
+				for _, tagName := range f.Tags {
+					tag, err := i.store.GetOrCreateTag(ctx, tagName, i.uuidGen)
+					if err != nil {
+						i.logger.ErrorContext(ctx, "failed to get or create tag", "tag", tagName, "error", err)
+						tagsFailed = true
+						break
+					}
+					if _, ok := seenTagIDs[tag.ID]; !ok {
+						seenTagIDs[tag.ID] = struct{}{}
+						tagIDs = append(tagIDs, tag.ID)
+					}
+				}
+				if !tagsFailed && len(tagIDs) > 0 {
+					if err := i.store.SetFeedTags(ctx, feedID, tagIDs); err != nil {
+						i.logger.ErrorContext(ctx, "failed to set feed tags", "feedID", feedID, "error", err)
+						tagsFailed = true
+					}
+				}
+			}
+
+			mu.Lock()
+			defer mu.Unlock()
+			if tagsFailed {
+				results.FailedFeeds = append(results.FailedFeeds, ImportFailedFeed{
+					URL:          f.URL,
+					ErrorMessage: "failed to persist tags for feed",
+				})
+			} else {
+				results.Success++
+			}
+			return nil
+		})
+	}
+
+	if err := g.Wait(); err != nil {
+		return nil, err
 	}
 
 	return results, nil
