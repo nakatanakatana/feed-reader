@@ -1,9 +1,9 @@
 # Implementation Plan - Prefetch Optimization
 
 ## Phase 1: Verification and Testing Foundation
-- [ ] Task: Create reproduction test for redundant fetch
-    - [ ] Analyze existing tests in `frontend/src/lib/item-prefetch.test.ts`.
-    - [ ] Write a test case that demonstrates `useQuery` triggering a network fetch even if the data exists in the cache (simulating the default `staleTime: 0` behavior).
+- [x] Task: Create reproduction test for redundant fetch (38065fe)
+    - [x] Analyze existing tests in `frontend/src/lib/item-prefetch.test.ts`.
+    - [x] Write a test case that demonstrates `useQuery` triggering a network fetch even if the data exists in the cache (simulating the default `staleTime: 0` behavior).
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Verification and Testing Foundation' (Protocol in workflow.md)
 
 ## Phase 2: Implementation of Optimization
