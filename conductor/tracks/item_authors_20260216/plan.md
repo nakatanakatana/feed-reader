@@ -16,7 +16,7 @@ Goal: Define the new database schema and generate type-safe data access code usi
 - [x] Task: Run `make gen` (or equivalent) to update `sqlc` generated code. <sha:bf980eb>
 - [x] Task: Conductor - User Manual Verification 'Schema and Data Access Layer' (Protocol in workflow.md) <sha:7358dd4>
 
-## Phase 2: Protobuf and API Definitions
+## Phase 2: Protobuf and API Definitions [checkpoint: 97f7c82]
 Goal: Update the communication contract to support multiple authors per item.
 
 - [x] Task: Modify `proto/item/v1/item.proto` (or relevant proto file). <sha:19593ef>
