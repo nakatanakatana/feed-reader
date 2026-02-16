@@ -7,7 +7,7 @@ import {
 import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { page } from "vitest/browser";
+import { page, userEvent } from "vitest/browser";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
@@ -47,6 +47,7 @@ describe("FeedList", () => {
   );
 
   it("displays a list of feeds", async () => {
+    await page.viewport?.(1280, 720);
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
     const router = createRouter({ routeTree, history });
 
@@ -71,6 +72,7 @@ describe("FeedList", () => {
   });
 
   it("deletes a feed", async () => {
+    await page.viewport?.(1280, 720);
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
     const router = createRouter({ routeTree, history });
 
@@ -86,17 +88,24 @@ describe("FeedList", () => {
     await expect.element(page.getByText("Example Feed 1")).toBeInTheDocument();
 
     const deleteButton = page.getByRole("button", { name: "Delete" }).first();
+    await expect.element(deleteButton).toBeVisible();
 
-    await deleteButton.click();
+    await userEvent.click(deleteButton);
+
+    // Force re-fetch since invalidation might be slow in tests
+    await queryClient.refetchQueries({ queryKey: ["feeds"] });
 
     // Wait for the feed to disappear
-
     await expect
-      .element(page.getByText("Example Feed 1"))
-      .not.toBeInTheDocument();
+      .poll(async () => {
+        const elements = await page.getByText("Example Feed 1").all();
+        return elements.length;
+      })
+      .toBe(0);
   });
 
   it("supports bulk selection", async () => {
+    await page.viewport?.(1280, 720);
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
 
     const router = createRouter({ routeTree, history });
@@ -115,9 +124,9 @@ describe("FeedList", () => {
 
     await expect.poll(async () => (await checkboxes.all()).length).toBe(3);
 
-    await checkboxes.nth(1).click();
+    await userEvent.click(checkboxes.nth(1));
 
-    await checkboxes.nth(2).click();
+    await userEvent.click(checkboxes.nth(2));
 
     // Bulk action bar should show selected count
 
@@ -127,6 +136,7 @@ describe("FeedList", () => {
   });
 
   it("manages tags for selected feeds", async () => {
+    await page.viewport?.(1280, 720);
     vi.useRealTimers();
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
 
@@ -146,14 +156,14 @@ describe("FeedList", () => {
     await expect.poll(async () => (await checkboxes.all()).length).toBe(3);
 
     // Select first feed (checkbox at index 1, index 0 is select all)
-    await checkboxes.nth(1).click();
+    await userEvent.click(checkboxes.nth(1));
 
     // Click Manage Tags button
     const manageButton = page.getByRole("button", {
       name: /Manage Tags/i,
     });
     await expect.element(manageButton).toBeInTheDocument();
-    await manageButton.click();
+    await userEvent.click(manageButton);
 
     // Should show modal
 

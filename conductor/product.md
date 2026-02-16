@@ -30,7 +30,8 @@ The primary target audience is individuals and organizations seeking control ove
 
 - **Manual Feed Refresh:** Trigger immediate updates for one or more feeds directly from the UI, bypassing the background scheduler. Includes real-time feedback with loading indicators and error reporting at the individual feed level.
 
-- **Fetch Scheduling & Suspend:** Take control of feed updates with a database-backed scheduling system.
+- **Fetch Scheduling & Suspend:** Take control of feed updates with an intelligent, database-backed scheduling system.
+  - **Adaptive Intervals:** Automatically adjusts fetch frequency based on item update history, prioritizing active feeds while reducing load from static ones.
   - **Manual Suspend:** Temporarily halt updates for specific feeds for a set duration (1 Day, 3 Days, 1 Week, or 1 Month) directly from the context menu or bulk action bar.
   - **Visual Scheduling:** View the scheduled "Next fetch" time for each feed in the list view, providing transparency into the background fetch cycle.
 
@@ -40,6 +41,7 @@ The primary target audience is individuals and organizations seeking control ove
 
 - **Article Management:** Retrieve articles with flexible filtering. Items are consistently sorted by creation date in ascending order (oldest first) across all views to ensure a predictable reading sequence. Track article status including read/unread. Features an information-dense list view displaying key metadata (publication/creation dates, snippets). Includes date-based filtering (e.g., Past 24 hours, Past 7 days, Past 30 days, Past 90 days, or Past 365 days) and a visibility toggle to easily show or hide read items. Supports bulk operations, such as marking multiple articles as read simultaneously for improved efficiency.
   - **Floating Bulk Actions:** Selecting multiple items triggers a floating action bar at the bottom of the screen, providing a stable and ergonomically accessible UI for bulk operations without causing layout shifts.
+  - **Transient Removal:** Features a "Clear Read Items" button to temporarily remove read articles from the current view. This memory-only operation helps users focus on unread content during a session without permanently modifying the backend database state.
 
 - **Content Reading:** Clean, distraction-free modal interface for reading full article content. Supports rich HTML rendering, images, categories, and multiple authors per item. Features a highly optimized, compact header to maximize the vertical display area for the article. The primary action, marking an item as read or unread, is accessible via an ergonomic Floating Action Button (FAB) at the bottom-right, keeping the main content clear of obstruction. Features robust, keyboard-centric navigation between items with automatic pagination and read-status management, intentionally omitting redundant on-screen navigation buttons to further focus on content. The navigation sequence is synchronized with the current list view, including items that have been marked as read during the session. Includes a virtual placeholder at the end of lists to provide a clear terminal point and streamline marking the final item as read. Implements standard modal interactions including Escape key and backdrop dismissal. Full URL synchronization (deep linking) for direct access and browser history support, ensuring that active filters (tags and date ranges) are preserved when returning to the list view.
   - **Intelligent Image Layout:** Automatically adjusts the layout of images within article content. Multiple consecutive images or icons within a single paragraph are displayed in a flexible, side-by-side grid to optimize vertical space and improve visual organization.
@@ -52,12 +54,12 @@ The primary target audience is individuals and organizations seeking control ove
 
 - **Dynamic Favicon:** The browser tab's favicon dynamically updates its color based on the total unread count (Blue for 0-199, Orange for 200-999, Red for 1000+), providing a passive, at-a-glance status update even when the application is in the background.
 
-- **Background Fetching:** Periodically fetches and updates feeds in the background using a robust scheduling system that respects both global intervals and manual suspensions.
+- **Adaptive Background Fetching:** Periodically fetches and updates feeds in the background. The system automatically calculates the optimal fetch interval for each feed based on its actual update frequency (averaging the last 10 items), ranging from 15 minutes for high-frequency sources to 24 hours for rare updates. This ensures timely delivery while optimizing resource usage.
 
 - **Deduplication & Storage:** Efficiently stores and retrieves articles with URL-based deduplication and normalized data structures, ensuring unique presentation even when items are associated with multiple feeds. Features a robust many-to-many relationship for item authors, supporting multiple contributors per article as provided by modern feed formats. Tracks per-feed metadata, including original publication and discovery timestamps for each association.
 
 - **Standard Compliance:** Supports standard RSS and Atom feed formats.
-- **Responsive Design:** Accessible on desktop and mobile devices with a tailored experience. Features adaptive headers that prioritize content on small screens and Floating Action Buttons (FAB) for ergonomic access to primary actions like tag management.
+- **Responsive Design:** Accessible on desktop and mobile devices with a tailored experience. Features adaptive headers that prioritize content on small screens, Floating Action Buttons (FAB) for ergonomic access to primary actions like tag management, and an optimized feed list that ensures layout integrity without horizontal scrolling via intelligent text truncation and consolidated action menus on narrow viewports.
 - **Background Deferral:** To ensure high responsiveness, newly added feeds (via manual entry or OPML import) initially register metadata only. Article content is deferred to the background scheduler for the first crawl.
   - **Maximized Viewport:** Redundant page titles (e.g., "All Items") are omitted in favor of active navigation states, allowing more content to be visible immediately on both desktop and mobile.
 
