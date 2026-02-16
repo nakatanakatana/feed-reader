@@ -155,16 +155,16 @@ describe("FeedList Responsive", () => {
     // Open kebab menu
     await kebabButton.click();
     await expect
-      .element(page.getByRole("button", { name: "Suspend 1 Day" }))
+      .element(page.getByRole("menuitem", { name: "Suspend 1 Day" }))
       .toBeInTheDocument();
     await expect
-      .element(page.getByRole("button", { name: "Suspend 3 Days" }))
+      .element(page.getByRole("menuitem", { name: "Suspend 3 Days" }))
       .toBeInTheDocument();
 
     // Close with Escape
     await userEvent.keyboard("{Escape}");
     await expect
-      .element(page.getByRole("button", { name: "Suspend 1 Day" }))
+      .element(page.getByRole("menuitem", { name: "Suspend 1 Day" }))
       .not.toBeInTheDocument();
 
     // 3. Check for horizontal overflow

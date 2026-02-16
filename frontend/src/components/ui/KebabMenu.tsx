@@ -15,12 +15,18 @@ interface KebabMenuProps {
 
 export function KebabMenu(props: KebabMenuProps) {
   const [isOpen, setIsOpen] = createSignal(false);
+  const [focusedIndex, setFocusedIndex] = createSignal(-1);
   let buttonRef: HTMLButtonElement | undefined;
   let menuRef: HTMLDivElement | undefined;
+  const itemRefs: HTMLButtonElement[] = [];
 
   const toggle = (e: MouseEvent) => {
     e.stopPropagation();
-    setIsOpen(!isOpen());
+    const nextOpen = !isOpen();
+    setIsOpen(nextOpen);
+    if (nextOpen) {
+      setFocusedIndex(-1);
+    }
   };
 
   const handleClickOutside = (e: MouseEvent) => {
@@ -36,9 +42,39 @@ export function KebabMenu(props: KebabMenuProps) {
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.key === "Escape" && isOpen()) {
+    if (!isOpen()) {
+      if (
+        (e.key === "Enter" || e.key === " ") &&
+        buttonRef === document.activeElement
+      ) {
+        setIsOpen(true);
+        setFocusedIndex(-1);
+      }
+      return;
+    }
+
+    if (e.key === "Escape") {
       setIsOpen(false);
       buttonRef?.focus();
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      const next = (focusedIndex() + 1) % props.actions.length;
+      setFocusedIndex(next);
+      itemRefs[next]?.focus();
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      const next =
+        (focusedIndex() - 1 + props.actions.length) % props.actions.length;
+      setFocusedIndex(next);
+      itemRefs[next]?.focus();
+    } else if (e.key === "Home") {
+      e.preventDefault();
+      setFocusedIndex(0);
+      itemRefs[0]?.focus();
+    } else if (e.key === "End") {
+      e.preventDefault();
+      setFocusedIndex(props.actions.length - 1);
+      itemRefs[props.actions.length - 1]?.focus();
     }
   };
 
@@ -55,9 +91,32 @@ export function KebabMenu(props: KebabMenuProps) {
   const getMenuPosition = () => {
     if (!buttonRef) return { top: "0px", left: "0px" };
     const rect = buttonRef.getBoundingClientRect();
+    const scrollX = window.scrollX || window.pageXOffset;
+    const scrollY = window.scrollY || window.pageYOffset;
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    const menuWidth = 160; // Initial assumed width
+    const menuHeight = menuRef?.offsetHeight ?? 0;
+
+    let top = rect.bottom + scrollY + 4;
+    let left = rect.right + scrollX - menuWidth;
+
+    const margin = 4;
+
+    // Clamp horizontally
+    const minLeft = scrollX + margin;
+    const maxLeft = scrollX + viewportWidth - menuWidth - margin;
+    if (left < minLeft) left = minLeft;
+    if (left > maxLeft) left = maxLeft;
+
+    // Clamp vertically
+    const maxTop = scrollY + viewportHeight - menuHeight - margin;
+    if (top > maxTop) top = maxTop;
+
     return {
-      top: `${rect.bottom + window.scrollY + 4}px`,
-      left: `${rect.right + window.scrollX - 160}px`,
+      top: `${top}px`,
+      left: `${left}px`,
     };
   };
 
@@ -67,6 +126,8 @@ export function KebabMenu(props: KebabMenuProps) {
         ref={buttonRef}
         type="button"
         aria-label={props.ariaLabel || "More actions"}
+        aria-haspopup="menu"
+        aria-expanded={isOpen()}
         onClick={toggle}
         class={css({
           p: "1",
@@ -100,6 +161,7 @@ export function KebabMenu(props: KebabMenuProps) {
         <Portal>
           <div
             ref={menuRef}
+            role="menu"
             class={css({
               position: "absolute",
               zIndex: 1000,
@@ -114,9 +176,13 @@ export function KebabMenu(props: KebabMenuProps) {
             style={getMenuPosition()}
           >
             <For each={props.actions}>
-              {(action) => (
+              {(action, index) => (
                 <button
+                  ref={(el) => {
+                    itemRefs[index()] = el;
+                  }}
                   type="button"
+                  role="menuitem"
                   onClick={(e) => {
                     e.stopPropagation();
                     action.onClick();
@@ -131,9 +197,14 @@ export function KebabMenu(props: KebabMenuProps) {
                       fontSize: "sm",
                       cursor: "pointer",
                       _hover: { bg: "gray.50" },
+                      _focus: { bg: "gray.50", outline: "none" },
                     }),
                     action.variant === "danger"
-                      ? css({ color: "red.600", _hover: { bg: "red.50" } })
+                      ? css({
+                          color: "red.600",
+                          _hover: { bg: "red.50" },
+                          _focus: { bg: "red.50" },
+                        })
                       : "",
                   )}
                 >
