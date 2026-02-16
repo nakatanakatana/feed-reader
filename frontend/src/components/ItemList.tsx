@@ -1,6 +1,6 @@
 import { count, eq, useLiveQuery } from "@tanstack/solid-db";
 import { useLocation, useNavigate } from "@tanstack/solid-router";
-import { createEffect, createSignal, For, type JSX, Show } from "solid-js";
+import { createEffect, createMemo, createSignal, For, type JSX, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { feedTag, type Item, items, itemsUnreadQuery, tags } from "../lib/db";
@@ -58,6 +58,19 @@ export function ItemList(props: ItemListProps) {
     return query.select(({ item }: any) => ({ ...item }));
   });
 
+  const filteredItems = createMemo(() => {
+    return itemQuery().filter(
+      (item) => !itemStore.state.transientRemovedIds[item.id],
+    );
+  });
+
+  const handleClearReadItems = () => {
+    const readItemIds = filteredItems()
+      .filter((item) => item.isRead)
+      .map((item) => item.id);
+    itemStore.addTransientRemovedIds(readItemIds);
+  };
+
   const totalUnread = useLiveQuery((q) =>
     q
       .from({ i: itemsUnreadQuery() })
@@ -91,11 +104,12 @@ export function ItemList(props: ItemListProps) {
   };
 
   const isAllSelected = () =>
-    itemQuery().length > 0 && selectedItemIds().size === itemQuery().length;
+    filteredItems().length > 0 &&
+    selectedItemIds().size === filteredItems().length;
 
   const handleToggleAll = (checked: boolean) => {
     if (checked) {
-      setSelectedItemIds(new Set<string>(itemQuery().map((i) => i.id)));
+      setSelectedItemIds(new Set<string>(filteredItems().map((i) => i.id)));
     } else {
       setSelectedItemIds(new Set<string>());
     }
@@ -224,6 +238,16 @@ export function ItemList(props: ItemListProps) {
 
         <div class={flex({ gap: "4", alignItems: "center", flexWrap: "wrap" })}>
           <div class={flex({ gap: "2", alignItems: "center" })}>
+            <ActionButton
+              size="sm"
+              variant="secondary"
+              onClick={handleClearReadItems}
+              aria-label="Clear read items from current view"
+            >
+              Clear Read Items
+            </ActionButton>
+          </div>
+          <div class={flex({ gap: "2", alignItems: "center" })}>
             <DateFilterSelector
               value={itemStore.state.since}
               onSelect={handleDateFilterSelect}
@@ -295,7 +319,7 @@ export function ItemList(props: ItemListProps) {
       })}
     >
       <div class={stack({ gap: "2", padding: "0" })}>
-        <For each={itemQuery() as Item[]}>
+        <For each={filteredItems() as Item[]}>
           {(item) => (
             <ItemRow
               item={item}
@@ -317,7 +341,7 @@ export function ItemList(props: ItemListProps) {
         </div>
       </Show>
 
-      <Show when={!itemQuery.isLoading && itemQuery().length === 0}>
+      <Show when={!itemQuery.isLoading && filteredItems().length === 0}>
         <EmptyState title="No items found." />
       </Show>
     </div>
