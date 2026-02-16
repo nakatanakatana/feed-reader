@@ -5,9 +5,9 @@ This plan focuses on investigating and optimizing the OPML import process to han
 ## Phase 1: Performance Profiling and Baseline Establishment
 Goal: Identify current bottlenecks and establish a baseline for performance measurements.
 
-- [ ] Task: Create a benchmark test with a large OPML file (500+ feeds) to measure current performance.
-- [ ] Task: Profile the backend during import to identify bottlenecks (CPU vs. I/O).
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Performance Profiling' (Protocol in workflow.md)
+- [x] Task: Create a benchmark test with a large OPML file (500+ feeds) to measure current performance.
+- [x] Task: Profile the backend during import to identify bottlenecks (CPU vs. I/O).
+- [~] Task: Conductor - User Manual Verification 'Phase 1: Performance Profiling' (Protocol in workflow.md)
 
 ## Phase 2: Parallelize Feed Processing
 Goal: Use Go goroutines to parallelize the initial processing of feeds extracted from OPML.
