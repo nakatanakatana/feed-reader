@@ -7,7 +7,7 @@ import {
 } from "@tanstack/solid-router";
 import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
 import {
@@ -84,7 +84,9 @@ describe("ItemList Clear Read Items", () => {
       },
     ]);
 
-    const history = createMemoryHistory({ initialEntries: ["/?showRead=true"] });
+    const history = createMemoryHistory({
+      initialEntries: ["/?showRead=true"],
+    });
     const router = createRouter({ routeTree, history });
 
     dispose = render(
@@ -99,8 +101,12 @@ describe("ItemList Clear Read Items", () => {
     );
 
     // Initial state: both items visible
-    await expect.element(page.getByText("Unread Item", { exact: true })).toBeInTheDocument();
-    await expect.element(page.getByText("Read Item", { exact: true })).toBeInTheDocument();
+    await expect
+      .element(page.getByText("Unread Item", { exact: true }))
+      .toBeInTheDocument();
+    await expect
+      .element(page.getByText("Read Item", { exact: true }))
+      .toBeInTheDocument();
 
     // Click "Clear Read Items" button
     const clearButton = page.getByRole("button", { name: /clear read items/i });
@@ -108,8 +114,12 @@ describe("ItemList Clear Read Items", () => {
     await clearButton.click();
 
     // After clicking: Read Item should be gone, Unread Item should remain
-    await expect.element(page.getByText("Unread Item", { exact: true })).toBeInTheDocument();
-    await expect.element(page.getByText("Read Item", { exact: true })).not.toBeInTheDocument();
+    await expect
+      .element(page.getByText("Unread Item", { exact: true }))
+      .toBeInTheDocument();
+    await expect
+      .element(page.getByText("Read Item", { exact: true }))
+      .not.toBeInTheDocument();
 
     // Verify no new ListItems request was made after clicking Clear (only the initial one)
     // Initial fetch happens during render
@@ -120,14 +130,20 @@ describe("ItemList Clear Read Items", () => {
 
     // Read Item should reappear
     await vi.waitFor(async () => {
-      await expect.element(page.getByText("Read Item", { exact: true })).toBeInTheDocument();
+      await expect
+        .element(page.getByText("Read Item", { exact: true }))
+        .toBeInTheDocument();
     });
 
     // --- New check for Refresh button ---
     // First, remove it again
-    const clearButton2 = page.getByRole("button", { name: /clear read items/i });
+    const clearButton2 = page.getByRole("button", {
+      name: /clear read items/i,
+    });
     await clearButton2.click();
-    await expect.element(page.getByText("Read Item", { exact: true })).not.toBeInTheDocument();
+    await expect
+      .element(page.getByText("Read Item", { exact: true }))
+      .not.toBeInTheDocument();
 
     // Click Refresh button
     const refreshButton = page.getByRole("button", { name: /refresh/i });
@@ -135,7 +151,9 @@ describe("ItemList Clear Read Items", () => {
 
     // Read Item should reappear because queryFn clears the transient IDs
     await vi.waitFor(async () => {
-      await expect.element(page.getByText("Read Item", { exact: true })).toBeInTheDocument();
+      await expect
+        .element(page.getByText("Read Item", { exact: true }))
+        .toBeInTheDocument();
     });
   });
 });
