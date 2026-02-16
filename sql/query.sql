@@ -207,6 +207,17 @@ ORDER BY
   i.created_at ASC
 LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
 
+-- name: ListRecentItemPublishedDates :many
+SELECT
+  published_at
+FROM
+  feed_items
+WHERE
+  feed_id = ? AND published_at IS NOT NULL
+ORDER BY
+  published_at DESC
+LIMIT ?;
+
 -- name: CountUnreadItemsPerFeed :many
 SELECT
   fi.feed_id,

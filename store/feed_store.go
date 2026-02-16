@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -104,6 +105,28 @@ func (s *Store) ListFeedsByIDs(ctx context.Context, ids []string) ([]FullFeed, e
 		feeds[i] = FullFeed(r)
 	}
 	return feeds, nil
+}
+
+func (s *Store) ListRecentItemPublishedDates(ctx context.Context, feedID string, limit int32) ([]time.Time, error) {
+	rows, err := s.Queries.ListRecentItemPublishedDates(ctx, ListRecentItemPublishedDatesParams{
+		FeedID: feedID,
+		Limit:  int64(limit),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	dates := make([]time.Time, 0, len(rows))
+	for _, r := range rows {
+		if r == nil {
+			continue
+		}
+		t, err := time.Parse(time.RFC3339, *r)
+		if err == nil {
+			dates = append(dates, t)
+		}
+	}
+	return dates, nil
 }
 
 // WithTransaction executes the given function within a transaction, retrying on SQLite busy errors.

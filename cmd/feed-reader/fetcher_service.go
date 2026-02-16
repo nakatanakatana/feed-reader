@@ -135,7 +135,8 @@ func (s *FetcherService) fetchAndSaveSync(ctx context.Context, f store.FullFeed)
 	// Update last_fetched_at and next_fetch
 	now := time.Now().UTC()
 	lastFetched := now.Format(time.RFC3339)
-	nextFetch := now.Add(s.fetchInterval).Format(time.RFC3339)
+	interval := s.getNextFetchInterval(ctx, f.ID)
+	nextFetch := now.Add(interval).Format(time.RFC3339)
 	s.writeQueue.Submit(&MarkFetchedJob{
 		Params: store.MarkFeedFetchedParams{
 			LastFetchedAt: &lastFetched,
@@ -146,6 +147,7 @@ func (s *FetcherService) fetchAndSaveSync(ctx context.Context, f store.FullFeed)
 
 	return result, nil
 }
+
 
 // FetchAllFeeds initiates the fetching process for feeds that are due to be fetched.
 func (s *FetcherService) FetchAllFeeds(ctx context.Context) error {
@@ -220,7 +222,8 @@ func (s *FetcherService) FetchAndSave(ctx context.Context, f store.FullFeed) err
 			// Still update last_fetched_at and next_fetch to avoid immediate re-fetch
 			now := time.Now().UTC()
 			lastFetched := now.Format(time.RFC3339)
-			nextFetch := now.Add(s.fetchInterval).Format(time.RFC3339)
+			interval := s.getNextFetchInterval(ctx, f.ID)
+			nextFetch := now.Add(interval).Format(time.RFC3339)
 			s.writeQueue.Submit(&MarkFetchedJob{
 				Params: store.MarkFeedFetchedParams{
 					LastFetchedAt: &lastFetched,
@@ -247,7 +250,8 @@ func (s *FetcherService) FetchAndSave(ctx context.Context, f store.FullFeed) err
 	// Update last_fetched_at and next_fetch asynchronously
 	now := time.Now().UTC()
 	lastFetched := now.Format(time.RFC3339)
-	nextFetch := now.Add(s.fetchInterval).Format(time.RFC3339)
+	interval := s.getNextFetchInterval(ctx, f.ID)
+	nextFetch := now.Add(interval).Format(time.RFC3339)
 	s.writeQueue.Submit(&MarkFetchedJob{
 		Params: store.MarkFeedFetchedParams{
 			LastFetchedAt: &lastFetched,
@@ -289,3 +293,14 @@ func (s *FetcherService) normalizeItem(feedID string, item *gofeed.Item) store.S
 
 	return params
 }
+
+func (s *FetcherService) getNextFetchInterval(ctx context.Context, feedID string) time.Duration {
+	pubDates, err := s.store.ListRecentItemPublishedDates(ctx, feedID, 10)
+	if err != nil {
+		s.logger.WarnContext(ctx, "failed to list recent published dates, using default interval", "feed_id", feedID, "error", err)
+		return s.fetchInterval
+	}
+
+	return CalculateAdaptiveInterval(pubDates, s.fetchInterval, 15*time.Minute, 24*time.Hour)
+}
+

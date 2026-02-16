@@ -1106,6 +1106,46 @@ func (q *Queries) ListItems(ctx context.Context, arg ListItemsParams) ([]ListIte
 	return items, nil
 }
 
+const listRecentItemPublishedDates = `-- name: ListRecentItemPublishedDates :many
+SELECT
+  published_at
+FROM
+  feed_items
+WHERE
+  feed_id = ? AND published_at IS NOT NULL
+ORDER BY
+  published_at DESC
+LIMIT ?
+`
+
+type ListRecentItemPublishedDatesParams struct {
+	FeedID string `json:"feed_id"`
+	Limit  int64  `json:"limit"`
+}
+
+func (q *Queries) ListRecentItemPublishedDates(ctx context.Context, arg ListRecentItemPublishedDatesParams) ([]*string, error) {
+	rows, err := q.db.QueryContext(ctx, listRecentItemPublishedDates, arg.FeedID, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []*string
+	for rows.Next() {
+		var published_at *string
+		if err := rows.Scan(&published_at); err != nil {
+			return nil, err
+		}
+		items = append(items, published_at)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listTags = `-- name: ListTags :many
 SELECT
   id, name, created_at, updated_at
