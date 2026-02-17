@@ -128,11 +128,15 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   const isLoading = () => itemQuery.isPending;
   const isEndOfList = () => props.itemId === "end-of-list";
 
-  const handleToggleRead = () => {
+  const handleToggleRead = async () => {
     const currentItem = item();
     if (!currentItem || isEndOfList()) return;
 
-    updateItemStatus(currentItem.id, !currentItem.isRead);
+    try {
+      await updateItemStatus(currentItem.id, !currentItem.isRead);
+    } catch (e) {
+      console.error("Failed to toggle read status", e);
+    }
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {

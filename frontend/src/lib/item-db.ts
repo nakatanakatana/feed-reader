@@ -30,7 +30,7 @@ export interface Item {
   content?: string;
 }
 
-export const itemClient = createClient(ItemService, transport);
+const itemClient = createClient(ItemService, transport);
 
 export const [lastFetched, setLastFetched] = createSignal<Date | null>(null);
 
@@ -96,10 +96,8 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
           isRead: isRead,
         });
 
-        // Invalidate individual item queries to ensure consistency
-        for (const id of ids) {
-          queryClient.invalidateQueries({ queryKey: ["item", id] });
-        }
+        // Invalidate all per-item queries in a single call to avoid O(n) invalidations
+        queryClient.invalidateQueries({ queryKey: ["item"], exact: false });
 
         return { refetch: false };
       },
@@ -129,36 +127,50 @@ export const getItem = async (id: string) => {
 };
 
 export const updateItemStatus = async (id: string, isRead: boolean) => {
+  let previousItemCache: any;
   // Update the item query cache directly for immediate UI feedback in the modal
   // biome-ignore lint/suspicious/noExplicitAny: Query data type is complex
   queryClient.setQueryData(["item", id], (old: any) => {
+    previousItemCache = old;
     if (!old) return old;
     return { ...old, isRead };
   });
 
-  // Try to update the items collection if the item is present
   try {
-    const itemInCollection = items().get(id);
-    if (itemInCollection) {
-      items().update(id, (draft) => {
-        draft.isRead = isRead;
-      });
-    } else {
-      // If not in collection, call the API directly
+    // Try to update the items collection if the item is present
+    try {
+      const itemInCollection = items().get(id);
+      if (itemInCollection) {
+        items().update(id, (draft) => {
+          draft.isRead = isRead;
+        });
+      } else {
+        // If not in collection, call the API directly
+        await itemClient.updateItemStatus({
+          ids: [id],
+          isRead: isRead,
+        });
+      }
+    } catch (e) {
+      // If update fails (e.g. not in collection), fallback to direct API call
+      console.warn(
+        "Failed to update items collection, calling API directly",
+        e,
+      );
       await itemClient.updateItemStatus({
         ids: [id],
         isRead: isRead,
       });
+      throw e; // Rethrow to allow recovery logic and tests to work
     }
-  } catch (e) {
-    // If update fails (e.g. not in collection), fallback to direct API call
-    console.warn("Failed to update items collection, calling API directly", e);
-    await itemClient.updateItemStatus({
-      ids: [id],
-      isRead: isRead,
-    });
+  } catch (error) {
+    // Roll back optimistic update if the backend update ultimately fails
+    if (previousItemCache !== undefined) {
+      queryClient.setQueryData(["item", id], previousItemCache);
+    }
+    throw error;
+  } finally {
+    // Invalidate to ensure consistency across the app
+    queryClient.invalidateQueries({ queryKey: ["item", id] });
   }
-
-  // Invalidate to ensure consistency across the app
-  queryClient.invalidateQueries({ queryKey: ["item", id] });
 };
