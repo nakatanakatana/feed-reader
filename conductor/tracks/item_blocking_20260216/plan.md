@@ -8,7 +8,7 @@ Define the storage for blocking rules, URL parsing rules, and update the item mo
 - [x] Task: Create migration for `blocking_rules` table ee03836
 - [x] Task: Create migration for `url_parsing_rules` table 96d2b15
 - [x] Task: Add `is_hidden` column to `items` table e250c80
-- [ ] Task: Update Go models and SQLC queries for new tables and column
+- [x] Task: Update Go models and SQLC queries for new tables and column 6c3969d
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Database Schema and Models' (Protocol in workflow.md)
 
 ## Phase 2: Username Extraction Logic
