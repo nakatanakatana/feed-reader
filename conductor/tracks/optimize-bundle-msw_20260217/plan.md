@@ -11,11 +11,11 @@
 - [x] Task: Conductor - User Manual Verification 'Setup & Baseline Analysis' (Protocol in workflow.md) (2dd677d)
 
 ## Phase 2: Implementation (Conditional Loading)
-- [ ] Task: Refactor Entry Point for Dynamic Import
-    - [ ] Modify `frontend/src/main.tsx` to remove the static import of the mock worker.
-    - [ ] Implement conditional logic using `import.meta.env.DEV`.
-    - [ ] Use `import()` to dynamically load and start the worker only in development.
-    - [ ] Ensure the app rendering waits for the worker start in dev mode.
+- [x] Task: Refactor Entry Point for Dynamic Import (24cbd94)
+    - [x] Modify `frontend/src/mocks/init.ts` (used by `main.tsx`) to remove the static import of the mock worker.
+    - [x] Implement conditional logic using `import.meta.env.DEV` (or passed config).
+    - [x] Use `import()` to dynamically load and start the worker only when mocks are enabled.
+    - [x] Ensure the app rendering waits for the worker start (already handled by `initMocks` promise).
 - [ ] Task: Conductor - User Manual Verification 'Implementation (Conditional Loading)' (Protocol in workflow.md)
 
 ## Phase 3: Verification
