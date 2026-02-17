@@ -3,6 +3,7 @@ import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import { playwright } from "@vitest/browser-playwright";
 import devtools from "solid-devtools/vite";
 import { defineConfig } from "vite";
+import { analyzer } from "vite-bundle-analyzer";
 import { VitePWA } from "vite-plugin-pwa";
 import solid from "vite-plugin-solid";
 
@@ -14,8 +15,23 @@ export default defineConfig({
   },
   plugins: [
     devtools(),
-    tanstackRouter({ target: "solid" }),
+    tanstackRouter({
+      target: "solid",
+      autoCodeSplitting: true,
+    }),
     solid(),
+    process.env.ANALYZE === "true" && [
+      analyzer({
+        analyzerMode: "static",
+        openAnalyzer: false,
+        filename: "stats",
+      }),
+      analyzer({
+        analyzerMode: "json",
+        openAnalyzer: false,
+        filename: "stats",
+      }),
+    ],
     VitePWA({
       registerType: "autoUpdate",
       workbox: {
