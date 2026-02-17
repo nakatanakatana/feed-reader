@@ -4,7 +4,7 @@ WORKDIR /app
 COPY package.json package-lock.json panda.config.ts postcss.config.cjs ./
 RUN npm ci
 COPY . .
-RUN npm run build
+RUN npm run build -- --emptyOutDir true
 
 # Stage 2: Backend Builder
 FROM golang:1.26-alpine@sha256:d4c4845f5d60c6a974c6000ce58ae079328d03ab7f721a0734277e69905473e5 AS backend-builder

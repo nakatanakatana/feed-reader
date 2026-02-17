@@ -9,6 +9,9 @@ import solid from "vite-plugin-solid";
 // https://vitejs.dev/config/
 export default defineConfig({
   root: "frontend",
+  build: {
+    emptyOutDir: false,
+  },
   plugins: [
     devtools(),
     tanstackRouter({ target: "solid" }),
