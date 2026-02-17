@@ -77,6 +77,16 @@ CREATE TABLE feed_fetcher (
   FOREIGN KEY (feed_id) REFERENCES feeds(id) ON DELETE CASCADE
 );
 
+CREATE TABLE blocking_rules (
+  id           TEXT PRIMARY KEY,
+  rule_type    TEXT NOT NULL, -- 'user_domain', 'keyword'
+  username     TEXT,
+  domain       TEXT,
+  keyword      TEXT,
+  created_at   TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now')),
+  updated_at   TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now'))
+);
+
 CREATE INDEX idx_feeds_updated_at ON feeds(updated_at);
 CREATE INDEX idx_tags_updated_at ON tags(updated_at);
 CREATE INDEX idx_items_created_at ON items(created_at);
