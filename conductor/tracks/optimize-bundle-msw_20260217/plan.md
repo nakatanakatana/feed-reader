@@ -16,9 +16,9 @@
     - [x] Implement conditional logic using `import.meta.env.DEV` (or passed config).
     - [x] Use `import()` to dynamically load and start the worker only when mocks are enabled.
     - [x] Ensure the app rendering waits for the worker start (already handled by `initMocks` promise).
-- [~] Task: Conductor - User Manual Verification 'Implementation (Conditional Loading)' (Protocol in workflow.md) (91588e8)
+- [x] Task: Conductor - User Manual Verification 'Implementation (Conditional Loading)' (Protocol in workflow.md) (6a9cb29)
 
-## Phase 3: Verification
+## Phase 3: Verification [checkpoint: 6a9cb29]
 - [ ] Task: Verify Exclusion and Functionality
     - [ ] Run the analysis script again.
     - [ ] Confirm `msw` is absent from the production bundle.
