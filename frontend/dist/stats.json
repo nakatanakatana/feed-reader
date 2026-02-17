@@ -1,0 +1,52 @@
+[
+  {
+    "filename": "assets/index-DgdkFoOg.css",
+    "label": "assets/index-DgdkFoOg.css",
+    "parsedSize": 31894,
+    "mapSize": 0,
+    "gzipSize": 8265,
+    "brotliSize": 6838,
+    "source": [],
+    "isAsset": true,
+    "isEntry": false,
+    "imports": []
+  },
+  {
+    "filename": "assets/index-DZhPTk7A.js",
+    "label": "assets/index-DZhPTk7A.js",
+    "parsedSize": 0,
+    "mapSize": 0,
+    "gzipSize": 0,
+    "brotliSize": 0,
+    "source": [],
+    "isAsset": true,
+    "isEntry": true,
+    "imports": [
+      "assets/workbox-window.prod.es5-BIl4cyR9.js"
+    ]
+  },
+  {
+    "filename": "assets/workbox-window.prod.es5-BIl4cyR9.js",
+    "label": "assets/workbox-window.prod.es5-BIl4cyR9.js",
+    "parsedSize": 0,
+    "mapSize": 0,
+    "gzipSize": 0,
+    "brotliSize": 0,
+    "source": [],
+    "isAsset": true,
+    "isEntry": false,
+    "imports": []
+  },
+  {
+    "filename": "index.html",
+    "label": "index.html",
+    "parsedSize": 510,
+    "mapSize": 0,
+    "gzipSize": 311,
+    "brotliSize": 187,
+    "source": [],
+    "isAsset": true,
+    "isEntry": false,
+    "imports": []
+  }
+]
