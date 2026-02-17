@@ -54,6 +54,45 @@ describe("items collection", () => {
       itemsSpy.mockRestore();
     });
 
+    it("uses collection update when item exists and calls items().update with correct parameters", async () => {
+      const id = "item-collection-1";
+      const isRead = true;
+      const oldData = { id, isRead: false, title: "Test from collection" };
+
+      // Setup cache
+      queryClient.setQueryData(["item", id], oldData);
+
+      const collection = items();
+
+      // Mock items().get to return an existing item in the collection
+      const getSpy = vi.spyOn(collection, "get").mockReturnValue({
+        ...oldData,
+      } as any);
+
+      // Spy on items().update to verify it is called correctly
+      // We mock implementation to do nothing (success)
+      const updateSpy = vi
+        .spyOn(collection, "update")
+        .mockImplementation(() => {});
+
+      await updateItemStatus(id, isRead);
+
+      // Verify cache reflects updated status
+      expect(queryClient.getQueryData(["item", id])).toEqual({
+        ...oldData,
+        isRead,
+      });
+
+      // Verify collection update was used with correct parameters
+      expect(updateSpy).toHaveBeenCalledWith(
+        id,
+        expect.any(Function), // The draft update function
+      );
+
+      getSpy.mockRestore();
+      updateSpy.mockRestore();
+    });
+
     it("rolls back optimistic update on error (both collection and API fail)", async () => {
       const id = "item-2";
       const isRead = true;
@@ -90,13 +129,17 @@ describe("items collection", () => {
       // Setup cache
       queryClient.setQueryData(["item", id], oldData);
 
-      // Mock items().get to throw error
-      const itemsSpy = vi.spyOn(items(), "get").mockImplementation(() => {
-        throw new Error("Collection Error");
+      const collection = items();
+      // Mock items().get to return a valid item
+      const getSpy = vi.spyOn(collection, "get").mockReturnValue({
+        ...oldData,
+      } as any);
+      // Mock collection.update to throw error
+      const updateSpy = vi.spyOn(collection, "update").mockImplementation(() => {
+        throw new Error("Collection Update Error");
       });
 
-      // Mock API to succeed (MSW default handler for UpdateItemStatus is likely success)
-      // but let's be explicit
+      // Mock API to succeed
       worker.use(
         http.post("*/item.v1.ItemService/UpdateItemStatus", () => {
           return HttpResponse.json({});
@@ -111,7 +154,8 @@ describe("items collection", () => {
         isRead,
       });
 
-      itemsSpy.mockRestore();
+      getSpy.mockRestore();
+      updateSpy.mockRestore();
     });
   });
 

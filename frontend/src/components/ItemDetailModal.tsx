@@ -121,7 +121,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
       return remoteItem;
     },
     enabled: !!props.itemId && props.itemId !== "end-of-list",
-    staleTime: ITEM_STALE_TIME,
+    staleTime: 0,
   }));
 
   const item = () => itemQuery.data ?? null;

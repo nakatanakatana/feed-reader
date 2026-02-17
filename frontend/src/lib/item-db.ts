@@ -96,7 +96,9 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
           isRead: isRead,
         });
 
-        // Invalidate all per-item queries in a single call to avoid O(n) invalidations
+        // Invalidate all queries whose key starts with ["item"] in a single call.
+        // This avoids O(n) invalidateQueries calls over each id, at the cost of also
+        // refetching some unrelated item queries.
         queryClient.invalidateQueries({ queryKey: ["item"], exact: false });
 
         return { refetch: false };
@@ -138,31 +140,32 @@ export const updateItemStatus = async (id: string, isRead: boolean) => {
   });
 
   try {
-    // Try to update the items collection if the item is present
-    try {
-      const itemInCollection = items().get(id);
-      if (itemInCollection) {
-        items().update(id, (draft) => {
+    const collection = items();
+    const itemInCollection = collection.get(id);
+
+    if (itemInCollection) {
+      // Try to update the items collection if the item is present.
+      // If this fails (including any onUpdate side effects), fall back to a direct API call.
+      try {
+        collection.update(id, (draft) => {
           draft.isRead = isRead;
         });
-      } else {
-        // If not in collection, call the API directly
+      } catch (e) {
+        console.warn(
+          "Failed to update items collection, falling back to API call",
+          e,
+        );
         await itemClient.updateItemStatus({
           ids: [id],
           isRead: isRead,
         });
       }
-    } catch (e) {
-      // If collection update fails, fall back to direct API call.
-      console.warn(
-        "Failed to update items collection, calling API directly",
-        e,
-      );
+    } else {
+      // If not in collection, call the API directly
       await itemClient.updateItemStatus({
         ids: [id],
         isRead: isRead,
       });
-      // If the fallback API call succeeds, do not rethrow the original error.
     }
   } catch (error) {
     // Roll back optimistic update if the backend update ultimately fails
@@ -171,7 +174,15 @@ export const updateItemStatus = async (id: string, isRead: boolean) => {
     }
     throw error;
   } finally {
-    // Invalidate to ensure consistency across the app
-    queryClient.invalidateQueries({ queryKey: ["item", id] });
+    // Note: We intentionally don't invalidate here because:
+    // 1. If we used collection.update, onUpdate already handles invalidation after API success.
+    // 2. If we used direct API call, it's safer to let the caller or onUpdate handle it,
+    //    or we could add it here if we're sure API finished.
+    // Given the Copilot feedback about race conditions, relying on onUpdate's invalidation
+    // is better for the collection path. For direct API path, we should ideally invalidate.
+    const collection = items();
+    if (!collection.get(id)) {
+      queryClient.invalidateQueries({ queryKey: ["item", id] });
+    }
   }
 };
