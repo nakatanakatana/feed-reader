@@ -115,15 +115,16 @@ func (i *OPMLImporter) ImportSync(ctx context.Context, opmlContent []byte) (*Imp
 						if err != nil {
 							return err
 						}
-						id := newTagUUID.String()
-						tagNameToID[tagName] = id
-						_, err = qtx.CreateTag(ctx, store.CreateTagParams{
-							ID:   id,
+						// CreateTag now uses ON CONFLICT DO UPDATE SET name = excluded.name RETURNING *
+						// so it will always return the tag (either new or existing)
+						tag, err = qtx.CreateTag(ctx, store.CreateTagParams{
+							ID:   newTagUUID.String(),
 							Name: tagName,
 						})
-						if err != nil && !errors.Is(err, sql.ErrNoRows) {
+						if err != nil {
 							return err
 						}
+						tagNameToID[tagName] = tag.ID
 					} else {
 						return err
 					}
