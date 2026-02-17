@@ -8,7 +8,7 @@
 - [x] Task: Baseline Measurement (fb739d3)
     - [x] Execute the analysis script.
     - [x] Record the current bundle size and the size contributed by `msw`. (865.31 kB, contains 'msw')
-- [ ] Task: Conductor - User Manual Verification 'Setup & Baseline Analysis' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Setup & Baseline Analysis' (Protocol in workflow.md) (2dd677d)
 
 ## Phase 2: Implementation (Conditional Loading)
 - [ ] Task: Refactor Entry Point for Dynamic Import
