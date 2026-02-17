@@ -13,7 +13,7 @@ registries:
 packages:
 - name: bufbuild/buf@v1.65.0
 - name: golang/go@go1.26.0
-- name: golangci/golangci-lint@v2.9.0
+- name: golangci/golangci-lint@v2.10.1
 - name: goreleaser/goreleaser@v2.13.3
 - name: k1LoW/octocov@v0.74.5
 - name: sqlc-dev/sqlc@v1.30.0
