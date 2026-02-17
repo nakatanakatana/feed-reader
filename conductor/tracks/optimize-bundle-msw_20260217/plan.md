@@ -26,3 +26,6 @@
     - [x] Verify the application works correctly in production mode (build & preview).
     - [x] Verify the application works correctly in development mode (with MSW).
 - [x] Task: Conductor - User Manual Verification 'Verification' (Protocol in workflow.md) (8c62780)
+
+## Phase: Review Fixes
+- [x] Task: Apply review suggestions (b4db09d)
