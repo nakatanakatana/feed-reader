@@ -118,7 +118,7 @@ func TestStore_ItemOrdering_PBT(t *testing.T) {
 
 		count := rapid.IntRange(5, 20).Draw(t, "count")
 		base := time.Now().UTC().Truncate(time.Second)
-		for i := 0; i < count; i++ {
+		for range count {
 			id := uuid.NewString()
 			url := "http://example.com/pbt/" + uuid.NewString()
 			title := "PBT Item"

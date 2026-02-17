@@ -31,7 +31,7 @@ func WithRetry(ctx context.Context, op func() error) error {
 	var err error
 	delay := initialDelay
 
-	for i := 0; i < maxRetries; i++ {
+	for i := range maxRetries {
 		err = op()
 		if err == nil {
 			return nil

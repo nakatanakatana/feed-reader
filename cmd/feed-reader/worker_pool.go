@@ -26,13 +26,11 @@ func NewWorkerPool(maxWorkers int) *WorkerPool {
 // Start initializes the workers and starts processing tasks.
 func (wp *WorkerPool) Start(ctx context.Context) {
 	for i := 0; i < wp.maxWorkers; i++ {
-		wp.wg.Add(1)
-		go func() {
-			defer wp.wg.Done()
+		wp.wg.Go(func() {
 			for task := range wp.tasks {
 				_ = task(ctx) // Errors are handled within the task or ignored here
 			}
-		}()
+		})
 	}
 }
 

@@ -103,7 +103,7 @@ func TestStore_ListItems_DateFilter_Monotonic_PBT(t *testing.T) {
 
 	now := time.Now().UTC().Truncate(time.Second)
 	itemCount := 25
-	for i := 0; i < itemCount; i++ {
+	for i := range itemCount {
 		pubAt := now.Add(-time.Duration(i) * time.Hour).Format(time.RFC3339)
 		_ = createTestItem(
 			t,
@@ -157,7 +157,7 @@ func TestStore_ListItems_CountMatches_List_PBT(t *testing.T) {
 
 	now := time.Now().UTC().Truncate(time.Second)
 	itemCount := 30
-	for i := 0; i < itemCount; i++ {
+	for i := range itemCount {
 		pubAt := now.Add(-time.Duration(i) * time.Hour).Format(time.RFC3339)
 		_ = createTestItem(
 			t,

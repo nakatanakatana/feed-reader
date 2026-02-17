@@ -28,11 +28,11 @@ func setupDB(t *testing.T) (*store.Queries, *store.Store) {
 	return store.New(db), store.NewStore(db)
 }
 
-func maskJSON(t *testing.T, data interface{}) string {
+func maskJSON(t *testing.T, data any) string {
 	b, err := json.Marshal(data)
 	assert.NilError(t, err)
 
-	var m interface{}
+	var m any
 	err = json.Unmarshal(b, &m)
 	assert.NilError(t, err)
 
@@ -43,9 +43,9 @@ func maskJSON(t *testing.T, data interface{}) string {
 	return string(b)
 }
 
-func mask(i interface{}) {
+func mask(i any) {
 	switch v := i.(type) {
-	case map[string]interface{}:
+	case map[string]any:
 		for k, val := range v {
 			if k == "created_at" || k == "updated_at" || k == "published_at" || k == "read_at" || k == "last_fetched_at" {
 				if val != nil {
@@ -55,7 +55,7 @@ func mask(i interface{}) {
 				mask(val)
 			}
 		}
-	case []interface{}:
+	case []any:
 		for _, val := range v {
 			mask(val)
 		}
@@ -70,10 +70,10 @@ func TestQueries_CreateItem(t *testing.T) {
 		params := store.CreateItemParams{
 			ID:          "item-1",
 			Url:         "http://example.com/item1",
-			Title:       stringPtr("Item 1"),
-			Description: stringPtr("Description 1"),
-			PublishedAt: stringPtr(time.Now().Format(time.RFC3339)),
-			Guid:        stringPtr("guid-1"),
+			Title:       new("Item 1"),
+			Description: new("Description 1"),
+			PublishedAt: new(time.Now().Format(time.RFC3339)),
+			Guid:        new("guid-1"),
 		}
 
 		item, err := q.CreateItem(ctx, params)
@@ -87,8 +87,8 @@ func TestQueries_CreateItem(t *testing.T) {
 		params := store.CreateItemParams{
 			ID:          "item-2",
 			Url:         "http://example.com/item2",
-			Title:       stringPtr("Item 2"),
-			Description: stringPtr("Description 2"),
+			Title:       new("Item 2"),
+			Description: new("Description 2"),
 		}
 		_, err := q.CreateItem(ctx, params)
 		assert.NilError(t, err)
@@ -97,8 +97,8 @@ func TestQueries_CreateItem(t *testing.T) {
 		newParams := store.CreateItemParams{
 			ID:          "item-2-new-id-ignored",
 			Url:         "http://example.com/item2", // Same URL
-			Title:       stringPtr("Item 2 Updated"),
-			Description: stringPtr("Description 2"),
+			Title:       new("Item 2 Updated"),
+			Description: new("Description 2"),
 		}
 		item, err := q.CreateItem(ctx, newParams)
 		assert.NilError(t, err)
@@ -175,6 +175,3 @@ func TestQueries_CreateItemRead(t *testing.T) {
 	})
 }
 
-func stringPtr(s string) *string {
-	return &s
-}

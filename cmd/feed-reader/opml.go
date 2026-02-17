@@ -71,8 +71,8 @@ func ParseOPML(content []byte) ([]OpmlFeed, error) {
 				}
 
 				if o.Category != "" {
-					cats := strings.Split(o.Category, ",")
-					for _, c := range cats {
+					cats := strings.SplitSeq(o.Category, ",")
+					for c := range cats {
 						c = strings.TrimSpace(c)
 						if c != "" {
 							tagSet[c] = struct{}{}

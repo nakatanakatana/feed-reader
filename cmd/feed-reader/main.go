@@ -78,11 +78,9 @@ func main() {
 		FlushInterval: cfg.WriteQueueFlushInterval,
 	}, logger)
 	var writeQueueWg sync.WaitGroup
-	writeQueueWg.Add(1)
-	go func() {
-		defer writeQueueWg.Done()
+	writeQueueWg.Go(func() {
 		writeQueue.Start(ctx)
-	}()
+	})
 
 	// 4. Initialize Fetcher components
 	fetcher := NewGofeedFetcher(s)

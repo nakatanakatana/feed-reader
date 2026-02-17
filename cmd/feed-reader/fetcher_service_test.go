@@ -259,7 +259,7 @@ func TestFetcherService_AdaptiveInterval(t *testing.T) {
 	t.Run("frequent updates", func(t *testing.T) {
 		feed, _ := queries.CreateFeed(ctx, store.CreateFeedParams{ID: "frequent", Url: "http://frequent"})
 		now := time.Now()
-		for i := 0; i < 5; i++ {
+		for i := range 5 {
 			pubAt := now.Add(time.Duration(-5*i) * time.Minute).Format(time.RFC3339)
 			_ = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
 				FeedID:      feed.ID,
@@ -283,7 +283,7 @@ func TestFetcherService_AdaptiveInterval(t *testing.T) {
 	t.Run("rare updates", func(t *testing.T) {
 		feed, _ := queries.CreateFeed(ctx, store.CreateFeedParams{ID: "rare", Url: "http://rare"})
 		now := time.Now()
-		for i := 0; i < 3; i++ {
+		for i := range 3 {
 			pubAt := now.Add(time.Duration(-48*i) * time.Hour).Format(time.RFC3339)
 			_ = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
 				FeedID:      feed.ID,
