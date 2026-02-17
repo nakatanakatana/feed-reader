@@ -22,13 +22,13 @@ Goal: Reduce SQLite overhead by batching insertions and optimizing transactions.
 
 - [x] Task: Write tests for bulk feed and tag insertion into the database. [08c703b]
 - [x] Task: Implement bulk insert logic in the `FeedStore` and `TagStore` (if necessary) using `sqlc` or raw SQL. [eb68c19]
-- [~] Task: Refactor the OPML importer to use these bulk operations instead of one-by-one inserts.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Optimize Database Operations' (Protocol in workflow.md)
+- [x] Task: Refactor the OPML importer to use these bulk operations instead of one-by-one inserts. [226e69a]
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Optimize Database Operations' (Protocol in workflow.md) [checkpoint: 226e69a]
 
 ## Phase 4: Verification and Final Benchmarking
 Goal: Confirm the performance improvements and ensure system stability.
 
-- [ ] Task: Re-run the performance benchmark and compare with the baseline (Target: >50% improvement).
-- [ ] Task: Run full integration tests to ensure no regressions in feed management or tagging.
-- [ ] Task: Verify memory and CPU usage during large imports remains within acceptable limits.
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Verification and Final Benchmarking' (Protocol in workflow.md)
+- [x] Task: Re-run the performance benchmark and compare with the baseline (Target: >50% improvement). [226e69a]
+- [x] Task: Run full integration tests to ensure no regressions in feed management or tagging. [226e69a]
+- [x] Task: Verify memory and CPU usage during large imports remains within acceptable limits. [226e69a]
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Verification and Final Benchmarking' (Protocol in workflow.md) [checkpoint: 226e69a]
