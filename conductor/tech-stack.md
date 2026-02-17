@@ -35,6 +35,7 @@ The frontend is a modern Single Page Application (SPA) designed for speed and re
 -   **Snapshot Testing:** Vitest `toMatchSnapshot()` (To ensure UI stability and verify complex data transformations)
 -   **API Mocking:** MSW (Mock Service Worker). Serves as the primary mocking layer for both standalone development and integration testing, intercepting network requests at the browser level.
 -   **Property-Based Testing:** `fast-check` (For robust logic validation)
+-   **Bundle Analysis:** `vite-bundle-analyzer` (outputs static HTML and JSON reports)
 -   **Linting & Formatting:** BiomeJS (Fast all-in-one toolchain)
 
 ## 3. Infrastructure & Deployment
