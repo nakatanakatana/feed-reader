@@ -30,7 +30,7 @@ export interface Item {
   content?: string;
 }
 
-const itemClient = createClient(ItemService, transport);
+export const itemClient = createClient(ItemService, transport);
 
 export const [lastFetched, setLastFetched] = createSignal<Date | null>(null);
 
@@ -121,4 +121,35 @@ export const itemsUnreadQuery = createRoot(() => {
 export const getItem = async (id: string) => {
   const response = await itemClient.getItem({ id });
   return response.item;
+};
+
+export const updateItemStatus = async (id: string, isRead: boolean) => {
+  // Update the item query cache directly for immediate UI feedback in the modal
+  queryClient.setQueryData(["item", id], (old: any) => {
+    if (!old) return old;
+    return { ...old, isRead };
+  });
+
+  // Try to update the items collection if the item is present
+  try {
+    const itemInCollection = items().get(id);
+    if (itemInCollection) {
+      items().update(id, (draft) => {
+        draft.isRead = isRead;
+      });
+    } else {
+      // If not in collection, call the API directly
+      await itemClient.updateItemStatus({
+        ids: [id],
+        isRead: isRead,
+      });
+    }
+  } catch (e) {
+    // If update fails (e.g. not in collection), fallback to direct API call
+    console.warn("Failed to update items collection, calling API directly", e);
+    await itemClient.updateItemStatus({
+      ids: [id],
+      isRead: isRead,
+    });
+  }
 };
