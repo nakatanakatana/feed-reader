@@ -96,6 +96,11 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
           isRead: isRead,
         });
 
+        // Invalidate individual item queries to ensure consistency
+        for (const id of ids) {
+          queryClient.invalidateQueries({ queryKey: ["item", id] });
+        }
+
         return { refetch: false };
       },
     }),
