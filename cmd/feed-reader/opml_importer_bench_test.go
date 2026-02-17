@@ -43,21 +43,19 @@ func BenchmarkOPMLImporter_ImportSync(b *testing.B) {
 	ctx := context.Background()
 	opmlContent := generateLargeOPML(500)
 
-	_, db := setupBenchmarkDB(b)
-	s := store.NewStore(db)
+	_, _ = setupBenchmarkDB(b)
 
 	fetcher := &mockFetcher{
 		feed: &gofeed.Feed{Title: "Fetched Title"},
 	}
-
-	importer := NewOPMLImporter(s, fetcher, slog.Default(), nil)
+	logger := slog.Default()
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
 		_, dbIteration := setupBenchmarkDB(b)
 		sIteration := store.NewStore(dbIteration)
-		importer.store = sIteration
+		importer := NewOPMLImporter(sIteration, fetcher, logger, nil)
 		b.StartTimer()
 
 		_, err := importer.ImportSync(ctx, opmlContent)

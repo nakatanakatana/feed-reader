@@ -45,11 +45,17 @@ func (i *OPMLImporter) ImportSync(ctx context.Context, opmlContent []byte) (*Imp
 		feedID      string
 	}
 	var successfulFeeds []fetchedResult
+	var fetchedURLs sync.Map
 
 	for _, f := range opmlFeeds {
 		f := f
 		g.Go(func() error {
-			// Deduplication
+			// Application-level deduplication
+			if _, loaded := fetchedURLs.LoadOrStore(f.URL, true); loaded {
+				return nil
+			}
+
+			// Deduplication (Database check)
 			_, err := i.store.GetFeedByURL(gCtx, f.URL)
 			if err == nil {
 				mu.Lock()
