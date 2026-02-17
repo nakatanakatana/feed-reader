@@ -1,11 +1,11 @@
 # Implementation Plan - Optimize Bundle Size by Excluding MSW
 
 ## Phase 1: Setup & Baseline Analysis
-- [x] Task: Install and Configure Analyzer (d4585c5)
+- [x] Task: Install and Configure Analyzer (fb739d3)
     - [x] Install `vite-bundle-analyzer` as a dev dependency (standard for Vite).
     - [x] Update `vite.config.js` to include the visualizer plugin conditionally (e.g., when `ANALYZE=true`).
     - [x] Add an `analyze` script to `package.json`.
-- [x] Task: Baseline Measurement (d4585c5)
+- [x] Task: Baseline Measurement (fb739d3)
     - [x] Execute the analysis script.
     - [x] Record the current bundle size and the size contributed by `msw`. (865.31 kB, contains 'msw')
 - [ ] Task: Conductor - User Manual Verification 'Setup & Baseline Analysis' (Protocol in workflow.md)
