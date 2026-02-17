@@ -14,11 +14,18 @@ export default defineConfig({
     devtools(),
     tanstackRouter({ target: "solid" }),
     solid(),
-    process.env.ANALYZE === "true" &&
+    process.env.ANALYZE === "true" && [
       analyzer({
         analyzerMode: "static",
         openAnalyzer: false,
+        filename: "stats",
       }),
+      analyzer({
+        analyzerMode: "json",
+        openAnalyzer: false,
+        filename: "stats",
+      }),
+    ],
     VitePWA({
       registerType: "autoUpdate",
       workbox: {
