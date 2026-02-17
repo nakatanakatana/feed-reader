@@ -59,7 +59,7 @@ The primary target audience is individuals and organizations seeking control ove
 - **Deduplication & Storage:** Efficiently stores and retrieves articles with URL-based deduplication and normalized data structures, ensuring unique presentation even when items are associated with multiple feeds. Tracks per-feed metadata, including original publication and discovery timestamps for each association.
 
 - **Standard Compliance:** Supports standard RSS and Atom feed formats.
-- **Responsive Design:** Accessible on desktop and mobile devices with a tailored experience. Features adaptive headers that prioritize content on small screens and Floating Action Buttons (FAB) for ergonomic access to primary actions like tag management.
+- **Responsive Design:** Accessible on desktop and mobile devices with a tailored experience. Features adaptive headers that prioritize content on small screens, Floating Action Buttons (FAB) for ergonomic access to primary actions like tag management, and an optimized feed list that ensures layout integrity without horizontal scrolling via intelligent text truncation and consolidated action menus on narrow viewports.
 - **Background Deferral:** To ensure high responsiveness, newly added feeds (via manual entry or OPML import) initially register metadata only. Article content is deferred to the background scheduler for the first crawl.
   - **Maximized Viewport:** Redundant page titles (e.g., "All Items") are omitted in favor of active navigation states, allowing more content to be visible immediately on both desktop and mobile.
 

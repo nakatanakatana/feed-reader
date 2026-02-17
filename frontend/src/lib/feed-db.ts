@@ -105,6 +105,7 @@ export const feeds = createCollection(
         url: feed.url,
         link: feed.link,
         title: feed.title,
+        unreadCount: feed.unreadCount,
         lastFetchedAt: feed.lastFetchedAt,
         nextFetch: feed.nextFetch,
         tags: feed.tags,
