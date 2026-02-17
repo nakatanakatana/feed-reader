@@ -12,7 +12,10 @@ export default defineConfig({
   root: "frontend",
   plugins: [
     devtools(),
-    tanstackRouter({ target: "solid" }),
+    tanstackRouter({
+      target: "solid",
+      autoCodeSplitting: true,
+    }),
     solid(),
     process.env.ANALYZE === "true" && [
       analyzer({

@@ -25,4 +25,4 @@
     - [x] Verify bundle size reduction (865 kB -> 622 kB).
     - [x] Verify the application works correctly in production mode (build & preview).
     - [x] Verify the application works correctly in development mode (with MSW).
-- [ ] Task: Conductor - User Manual Verification 'Verification' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Verification' (Protocol in workflow.md) (3249835)
