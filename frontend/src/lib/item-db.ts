@@ -127,6 +127,7 @@ export const getItem = async (id: string) => {
 };
 
 export const updateItemStatus = async (id: string, isRead: boolean) => {
+  // biome-ignore lint/suspicious/noExplicitAny: Cache type is complex
   let previousItemCache: any;
   // Update the item query cache directly for immediate UI feedback in the modal
   // biome-ignore lint/suspicious/noExplicitAny: Query data type is complex
@@ -152,7 +153,7 @@ export const updateItemStatus = async (id: string, isRead: boolean) => {
         });
       }
     } catch (e) {
-      // If update fails (e.g. not in collection), fallback to direct API call
+      // If collection update fails, fall back to direct API call.
       console.warn(
         "Failed to update items collection, calling API directly",
         e,
@@ -161,7 +162,7 @@ export const updateItemStatus = async (id: string, isRead: boolean) => {
         ids: [id],
         isRead: isRead,
       });
-      throw e; // Rethrow to allow recovery logic and tests to work
+      // If the fallback API call succeeds, do not rethrow the original error.
     }
   } catch (error) {
     // Roll back optimistic update if the backend update ultimately fails
