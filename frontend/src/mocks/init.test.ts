@@ -5,7 +5,7 @@ describe("initMocks", () => {
   it("should start the worker if useMocks is true", async () => {
     // Dynamically import the worker to mirror application behavior
     const { worker } = await import("./browser");
-    const startSpy = vi.spyOn(worker, "start").mockResolvedValue(undefined as any);
+    const startSpy = vi.spyOn(worker, "start").mockResolvedValue(undefined);
 
     const config = { useMocks: true };
     await initMocks(config);
