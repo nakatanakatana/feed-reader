@@ -108,7 +108,18 @@ func (s *Store) ListFeedsByIDs(ctx context.Context, ids []string) ([]FullFeed, e
 }
 
 func (s *Store) BulkCreateFeeds(ctx context.Context, feeds []CreateFeedParams) error {
-	return fmt.Errorf("not implemented")
+	if len(feeds) == 0 {
+		return nil
+	}
+	return s.WithTransaction(ctx, func(qtx *Queries) error {
+		for _, f := range feeds {
+			_, err := qtx.CreateFeed(ctx, f)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 }
 
 func (s *Store) ListRecentItemPublishedDates(ctx context.Context, feedID string, limit int32) ([]time.Time, error) {

@@ -112,11 +112,33 @@ func (s *Store) ListTagsByFeedIDs(ctx context.Context, feedIDs []string) ([]List
 }
 
 func (s *Store) BulkCreateTags(ctx context.Context, tags []CreateTagParams) error {
-	return fmt.Errorf("not implemented")
+	if len(tags) == 0 {
+		return nil
+	}
+	return s.WithTransaction(ctx, func(qtx *Queries) error {
+		for _, t := range tags {
+			_, err := qtx.CreateTag(ctx, t)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 }
 
 func (s *Store) BulkCreateFeedTags(ctx context.Context, feedTags []CreateFeedTagParams) error {
-	return fmt.Errorf("not implemented")
+	if len(feedTags) == 0 {
+		return nil
+	}
+	return s.WithTransaction(ctx, func(qtx *Queries) error {
+		for _, ft := range feedTags {
+			err := qtx.CreateFeedTag(ctx, ft)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 }
 
 // GetOrCreateTag returns a tag by name, creating it if it doesn't exist.
