@@ -1,13 +1,13 @@
 # Implementation Plan - Optimize Bundle Size by Excluding MSW
 
 ## Phase 1: Setup & Baseline Analysis
-- [ ] Task: Install and Configure Analyzer
-    - [ ] Install `rollup-plugin-visualizer` as a dev dependency (standard for Vite).
-    - [ ] Update `vite.config.ts` to include the visualizer plugin conditionally (e.g., when `ANALYZE=true`).
-    - [ ] Add an `analyze` script to `package.json`.
-- [ ] Task: Baseline Measurement
-    - [ ] Execute the analysis script.
-    - [ ] Record the current bundle size and the size contributed by `msw`.
+- [x] Task: Install and Configure Analyzer (d4585c5)
+    - [x] Install `vite-bundle-analyzer` as a dev dependency (standard for Vite).
+    - [x] Update `vite.config.js` to include the visualizer plugin conditionally (e.g., when `ANALYZE=true`).
+    - [x] Add an `analyze` script to `package.json`.
+- [x] Task: Baseline Measurement (d4585c5)
+    - [x] Execute the analysis script.
+    - [x] Record the current bundle size and the size contributed by `msw`. (865.31 kB, contains 'msw')
 - [ ] Task: Conductor - User Manual Verification 'Setup & Baseline Analysis' (Protocol in workflow.md)
 
 ## Phase 2: Implementation (Conditional Loading)
