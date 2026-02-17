@@ -130,6 +130,7 @@ export const getItem = async (id: string) => {
 
 export const updateItemStatus = async (id: string, isRead: boolean) => {
   // Update the item query cache directly for immediate UI feedback in the modal
+  // biome-ignore lint/suspicious/noExplicitAny: Query data type is complex
   queryClient.setQueryData(["item", id], (old: any) => {
     if (!old) return old;
     return { ...old, isRead };

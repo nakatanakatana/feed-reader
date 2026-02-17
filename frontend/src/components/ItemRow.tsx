@@ -2,7 +2,7 @@ import { Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import type { Item } from "../lib/db";
-import { items, updateItemStatus } from "../lib/db";
+import { updateItemStatus } from "../lib/db";
 import { formatDate } from "../lib/item-utils";
 
 interface ItemRowProps {
