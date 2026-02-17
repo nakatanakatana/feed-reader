@@ -11,9 +11,10 @@ require (
 	github.com/mmcdole/gofeed v1.3.0
 	github.com/sqldef/sqldef/v3 v3.9.8
 	golang.org/x/net v0.50.0
+	golang.org/x/sync v0.19.0
 	google.golang.org/protobuf v1.36.11
 	gotest.tools/v3 v3.5.2
-	modernc.org/sqlite v1.45.0
+	modernc.org/sqlite v1.46.0
 	pgregory.net/rapid v1.2.0
 )
 
@@ -33,7 +34,6 @@ require (
 	github.com/ncruces/go-strftime v1.0.0 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	golang.org/x/exp v0.0.0-20260112195511-716be5621a96 // indirect
-	golang.org/x/sync v0.19.0 // indirect
 	golang.org/x/sys v0.41.0 // indirect
 	golang.org/x/text v0.34.0 // indirect
 	modernc.org/libc v1.67.7 // indirect
