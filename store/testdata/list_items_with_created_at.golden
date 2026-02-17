@@ -9,6 +9,7 @@
     "guid": null,
     "id": "item-1",
     "image_url": null,
+    "is_hidden": 0,
     "is_read": 0,
     "published_at": null,
     "title": null,
