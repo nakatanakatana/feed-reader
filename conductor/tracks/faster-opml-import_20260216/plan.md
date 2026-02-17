@@ -21,8 +21,8 @@ Goal: Use Go goroutines to parallelize the initial processing of feeds extracted
 Goal: Reduce SQLite overhead by batching insertions and optimizing transactions.
 
 - [x] Task: Write tests for bulk feed and tag insertion into the database. [08c703b]
-- [~] Task: Implement bulk insert logic in the `FeedStore` and `TagStore` (if necessary) using `sqlc` or raw SQL.
-- [ ] Task: Refactor the OPML importer to use these bulk operations instead of one-by-one inserts.
+- [x] Task: Implement bulk insert logic in the `FeedStore` and `TagStore` (if necessary) using `sqlc` or raw SQL. [eb68c19]
+- [~] Task: Refactor the OPML importer to use these bulk operations instead of one-by-one inserts.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Optimize Database Operations' (Protocol in workflow.md)
 
 ## Phase 4: Verification and Final Benchmarking
