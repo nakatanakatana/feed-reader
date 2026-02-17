@@ -107,7 +107,18 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     queryKey: ["item", props.itemId],
     queryFn: async () => {
       if (!props.itemId || props.itemId === "end-of-list") return null;
-      return await getItem(props.itemId);
+      const remoteItem = await getItem(props.itemId);
+      if (!remoteItem) return null;
+
+      // Merge with local collection data if available (for more up-to-date isRead status)
+      const localItem = items().get(props.itemId);
+      if (localItem) {
+        return {
+          ...remoteItem,
+          isRead: localItem.isRead,
+        };
+      }
+      return remoteItem;
     },
     enabled: !!props.itemId && props.itemId !== "end-of-list",
     staleTime: ITEM_STALE_TIME,

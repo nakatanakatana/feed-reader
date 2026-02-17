@@ -152,4 +152,7 @@ export const updateItemStatus = async (id: string, isRead: boolean) => {
       isRead: isRead,
     });
   }
+
+  // Invalidate to ensure consistency across the app
+  queryClient.invalidateQueries({ queryKey: ["item", id] });
 };
