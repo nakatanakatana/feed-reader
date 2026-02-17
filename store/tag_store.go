@@ -111,6 +111,14 @@ func (s *Store) ListTagsByFeedIDs(ctx context.Context, feedIDs []string) ([]List
 	return s.Queries.ListTagsByFeedIDs(ctx, feedIDs)
 }
 
+func (s *Store) BulkCreateTags(ctx context.Context, tags []CreateTagParams) error {
+	return fmt.Errorf("not implemented")
+}
+
+func (s *Store) BulkCreateFeedTags(ctx context.Context, feedTags []CreateFeedTagParams) error {
+	return fmt.Errorf("not implemented")
+}
+
 // GetOrCreateTag returns a tag by name, creating it if it doesn't exist.
 func (s *Store) GetOrCreateTag(ctx context.Context, name string, uuidGen UUIDGenerator) (*Tag, error) {
 	tag, err := s.GetTagByName(ctx, name)
