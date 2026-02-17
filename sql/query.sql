@@ -101,9 +101,10 @@ INSERT INTO items (
   guid,
   content,
   image_url,
-  categories
+  categories,
+  is_hidden
 ) VALUES (
-  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 )
 ON CONFLICT(url) DO UPDATE SET
   title = excluded.title,
@@ -113,6 +114,7 @@ ON CONFLICT(url) DO UPDATE SET
   content = excluded.content,
   image_url = excluded.image_url,
   categories = excluded.categories,
+  is_hidden = excluded.is_hidden,
   updated_at = (strftime('%FT%TZ', 'now'))
 RETURNING *;
 
@@ -161,6 +163,7 @@ SELECT
   i.content,
   i.image_url,
   i.categories,
+  i.is_hidden,
   i.created_at,
   fi.feed_id,
   CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read
@@ -185,6 +188,7 @@ SELECT
   i.content,
   i.image_url,
   i.categories,
+  i.is_hidden,
   i.created_at,
   CAST(MIN(fi.feed_id) AS TEXT) AS feed_id,
   CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read
@@ -200,7 +204,8 @@ WHERE
   (sqlc.narg('tag_id') IS NULL OR EXISTS (
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = sqlc.narg('tag_id')
   )) AND
-  (sqlc.narg('since') IS NULL OR i.created_at >= sqlc.narg('since'))
+  (sqlc.narg('since') IS NULL OR i.created_at >= sqlc.narg('since')) AND
+  (sqlc.narg('include_hidden') IS NOT NULL OR i.is_hidden = 0)
 GROUP BY
   i.id
 ORDER BY
@@ -224,10 +229,13 @@ SELECT
   COUNT(*) AS count
 FROM
   feed_items fi
+JOIN
+  items i ON fi.item_id = i.id
 LEFT JOIN
   item_reads ir ON fi.item_id = ir.item_id
 WHERE
-  COALESCE(ir.is_read, 0) = 0
+  COALESCE(ir.is_read, 0) = 0 AND
+  i.is_hidden = 0
 GROUP BY
   fi.feed_id;
 
@@ -239,10 +247,13 @@ FROM
   feed_tags ft
 JOIN
   feed_items fi ON ft.feed_id = fi.feed_id
+JOIN
+  items i ON fi.item_id = i.id
 LEFT JOIN
   item_reads ir ON fi.item_id = ir.item_id
 WHERE
-  COALESCE(ir.is_read, 0) = 0
+  COALESCE(ir.is_read, 0) = 0 AND
+  i.is_hidden = 0
 GROUP BY
   ft.tag_id;
 
@@ -260,10 +271,13 @@ SELECT
   COUNT(DISTINCT fi.item_id) AS count
 FROM
   feed_items fi
+JOIN
+  items i ON fi.item_id = i.id
 LEFT JOIN
   item_reads ir ON fi.item_id = ir.item_id
 WHERE
-  COALESCE(ir.is_read, 0) = 0;
+  COALESCE(ir.is_read, 0) = 0 AND
+  i.is_hidden = 0;
 
 -- name: CountItems :one
 SELECT
@@ -280,7 +294,8 @@ WHERE
   (sqlc.narg('tag_id') IS NULL OR EXISTS (
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = sqlc.narg('tag_id')
   )) AND
-  (sqlc.narg('since') IS NULL OR i.created_at >= sqlc.narg('since'));
+  (sqlc.narg('since') IS NULL OR i.created_at >= sqlc.narg('since')) AND
+  (sqlc.narg('include_hidden') IS NOT NULL OR i.is_hidden = 0);
 
 
 -- name: SetItemRead :one
@@ -446,3 +461,76 @@ WHERE
   ff.next_fetch IS NULL OR ff.next_fetch <= (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
 ORDER BY
   ff.next_fetch ASC;
+
+-- name: CreateBlockingRule :one
+INSERT INTO blocking_rules (
+  id,
+  rule_type,
+  username,
+  domain,
+  keyword
+) VALUES (
+  ?, ?, ?, ?, ?
+)
+RETURNING *;
+
+-- name: ListBlockingRules :many
+SELECT
+  *
+FROM
+  blocking_rules
+ORDER BY
+  created_at ASC;
+
+-- name: DeleteBlockingRule :exec
+DELETE FROM
+  blocking_rules
+WHERE
+  id = ?;
+
+-- name: CreateURLParsingRule :one
+INSERT INTO url_parsing_rules (
+  id,
+  domain,
+  pattern
+) VALUES (
+  ?, ?, ?
+)
+ON CONFLICT(domain) DO UPDATE SET
+  pattern = excluded.pattern,
+  updated_at = (strftime('%FT%TZ', 'now'))
+RETURNING *;
+
+-- name: GetURLParsingRuleByDomain :one
+SELECT
+  *
+FROM
+  url_parsing_rules
+WHERE
+  domain = ?;
+
+-- name: ListURLParsingRules :many
+SELECT
+  *
+FROM
+  url_parsing_rules
+ORDER BY
+  domain ASC;
+
+-- name: DeleteURLParsingRule :exec
+DELETE FROM
+  url_parsing_rules
+WHERE
+  id = ?;
+
+-- name: UpdateItemHidden :exec
+UPDATE
+  items
+SET
+  is_hidden = ?,
+  updated_at = (strftime('%FT%TZ', 'now'))
+WHERE
+  id = ?;
+
+-- name: ListAllItems :many
+SELECT * FROM items;

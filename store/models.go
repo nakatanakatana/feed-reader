@@ -4,6 +4,16 @@
 
 package store
 
+type BlockingRule struct {
+	ID        string  `json:"id"`
+	RuleType  string  `json:"rule_type"`
+	Username  *string `json:"username"`
+	Domain    *string `json:"domain"`
+	Keyword   *string `json:"keyword"`
+	CreatedAt string  `json:"created_at"`
+	UpdatedAt string  `json:"updated_at"`
+}
+
 type Feed struct {
 	ID          string  `json:"id"`
 	Url         string  `json:"url"`
@@ -55,6 +65,7 @@ type Item struct {
 	Content     *string `json:"content"`
 	ImageUrl    *string `json:"image_url"`
 	Categories  *string `json:"categories"`
+	IsHidden    int64   `json:"is_hidden"`
 	CreatedAt   string  `json:"created_at"`
 	UpdatedAt   string  `json:"updated_at"`
 }
@@ -70,6 +81,14 @@ type ItemRead struct {
 type Tag struct {
 	ID        string `json:"id"`
 	Name      string `json:"name"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
+}
+
+type UrlParsingRule struct {
+	ID        string `json:"id"`
+	Domain    string `json:"domain"`
+	Pattern   string `json:"pattern"`
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
 }

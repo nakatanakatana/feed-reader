@@ -63,14 +63,16 @@ WHERE
   (?3 IS NULL OR EXISTS (
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = ?3
   )) AND
-  (?4 IS NULL OR i.created_at >= ?4)
+  (?4 IS NULL OR i.created_at >= ?4) AND
+  (?5 IS NOT NULL OR i.is_hidden = 0)
 `
 
 type CountItemsParams struct {
-	FeedID interface{} `json:"feed_id"`
-	IsRead interface{} `json:"is_read"`
-	TagID  interface{} `json:"tag_id"`
-	Since  interface{} `json:"since"`
+	FeedID        interface{} `json:"feed_id"`
+	IsRead        interface{} `json:"is_read"`
+	TagID         interface{} `json:"tag_id"`
+	Since         interface{} `json:"since"`
+	IncludeHidden interface{} `json:"include_hidden"`
 }
 
 func (q *Queries) CountItems(ctx context.Context, arg CountItemsParams) (int64, error) {
@@ -79,6 +81,7 @@ func (q *Queries) CountItems(ctx context.Context, arg CountItemsParams) (int64, 
 		arg.IsRead,
 		arg.TagID,
 		arg.Since,
+		arg.IncludeHidden,
 	)
 	var count int64
 	err := row.Scan(&count)
@@ -90,10 +93,13 @@ SELECT
   COUNT(DISTINCT fi.item_id) AS count
 FROM
   feed_items fi
+JOIN
+  items i ON fi.item_id = i.id
 LEFT JOIN
   item_reads ir ON fi.item_id = ir.item_id
 WHERE
-  COALESCE(ir.is_read, 0) = 0
+  COALESCE(ir.is_read, 0) = 0 AND
+  i.is_hidden = 0
 `
 
 func (q *Queries) CountTotalUnreadItems(ctx context.Context) (int64, error) {
@@ -109,10 +115,13 @@ SELECT
   COUNT(*) AS count
 FROM
   feed_items fi
+JOIN
+  items i ON fi.item_id = i.id
 LEFT JOIN
   item_reads ir ON fi.item_id = ir.item_id
 WHERE
-  COALESCE(ir.is_read, 0) = 0
+  COALESCE(ir.is_read, 0) = 0 AND
+  i.is_hidden = 0
 GROUP BY
   fi.feed_id
 `
@@ -153,10 +162,13 @@ FROM
   feed_tags ft
 JOIN
   feed_items fi ON ft.feed_id = fi.feed_id
+JOIN
+  items i ON fi.item_id = i.id
 LEFT JOIN
   item_reads ir ON fi.item_id = ir.item_id
 WHERE
-  COALESCE(ir.is_read, 0) = 0
+  COALESCE(ir.is_read, 0) = 0 AND
+  i.is_hidden = 0
 GROUP BY
   ft.tag_id
 `
@@ -187,6 +199,48 @@ func (q *Queries) CountUnreadItemsPerTag(ctx context.Context) ([]CountUnreadItem
 		return nil, err
 	}
 	return items, nil
+}
+
+const createBlockingRule = `-- name: CreateBlockingRule :one
+INSERT INTO blocking_rules (
+  id,
+  rule_type,
+  username,
+  domain,
+  keyword
+) VALUES (
+  ?, ?, ?, ?, ?
+)
+RETURNING id, rule_type, username, domain, keyword, created_at, updated_at
+`
+
+type CreateBlockingRuleParams struct {
+	ID       string  `json:"id"`
+	RuleType string  `json:"rule_type"`
+	Username *string `json:"username"`
+	Domain   *string `json:"domain"`
+	Keyword  *string `json:"keyword"`
+}
+
+func (q *Queries) CreateBlockingRule(ctx context.Context, arg CreateBlockingRuleParams) (BlockingRule, error) {
+	row := q.db.QueryRowContext(ctx, createBlockingRule,
+		arg.ID,
+		arg.RuleType,
+		arg.Username,
+		arg.Domain,
+		arg.Keyword,
+	)
+	var i BlockingRule
+	err := row.Scan(
+		&i.ID,
+		&i.RuleType,
+		&i.Username,
+		&i.Domain,
+		&i.Keyword,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const createFeed = `-- name: CreateFeed :one
@@ -306,9 +360,10 @@ INSERT INTO items (
   guid,
   content,
   image_url,
-  categories
+  categories,
+  is_hidden
 ) VALUES (
-  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 )
 ON CONFLICT(url) DO UPDATE SET
   title = excluded.title,
@@ -318,8 +373,9 @@ ON CONFLICT(url) DO UPDATE SET
   content = excluded.content,
   image_url = excluded.image_url,
   categories = excluded.categories,
+  is_hidden = excluded.is_hidden,
   updated_at = (strftime('%FT%TZ', 'now'))
-RETURNING id, url, title, description, published_at, author, guid, content, image_url, categories, created_at, updated_at
+RETURNING id, url, title, description, published_at, author, guid, content, image_url, categories, is_hidden, created_at, updated_at
 `
 
 type CreateItemParams struct {
@@ -333,6 +389,7 @@ type CreateItemParams struct {
 	Content     *string `json:"content"`
 	ImageUrl    *string `json:"image_url"`
 	Categories  *string `json:"categories"`
+	IsHidden    int64   `json:"is_hidden"`
 }
 
 func (q *Queries) CreateItem(ctx context.Context, arg CreateItemParams) (Item, error) {
@@ -347,6 +404,7 @@ func (q *Queries) CreateItem(ctx context.Context, arg CreateItemParams) (Item, e
 		arg.Content,
 		arg.ImageUrl,
 		arg.Categories,
+		arg.IsHidden,
 	)
 	var i Item
 	err := row.Scan(
@@ -360,6 +418,7 @@ func (q *Queries) CreateItem(ctx context.Context, arg CreateItemParams) (Item, e
 		&i.Content,
 		&i.ImageUrl,
 		&i.Categories,
+		&i.IsHidden,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -407,6 +466,51 @@ func (q *Queries) CreateTag(ctx context.Context, arg CreateTagParams) (Tag, erro
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const createURLParsingRule = `-- name: CreateURLParsingRule :one
+INSERT INTO url_parsing_rules (
+  id,
+  domain,
+  pattern
+) VALUES (
+  ?, ?, ?
+)
+ON CONFLICT(domain) DO UPDATE SET
+  pattern = excluded.pattern,
+  updated_at = (strftime('%FT%TZ', 'now'))
+RETURNING id, domain, pattern, created_at, updated_at
+`
+
+type CreateURLParsingRuleParams struct {
+	ID      string `json:"id"`
+	Domain  string `json:"domain"`
+	Pattern string `json:"pattern"`
+}
+
+func (q *Queries) CreateURLParsingRule(ctx context.Context, arg CreateURLParsingRuleParams) (UrlParsingRule, error) {
+	row := q.db.QueryRowContext(ctx, createURLParsingRule, arg.ID, arg.Domain, arg.Pattern)
+	var i UrlParsingRule
+	err := row.Scan(
+		&i.ID,
+		&i.Domain,
+		&i.Pattern,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const deleteBlockingRule = `-- name: DeleteBlockingRule :exec
+DELETE FROM
+  blocking_rules
+WHERE
+  id = ?
+`
+
+func (q *Queries) DeleteBlockingRule(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, deleteBlockingRule, id)
+	return err
 }
 
 const deleteFeed = `-- name: DeleteFeed :exec
@@ -471,6 +575,18 @@ WHERE
 
 func (q *Queries) DeleteTag(ctx context.Context, id string) error {
 	_, err := q.db.ExecContext(ctx, deleteTag, id)
+	return err
+}
+
+const deleteURLParsingRule = `-- name: DeleteURLParsingRule :exec
+DELETE FROM
+  url_parsing_rules
+WHERE
+  id = ?
+`
+
+func (q *Queries) DeleteURLParsingRule(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, deleteURLParsingRule, id)
 	return err
 }
 
@@ -614,6 +730,7 @@ SELECT
   i.content,
   i.image_url,
   i.categories,
+  i.is_hidden,
   i.created_at,
   fi.feed_id,
   CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read
@@ -638,6 +755,7 @@ type GetItemRow struct {
 	Content     *string `json:"content"`
 	ImageUrl    *string `json:"image_url"`
 	Categories  *string `json:"categories"`
+	IsHidden    int64   `json:"is_hidden"`
 	CreatedAt   string  `json:"created_at"`
 	FeedID      string  `json:"feed_id"`
 	IsRead      int64   `json:"is_read"`
@@ -657,6 +775,7 @@ func (q *Queries) GetItem(ctx context.Context, id string) (GetItemRow, error) {
 		&i.Content,
 		&i.ImageUrl,
 		&i.Categories,
+		&i.IsHidden,
 		&i.CreatedAt,
 		&i.FeedID,
 		&i.IsRead,
@@ -683,6 +802,109 @@ func (q *Queries) GetTagByName(ctx context.Context, name string) (Tag, error) {
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const getURLParsingRuleByDomain = `-- name: GetURLParsingRuleByDomain :one
+SELECT
+  id, domain, pattern, created_at, updated_at
+FROM
+  url_parsing_rules
+WHERE
+  domain = ?
+`
+
+func (q *Queries) GetURLParsingRuleByDomain(ctx context.Context, domain string) (UrlParsingRule, error) {
+	row := q.db.QueryRowContext(ctx, getURLParsingRuleByDomain, domain)
+	var i UrlParsingRule
+	err := row.Scan(
+		&i.ID,
+		&i.Domain,
+		&i.Pattern,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const listAllItems = `-- name: ListAllItems :many
+SELECT id, url, title, description, published_at, author, guid, content, image_url, categories, is_hidden, created_at, updated_at FROM items
+`
+
+func (q *Queries) ListAllItems(ctx context.Context) ([]Item, error) {
+	rows, err := q.db.QueryContext(ctx, listAllItems)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Item
+	for rows.Next() {
+		var i Item
+		if err := rows.Scan(
+			&i.ID,
+			&i.Url,
+			&i.Title,
+			&i.Description,
+			&i.PublishedAt,
+			&i.Author,
+			&i.Guid,
+			&i.Content,
+			&i.ImageUrl,
+			&i.Categories,
+			&i.IsHidden,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listBlockingRules = `-- name: ListBlockingRules :many
+SELECT
+  id, rule_type, username, domain, keyword, created_at, updated_at
+FROM
+  blocking_rules
+ORDER BY
+  created_at ASC
+`
+
+func (q *Queries) ListBlockingRules(ctx context.Context) ([]BlockingRule, error) {
+	rows, err := q.db.QueryContext(ctx, listBlockingRules)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []BlockingRule
+	for rows.Next() {
+		var i BlockingRule
+		if err := rows.Scan(
+			&i.ID,
+			&i.RuleType,
+			&i.Username,
+			&i.Domain,
+			&i.Keyword,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const listFeedTags = `-- name: ListFeedTags :many
@@ -1016,6 +1238,7 @@ SELECT
   i.content,
   i.image_url,
   i.categories,
+  i.is_hidden,
   i.created_at,
   CAST(MIN(fi.feed_id) AS TEXT) AS feed_id,
   CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read
@@ -1031,21 +1254,23 @@ WHERE
   (?3 IS NULL OR EXISTS (
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = ?3
   )) AND
-  (?4 IS NULL OR i.created_at >= ?4)
+  (?4 IS NULL OR i.created_at >= ?4) AND
+  (?5 IS NOT NULL OR i.is_hidden = 0)
 GROUP BY
   i.id
 ORDER BY
   i.created_at ASC
-LIMIT ?6 OFFSET ?5
+LIMIT ?7 OFFSET ?6
 `
 
 type ListItemsParams struct {
-	FeedID interface{} `json:"feed_id"`
-	IsRead interface{} `json:"is_read"`
-	TagID  interface{} `json:"tag_id"`
-	Since  interface{} `json:"since"`
-	Offset int64       `json:"offset"`
-	Limit  int64       `json:"limit"`
+	FeedID        interface{} `json:"feed_id"`
+	IsRead        interface{} `json:"is_read"`
+	TagID         interface{} `json:"tag_id"`
+	Since         interface{} `json:"since"`
+	IncludeHidden interface{} `json:"include_hidden"`
+	Offset        int64       `json:"offset"`
+	Limit         int64       `json:"limit"`
 }
 
 type ListItemsRow struct {
@@ -1059,6 +1284,7 @@ type ListItemsRow struct {
 	Content     *string `json:"content"`
 	ImageUrl    *string `json:"image_url"`
 	Categories  *string `json:"categories"`
+	IsHidden    int64   `json:"is_hidden"`
 	CreatedAt   string  `json:"created_at"`
 	FeedID      string  `json:"feed_id"`
 	IsRead      int64   `json:"is_read"`
@@ -1070,6 +1296,7 @@ func (q *Queries) ListItems(ctx context.Context, arg ListItemsParams) ([]ListIte
 		arg.IsRead,
 		arg.TagID,
 		arg.Since,
+		arg.IncludeHidden,
 		arg.Offset,
 		arg.Limit,
 	)
@@ -1091,6 +1318,7 @@ func (q *Queries) ListItems(ctx context.Context, arg ListItemsParams) ([]ListIte
 			&i.Content,
 			&i.ImageUrl,
 			&i.Categories,
+			&i.IsHidden,
 			&i.CreatedAt,
 			&i.FeedID,
 			&i.IsRead,
@@ -1278,6 +1506,44 @@ func (q *Queries) ListTagsByFeedId(ctx context.Context, feedID string) ([]Tag, e
 	return items, nil
 }
 
+const listURLParsingRules = `-- name: ListURLParsingRules :many
+SELECT
+  id, domain, pattern, created_at, updated_at
+FROM
+  url_parsing_rules
+ORDER BY
+  domain ASC
+`
+
+func (q *Queries) ListURLParsingRules(ctx context.Context) ([]UrlParsingRule, error) {
+	rows, err := q.db.QueryContext(ctx, listURLParsingRules)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []UrlParsingRule
+	for rows.Next() {
+		var i UrlParsingRule
+		if err := rows.Scan(
+			&i.ID,
+			&i.Domain,
+			&i.Pattern,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const markFeedFetched = `-- name: MarkFeedFetched :exec
 INSERT INTO feed_fetcher (
   feed_id,
@@ -1395,6 +1661,26 @@ func (q *Queries) UpdateFeed(ctx context.Context, arg UpdateFeedParams) (Feed, e
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const updateItemHidden = `-- name: UpdateItemHidden :exec
+UPDATE
+  items
+SET
+  is_hidden = ?,
+  updated_at = (strftime('%FT%TZ', 'now'))
+WHERE
+  id = ?
+`
+
+type UpdateItemHiddenParams struct {
+	IsHidden int64  `json:"is_hidden"`
+	ID       string `json:"id"`
+}
+
+func (q *Queries) UpdateItemHidden(ctx context.Context, arg UpdateItemHiddenParams) error {
+	_, err := q.db.ExecContext(ctx, updateItemHidden, arg.IsHidden, arg.ID)
+	return err
 }
 
 const upsertFeedFetcher = `-- name: UpsertFeedFetcher :one
