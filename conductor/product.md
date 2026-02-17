@@ -35,7 +35,7 @@ The primary target audience is individuals and organizations seeking control ove
   - **Manual Suspend:** Temporarily halt updates for specific feeds for a set duration (1 Day, 3 Days, 1 Week, or 1 Month) directly from the context menu or bulk action bar.
   - **Visual Scheduling:** View the scheduled "Next fetch" time for each feed in the list view, providing transparency into the background fetch cycle.
 
-- **OPML Import:** Bulk import existing subscriptions from other RSS readers using the standard OPML format, with automatic deduplication. Synchronous processing provides immediate feedback on the import results, including success and failure counts. Features advanced tagging support, automatically extracting tags from OPML folders and `category` attributes. Includes an enhanced error handling UI that displays detailed lists of failed items for easy troubleshooting.
+- **OPML Import:** High-performance bulk import of existing subscriptions using the standard OPML format. Features automatic deduplication and parallel metadata fetching. Optimized database operations ensure that even large imports (500+ feeds) complete efficiently. Synchronous processing provides immediate feedback on success and failure counts. Includes advanced tagging support and detailed error reporting for failed items.
 
 - **OPML Export:** Export selected feeds to a standard OPML 2.0 file. Tags associated with feeds are preserved using the `category` attribute, ensuring portability across different feed readers.
 

@@ -387,6 +387,8 @@ INSERT INTO tags (
 ) VALUES (
   ?, ?
 )
+ON CONFLICT(name) DO UPDATE SET
+  name = excluded.name
 RETURNING id, name, created_at, updated_at
 `
 

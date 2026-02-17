@@ -304,6 +304,8 @@ INSERT INTO tags (
 ) VALUES (
   ?, ?
 )
+ON CONFLICT(name) DO UPDATE SET
+  name = excluded.name
 RETURNING *;
 
 -- name: GetTagByName :one
