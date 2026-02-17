@@ -87,6 +87,14 @@ CREATE TABLE blocking_rules (
   updated_at   TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now'))
 );
 
+CREATE TABLE url_parsing_rules (
+  id           TEXT PRIMARY KEY,
+  domain       TEXT NOT NULL UNIQUE,
+  pattern      TEXT NOT NULL, -- Regex pattern with a named group or first group for username
+  created_at   TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now')),
+  updated_at   TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now'))
+);
+
 CREATE INDEX idx_feeds_updated_at ON feeds(updated_at);
 CREATE INDEX idx_tags_updated_at ON tags(updated_at);
 CREATE INDEX idx_items_created_at ON items(created_at);
