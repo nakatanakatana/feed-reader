@@ -19,7 +19,7 @@
 - [x] Task: Conductor - User Manual Verification 'Implementation (Conditional Loading)' (Protocol in workflow.md) (6a9cb29)
 
 ## Phase 3: Verification [checkpoint: 6a9cb29]
-- [ ] Task: Verify Exclusion and Functionality
+- [~] Task: Verify Exclusion and Functionality
     - [ ] Run the analysis script again.
     - [ ] Confirm `msw` is absent from the production bundle.
     - [ ] Verify the application works correctly in production mode (build & preview).
