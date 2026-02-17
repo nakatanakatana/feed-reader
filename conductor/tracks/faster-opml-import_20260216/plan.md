@@ -9,19 +9,19 @@ Goal: Identify current bottlenecks and establish a baseline for performance meas
 - [x] Task: Profile the backend during import to identify bottlenecks (CPU vs. I/O).
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Performance Profiling' (Protocol in workflow.md) (8bba7ba)
 
-## Phase 2: Parallelize Feed Processing
+## Phase 2: Parallelize Feed Processing [checkpoint: ccc8cc5]
 Goal: Use Go goroutines to parallelize the initial processing of feeds extracted from OPML.
 
 - [x] Task: Write tests for parallel OPML processing to ensure correct data extraction and error handling.
 - [x] Task: Implement a worker pool or bounded concurrency to process feeds in parallel.
 - [x] Task: Verify that success/failure counts remain accurate under concurrent processing.
-- [~] Task: Conductor - User Manual Verification 'Phase 2: Parallelize Feed Processing' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Parallelize Feed Processing' (Protocol in workflow.md) (ccc8cc5)
 
 ## Phase 3: Optimize Database Operations (Bulk Insertion)
 Goal: Reduce SQLite overhead by batching insertions and optimizing transactions.
 
-- [ ] Task: Write tests for bulk feed and tag insertion into the database.
-- [ ] Task: Implement bulk insert logic in the `FeedStore` and `TagStore` (if necessary) using `sqlc` or raw SQL.
+- [x] Task: Write tests for bulk feed and tag insertion into the database. [08c703b]
+- [~] Task: Implement bulk insert logic in the `FeedStore` and `TagStore` (if necessary) using `sqlc` or raw SQL.
 - [ ] Task: Refactor the OPML importer to use these bulk operations instead of one-by-one inserts.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Optimize Database Operations' (Protocol in workflow.md)
 
