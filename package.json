@@ -44,6 +44,7 @@
     "solid-devtools": "^0.34.3",
     "typescript": "^5.9.2",
     "vite": "^7.1.10",
+    "vite-bundle-analyzer": "^1.3.6",
     "vite-plugin-pwa": "^1.2.0",
     "vite-plugin-solid": "^2.11.9",
     "vitest": "^4.0.16"
