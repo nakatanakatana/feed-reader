@@ -304,6 +304,7 @@ INSERT INTO tags (
 ) VALUES (
   ?, ?
 )
+ON CONFLICT(name) DO NOTHING
 RETURNING *;
 
 -- name: GetTagByName :one

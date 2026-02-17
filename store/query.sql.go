@@ -387,6 +387,7 @@ INSERT INTO tags (
 ) VALUES (
   ?, ?
 )
+ON CONFLICT(name) DO NOTHING
 RETURNING id, name, created_at, updated_at
 `
 
