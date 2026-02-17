@@ -5,7 +5,7 @@ This plan implements a high-performance item blocking feature based on usernames
 ## Phase 1: Database Schema and Models
 Define the storage for blocking rules, URL parsing rules, and update the item model.
 
-- [ ] Task: Create migration for `blocking_rules` table
+- [x] Task: Create migration for `blocking_rules` table ee03836
 - [ ] Task: Create migration for `url_parsing_rules` table
 - [ ] Task: Add `is_hidden` column to `items` table
 - [ ] Task: Update Go models and SQLC queries for new tables and column
