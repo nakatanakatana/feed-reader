@@ -3,7 +3,6 @@ import { createEffect, For, type JSX, onCleanup, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
 import { getItem, items, updateItemStatus } from "../lib/item-db";
-import { ITEM_STALE_TIME } from "../lib/item-query-constants";
 import { formatDate, normalizeCategories } from "../lib/item-utils";
 import { useSwipe } from "../lib/use-swipe";
 import { MarkdownRenderer } from "./MarkdownRenderer";

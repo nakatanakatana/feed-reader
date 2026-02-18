@@ -139,8 +139,11 @@ export const updateItemStatus = async (id: string, isRead: boolean) => {
     return { ...old, isRead };
   });
 
+  // Decide whether we need to call the API directly.
+  let shouldCallApi = false;
+  const collection = items();
+
   try {
-    const collection = items();
     const itemInCollection = collection.get(id);
 
     if (itemInCollection) {
@@ -155,13 +158,14 @@ export const updateItemStatus = async (id: string, isRead: boolean) => {
           "Failed to update items collection, falling back to API call",
           e,
         );
-        await itemClient.updateItemStatus({
-          ids: [id],
-          isRead: isRead,
-        });
+        shouldCallApi = true;
       }
     } else {
-      // If not in collection, call the API directly
+      // If not in collection, call the API directly.
+      shouldCallApi = true;
+    }
+
+    if (shouldCallApi) {
       await itemClient.updateItemStatus({
         ids: [id],
         isRead: isRead,
@@ -174,14 +178,10 @@ export const updateItemStatus = async (id: string, isRead: boolean) => {
     }
     throw error;
   } finally {
-    // Note: We intentionally don't invalidate here because:
-    // 1. If we used collection.update, onUpdate already handles invalidation after API success.
-    // 2. If we used direct API call, it's safer to let the caller or onUpdate handle it,
-    //    or we could add it here if we're sure API finished.
-    // Given the Copilot feedback about race conditions, relying on onUpdate's invalidation
-    // is better for the collection path. For direct API path, we should ideally invalidate.
-    const collection = items();
-    if (!collection.get(id)) {
+    // Invalidate to ensure consistency across the app.
+    // Note: If we used collection.update, onUpdate already handles invalidation after API success.
+    // However, if we called API directly or there's a delay, we invalidate again here.
+    if (shouldCallApi || !collection.get(id)) {
       queryClient.invalidateQueries({ queryKey: ["item", id] });
     }
   }

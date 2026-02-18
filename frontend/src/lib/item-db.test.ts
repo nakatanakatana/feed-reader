@@ -28,7 +28,6 @@ describe("items collection", () => {
       // Setup cache
       queryClient.setQueryData(["item", id], oldData);
 
-      const setQueryDataSpy = vi.spyOn(queryClient, "setQueryData");
       const invalidateQueriesSpy = vi.spyOn(queryClient, "invalidateQueries");
 
       // Mock items().get to return null to force direct API path (simpler for unit test)
@@ -37,10 +36,6 @@ describe("items collection", () => {
       await updateItemStatus(id, isRead);
 
       // Verify optimistic update
-      expect(setQueryDataSpy).toHaveBeenCalledWith(
-        ["item", id],
-        expect.any(Function),
-      );
       expect(queryClient.getQueryData(["item", id])).toEqual({
         ...oldData,
         isRead,
@@ -63,6 +58,7 @@ describe("items collection", () => {
       queryClient.setQueryData(["item", id], oldData);
 
       const collection = items();
+      const invalidateQueriesSpy = vi.spyOn(queryClient, "invalidateQueries");
 
       // Mock items().get to return an existing item in the collection
       const getSpy = vi.spyOn(collection, "get").mockReturnValue({
@@ -73,7 +69,8 @@ describe("items collection", () => {
       // We mock implementation to do nothing (success)
       const updateSpy = vi
         .spyOn(collection, "update")
-        .mockImplementation(() => {});
+        // biome-ignore lint/suspicious/noExplicitAny: Mocking complex Transaction return type
+        .mockImplementation((() => {}) as any);
 
       await updateItemStatus(id, isRead);
 
@@ -88,6 +85,10 @@ describe("items collection", () => {
         id,
         expect.any(Function), // The draft update function
       );
+
+      // In the collection path, invalidateQueries should NOT be called directly by updateItemStatus
+      // because it's handled by onUpdate to avoid race conditions.
+      expect(invalidateQueriesSpy).not.toHaveBeenCalled();
 
       getSpy.mockRestore();
       updateSpy.mockRestore();
@@ -135,9 +136,12 @@ describe("items collection", () => {
         ...oldData,
       } as any);
       // Mock collection.update to throw error
-      const updateSpy = vi.spyOn(collection, "update").mockImplementation(() => {
-        throw new Error("Collection Update Error");
-      });
+      const updateSpy = vi
+        .spyOn(collection, "update")
+        // biome-ignore lint/suspicious/noExplicitAny: Mocking complex Transaction return type
+        .mockImplementation((() => {
+          throw new Error("Collection Update Error");
+        }) as any);
 
       // Mock API to succeed
       worker.use(
