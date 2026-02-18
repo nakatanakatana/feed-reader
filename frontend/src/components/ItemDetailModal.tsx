@@ -330,6 +330,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             flexDirection: "column",
             gap: "4",
             padding: "6",
+            paddingTop: "0",
             pb: "24",
             overflowY: "auto",
             height: "full",
