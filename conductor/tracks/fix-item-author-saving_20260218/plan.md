@@ -11,14 +11,14 @@ Focus on the logic that converts `gofeed.Item` to the internal database model.
 - [x] Task: Verify end-to-end storage by fetching a mock feed in an integration test f5cae78
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Backend' (Protocol in workflow.md)
 
-## Phase 2: Frontend - Display Item Author
+## Phase 2: Frontend - Display Item Author [checkpoint: 5f89cf9]
 Focus on rendering the `author` field in the item detail view.
 
 - [x] Task: Research `frontend/src/components/ItemDetailModal.tsx` and its test file
 - [x] Task: Write failing test in `frontend/src/components/ItemDetailModal.test.tsx` to verify author rendering
 - [x] Task: Update `ItemDetailModal.tsx` to display the author name and ensure tests pass
 - [x] Task: Verify visual integration and responsive behavior on mobile/desktop
-- [~] Task: Conductor - User Manual Verification 'Phase 2: Frontend' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Frontend' (Protocol in workflow.md)
 
 ## Phase 3: Final Validation and Cleanup
 Ensure everything works together and meets the quality gates.
