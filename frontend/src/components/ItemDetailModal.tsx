@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/solid-query";
-import { createEffect, For, type JSX, onCleanup, Show } from "solid-js";
+import { createEffect, createMemo, For, type JSX, onCleanup, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
 import { getItem, items, updateItemStatus } from "../lib/item-db";
@@ -123,7 +123,29 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     staleTime: 0,
   }));
 
-  const item = () => itemQuery.data ?? null;
+  const item = createMemo(() => {
+    const id = props.itemId;
+    if (!id || id === "end-of-list") return null;
+
+    const queryData = itemQuery.data;
+    const localItem = items().get(id);
+
+    // Prefer data from the local collection for immediate synchronization of read status.
+    // This prevents the "Mark as Read" button from flickering when opening a read item.
+    if (localItem) {
+      if (!queryData || queryData.id !== id) {
+        // While the query is loading or if it's for a different item (stale cache),
+        // we can still show basic info and the correct button state from the collection.
+        return localItem as any;
+      }
+      if (queryData.isRead !== localItem.isRead) {
+        return { ...queryData, isRead: localItem.isRead };
+      }
+      return queryData;
+    }
+
+    return queryData ?? null;
+  });
   const isLoading = () => itemQuery.isPending;
   const isEndOfList = () => props.itemId === "end-of-list";
 
