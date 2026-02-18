@@ -282,6 +282,12 @@ func (s *FetcherService) normalizeItem(feedID string, item *gofeed.Item) store.S
 		params.ImageUrl = &item.Image.URL
 	}
 
+	if item.Author != nil && item.Author.Name != "" {
+		params.Author = &item.Author.Name
+	} else if len(item.Authors) > 0 && item.Authors[0].Name != "" {
+		params.Author = &item.Authors[0].Name
+	}
+
 	if len(item.Categories) > 0 {
 		// Simple JSON encoding
 		// We ignore error here as []string should always be encodable
