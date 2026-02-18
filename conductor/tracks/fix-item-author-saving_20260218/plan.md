@@ -2,14 +2,14 @@
 
 This plan follows the TDD-centric workflow to ensure the author's name is correctly extracted from feeds, saved to the database, and displayed in the UI.
 
-## Phase 1: Backend - Item Author Extraction and Storage
+## Phase 1: Backend - Item Author Extraction and Storage [checkpoint: 2f46557]
 Focus on the logic that converts `gofeed.Item` to the internal database model.
 
-- [ ] Task: Research existing item creation flow in `cmd/feed-reader/write_queue.go` and `store/`
-- [ ] Task: Write failing test in `cmd/feed-reader/` to verify `author` extraction from `gofeed.Item`
-- [ ] Task: Implement author extraction logic in `cmd/feed-reader/` and ensure tests pass
-- [ ] Task: Verify end-to-end storage by fetching a mock feed in an integration test
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Backend' (Protocol in workflow.md)
+- [x] Task: Research existing item creation flow in `cmd/feed-reader/write_queue.go` and `store/` f5cae78
+- [x] Task: Write failing test in `cmd/feed-reader/` to verify `author` extraction from `gofeed.Item` f5cae78
+- [x] Task: Implement author extraction logic in `cmd/feed-reader/` and ensure tests pass f5cae78
+- [x] Task: Verify end-to-end storage by fetching a mock feed in an integration test f5cae78
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Backend' (Protocol in workflow.md)
 
 ## Phase 2: Frontend - Display Item Author
 Focus on rendering the `author` field in the item detail view.
