@@ -9,6 +9,13 @@
     {
       "groupName": "buf",
       "matchPackageNames": ["/@connectrpc//", "/@bufbuild//"]
+    },
+    {
+      "groupName": "tanstack/db",
+      "matchPackageNames": [
+        "@tanstack/solid-db",
+        "@tanstack/query-db-collection"
+      ]
     }
   ]
 }
