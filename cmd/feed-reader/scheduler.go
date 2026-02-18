@@ -72,10 +72,7 @@ func CalculateAdaptiveInterval(pubDates []time.Time, defaultInterval, minInterva
 	})
 
 	// Use at most the last 10 items
-	count := len(dates)
-	if count > 10 {
-		count = 10
-	}
+	count := min(len(dates), 10)
 
 	avgInterval := dates[0].Sub(dates[count-1]) / time.Duration(count-1)
 
@@ -88,4 +85,3 @@ func CalculateAdaptiveInterval(pubDates []time.Time, defaultInterval, minInterva
 
 	return avgInterval
 }
-

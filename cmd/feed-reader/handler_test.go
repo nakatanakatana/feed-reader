@@ -35,7 +35,7 @@ func assertResponseGolden(t *testing.T, m proto.Message, goldenFile string) {
 	assert.NilError(t, err)
 
 	// Re-marshal with encoding/json for stable formatting
-	var jsonObj interface{}
+	var jsonObj any
 	err = json.Unmarshal(b, &jsonObj)
 	assert.NilError(t, err)
 
@@ -172,7 +172,7 @@ func TestFeedServer_CreateFeed(t *testing.T) {
 			args: args{
 				req: &feedv1.CreateFeedRequest{
 					Url:   "https://example.com/rss",
-					Title: proto.String("Test Feed"),
+					Title: new("Test Feed"),
 				},
 			},
 			mockFeed:  &gofeed.Feed{Title: "Fetched Title"},
@@ -185,7 +185,7 @@ func TestFeedServer_CreateFeed(t *testing.T) {
 			args: args{
 				req: &feedv1.CreateFeedRequest{
 					Url:   "https://example.com/err",
-					Title: proto.String("Error Feed"),
+					Title: new("Error Feed"),
 				},
 			},
 			mockFeed: &gofeed.Feed{Title: "Fetched Title"},
@@ -247,7 +247,7 @@ func TestFeedServer_GetFeed(t *testing.T) {
 			setup: func(t *testing.T, server feedv1connect.FeedServiceHandler) string {
 				res, err := server.CreateFeed(ctx, connect.NewRequest(&feedv1.CreateFeedRequest{
 					Url:   "https://example.com/get",
-					Title: proto.String("Get Feed"),
+					Title: new("Get Feed"),
 				}))
 				assert.NilError(t, err, "setup failed")
 				return res.Msg.Feed.Id
@@ -295,7 +295,7 @@ func TestFeedServer_ListFeeds(t *testing.T) {
 				for i := range 3 {
 					_, err := server.CreateFeed(ctx, connect.NewRequest(&feedv1.CreateFeedRequest{
 						Url:   "https://example.com/list-" + string(rune('a'+i)),
-						Title: proto.String("Feed " + string(rune('a'+i))),
+						Title: new("Feed " + string(rune('a'+i))),
 					}))
 					assert.NilError(t, err, "setup failed")
 				}
@@ -329,17 +329,17 @@ func TestFeedServer_ListFeeds_UnreadCounts(t *testing.T) {
 	server, _ := setupServer(t, db, nil, &mockFetcher{}, &mockItemFetcher{})
 
 	// Feed 1
-	f1, err := s.CreateFeed(ctx, store.CreateFeedParams{ID: "f1", Url: "u1", Title: proto.String("Feed 1")})
+	f1, err := s.CreateFeed(ctx, store.CreateFeedParams{ID: "f1", Url: "u1", Title: new("Feed 1")})
 	assert.NilError(t, err)
 
 	// Feed 2
-	f2, err := s.CreateFeed(ctx, store.CreateFeedParams{ID: "f2", Url: "u2", Title: proto.String("Feed 2")})
+	f2, err := s.CreateFeed(ctx, store.CreateFeedParams{ID: "f2", Url: "u2", Title: new("Feed 2")})
 	assert.NilError(t, err)
 
 	// Items for F1: 1 unread, 1 read
-	err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{FeedID: f1.ID, Url: "i1-1", Title: proto.String("i1-1")}) // Unread by default
+	err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{FeedID: f1.ID, Url: "i1-1", Title: new("i1-1")}) // Unread by default
 	assert.NilError(t, err)
-	err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{FeedID: f1.ID, Url: "i1-2", Title: proto.String("i1-2")})
+	err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{FeedID: f1.ID, Url: "i1-2", Title: new("i1-2")})
 	assert.NilError(t, err)
 
 	// Mark i1-2 as read. Need ID.
@@ -350,7 +350,7 @@ func TestFeedServer_ListFeeds_UnreadCounts(t *testing.T) {
 	assert.NilError(t, err)
 
 	// Items for F2: 1 unread
-	err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{FeedID: f2.ID, Url: "i2-1", Title: proto.String("i2-1")})
+	err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{FeedID: f2.ID, Url: "i2-1", Title: new("i2-1")})
 	assert.NilError(t, err)
 
 	// List Feeds
@@ -374,13 +374,13 @@ func TestFeedServer_UpdateFeed(t *testing.T) {
 			setup: func(t *testing.T, server feedv1connect.FeedServiceHandler) *feedv1.UpdateFeedRequest {
 				res, err := server.CreateFeed(ctx, connect.NewRequest(&feedv1.CreateFeedRequest{
 					Url:   "https://example.com/update",
-					Title: proto.String("Original"),
+					Title: new("Original"),
 				}))
 				assert.NilError(t, err, "setup failed")
 				feed := res.Msg.Feed
 				return &feedv1.UpdateFeedRequest{
 					Id:    feed.Id,
-					Title: proto.String("Updated"),
+					Title: new("Updated"),
 				}
 			},
 			wantErr: false,
@@ -390,7 +390,7 @@ func TestFeedServer_UpdateFeed(t *testing.T) {
 			setup: func(t *testing.T, server feedv1connect.FeedServiceHandler) *feedv1.UpdateFeedRequest {
 				return &feedv1.UpdateFeedRequest{
 					Id:    "00000000-0000-0000-0000-000000000000",
-					Title: proto.String("Updated"),
+					Title: new("Updated"),
 				}
 			},
 			wantErr: true,
@@ -428,7 +428,7 @@ func TestFeedServer_DeleteFeed(t *testing.T) {
 			setup: func(t *testing.T, server feedv1connect.FeedServiceHandler) string {
 				res, err := server.CreateFeed(ctx, connect.NewRequest(&feedv1.CreateFeedRequest{
 					Url:   "https://example.com/delete",
-					Title: proto.String("Delete Me"),
+					Title: new("Delete Me"),
 				}))
 				assert.NilError(t, err, "setup failed")
 				return res.Msg.Feed.Id
@@ -561,8 +561,8 @@ func TestFeedServer_ManageFeedTags(t *testing.T) {
 	server, _ := setupServer(t, db, nil, &mockFetcher{}, &mockItemFetcher{})
 
 	// Setup: 2 feeds and 2 tags
-	f1Res, _ := server.CreateFeed(ctx, connect.NewRequest(&feedv1.CreateFeedRequest{Url: "u1", Title: proto.String("f1")}))
-	f2Res, _ := server.CreateFeed(ctx, connect.NewRequest(&feedv1.CreateFeedRequest{Url: "u2", Title: proto.String("f2")}))
+	f1Res, _ := server.CreateFeed(ctx, connect.NewRequest(&feedv1.CreateFeedRequest{Url: "u1", Title: new("f1")}))
+	f2Res, _ := server.CreateFeed(ctx, connect.NewRequest(&feedv1.CreateFeedRequest{Url: "u2", Title: new("f2")}))
 
 	// Assuming TagService is managed separately, but for handler test we can just use store directly to create tags
 	q := store.New(db)
@@ -601,7 +601,7 @@ func TestFeedServer_SuspendFeeds(t *testing.T) {
 	server, _ := setupServer(t, db, nil, &mockFetcher{}, &mockItemFetcher{})
 
 	// Setup: create a feed
-	res, _ := server.CreateFeed(ctx, connect.NewRequest(&feedv1.CreateFeedRequest{Url: "u1", Title: proto.String("f1")}))
+	res, _ := server.CreateFeed(ctx, connect.NewRequest(&feedv1.CreateFeedRequest{Url: "u1", Title: new("f1")}))
 	id := res.Msg.Feed.Id
 
 	t.Run("Suspend for 1 hour", func(t *testing.T) {

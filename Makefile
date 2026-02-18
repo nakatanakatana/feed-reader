@@ -53,6 +53,14 @@ lint-backend:
 lint-frontend:
 	npm run lint
 
+fix-backend:
+	go fix ./...
+
+fix-frontend:
+	npm run format
+
+fix: fix-backend fix-frontend
+
 build-backend:
 	go build -o dist/ ./cmd/...
 

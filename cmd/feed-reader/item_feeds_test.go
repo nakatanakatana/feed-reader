@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/nakatanakatana/feed-reader/gen/go/item/v1"
 	"github.com/nakatanakatana/feed-reader/store"
-	"google.golang.org/protobuf/proto"
 	"gotest.tools/v3/assert"
 )
 
@@ -24,7 +23,7 @@ func TestListItemFeeds(t *testing.T) {
 	_, err := queries.CreateFeed(ctx, store.CreateFeedParams{
 		ID:    feedID,
 		Url:   "http://example.com/feed",
-		Title: proto.String("Example Feed"),
+		Title: new("Example Feed"),
 	})
 	assert.NilError(t, err)
 
@@ -34,7 +33,7 @@ func TestListItemFeeds(t *testing.T) {
 	err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
 		FeedID:      feedID,
 		Url:         "http://example.com/item1",
-		Title:       proto.String("Item 1"),
+		Title:       new("Item 1"),
 		PublishedAt: &pubAt,
 	})
 	assert.NilError(t, err)

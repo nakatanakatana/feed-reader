@@ -61,7 +61,7 @@ func (s *FeedServer) GetFeed(ctx context.Context, req *connect.Request[feedv1.Ge
 }
 
 func (s *FeedServer) ListFeeds(ctx context.Context, req *connect.Request[feedv1.ListFeedsRequest]) (*connect.Response[feedv1.ListFeedsResponse], error) {
-	var tagID interface{}
+	var tagID any
 	if req.Msg.TagId != nil {
 		tagID = *req.Msg.TagId
 	}
@@ -207,7 +207,7 @@ func (s *FeedServer) createFeedFromURL(ctx context.Context, url string, titleOve
 	now := time.Now().UTC().Format(time.RFC3339)
 	err = s.store.MarkFeedFetched(ctx, store.MarkFeedFetchedParams{
 		FeedID:        feed.ID,
-		LastFetchedAt: nil, // Never fetched yet
+		LastFetchedAt: nil,  // Never fetched yet
 		NextFetch:     &now, // Fetch immediately
 	})
 	if err != nil {

@@ -41,11 +41,11 @@ func (s *ItemServer) ListItems(ctx context.Context, req *connect.Request[itemv1.
 	}
 	offset := int64(req.Msg.Offset)
 
-	var feedID interface{}
+	var feedID any
 	if req.Msg.FeedId != nil {
 		feedID = *req.Msg.FeedId
 	}
-	var isRead interface{}
+	var isRead any
 	if req.Msg.IsRead != nil {
 		if *req.Msg.IsRead {
 			isRead = int64(1)
@@ -53,11 +53,11 @@ func (s *ItemServer) ListItems(ctx context.Context, req *connect.Request[itemv1.
 			isRead = int64(0)
 		}
 	}
-	var tagID interface{}
+	var tagID any
 	if req.Msg.TagId != nil {
 		tagID = *req.Msg.TagId
 	}
-	var since interface{}
+	var since any
 	if req.Msg.Since != nil {
 		since = req.Msg.Since.AsTime().UTC().Format(time.RFC3339)
 	}

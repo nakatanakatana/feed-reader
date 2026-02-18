@@ -70,7 +70,7 @@ func TestScheduler_nextDelay_PBT(t *testing.T) {
 
 		s := NewScheduler(interval, maxJitter, nil)
 
-		for i := 0; i < 100; i++ {
+		for range 100 {
 			delay := s.nextDelay()
 
 			assert.Assert(t, int64(delay) >= int64(interval), "Delay should be at least the interval")
@@ -137,7 +137,7 @@ func TestCalculateAdaptiveInterval(t *testing.T) {
 	t.Run("last 10 items", func(t *testing.T) {
 		now := time.Now()
 		pubDates := make([]time.Time, 15)
-		for i := 0; i < 15; i++ {
+		for i := range 15 {
 			// Every 30 minutes
 			pubDates[i] = now.Add(time.Duration(-30*i) * time.Minute)
 		}

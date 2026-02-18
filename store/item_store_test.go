@@ -113,7 +113,7 @@ func TestStore_ListItems_IsRead_CountMatches_PBT(t *testing.T) {
 
 		count := rapid.IntRange(5, 20).Draw(t, "count")
 		itemIDs := make([]string, 0, count)
-		for i := 0; i < count; i++ {
+		for i := range count {
 			pubAt := time.Now().Add(time.Duration(-i) * time.Hour).Format(time.RFC3339)
 			id := createTestItemForRapid(
 				t,

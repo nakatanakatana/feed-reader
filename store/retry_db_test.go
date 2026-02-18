@@ -12,13 +12,13 @@ import (
 )
 
 type mockDBTX struct {
-	execContext     func(ctx context.Context, query string, args ...interface{}) (sql.Result, error)
+	execContext     func(ctx context.Context, query string, args ...any) (sql.Result, error)
 	prepareContext  func(ctx context.Context, query string) (*sql.Stmt, error)
-	queryContext    func(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error)
-	queryRowContext func(ctx context.Context, query string, args ...interface{}) *sql.Row
+	queryContext    func(ctx context.Context, query string, args ...any) (*sql.Rows, error)
+	queryRowContext func(ctx context.Context, query string, args ...any) *sql.Row
 }
 
-func (m *mockDBTX) ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+func (m *mockDBTX) ExecContext(ctx context.Context, query string, args ...any) (sql.Result, error) {
 	return m.execContext(ctx, query, args...)
 }
 
@@ -26,11 +26,11 @@ func (m *mockDBTX) PrepareContext(ctx context.Context, query string) (*sql.Stmt,
 	return m.prepareContext(ctx, query)
 }
 
-func (m *mockDBTX) QueryContext(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error) {
+func (m *mockDBTX) QueryContext(ctx context.Context, query string, args ...any) (*sql.Rows, error) {
 	return m.queryContext(ctx, query, args...)
 }
 
-func (m *mockDBTX) QueryRowContext(ctx context.Context, query string, args ...interface{}) *sql.Row {
+func (m *mockDBTX) QueryRowContext(ctx context.Context, query string, args ...any) *sql.Row {
 	return m.queryRowContext(ctx, query, args...)
 }
 
@@ -40,7 +40,7 @@ func TestRetryingDB_ExecContext(t *testing.T) {
 		busyErr := mockSqliteError{code: sqlite3.SQLITE_BUSY}
 		mockResult := new(mockResult)
 		m := &mockDBTX{
-			execContext: func(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+			execContext: func(ctx context.Context, query string, args ...any) (sql.Result, error) {
 				calls++
 				if calls == 1 {
 					return mockResult, busyErr
@@ -60,7 +60,7 @@ func TestRetryingDB_ExecContext(t *testing.T) {
 		otherErr := errors.New("other error")
 		mockResult := new(mockResult)
 		m := &mockDBTX{
-			execContext: func(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+			execContext: func(ctx context.Context, query string, args ...any) (sql.Result, error) {
 				calls++
 				return mockResult, otherErr
 			},

@@ -10,7 +10,7 @@ import (
 )
 
 type ListFeedsParams struct {
-	TagID interface{}
+	TagID any
 }
 
 type Store struct {

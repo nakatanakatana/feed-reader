@@ -9,7 +9,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/nakatanakatana/feed-reader/gen/go/item/v1"
 	"github.com/nakatanakatana/feed-reader/store"
-	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gotest.tools/v3/assert"
 	"gotest.tools/v3/assert/cmp"
@@ -38,7 +37,7 @@ func TestItemServer(t *testing.T) {
 	err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
 		FeedID:      feedID,
 		Url:         "http://example.com/item1",
-		Title:       proto.String("Item 1"),
+		Title:       new("Item 1"),
 		PublishedAt: &t1,
 		Author:      &author,
 	})
@@ -53,7 +52,7 @@ func TestItemServer(t *testing.T) {
 	err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
 		FeedID:      feedID,
 		Url:         "http://example.com/item2",
-		Title:       proto.String("Item 2"),
+		Title:       new("Item 2"),
 		PublishedAt: &t2,
 	})
 	assert.NilError(t, err)
@@ -81,7 +80,7 @@ func TestItemServer(t *testing.T) {
 		err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
 			FeedID:      feedID,
 			Url:         "http://rich",
-			Title:       proto.String("Rich Item"),
+			Title:       new("Rich Item"),
 			Content:     &content,
 			ImageUrl:    &img,
 			Categories:  &cats,
@@ -112,7 +111,7 @@ func TestItemServer(t *testing.T) {
 		err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
 			FeedID:      feedID,
 			Url:         "http://example.com/item-with-desc",
-			Title:       proto.String("Item with desc"),
+			Title:       new("Item with desc"),
 			Description: &desc,
 			PublishedAt: &t2,
 		})
@@ -147,7 +146,7 @@ func TestItemServer(t *testing.T) {
 	t.Run("UpdateItemStatus", func(t *testing.T) {
 		_, err := server.UpdateItemStatus(ctx, connect.NewRequest(&itemv1.UpdateItemStatusRequest{
 			Ids:    []string{item1ID},
-			IsRead: proto.Bool(true),
+			IsRead: new(true),
 		}))
 		assert.NilError(t, err)
 

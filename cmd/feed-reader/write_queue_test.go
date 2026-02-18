@@ -62,8 +62,7 @@ func TestWriteQueueServiceLoopCountTrigger(t *testing.T) {
 	}
 	st := setupTestStore(t)
 	s := NewWriteQueueService(st, cfg, slog.Default())
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 
 	go s.Start(ctx)
 
@@ -87,8 +86,7 @@ func TestWriteQueueServiceIntegration(t *testing.T) {
 		FlushInterval: 100 * time.Millisecond,
 	}
 	st := setupTestStore(t)
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 
 	s := NewWriteQueueService(st, cfg, slog.Default())
 	go s.Start(ctx)
@@ -99,8 +97,8 @@ func TestWriteQueueServiceIntegration(t *testing.T) {
 	// Submit jobs
 	job := &SaveItemsJob{
 		Items: []store.SaveFetchedItemParams{
-			{FeedID: feed.ID, Url: "item1", Title: stringPtr("T1")},
-			{FeedID: feed.ID, Url: "item2", Title: stringPtr("T2")},
+			{FeedID: feed.ID, Url: "item1", Title: new("T1")},
+			{FeedID: feed.ID, Url: "item2", Title: new("T2")},
 		},
 	}
 	s.Submit(job)
@@ -115,6 +113,3 @@ func TestWriteQueueServiceIntegration(t *testing.T) {
 	}
 }
 
-func stringPtr(s string) *string {
-	return &s
-}
