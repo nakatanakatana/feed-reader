@@ -1,8 +1,15 @@
 import { useQuery } from "@tanstack/solid-query";
-import { createEffect, createMemo, For, type JSX, onCleanup, Show } from "solid-js";
+import {
+  createEffect,
+  createMemo,
+  For,
+  type JSX,
+  onCleanup,
+  Show,
+} from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
-import { getItem, items, updateItemStatus } from "../lib/item-db";
+import { getItem, type Item, items, updateItemStatus } from "../lib/item-db";
 import { formatDate, normalizeCategories } from "../lib/item-utils";
 import { useSwipe } from "../lib/use-swipe";
 import { MarkdownRenderer } from "./MarkdownRenderer";
@@ -136,7 +143,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
       if (!queryData || queryData.id !== id) {
         // While the query is loading or if it's for a different item (stale cache),
         // we can still show basic info and the correct button state from the collection.
-        return localItem as any;
+        return localItem as unknown as Item;
       }
       if (queryData.isRead !== localItem.isRead) {
         return { ...queryData, isRead: localItem.isRead };
@@ -431,9 +438,8 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
               const isImageInContent = () => {
                 const content =
                   itemData().content || itemData().description || "";
-                return (
-                  itemData().imageUrl && content.includes(itemData().imageUrl)
-                );
+                const imageUrl = itemData().imageUrl;
+                return !!(imageUrl && content.includes(imageUrl));
               };
 
               return (

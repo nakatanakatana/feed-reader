@@ -63,13 +63,14 @@ describe("items collection", () => {
       // Mock items().get to return an existing item in the collection
       const getSpy = vi.spyOn(collection, "get").mockReturnValue({
         ...oldData,
+        // biome-ignore lint/suspicious/noExplicitAny: Mocking complex ListItem
       } as any);
 
       // Spy on items().update to verify it is called correctly
       // We mock implementation to do nothing (success)
       const updateSpy = vi
         .spyOn(collection, "update")
-        // biome-ignore lint/suspicious/noExplicitAny: Mocking complex Transaction return type
+        // biome-ignore lint/suspicious/noExplicitAny: Mocking complex Transaction
         .mockImplementation((() => {}) as any);
 
       await updateItemStatus(id, isRead);
@@ -134,13 +135,14 @@ describe("items collection", () => {
       // Mock items().get to return a valid item
       const getSpy = vi.spyOn(collection, "get").mockReturnValue({
         ...oldData,
+        // biome-ignore lint/suspicious/noExplicitAny: Mocking complex ListItem
       } as any);
       // Mock collection.update to throw error
       const updateSpy = vi
         .spyOn(collection, "update")
-        // biome-ignore lint/suspicious/noExplicitAny: Mocking complex Transaction return type
         .mockImplementation((() => {
           throw new Error("Collection Update Error");
+          // biome-ignore lint/suspicious/noExplicitAny: Mocking complex Transaction
         }) as any);
 
       // Mock API to succeed
