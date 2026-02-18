@@ -20,9 +20,9 @@ Focus on rendering the `author` field in the item detail view.
 - [x] Task: Verify visual integration and responsive behavior on mobile/desktop
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Frontend' (Protocol in workflow.md)
 
-## Phase 3: Final Validation and Cleanup
+## Phase 3: Final Validation and Cleanup [checkpoint: 013c717]
 Ensure everything works together and meets the quality gates.
 
-- [ ] Task: Perform end-to-end manual verification with a real or simulated feed fetch
-- [ ] Task: Verify code coverage (>80%) and linting for all modified files
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Final' (Protocol in workflow.md)
+- [x] Task: Perform end-to-end manual verification with a real or simulated feed fetch
+- [x] Task: Verify code coverage (>80%) and linting for all modified files
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Final' (Protocol in workflow.md)
