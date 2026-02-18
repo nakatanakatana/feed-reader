@@ -14,11 +14,11 @@ Focus on the logic that converts `gofeed.Item` to the internal database model.
 ## Phase 2: Frontend - Display Item Author
 Focus on rendering the `author` field in the item detail view.
 
-- [ ] Task: Research `frontend/src/components/ItemDetailModal.tsx` and its test file
-- [ ] Task: Write failing test in `frontend/src/components/ItemDetailModal.test.tsx` to verify author rendering
-- [ ] Task: Update `ItemDetailModal.tsx` to display the author name and ensure tests pass
-- [ ] Task: Verify visual integration and responsive behavior on mobile/desktop
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Frontend' (Protocol in workflow.md)
+- [x] Task: Research `frontend/src/components/ItemDetailModal.tsx` and its test file
+- [x] Task: Write failing test in `frontend/src/components/ItemDetailModal.test.tsx` to verify author rendering
+- [x] Task: Update `ItemDetailModal.tsx` to display the author name and ensure tests pass
+- [x] Task: Verify visual integration and responsive behavior on mobile/desktop
+- [~] Task: Conductor - User Manual Verification 'Phase 2: Frontend' (Protocol in workflow.md)
 
 ## Phase 3: Final Validation and Cleanup
 Ensure everything works together and meets the quality gates.
