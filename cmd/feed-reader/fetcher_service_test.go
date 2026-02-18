@@ -83,12 +83,18 @@ func TestFetcherService_FetchAndSave(t *testing.T) {
 				Description:     "Desc 1",
 				GUID:            "guid-1",
 				PublishedParsed: &[]time.Time{time.Now()}[0],
+				Author: &gofeed.Person{
+					Name: "Author 1",
+				},
 			},
 			{
 				Title:       "Item 2",
 				Link:        "https://example.com/2",
 				Description: "Desc 2",
 				GUID:        "guid-2",
+				Authors: []*gofeed.Person{
+					{Name: "Author 2"},
+				},
 			},
 		},
 	}
@@ -106,7 +112,7 @@ func TestFetcherService_FetchAndSave(t *testing.T) {
 	assert.NilError(t, err)
 
 	// Wait for WriteQueue to process jobs
-	time.Sleep(50 * time.Millisecond)
+	time.Sleep(100 * time.Millisecond)
 
 	// Verify items are saved
 	items, err := queries.ListItems(ctx, store.ListItemsParams{FeedID: feed.ID, Limit: 10})
@@ -114,14 +120,23 @@ func TestFetcherService_FetchAndSave(t *testing.T) {
 	assert.Equal(t, len(items), 2)
 
 	found1 := false
+	found2 := false
 	for _, item := range items {
 		if item.Url == "https://example.com/1" {
 			found1 = true
 			assert.Assert(t, item.Title != nil)
 			assert.Equal(t, *item.Title, "Item 1")
+			assert.Assert(t, item.Author != nil)
+			assert.Equal(t, *item.Author, "Author 1")
+		}
+		if item.Url == "https://example.com/2" {
+			found2 = true
+			assert.Assert(t, item.Author != nil)
+			assert.Equal(t, *item.Author, "Author 2")
 		}
 	}
 	assert.Assert(t, found1, "item 1 not found in DB")
+	assert.Assert(t, found2, "item 2 not found in DB")
 }
 
 func TestFetcherService_FetchAllFeeds_Interval(t *testing.T) {
