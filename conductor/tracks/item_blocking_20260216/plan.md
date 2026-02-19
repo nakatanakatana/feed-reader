@@ -31,7 +31,7 @@ Implement the core filtering logic applied during item ingestion.
 ## Phase 4: Retroactive Background Updates
 Implement the mechanism to update existing items when rules change.
 
-- [ ] Task: Implement a background worker to re-evaluate `is_hidden` for all items
+- [x] Task: Implement a background worker to re-evaluate `is_hidden` for all items 413942e
 - [ ] Task: Trigger background update when a blocking rule is created/updated/deleted
 - [ ] Task: Optimize background update (e.g., batch processing) to ensure scalability
 - [ ] Task: Write tests for retroactive blocking application
