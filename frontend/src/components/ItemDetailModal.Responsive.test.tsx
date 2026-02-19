@@ -199,7 +199,11 @@ describe("ItemDetailModal Responsive", () => {
     await expect.element(page.getByText("Received:")).toBeVisible();
 
     // Icons with titles should NOT be visible
-    await expect.element(page.getByTitle("Published", { exact: true })).not.toBeVisible();
-    await expect.element(page.getByTitle("Received", { exact: true })).not.toBeVisible();
+    await expect
+      .element(page.getByTitle("Published", { exact: true }))
+      .not.toBeVisible();
+    await expect
+      .element(page.getByTitle("Received", { exact: true }))
+      .not.toBeVisible();
   });
 });
