@@ -49,7 +49,7 @@ describe("ItemRow", () => {
     );
 
     expect(page.getByText("Test Article Title")).toBeInTheDocument();
-    expect(page.getByText(/Received:/)).toBeInTheDocument();
+    expect(page.getByText(/Received:/).first()).toBeInTheDocument();
     expect(
       page.getByText(
         "This is a test description snippet that should be displayed.",

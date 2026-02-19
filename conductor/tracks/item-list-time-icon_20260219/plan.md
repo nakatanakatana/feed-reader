@@ -20,6 +20,6 @@ Standardize the date display in `ItemRow` (used within `ItemList`) by reordering
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Implementation' (Protocol in workflow.md) 4cb124c
 
 ## Phase 3: Final Verification
-- [~] Task: Verify that `ItemDetailModal` remains unaffected and functional.
-- [ ] Task: Run all frontend tests to ensure no regressions.
+- [x] Task: Verify that `ItemDetailModal` remains unaffected and functional. d3c4e0e
+- [~] Task: Run all frontend tests to ensure no regressions.
 - [ ] Task: Check code coverage for `ItemRow.tsx` and related changes.
