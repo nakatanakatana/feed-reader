@@ -14,7 +14,7 @@ Define the storage for blocking rules, URL parsing rules, and update the item mo
 ## Phase 2: Username Extraction Logic
 Implement the logic to extract usernames from URLs based on domain-specific rules.
 
-- [ ] Task: Implement `UsernameExtractor` service in Go
+- [x] Task: Implement `UsernameExtractor` service in Go f37fc98
 - [ ] Task: Write tests for `UsernameExtractor` with various URL patterns and regex rules
 - [ ] Task: Integrate `UsernameExtractor` into the item fetching pipeline
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Username Extraction Logic' (Protocol in workflow.md)
