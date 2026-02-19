@@ -21,5 +21,5 @@ Standardize the date display in `ItemRow` (used within `ItemList`) by reordering
 
 ## Phase 3: Final Verification
 - [x] Task: Verify that `ItemDetailModal` remains unaffected and functional. d3c4e0e
-- [~] Task: Run all frontend tests to ensure no regressions.
-- [ ] Task: Check code coverage for `ItemRow.tsx` and related changes.
+- [x] Task: Run all frontend tests to ensure no regressions. c788cf5
+- [~] Task: Check code coverage for `ItemRow.tsx` and related changes.
