@@ -15,7 +15,7 @@ Enable the Badging API to display the total unread count on the application icon
 
 ## Phase 2: Testing and Refinement
 
-- [ ] Task: Create unit tests for `PwaBadge`
+- [x] Task: Create unit tests for `PwaBadge` e0a5556
     - Create `frontend/src/components/PwaBadge.test.tsx`.
     - Mock `navigator.setAppBadge` and `navigator.clearAppBadge`.
     - Verify that the API is called correctly with different unread counts.
