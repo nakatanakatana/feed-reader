@@ -28,14 +28,14 @@ Implement the core filtering logic applied during item ingestion.
 - [x] Task: Write integration tests for the full "fetch -> block -> hide" flow 2019bfa
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Blocking Logic and Save-time Flagging' (Protocol in workflow.md) cdb1aba
 
-## Phase 4: Retroactive Background Updates
+## Phase 4: Retroactive Background Updates [checkpoint: 11c7737]
 Implement the mechanism to update existing items when rules change.
 
 - [x] Task: Implement a background worker to re-evaluate `is_hidden` for all items 413942e
 - [x] Task: Trigger background update when a blocking rule is created/updated/deleted 61202d0
 - [x] Task: Optimize background update (e.g., batch processing) to ensure scalability b28bc1f
 - [x] Task: Write tests for retroactive blocking application 4f2c0a7
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Retroactive Background Updates' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Retroactive Background Updates' (Protocol in workflow.md) 11c7737
 
 ## Phase 5: Frontend Integration (Rule Management UI)
 Add UI components to manage blocking rules and URL parsing rules.
