@@ -6,12 +6,17 @@ import type { DateFilterValue } from "./item-utils";
 function createItemStore() {
   const [state, setState] = createStore({
     showRead: itemsShowReadFilter,
+    showHidden: false,
     since: itemsDateFilter as DateFilterValue,
     transientRemovedIds: {} as Record<string, boolean>,
   });
 
   const setShowRead = (showRead: boolean) => {
     setState("showRead", showRead);
+  };
+
+  const setShowHidden = (showHidden: boolean) => {
+    setState("showHidden", showHidden);
   };
 
   const setDateFilter = (since: DateFilterValue) => {
@@ -33,6 +38,7 @@ function createItemStore() {
   return {
     state,
     setShowRead,
+    setShowHidden,
     setDateFilter,
     addTransientRemovedIds,
     clearTransientRemovedIds,

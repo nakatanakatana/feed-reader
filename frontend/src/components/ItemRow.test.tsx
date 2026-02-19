@@ -34,6 +34,7 @@ describe("ItemRow", () => {
     description: "This is a test description snippet that should be displayed.",
     isRead: false,
     feedId: "feed-1",
+    isHidden: false,
   };
 
   it("renders item title, description and metadata", () => {

@@ -28,16 +28,22 @@ export interface Item {
   categories?: string;
   imageUrl?: string;
   content?: string;
+  isHidden: boolean;
 }
 
 const itemClient = createClient(ItemService, transport);
 
 export const [lastFetched, setLastFetched] = createSignal<Date | null>(null);
 
-const createItems = (showRead: boolean, since: DateFilterValue) => {
+const createItems = (
+  showRead: boolean,
+  since: DateFilterValue,
+  showHidden: boolean,
+) => {
   setLastFetched(null);
   const isRead = showRead ? {} : { isRead: false };
   const sinceTimestamp = since !== "all" ? getPublishedSince(since) : undefined;
+  const includeHidden = showHidden ? { includeHidden: true } : {};
 
   return createCollection(
     queryCollectionOptions({
@@ -46,7 +52,7 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
       queryClient,
 
       refetchInterval: 1 * 60 * 1000,
-      queryKey: ["items", { since, showRead }],
+      queryKey: ["items", { since, showRead, showHidden }],
       queryFn: async ({ queryKey }) => {
         // Clear transient removed items on any fresh fetch/refetch
         itemStore.clearTransientRemovedIds();
@@ -62,6 +68,7 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
           limit: 10000,
           offset: 0,
           ...isRead,
+          ...includeHidden,
         });
         setLastFetched(new Date());
 
@@ -74,6 +81,7 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
           createdAt: item.createdAt,
           feedId: item.feedId,
           url: item.url,
+          isHidden: item.isHidden,
         }));
 
         // @ts-expect-error
@@ -104,7 +112,11 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
 
 export const items = createRoot(() => {
   return createMemo(() =>
-    createItems(itemStore.state.showRead, itemStore.state.since),
+    createItems(
+      itemStore.state.showRead,
+      itemStore.state.since,
+      itemStore.state.showHidden,
+    ),
   );
 });
 

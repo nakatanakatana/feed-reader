@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TagsRouteImport } from './routes/tags'
 import { Route as FeedsRouteImport } from './routes/feeds'
+import { Route as BlockingRouteImport } from './routes/blocking'
 import { Route as ItemsRouteImport } from './routes/_items'
 import { Route as ItemsIndexRouteImport } from './routes/_items.index'
 import { Route as ItemsItemsItemIdRouteImport } from './routes/_items.items.$itemId'
@@ -23,6 +24,11 @@ const TagsRoute = TagsRouteImport.update({
 const FeedsRoute = FeedsRouteImport.update({
   id: '/feeds',
   path: '/feeds',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlockingRoute = BlockingRouteImport.update({
+  id: '/blocking',
+  path: '/blocking',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ItemsRoute = ItemsRouteImport.update({
@@ -42,11 +48,13 @@ const ItemsItemsItemIdRoute = ItemsItemsItemIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof ItemsIndexRoute
+  '/blocking': typeof BlockingRoute
   '/feeds': typeof FeedsRoute
   '/tags': typeof TagsRoute
   '/items/$itemId': typeof ItemsItemsItemIdRoute
 }
 export interface FileRoutesByTo {
+  '/blocking': typeof BlockingRoute
   '/feeds': typeof FeedsRoute
   '/tags': typeof TagsRoute
   '/': typeof ItemsIndexRoute
@@ -55,6 +63,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_items': typeof ItemsRouteWithChildren
+  '/blocking': typeof BlockingRoute
   '/feeds': typeof FeedsRoute
   '/tags': typeof TagsRoute
   '/_items/': typeof ItemsIndexRoute
@@ -62,12 +71,13 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/feeds' | '/tags' | '/items/$itemId'
+  fullPaths: '/' | '/blocking' | '/feeds' | '/tags' | '/items/$itemId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/feeds' | '/tags' | '/' | '/items/$itemId'
+  to: '/blocking' | '/feeds' | '/tags' | '/' | '/items/$itemId'
   id:
     | '__root__'
     | '/_items'
+    | '/blocking'
     | '/feeds'
     | '/tags'
     | '/_items/'
@@ -76,6 +86,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   ItemsRoute: typeof ItemsRouteWithChildren
+  BlockingRoute: typeof BlockingRoute
   FeedsRoute: typeof FeedsRoute
   TagsRoute: typeof TagsRoute
 }
@@ -94,6 +105,13 @@ declare module '@tanstack/solid-router' {
       path: '/feeds'
       fullPath: '/feeds'
       preLoaderRoute: typeof FeedsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blocking': {
+      id: '/blocking'
+      path: '/blocking'
+      fullPath: '/blocking'
+      preLoaderRoute: typeof BlockingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_items': {
@@ -134,6 +152,7 @@ const ItemsRouteWithChildren = ItemsRoute._addFileChildren(ItemsRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   ItemsRoute: ItemsRouteWithChildren,
+  BlockingRoute: BlockingRoute,
   FeedsRoute: FeedsRoute,
   TagsRoute: TagsRoute,
 }

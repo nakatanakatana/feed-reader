@@ -26,6 +26,8 @@ message Item {
   string image_url = 11;
   string categories = 12;
   string created_at = 13;
+  string username = 14;
+  bool is_hidden = 15;
 }
 
 message ListItem {
@@ -37,6 +39,7 @@ message ListItem {
   bool is_read = 6;
   string feed_id = 7;
   string url = 8;
+  bool is_hidden = 9;
 }
 
 message GetItemRequest {
@@ -52,6 +55,7 @@ message ListItemsRequest {
   optional bool is_read = 2;
   optional string tag_id = 7;
   optional google.protobuf.Timestamp since = 8;
+  optional bool include_hidden = 9;
 
   int32 limit = 5;
   int32 offset = 6;

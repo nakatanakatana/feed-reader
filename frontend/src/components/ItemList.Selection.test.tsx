@@ -96,13 +96,13 @@ describe("ItemList Selection", () => {
 
     // Get checkboxes
     const checkboxes = page.getByRole("checkbox");
-    // Should have 1 (Show Read) + 1 (Select All) + 2 (Items) = 4 checkboxes
-    await expect.poll(async () => (await checkboxes.all()).length).toBe(4);
+    // Should have 1 (Show Read) + 1 (Show Blocked) + 1 (Select All) + 2 (Items) = 5 checkboxes
+    await expect.poll(async () => (await checkboxes.all()).length).toBe(5);
 
     const selectAll = page.getByLabelText(/Select All/i);
     const allCheckboxes = await checkboxes.all();
-    const item1Checkbox = allCheckboxes[2];
-    const item2Checkbox = allCheckboxes[3];
+    const item1Checkbox = allCheckboxes[3];
+    const item2Checkbox = allCheckboxes[4];
 
     // Select Item 1
     await item1Checkbox.click();
@@ -158,11 +158,12 @@ describe("ItemList Selection", () => {
 
     const selectAll = page.getByLabelText(/Select All/i);
     const checkboxes = page.getByRole("checkbox");
-    await expect.poll(async () => (await checkboxes.all()).length).toBe(4);
+    // Should have 1 (Show Read) + 1 (Show Blocked) + 1 (Select All) + 2 (Items) = 5 checkboxes
+    await expect.poll(async () => (await checkboxes.all()).length).toBe(5);
 
     const allCheckboxes = await checkboxes.all();
-    const item1Checkbox = allCheckboxes[2];
-    const item2Checkbox = allCheckboxes[3];
+    const item1Checkbox = allCheckboxes[3];
+    const item2Checkbox = allCheckboxes[4];
 
     // Click Select All
     await selectAll.click();

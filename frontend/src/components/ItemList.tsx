@@ -321,6 +321,28 @@ export function ItemList(props: ItemListProps) {
             </div>
             <div class={flex({ gap: "2", alignItems: "center" })}>
               <input
+                id="show-blocked-toggle"
+                type="checkbox"
+                checked={itemStore.state.showHidden}
+                onChange={(e) =>
+                  itemStore.setShowHidden(e.currentTarget.checked)
+                }
+                class={css({ cursor: "pointer" })}
+              />
+              <label
+                for="show-blocked-toggle"
+                class={css({
+                  fontSize: "sm",
+                  color: "gray.600",
+                  cursor: "pointer",
+                  whiteSpace: "nowrap",
+                })}
+              >
+                Show Blocked
+              </label>
+            </div>
+            <div class={flex({ gap: "2", alignItems: "center" })}>
+              <input
                 id="select-all-checkbox"
                 type="checkbox"
                 checked={isAllSelected()}
@@ -450,6 +472,30 @@ export function ItemList(props: ItemListProps) {
                       class={css({ cursor: "pointer" })}
                     />
                     <span>Show Read</span>
+                  </label>
+                  <label
+                    class={css({
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "2",
+                      px: "3",
+                      py: "2",
+                      fontSize: "sm",
+                      color: "gray.700",
+                      borderRadius: "sm",
+                      cursor: "pointer",
+                      _hover: { bg: "gray.50" },
+                    })}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={itemStore.state.showHidden}
+                      onChange={(e) => {
+                        itemStore.setShowHidden(e.currentTarget.checked);
+                      }}
+                      class={css({ cursor: "pointer" })}
+                    />
+                    <span>Show Blocked</span>
                   </label>
                   <label
                     class={css({

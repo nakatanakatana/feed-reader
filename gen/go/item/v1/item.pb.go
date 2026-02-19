@@ -36,6 +36,8 @@ type Item struct {
 	ImageUrl      string                 `protobuf:"bytes,11,opt,name=image_url,json=imageUrl,proto3" json:"image_url,omitempty"`
 	Categories    string                 `protobuf:"bytes,12,opt,name=categories,proto3" json:"categories,omitempty"`
 	CreatedAt     string                 `protobuf:"bytes,13,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	Username      string                 `protobuf:"bytes,14,opt,name=username,proto3" json:"username,omitempty"`
+	IsHidden      bool                   `protobuf:"varint,15,opt,name=is_hidden,json=isHidden,proto3" json:"is_hidden,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -154,6 +156,20 @@ func (x *Item) GetCreatedAt() string {
 	return ""
 }
 
+func (x *Item) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
+func (x *Item) GetIsHidden() bool {
+	if x != nil {
+		return x.IsHidden
+	}
+	return false
+}
+
 type ListItem struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -164,6 +180,7 @@ type ListItem struct {
 	IsRead        bool                   `protobuf:"varint,6,opt,name=is_read,json=isRead,proto3" json:"is_read,omitempty"`
 	FeedId        string                 `protobuf:"bytes,7,opt,name=feed_id,json=feedId,proto3" json:"feed_id,omitempty"`
 	Url           string                 `protobuf:"bytes,8,opt,name=url,proto3" json:"url,omitempty"`
+	IsHidden      bool                   `protobuf:"varint,9,opt,name=is_hidden,json=isHidden,proto3" json:"is_hidden,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -252,6 +269,13 @@ func (x *ListItem) GetUrl() string {
 		return x.Url
 	}
 	return ""
+}
+
+func (x *ListItem) GetIsHidden() bool {
+	if x != nil {
+		return x.IsHidden
+	}
+	return false
 }
 
 type GetItemRequest struct {
@@ -348,6 +372,7 @@ type ListItemsRequest struct {
 	IsRead        *bool                  `protobuf:"varint,2,opt,name=is_read,json=isRead,proto3,oneof" json:"is_read,omitempty"`
 	TagId         *string                `protobuf:"bytes,7,opt,name=tag_id,json=tagId,proto3,oneof" json:"tag_id,omitempty"`
 	Since         *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=since,proto3,oneof" json:"since,omitempty"`
+	IncludeHidden *bool                  `protobuf:"varint,9,opt,name=include_hidden,json=includeHidden,proto3,oneof" json:"include_hidden,omitempty"`
 	Limit         int32                  `protobuf:"varint,5,opt,name=limit,proto3" json:"limit,omitempty"`
 	Offset        int32                  `protobuf:"varint,6,opt,name=offset,proto3" json:"offset,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -410,6 +435,13 @@ func (x *ListItemsRequest) GetSince() *timestamppb.Timestamp {
 		return x.Since
 	}
 	return nil
+}
+
+func (x *ListItemsRequest) GetIncludeHidden() bool {
+	if x != nil && x.IncludeHidden != nil {
+		return *x.IncludeHidden
+	}
+	return false
 }
 
 func (x *ListItemsRequest) GetLimit() int32 {
@@ -726,7 +758,7 @@ var File_item_v1_item_proto protoreflect.FileDescriptor
 
 const file_item_v1_item_proto_rawDesc = "" +
 	"\n" +
-	"\x12item/v1/item.proto\x12\aitem.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc3\x02\n" +
+	"\x12item/v1/item.proto\x12\aitem.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfc\x02\n" +
 	"\x04Item\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x10\n" +
 	"\x03url\x18\x02 \x01(\tR\x03url\x12\x14\n" +
@@ -743,7 +775,9 @@ const file_item_v1_item_proto_rawDesc = "" +
 	"categories\x18\f \x01(\tR\n" +
 	"categories\x12\x1d\n" +
 	"\n" +
-	"created_at\x18\r \x01(\tR\tcreatedAt\"\xd8\x01\n" +
+	"created_at\x18\r \x01(\tR\tcreatedAt\x12\x1a\n" +
+	"\busername\x18\x0e \x01(\tR\busername\x12\x1b\n" +
+	"\tis_hidden\x18\x0f \x01(\bR\bisHidden\"\xf5\x01\n" +
 	"\bListItem\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12 \n" +
@@ -753,16 +787,18 @@ const file_item_v1_item_proto_rawDesc = "" +
 	"created_at\x18\x05 \x01(\tR\tcreatedAt\x12\x17\n" +
 	"\ais_read\x18\x06 \x01(\bR\x06isRead\x12\x17\n" +
 	"\afeed_id\x18\a \x01(\tR\x06feedId\x12\x10\n" +
-	"\x03url\x18\b \x01(\tR\x03url\" \n" +
+	"\x03url\x18\b \x01(\tR\x03url\x12\x1b\n" +
+	"\tis_hidden\x18\t \x01(\bR\bisHidden\" \n" +
 	"\x0eGetItemRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"4\n" +
 	"\x0fGetItemResponse\x12!\n" +
-	"\x04item\x18\x01 \x01(\v2\r.item.v1.ItemR\x04item\"\xfc\x01\n" +
+	"\x04item\x18\x01 \x01(\v2\r.item.v1.ItemR\x04item\"\xbb\x02\n" +
 	"\x10ListItemsRequest\x12\x1c\n" +
 	"\afeed_id\x18\x01 \x01(\tH\x00R\x06feedId\x88\x01\x01\x12\x1c\n" +
 	"\ais_read\x18\x02 \x01(\bH\x01R\x06isRead\x88\x01\x01\x12\x1a\n" +
 	"\x06tag_id\x18\a \x01(\tH\x02R\x05tagId\x88\x01\x01\x125\n" +
-	"\x05since\x18\b \x01(\v2\x1a.google.protobuf.TimestampH\x03R\x05since\x88\x01\x01\x12\x14\n" +
+	"\x05since\x18\b \x01(\v2\x1a.google.protobuf.TimestampH\x03R\x05since\x88\x01\x01\x12*\n" +
+	"\x0einclude_hidden\x18\t \x01(\bH\x04R\rincludeHidden\x88\x01\x01\x12\x14\n" +
 	"\x05limit\x18\x05 \x01(\x05R\x05limit\x12\x16\n" +
 	"\x06offset\x18\x06 \x01(\x05R\x06offsetB\n" +
 	"\n" +
@@ -770,7 +806,8 @@ const file_item_v1_item_proto_rawDesc = "" +
 	"\n" +
 	"\b_is_readB\t\n" +
 	"\a_tag_idB\b\n" +
-	"\x06_since\"]\n" +
+	"\x06_sinceB\x11\n" +
+	"\x0f_include_hidden\"]\n" +
 	"\x11ListItemsResponse\x12'\n" +
 	"\x05items\x18\x01 \x03(\v2\x11.item.v1.ListItemR\x05items\x12\x1f\n" +
 	"\vtotal_count\x18\x02 \x01(\x05R\n" +

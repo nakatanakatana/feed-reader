@@ -61,27 +61,33 @@ func (s *ItemServer) ListItems(ctx context.Context, req *connect.Request[itemv1.
 	if req.Msg.Since != nil {
 		since = req.Msg.Since.AsTime().UTC().Format(time.RFC3339)
 	}
+	var includeHidden interface{}
+	if req.Msg.IncludeHidden != nil && *req.Msg.IncludeHidden {
+		includeHidden = true
+	}
 
 	var totalCount int64
 	var err error
 
 	totalCount, err = s.store.CountItems(ctx, store.CountItemsParams{
-		FeedID: feedID,
-		IsRead: isRead,
-		TagID:  tagID,
-		Since:  since,
+		FeedID:        feedID,
+		IsRead:        isRead,
+		TagID:         tagID,
+		Since:         since,
+		IncludeHidden: includeHidden,
 	})
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
 	rows, err := s.store.ListItems(ctx, store.ListItemsParams{
-		FeedID: feedID,
-		IsRead: isRead,
-		TagID:  tagID,
-		Since:  since,
-		Limit:  limit,
-		Offset: offset,
+		FeedID:        feedID,
+		IsRead:        isRead,
+		TagID:         tagID,
+		Since:         since,
+		IncludeHidden: includeHidden,
+		Limit:         limit,
+		Offset:        offset,
 	})
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
@@ -161,6 +167,8 @@ func GetItemRowFromListItemsRow(row store.ListItemsRow) store.GetItemRow {
 		Content:     row.Content,
 		ImageUrl:    row.ImageUrl,
 		Categories:  row.Categories,
+		Username:    row.Username,
+		IsHidden:    row.IsHidden,
 		CreatedAt:   row.CreatedAt,
 		FeedID:      row.FeedID,
 		IsRead:      row.IsRead,
@@ -196,6 +204,10 @@ func toProtoItem(row store.GetItemRow) *itemv1.Item {
 	if row.Categories != nil {
 		cats = *row.Categories
 	}
+	var username string
+	if row.Username != nil {
+		username = *row.Username
+	}
 
 	return &itemv1.Item{
 		Id:          row.ID,
@@ -210,6 +222,8 @@ func toProtoItem(row store.GetItemRow) *itemv1.Item {
 		ImageUrl:    img,
 		Categories:  cats,
 		CreatedAt:   row.CreatedAt,
+		Username:    username,
+		IsHidden:    row.IsHidden == 1,
 	}
 }
 
@@ -236,5 +250,6 @@ func toProtoListItem(row store.GetItemRow) *itemv1.ListItem {
 		IsRead:      row.IsRead == 1,
 		FeedId:      row.FeedID,
 		Url:         row.Url,
+		IsHidden:    row.IsHidden == 1,
 	}
 }

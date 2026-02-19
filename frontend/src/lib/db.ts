@@ -1,11 +1,13 @@
 import { queryClient } from "./query";
 
+export * from "./blocking-db";
 // Re-export all database modules
 // ... (omitting lines for brevity, use real content)
 export * from "./feed-db";
 export * from "./item-db";
 export * from "./tag-db";
 
+import { blockingRules, urlParsingRules } from "./blocking-db";
 // Import for db object
 import { feeds, feedTag } from "./feed-db";
 import { tags } from "./tag-db";
@@ -16,6 +18,8 @@ export const db = {
   feeds,
   feedTag,
   tags,
+  blockingRules,
+  urlParsingRules,
 };
 
 export const resetDatabase = () => {

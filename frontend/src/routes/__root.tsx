@@ -27,7 +27,7 @@ function RootComponent() {
     borderBottomWidth: "1px",
     borderBottomStyle: "solid",
     borderBottomColor: "gray.100",
-    gap: "6",
+    gap: { base: "2", md: "6" },
     fontSize: "md",
     backgroundColor: "white",
     position: "sticky",
@@ -37,7 +37,7 @@ function RootComponent() {
 
   const linkStyle = css({
     position: "relative",
-    paddingX: "3",
+    paddingX: { base: "2", md: "3" },
     paddingY: "1.5",
     borderRadius: "md",
     color: "gray.500",
@@ -91,6 +91,15 @@ function RootComponent() {
           }}
         >
           Tags
+        </Link>
+        <Link
+          to="/blocking"
+          class={css(linkStyle, { display: { base: "none", md: "inline-block" } })}
+          activeProps={{
+            class: activeLinkStyle,
+          }}
+        >
+          Blocking
         </Link>
       </header>
       <Outlet />

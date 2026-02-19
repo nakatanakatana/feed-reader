@@ -148,6 +148,23 @@ export function ItemRow(props: ItemRowProps) {
                 Read
               </span>
             </Show>
+            <Show when={props.item.isHidden}>
+              <span
+                class={css({
+                  fontSize: "xs",
+                  color: "red.600",
+                  backgroundColor: "red.50",
+                  borderWidth: "1px",
+                  borderStyle: "solid",
+                  borderColor: "red.100",
+                  paddingInline: "1.5",
+                  borderRadius: "sm",
+                  fontWeight: "bold",
+                })}
+              >
+                Blocked
+              </span>
+            </Show>
           </div>
         </button>
       </div>

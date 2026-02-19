@@ -23,6 +23,7 @@ describe("ItemRow Density", () => {
     description: "This is a test description snippet.",
     isRead: false,
     feedId: "feed-1",
+    isHidden: false,
   };
 
   it("has reduced vertical padding", async () => {
