@@ -199,8 +199,12 @@ describe("ItemDetailModal Responsive", () => {
     );
 
     // Labels "Published:" and "Received:" SHOULD be visible at the breakpoint
-    await expect.element(page.getByText("Published:", { exact: true }).first()).toBeVisible();
-    await expect.element(page.getByText("Received:", { exact: true }).first()).toBeVisible();
+    await expect
+      .element(page.getByText("Published:", { exact: true }).first())
+      .toBeVisible();
+    await expect
+      .element(page.getByText("Received:", { exact: true }).first())
+      .toBeVisible();
 
     // Icons with titles should NOT be visible
     await expect
@@ -227,8 +231,12 @@ describe("ItemDetailModal Responsive", () => {
     );
 
     // Labels "Published:" and "Received:" SHOULD be visible
-    await expect.element(page.getByText("Published:", { exact: true }).first()).toBeVisible();
-    await expect.element(page.getByText("Received:", { exact: true }).first()).toBeVisible();
+    await expect
+      .element(page.getByText("Published:", { exact: true }).first())
+      .toBeVisible();
+    await expect
+      .element(page.getByText("Received:", { exact: true }).first())
+      .toBeVisible();
 
     // Icons with titles should NOT be visible
     await expect
