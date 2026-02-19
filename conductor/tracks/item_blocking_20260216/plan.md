@@ -16,7 +16,7 @@ Implement the logic to extract usernames from URLs based on domain-specific rule
 
 - [x] Task: Implement `UsernameExtractor` service in Go f37fc98
 - [x] Task: Write tests for `UsernameExtractor` with various URL patterns and regex rules a7227d9
-- [ ] Task: Integrate `UsernameExtractor` into the item fetching pipeline
+- [x] Task: Integrate `UsernameExtractor` into the item fetching pipeline 0eeb8ea
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Username Extraction Logic' (Protocol in workflow.md)
 
 ## Phase 3: Blocking Logic and Save-time Flagging
