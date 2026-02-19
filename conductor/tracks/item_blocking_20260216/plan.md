@@ -22,7 +22,7 @@ Implement the logic to extract usernames from URLs based on domain-specific rule
 ## Phase 3: Blocking Logic and Save-time Flagging
 Implement the core filtering logic applied during item ingestion.
 
-- [ ] Task: Implement `BlockingService` to check if an item should be hidden
+- [x] Task: Implement `BlockingService` to check if an item should be hidden 23b2bec
 - [ ] Task: Update the item creation flow to apply `BlockingService` and set `is_hidden` flag
 - [ ] Task: Update item retrieval queries to exclude `is_hidden = true` by default
 - [ ] Task: Write integration tests for the full "fetch -> block -> hide" flow
