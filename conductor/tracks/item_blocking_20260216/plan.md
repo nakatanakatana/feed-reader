@@ -25,7 +25,7 @@ Implement the core filtering logic applied during item ingestion.
 - [x] Task: Implement `BlockingService` to check if an item should be hidden 23b2bec
 - [x] Task: Update the item creation flow to apply `BlockingService` and set `is_hidden` flag 22774c6
 - [x] Task: Update item retrieval queries to exclude `is_hidden = true` by default (Already implemented in previous phases)
-- [ ] Task: Write integration tests for the full "fetch -> block -> hide" flow
+- [x] Task: Write integration tests for the full "fetch -> block -> hide" flow 2019bfa
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Blocking Logic and Save-time Flagging' (Protocol in workflow.md)
 
 ## Phase 4: Retroactive Background Updates
