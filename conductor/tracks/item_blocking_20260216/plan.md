@@ -11,13 +11,13 @@ Define the storage for blocking rules, URL parsing rules, and update the item mo
 - [x] Task: Update Go models and SQLC queries for new tables and column 6c3969d
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Database Schema and Models' (Protocol in workflow.md) 5f2e614
 
-## Phase 2: Username Extraction Logic
+## Phase 2: Username Extraction Logic [checkpoint: 673d1f2]
 Implement the logic to extract usernames from URLs based on domain-specific rules.
 
 - [x] Task: Implement `UsernameExtractor` service in Go f37fc98
 - [x] Task: Write tests for `UsernameExtractor` with various URL patterns and regex rules a7227d9
 - [x] Task: Integrate `UsernameExtractor` into the item fetching pipeline 0eeb8ea
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Username Extraction Logic' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Username Extraction Logic' (Protocol in workflow.md) 673d1f2
 
 ## Phase 3: Blocking Logic and Save-time Flagging
 Implement the core filtering logic applied during item ingestion.
