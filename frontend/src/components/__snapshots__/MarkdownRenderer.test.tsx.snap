@@ -1,22 +1,59 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`MarkdownRenderer > disables raw HTML rendering (XSS protection) 1`] = `
-"<div><p>&lt;script&gt;alert("xss")&lt;/script&gt;<strong>Safe</strong></p>
-</div>"
+<DocumentFragment>
+  <div>
+    <p>
+      &lt;script&gt;alert("xss")&lt;/script&gt;
+      <strong>
+        Safe
+      </strong>
+    </p>
+    
+
+  </div>
+</DocumentFragment>
 `;
 
-exports[`MarkdownRenderer > handles empty content 1`] = `"<div></div>"`;
+exports[`MarkdownRenderer > handles empty content 1`] = `
+<DocumentFragment>
+  <div />
+</DocumentFragment>
+`;
 
 exports[`MarkdownRenderer > renders basic markdown 1`] = `
-"
-  
+<DocumentFragment>
+  <div>
+    <h1>
+      Hello World
+    </h1>
+    
 
-<div><h1>Hello World</h1>
-<p>This is <strong>bold</strong> text.</p>
-</div>"
+    <p>
+      This is 
+      <strong>
+        bold
+      </strong>
+       text.
+    </p>
+    
+
+  </div>
+</DocumentFragment>
 `;
 
 exports[`MarkdownRenderer > renders links correctly 1`] = `
-"<div><p><a href="https://example.com">Example</a></p>
-</div>"
+<DocumentFragment>
+  <div>
+    <p>
+      <a
+        href="https://example.com"
+      >
+        Example
+      </a>
+    </p>
+    
+
+  </div>
+</DocumentFragment>
 `;

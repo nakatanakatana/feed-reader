@@ -1,4 +1,4 @@
-import { afterAll, afterEach, beforeAll, vi } from "vitest";
+import { afterAll, afterEach, beforeAll, expect, vi } from "vitest";
 import "./styles.css";
 import { resetDatabase } from "./lib/db";
 import { worker } from "./mocks/browser";
@@ -15,6 +15,20 @@ Date.prototype.toLocaleString = function (
     timeZone: "UTC",
   });
 };
+
+// Custom snapshot serializer to format HTML strings
+expect.addSnapshotSerializer({
+  test: (val) =>
+    typeof document !== "undefined" &&
+    typeof val === "string" &&
+    val.trim().startsWith("<") &&
+    val.trim().endsWith(">"),
+  print: (val, serialize) => {
+    const template = document.createElement("template");
+    template.innerHTML = (val as string).trim();
+    return serialize(template.content);
+  },
+});
 
 beforeAll(async () => {
   await worker.start({ onUnhandledRequest: "bypass" });
