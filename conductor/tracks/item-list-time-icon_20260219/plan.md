@@ -11,7 +11,7 @@ Standardize the date display in `ItemRow` (used within `ItemList`) by reordering
     - [x] Sub-task: Verify tests fail as expected (Red Phase).
 
 ## Phase 2: Implementation
-- [ ] Task: Refactor `PublishedIcon` and `ReceivedIcon` from `ItemDetailModal.tsx` into a shared location if appropriate, or duplicate for now if minimal.
+- [x] Task: Refactor `PublishedIcon` and `ReceivedIcon` from `ItemDetailModal.tsx` into a shared location if appropriate, or duplicate for now if minimal. c722e2a
 - [ ] Task: Update `ItemRow.tsx` to reorder dates: "Published" followed by "Received".
 - [ ] Task: Implement responsive logic in `ItemRow.tsx` using Panda CSS (same as `ItemDetailModal.tsx`) to switch between text labels and icons at the `xs` breakpoint.
 - [ ] Task: Add tooltips to the icons in `ItemRow.tsx` for accessibility and information parity.
