@@ -3,7 +3,7 @@ import { useLiveQuery } from "@tanstack/solid-db";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { page } from "vitest/browser";
 import {
   GetItemResponseSchema,
@@ -23,6 +23,10 @@ function CollectionInitializer() {
 }
 
 describe("ItemDetailModal FAB Reactivity & Fallback", () => {
+  afterEach(() => {
+    document.body.innerHTML = "";
+  });
+
   const setupMockData = (itemId: string, isRead: boolean) => {
     worker.use(
       http.post("*/item.v1.ItemService/GetItem", () => {
@@ -99,9 +103,19 @@ describe("ItemDetailModal FAB Reactivity & Fallback", () => {
     dispose();
   });
 
-  it("verifies: FAB shows 'Mark as Unread' initially for a read item", async () => {
-    const itemId = "test-read-initial-1";
-    setupMockData(itemId, true); // isRead: true
+  it("verifies: FAB toggles status and updates UI when item IS in collection", async () => {
+    const itemId = "test-in-collection-1";
+    setupMockData(itemId, false);
+
+    // Manually add the item to the collection
+    items().utils.writeInsert({
+      id: itemId,
+      title: "Test Item in Collection",
+      isRead: false,
+      publishedAt: "2026-01-24T10:00:00Z",
+      createdAt: "2026-01-24T09:00:00Z",
+      feedId: "feed-1",
+    });
 
     const dispose = render(
       () => (
@@ -115,10 +129,38 @@ describe("ItemDetailModal FAB Reactivity & Fallback", () => {
       document.body,
     );
 
-    // Initial state: Mark as Unread should be visible
+    // 1. Initial state: Mark as Read should be visible
+    await expect.element(page.getByText(`Test Item ${itemId}`)).toBeInTheDocument();
+    const fab = page.getByRole("button", { name: /Mark as read/i });
+    await expect.element(fab).toBeInTheDocument();
+
+    // 2. Click the FAB
+    await fab.click();
+
+    // 3. FAB should update to Mark as unread
     await expect
-      .element(page.getByText(`Test Item ${itemId}`))
+      .element(page.getByRole("button", { name: /Mark as unread/i }))
       .toBeInTheDocument();
+
+    dispose();
+  });
+
+  it("verifies: FAB shows 'Mark as Unread' initially for a read item", async () => {
+    const itemId = "test-read-initial-1";
+    setupMockData(itemId, true); // isRead: true
+
+    const dispose = render(
+      () => (
+        <TransportProvider transport={transport}>
+          <QueryClientProvider client={queryClient}>
+            <ItemDetailModal itemId={itemId} onClose={() => {}} />
+          </QueryClientProvider>
+        </TransportProvider>
+      ),
+      document.body,
+    );
+
+    // Initial state: Mark as Unread should be visible
     await expect
       .element(page.getByRole("button", { name: /Mark as unread/i }))
       .toBeInTheDocument();

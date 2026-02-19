@@ -138,27 +138,23 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
 
     const newIsRead = !currentItem.isRead;
 
-    // Use items().update if the item is in the collection
+    // Always update the individual item query cache for immediate UI feedback in the modal.
+    // This handles both the collection and fallback cases.
+    queryClient.setQueryData(
+      ["item", props.itemId],
+      (old: Item | null | undefined) => {
+        if (!old) return old;
+        return { ...old, isRead: newIsRead };
+      },
+    );
+
+    // Use items().update if the item is in the collection to keep the list in sync
     if (collectionItem()) {
       items().update(currentItem.id, (draft) => {
         draft.isRead = newIsRead;
       });
     } else {
-      // Fallback: If not in collection, update the query data for the detail query.
-      // We also need to call the API directly since items().update won't trigger its onUpdate hook.
-      // For now, updating the query cache is sufficient for UI reactivity in the modal.
-      // (The API call would ideally be handled by a dedicated service/store method)
-
-      // Let's use the queryClient to update the individual item query cache
-      queryClient.setQueryData(
-        ["item", props.itemId],
-        (old: Item | null | undefined) => {
-          if (!old) return old;
-          return { ...old, isRead: newIsRead };
-        },
-      );
-
-      // Call the API directly to ensure the state is persisted.
+      // Call the API directly only if NOT in collection (items().update handles it otherwise)
       updateItemReadStatus([currentItem.id], newIsRead);
     }
   };
