@@ -2,43 +2,6 @@ import { useQuery } from "@tanstack/solid-query";
 import { createEffect, For, type JSX, onCleanup, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
-
-const PublishedIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-  >
-    <path d="m22 2-7 20-4-9-9-4Z" />
-    <path d="M22 2 11 13" />
-  </svg>
-);
-
-const ReceivedIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-  >
-    <circle cx="12" cy="12" r="10" />
-    <polyline points="12 6 12 12 16 14" />
-  </svg>
-);
-
 import { getItem, items } from "../lib/item-db";
 import { ITEM_STALE_TIME } from "../lib/item-query-constants";
 import { formatDate, normalizeCategories } from "../lib/item-utils";
@@ -47,7 +10,7 @@ import { MarkdownRenderer } from "./MarkdownRenderer";
 import { ActionButton } from "./ui/ActionButton";
 import { Modal } from "./ui/Modal";
 
-interface ItemDetailModalProps {
+const PublishedIcon = () => (
   itemId: string | undefined;
   onClose: () => void;
   prevItemId?: string;
