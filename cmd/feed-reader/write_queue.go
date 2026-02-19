@@ -127,6 +127,10 @@ func (j *SaveItemsJob) Execute(ctx context.Context, q *store.Queries) error {
 	for _, params := range j.Items {
 		// 1. Upsert Item
 		newID := uuid.NewString()
+		isHidden := int64(0)
+		if params.IsHidden {
+			isHidden = 1
+		}
 		item, err := q.CreateItem(ctx, store.CreateItemParams{
 			ID:          newID,
 			Url:         params.Url,
@@ -138,6 +142,8 @@ func (j *SaveItemsJob) Execute(ctx context.Context, q *store.Queries) error {
 			Content:     params.Content,
 			ImageUrl:    params.ImageUrl,
 			Categories:  params.Categories,
+			Username:    params.Username,
+			IsHidden:    isHidden,
 		})
 		if err != nil {
 			err = fmt.Errorf("failed to create/update item: %w", err)
@@ -149,8 +155,9 @@ func (j *SaveItemsJob) Execute(ctx context.Context, q *store.Queries) error {
 
 		// 2. Link to Feed
 		err = q.CreateFeedItem(ctx, store.CreateFeedItemParams{
-			FeedID: params.FeedID,
-			ItemID: item.ID,
+			FeedID:      params.FeedID,
+			ItemID:      item.ID,
+			PublishedAt: params.PublishedAt,
 		})
 		if err != nil {
 			err = fmt.Errorf("failed to link feed and item: %w", err)
