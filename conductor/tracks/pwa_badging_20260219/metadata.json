@@ -1,0 +1,8 @@
+{
+  "track_id": "pwa_badging_20260219",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-02-19T12:00:00Z",
+  "updated_at": "2026-02-19T12:00:00Z",
+  "description": "frontendでBadging APIに対応して全体の未読件数をバッジで表示できるようにしてください"
+}
