@@ -20,6 +20,6 @@ Enable the Badging API to display the total unread count on the application icon
     - Mock `navigator.setAppBadge` and `navigator.clearAppBadge`.
     - Verify that the API is called correctly with different unread counts.
     - Verify that it doesn't crash in environments where the API is missing.
-- [ ] Task: Refine display limit logic
+- [x] Task: Refine display limit logic 3d1fc8d
     - Based on the spec, ensure that very high counts are handled gracefully (either by the browser or by capping the value passed to the API).
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Testing and Refinement' (Protocol in workflow.md)
