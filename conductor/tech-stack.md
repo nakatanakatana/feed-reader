@@ -9,6 +9,10 @@ The backend is responsible for feed management, article fetching, and providing 
 -   **API Framework:** Connect RPC (Protobuf over HTTP/2)
 -   **Database:** SQLite (Relational storage via `ncruces/go-sqlite3`)
 -   **SQLite Resilience:** Application-level retry mechanism with exponential backoff for transient lock conflicts (`SQLITE_BUSY`).
+- **Save-time Item Filtering:** 
+    - **Username Extraction:** Domain-aware extraction service using configurable regex patterns.
+    - **Blocking Engine:** Evaluates items against multi-criteria rules (User, Domain, Keyword) during ingestion.
+    - **Asynchronous Re-evaluation:** Background service for retroactive visibility updates using cursor-based batch processing for scalability.
 - **Write Consolidation:** Dedicated Write Queue Service to batch multiple write operations into single transactions. For large-scale operations like OPML import, the application utilizes manual bulk transaction scoping and parallel processing to significantly reduce I/O overhead and improve throughput.
 -   **Query Tooling:** `sqlc` (Type-safe SQL generation)
 -   **Feed Parsing:** `gofeed` (Robust RSS/Atom parsing)

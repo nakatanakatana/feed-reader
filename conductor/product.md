@@ -56,6 +56,14 @@ The primary target audience is individuals and organizations seeking control ove
 
 - **Adaptive Background Fetching:** Periodically fetches and updates feeds in the background. The system automatically calculates the optimal fetch interval for each feed based on its actual update frequency (averaging the last 10 items), ranging from 15 minutes for high-frequency sources to 24 hours for rare updates. This ensures timely delivery while optimizing resource usage.
 
+- **Item Blocking (Mute):** Advanced filtering system to hide unwanted content.
+  - **Multi-Criteria Blocking:** Support for blocking by username (automatically extracted from article URLs), domain, or specific keywords in titles and content.
+  - **Dynamic Extraction Rules:** Domain-specific regex rules to extract usernames from URLs, allowing for precise user-level blocking even when not explicitly provided by the feed.
+  - **Save-time Filtering:** Applied during item ingestion for zero performance impact on reading.
+  - **Retroactive Updates:** Automatically re-evaluates and updates the visibility of existing items when blocking rules are created or modified.
+  - **Flexible Visibility:** Integrated toggle in the item list to quickly show or hide blocked items for administrative review.
+  - **Rule Management UI:** Dedicated management interface for configuring both extraction and blocking rules.
+
 - **Deduplication & Storage:** Efficiently stores and retrieves articles with URL-based deduplication and normalized data structures, ensuring unique presentation even when items are associated with multiple feeds. Tracks per-feed metadata, including original publication and discovery timestamps for each association.
 
 - **Standard Compliance:** Supports standard RSS and Atom feed formats.
