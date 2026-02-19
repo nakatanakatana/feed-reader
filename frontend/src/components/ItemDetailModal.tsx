@@ -1,8 +1,9 @@
-import { useQuery } from "@tanstack/solid-query";
+import { useQuery, useQueryClient } from "@tanstack/solid-query";
+import { eq, useLiveQuery } from "@tanstack/solid-db";
 import { createEffect, For, type JSX, onCleanup, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
-import { getItem, items } from "../lib/item-db";
+import { getItem, items, updateItemReadStatus } from "../lib/item-db";
 import { ITEM_STALE_TIME } from "../lib/item-query-constants";
 import { formatDate, normalizeCategories } from "../lib/item-utils";
 import { useSwipe } from "../lib/use-swipe";
@@ -22,6 +23,7 @@ interface ItemDetailModalProps {
 
 export function ItemDetailModal(props: ItemDetailModalProps) {
   let modalRef: HTMLDivElement | undefined;
+  const queryClient = useQueryClient();
 
   const { x, isSwiping, handlers } = useSwipe({
     onSwipeLeft: () => {
@@ -117,13 +119,49 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   const isLoading = () => itemQuery.isPending;
   const isEndOfList = () => props.itemId === "end-of-list";
 
+  // Prioritize looking up the target item within the items collection
+  const collectionItems = useLiveQuery((q) => {
+    const id = props.itemId;
+    if (!id || id === "end-of-list") {
+      // Return a non-matching query to initialize the signal correctly
+      return q.from({ item: items() }).where(({ item }) => eq(item.id, "__none__")).select(({ item }) => ({ ...item }));
+    }
+    return q
+      .from({ item: items() })
+      .where(({ item }) => eq(item.id, id))
+      .select(({ item }) => ({ ...item }));
+  });
+
+  const collectionItem = () => collectionItems()[0];
+
+  const prioritizedItem = () => collectionItem() || item();
+
   const handleToggleRead = () => {
-    const currentItem = item();
+    const currentItem = prioritizedItem();
     if (!currentItem || isEndOfList()) return;
 
-    items().update(currentItem.id, (draft) => {
-      draft.isRead = !currentItem.isRead;
-    });
+    const newIsRead = !currentItem.isRead;
+
+    // Use items().update if the item is in the collection
+    if (collectionItem()) {
+      items().update(currentItem.id, (draft) => {
+        draft.isRead = newIsRead;
+      });
+    } else {
+      // Fallback: If not in collection, update the query data for the detail query.
+      // We also need to call the API directly since items().update won't trigger its onUpdate hook.
+      // For now, updating the query cache is sufficient for UI reactivity in the modal.
+      // (The API call would ideally be handled by a dedicated service/store method)
+      
+      // Let's use the queryClient to update the individual item query cache
+      queryClient.setQueryData(["item", props.itemId], (old: any) => {
+        if (!old) return old;
+        return { ...old, isRead: newIsRead };
+      });
+
+      // Call the API directly to ensure the state is persisted.
+      updateItemReadStatus([currentItem.id], newIsRead);
+    }
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
@@ -236,26 +274,26 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             <button
               type="button"
               onClick={handleToggleRead}
-              title={item()?.isRead ? "Mark as Unread" : "Mark as Read"}
-              aria-label={item()?.isRead ? "Mark as Unread" : "Mark as Read"}
-              aria-pressed={item()?.isRead ?? false}
+              title={prioritizedItem()?.isRead ? "Mark as Unread" : "Mark as Read"}
+              aria-label={prioritizedItem()?.isRead ? "Mark as Unread" : "Mark as Read"}
+              aria-pressed={prioritizedItem()?.isRead ?? false}
               class={css({
                 width: "14",
                 height: "14",
                 borderRadius: "full",
-                bg: item()?.isRead ? "white" : "blue.600",
-                color: item()?.isRead ? "blue.600" : "white",
+                bg: prioritizedItem()?.isRead ? "white" : "blue.600",
+                color: prioritizedItem()?.isRead ? "blue.600" : "white",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 boxShadow: "lg",
                 cursor: "pointer",
                 border: "1px solid",
-                borderColor: item()?.isRead ? "blue.600" : "transparent",
+                borderColor: prioritizedItem()?.isRead ? "blue.600" : "transparent",
                 transition: "all 0.2s",
                 _hover: {
                   transform: "scale(1.05)",
-                  bg: item()?.isRead ? "blue.50" : "blue.700",
+                  bg: prioritizedItem()?.isRead ? "blue.50" : "blue.700",
                 },
                 _active: {
                   transform: "scale(0.95)",
@@ -263,7 +301,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
               })}
             >
               <Show
-                when={item()?.isRead}
+                when={prioritizedItem()?.isRead}
                 fallback={
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
