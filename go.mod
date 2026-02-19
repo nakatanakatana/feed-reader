@@ -14,7 +14,7 @@ require (
 	golang.org/x/sync v0.19.0
 	google.golang.org/protobuf v1.36.11
 	gotest.tools/v3 v3.5.2
-	modernc.org/sqlite v1.46.0
+	modernc.org/sqlite v1.46.1
 	pgregory.net/rapid v1.2.0
 )
 

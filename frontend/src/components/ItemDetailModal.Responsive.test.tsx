@@ -151,4 +151,99 @@ describe("ItemDetailModal Responsive", () => {
     expect(parseInt(fabStyle.bottom, 10)).toBeGreaterThan(0);
     expect(parseInt(fabStyle.right, 10)).toBeGreaterThan(0);
   });
+
+  it("should swap Published/Received labels with icons on narrow viewports (< 480px)", async () => {
+    // Narrow viewport (479px) - should show icons
+    await page.viewport(479, 800);
+    setupMockData("narrow-id");
+
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal itemId="narrow-id" onClose={() => {}} />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    // Labels "Published:" and "Received:" should NOT be visible (visually hidden by display: none)
+    // However, they should exist in the DOM for screen readers
+    const publishedText = page.getByText("Published:", { exact: true });
+    const receivedText = page.getByText("Received:", { exact: true });
+
+    // In CSS display:none case, vitest-browser's toBeVisible() correctly checks it.
+    // We expect 2 instances (one visually hidden in the icon span, one display:none in the label span)
+    await expect.element(publishedText.first()).not.toBeVisible();
+    await expect.element(receivedText.first()).not.toBeVisible();
+
+    // Icons with titles should be visible
+    const publishedIcon = page.getByTitle("Published", { exact: true });
+    const receivedIcon = page.getByTitle("Received", { exact: true });
+    await expect.element(publishedIcon).toBeVisible();
+    await expect.element(receivedIcon).toBeVisible();
+
+    dispose();
+    document.body.innerHTML = "";
+
+    // Boundary viewport (480px) - should show labels (start of 'xs' breakpoint)
+    await page.viewport(480, 800);
+    setupMockData("boundary-id");
+
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal itemId="boundary-id" onClose={() => {}} />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    // Labels "Published:" and "Received:" SHOULD be visible at the breakpoint
+    await expect
+      .element(page.getByText("Published:", { exact: true }).first())
+      .toBeVisible();
+    await expect
+      .element(page.getByText("Received:", { exact: true }).first())
+      .toBeVisible();
+
+    // Icons with titles should NOT be visible
+    await expect
+      .element(page.getByTitle("Published", { exact: true }))
+      .not.toBeVisible();
+    await expect
+      .element(page.getByTitle("Received", { exact: true }))
+      .not.toBeVisible();
+
+    dispose();
+    document.body.innerHTML = "";
+
+    // Wider viewport (600px)
+    await page.viewport(600, 800);
+    setupMockData("wide-id");
+
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal itemId="wide-id" onClose={() => {}} />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    // Labels "Published:" and "Received:" SHOULD be visible
+    await expect
+      .element(page.getByText("Published:", { exact: true }).first())
+      .toBeVisible();
+    await expect
+      .element(page.getByText("Received:", { exact: true }).first())
+      .toBeVisible();
+
+    // Icons with titles should NOT be visible
+    await expect
+      .element(page.getByTitle("Published", { exact: true }))
+      .not.toBeVisible();
+    await expect
+      .element(page.getByTitle("Received", { exact: true }))
+      .not.toBeVisible();
+  });
 });
