@@ -14,9 +14,8 @@ import { formatDate, normalizeCategories } from "../lib/item-utils";
 import { useSwipe } from "../lib/use-swipe";
 import { MarkdownRenderer } from "./MarkdownRenderer";
 import { ActionButton } from "./ui/ActionButton";
-import { Modal } from "./ui/Modal";
-
 import { PublishedIcon, ReceivedIcon } from "./ui/Icons";
+import { Modal } from "./ui/Modal";
 
 interface ItemDetailModalProps {
   itemId: string | undefined;

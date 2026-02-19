@@ -1,5 +1,3 @@
-import type { JSX } from "solid-js";
-
 interface IconProps {
   size?: number;
 }

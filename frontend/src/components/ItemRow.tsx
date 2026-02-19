@@ -138,36 +138,40 @@ export function ItemRow(props: ItemRowProps) {
             })}
           >
             <Show when={props.item.publishedAt}>
-              <span
-                class={flex({ gap: "1", alignItems: "center" })}
-                title={`Published: ${formatDate(props.item.publishedAt!)}`}
-              >
-                <span class={css({ display: { base: "none", xs: "inline" } })}>
-                  Published:
-                </span>
+              {(publishedAt) => (
                 <span
-                  class={css({ display: { base: "inline", xs: "none" } })}
-                  title="Published"
+                  class={flex({ gap: "1", alignItems: "center" })}
+                  title={`Published: ${formatDate(publishedAt())}`}
                 >
-                  <PublishedIcon />
                   <span
-                    class={css({
-                      position: "absolute",
-                      width: "1px",
-                      height: "1px",
-                      padding: "0",
-                      margin: "-1px",
-                      overflow: "hidden",
-                      clip: "rect(0, 0, 0, 0)",
-                      whiteSpace: "nowrap",
-                      borderWidth: "0",
-                    })}
+                    class={css({ display: { base: "none", xs: "inline" } })}
                   >
                     Published:
                   </span>
+                  <span
+                    class={css({ display: { base: "inline", xs: "none" } })}
+                    title="Published"
+                  >
+                    <PublishedIcon />
+                    <span
+                      class={css({
+                        position: "absolute",
+                        width: "1px",
+                        height: "1px",
+                        padding: "0",
+                        margin: "-1px",
+                        overflow: "hidden",
+                        clip: "rect(0, 0, 0, 0)",
+                        whiteSpace: "nowrap",
+                        borderWidth: "0",
+                      })}
+                    >
+                      Published:
+                    </span>
+                  </span>
+                  {formatDate(publishedAt())}
                 </span>
-                {formatDate(props.item.publishedAt!)}
-              </span>
+              )}
             </Show>
             <span
               class={flex({ gap: "1", alignItems: "center" })}
