@@ -13,7 +13,7 @@ Enable the Badging API to display the total unread count on the application icon
     - Pass the total unread count from the existing live query to the component.
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Implementation' (Protocol in workflow.md)
 
-## Phase 2: Testing and Refinement
+## Phase 2: Testing and Refinement [checkpoint: 35abbde]
 
 - [x] Task: Create unit tests for `PwaBadge` e0a5556
     - Create `frontend/src/components/PwaBadge.test.tsx`.
