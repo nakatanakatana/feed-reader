@@ -11,5 +11,6 @@
   "published_at": "MASKED",
   "title": "Item 1",
   "updated_at": "MASKED",
-  "url": "http://example.com/item1"
+  "url": "http://example.com/item1",
+  "username": null
 }

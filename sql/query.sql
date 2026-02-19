@@ -102,9 +102,10 @@ INSERT INTO items (
   content,
   image_url,
   categories,
+  username,
   is_hidden
 ) VALUES (
-  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 )
 ON CONFLICT(url) DO UPDATE SET
   title = excluded.title,
@@ -114,6 +115,7 @@ ON CONFLICT(url) DO UPDATE SET
   content = excluded.content,
   image_url = excluded.image_url,
   categories = excluded.categories,
+  username = excluded.username,
   is_hidden = excluded.is_hidden,
   updated_at = (strftime('%FT%TZ', 'now'))
 RETURNING *;
@@ -163,6 +165,7 @@ SELECT
   i.content,
   i.image_url,
   i.categories,
+  i.username,
   i.is_hidden,
   i.created_at,
   fi.feed_id,
@@ -188,6 +191,7 @@ SELECT
   i.content,
   i.image_url,
   i.categories,
+  i.username,
   i.is_hidden,
   i.created_at,
   CAST(MIN(fi.feed_id) AS TEXT) AS feed_id,

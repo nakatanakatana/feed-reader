@@ -65,6 +65,7 @@ type Item struct {
 	Content     *string `json:"content"`
 	ImageUrl    *string `json:"image_url"`
 	Categories  *string `json:"categories"`
+	Username    *string `json:"username"`
 	IsHidden    int64   `json:"is_hidden"`
 	CreatedAt   string  `json:"created_at"`
 	UpdatedAt   string  `json:"updated_at"`

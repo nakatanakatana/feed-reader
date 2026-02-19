@@ -24,6 +24,7 @@ CREATE TABLE items (
   content      TEXT,
   image_url    TEXT,
   categories   TEXT,
+  username     TEXT, -- Extracted from URL
   is_hidden    INTEGER NOT NULL DEFAULT 0, -- 0: false, 1: true
   created_at   TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now')),
   updated_at   TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now'))

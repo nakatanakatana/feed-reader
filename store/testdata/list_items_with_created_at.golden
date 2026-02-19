@@ -13,6 +13,7 @@
     "is_read": 0,
     "published_at": null,
     "title": null,
-    "url": "http://example.com/item1"
+    "url": "http://example.com/item1",
+    "username": null
   }
 ]

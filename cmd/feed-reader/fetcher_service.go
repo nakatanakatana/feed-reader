@@ -289,8 +289,10 @@ func (s *FetcherService) normalizeItem(ctx context.Context, feedID string, item 
 	}
 
 	if username, err := s.usernameExtractor.Extract(item.Link, rules); err == nil && username != "" {
-		params.Author = &username
-	} else if item.Author != nil {
+		params.Username = &username
+	}
+
+	if item.Author != nil {
 		params.Author = &item.Author.Name
 	} else if len(item.Authors) > 0 {
 		params.Author = &item.Authors[0].Name

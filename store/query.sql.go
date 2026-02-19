@@ -361,9 +361,10 @@ INSERT INTO items (
   content,
   image_url,
   categories,
+  username,
   is_hidden
 ) VALUES (
-  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
 )
 ON CONFLICT(url) DO UPDATE SET
   title = excluded.title,
@@ -373,9 +374,10 @@ ON CONFLICT(url) DO UPDATE SET
   content = excluded.content,
   image_url = excluded.image_url,
   categories = excluded.categories,
+  username = excluded.username,
   is_hidden = excluded.is_hidden,
   updated_at = (strftime('%FT%TZ', 'now'))
-RETURNING id, url, title, description, published_at, author, guid, content, image_url, categories, is_hidden, created_at, updated_at
+RETURNING id, url, title, description, published_at, author, guid, content, image_url, categories, username, is_hidden, created_at, updated_at
 `
 
 type CreateItemParams struct {
@@ -389,6 +391,7 @@ type CreateItemParams struct {
 	Content     *string `json:"content"`
 	ImageUrl    *string `json:"image_url"`
 	Categories  *string `json:"categories"`
+	Username    *string `json:"username"`
 	IsHidden    int64   `json:"is_hidden"`
 }
 
@@ -404,6 +407,7 @@ func (q *Queries) CreateItem(ctx context.Context, arg CreateItemParams) (Item, e
 		arg.Content,
 		arg.ImageUrl,
 		arg.Categories,
+		arg.Username,
 		arg.IsHidden,
 	)
 	var i Item
@@ -418,6 +422,7 @@ func (q *Queries) CreateItem(ctx context.Context, arg CreateItemParams) (Item, e
 		&i.Content,
 		&i.ImageUrl,
 		&i.Categories,
+		&i.Username,
 		&i.IsHidden,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -730,6 +735,7 @@ SELECT
   i.content,
   i.image_url,
   i.categories,
+  i.username,
   i.is_hidden,
   i.created_at,
   fi.feed_id,
@@ -755,6 +761,7 @@ type GetItemRow struct {
 	Content     *string `json:"content"`
 	ImageUrl    *string `json:"image_url"`
 	Categories  *string `json:"categories"`
+	Username    *string `json:"username"`
 	IsHidden    int64   `json:"is_hidden"`
 	CreatedAt   string  `json:"created_at"`
 	FeedID      string  `json:"feed_id"`
@@ -775,6 +782,7 @@ func (q *Queries) GetItem(ctx context.Context, id string) (GetItemRow, error) {
 		&i.Content,
 		&i.ImageUrl,
 		&i.Categories,
+		&i.Username,
 		&i.IsHidden,
 		&i.CreatedAt,
 		&i.FeedID,
@@ -827,7 +835,7 @@ func (q *Queries) GetURLParsingRuleByDomain(ctx context.Context, domain string) 
 }
 
 const listAllItems = `-- name: ListAllItems :many
-SELECT id, url, title, description, published_at, author, guid, content, image_url, categories, is_hidden, created_at, updated_at FROM items
+SELECT id, url, title, description, published_at, author, guid, content, image_url, categories, username, is_hidden, created_at, updated_at FROM items
 `
 
 func (q *Queries) ListAllItems(ctx context.Context) ([]Item, error) {
@@ -850,6 +858,7 @@ func (q *Queries) ListAllItems(ctx context.Context) ([]Item, error) {
 			&i.Content,
 			&i.ImageUrl,
 			&i.Categories,
+			&i.Username,
 			&i.IsHidden,
 			&i.CreatedAt,
 			&i.UpdatedAt,
@@ -1238,6 +1247,7 @@ SELECT
   i.content,
   i.image_url,
   i.categories,
+  i.username,
   i.is_hidden,
   i.created_at,
   CAST(MIN(fi.feed_id) AS TEXT) AS feed_id,
@@ -1284,6 +1294,7 @@ type ListItemsRow struct {
 	Content     *string `json:"content"`
 	ImageUrl    *string `json:"image_url"`
 	Categories  *string `json:"categories"`
+	Username    *string `json:"username"`
 	IsHidden    int64   `json:"is_hidden"`
 	CreatedAt   string  `json:"created_at"`
 	FeedID      string  `json:"feed_id"`
@@ -1318,6 +1329,7 @@ func (q *Queries) ListItems(ctx context.Context, arg ListItemsParams) ([]ListIte
 			&i.Content,
 			&i.ImageUrl,
 			&i.Categories,
+			&i.Username,
 			&i.IsHidden,
 			&i.CreatedAt,
 			&i.FeedID,
