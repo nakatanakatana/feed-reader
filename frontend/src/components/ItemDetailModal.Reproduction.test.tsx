@@ -1,16 +1,21 @@
 import { create, toJson } from "@bufbuild/protobuf";
+import { useLiveQuery } from "@tanstack/solid-db";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { page } from "vitest/browser";
-import { GetItemResponseSchema, ItemSchema, ListItemsResponseSchema, UpdateItemStatusResponseSchema } from "../gen/item/v1/item_pb";
+import {
+  GetItemResponseSchema,
+  ItemSchema,
+  ListItemsResponseSchema,
+  UpdateItemStatusResponseSchema,
+} from "../gen/item/v1/item_pb";
 import { items } from "../lib/item-db";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
 import { ItemDetailModal } from "./ItemDetailModal";
-import { useLiveQuery } from "@tanstack/solid-db";
 
 function CollectionInitializer() {
   useLiveQuery((q) => q.from({ item: items() }));
@@ -51,14 +56,14 @@ describe("ItemDetailModal FAB Reactivity & Fallback", () => {
 
     // Mock the update API
     let apiCalled = false;
-    let apiValue = false;
+    const _apiValue = false;
     worker.use(
-        http.post("*/item.v1.ItemService/UpdateItemStatus", async ({ request }) => {
-            apiCalled = true;
-            // Note: In some environments we might want to check the body
-            const msg = create(UpdateItemStatusResponseSchema, {});
-            return HttpResponse.json(toJson(UpdateItemStatusResponseSchema, msg));
-        })
+      http.post("*/item.v1.ItemService/UpdateItemStatus", async () => {
+        apiCalled = true;
+        // Note: In some environments we might want to check the body
+        const msg = create(UpdateItemStatusResponseSchema, {});
+        return HttpResponse.json(toJson(UpdateItemStatusResponseSchema, msg));
+      }),
     );
 
     const dispose = render(
@@ -74,7 +79,9 @@ describe("ItemDetailModal FAB Reactivity & Fallback", () => {
     );
 
     // 1. Initial state: Mark as Read should be visible
-    await expect.element(page.getByText(`Test Item ${itemId}`)).toBeInTheDocument();
+    await expect
+      .element(page.getByText(`Test Item ${itemId}`))
+      .toBeInTheDocument();
     const fab = page.getByRole("button", { name: /Mark as read/i });
     await expect.element(fab).toBeInTheDocument();
 
@@ -82,8 +89,10 @@ describe("ItemDetailModal FAB Reactivity & Fallback", () => {
     await fab.click();
 
     // 3. FAB should update to Mark as unread
-    await expect.element(page.getByRole("button", { name: /Mark as unread/i })).toBeInTheDocument();
-    
+    await expect
+      .element(page.getByRole("button", { name: /Mark as unread/i }))
+      .toBeInTheDocument();
+
     // 4. API should have been called
     await expect.poll(() => apiCalled).toBe(true);
 
@@ -107,9 +116,15 @@ describe("ItemDetailModal FAB Reactivity & Fallback", () => {
     );
 
     // Initial state: Mark as Unread should be visible
-    await expect.element(page.getByText(`Test Item ${itemId}`)).toBeInTheDocument();
-    await expect.element(page.getByRole("button", { name: /Mark as unread/i })).toBeInTheDocument();
-    await expect.element(page.getByRole("button", { name: /Mark as unread/i })).toHaveAttribute("aria-pressed", "true");
+    await expect
+      .element(page.getByText(`Test Item ${itemId}`))
+      .toBeInTheDocument();
+    await expect
+      .element(page.getByRole("button", { name: /Mark as unread/i }))
+      .toBeInTheDocument();
+    await expect
+      .element(page.getByRole("button", { name: /Mark as unread/i }))
+      .toHaveAttribute("aria-pressed", "true");
 
     dispose();
   });

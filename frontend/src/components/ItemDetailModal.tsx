@@ -1,9 +1,14 @@
-import { useQuery, useQueryClient } from "@tanstack/solid-query";
 import { eq, useLiveQuery } from "@tanstack/solid-db";
+import { useQuery, useQueryClient } from "@tanstack/solid-query";
 import { createEffect, For, type JSX, onCleanup, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
-import { getItem, items, updateItemReadStatus } from "../lib/item-db";
+import {
+  getItem,
+  type Item,
+  items,
+  updateItemReadStatus,
+} from "../lib/item-db";
 import { ITEM_STALE_TIME } from "../lib/item-query-constants";
 import { formatDate, normalizeCategories } from "../lib/item-utils";
 import { useSwipe } from "../lib/use-swipe";
@@ -124,7 +129,10 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     const id = props.itemId;
     if (!id || id === "end-of-list") {
       // Return a non-matching query to initialize the signal correctly
-      return q.from({ item: items() }).where(({ item }) => eq(item.id, "__none__")).select(({ item }) => ({ ...item }));
+      return q
+        .from({ item: items() })
+        .where(({ item }) => eq(item.id, "__none__"))
+        .select(({ item }) => ({ ...item }));
     }
     return q
       .from({ item: items() })
@@ -152,12 +160,15 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
       // We also need to call the API directly since items().update won't trigger its onUpdate hook.
       // For now, updating the query cache is sufficient for UI reactivity in the modal.
       // (The API call would ideally be handled by a dedicated service/store method)
-      
+
       // Let's use the queryClient to update the individual item query cache
-      queryClient.setQueryData(["item", props.itemId], (old: any) => {
-        if (!old) return old;
-        return { ...old, isRead: newIsRead };
-      });
+      queryClient.setQueryData(
+        ["item", props.itemId],
+        (old: Item | null | undefined) => {
+          if (!old) return old;
+          return { ...old, isRead: newIsRead };
+        },
+      );
 
       // Call the API directly to ensure the state is persisted.
       updateItemReadStatus([currentItem.id], newIsRead);
@@ -274,8 +285,12 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             <button
               type="button"
               onClick={handleToggleRead}
-              title={prioritizedItem()?.isRead ? "Mark as Unread" : "Mark as Read"}
-              aria-label={prioritizedItem()?.isRead ? "Mark as Unread" : "Mark as Read"}
+              title={
+                prioritizedItem()?.isRead ? "Mark as Unread" : "Mark as Read"
+              }
+              aria-label={
+                prioritizedItem()?.isRead ? "Mark as Unread" : "Mark as Read"
+              }
               aria-pressed={prioritizedItem()?.isRead ?? false}
               class={css({
                 width: "14",
@@ -289,7 +304,9 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                 boxShadow: "lg",
                 cursor: "pointer",
                 border: "1px solid",
-                borderColor: prioritizedItem()?.isRead ? "blue.600" : "transparent",
+                borderColor: prioritizedItem()?.isRead
+                  ? "blue.600"
+                  : "transparent",
                 transition: "all 0.2s",
                 _hover: {
                   transform: "scale(1.05)",
