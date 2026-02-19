@@ -19,14 +19,14 @@ Implement the logic to extract usernames from URLs based on domain-specific rule
 - [x] Task: Integrate `UsernameExtractor` into the item fetching pipeline 0eeb8ea
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Username Extraction Logic' (Protocol in workflow.md) 673d1f2
 
-## Phase 3: Blocking Logic and Save-time Flagging
+## Phase 3: Blocking Logic and Save-time Flagging [checkpoint: cdb1aba]
 Implement the core filtering logic applied during item ingestion.
 
 - [x] Task: Implement `BlockingService` to check if an item should be hidden 23b2bec
 - [x] Task: Update the item creation flow to apply `BlockingService` and set `is_hidden` flag 22774c6
 - [x] Task: Update item retrieval queries to exclude `is_hidden = true` by default (Already implemented in previous phases)
 - [x] Task: Write integration tests for the full "fetch -> block -> hide" flow 2019bfa
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Blocking Logic and Save-time Flagging' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Blocking Logic and Save-time Flagging' (Protocol in workflow.md) cdb1aba
 
 ## Phase 4: Retroactive Background Updates
 Implement the mechanism to update existing items when rules change.
