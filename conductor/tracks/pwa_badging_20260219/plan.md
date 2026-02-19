@@ -2,7 +2,7 @@
 
 Enable the Badging API to display the total unread count on the application icon.
 
-## Phase 1: Implementation
+## Phase 1: Implementation [checkpoint: e05e242]
 
 - [x] Task: Create `PwaBadge` component e0a5556
     - Create `frontend/src/components/PwaBadge.tsx`.
