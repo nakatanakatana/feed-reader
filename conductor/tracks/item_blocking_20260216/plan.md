@@ -40,7 +40,7 @@ Implement the mechanism to update existing items when rules change.
 ## Phase 5: Frontend Integration (Rule Management UI)
 Add UI components to manage blocking rules and URL parsing rules.
 
-- [x] Task: Create UI for managing Domain URL Parsing Rules b027402
-- [x] Task: Create UI for managing Blocking Rules (User, Domain, Keyword) b027402
-- [x] Task: Update item list UI to reflect hidden state (if needed for debugging/admin) b027402
+- [x] Task: Create UI for managing Domain URL Parsing Rules 76c662a
+- [x] Task: Create UI for managing Blocking Rules (User, Domain, Keyword) 76c662a
+- [x] Task: Update item list UI to reflect hidden state (if needed for debugging/admin) 76c662a
 - [ ] Task: Conductor - User Manual Verification 'Phase 5: Frontend Integration (Rule Management UI)' (Protocol in workflow.md)
