@@ -42,6 +42,12 @@ describe("PwaBadge", () => {
     await expect.poll(() => navigator.clearAppBadge).toHaveBeenCalled();
   });
 
+  it("caps the unreadCount at 999", async () => {
+    render(() => <PwaBadge unreadCount={1500} />, document.body);
+
+    await expect.poll(() => navigator.setAppBadge).toHaveBeenCalledWith(999);
+  });
+
   it("does not crash if Badging API is not supported", async () => {
     vi.stubGlobal("navigator", {
       ...navigator,

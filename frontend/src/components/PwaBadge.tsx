@@ -10,7 +10,9 @@ export interface PwaBadgeProps {
  */
 export function PwaBadge(props: PwaBadgeProps) {
   createEffect(() => {
-    const count = props.unreadCount;
+    // Limit the badge count to a reasonable maximum (e.g., 999)
+    // Browsers typically handle overflow, but we can be explicit here.
+    const count = Math.min(props.unreadCount, 999);
     const nav = navigator as any;
 
     if ("setAppBadge" in nav && typeof nav.setAppBadge === "function") {
