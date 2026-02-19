@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+package blocking.v1;
+
+option go_package = "github.com/nakatanakatana/feed-reader/gen/go/blocking/v1;blockingv1";
+
+service BlockingService {
+  // Blocking Rules
+  rpc CreateBlockingRule(CreateBlockingRuleRequest) returns (CreateBlockingRuleResponse);
+  rpc ListBlockingRules(ListBlockingRulesRequest) returns (ListBlockingRulesResponse);
+  rpc DeleteBlockingRule(DeleteBlockingRuleRequest) returns (DeleteBlockingRuleResponse);
+
+  // URL Parsing Rules
+  rpc CreateURLParsingRule(CreateURLParsingRuleRequest) returns (CreateURLParsingRuleResponse);
+  rpc ListURLParsingRules(ListURLParsingRulesRequest) returns (ListURLParsingRulesResponse);
+  rpc DeleteURLParsingRule(DeleteURLParsingRuleRequest) returns (DeleteURLParsingRuleResponse);
+
+  // Manual Trigger
+  rpc ReevaluateAllItems(ReevaluateAllItemsRequest) returns (ReevaluateAllItemsResponse);
+}
+
+message BlockingRule {
+  string id = 1;
+  string rule_type = 2; // 'user_domain', 'keyword'
+  optional string username = 3;
+  optional string domain = 4;
+  optional string keyword = 5;
+  string created_at = 6;
+  string updated_at = 7;
+}
+
+message CreateBlockingRuleRequest {
+  string rule_type = 1;
+  optional string username = 2;
+  optional string domain = 3;
+  optional string keyword = 4;
+}
+
+message CreateBlockingRuleResponse {
+  BlockingRule rule = 1;
+}
+
+message ListBlockingRulesRequest {}
+
+message ListBlockingRulesResponse {
+  repeated BlockingRule rules = 1;
+}
+
+message DeleteBlockingRuleRequest {
+  string id = 1;
+}
+
+message DeleteBlockingRuleResponse {}
+
+message URLParsingRule {
+  string id = 1;
+  string domain = 2;
+  string pattern = 3;
+  string created_at = 4;
+  string updated_at = 5;
+}
+
+message CreateURLParsingRuleRequest {
+  string domain = 1;
+  string pattern = 2;
+}
+
+message CreateURLParsingRuleResponse {
+  URLParsingRule rule = 1;
+}
+
+message ListURLParsingRulesRequest {}
+
+message ListURLParsingRulesResponse {
+  repeated URLParsingRule rules = 1;
+}
+
+message DeleteURLParsingRuleRequest {
+  string id = 1;
+}
+
+message DeleteURLParsingRuleResponse {}
+
+message ReevaluateAllItemsRequest {}
+
+message ReevaluateAllItemsResponse {}

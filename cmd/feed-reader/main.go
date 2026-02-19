@@ -13,6 +13,7 @@ import (
 
 	"github.com/caarlos0/env/v11"
 	"github.com/nakatanakatana/feed-reader/frontend"
+	"github.com/nakatanakatana/feed-reader/gen/go/blocking/v1/blockingv1connect"
 	"github.com/nakatanakatana/feed-reader/gen/go/feed/v1/feedv1connect"
 	"github.com/nakatanakatana/feed-reader/gen/go/item/v1/itemv1connect"
 	"github.com/nakatanakatana/feed-reader/gen/go/tag/v1/tagv1connect"
@@ -108,10 +109,15 @@ func main() {
 	tagServer := NewTagServer(s, nil)
 	tagPath, tagHandler := tagv1connect.NewTagServiceHandler(tagServer)
 
+	blockingBackgroundService := NewBlockingBackgroundService(s, blockingService, logger)
+	blockingServer := NewBlockingServer(s, blockingBackgroundService, pool)
+	blockingPath, blockingHandler := blockingv1connect.NewBlockingServiceHandler(blockingServer)
+
 	mux := http.NewServeMux()
 	mux.Handle("/api"+feedPath, http.StripPrefix("/api", feedHandler))
 	mux.Handle("/api"+itemPath, http.StripPrefix("/api", itemHandler))
 	mux.Handle("/api"+tagPath, http.StripPrefix("/api", tagHandler))
+	mux.Handle("/api"+blockingPath, http.StripPrefix("/api", blockingHandler))
 
 	// Mount static assets at root
 	mux.Handle("/", NewAssetsHandler(frontend.Assets))
