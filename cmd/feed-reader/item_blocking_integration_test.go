@@ -72,9 +72,10 @@ func TestItemBlockingIntegration(t *testing.T) {
 
 	var legitItem, spammyItem store.Item
 	for _, it := range allItems {
-		if it.Url == "https://example.com/users/jdoe/posts/1" {
+		switch it.Url {
+		case "https://example.com/users/jdoe/posts/1":
 			legitItem = it
-		} else if it.Url == "https://example.com/users/spammer/posts/2" {
+		case "https://example.com/users/spammer/posts/2":
 			spammyItem = it
 		}
 	}

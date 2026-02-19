@@ -35,8 +35,8 @@ function RootComponent() {
     zIndex: 10,
   });
 
-  const linkStyle = css({
-    position: "relative",
+  const linkStyleConfig = {
+    position: "relative" as const,
     paddingX: { base: "2", md: "3" },
     paddingY: "1.5",
     borderRadius: "md",
@@ -48,7 +48,9 @@ function RootComponent() {
       backgroundColor: "gray.50",
       color: "gray.900",
     },
-  });
+  };
+
+  const linkStyle = css(linkStyleConfig);
 
   const activeLinkStyle = css({
     fontWeight: "semibold",
@@ -94,7 +96,9 @@ function RootComponent() {
         </Link>
         <Link
           to="/blocking"
-          class={css(linkStyle, { display: { base: "none", md: "inline-block" } })}
+          class={css(linkStyleConfig, {
+            display: { base: "none", md: "inline-block" },
+          })}
           activeProps={{
             class: activeLinkStyle,
           }}
