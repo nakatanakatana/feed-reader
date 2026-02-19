@@ -469,6 +469,21 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                           title="Published"
                         >
                           <PublishedIcon />
+                          <span
+                            class={css({
+                              position: "absolute",
+                              width: "1px",
+                              height: "1px",
+                              padding: "0",
+                              margin: "-1px",
+                              overflow: "hidden",
+                              clip: "rect(0, 0, 0, 0)",
+                              whiteSpace: "nowrap",
+                              borderWidth: "0",
+                            })}
+                          >
+                            Published:
+                          </span>
                         </span>
                         {formatDate(itemData().publishedAt)}
                       </span>
@@ -487,6 +502,21 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                         title="Received"
                       >
                         <ReceivedIcon />
+                        <span
+                          class={css({
+                            position: "absolute",
+                            width: "1px",
+                            height: "1px",
+                            padding: "0",
+                            margin: "-1px",
+                            overflow: "hidden",
+                            clip: "rect(0, 0, 0, 0)",
+                            whiteSpace: "nowrap",
+                            borderWidth: "0",
+                          })}
+                        >
+                          Received:
+                        </span>
                       </span>
                       {formatDate(itemData().createdAt)}
                     </span>
