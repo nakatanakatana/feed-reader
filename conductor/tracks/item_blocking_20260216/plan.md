@@ -37,10 +37,10 @@ Implement the mechanism to update existing items when rules change.
 - [x] Task: Write tests for retroactive blocking application 4f2c0a7
 - [x] Task: Conductor - User Manual Verification 'Phase 4: Retroactive Background Updates' (Protocol in workflow.md) 11c7737
 
-## Phase 5: Frontend Integration (Rule Management UI)
+## Phase 5: Frontend Integration (Rule Management UI) [checkpoint: 0a5b8e7]
 Add UI components to manage blocking rules and URL parsing rules.
 
 - [x] Task: Create UI for managing Domain URL Parsing Rules 76c662a
 - [x] Task: Create UI for managing Blocking Rules (User, Domain, Keyword) 76c662a
 - [x] Task: Update item list UI to reflect hidden state (if needed for debugging/admin) 76c662a
-- [ ] Task: Conductor - User Manual Verification 'Phase 5: Frontend Integration (Rule Management UI)' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 5: Frontend Integration (Rule Management UI)' (Protocol in workflow.md) 0a5b8e7
