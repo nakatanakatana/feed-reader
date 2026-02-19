@@ -538,3 +538,9 @@ WHERE
 
 -- name: ListAllItems :many
 SELECT * FROM items;
+
+-- name: ListItemsForReevaluation :many
+SELECT * FROM items
+WHERE id > ?
+ORDER BY id ASC
+LIMIT ?;

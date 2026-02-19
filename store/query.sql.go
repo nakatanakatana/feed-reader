@@ -1348,6 +1348,56 @@ func (q *Queries) ListItems(ctx context.Context, arg ListItemsParams) ([]ListIte
 	return items, nil
 }
 
+const listItemsForReevaluation = `-- name: ListItemsForReevaluation :many
+SELECT id, url, title, description, published_at, author, guid, content, image_url, categories, username, is_hidden, created_at, updated_at FROM items
+WHERE id > ?
+ORDER BY id ASC
+LIMIT ?
+`
+
+type ListItemsForReevaluationParams struct {
+	ID    string `json:"id"`
+	Limit int64  `json:"limit"`
+}
+
+func (q *Queries) ListItemsForReevaluation(ctx context.Context, arg ListItemsForReevaluationParams) ([]Item, error) {
+	rows, err := q.db.QueryContext(ctx, listItemsForReevaluation, arg.ID, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Item
+	for rows.Next() {
+		var i Item
+		if err := rows.Scan(
+			&i.ID,
+			&i.Url,
+			&i.Title,
+			&i.Description,
+			&i.PublishedAt,
+			&i.Author,
+			&i.Guid,
+			&i.Content,
+			&i.ImageUrl,
+			&i.Categories,
+			&i.Username,
+			&i.IsHidden,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listRecentItemPublishedDates = `-- name: ListRecentItemPublishedDates :many
 SELECT
   published_at
