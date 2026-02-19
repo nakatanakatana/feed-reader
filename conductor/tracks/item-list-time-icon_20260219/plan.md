@@ -3,12 +3,12 @@
 Standardize the date display in `ItemRow` (used within `ItemList`) by reordering "Published" and "Received" dates and implementing responsive iconization to match `ItemDetailModal`.
 
 ## Phase 1: Preparation and TDD Setup
-- [ ] Task: Research existing icon implementation in `ItemDetailModal.tsx` and identify potential for refactoring or reuse.
-- [ ] Task: Create a new test file `frontend/src/components/ItemRow.ResponsiveDate.test.tsx` to verify the date order and responsive icon display.
-    - [ ] Sub-task: Write a test ensuring "Published" comes before "Received" in the UI.
-    - [ ] Sub-task: Write a test verifying that text labels ("Published:", "Received:") are visible at desktop widths.
-    - [ ] Sub-task: Write a test verifying that text labels are hidden and icons are visible at narrow widths (< 480px).
-    - [ ] Sub-task: Verify tests fail as expected (Red Phase).
+- [x] Task: Research existing icon implementation in `ItemDetailModal.tsx` and identify potential for refactoring or reuse.
+- [x] Task: Create a new test file `frontend/src/components/ItemRow.ResponsiveDate.test.tsx` to verify the date order and responsive icon display. 805bc7a
+    - [x] Sub-task: Write a test ensuring "Published" comes before "Received" in the UI.
+    - [x] Sub-task: Write a test verifying that text labels ("Published:", "Received:") are visible at desktop widths.
+    - [x] Sub-task: Write a test verifying that text labels are hidden and icons are visible at narrow widths (< 480px).
+    - [x] Sub-task: Verify tests fail as expected (Red Phase).
 
 ## Phase 2: Implementation
 - [ ] Task: Refactor `PublishedIcon` and `ReceivedIcon` from `ItemDetailModal.tsx` into a shared location if appropriate, or duplicate for now if minimal.
