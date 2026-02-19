@@ -45,7 +45,7 @@ func TestPollingRespectsSchedule(t *testing.T) {
 	go wq.Start(ctx)
 	defer wq.Stop()
 
-	svc := NewFetcherService(s, fetcher, pool, wq, logger, 1*time.Hour)
+	svc := NewFetcherService(s, fetcher, NewUsernameExtractor(), pool, wq, logger, 1*time.Hour)
 
 	// 1. Add a feed
 	feed, err := s.CreateFeed(ctx, store.CreateFeedParams{

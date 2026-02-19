@@ -14,24 +14,26 @@ import (
 
 // FetcherService coordinates the background fetching process.
 type FetcherService struct {
-	store         *store.Store
-	fetcher       FeedFetcher
-	pool          *WorkerPool
-	writeQueue    *WriteQueueService
-	logger        *slog.Logger
-	fetchInterval time.Duration
-	fetching      sync.Map // feedID -> struct{}{}
+	store             *store.Store
+	fetcher           FeedFetcher
+	usernameExtractor UsernameExtractor
+	pool              *WorkerPool
+	writeQueue        *WriteQueueService
+	logger            *slog.Logger
+	fetchInterval     time.Duration
+	fetching          sync.Map // feedID -> struct{}{}
 }
 
 // NewFetcherService creates a new FetcherService.
-func NewFetcherService(s *store.Store, f FeedFetcher, p *WorkerPool, wq *WriteQueueService, l *slog.Logger, fetchInterval time.Duration) *FetcherService {
+func NewFetcherService(s *store.Store, f FeedFetcher, ue UsernameExtractor, p *WorkerPool, wq *WriteQueueService, l *slog.Logger, fetchInterval time.Duration) *FetcherService {
 	return &FetcherService{
-		store:         s,
-		fetcher:       f,
-		pool:          p,
-		writeQueue:    wq,
-		logger:        l,
-		fetchInterval: fetchInterval,
+		store:             s,
+		fetcher:           f,
+		usernameExtractor: ue,
+		pool:              p,
+		writeQueue:        wq,
+		logger:            l,
+		fetchInterval:     fetchInterval,
 	}
 }
 
@@ -116,8 +118,14 @@ func (s *FetcherService) fetchAndSaveSync(ctx context.Context, f store.FullFeed)
 			Items:      make([]store.SaveFetchedItemParams, 0, len(parsedFeed.Items)),
 			ResultChan: resChan,
 		}
+
+		rules, err := s.store.ListURLParsingRules(ctx)
+		if err != nil {
+			s.logger.WarnContext(ctx, "failed to list url parsing rules", "error", err)
+		}
+
 		for _, item := range parsedFeed.Items {
-			job.Items = append(job.Items, s.normalizeItem(f.ID, item))
+			job.Items = append(job.Items, s.normalizeItem(ctx, f.ID, item, rules))
 		}
 		s.writeQueue.Submit(job)
 
@@ -241,8 +249,14 @@ func (s *FetcherService) FetchAndSave(ctx context.Context, f store.FullFeed) err
 		job := &SaveItemsJob{
 			Items: make([]store.SaveFetchedItemParams, 0, len(parsedFeed.Items)),
 		}
+
+		rules, err := s.store.ListURLParsingRules(ctx)
+		if err != nil {
+			s.logger.WarnContext(ctx, "failed to list url parsing rules", "error", err)
+		}
+
 		for _, item := range parsedFeed.Items {
-			job.Items = append(job.Items, s.normalizeItem(f.ID, item))
+			job.Items = append(job.Items, s.normalizeItem(ctx, f.ID, item, rules))
 		}
 		s.writeQueue.Submit(job)
 	}
@@ -264,7 +278,7 @@ func (s *FetcherService) FetchAndSave(ctx context.Context, f store.FullFeed) err
 	return nil
 }
 
-func (s *FetcherService) normalizeItem(feedID string, item *gofeed.Item) store.SaveFetchedItemParams {
+func (s *FetcherService) normalizeItem(ctx context.Context, feedID string, item *gofeed.Item, rules []store.UrlParsingRule) store.SaveFetchedItemParams {
 	params := store.SaveFetchedItemParams{
 		FeedID:      feedID,
 		Url:         item.Link,
@@ -273,6 +287,15 @@ func (s *FetcherService) normalizeItem(feedID string, item *gofeed.Item) store.S
 		Guid:        &item.GUID,
 		Content:     &item.Content,
 	}
+
+	if username, err := s.usernameExtractor.Extract(item.Link, rules); err == nil && username != "" {
+		params.Author = &username
+	} else if item.Author != nil {
+		params.Author = &item.Author.Name
+	} else if len(item.Authors) > 0 {
+		params.Author = &item.Authors[0].Name
+	}
+
 	if item.PublishedParsed != nil {
 		pubAt := item.PublishedParsed.Format(time.RFC3339)
 		params.PublishedAt = &pubAt

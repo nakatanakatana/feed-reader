@@ -15,7 +15,10 @@ import (
 )
 
 func TestFetcherService_normalizeItem_PBT(t *testing.T) {
-	s := &FetcherService{}
+	ctx := context.Background()
+	s := &FetcherService{
+		usernameExtractor: NewUsernameExtractor(),
+	}
 
 	rapid.Check(t, func(t *rapid.T) {
 		feedID := rapid.String().Draw(t, "feedID")
@@ -37,7 +40,7 @@ func TestFetcherService_normalizeItem_PBT(t *testing.T) {
 			item.PublishedParsed = &pubDate
 		}
 
-		params := s.normalizeItem(feedID, item)
+		params := s.normalizeItem(ctx, feedID, item, nil)
 
 		assert.Equal(t, params.FeedID, feedID)
 		assert.Equal(t, params.Url, item.Link)
@@ -97,7 +100,7 @@ func TestFetcherService_FetchAndSave(t *testing.T) {
 	logger := slog.New(slog.NewJSONHandler(&bytes.Buffer{}, nil))
 	wq := NewWriteQueueService(s, WriteQueueConfig{MaxBatchSize: 1, FlushInterval: 10 * time.Millisecond}, logger)
 	go wq.Start(ctx)
-	service := NewFetcherService(s, fetcher, nil, wq, logger, 30*time.Minute)
+	service := NewFetcherService(s, fetcher, NewUsernameExtractor(), nil, wq, logger, 30*time.Minute)
 
 	err = service.FetchAndSave(ctx, store.FullFeed{
 		ID:  feed.ID,
@@ -137,7 +140,7 @@ func TestFetcherService_FetchAllFeeds_Interval(t *testing.T) {
 	interval := 30 * time.Minute
 	wq := NewWriteQueueService(s, WriteQueueConfig{MaxBatchSize: 1, FlushInterval: 10 * time.Millisecond}, logger)
 	go wq.Start(ctx)
-	service := NewFetcherService(s, fetcher, pool, wq, logger, interval)
+	service := NewFetcherService(s, fetcher, NewUsernameExtractor(), pool, wq, logger, interval)
 
 	// Case 1: Feed scheduled for FUTURE (should NOT fetch)
 	futureTime := time.Now().UTC().Add(1 * time.Hour).Format("2006-01-02T15:04:05Z")
@@ -199,7 +202,7 @@ func TestFetcherService_FetchFeedsByIDs(t *testing.T) {
 	interval := 30 * time.Minute
 	wq := NewWriteQueueService(s, WriteQueueConfig{MaxBatchSize: 1, FlushInterval: 10 * time.Millisecond}, logger)
 	go wq.Start(ctx)
-	service := NewFetcherService(s, fetcher, pool, wq, logger, interval)
+	service := NewFetcherService(s, fetcher, NewUsernameExtractor(), pool, wq, logger, interval)
 
 	// Create a feed that was fetched recently (so normally wouldn't be fetched)
 	recentTime := time.Now().Add(-1 * time.Minute).Format(time.RFC3339)
@@ -233,7 +236,7 @@ func TestFetcherService_FetchFeedsByIDsSync(t *testing.T) {
 	logger := slog.New(slog.NewJSONHandler(&bytes.Buffer{}, nil))
 	wq := NewWriteQueueService(s, WriteQueueConfig{MaxBatchSize: 1, FlushInterval: 10 * time.Millisecond}, logger)
 	go wq.Start(ctx)
-	service := NewFetcherService(s, fetcher, nil, wq, logger, 30*time.Minute)
+	service := NewFetcherService(s, fetcher, NewUsernameExtractor(), nil, wq, logger, 30*time.Minute)
 
 	feed, _ := queries.CreateFeed(ctx, store.CreateFeedParams{ID: "sync-fetch", Url: "http://sync-fetch"})
 
@@ -254,7 +257,7 @@ func TestFetcherService_AdaptiveInterval(t *testing.T) {
 	wq := NewWriteQueueService(s, WriteQueueConfig{MaxBatchSize: 1, FlushInterval: 10 * time.Millisecond}, logger)
 	go wq.Start(ctx)
 	fetcher := &mockFetcher{feed: &gofeed.Feed{}}
-	service := NewFetcherService(s, fetcher, nil, wq, logger, defaultInterval)
+	service := NewFetcherService(s, fetcher, NewUsernameExtractor(), nil, wq, logger, defaultInterval)
 
 	t.Run("frequent updates", func(t *testing.T) {
 		feed, _ := queries.CreateFeed(ctx, store.CreateFeedParams{ID: "frequent", Url: "http://frequent"})
