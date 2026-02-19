@@ -2,14 +2,14 @@
 
 This plan implements a high-performance item blocking feature based on usernames, domains, and keywords, using a save-time flagging approach and background retroactive updates.
 
-## Phase 1: Database Schema and Models
+## Phase 1: Database Schema and Models [checkpoint: 5f2e614]
 Define the storage for blocking rules, URL parsing rules, and update the item model.
 
 - [x] Task: Create migration for `blocking_rules` table ee03836
 - [x] Task: Create migration for `url_parsing_rules` table 96d2b15
 - [x] Task: Add `is_hidden` column to `items` table e250c80
 - [x] Task: Update Go models and SQLC queries for new tables and column 6c3969d
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Database Schema and Models' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Database Schema and Models' (Protocol in workflow.md) 5f2e614
 
 ## Phase 2: Username Extraction Logic
 Implement the logic to extract usernames from URLs based on domain-specific rules.
