@@ -45,8 +45,8 @@ describe("ItemRow Responsive Date", () => {
       document.body,
     );
 
-    const publishedAt = page.getByText(/Published:/);
-    const receivedAt = page.getByText(/Received:/);
+    const publishedAt = page.getByText(/Published:/).first();
+    const receivedAt = page.getByText(/Received:/).first();
 
     await expect.element(publishedAt).toBeInTheDocument();
     await expect.element(receivedAt).toBeInTheDocument();
