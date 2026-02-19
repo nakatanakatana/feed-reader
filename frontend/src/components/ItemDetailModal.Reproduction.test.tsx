@@ -8,6 +8,7 @@ import { page } from "vitest/browser";
 import {
   GetItemResponseSchema,
   ItemSchema,
+  ListItemSchema,
   ListItemsResponseSchema,
   UpdateItemStatusResponseSchema,
 } from "../gen/item/v1/item_pb";
@@ -108,14 +109,16 @@ describe("ItemDetailModal FAB Reactivity & Fallback", () => {
     setupMockData(itemId, false);
 
     // Manually add the item to the collection
-    items().utils.writeInsert({
-      id: itemId,
-      title: "Test Item in Collection",
-      isRead: false,
-      publishedAt: "2026-01-24T10:00:00Z",
-      createdAt: "2026-01-24T09:00:00Z",
-      feedId: "feed-1",
-    });
+    items().utils.writeInsert(
+      create(ListItemSchema, {
+        id: itemId,
+        title: "Test Item in Collection",
+        isRead: false,
+        publishedAt: "2026-01-24T10:00:00Z",
+        createdAt: "2026-01-24T09:00:00Z",
+        feedId: "feed-1",
+      }),
+    );
 
     const dispose = render(
       () => (
@@ -130,7 +133,9 @@ describe("ItemDetailModal FAB Reactivity & Fallback", () => {
     );
 
     // 1. Initial state: Mark as Read should be visible
-    await expect.element(page.getByText(`Test Item ${itemId}`)).toBeInTheDocument();
+    await expect
+      .element(page.getByText(`Test Item ${itemId}`))
+      .toBeInTheDocument();
     const fab = page.getByRole("button", { name: /Mark as read/i });
     await expect.element(fab).toBeInTheDocument();
 
