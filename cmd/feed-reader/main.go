@@ -108,7 +108,7 @@ func main() {
 	tagPath, tagHandler := tagv1connect.NewTagServiceHandler(tagServer)
 
 	blockingBackgroundService := NewBlockingBackgroundService(s, blockingService, logger)
-	blockingServer := NewBlockingServer(s, blockingBackgroundService, pool)
+	blockingServer := NewBlockingServer(s, blockingBackgroundService, pool, logger)
 	blockingPath, blockingHandler := blockingv1connect.NewBlockingServiceHandler(blockingServer)
 
 	mux := http.NewServeMux()

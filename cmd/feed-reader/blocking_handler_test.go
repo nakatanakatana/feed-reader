@@ -32,7 +32,7 @@ func TestBlockingServer_TriggerUpdate(t *testing.T) {
 
 	bs := NewBlockingService()
 	bgs := NewBlockingBackgroundService(s, bs, logger)
-	server := NewBlockingServer(s, bgs, pool)
+	server := NewBlockingServer(s, bgs, pool, logger)
 
 	// 3. Create rule via server
 	_, err := server.CreateBlockingRule(ctx, connect.NewRequest(&blockingv1.CreateBlockingRuleRequest{
@@ -57,4 +57,47 @@ func TestBlockingServer_TriggerUpdate(t *testing.T) {
 		time.Sleep(50 * time.Millisecond)
 	}
 	assert.Assert(t, success, "Item should have been hidden by background process")
+}
+
+func TestBlockingServer_Validation(t *testing.T) {
+	ctx := context.Background()
+	_, db := setupTestDB(t)
+	s := store.NewStore(db)
+	logger := slog.New(slog.NewJSONHandler(&bytes.Buffer{}, nil))
+	server := NewBlockingServer(s, nil, nil, logger)
+
+	t.Run("CreateBlockingRule validation", func(t *testing.T) {
+		// Invalid rule type
+		_, err := server.CreateBlockingRule(ctx, connect.NewRequest(&blockingv1.CreateBlockingRuleRequest{
+			RuleType: "invalid",
+		}))
+		assert.ErrorContains(t, err, "invalid rule_type")
+
+		// missing fields for user_domain
+		_, err = server.CreateBlockingRule(ctx, connect.NewRequest(&blockingv1.CreateBlockingRuleRequest{
+			RuleType: "user_domain",
+		}))
+		assert.ErrorContains(t, err, "either username or domain must be provided")
+
+		// missing fields for keyword
+		_, err = server.CreateBlockingRule(ctx, connect.NewRequest(&blockingv1.CreateBlockingRuleRequest{
+			RuleType: "keyword",
+		}))
+		assert.ErrorContains(t, err, "keyword must be provided")
+	})
+
+	t.Run("CreateURLParsingRule validation", func(t *testing.T) {
+		// Empty domain
+		_, err := server.CreateURLParsingRule(ctx, connect.NewRequest(&blockingv1.CreateURLParsingRuleRequest{
+			Domain: "",
+		}))
+		assert.ErrorContains(t, err, "domain must not be empty")
+
+		// Invalid regex
+		_, err = server.CreateURLParsingRule(ctx, connect.NewRequest(&blockingv1.CreateURLParsingRuleRequest{
+			Domain:  "example.com",
+			Pattern: "[",
+		}))
+		assert.ErrorContains(t, err, "invalid regex pattern")
+	})
 }

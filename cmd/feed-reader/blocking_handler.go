@@ -2,6 +2,9 @@ package main
 
 import (
 	"context"
+	"errors"
+	"log/slog"
+	"regexp"
 
 	"connectrpc.com/connect"
 	blockingv1 "github.com/nakatanakatana/feed-reader/gen/go/blocking/v1"
@@ -14,13 +17,15 @@ type BlockingServer struct {
 	store             *store.Store
 	backgroundService *BlockingBackgroundService
 	pool              *WorkerPool
+	logger            *slog.Logger
 }
 
-func NewBlockingServer(s *store.Store, bg *BlockingBackgroundService, p *WorkerPool) blockingv1connect.BlockingServiceHandler {
+func NewBlockingServer(s *store.Store, bg *BlockingBackgroundService, p *WorkerPool, l *slog.Logger) blockingv1connect.BlockingServiceHandler {
 	return &BlockingServer{
 		store:             s,
 		backgroundService: bg,
 		pool:              p,
+		logger:            l,
 	}
 }
 
@@ -29,10 +34,26 @@ func (s *BlockingServer) triggerReevaluation() {
 		s.pool.AddTask(func(ctx context.Context) error {
 			return s.backgroundService.ReevaluateAll(ctx)
 		})
+	} else {
+		s.logger.Warn("cannot trigger re-evaluation: worker pool is nil")
 	}
 }
 
 func (s *BlockingServer) CreateBlockingRule(ctx context.Context, req *connect.Request[blockingv1.CreateBlockingRuleRequest]) (*connect.Response[blockingv1.CreateBlockingRuleResponse], error) {
+	// Validation
+	switch req.Msg.RuleType {
+	case "user_domain":
+		if req.Msg.Username == nil && req.Msg.Domain == nil {
+			return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("either username or domain must be provided for user_domain rule"))
+		}
+	case "keyword":
+		if req.Msg.Keyword == nil || *req.Msg.Keyword == "" {
+			return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("keyword must be provided for keyword rule"))
+		}
+	default:
+		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("invalid rule_type"))
+	}
+
 	rule, err := s.store.CreateBlockingRule(ctx, store.CreateBlockingRuleParams{
 		ID:       uuid.NewString(),
 		RuleType: req.Msg.RuleType,
@@ -78,6 +99,14 @@ func (s *BlockingServer) DeleteBlockingRule(ctx context.Context, req *connect.Re
 }
 
 func (s *BlockingServer) CreateURLParsingRule(ctx context.Context, req *connect.Request[blockingv1.CreateURLParsingRuleRequest]) (*connect.Response[blockingv1.CreateURLParsingRuleResponse], error) {
+	// Validation
+	if req.Msg.Domain == "" {
+		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("domain must not be empty"))
+	}
+	if _, err := regexp.Compile(req.Msg.Pattern); err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("invalid regex pattern"))
+	}
+
 	rule, err := s.store.CreateURLParsingRule(ctx, store.CreateURLParsingRuleParams{
 		ID:      uuid.NewString(),
 		Domain:  req.Msg.Domain,
