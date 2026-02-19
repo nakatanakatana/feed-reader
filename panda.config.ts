@@ -15,7 +15,11 @@ export default defineConfig({
 
   // Useful for theme customization
   theme: {
-    extend: {},
+    extend: {
+      breakpoints: {
+        xs: "480px",
+      },
+    },
   },
 
   // The output directory for your css system
