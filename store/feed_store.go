@@ -162,6 +162,7 @@ type SaveFetchedItemParams struct {
 	ImageUrl    *string
 	Categories  *string
 	Username    *string
+	IsHidden    bool
 }
 
 // SaveFetchedItem saves an item, links it to the feed, and initializes read status.
@@ -170,6 +171,10 @@ func (s *Store) SaveFetchedItem(ctx context.Context, params SaveFetchedItemParam
 	return s.WithTransaction(ctx, func(qtx *Queries) error {
 		// 1. Upsert Item
 		newID := uuid.NewString()
+		isHidden := int64(0)
+		if params.IsHidden {
+			isHidden = 1
+		}
 		item, err := qtx.CreateItem(ctx, CreateItemParams{
 			ID:          newID,
 			Url:         params.Url,
@@ -182,6 +187,7 @@ func (s *Store) SaveFetchedItem(ctx context.Context, params SaveFetchedItemParam
 			ImageUrl:    params.ImageUrl,
 			Categories:  params.Categories,
 			Username:    params.Username,
+			IsHidden:    isHidden,
 		})
 		if err != nil {
 			return fmt.Errorf("failed to create/update item: %w", err)

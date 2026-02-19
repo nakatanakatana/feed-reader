@@ -17,6 +17,7 @@ type FetcherService struct {
 	store             *store.Store
 	fetcher           FeedFetcher
 	usernameExtractor UsernameExtractor
+	blockingService   BlockingService
 	pool              *WorkerPool
 	writeQueue        *WriteQueueService
 	logger            *slog.Logger
@@ -25,11 +26,12 @@ type FetcherService struct {
 }
 
 // NewFetcherService creates a new FetcherService.
-func NewFetcherService(s *store.Store, f FeedFetcher, ue UsernameExtractor, p *WorkerPool, wq *WriteQueueService, l *slog.Logger, fetchInterval time.Duration) *FetcherService {
+func NewFetcherService(s *store.Store, f FeedFetcher, ue UsernameExtractor, bs BlockingService, p *WorkerPool, wq *WriteQueueService, l *slog.Logger, fetchInterval time.Duration) *FetcherService {
 	return &FetcherService{
 		store:             s,
 		fetcher:           f,
 		usernameExtractor: ue,
+		blockingService:   bs,
 		pool:              p,
 		writeQueue:        wq,
 		logger:            l,
@@ -124,8 +126,13 @@ func (s *FetcherService) fetchAndSaveSync(ctx context.Context, f store.FullFeed)
 			s.logger.WarnContext(ctx, "failed to list url parsing rules", "error", err)
 		}
 
+		blockingRules, err := s.store.ListBlockingRules(ctx)
+		if err != nil {
+			s.logger.WarnContext(ctx, "failed to list blocking rules", "error", err)
+		}
+
 		for _, item := range parsedFeed.Items {
-			job.Items = append(job.Items, s.normalizeItem(ctx, f.ID, item, rules))
+			job.Items = append(job.Items, s.normalizeItem(ctx, f.ID, item, rules, blockingRules))
 		}
 		s.writeQueue.Submit(job)
 
@@ -255,8 +262,13 @@ func (s *FetcherService) FetchAndSave(ctx context.Context, f store.FullFeed) err
 			s.logger.WarnContext(ctx, "failed to list url parsing rules", "error", err)
 		}
 
+		blockingRules, err := s.store.ListBlockingRules(ctx)
+		if err != nil {
+			s.logger.WarnContext(ctx, "failed to list blocking rules", "error", err)
+		}
+
 		for _, item := range parsedFeed.Items {
-			job.Items = append(job.Items, s.normalizeItem(ctx, f.ID, item, rules))
+			job.Items = append(job.Items, s.normalizeItem(ctx, f.ID, item, rules, blockingRules))
 		}
 		s.writeQueue.Submit(job)
 	}
@@ -278,7 +290,7 @@ func (s *FetcherService) FetchAndSave(ctx context.Context, f store.FullFeed) err
 	return nil
 }
 
-func (s *FetcherService) normalizeItem(ctx context.Context, feedID string, item *gofeed.Item, rules []store.UrlParsingRule) store.SaveFetchedItemParams {
+func (s *FetcherService) normalizeItem(ctx context.Context, feedID string, item *gofeed.Item, rules []store.UrlParsingRule, blockingRules []store.BlockingRule) store.SaveFetchedItemParams {
 	params := store.SaveFetchedItemParams{
 		FeedID:      feedID,
 		Url:         item.Link,
@@ -296,6 +308,11 @@ func (s *FetcherService) normalizeItem(ctx context.Context, feedID string, item 
 		params.Author = &item.Author.Name
 	} else if len(item.Authors) > 0 {
 		params.Author = &item.Authors[0].Name
+	}
+
+	if blocked, reason := s.blockingService.ShouldBlock(params, blockingRules); blocked {
+		s.logger.DebugContext(ctx, "item blocked", "url", params.Url, "reason", reason)
+		params.IsHidden = true
 	}
 
 	if item.PublishedParsed != nil {

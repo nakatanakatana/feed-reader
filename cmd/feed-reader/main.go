@@ -87,7 +87,8 @@ func main() {
 	// 4. Initialize Fetcher components
 	fetcher := NewGofeedFetcher(s)
 	usernameExtractor := NewUsernameExtractor()
-	fetchService := NewFetcherService(s, fetcher, usernameExtractor, pool, writeQueue, logger, cfg.FetchInterval)
+	blockingService := NewBlockingService()
+	fetchService := NewFetcherService(s, fetcher, usernameExtractor, blockingService, pool, writeQueue, logger, cfg.FetchInterval)
 
 	opmlImporter := NewOPMLImporter(s, fetcher, logger, nil)
 
