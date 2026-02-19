@@ -1,14 +1,56 @@
-import { useQuery } from "@tanstack/solid-query";
+import { eq, useLiveQuery } from "@tanstack/solid-db";
+import { useQuery, useQueryClient } from "@tanstack/solid-query";
 import { createEffect, For, type JSX, onCleanup, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
-import { getItem, items } from "../lib/item-db";
+import {
+  getItem,
+  type Item,
+  items,
+  updateItemReadStatus,
+} from "../lib/item-db";
 import { ITEM_STALE_TIME } from "../lib/item-query-constants";
 import { formatDate, normalizeCategories } from "../lib/item-utils";
 import { useSwipe } from "../lib/use-swipe";
 import { MarkdownRenderer } from "./MarkdownRenderer";
 import { ActionButton } from "./ui/ActionButton";
 import { Modal } from "./ui/Modal";
+
+const PublishedIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <path d="m22 2-7 20-4-9-9-4Z" />
+    <path d="M22 2 11 13" />
+  </svg>
+);
+
+const ReceivedIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <circle cx="12" cy="12" r="10" />
+    <polyline points="12 6 12 12 16 14" />
+  </svg>
+);
 
 interface ItemDetailModalProps {
   itemId: string | undefined;
@@ -22,6 +64,7 @@ interface ItemDetailModalProps {
 
 export function ItemDetailModal(props: ItemDetailModalProps) {
   let modalRef: HTMLDivElement | undefined;
+  const queryClient = useQueryClient();
 
   const { x, isSwiping, handlers } = useSwipe({
     onSwipeLeft: () => {
@@ -117,13 +160,64 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   const isLoading = () => itemQuery.isPending;
   const isEndOfList = () => props.itemId === "end-of-list";
 
-  const handleToggleRead = () => {
-    const currentItem = item();
+  // Prioritize looking up the target item within the items collection
+  const collectionItems = useLiveQuery((q) => {
+    const id = props.itemId;
+    if (!id || id === "end-of-list") {
+      // Return a non-matching query to initialize the signal correctly
+      return q
+        .from({ item: items() })
+        .where(({ item }) => eq(item.id, "__none__"))
+        .select(({ item }) => ({ ...item }));
+    }
+    return q
+      .from({ item: items() })
+      .where(({ item }) => eq(item.id, id))
+      .select(({ item }) => ({ ...item }));
+  });
+
+  const collectionItem = () => collectionItems()[0];
+
+  const prioritizedItem = () => collectionItem() || item();
+
+  const handleToggleRead = async () => {
+    const currentItem = prioritizedItem();
     if (!currentItem || isEndOfList()) return;
 
-    items().update(currentItem.id, (draft) => {
-      draft.isRead = !currentItem.isRead;
-    });
+    const newIsRead = !currentItem.isRead;
+    const inCollection = collectionItem();
+
+    // Always update the individual item query cache for immediate UI feedback in the modal.
+    // This handles both the collection and fallback cases.
+    queryClient.setQueryData(
+      ["item", props.itemId],
+      (old: Item | null | undefined) => {
+        if (!old) return old;
+        return { ...old, isRead: newIsRead };
+      },
+    );
+
+    try {
+      // Use items().update if the item is in the collection to keep the list in sync
+      if (inCollection) {
+        items().update(currentItem.id, (draft) => {
+          draft.isRead = newIsRead;
+        });
+      } else {
+        // Call the API directly only if NOT in collection (items().update handles it otherwise)
+        await updateItemReadStatus([currentItem.id], newIsRead);
+      }
+    } catch (e) {
+      console.error("Failed to update item status", e);
+      // Rollback cache on error
+      queryClient.setQueryData(
+        ["item", props.itemId],
+        (old: Item | null | undefined) => {
+          if (!old) return old;
+          return { ...old, isRead: currentItem.isRead };
+        },
+      );
+    }
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
@@ -236,26 +330,32 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             <button
               type="button"
               onClick={handleToggleRead}
-              title={item()?.isRead ? "Mark as Unread" : "Mark as Read"}
-              aria-label={item()?.isRead ? "Mark as Unread" : "Mark as Read"}
-              aria-pressed={item()?.isRead ?? false}
+              title={
+                prioritizedItem()?.isRead ? "Mark as Unread" : "Mark as Read"
+              }
+              aria-label={
+                prioritizedItem()?.isRead ? "Mark as Unread" : "Mark as Read"
+              }
+              aria-pressed={prioritizedItem()?.isRead ?? false}
               class={css({
                 width: "14",
                 height: "14",
                 borderRadius: "full",
-                bg: item()?.isRead ? "white" : "blue.600",
-                color: item()?.isRead ? "blue.600" : "white",
+                bg: prioritizedItem()?.isRead ? "white" : "blue.600",
+                color: prioritizedItem()?.isRead ? "blue.600" : "white",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 boxShadow: "lg",
                 cursor: "pointer",
                 border: "1px solid",
-                borderColor: item()?.isRead ? "blue.600" : "transparent",
+                borderColor: prioritizedItem()?.isRead
+                  ? "blue.600"
+                  : "transparent",
                 transition: "all 0.2s",
                 _hover: {
                   transform: "scale(1.05)",
-                  bg: item()?.isRead ? "blue.50" : "blue.700",
+                  bg: prioritizedItem()?.isRead ? "blue.50" : "blue.700",
                 },
                 _active: {
                   transform: "scale(0.95)",
@@ -263,7 +363,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
               })}
             >
               <Show
-                when={item()?.isRead}
+                when={prioritizedItem()?.isRead}
                 fallback={
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -330,6 +430,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             flexDirection: "column",
             gap: "4",
             padding: "6",
+            paddingTop: "0",
             pb: "24",
             overflowY: "auto",
             height: "full",
@@ -414,11 +515,75 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                     })}
                   >
                     <Show when={!!itemData().publishedAt}>
-                      <span>
-                        Published: {formatDate(itemData().publishedAt)}
+                      <span
+                        class={flex({ gap: "1", alignItems: "center" })}
+                        title="Published Date"
+                      >
+                        <span
+                          class={css({
+                            display: { base: "none", xs: "inline" },
+                          })}
+                        >
+                          Published:
+                        </span>
+                        <span
+                          class={css({
+                            display: { base: "inline", xs: "none" },
+                          })}
+                          title="Published"
+                        >
+                          <PublishedIcon />
+                          <span
+                            class={css({
+                              position: "absolute",
+                              width: "1px",
+                              height: "1px",
+                              padding: "0",
+                              margin: "-1px",
+                              overflow: "hidden",
+                              clip: "rect(0, 0, 0, 0)",
+                              whiteSpace: "nowrap",
+                              borderWidth: "0",
+                            })}
+                          >
+                            Published:
+                          </span>
+                        </span>
+                        {formatDate(itemData().publishedAt)}
                       </span>
                     </Show>
-                    <span>Received: {formatDate(itemData().createdAt)}</span>
+                    <span
+                      class={flex({ gap: "1", alignItems: "center" })}
+                      title="Received Date"
+                    >
+                      <span
+                        class={css({ display: { base: "none", xs: "inline" } })}
+                      >
+                        Received:
+                      </span>
+                      <span
+                        class={css({ display: { base: "inline", xs: "none" } })}
+                        title="Received"
+                      >
+                        <ReceivedIcon />
+                        <span
+                          class={css({
+                            position: "absolute",
+                            width: "1px",
+                            height: "1px",
+                            padding: "0",
+                            margin: "-1px",
+                            overflow: "hidden",
+                            clip: "rect(0, 0, 0, 0)",
+                            whiteSpace: "nowrap",
+                            borderWidth: "0",
+                          })}
+                        >
+                          Received:
+                        </span>
+                      </span>
+                      {formatDate(itemData().createdAt)}
+                    </span>
                     <Show when={itemData().author}>
                       <span>By {itemData().author}</span>
                     </Show>

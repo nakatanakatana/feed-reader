@@ -43,11 +43,11 @@ func TestItemStore_GetItems_Features(t *testing.T) {
 		item, err := q.CreateItem(ctx, store.CreateItemParams{
 			ID:          "item-new-fields",
 			Url:         "http://example.com/new-fields",
-			Title:       stringPtr("Title"),
-			Content:     stringPtr(content),
-			ImageUrl:    stringPtr(imageURL),
-			Categories:  stringPtr(categories),
-			PublishedAt: stringPtr(time.Now().Format(time.RFC3339)),
+			Title:       new("Title"),
+			Content:     new(content),
+			ImageUrl:    new(imageURL),
+			Categories:  new(categories),
+			PublishedAt: new(time.Now().Format(time.RFC3339)),
 		})
 		assert.NilError(t, err)
 

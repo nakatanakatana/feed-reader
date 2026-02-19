@@ -76,7 +76,7 @@ func TestStore_ItemDeduplication_PBT(t *testing.T) {
 
 		feedCount := rapid.IntRange(1, 5).Draw(t, "feedCount")
 		feedIDs := make([]string, feedCount)
-		for i := 0; i < feedCount; i++ {
+		for i := range feedCount {
 			feedID := uuid.NewString()
 			feedIDs[i] = feedID
 			_, err := s.CreateFeed(ctx, store.CreateFeedParams{
@@ -88,14 +88,14 @@ func TestStore_ItemDeduplication_PBT(t *testing.T) {
 
 		itemCount := rapid.IntRange(1, 10).Draw(t, "itemCount")
 		itemURLs := make([]string, itemCount)
-		for i := 0; i < itemCount; i++ {
+		for i := range itemCount {
 			itemURLs[i] = "http://example.com/item/" + uuid.NewString()
 		}
 
 		uniqueURLs := make(map[string]struct{}, itemCount)
-		for i := 0; i < feedCount; i++ {
+		for i := range feedCount {
 			itemsForFeed := rapid.IntRange(1, itemCount).Draw(t, fmt.Sprintf("itemsForFeed-%d", i))
-			for j := 0; j < itemsForFeed; j++ {
+			for j := range itemsForFeed {
 				index := rapid.IntRange(0, itemCount-1).Draw(t, fmt.Sprintf("itemIndex-%d-%d", i, j))
 				itemURL := itemURLs[index]
 				title := fmt.Sprintf("Item %d", index)

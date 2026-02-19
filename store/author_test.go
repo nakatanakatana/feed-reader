@@ -6,7 +6,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/nakatanakatana/feed-reader/store"
-	"google.golang.org/protobuf/proto"
 	"gotest.tools/v3/assert"
 )
 
@@ -27,7 +26,7 @@ func TestStore_AuthorField(t *testing.T) {
 	err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
 		FeedID: feedID,
 		Url:    "http://example.com/item-with-author",
-		Title:  proto.String("Title"),
+		Title:  new("Title"),
 		Author: &author,
 	})
 	assert.NilError(t, err)

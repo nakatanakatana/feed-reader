@@ -134,3 +134,10 @@ export const getItem = async (id: string) => {
   const response = await itemClient.getItem({ id });
   return response.item;
 };
+
+export const updateItemReadStatus = async (ids: string[], isRead: boolean) => {
+  await itemClient.updateItemStatus({
+    ids: ids,
+    isRead: isRead,
+  });
+};

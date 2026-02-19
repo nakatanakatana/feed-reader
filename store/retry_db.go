@@ -16,7 +16,7 @@ func NewRetryingDB(db DBTX) *RetryingDB {
 }
 
 // ExecContext wraps ExecContext with retry logic.
-func (r *RetryingDB) ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error) {
+func (r *RetryingDB) ExecContext(ctx context.Context, query string, args ...any) (sql.Result, error) {
 	var res sql.Result
 	err := WithRetry(ctx, func() error {
 		var err error
@@ -38,7 +38,7 @@ func (r *RetryingDB) PrepareContext(ctx context.Context, query string) (*sql.Stm
 }
 
 // QueryContext wraps QueryContext with retry logic.
-func (r *RetryingDB) QueryContext(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error) {
+func (r *RetryingDB) QueryContext(ctx context.Context, query string, args ...any) (*sql.Rows, error) {
 	var rows *sql.Rows
 	err := WithRetry(ctx, func() error {
 		var err error
@@ -49,7 +49,7 @@ func (r *RetryingDB) QueryContext(ctx context.Context, query string, args ...int
 }
 
 // QueryRowContext wraps QueryRowContext with retry logic.
-func (r *RetryingDB) QueryRowContext(ctx context.Context, query string, args ...interface{}) *sql.Row {
+func (r *RetryingDB) QueryRowContext(ctx context.Context, query string, args ...any) *sql.Row {
 	// QueryRowContext doesn't return an error directly, it returns a *sql.Row whose error is delayed.
 	// However, sqlc uses it for single row results.
 	// To truly retry, we'd need to intercept the Scan call, but sqlc generates code that calls Scan immediately.

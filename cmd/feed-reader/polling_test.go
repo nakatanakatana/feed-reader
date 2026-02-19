@@ -24,8 +24,7 @@ func (m *pollingMockFetcher) Fetch(ctx context.Context, feedID string, url strin
 }
 
 func TestPollingRespectsSchedule(t *testing.T) {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	ctx := t.Context()
 
 	_, db := setupTestDB(t)
 	defer func() { _ = db.Close() }()
@@ -33,11 +32,11 @@ func TestPollingRespectsSchedule(t *testing.T) {
 	s := store.NewStore(db)
 	fetcher := &pollingMockFetcher{}
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
-	
+
 	// Create worker pool and write queue
 	pool := NewWorkerPool(2)
 	go pool.Start(ctx)
-	
+
 	wq := NewWriteQueueService(s, WriteQueueConfig{
 		MaxBatchSize:  10,
 		FlushInterval: 10 * time.Millisecond,
@@ -68,7 +67,7 @@ func TestPollingRespectsSchedule(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Assert(t, f.NextFetch != nil)
 	logger.Info("Step 3: Verified next_fetch", "nextFetch", *f.NextFetch)
-	
+
 	nextFetch, err := time.Parse(time.RFC3339, *f.NextFetch)
 	assert.NilError(t, err)
 	assert.Assert(t, nextFetch.After(time.Now()))

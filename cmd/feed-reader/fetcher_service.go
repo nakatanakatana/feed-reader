@@ -304,9 +304,9 @@ func (s *FetcherService) normalizeItem(ctx context.Context, feedID string, item 
 		params.Username = &username
 	}
 
-	if item.Author != nil {
+	if item.Author != nil && item.Author.Name != "" {
 		params.Author = &item.Author.Name
-	} else if len(item.Authors) > 0 {
+	} else if len(item.Authors) > 0 && item.Authors[0].Name != "" {
 		params.Author = &item.Authors[0].Name
 	}
 
@@ -322,6 +322,12 @@ func (s *FetcherService) normalizeItem(ctx context.Context, feedID string, item 
 
 	if item.Image != nil {
 		params.ImageUrl = &item.Image.URL
+	}
+
+	if item.Author != nil && item.Author.Name != "" {
+		params.Author = &item.Author.Name
+	} else if len(item.Authors) > 0 && item.Authors[0].Name != "" {
+		params.Author = &item.Authors[0].Name
 	}
 
 	if len(item.Categories) > 0 {

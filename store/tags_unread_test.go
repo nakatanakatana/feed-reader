@@ -141,7 +141,7 @@ func TestTags_UnreadCounts_PBT(t *testing.T) {
 		tagCount := rapid.IntRange(1, 5).Draw(t, "tagCount")
 		feedIDs := make([]string, tagCount)
 		tagIDs := make([]string, tagCount)
-		for i := 0; i < tagCount; i++ {
+		for i := range tagCount {
 			tagID := fmt.Sprintf("tag-%d", i)
 			feedID := fmt.Sprintf("feed-%d", i)
 			feedIDs[i] = feedID
@@ -156,7 +156,7 @@ func TestTags_UnreadCounts_PBT(t *testing.T) {
 
 		itemCount := rapid.IntRange(1, 20).Draw(t, "itemCount")
 		unreadPerFeed := make(map[string]int64, tagCount)
-		for i := 0; i < itemCount; i++ {
+		for i := range itemCount {
 			feedIndex := rapid.IntRange(0, tagCount-1).Draw(t, fmt.Sprintf("feedIndex-%d", i))
 			feedID := feedIDs[feedIndex]
 			itemID := fmt.Sprintf("item-%d", i)
