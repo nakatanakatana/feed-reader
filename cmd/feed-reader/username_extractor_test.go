@@ -72,4 +72,56 @@ func TestUsernameExtractor(t *testing.T) {
 		_, err := extractor.Extract("https://example.com/users/jdoe", rules)
 		assert.ErrorContains(t, err, "error parsing regexp")
 	})
+
+	t.Run("Extract username from subdomain", func(t *testing.T) {
+		rules := []store.UrlParsingRule{
+			{
+				Domain:  "sub.example.com",
+				Pattern: `^https://sub\.example\.com/([^/]+)`,
+			},
+		}
+
+		username, err := extractor.Extract("https://sub.example.com/jdoe", rules)
+		assert.NilError(t, err)
+		assert.Equal(t, username, "jdoe")
+	})
+
+	t.Run("Extract username with port in URL", func(t *testing.T) {
+		rules := []store.UrlParsingRule{
+			{
+				Domain:  "localhost:8080",
+				Pattern: `^http://localhost:8080/users/([^/]+)`,
+			},
+		}
+
+		username, err := extractor.Extract("http://localhost:8080/users/jdoe", rules)
+		assert.NilError(t, err)
+		assert.Equal(t, username, "jdoe")
+	})
+
+	t.Run("Extract from first capture group only", func(t *testing.T) {
+		rules := []store.UrlParsingRule{
+			{
+				Domain:  "example.com",
+				Pattern: `^https://example\.com/users/([^/]+)/posts/([^/]+)`,
+			},
+		}
+
+		username, err := extractor.Extract("https://example.com/users/jdoe/posts/123", rules)
+		assert.NilError(t, err)
+		assert.Equal(t, username, "jdoe")
+	})
+
+	t.Run("Case insensitive matching if regex specifies it", func(t *testing.T) {
+		rules := []store.UrlParsingRule{
+			{
+				Domain:  "example.com",
+				Pattern: `(?i)^https://example\.com/USERS/([^/]+)`,
+			},
+		}
+
+		username, err := extractor.Extract("https://example.com/users/jdoe", rules)
+		assert.NilError(t, err)
+		assert.Equal(t, username, "jdoe")
+	})
 }
