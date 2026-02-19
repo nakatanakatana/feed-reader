@@ -3,7 +3,7 @@ import { useLiveQuery } from "@tanstack/solid-db";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import {
   GetItemResponseSchema,
@@ -24,8 +24,13 @@ function CollectionInitializer() {
 }
 
 describe("ItemDetailModal FAB Reactivity & Fallback", () => {
+  let dispose: () => void;
+
   afterEach(() => {
+    if (dispose) dispose();
     document.body.innerHTML = "";
+    vi.clearAllMocks();
+    vi.restoreAllMocks();
   });
 
   const setupMockData = (itemId: string, isRead: boolean) => {
@@ -61,7 +66,6 @@ describe("ItemDetailModal FAB Reactivity & Fallback", () => {
 
     // Mock the update API
     let apiCalled = false;
-    const _apiValue = false;
     worker.use(
       http.post("*/item.v1.ItemService/UpdateItemStatus", async () => {
         apiCalled = true;
@@ -71,7 +75,7 @@ describe("ItemDetailModal FAB Reactivity & Fallback", () => {
       }),
     );
 
-    const dispose = render(
+    dispose = render(
       () => (
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>
@@ -100,8 +104,6 @@ describe("ItemDetailModal FAB Reactivity & Fallback", () => {
 
     // 4. API should have been called
     await expect.poll(() => apiCalled).toBe(true);
-
-    dispose();
   });
 
   it("verifies: FAB toggles status and updates UI when item IS in collection", async () => {
@@ -120,7 +122,7 @@ describe("ItemDetailModal FAB Reactivity & Fallback", () => {
       }),
     );
 
-    const dispose = render(
+    dispose = render(
       () => (
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>
@@ -146,15 +148,13 @@ describe("ItemDetailModal FAB Reactivity & Fallback", () => {
     await expect
       .element(page.getByRole("button", { name: /Mark as unread/i }))
       .toBeInTheDocument();
-
-    dispose();
   });
 
   it("verifies: FAB shows 'Mark as Unread' initially for a read item", async () => {
     const itemId = "test-read-initial-1";
     setupMockData(itemId, true); // isRead: true
 
-    const dispose = render(
+    dispose = render(
       () => (
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>
@@ -172,7 +172,5 @@ describe("ItemDetailModal FAB Reactivity & Fallback", () => {
     await expect
       .element(page.getByRole("button", { name: /Mark as unread/i }))
       .toHaveAttribute("aria-pressed", "true");
-
-    dispose();
   });
 });

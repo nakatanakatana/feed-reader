@@ -180,11 +180,12 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
 
   const prioritizedItem = () => collectionItem() || item();
 
-  const handleToggleRead = () => {
+  const handleToggleRead = async () => {
     const currentItem = prioritizedItem();
     if (!currentItem || isEndOfList()) return;
 
     const newIsRead = !currentItem.isRead;
+    const inCollection = collectionItem();
 
     // Always update the individual item query cache for immediate UI feedback in the modal.
     // This handles both the collection and fallback cases.
@@ -196,14 +197,26 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
       },
     );
 
-    // Use items().update if the item is in the collection to keep the list in sync
-    if (collectionItem()) {
-      items().update(currentItem.id, (draft) => {
-        draft.isRead = newIsRead;
-      });
-    } else {
-      // Call the API directly only if NOT in collection (items().update handles it otherwise)
-      updateItemReadStatus([currentItem.id], newIsRead);
+    try {
+      // Use items().update if the item is in the collection to keep the list in sync
+      if (inCollection) {
+        items().update(currentItem.id, (draft) => {
+          draft.isRead = newIsRead;
+        });
+      } else {
+        // Call the API directly only if NOT in collection (items().update handles it otherwise)
+        await updateItemReadStatus([currentItem.id], newIsRead);
+      }
+    } catch (e) {
+      console.error("Failed to update item status", e);
+      // Rollback cache on error
+      queryClient.setQueryData(
+        ["item", props.itemId],
+        (old: Item | null | undefined) => {
+          if (!old) return old;
+          return { ...old, isRead: currentItem.isRead };
+        },
+      );
     }
   };
 
