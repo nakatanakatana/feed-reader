@@ -1,4 +1,3 @@
-import { eq, useLiveQuery } from "@tanstack/solid-db";
 import { useQuery, useQueryClient } from "@tanstack/solid-query";
 import { createEffect, For, type JSX, onCleanup, Show } from "solid-js";
 import { css } from "../../styled-system/css";
@@ -125,22 +124,11 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   const isEndOfList = () => props.itemId === "end-of-list";
 
   // Prioritize looking up the target item within the items collection
-  const collectionItems = useLiveQuery((q) => {
+  const collectionItem = () => {
     const id = props.itemId;
-    if (!id || id === "end-of-list") {
-      // Return a non-matching query to initialize the signal correctly
-      return q
-        .from({ item: items() })
-        .where(({ item }) => eq(item.id, "__none__"))
-        .select(({ item }) => ({ ...item }));
-    }
-    return q
-      .from({ item: items() })
-      .where(({ item }) => eq(item.id, id))
-      .select(({ item }) => ({ ...item }));
-  });
-
-  const collectionItem = () => collectionItems()[0];
+    if (!id || id === "end-of-list") return undefined;
+    return items().get(id);
+  };
 
   const prioritizedItem = () => collectionItem() || item();
 
