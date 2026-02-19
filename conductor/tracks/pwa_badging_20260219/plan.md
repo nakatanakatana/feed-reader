@@ -8,7 +8,7 @@ Enable the Badging API to display the total unread count on the application icon
     - Create `frontend/src/components/PwaBadge.tsx`.
     - Implement logic using `createEffect` to call `navigator.setAppBadge` when `unreadCount > 0` and `navigator.clearAppBadge` when `unreadCount === 0`.
     - Ensure it handles cases where the API is not supported.
-- [ ] Task: Integrate `PwaBadge` into the root route
+- [x] Task: Integrate `PwaBadge` into the root route c605049
     - Update `frontend/src/routes/__root.tsx` to include the `<PwaBadge />` component.
     - Pass the total unread count from the existing live query to the component.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Implementation' (Protocol in workflow.md)
