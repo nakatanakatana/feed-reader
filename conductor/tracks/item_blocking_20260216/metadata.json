@@ -1,8 +1,0 @@
-{
-  "track_id": "item_blocking_20260216",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-02-16T10:00:00Z",
-  "updated_at": "2026-02-16T10:00:00Z",
-  "description": "Add high-performance item blocking feature based on usernames, domains, and keywords."
-}
