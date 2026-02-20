@@ -56,7 +56,7 @@ describe("FeedList Sorting", () => {
 
   it("sorts feeds correctly by title", async () => {
     worker.use(
-      http.post("*/feed.v1.FeedService/ListFeeds", () => {
+      http.all("*/feed.v1.FeedService/ListFeeds", () => {
         const msg = create(ListFeedsResponseSchema, {
           feeds: [
             create(ListFeedSchema, {
@@ -81,7 +81,7 @@ describe("FeedList Sorting", () => {
         });
         return HttpResponse.json(toJson(ListFeedsResponseSchema, msg));
       }),
-      http.post("*/tag.v1.TagService/ListTags", () => {
+      http.all("*/tag.v1.TagService/ListTags", () => {
         return HttpResponse.json(
           toJson(
             ListTagsResponseSchema,
@@ -89,7 +89,7 @@ describe("FeedList Sorting", () => {
           ),
         );
       }),
-      http.post("*/feed.v1.FeedService/ListFeedTags", () => {
+      http.all("*/feed.v1.FeedService/ListFeedTags", () => {
         return HttpResponse.json(
           toJson(
             ListFeedTagsResponseSchema,
@@ -160,7 +160,7 @@ describe("FeedList Sorting", () => {
 
   it("sorts feeds correctly by last fetched", async () => {
     worker.use(
-      http.post("*/feed.v1.FeedService/ListFeeds", () => {
+      http.all("*/feed.v1.FeedService/ListFeeds", () => {
         const msg = create(ListFeedsResponseSchema, {
           feeds: [
             create(ListFeedSchema, {
@@ -200,7 +200,7 @@ describe("FeedList Sorting", () => {
         });
         return HttpResponse.json(toJson(ListFeedsResponseSchema, msg));
       }),
-      http.post("*/tag.v1.TagService/ListTags", () => {
+      http.all("*/tag.v1.TagService/ListTags", () => {
         return HttpResponse.json(
           toJson(
             ListTagsResponseSchema,
@@ -208,7 +208,7 @@ describe("FeedList Sorting", () => {
           ),
         );
       }),
-      http.post("*/feed.v1.FeedService/ListFeedTags", () => {
+      http.all("*/feed.v1.FeedService/ListFeedTags", () => {
         return HttpResponse.json(
           toJson(
             ListFeedTagsResponseSchema,

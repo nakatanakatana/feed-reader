@@ -21,6 +21,7 @@ import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
+import { parseConnectMessage } from "../mocks/connect";
 import { routeTree } from "../routeTree.gen";
 
 describe("ItemDetailRouteView Seamless Navigation", () => {
@@ -41,20 +42,21 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
     ],
   ) => {
     worker.use(
-      http.post("*/item.v1.ItemService/ListItems", () => {
+      http.all("*/item.v1.ItemService/ListItems", () => {
         const msg = create(ListItemsResponseSchema, {
           items: mockItems,
           totalCount: mockItems.length,
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),
-      http.post("*/item.v1.ItemService/GetItem", async ({ request }) => {
-        const body = (await request.json()) as { id: string };
-        const found = mockItems.find((i) => i.id === body.id);
+      http.all("*/item.v1.ItemService/GetItem", async ({ request }) => {
+        const body = (await parseConnectMessage(request)) as { id: string };
+        const id = body.id;
+        const found = mockItems.find((i) => i.id === id);
         const msg = create(GetItemResponseSchema, {
           item: create(ItemSchema, {
-            id: body.id,
-            title: found?.title || `Item ${body.id}`,
+            id: id,
+            title: found?.title || `Item ${id}`,
             isRead: found?.isRead || false,
           }),
         });
@@ -73,7 +75,7 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
           );
         },
       ),
-      http.post("*/tag.v1.TagService/ListTags", () => {
+      http.all("*/tag.v1.TagService/ListTags", () => {
         return HttpResponse.json(
           toJson(
             ListTagsResponseSchema,
@@ -81,7 +83,7 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
           ),
         );
       }),
-      http.post("*/feed.v1.FeedService/ListFeedTags", () => {
+      http.all("*/feed.v1.FeedService/ListFeedTags", () => {
         return HttpResponse.json(
           toJson(
             ListFeedTagsResponseSchema,
@@ -314,7 +316,7 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
 
     // Mock tag relation
     worker.use(
-      http.post("*/tag.v1.TagService/ListTags", () => {
+      http.all("*/tag.v1.TagService/ListTags", () => {
         return HttpResponse.json(
           toJson(
             ListTagsResponseSchema,
@@ -324,7 +326,7 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
           ),
         );
       }),
-      http.post("*/feed.v1.FeedService/ListFeedTags", () => {
+      http.all("*/feed.v1.FeedService/ListFeedTags", () => {
         return HttpResponse.json(
           toJson(
             ListFeedTagsResponseSchema,

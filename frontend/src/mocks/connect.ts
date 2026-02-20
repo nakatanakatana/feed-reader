@@ -18,6 +18,24 @@ type MethodDef = {
     | "bidi_streaming";
 };
 
+export const parseConnectMessage = async (request: Request): Promise<JsonValue> => {
+  if (request.method === "GET") {
+    const url = new URL(request.url);
+    const messageParam = url.searchParams.get("message");
+
+    if (!messageParam) {
+      return {};
+    }
+    try {
+      const decoded = atob(messageParam.replace(/-/g, "+").replace(/_/g, "/"));
+      return JSON.parse(decoded) as JsonValue;
+    } catch {
+      return JSON.parse(decodeURIComponent(messageParam)) as JsonValue;
+    }
+  }
+  return (await request.json()) as JsonValue;
+};
+
 export const mockConnectWeb =
   <T extends Record<string, MethodDef>>(service: GenService<T>) =>
   <U extends keyof T & string>(props: {
@@ -29,6 +47,7 @@ export const mockConnectWeb =
       props.method.charAt(0).toUpperCase() + props.method.slice(1);
 
     return http.all(`*/${service.typeName}/${rpcName}`, async ({ request }) => {
+      console.log(`MSW: Intercepted ${request.method} ${request.url}`);
       // biome-ignore lint/suspicious/noExplicitAny: service.methods can be array or object at runtime
       const methods = service.methods as any;
       let methodDef: MethodDef | undefined;
@@ -40,15 +59,29 @@ export const mockConnectWeb =
       }
 
       if (!methodDef) {
+        console.error(
+          `MSW: Method ${props.method} not found in service ${service.typeName}`,
+        );
         throw new Error(
           `Method ${props.method} not found in service ${service.typeName}`,
         );
       }
 
-      // Cast to any/JsonValue because msw request.json() might return unknown/DefaultBodyType
-      // and fromJson expects JsonValue.
-      const jsonBody = (await request.json()) as JsonValue;
+      let jsonBody: JsonValue;
+      try {
+        jsonBody = await parseConnectMessage(request);
+      } catch (e) {
+        console.error(
+          `MSW: Failed to parse request body/params for ${props.method}:`,
+          e,
+        );
+        return new HttpResponse(null, { status: 400 });
+      }
 
+      console.log(
+        `MSW: Calling handler for ${props.method} with body:`,
+        jsonBody,
+      );
       // Decode the JSON request into a typed Message
       const req = fromJson(methodDef.input, jsonBody);
 
@@ -57,6 +90,7 @@ export const mockConnectWeb =
 
       // Encode the response Message back to JSON
       const respJson = toJson(methodDef.output, resp);
+      console.log(`MSW: Returning response for ${props.method}`);
       return HttpResponse.json(respJson);
     });
   };

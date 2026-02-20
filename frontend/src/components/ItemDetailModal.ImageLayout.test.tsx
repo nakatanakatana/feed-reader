@@ -22,7 +22,7 @@ describe("ItemDetailModal Image Layout", () => {
 
   const setupMockDataWithContent = (itemId: string, content: string) => {
     worker.use(
-      http.post("*/item.v1.ItemService/GetItem", () => {
+      http.all("*/item.v1.ItemService/GetItem", () => {
         const msg = create(GetItemResponseSchema, {
           item: create(ItemSchema, {
             id: itemId,

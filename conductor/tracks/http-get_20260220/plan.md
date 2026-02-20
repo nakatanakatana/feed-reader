@@ -21,15 +21,15 @@ In this phase, we will update the Protobuf definitions and regenerate the code f
 ## Phase 3: Frontend Implementation & Configuration
 In this phase, we will configure the Connect-Web frontend to utilize the newly enabled HTTP GET support.
 
-- [ ] Task: Locate the Connect-Web transport initialization in `frontend/src/`.
-- [ ] Task: Update the transport configuration to include `useHttpGet: true`.
-- [ ] Task: Verify that the frontend application still functions correctly with the change.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Frontend Implementation & Configuration' (Protocol in workflow.md)
+- [x] Task: Locate the Connect-Web transport initialization in `frontend/src/`.
+- [x] Task: Update the transport configuration to include `useHttpGet: true`. (Already present in `frontend/src/lib/query.ts`)
+- [x] Task: Verify that the frontend application still functions correctly with the change.
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Frontend Implementation & Configuration' (Protocol in workflow.md)
 
 ## Phase 4: Verification & Automated Testing
 In this phase, we will add tests to ensure that the correct HTTP methods are being used and verify the functionality.
 
-- [ ] Task: Add/Update frontend integration tests using MSW to verify that idempotent RPC calls use the `GET` method.
-- [ ] Task: Verify that non-idempotent RPC calls continue to use the `POST` method.
-- [ ] Task: Perform manual verification using browser developer tools to confirm `GET` request usage and correct parameter serialization.
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Verification & Automated Testing' (Protocol in workflow.md)
+- [x] Task: Add/Update frontend integration tests using MSW to verify that idempotent RPC calls use the `GET` method. (Updated `frontend/src/mocks/connect.ts` and test files to handle GET requests)
+- [x] Task: Verify that non-idempotent RPC calls continue to use the `POST` method.
+- [x] Task: Perform manual verification using browser developer tools to confirm `GET` request usage and correct parameter serialization.
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Verification & Automated Testing' (Protocol in workflow.md)

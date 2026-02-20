@@ -21,6 +21,7 @@ import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
+import { parseRequest } from "../mocks/request-utils";
 import { routeTree } from "../routeTree.gen";
 
 describe("ItemDetailRouteView Auto-Read", () => {
@@ -34,7 +35,7 @@ describe("ItemDetailRouteView Auto-Read", () => {
 
   const setupMockData = () => {
     worker.use(
-      http.post("*/item.v1.ItemService/ListItems", () => {
+      http.all("*/item.v1.ItemService/ListItems", () => {
         const msg = create(ListItemsResponseSchema, {
           items: [
             create(ListItemSchema, { id: "1", title: "Item 1", isRead: false }),
@@ -44,8 +45,8 @@ describe("ItemDetailRouteView Auto-Read", () => {
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),
-      http.post("*/item.v1.ItemService/GetItem", async ({ request }) => {
-        const body = (await request.json()) as { id: string };
+      http.all("*/item.v1.ItemService/GetItem", async ({ request }) => {
+        const body = (await parseRequest(request)) as { id: string };
         const msg = create(GetItemResponseSchema, {
           item: create(ItemSchema, {
             id: body.id,
@@ -55,7 +56,7 @@ describe("ItemDetailRouteView Auto-Read", () => {
         });
         return HttpResponse.json(toJson(GetItemResponseSchema, msg));
       }),
-      http.post("*/tag.v1.TagService/ListTags", () => {
+      http.all("*/tag.v1.TagService/ListTags", () => {
         return HttpResponse.json(
           toJson(
             ListTagsResponseSchema,
@@ -63,7 +64,7 @@ describe("ItemDetailRouteView Auto-Read", () => {
           ),
         );
       }),
-      http.post("*/feed.v1.FeedService/ListFeedTags", () => {
+      http.all("*/feed.v1.FeedService/ListFeedTags", () => {
         return HttpResponse.json(
           toJson(
             ListFeedTagsResponseSchema,

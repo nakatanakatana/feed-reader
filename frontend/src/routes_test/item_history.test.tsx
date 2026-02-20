@@ -21,6 +21,7 @@ import { setLastFetched } from "../lib/item-db";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
+import { parseConnectMessage } from "../mocks/connect";
 import { routeTree } from "../routeTree.gen";
 
 describe("Item History Navigation", () => {
@@ -35,24 +36,23 @@ describe("Item History Navigation", () => {
 
   const setupMockData = (items: Record<string, unknown>[] = []) => {
     worker.use(
-      http.post("*/item.v1.ItemService/ListItems", () => {
+      http.all("*/item.v1.ItemService/ListItems", () => {
         const msg = create(ListItemsResponseSchema, {
           items: items.map((i) => create(ListItemSchema, i)),
           totalCount: items.length,
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),
-      http.post("*/item.v1.ItemService/GetItem", ({ request }) => {
-        return request.json().then((body) => {
-          const { id } = body as { id: string };
-          const item = items.find((i) => i.id === id) || items[0];
-          const msg = create(GetItemResponseSchema, {
-            item: create(ItemSchema, item),
-          });
-          return HttpResponse.json(toJson(GetItemResponseSchema, msg));
+      http.all("*/item.v1.ItemService/GetItem", async ({ request }) => {
+        const body = (await parseConnectMessage(request)) as { id: string };
+        const { id } = body;
+        const item = items.find((i) => i.id === id) || items[0];
+        const msg = create(GetItemResponseSchema, {
+          item: create(ItemSchema, item),
         });
+        return HttpResponse.json(toJson(GetItemResponseSchema, msg));
       }),
-      http.post("*/tag.v1.TagService/ListTags", () => {
+      http.all("*/tag.v1.TagService/ListTags", () => {
         return HttpResponse.json(
           toJson(
             ListTagsResponseSchema,
@@ -60,7 +60,7 @@ describe("Item History Navigation", () => {
           ),
         );
       }),
-      http.post("*/feed.v1.FeedService/ListFeedTags", () => {
+      http.all("*/feed.v1.FeedService/ListFeedTags", () => {
         return HttpResponse.json(
           toJson(
             ListFeedTagsResponseSchema,

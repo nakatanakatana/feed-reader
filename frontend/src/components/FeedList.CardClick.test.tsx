@@ -56,7 +56,7 @@ describe("FeedList Card Click Selection", () => {
 
   it("toggles selection when clicking the card background", async () => {
     worker.use(
-      http.post("*/feed.v1.FeedService/ListFeeds", () => {
+      http.all("*/feed.v1.FeedService/ListFeeds", () => {
         const msg = create(ListFeedsResponseSchema, {
           feeds: [
             create(ListFeedSchema, {
@@ -69,7 +69,7 @@ describe("FeedList Card Click Selection", () => {
         });
         return HttpResponse.json(toJson(ListFeedsResponseSchema, msg));
       }),
-      http.post("*/tag.v1.TagService/ListTags", () => {
+      http.all("*/tag.v1.TagService/ListTags", () => {
         return HttpResponse.json(
           toJson(
             ListTagsResponseSchema,
@@ -77,7 +77,7 @@ describe("FeedList Card Click Selection", () => {
           ),
         );
       }),
-      http.post("*/feed.v1.FeedService/ListFeedTags", () => {
+      http.all("*/feed.v1.FeedService/ListFeedTags", () => {
         return HttpResponse.json(
           toJson(
             ListFeedTagsResponseSchema,

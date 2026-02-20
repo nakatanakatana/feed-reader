@@ -95,14 +95,14 @@ func NewFeedServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			httpClient,
 			baseURL+FeedServiceGetFeedProcedure,
 			connect.WithSchema(feedServiceMethods.ByName("GetFeed")),
-			connect.WithIdempotency(connect.IdempotencyIdempotent),
+			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		listFeeds: connect.NewClient[v1.ListFeedsRequest, v1.ListFeedsResponse](
 			httpClient,
 			baseURL+FeedServiceListFeedsProcedure,
 			connect.WithSchema(feedServiceMethods.ByName("ListFeeds")),
-			connect.WithIdempotency(connect.IdempotencyIdempotent),
+			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		createFeed: connect.NewClient[v1.CreateFeedRequest, v1.CreateFeedResponse](
@@ -139,14 +139,14 @@ func NewFeedServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			httpClient,
 			baseURL+FeedServiceExportOpmlProcedure,
 			connect.WithSchema(feedServiceMethods.ByName("ExportOpml")),
-			connect.WithIdempotency(connect.IdempotencyIdempotent),
+			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		listFeedTags: connect.NewClient[v1.ListFeedTagsRequest, v1.ListFeedTagsResponse](
 			httpClient,
 			baseURL+FeedServiceListFeedTagsProcedure,
 			connect.WithSchema(feedServiceMethods.ByName("ListFeedTags")),
-			connect.WithIdempotency(connect.IdempotencyIdempotent),
+			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		setFeedTags: connect.NewClient[v1.SetFeedTagsRequest, v1.SetFeedTagsResponse](
@@ -274,14 +274,14 @@ func NewFeedServiceHandler(svc FeedServiceHandler, opts ...connect.HandlerOption
 		FeedServiceGetFeedProcedure,
 		svc.GetFeed,
 		connect.WithSchema(feedServiceMethods.ByName("GetFeed")),
-		connect.WithIdempotency(connect.IdempotencyIdempotent),
+		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	feedServiceListFeedsHandler := connect.NewUnaryHandler(
 		FeedServiceListFeedsProcedure,
 		svc.ListFeeds,
 		connect.WithSchema(feedServiceMethods.ByName("ListFeeds")),
-		connect.WithIdempotency(connect.IdempotencyIdempotent),
+		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	feedServiceCreateFeedHandler := connect.NewUnaryHandler(
@@ -318,14 +318,14 @@ func NewFeedServiceHandler(svc FeedServiceHandler, opts ...connect.HandlerOption
 		FeedServiceExportOpmlProcedure,
 		svc.ExportOpml,
 		connect.WithSchema(feedServiceMethods.ByName("ExportOpml")),
-		connect.WithIdempotency(connect.IdempotencyIdempotent),
+		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	feedServiceListFeedTagsHandler := connect.NewUnaryHandler(
 		FeedServiceListFeedTagsProcedure,
 		svc.ListFeedTags,
 		connect.WithSchema(feedServiceMethods.ByName("ListFeedTags")),
-		connect.WithIdempotency(connect.IdempotencyIdempotent),
+		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	feedServiceSetFeedTagsHandler := connect.NewUnaryHandler(

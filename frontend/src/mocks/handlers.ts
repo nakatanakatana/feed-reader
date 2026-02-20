@@ -114,7 +114,6 @@ export const handlers = [
   mockConnectWeb(FeedService)({
     method: "listFeeds",
     handler: (req) => {
-      console.log("MSW: listFeeds called, count:", feeds.length);
       let filteredFeeds = feeds;
       // ... (rest of handlers remain same but with logging added to key ones)
 

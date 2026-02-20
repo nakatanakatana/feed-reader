@@ -23,7 +23,7 @@ describe("ItemDetailModal UI Updates", () => {
   // biome-ignore lint/suspicious/noExplicitAny: test mock data
   const setupMockData = (itemId: string, itemData: any) => {
     worker.use(
-      http.post("*/item.v1.ItemService/GetItem", () => {
+      http.all("*/item.v1.ItemService/GetItem", () => {
         const msg = create(GetItemResponseSchema, {
           item: create(ItemSchema, {
             ...itemData,

@@ -2,12 +2,15 @@ syntax = "proto3";
 
 package tag.v1;
 
+import "google/api/annotations.proto";
+
 option go_package = "github.com/nakatanakatana/feed-reader/gen/go/tag/v1;tagv1";
 
 service TagService {
   rpc CreateTag(CreateTagRequest) returns (CreateTagResponse);
   rpc ListTags(ListTagsRequest) returns (ListTagsResponse) {
-    option idempotency_level = IDEMPOTENT;
+    option (google.api.http).get = "/tag.v1.TagService/ListTags";
+    option idempotency_level = NO_SIDE_EFFECTS;
   }
   rpc DeleteTag(DeleteTagRequest) returns (DeleteTagResponse);
 }

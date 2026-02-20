@@ -22,7 +22,7 @@ describe("ManageTagsModal", () => {
 
   it("renders the modal with tags", async () => {
     worker.use(
-      http.post("*/tag.v1.TagService/ListTags", () => {
+      http.all("*/tag.v1.TagService/ListTags", () => {
         const msg = create(ListTagsResponseSchema, {
           tags: [
             create(ListTagSchema, { id: "t1", name: "Tech", feedCount: 1n }),
@@ -31,7 +31,7 @@ describe("ManageTagsModal", () => {
         });
         return HttpResponse.json(toJson(ListTagsResponseSchema, msg));
       }),
-      http.post("*/feed.v1.FeedService/ListFeedTags", () => {
+      http.all("*/feed.v1.FeedService/ListFeedTags", () => {
         return HttpResponse.json(
           toJson(
             ListFeedTagsResponseSchema,
