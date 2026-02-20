@@ -3,11 +3,11 @@
 ## Phase 1: Research & Audit
 In this phase, we will identify all the RPC methods that are side-effect-free and can be safely moved to HTTP GET.
 
-- [ ] Task: Audit `proto/feed/v1/*.proto` to identify read-only methods.
-- [ ] Task: Audit `proto/item/v1/*.proto` to identify read-only methods.
-- [ ] Task: Audit `proto/tag/v1/*.proto` to identify read-only methods.
-- [ ] Task: Audit Go backend handlers (`cmd/feed-reader/handler.go`, `cmd/feed-reader/item_handler.go`, `cmd/feed-reader/tag_service.go`) to confirm methods are truly idempotent.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Research & Audit' (Protocol in workflow.md)
+- [x] Task: Audit `proto/feed/v1/*.proto` to identify read-only methods.
+- [x] Task: Audit `proto/item/v1/*.proto` to identify read-only methods.
+- [x] Task: Audit `proto/tag/v1/*.proto` to identify read-only methods.
+- [x] Task: Audit Go backend handlers (`cmd/feed-reader/handler.go`, `cmd/feed-reader/item_handler.go`, `cmd/feed-reader/tag_service.go`) to confirm methods are truly idempotent.
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Research & Audit' (Protocol in workflow.md) [45464f6]
 
 ## Phase 2: Protobuf Updates & Generation
 In this phase, we will update the Protobuf definitions and regenerate the code for both the backend and frontend.
