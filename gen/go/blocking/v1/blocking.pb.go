@@ -225,6 +225,94 @@ func (x *CreateBlockingRuleResponse) GetRule() *BlockingRule {
 	return nil
 }
 
+type BulkCreateBlockingRulesRequest struct {
+	state         protoimpl.MessageState       `protogen:"open.v1"`
+	Rules         []*CreateBlockingRuleRequest `protobuf:"bytes,1,rep,name=rules,proto3" json:"rules,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BulkCreateBlockingRulesRequest) Reset() {
+	*x = BulkCreateBlockingRulesRequest{}
+	mi := &file_blocking_v1_blocking_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BulkCreateBlockingRulesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BulkCreateBlockingRulesRequest) ProtoMessage() {}
+
+func (x *BulkCreateBlockingRulesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_blocking_v1_blocking_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BulkCreateBlockingRulesRequest.ProtoReflect.Descriptor instead.
+func (*BulkCreateBlockingRulesRequest) Descriptor() ([]byte, []int) {
+	return file_blocking_v1_blocking_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *BulkCreateBlockingRulesRequest) GetRules() []*CreateBlockingRuleRequest {
+	if x != nil {
+		return x.Rules
+	}
+	return nil
+}
+
+type BulkCreateBlockingRulesResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Rules         []*BlockingRule        `protobuf:"bytes,1,rep,name=rules,proto3" json:"rules,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BulkCreateBlockingRulesResponse) Reset() {
+	*x = BulkCreateBlockingRulesResponse{}
+	mi := &file_blocking_v1_blocking_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BulkCreateBlockingRulesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BulkCreateBlockingRulesResponse) ProtoMessage() {}
+
+func (x *BulkCreateBlockingRulesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_blocking_v1_blocking_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BulkCreateBlockingRulesResponse.ProtoReflect.Descriptor instead.
+func (*BulkCreateBlockingRulesResponse) Descriptor() ([]byte, []int) {
+	return file_blocking_v1_blocking_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *BulkCreateBlockingRulesResponse) GetRules() []*BlockingRule {
+	if x != nil {
+		return x.Rules
+	}
+	return nil
+}
+
 type ListBlockingRulesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -233,7 +321,7 @@ type ListBlockingRulesRequest struct {
 
 func (x *ListBlockingRulesRequest) Reset() {
 	*x = ListBlockingRulesRequest{}
-	mi := &file_blocking_v1_blocking_proto_msgTypes[3]
+	mi := &file_blocking_v1_blocking_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -245,7 +333,7 @@ func (x *ListBlockingRulesRequest) String() string {
 func (*ListBlockingRulesRequest) ProtoMessage() {}
 
 func (x *ListBlockingRulesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_blocking_v1_blocking_proto_msgTypes[3]
+	mi := &file_blocking_v1_blocking_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -258,7 +346,7 @@ func (x *ListBlockingRulesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListBlockingRulesRequest.ProtoReflect.Descriptor instead.
 func (*ListBlockingRulesRequest) Descriptor() ([]byte, []int) {
-	return file_blocking_v1_blocking_proto_rawDescGZIP(), []int{3}
+	return file_blocking_v1_blocking_proto_rawDescGZIP(), []int{5}
 }
 
 type ListBlockingRulesResponse struct {
@@ -270,7 +358,7 @@ type ListBlockingRulesResponse struct {
 
 func (x *ListBlockingRulesResponse) Reset() {
 	*x = ListBlockingRulesResponse{}
-	mi := &file_blocking_v1_blocking_proto_msgTypes[4]
+	mi := &file_blocking_v1_blocking_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -282,7 +370,7 @@ func (x *ListBlockingRulesResponse) String() string {
 func (*ListBlockingRulesResponse) ProtoMessage() {}
 
 func (x *ListBlockingRulesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_blocking_v1_blocking_proto_msgTypes[4]
+	mi := &file_blocking_v1_blocking_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -295,7 +383,7 @@ func (x *ListBlockingRulesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListBlockingRulesResponse.ProtoReflect.Descriptor instead.
 func (*ListBlockingRulesResponse) Descriptor() ([]byte, []int) {
-	return file_blocking_v1_blocking_proto_rawDescGZIP(), []int{4}
+	return file_blocking_v1_blocking_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *ListBlockingRulesResponse) GetRules() []*BlockingRule {
@@ -314,7 +402,7 @@ type DeleteBlockingRuleRequest struct {
 
 func (x *DeleteBlockingRuleRequest) Reset() {
 	*x = DeleteBlockingRuleRequest{}
-	mi := &file_blocking_v1_blocking_proto_msgTypes[5]
+	mi := &file_blocking_v1_blocking_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -326,7 +414,7 @@ func (x *DeleteBlockingRuleRequest) String() string {
 func (*DeleteBlockingRuleRequest) ProtoMessage() {}
 
 func (x *DeleteBlockingRuleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_blocking_v1_blocking_proto_msgTypes[5]
+	mi := &file_blocking_v1_blocking_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -339,7 +427,7 @@ func (x *DeleteBlockingRuleRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteBlockingRuleRequest.ProtoReflect.Descriptor instead.
 func (*DeleteBlockingRuleRequest) Descriptor() ([]byte, []int) {
-	return file_blocking_v1_blocking_proto_rawDescGZIP(), []int{5}
+	return file_blocking_v1_blocking_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *DeleteBlockingRuleRequest) GetId() string {
@@ -357,7 +445,7 @@ type DeleteBlockingRuleResponse struct {
 
 func (x *DeleteBlockingRuleResponse) Reset() {
 	*x = DeleteBlockingRuleResponse{}
-	mi := &file_blocking_v1_blocking_proto_msgTypes[6]
+	mi := &file_blocking_v1_blocking_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -369,7 +457,7 @@ func (x *DeleteBlockingRuleResponse) String() string {
 func (*DeleteBlockingRuleResponse) ProtoMessage() {}
 
 func (x *DeleteBlockingRuleResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_blocking_v1_blocking_proto_msgTypes[6]
+	mi := &file_blocking_v1_blocking_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -382,7 +470,7 @@ func (x *DeleteBlockingRuleResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteBlockingRuleResponse.ProtoReflect.Descriptor instead.
 func (*DeleteBlockingRuleResponse) Descriptor() ([]byte, []int) {
-	return file_blocking_v1_blocking_proto_rawDescGZIP(), []int{6}
+	return file_blocking_v1_blocking_proto_rawDescGZIP(), []int{8}
 }
 
 type URLParsingRule struct {
@@ -398,7 +486,7 @@ type URLParsingRule struct {
 
 func (x *URLParsingRule) Reset() {
 	*x = URLParsingRule{}
-	mi := &file_blocking_v1_blocking_proto_msgTypes[7]
+	mi := &file_blocking_v1_blocking_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -410,7 +498,7 @@ func (x *URLParsingRule) String() string {
 func (*URLParsingRule) ProtoMessage() {}
 
 func (x *URLParsingRule) ProtoReflect() protoreflect.Message {
-	mi := &file_blocking_v1_blocking_proto_msgTypes[7]
+	mi := &file_blocking_v1_blocking_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -423,7 +511,7 @@ func (x *URLParsingRule) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use URLParsingRule.ProtoReflect.Descriptor instead.
 func (*URLParsingRule) Descriptor() ([]byte, []int) {
-	return file_blocking_v1_blocking_proto_rawDescGZIP(), []int{7}
+	return file_blocking_v1_blocking_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *URLParsingRule) GetId() string {
@@ -471,7 +559,7 @@ type CreateURLParsingRuleRequest struct {
 
 func (x *CreateURLParsingRuleRequest) Reset() {
 	*x = CreateURLParsingRuleRequest{}
-	mi := &file_blocking_v1_blocking_proto_msgTypes[8]
+	mi := &file_blocking_v1_blocking_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -483,7 +571,7 @@ func (x *CreateURLParsingRuleRequest) String() string {
 func (*CreateURLParsingRuleRequest) ProtoMessage() {}
 
 func (x *CreateURLParsingRuleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_blocking_v1_blocking_proto_msgTypes[8]
+	mi := &file_blocking_v1_blocking_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -496,7 +584,7 @@ func (x *CreateURLParsingRuleRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateURLParsingRuleRequest.ProtoReflect.Descriptor instead.
 func (*CreateURLParsingRuleRequest) Descriptor() ([]byte, []int) {
-	return file_blocking_v1_blocking_proto_rawDescGZIP(), []int{8}
+	return file_blocking_v1_blocking_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *CreateURLParsingRuleRequest) GetDomain() string {
@@ -522,7 +610,7 @@ type CreateURLParsingRuleResponse struct {
 
 func (x *CreateURLParsingRuleResponse) Reset() {
 	*x = CreateURLParsingRuleResponse{}
-	mi := &file_blocking_v1_blocking_proto_msgTypes[9]
+	mi := &file_blocking_v1_blocking_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -534,7 +622,7 @@ func (x *CreateURLParsingRuleResponse) String() string {
 func (*CreateURLParsingRuleResponse) ProtoMessage() {}
 
 func (x *CreateURLParsingRuleResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_blocking_v1_blocking_proto_msgTypes[9]
+	mi := &file_blocking_v1_blocking_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -547,7 +635,7 @@ func (x *CreateURLParsingRuleResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateURLParsingRuleResponse.ProtoReflect.Descriptor instead.
 func (*CreateURLParsingRuleResponse) Descriptor() ([]byte, []int) {
-	return file_blocking_v1_blocking_proto_rawDescGZIP(), []int{9}
+	return file_blocking_v1_blocking_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *CreateURLParsingRuleResponse) GetRule() *URLParsingRule {
@@ -565,7 +653,7 @@ type ListURLParsingRulesRequest struct {
 
 func (x *ListURLParsingRulesRequest) Reset() {
 	*x = ListURLParsingRulesRequest{}
-	mi := &file_blocking_v1_blocking_proto_msgTypes[10]
+	mi := &file_blocking_v1_blocking_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -577,7 +665,7 @@ func (x *ListURLParsingRulesRequest) String() string {
 func (*ListURLParsingRulesRequest) ProtoMessage() {}
 
 func (x *ListURLParsingRulesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_blocking_v1_blocking_proto_msgTypes[10]
+	mi := &file_blocking_v1_blocking_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -590,7 +678,7 @@ func (x *ListURLParsingRulesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListURLParsingRulesRequest.ProtoReflect.Descriptor instead.
 func (*ListURLParsingRulesRequest) Descriptor() ([]byte, []int) {
-	return file_blocking_v1_blocking_proto_rawDescGZIP(), []int{10}
+	return file_blocking_v1_blocking_proto_rawDescGZIP(), []int{12}
 }
 
 type ListURLParsingRulesResponse struct {
@@ -602,7 +690,7 @@ type ListURLParsingRulesResponse struct {
 
 func (x *ListURLParsingRulesResponse) Reset() {
 	*x = ListURLParsingRulesResponse{}
-	mi := &file_blocking_v1_blocking_proto_msgTypes[11]
+	mi := &file_blocking_v1_blocking_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -614,7 +702,7 @@ func (x *ListURLParsingRulesResponse) String() string {
 func (*ListURLParsingRulesResponse) ProtoMessage() {}
 
 func (x *ListURLParsingRulesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_blocking_v1_blocking_proto_msgTypes[11]
+	mi := &file_blocking_v1_blocking_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -627,7 +715,7 @@ func (x *ListURLParsingRulesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListURLParsingRulesResponse.ProtoReflect.Descriptor instead.
 func (*ListURLParsingRulesResponse) Descriptor() ([]byte, []int) {
-	return file_blocking_v1_blocking_proto_rawDescGZIP(), []int{11}
+	return file_blocking_v1_blocking_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *ListURLParsingRulesResponse) GetRules() []*URLParsingRule {
@@ -646,7 +734,7 @@ type DeleteURLParsingRuleRequest struct {
 
 func (x *DeleteURLParsingRuleRequest) Reset() {
 	*x = DeleteURLParsingRuleRequest{}
-	mi := &file_blocking_v1_blocking_proto_msgTypes[12]
+	mi := &file_blocking_v1_blocking_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -658,7 +746,7 @@ func (x *DeleteURLParsingRuleRequest) String() string {
 func (*DeleteURLParsingRuleRequest) ProtoMessage() {}
 
 func (x *DeleteURLParsingRuleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_blocking_v1_blocking_proto_msgTypes[12]
+	mi := &file_blocking_v1_blocking_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -671,7 +759,7 @@ func (x *DeleteURLParsingRuleRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteURLParsingRuleRequest.ProtoReflect.Descriptor instead.
 func (*DeleteURLParsingRuleRequest) Descriptor() ([]byte, []int) {
-	return file_blocking_v1_blocking_proto_rawDescGZIP(), []int{12}
+	return file_blocking_v1_blocking_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *DeleteURLParsingRuleRequest) GetId() string {
@@ -689,7 +777,7 @@ type DeleteURLParsingRuleResponse struct {
 
 func (x *DeleteURLParsingRuleResponse) Reset() {
 	*x = DeleteURLParsingRuleResponse{}
-	mi := &file_blocking_v1_blocking_proto_msgTypes[13]
+	mi := &file_blocking_v1_blocking_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -701,7 +789,7 @@ func (x *DeleteURLParsingRuleResponse) String() string {
 func (*DeleteURLParsingRuleResponse) ProtoMessage() {}
 
 func (x *DeleteURLParsingRuleResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_blocking_v1_blocking_proto_msgTypes[13]
+	mi := &file_blocking_v1_blocking_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -714,7 +802,7 @@ func (x *DeleteURLParsingRuleResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteURLParsingRuleResponse.ProtoReflect.Descriptor instead.
 func (*DeleteURLParsingRuleResponse) Descriptor() ([]byte, []int) {
-	return file_blocking_v1_blocking_proto_rawDescGZIP(), []int{13}
+	return file_blocking_v1_blocking_proto_rawDescGZIP(), []int{15}
 }
 
 type ReevaluateAllItemsRequest struct {
@@ -725,7 +813,7 @@ type ReevaluateAllItemsRequest struct {
 
 func (x *ReevaluateAllItemsRequest) Reset() {
 	*x = ReevaluateAllItemsRequest{}
-	mi := &file_blocking_v1_blocking_proto_msgTypes[14]
+	mi := &file_blocking_v1_blocking_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -737,7 +825,7 @@ func (x *ReevaluateAllItemsRequest) String() string {
 func (*ReevaluateAllItemsRequest) ProtoMessage() {}
 
 func (x *ReevaluateAllItemsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_blocking_v1_blocking_proto_msgTypes[14]
+	mi := &file_blocking_v1_blocking_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -750,7 +838,7 @@ func (x *ReevaluateAllItemsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReevaluateAllItemsRequest.ProtoReflect.Descriptor instead.
 func (*ReevaluateAllItemsRequest) Descriptor() ([]byte, []int) {
-	return file_blocking_v1_blocking_proto_rawDescGZIP(), []int{14}
+	return file_blocking_v1_blocking_proto_rawDescGZIP(), []int{16}
 }
 
 type ReevaluateAllItemsResponse struct {
@@ -761,7 +849,7 @@ type ReevaluateAllItemsResponse struct {
 
 func (x *ReevaluateAllItemsResponse) Reset() {
 	*x = ReevaluateAllItemsResponse{}
-	mi := &file_blocking_v1_blocking_proto_msgTypes[15]
+	mi := &file_blocking_v1_blocking_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -773,7 +861,7 @@ func (x *ReevaluateAllItemsResponse) String() string {
 func (*ReevaluateAllItemsResponse) ProtoMessage() {}
 
 func (x *ReevaluateAllItemsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_blocking_v1_blocking_proto_msgTypes[15]
+	mi := &file_blocking_v1_blocking_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -786,7 +874,7 @@ func (x *ReevaluateAllItemsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReevaluateAllItemsResponse.ProtoReflect.Descriptor instead.
 func (*ReevaluateAllItemsResponse) Descriptor() ([]byte, []int) {
-	return file_blocking_v1_blocking_proto_rawDescGZIP(), []int{15}
+	return file_blocking_v1_blocking_proto_rawDescGZIP(), []int{17}
 }
 
 var File_blocking_v1_blocking_proto protoreflect.FileDescriptor
@@ -818,7 +906,11 @@ const file_blocking_v1_blocking_proto_rawDesc = "" +
 	"\n" +
 	"\b_keyword\"K\n" +
 	"\x1aCreateBlockingRuleResponse\x12-\n" +
-	"\x04rule\x18\x01 \x01(\v2\x19.blocking.v1.BlockingRuleR\x04rule\"\x1a\n" +
+	"\x04rule\x18\x01 \x01(\v2\x19.blocking.v1.BlockingRuleR\x04rule\"^\n" +
+	"\x1eBulkCreateBlockingRulesRequest\x12<\n" +
+	"\x05rules\x18\x01 \x03(\v2&.blocking.v1.CreateBlockingRuleRequestR\x05rules\"R\n" +
+	"\x1fBulkCreateBlockingRulesResponse\x12/\n" +
+	"\x05rules\x18\x01 \x03(\v2\x19.blocking.v1.BlockingRuleR\x05rules\"\x1a\n" +
 	"\x18ListBlockingRulesRequest\"L\n" +
 	"\x19ListBlockingRulesResponse\x12/\n" +
 	"\x05rules\x18\x01 \x03(\v2\x19.blocking.v1.BlockingRuleR\x05rules\"+\n" +
@@ -845,9 +937,10 @@ const file_blocking_v1_blocking_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"\x1e\n" +
 	"\x1cDeleteURLParsingRuleResponse\"\x1b\n" +
 	"\x19ReevaluateAllItemsRequest\"\x1c\n" +
-	"\x1aReevaluateAllItemsResponse2\xee\x05\n" +
+	"\x1aReevaluateAllItemsResponse2\xe4\x06\n" +
 	"\x0fBlockingService\x12e\n" +
-	"\x12CreateBlockingRule\x12&.blocking.v1.CreateBlockingRuleRequest\x1a'.blocking.v1.CreateBlockingRuleResponse\x12b\n" +
+	"\x12CreateBlockingRule\x12&.blocking.v1.CreateBlockingRuleRequest\x1a'.blocking.v1.CreateBlockingRuleResponse\x12t\n" +
+	"\x17BulkCreateBlockingRules\x12+.blocking.v1.BulkCreateBlockingRulesRequest\x1a,.blocking.v1.BulkCreateBlockingRulesResponse\x12b\n" +
 	"\x11ListBlockingRules\x12%.blocking.v1.ListBlockingRulesRequest\x1a&.blocking.v1.ListBlockingRulesResponse\x12e\n" +
 	"\x12DeleteBlockingRule\x12&.blocking.v1.DeleteBlockingRuleRequest\x1a'.blocking.v1.DeleteBlockingRuleResponse\x12k\n" +
 	"\x14CreateURLParsingRule\x12(.blocking.v1.CreateURLParsingRuleRequest\x1a).blocking.v1.CreateURLParsingRuleResponse\x12h\n" +
@@ -867,49 +960,55 @@ func file_blocking_v1_blocking_proto_rawDescGZIP() []byte {
 	return file_blocking_v1_blocking_proto_rawDescData
 }
 
-var file_blocking_v1_blocking_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
+var file_blocking_v1_blocking_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
 var file_blocking_v1_blocking_proto_goTypes = []any{
-	(*BlockingRule)(nil),                 // 0: blocking.v1.BlockingRule
-	(*CreateBlockingRuleRequest)(nil),    // 1: blocking.v1.CreateBlockingRuleRequest
-	(*CreateBlockingRuleResponse)(nil),   // 2: blocking.v1.CreateBlockingRuleResponse
-	(*ListBlockingRulesRequest)(nil),     // 3: blocking.v1.ListBlockingRulesRequest
-	(*ListBlockingRulesResponse)(nil),    // 4: blocking.v1.ListBlockingRulesResponse
-	(*DeleteBlockingRuleRequest)(nil),    // 5: blocking.v1.DeleteBlockingRuleRequest
-	(*DeleteBlockingRuleResponse)(nil),   // 6: blocking.v1.DeleteBlockingRuleResponse
-	(*URLParsingRule)(nil),               // 7: blocking.v1.URLParsingRule
-	(*CreateURLParsingRuleRequest)(nil),  // 8: blocking.v1.CreateURLParsingRuleRequest
-	(*CreateURLParsingRuleResponse)(nil), // 9: blocking.v1.CreateURLParsingRuleResponse
-	(*ListURLParsingRulesRequest)(nil),   // 10: blocking.v1.ListURLParsingRulesRequest
-	(*ListURLParsingRulesResponse)(nil),  // 11: blocking.v1.ListURLParsingRulesResponse
-	(*DeleteURLParsingRuleRequest)(nil),  // 12: blocking.v1.DeleteURLParsingRuleRequest
-	(*DeleteURLParsingRuleResponse)(nil), // 13: blocking.v1.DeleteURLParsingRuleResponse
-	(*ReevaluateAllItemsRequest)(nil),    // 14: blocking.v1.ReevaluateAllItemsRequest
-	(*ReevaluateAllItemsResponse)(nil),   // 15: blocking.v1.ReevaluateAllItemsResponse
+	(*BlockingRule)(nil),                    // 0: blocking.v1.BlockingRule
+	(*CreateBlockingRuleRequest)(nil),       // 1: blocking.v1.CreateBlockingRuleRequest
+	(*CreateBlockingRuleResponse)(nil),      // 2: blocking.v1.CreateBlockingRuleResponse
+	(*BulkCreateBlockingRulesRequest)(nil),  // 3: blocking.v1.BulkCreateBlockingRulesRequest
+	(*BulkCreateBlockingRulesResponse)(nil), // 4: blocking.v1.BulkCreateBlockingRulesResponse
+	(*ListBlockingRulesRequest)(nil),        // 5: blocking.v1.ListBlockingRulesRequest
+	(*ListBlockingRulesResponse)(nil),       // 6: blocking.v1.ListBlockingRulesResponse
+	(*DeleteBlockingRuleRequest)(nil),       // 7: blocking.v1.DeleteBlockingRuleRequest
+	(*DeleteBlockingRuleResponse)(nil),      // 8: blocking.v1.DeleteBlockingRuleResponse
+	(*URLParsingRule)(nil),                  // 9: blocking.v1.URLParsingRule
+	(*CreateURLParsingRuleRequest)(nil),     // 10: blocking.v1.CreateURLParsingRuleRequest
+	(*CreateURLParsingRuleResponse)(nil),    // 11: blocking.v1.CreateURLParsingRuleResponse
+	(*ListURLParsingRulesRequest)(nil),      // 12: blocking.v1.ListURLParsingRulesRequest
+	(*ListURLParsingRulesResponse)(nil),     // 13: blocking.v1.ListURLParsingRulesResponse
+	(*DeleteURLParsingRuleRequest)(nil),     // 14: blocking.v1.DeleteURLParsingRuleRequest
+	(*DeleteURLParsingRuleResponse)(nil),    // 15: blocking.v1.DeleteURLParsingRuleResponse
+	(*ReevaluateAllItemsRequest)(nil),       // 16: blocking.v1.ReevaluateAllItemsRequest
+	(*ReevaluateAllItemsResponse)(nil),      // 17: blocking.v1.ReevaluateAllItemsResponse
 }
 var file_blocking_v1_blocking_proto_depIdxs = []int32{
 	0,  // 0: blocking.v1.CreateBlockingRuleResponse.rule:type_name -> blocking.v1.BlockingRule
-	0,  // 1: blocking.v1.ListBlockingRulesResponse.rules:type_name -> blocking.v1.BlockingRule
-	7,  // 2: blocking.v1.CreateURLParsingRuleResponse.rule:type_name -> blocking.v1.URLParsingRule
-	7,  // 3: blocking.v1.ListURLParsingRulesResponse.rules:type_name -> blocking.v1.URLParsingRule
-	1,  // 4: blocking.v1.BlockingService.CreateBlockingRule:input_type -> blocking.v1.CreateBlockingRuleRequest
-	3,  // 5: blocking.v1.BlockingService.ListBlockingRules:input_type -> blocking.v1.ListBlockingRulesRequest
-	5,  // 6: blocking.v1.BlockingService.DeleteBlockingRule:input_type -> blocking.v1.DeleteBlockingRuleRequest
-	8,  // 7: blocking.v1.BlockingService.CreateURLParsingRule:input_type -> blocking.v1.CreateURLParsingRuleRequest
-	10, // 8: blocking.v1.BlockingService.ListURLParsingRules:input_type -> blocking.v1.ListURLParsingRulesRequest
-	12, // 9: blocking.v1.BlockingService.DeleteURLParsingRule:input_type -> blocking.v1.DeleteURLParsingRuleRequest
-	14, // 10: blocking.v1.BlockingService.ReevaluateAllItems:input_type -> blocking.v1.ReevaluateAllItemsRequest
-	2,  // 11: blocking.v1.BlockingService.CreateBlockingRule:output_type -> blocking.v1.CreateBlockingRuleResponse
-	4,  // 12: blocking.v1.BlockingService.ListBlockingRules:output_type -> blocking.v1.ListBlockingRulesResponse
-	6,  // 13: blocking.v1.BlockingService.DeleteBlockingRule:output_type -> blocking.v1.DeleteBlockingRuleResponse
-	9,  // 14: blocking.v1.BlockingService.CreateURLParsingRule:output_type -> blocking.v1.CreateURLParsingRuleResponse
-	11, // 15: blocking.v1.BlockingService.ListURLParsingRules:output_type -> blocking.v1.ListURLParsingRulesResponse
-	13, // 16: blocking.v1.BlockingService.DeleteURLParsingRule:output_type -> blocking.v1.DeleteURLParsingRuleResponse
-	15, // 17: blocking.v1.BlockingService.ReevaluateAllItems:output_type -> blocking.v1.ReevaluateAllItemsResponse
-	11, // [11:18] is the sub-list for method output_type
-	4,  // [4:11] is the sub-list for method input_type
-	4,  // [4:4] is the sub-list for extension type_name
-	4,  // [4:4] is the sub-list for extension extendee
-	0,  // [0:4] is the sub-list for field type_name
+	1,  // 1: blocking.v1.BulkCreateBlockingRulesRequest.rules:type_name -> blocking.v1.CreateBlockingRuleRequest
+	0,  // 2: blocking.v1.BulkCreateBlockingRulesResponse.rules:type_name -> blocking.v1.BlockingRule
+	0,  // 3: blocking.v1.ListBlockingRulesResponse.rules:type_name -> blocking.v1.BlockingRule
+	9,  // 4: blocking.v1.CreateURLParsingRuleResponse.rule:type_name -> blocking.v1.URLParsingRule
+	9,  // 5: blocking.v1.ListURLParsingRulesResponse.rules:type_name -> blocking.v1.URLParsingRule
+	1,  // 6: blocking.v1.BlockingService.CreateBlockingRule:input_type -> blocking.v1.CreateBlockingRuleRequest
+	3,  // 7: blocking.v1.BlockingService.BulkCreateBlockingRules:input_type -> blocking.v1.BulkCreateBlockingRulesRequest
+	5,  // 8: blocking.v1.BlockingService.ListBlockingRules:input_type -> blocking.v1.ListBlockingRulesRequest
+	7,  // 9: blocking.v1.BlockingService.DeleteBlockingRule:input_type -> blocking.v1.DeleteBlockingRuleRequest
+	10, // 10: blocking.v1.BlockingService.CreateURLParsingRule:input_type -> blocking.v1.CreateURLParsingRuleRequest
+	12, // 11: blocking.v1.BlockingService.ListURLParsingRules:input_type -> blocking.v1.ListURLParsingRulesRequest
+	14, // 12: blocking.v1.BlockingService.DeleteURLParsingRule:input_type -> blocking.v1.DeleteURLParsingRuleRequest
+	16, // 13: blocking.v1.BlockingService.ReevaluateAllItems:input_type -> blocking.v1.ReevaluateAllItemsRequest
+	2,  // 14: blocking.v1.BlockingService.CreateBlockingRule:output_type -> blocking.v1.CreateBlockingRuleResponse
+	4,  // 15: blocking.v1.BlockingService.BulkCreateBlockingRules:output_type -> blocking.v1.BulkCreateBlockingRulesResponse
+	6,  // 16: blocking.v1.BlockingService.ListBlockingRules:output_type -> blocking.v1.ListBlockingRulesResponse
+	8,  // 17: blocking.v1.BlockingService.DeleteBlockingRule:output_type -> blocking.v1.DeleteBlockingRuleResponse
+	11, // 18: blocking.v1.BlockingService.CreateURLParsingRule:output_type -> blocking.v1.CreateURLParsingRuleResponse
+	13, // 19: blocking.v1.BlockingService.ListURLParsingRules:output_type -> blocking.v1.ListURLParsingRulesResponse
+	15, // 20: blocking.v1.BlockingService.DeleteURLParsingRule:output_type -> blocking.v1.DeleteURLParsingRuleResponse
+	17, // 21: blocking.v1.BlockingService.ReevaluateAllItems:output_type -> blocking.v1.ReevaluateAllItemsResponse
+	14, // [14:22] is the sub-list for method output_type
+	6,  // [6:14] is the sub-list for method input_type
+	6,  // [6:6] is the sub-list for extension type_name
+	6,  // [6:6] is the sub-list for extension extendee
+	0,  // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_blocking_v1_blocking_proto_init() }
@@ -925,7 +1024,7 @@ func file_blocking_v1_blocking_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_blocking_v1_blocking_proto_rawDesc), len(file_blocking_v1_blocking_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   16,
+			NumMessages:   18,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

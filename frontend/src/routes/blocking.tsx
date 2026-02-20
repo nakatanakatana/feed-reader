@@ -7,6 +7,7 @@ import { ActionButton } from "../components/ui/ActionButton";
 import { PageLayout } from "../components/ui/PageLayout";
 import {
   blockingRules,
+  bulkCreateBlockingRules,
   createBlockingRule,
   createURLParsingRule,
   deleteBlockingRule,
@@ -30,6 +31,8 @@ function BlockingComponent() {
   const [blockUsername, setBlockUsername] = createSignal("");
   const [blockDomain, setBlockDomain] = createSignal("");
   const [blockKeyword, setBlockKeyword] = createSignal("");
+
+  const [bulkInput, setBulkInput] = createSignal("");
 
   const handleAddUrlRule = async (e: Event) => {
     e.preventDefault();
@@ -61,6 +64,44 @@ function BlockingComponent() {
     setBlockKeyword("");
   };
 
+  const handleBulkImport = async (e: Event) => {
+    e.preventDefault();
+    const input = bulkInput().trim();
+    if (!input) return;
+
+    const lines = input.split("\n");
+    const rulesToCreate = lines
+      .map((line) => {
+        const [ruleType, username, domain, keyword] = line
+          .split(",")
+          .map((s) => s.trim());
+        if (!ruleType) return null;
+
+        if (ruleType === "user_domain") {
+          if (!username && !domain) return null;
+          return {
+            ruleType,
+            username: username || undefined,
+            domain: domain || undefined,
+          };
+        }
+        if (ruleType === "keyword") {
+          if (!keyword) return null;
+          return {
+            ruleType,
+            keyword,
+          };
+        }
+        return null;
+      })
+      .filter((r): r is NonNullable<typeof r> => r !== null);
+
+    if (rulesToCreate.length > 0) {
+      await bulkCreateBlockingRules(rulesToCreate);
+      setBulkInput("");
+    }
+  };
+
   const sectionStyle = css({
     backgroundColor: "white",
     padding: "6",
@@ -78,7 +119,7 @@ function BlockingComponent() {
     color: "gray.900",
   });
 
-  const inputStyle = css({
+  const inputStyleConfig = {
     paddingX: "3",
     paddingY: "2",
     borderRadius: "md",
@@ -92,7 +133,9 @@ function BlockingComponent() {
       borderColor: "blue.500",
       boxShadow: "0 0 0 2px rgba(59, 130, 246, 0.2)",
     },
-  });
+  };
+
+  const inputStyle = css(inputStyleConfig);
 
   const tableStyle = css({
     width: "full",
@@ -222,6 +265,46 @@ function BlockingComponent() {
               </For>
             </tbody>
           </table>
+        </section>
+
+        {/* Bulk Import Section */}
+        <section class={sectionStyle}>
+          <h2 class={headingStyle}>Bulk Import Blocking Rules</h2>
+          <form onSubmit={handleBulkImport} class={stack({ gap: "4" })}>
+            <div>
+              <p
+                class={css({
+                  fontSize: "xs",
+                  color: "gray.500",
+                  marginBottom: "2",
+                })}
+              >
+                Format: <code>rule_type,username,domain,keyword</code> (one per
+                line).
+                <br />
+                Example: <code>user_domain,,spam.com,</code> or{" "}
+                <code>keyword,,,badword</code>
+              </p>
+              <textarea
+                placeholder="user_domain,,spam.com,&#10;keyword,,,badword"
+                value={bulkInput()}
+                onInput={(e) => setBulkInput(e.currentTarget.value)}
+                class={css(inputStyleConfig, {
+                  minHeight: "100px",
+                  fontFamily: "mono",
+                })}
+              />
+            </div>
+            <div class={flex({ justifyContent: "flex-end" })}>
+              <ActionButton
+                type="submit"
+                variant="primary"
+                disabled={!bulkInput().trim()}
+              >
+                Import Rules
+              </ActionButton>
+            </div>
+          </form>
         </section>
 
         {/* Blocking Rules Section */}

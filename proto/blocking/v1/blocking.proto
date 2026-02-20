@@ -7,6 +7,7 @@ option go_package = "github.com/nakatanakatana/feed-reader/gen/go/blocking/v1;bl
 service BlockingService {
   // Blocking Rules
   rpc CreateBlockingRule(CreateBlockingRuleRequest) returns (CreateBlockingRuleResponse);
+  rpc BulkCreateBlockingRules(BulkCreateBlockingRulesRequest) returns (BulkCreateBlockingRulesResponse);
   rpc ListBlockingRules(ListBlockingRulesRequest) returns (ListBlockingRulesResponse);
   rpc DeleteBlockingRule(DeleteBlockingRuleRequest) returns (DeleteBlockingRuleResponse);
 
@@ -38,6 +39,14 @@ message CreateBlockingRuleRequest {
 
 message CreateBlockingRuleResponse {
   BlockingRule rule = 1;
+}
+
+message BulkCreateBlockingRulesRequest {
+  repeated CreateBlockingRuleRequest rules = 1;
+}
+
+message BulkCreateBlockingRulesResponse {
+  repeated BlockingRule rules = 1;
 }
 
 message ListBlockingRulesRequest {}

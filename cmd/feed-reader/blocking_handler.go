@@ -81,6 +81,54 @@ func (s *BlockingServer) CreateBlockingRule(ctx context.Context, req *connect.Re
 	}), nil
 }
 
+func (s *BlockingServer) BulkCreateBlockingRules(ctx context.Context, req *connect.Request[blockingv1.BulkCreateBlockingRulesRequest]) (*connect.Response[blockingv1.BulkCreateBlockingRulesResponse], error) {
+	createdRules := make([]*blockingv1.BlockingRule, 0, len(req.Msg.Rules))
+
+	err := s.store.WithTransaction(ctx, func(qtx *store.Queries) error {
+		for _, r := range req.Msg.Rules {
+			// Validation
+			switch r.RuleType {
+			case "user_domain":
+				if r.Username == nil && r.Domain == nil {
+					return connect.NewError(connect.CodeInvalidArgument, errors.New("either username or domain must be provided for user_domain rule"))
+				}
+			case "keyword":
+				if r.Keyword == nil || *r.Keyword == "" {
+					return connect.NewError(connect.CodeInvalidArgument, errors.New("keyword must be provided for keyword rule"))
+				}
+			default:
+				return connect.NewError(connect.CodeInvalidArgument, errors.New("invalid rule_type"))
+			}
+
+			rule, err := qtx.CreateBlockingRule(ctx, store.CreateBlockingRuleParams{
+				ID:       uuid.NewString(),
+				RuleType: r.RuleType,
+				Username: r.Username,
+				Domain:   r.Domain,
+				Keyword:  r.Keyword,
+			})
+			if err != nil {
+				return err
+			}
+			createdRules = append(createdRules, s.toProtoBlockingRule(rule))
+		}
+		return nil
+	})
+
+	if err != nil {
+		if _, ok := err.(*connect.Error); ok {
+			return nil, err
+		}
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	s.triggerReevaluation()
+
+	return connect.NewResponse(&blockingv1.BulkCreateBlockingRulesResponse{
+		Rules: createdRules,
+	}), nil
+}
+
 func (s *BlockingServer) ListBlockingRules(ctx context.Context, req *connect.Request[blockingv1.ListBlockingRulesRequest]) (*connect.Response[blockingv1.ListBlockingRulesResponse], error) {
 	rules, err := s.store.ListBlockingRules(ctx)
 	if err != nil {

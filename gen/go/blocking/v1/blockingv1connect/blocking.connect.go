@@ -36,6 +36,9 @@ const (
 	// BlockingServiceCreateBlockingRuleProcedure is the fully-qualified name of the BlockingService's
 	// CreateBlockingRule RPC.
 	BlockingServiceCreateBlockingRuleProcedure = "/blocking.v1.BlockingService/CreateBlockingRule"
+	// BlockingServiceBulkCreateBlockingRulesProcedure is the fully-qualified name of the
+	// BlockingService's BulkCreateBlockingRules RPC.
+	BlockingServiceBulkCreateBlockingRulesProcedure = "/blocking.v1.BlockingService/BulkCreateBlockingRules"
 	// BlockingServiceListBlockingRulesProcedure is the fully-qualified name of the BlockingService's
 	// ListBlockingRules RPC.
 	BlockingServiceListBlockingRulesProcedure = "/blocking.v1.BlockingService/ListBlockingRules"
@@ -60,6 +63,7 @@ const (
 type BlockingServiceClient interface {
 	// Blocking Rules
 	CreateBlockingRule(context.Context, *connect.Request[v1.CreateBlockingRuleRequest]) (*connect.Response[v1.CreateBlockingRuleResponse], error)
+	BulkCreateBlockingRules(context.Context, *connect.Request[v1.BulkCreateBlockingRulesRequest]) (*connect.Response[v1.BulkCreateBlockingRulesResponse], error)
 	ListBlockingRules(context.Context, *connect.Request[v1.ListBlockingRulesRequest]) (*connect.Response[v1.ListBlockingRulesResponse], error)
 	DeleteBlockingRule(context.Context, *connect.Request[v1.DeleteBlockingRuleRequest]) (*connect.Response[v1.DeleteBlockingRuleResponse], error)
 	// URL Parsing Rules
@@ -85,6 +89,12 @@ func NewBlockingServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			httpClient,
 			baseURL+BlockingServiceCreateBlockingRuleProcedure,
 			connect.WithSchema(blockingServiceMethods.ByName("CreateBlockingRule")),
+			connect.WithClientOptions(opts...),
+		),
+		bulkCreateBlockingRules: connect.NewClient[v1.BulkCreateBlockingRulesRequest, v1.BulkCreateBlockingRulesResponse](
+			httpClient,
+			baseURL+BlockingServiceBulkCreateBlockingRulesProcedure,
+			connect.WithSchema(blockingServiceMethods.ByName("BulkCreateBlockingRules")),
 			connect.WithClientOptions(opts...),
 		),
 		listBlockingRules: connect.NewClient[v1.ListBlockingRulesRequest, v1.ListBlockingRulesResponse](
@@ -128,18 +138,24 @@ func NewBlockingServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 
 // blockingServiceClient implements BlockingServiceClient.
 type blockingServiceClient struct {
-	createBlockingRule   *connect.Client[v1.CreateBlockingRuleRequest, v1.CreateBlockingRuleResponse]
-	listBlockingRules    *connect.Client[v1.ListBlockingRulesRequest, v1.ListBlockingRulesResponse]
-	deleteBlockingRule   *connect.Client[v1.DeleteBlockingRuleRequest, v1.DeleteBlockingRuleResponse]
-	createURLParsingRule *connect.Client[v1.CreateURLParsingRuleRequest, v1.CreateURLParsingRuleResponse]
-	listURLParsingRules  *connect.Client[v1.ListURLParsingRulesRequest, v1.ListURLParsingRulesResponse]
-	deleteURLParsingRule *connect.Client[v1.DeleteURLParsingRuleRequest, v1.DeleteURLParsingRuleResponse]
-	reevaluateAllItems   *connect.Client[v1.ReevaluateAllItemsRequest, v1.ReevaluateAllItemsResponse]
+	createBlockingRule      *connect.Client[v1.CreateBlockingRuleRequest, v1.CreateBlockingRuleResponse]
+	bulkCreateBlockingRules *connect.Client[v1.BulkCreateBlockingRulesRequest, v1.BulkCreateBlockingRulesResponse]
+	listBlockingRules       *connect.Client[v1.ListBlockingRulesRequest, v1.ListBlockingRulesResponse]
+	deleteBlockingRule      *connect.Client[v1.DeleteBlockingRuleRequest, v1.DeleteBlockingRuleResponse]
+	createURLParsingRule    *connect.Client[v1.CreateURLParsingRuleRequest, v1.CreateURLParsingRuleResponse]
+	listURLParsingRules     *connect.Client[v1.ListURLParsingRulesRequest, v1.ListURLParsingRulesResponse]
+	deleteURLParsingRule    *connect.Client[v1.DeleteURLParsingRuleRequest, v1.DeleteURLParsingRuleResponse]
+	reevaluateAllItems      *connect.Client[v1.ReevaluateAllItemsRequest, v1.ReevaluateAllItemsResponse]
 }
 
 // CreateBlockingRule calls blocking.v1.BlockingService.CreateBlockingRule.
 func (c *blockingServiceClient) CreateBlockingRule(ctx context.Context, req *connect.Request[v1.CreateBlockingRuleRequest]) (*connect.Response[v1.CreateBlockingRuleResponse], error) {
 	return c.createBlockingRule.CallUnary(ctx, req)
+}
+
+// BulkCreateBlockingRules calls blocking.v1.BlockingService.BulkCreateBlockingRules.
+func (c *blockingServiceClient) BulkCreateBlockingRules(ctx context.Context, req *connect.Request[v1.BulkCreateBlockingRulesRequest]) (*connect.Response[v1.BulkCreateBlockingRulesResponse], error) {
+	return c.bulkCreateBlockingRules.CallUnary(ctx, req)
 }
 
 // ListBlockingRules calls blocking.v1.BlockingService.ListBlockingRules.
@@ -176,6 +192,7 @@ func (c *blockingServiceClient) ReevaluateAllItems(ctx context.Context, req *con
 type BlockingServiceHandler interface {
 	// Blocking Rules
 	CreateBlockingRule(context.Context, *connect.Request[v1.CreateBlockingRuleRequest]) (*connect.Response[v1.CreateBlockingRuleResponse], error)
+	BulkCreateBlockingRules(context.Context, *connect.Request[v1.BulkCreateBlockingRulesRequest]) (*connect.Response[v1.BulkCreateBlockingRulesResponse], error)
 	ListBlockingRules(context.Context, *connect.Request[v1.ListBlockingRulesRequest]) (*connect.Response[v1.ListBlockingRulesResponse], error)
 	DeleteBlockingRule(context.Context, *connect.Request[v1.DeleteBlockingRuleRequest]) (*connect.Response[v1.DeleteBlockingRuleResponse], error)
 	// URL Parsing Rules
@@ -197,6 +214,12 @@ func NewBlockingServiceHandler(svc BlockingServiceHandler, opts ...connect.Handl
 		BlockingServiceCreateBlockingRuleProcedure,
 		svc.CreateBlockingRule,
 		connect.WithSchema(blockingServiceMethods.ByName("CreateBlockingRule")),
+		connect.WithHandlerOptions(opts...),
+	)
+	blockingServiceBulkCreateBlockingRulesHandler := connect.NewUnaryHandler(
+		BlockingServiceBulkCreateBlockingRulesProcedure,
+		svc.BulkCreateBlockingRules,
+		connect.WithSchema(blockingServiceMethods.ByName("BulkCreateBlockingRules")),
 		connect.WithHandlerOptions(opts...),
 	)
 	blockingServiceListBlockingRulesHandler := connect.NewUnaryHandler(
@@ -239,6 +262,8 @@ func NewBlockingServiceHandler(svc BlockingServiceHandler, opts ...connect.Handl
 		switch r.URL.Path {
 		case BlockingServiceCreateBlockingRuleProcedure:
 			blockingServiceCreateBlockingRuleHandler.ServeHTTP(w, r)
+		case BlockingServiceBulkCreateBlockingRulesProcedure:
+			blockingServiceBulkCreateBlockingRulesHandler.ServeHTTP(w, r)
 		case BlockingServiceListBlockingRulesProcedure:
 			blockingServiceListBlockingRulesHandler.ServeHTTP(w, r)
 		case BlockingServiceDeleteBlockingRuleProcedure:
@@ -262,6 +287,10 @@ type UnimplementedBlockingServiceHandler struct{}
 
 func (UnimplementedBlockingServiceHandler) CreateBlockingRule(context.Context, *connect.Request[v1.CreateBlockingRuleRequest]) (*connect.Response[v1.CreateBlockingRuleResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("blocking.v1.BlockingService.CreateBlockingRule is not implemented"))
+}
+
+func (UnimplementedBlockingServiceHandler) BulkCreateBlockingRules(context.Context, *connect.Request[v1.BulkCreateBlockingRulesRequest]) (*connect.Response[v1.BulkCreateBlockingRulesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("blocking.v1.BlockingService.BulkCreateBlockingRules is not implemented"))
 }
 
 func (UnimplementedBlockingServiceHandler) ListBlockingRules(context.Context, *connect.Request[v1.ListBlockingRulesRequest]) (*connect.Response[v1.ListBlockingRulesResponse], error) {

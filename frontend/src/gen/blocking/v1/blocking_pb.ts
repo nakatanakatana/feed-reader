@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file blocking/v1/blocking.proto.
  */
 export const file_blocking_v1_blocking: GenFile = /*@__PURE__*/
-  fileDesc("ChpibG9ja2luZy92MS9ibG9ja2luZy5wcm90bxILYmxvY2tpbmcudjEiuwEKDEJsb2NraW5nUnVsZRIKCgJpZBgBIAEoCRIRCglydWxlX3R5cGUYAiABKAkSFQoIdXNlcm5hbWUYAyABKAlIAIgBARITCgZkb21haW4YBCABKAlIAYgBARIUCgdrZXl3b3JkGAUgASgJSAKIAQESEgoKY3JlYXRlZF9hdBgGIAEoCRISCgp1cGRhdGVkX2F0GAcgASgJQgsKCV91c2VybmFtZUIJCgdfZG9tYWluQgoKCF9rZXl3b3JkIpQBChlDcmVhdGVCbG9ja2luZ1J1bGVSZXF1ZXN0EhEKCXJ1bGVfdHlwZRgBIAEoCRIVCgh1c2VybmFtZRgCIAEoCUgAiAEBEhMKBmRvbWFpbhgDIAEoCUgBiAEBEhQKB2tleXdvcmQYBCABKAlIAogBAUILCglfdXNlcm5hbWVCCQoHX2RvbWFpbkIKCghfa2V5d29yZCJFChpDcmVhdGVCbG9ja2luZ1J1bGVSZXNwb25zZRInCgRydWxlGAEgASgLMhkuYmxvY2tpbmcudjEuQmxvY2tpbmdSdWxlIhoKGExpc3RCbG9ja2luZ1J1bGVzUmVxdWVzdCJFChlMaXN0QmxvY2tpbmdSdWxlc1Jlc3BvbnNlEigKBXJ1bGVzGAEgAygLMhkuYmxvY2tpbmcudjEuQmxvY2tpbmdSdWxlIicKGURlbGV0ZUJsb2NraW5nUnVsZVJlcXVlc3QSCgoCaWQYASABKAkiHAoaRGVsZXRlQmxvY2tpbmdSdWxlUmVzcG9uc2UiZQoOVVJMUGFyc2luZ1J1bGUSCgoCaWQYASABKAkSDgoGZG9tYWluGAIgASgJEg8KB3BhdHRlcm4YAyABKAkSEgoKY3JlYXRlZF9hdBgEIAEoCRISCgp1cGRhdGVkX2F0GAUgASgJIj4KG0NyZWF0ZVVSTFBhcnNpbmdSdWxlUmVxdWVzdBIOCgZkb21haW4YASABKAkSDwoHcGF0dGVybhgCIAEoCSJJChxDcmVhdGVVUkxQYXJzaW5nUnVsZVJlc3BvbnNlEikKBHJ1bGUYASABKAsyGy5ibG9ja2luZy52MS5VUkxQYXJzaW5nUnVsZSIcChpMaXN0VVJMUGFyc2luZ1J1bGVzUmVxdWVzdCJJChtMaXN0VVJMUGFyc2luZ1J1bGVzUmVzcG9uc2USKgoFcnVsZXMYASADKAsyGy5ibG9ja2luZy52MS5VUkxQYXJzaW5nUnVsZSIpChtEZWxldGVVUkxQYXJzaW5nUnVsZVJlcXVlc3QSCgoCaWQYASABKAkiHgocRGVsZXRlVVJMUGFyc2luZ1J1bGVSZXNwb25zZSIbChlSZWV2YWx1YXRlQWxsSXRlbXNSZXF1ZXN0IhwKGlJlZXZhbHVhdGVBbGxJdGVtc1Jlc3BvbnNlMu4FCg9CbG9ja2luZ1NlcnZpY2USZQoSQ3JlYXRlQmxvY2tpbmdSdWxlEiYuYmxvY2tpbmcudjEuQ3JlYXRlQmxvY2tpbmdSdWxlUmVxdWVzdBonLmJsb2NraW5nLnYxLkNyZWF0ZUJsb2NraW5nUnVsZVJlc3BvbnNlEmIKEUxpc3RCbG9ja2luZ1J1bGVzEiUuYmxvY2tpbmcudjEuTGlzdEJsb2NraW5nUnVsZXNSZXF1ZXN0GiYuYmxvY2tpbmcudjEuTGlzdEJsb2NraW5nUnVsZXNSZXNwb25zZRJlChJEZWxldGVCbG9ja2luZ1J1bGUSJi5ibG9ja2luZy52MS5EZWxldGVCbG9ja2luZ1J1bGVSZXF1ZXN0GicuYmxvY2tpbmcudjEuRGVsZXRlQmxvY2tpbmdSdWxlUmVzcG9uc2USawoUQ3JlYXRlVVJMUGFyc2luZ1J1bGUSKC5ibG9ja2luZy52MS5DcmVhdGVVUkxQYXJzaW5nUnVsZVJlcXVlc3QaKS5ibG9ja2luZy52MS5DcmVhdGVVUkxQYXJzaW5nUnVsZVJlc3BvbnNlEmgKE0xpc3RVUkxQYXJzaW5nUnVsZXMSJy5ibG9ja2luZy52MS5MaXN0VVJMUGFyc2luZ1J1bGVzUmVxdWVzdBooLmJsb2NraW5nLnYxLkxpc3RVUkxQYXJzaW5nUnVsZXNSZXNwb25zZRJrChREZWxldGVVUkxQYXJzaW5nUnVsZRIoLmJsb2NraW5nLnYxLkRlbGV0ZVVSTFBhcnNpbmdSdWxlUmVxdWVzdBopLmJsb2NraW5nLnYxLkRlbGV0ZVVSTFBhcnNpbmdSdWxlUmVzcG9uc2USZQoSUmVldmFsdWF0ZUFsbEl0ZW1zEiYuYmxvY2tpbmcudjEuUmVldmFsdWF0ZUFsbEl0ZW1zUmVxdWVzdBonLmJsb2NraW5nLnYxLlJlZXZhbHVhdGVBbGxJdGVtc1Jlc3BvbnNlQkVaQ2dpdGh1Yi5jb20vbmFrYXRhbmFrYXRhbmEvZmVlZC1yZWFkZXIvZ2VuL2dvL2Jsb2NraW5nL3YxO2Jsb2NraW5ndjFiBnByb3RvMw");
+  fileDesc("ChpibG9ja2luZy92MS9ibG9ja2luZy5wcm90bxILYmxvY2tpbmcudjEiuwEKDEJsb2NraW5nUnVsZRIKCgJpZBgBIAEoCRIRCglydWxlX3R5cGUYAiABKAkSFQoIdXNlcm5hbWUYAyABKAlIAIgBARITCgZkb21haW4YBCABKAlIAYgBARIUCgdrZXl3b3JkGAUgASgJSAKIAQESEgoKY3JlYXRlZF9hdBgGIAEoCRISCgp1cGRhdGVkX2F0GAcgASgJQgsKCV91c2VybmFtZUIJCgdfZG9tYWluQgoKCF9rZXl3b3JkIpQBChlDcmVhdGVCbG9ja2luZ1J1bGVSZXF1ZXN0EhEKCXJ1bGVfdHlwZRgBIAEoCRIVCgh1c2VybmFtZRgCIAEoCUgAiAEBEhMKBmRvbWFpbhgDIAEoCUgBiAEBEhQKB2tleXdvcmQYBCABKAlIAogBAUILCglfdXNlcm5hbWVCCQoHX2RvbWFpbkIKCghfa2V5d29yZCJFChpDcmVhdGVCbG9ja2luZ1J1bGVSZXNwb25zZRInCgRydWxlGAEgASgLMhkuYmxvY2tpbmcudjEuQmxvY2tpbmdSdWxlIlcKHkJ1bGtDcmVhdGVCbG9ja2luZ1J1bGVzUmVxdWVzdBI1CgVydWxlcxgBIAMoCzImLmJsb2NraW5nLnYxLkNyZWF0ZUJsb2NraW5nUnVsZVJlcXVlc3QiSwofQnVsa0NyZWF0ZUJsb2NraW5nUnVsZXNSZXNwb25zZRIoCgVydWxlcxgBIAMoCzIZLmJsb2NraW5nLnYxLkJsb2NraW5nUnVsZSIaChhMaXN0QmxvY2tpbmdSdWxlc1JlcXVlc3QiRQoZTGlzdEJsb2NraW5nUnVsZXNSZXNwb25zZRIoCgVydWxlcxgBIAMoCzIZLmJsb2NraW5nLnYxLkJsb2NraW5nUnVsZSInChlEZWxldGVCbG9ja2luZ1J1bGVSZXF1ZXN0EgoKAmlkGAEgASgJIhwKGkRlbGV0ZUJsb2NraW5nUnVsZVJlc3BvbnNlImUKDlVSTFBhcnNpbmdSdWxlEgoKAmlkGAEgASgJEg4KBmRvbWFpbhgCIAEoCRIPCgdwYXR0ZXJuGAMgASgJEhIKCmNyZWF0ZWRfYXQYBCABKAkSEgoKdXBkYXRlZF9hdBgFIAEoCSI+ChtDcmVhdGVVUkxQYXJzaW5nUnVsZVJlcXVlc3QSDgoGZG9tYWluGAEgASgJEg8KB3BhdHRlcm4YAiABKAkiSQocQ3JlYXRlVVJMUGFyc2luZ1J1bGVSZXNwb25zZRIpCgRydWxlGAEgASgLMhsuYmxvY2tpbmcudjEuVVJMUGFyc2luZ1J1bGUiHAoaTGlzdFVSTFBhcnNpbmdSdWxlc1JlcXVlc3QiSQobTGlzdFVSTFBhcnNpbmdSdWxlc1Jlc3BvbnNlEioKBXJ1bGVzGAEgAygLMhsuYmxvY2tpbmcudjEuVVJMUGFyc2luZ1J1bGUiKQobRGVsZXRlVVJMUGFyc2luZ1J1bGVSZXF1ZXN0EgoKAmlkGAEgASgJIh4KHERlbGV0ZVVSTFBhcnNpbmdSdWxlUmVzcG9uc2UiGwoZUmVldmFsdWF0ZUFsbEl0ZW1zUmVxdWVzdCIcChpSZWV2YWx1YXRlQWxsSXRlbXNSZXNwb25zZTLkBgoPQmxvY2tpbmdTZXJ2aWNlEmUKEkNyZWF0ZUJsb2NraW5nUnVsZRImLmJsb2NraW5nLnYxLkNyZWF0ZUJsb2NraW5nUnVsZVJlcXVlc3QaJy5ibG9ja2luZy52MS5DcmVhdGVCbG9ja2luZ1J1bGVSZXNwb25zZRJ0ChdCdWxrQ3JlYXRlQmxvY2tpbmdSdWxlcxIrLmJsb2NraW5nLnYxLkJ1bGtDcmVhdGVCbG9ja2luZ1J1bGVzUmVxdWVzdBosLmJsb2NraW5nLnYxLkJ1bGtDcmVhdGVCbG9ja2luZ1J1bGVzUmVzcG9uc2USYgoRTGlzdEJsb2NraW5nUnVsZXMSJS5ibG9ja2luZy52MS5MaXN0QmxvY2tpbmdSdWxlc1JlcXVlc3QaJi5ibG9ja2luZy52MS5MaXN0QmxvY2tpbmdSdWxlc1Jlc3BvbnNlEmUKEkRlbGV0ZUJsb2NraW5nUnVsZRImLmJsb2NraW5nLnYxLkRlbGV0ZUJsb2NraW5nUnVsZVJlcXVlc3QaJy5ibG9ja2luZy52MS5EZWxldGVCbG9ja2luZ1J1bGVSZXNwb25zZRJrChRDcmVhdGVVUkxQYXJzaW5nUnVsZRIoLmJsb2NraW5nLnYxLkNyZWF0ZVVSTFBhcnNpbmdSdWxlUmVxdWVzdBopLmJsb2NraW5nLnYxLkNyZWF0ZVVSTFBhcnNpbmdSdWxlUmVzcG9uc2USaAoTTGlzdFVSTFBhcnNpbmdSdWxlcxInLmJsb2NraW5nLnYxLkxpc3RVUkxQYXJzaW5nUnVsZXNSZXF1ZXN0GiguYmxvY2tpbmcudjEuTGlzdFVSTFBhcnNpbmdSdWxlc1Jlc3BvbnNlEmsKFERlbGV0ZVVSTFBhcnNpbmdSdWxlEiguYmxvY2tpbmcudjEuRGVsZXRlVVJMUGFyc2luZ1J1bGVSZXF1ZXN0GikuYmxvY2tpbmcudjEuRGVsZXRlVVJMUGFyc2luZ1J1bGVSZXNwb25zZRJlChJSZWV2YWx1YXRlQWxsSXRlbXMSJi5ibG9ja2luZy52MS5SZWV2YWx1YXRlQWxsSXRlbXNSZXF1ZXN0GicuYmxvY2tpbmcudjEuUmVldmFsdWF0ZUFsbEl0ZW1zUmVzcG9uc2VCRVpDZ2l0aHViLmNvbS9uYWthdGFuYWthdGFuYS9mZWVkLXJlYWRlci9nZW4vZ28vYmxvY2tpbmcvdjE7YmxvY2tpbmd2MWIGcHJvdG8z");
 
 /**
  * @generated from message blocking.v1.BlockingRule
@@ -111,6 +111,40 @@ export const CreateBlockingRuleResponseSchema: GenMessage<CreateBlockingRuleResp
   messageDesc(file_blocking_v1_blocking, 2);
 
 /**
+ * @generated from message blocking.v1.BulkCreateBlockingRulesRequest
+ */
+export type BulkCreateBlockingRulesRequest = Message<"blocking.v1.BulkCreateBlockingRulesRequest"> & {
+  /**
+   * @generated from field: repeated blocking.v1.CreateBlockingRuleRequest rules = 1;
+   */
+  rules: CreateBlockingRuleRequest[];
+};
+
+/**
+ * Describes the message blocking.v1.BulkCreateBlockingRulesRequest.
+ * Use `create(BulkCreateBlockingRulesRequestSchema)` to create a new message.
+ */
+export const BulkCreateBlockingRulesRequestSchema: GenMessage<BulkCreateBlockingRulesRequest> = /*@__PURE__*/
+  messageDesc(file_blocking_v1_blocking, 3);
+
+/**
+ * @generated from message blocking.v1.BulkCreateBlockingRulesResponse
+ */
+export type BulkCreateBlockingRulesResponse = Message<"blocking.v1.BulkCreateBlockingRulesResponse"> & {
+  /**
+   * @generated from field: repeated blocking.v1.BlockingRule rules = 1;
+   */
+  rules: BlockingRule[];
+};
+
+/**
+ * Describes the message blocking.v1.BulkCreateBlockingRulesResponse.
+ * Use `create(BulkCreateBlockingRulesResponseSchema)` to create a new message.
+ */
+export const BulkCreateBlockingRulesResponseSchema: GenMessage<BulkCreateBlockingRulesResponse> = /*@__PURE__*/
+  messageDesc(file_blocking_v1_blocking, 4);
+
+/**
  * @generated from message blocking.v1.ListBlockingRulesRequest
  */
 export type ListBlockingRulesRequest = Message<"blocking.v1.ListBlockingRulesRequest"> & {
@@ -121,7 +155,7 @@ export type ListBlockingRulesRequest = Message<"blocking.v1.ListBlockingRulesReq
  * Use `create(ListBlockingRulesRequestSchema)` to create a new message.
  */
 export const ListBlockingRulesRequestSchema: GenMessage<ListBlockingRulesRequest> = /*@__PURE__*/
-  messageDesc(file_blocking_v1_blocking, 3);
+  messageDesc(file_blocking_v1_blocking, 5);
 
 /**
  * @generated from message blocking.v1.ListBlockingRulesResponse
@@ -138,7 +172,7 @@ export type ListBlockingRulesResponse = Message<"blocking.v1.ListBlockingRulesRe
  * Use `create(ListBlockingRulesResponseSchema)` to create a new message.
  */
 export const ListBlockingRulesResponseSchema: GenMessage<ListBlockingRulesResponse> = /*@__PURE__*/
-  messageDesc(file_blocking_v1_blocking, 4);
+  messageDesc(file_blocking_v1_blocking, 6);
 
 /**
  * @generated from message blocking.v1.DeleteBlockingRuleRequest
@@ -155,7 +189,7 @@ export type DeleteBlockingRuleRequest = Message<"blocking.v1.DeleteBlockingRuleR
  * Use `create(DeleteBlockingRuleRequestSchema)` to create a new message.
  */
 export const DeleteBlockingRuleRequestSchema: GenMessage<DeleteBlockingRuleRequest> = /*@__PURE__*/
-  messageDesc(file_blocking_v1_blocking, 5);
+  messageDesc(file_blocking_v1_blocking, 7);
 
 /**
  * @generated from message blocking.v1.DeleteBlockingRuleResponse
@@ -168,7 +202,7 @@ export type DeleteBlockingRuleResponse = Message<"blocking.v1.DeleteBlockingRule
  * Use `create(DeleteBlockingRuleResponseSchema)` to create a new message.
  */
 export const DeleteBlockingRuleResponseSchema: GenMessage<DeleteBlockingRuleResponse> = /*@__PURE__*/
-  messageDesc(file_blocking_v1_blocking, 6);
+  messageDesc(file_blocking_v1_blocking, 8);
 
 /**
  * @generated from message blocking.v1.URLParsingRule
@@ -205,7 +239,7 @@ export type URLParsingRule = Message<"blocking.v1.URLParsingRule"> & {
  * Use `create(URLParsingRuleSchema)` to create a new message.
  */
 export const URLParsingRuleSchema: GenMessage<URLParsingRule> = /*@__PURE__*/
-  messageDesc(file_blocking_v1_blocking, 7);
+  messageDesc(file_blocking_v1_blocking, 9);
 
 /**
  * @generated from message blocking.v1.CreateURLParsingRuleRequest
@@ -227,7 +261,7 @@ export type CreateURLParsingRuleRequest = Message<"blocking.v1.CreateURLParsingR
  * Use `create(CreateURLParsingRuleRequestSchema)` to create a new message.
  */
 export const CreateURLParsingRuleRequestSchema: GenMessage<CreateURLParsingRuleRequest> = /*@__PURE__*/
-  messageDesc(file_blocking_v1_blocking, 8);
+  messageDesc(file_blocking_v1_blocking, 10);
 
 /**
  * @generated from message blocking.v1.CreateURLParsingRuleResponse
@@ -244,7 +278,7 @@ export type CreateURLParsingRuleResponse = Message<"blocking.v1.CreateURLParsing
  * Use `create(CreateURLParsingRuleResponseSchema)` to create a new message.
  */
 export const CreateURLParsingRuleResponseSchema: GenMessage<CreateURLParsingRuleResponse> = /*@__PURE__*/
-  messageDesc(file_blocking_v1_blocking, 9);
+  messageDesc(file_blocking_v1_blocking, 11);
 
 /**
  * @generated from message blocking.v1.ListURLParsingRulesRequest
@@ -257,7 +291,7 @@ export type ListURLParsingRulesRequest = Message<"blocking.v1.ListURLParsingRule
  * Use `create(ListURLParsingRulesRequestSchema)` to create a new message.
  */
 export const ListURLParsingRulesRequestSchema: GenMessage<ListURLParsingRulesRequest> = /*@__PURE__*/
-  messageDesc(file_blocking_v1_blocking, 10);
+  messageDesc(file_blocking_v1_blocking, 12);
 
 /**
  * @generated from message blocking.v1.ListURLParsingRulesResponse
@@ -274,7 +308,7 @@ export type ListURLParsingRulesResponse = Message<"blocking.v1.ListURLParsingRul
  * Use `create(ListURLParsingRulesResponseSchema)` to create a new message.
  */
 export const ListURLParsingRulesResponseSchema: GenMessage<ListURLParsingRulesResponse> = /*@__PURE__*/
-  messageDesc(file_blocking_v1_blocking, 11);
+  messageDesc(file_blocking_v1_blocking, 13);
 
 /**
  * @generated from message blocking.v1.DeleteURLParsingRuleRequest
@@ -291,7 +325,7 @@ export type DeleteURLParsingRuleRequest = Message<"blocking.v1.DeleteURLParsingR
  * Use `create(DeleteURLParsingRuleRequestSchema)` to create a new message.
  */
 export const DeleteURLParsingRuleRequestSchema: GenMessage<DeleteURLParsingRuleRequest> = /*@__PURE__*/
-  messageDesc(file_blocking_v1_blocking, 12);
+  messageDesc(file_blocking_v1_blocking, 14);
 
 /**
  * @generated from message blocking.v1.DeleteURLParsingRuleResponse
@@ -304,7 +338,7 @@ export type DeleteURLParsingRuleResponse = Message<"blocking.v1.DeleteURLParsing
  * Use `create(DeleteURLParsingRuleResponseSchema)` to create a new message.
  */
 export const DeleteURLParsingRuleResponseSchema: GenMessage<DeleteURLParsingRuleResponse> = /*@__PURE__*/
-  messageDesc(file_blocking_v1_blocking, 13);
+  messageDesc(file_blocking_v1_blocking, 15);
 
 /**
  * @generated from message blocking.v1.ReevaluateAllItemsRequest
@@ -317,7 +351,7 @@ export type ReevaluateAllItemsRequest = Message<"blocking.v1.ReevaluateAllItemsR
  * Use `create(ReevaluateAllItemsRequestSchema)` to create a new message.
  */
 export const ReevaluateAllItemsRequestSchema: GenMessage<ReevaluateAllItemsRequest> = /*@__PURE__*/
-  messageDesc(file_blocking_v1_blocking, 14);
+  messageDesc(file_blocking_v1_blocking, 16);
 
 /**
  * @generated from message blocking.v1.ReevaluateAllItemsResponse
@@ -330,7 +364,7 @@ export type ReevaluateAllItemsResponse = Message<"blocking.v1.ReevaluateAllItems
  * Use `create(ReevaluateAllItemsResponseSchema)` to create a new message.
  */
 export const ReevaluateAllItemsResponseSchema: GenMessage<ReevaluateAllItemsResponse> = /*@__PURE__*/
-  messageDesc(file_blocking_v1_blocking, 15);
+  messageDesc(file_blocking_v1_blocking, 17);
 
 /**
  * @generated from service blocking.v1.BlockingService
@@ -345,6 +379,14 @@ export const BlockingService: GenService<{
     methodKind: "unary";
     input: typeof CreateBlockingRuleRequestSchema;
     output: typeof CreateBlockingRuleResponseSchema;
+  },
+  /**
+   * @generated from rpc blocking.v1.BlockingService.BulkCreateBlockingRules
+   */
+  bulkCreateBlockingRules: {
+    methodKind: "unary";
+    input: typeof BulkCreateBlockingRulesRequestSchema;
+    output: typeof BulkCreateBlockingRulesResponseSchema;
   },
   /**
    * @generated from rpc blocking.v1.BlockingService.ListBlockingRules

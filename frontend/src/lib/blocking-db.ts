@@ -57,6 +57,19 @@ export const createBlockingRule = async (params: {
   await queryClient.invalidateQueries({ queryKey: ["items"] });
 };
 
+export const bulkCreateBlockingRules = async (
+  rules: {
+    ruleType: string;
+    username?: string;
+    domain?: string;
+    keyword?: string;
+  }[],
+) => {
+  await blockingClient.bulkCreateBlockingRules({ rules });
+  await queryClient.invalidateQueries({ queryKey: ["blocking-rules"] });
+  await queryClient.invalidateQueries({ queryKey: ["items"] });
+};
+
 export const deleteBlockingRule = async (id: string) => {
   await blockingClient.deleteBlockingRule({ id });
   await queryClient.invalidateQueries({ queryKey: ["blocking-rules"] });
