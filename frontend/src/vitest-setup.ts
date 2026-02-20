@@ -1,9 +1,9 @@
 import { afterAll, afterEach, beforeAll, expect, vi } from "vitest";
 import "./styles.css";
 import { resetDatabase } from "./lib/db";
+import { itemStore } from "./lib/item-store";
 import { worker } from "./mocks/browser";
 import { resetState } from "./mocks/handlers";
-import { itemStore } from "./lib/item-store";
 
 // Force UTC timezone for consistent snapshot testing
 const originalToLocaleString = Date.prototype.toLocaleString;
