@@ -3,6 +3,7 @@ import "./styles.css";
 import { resetDatabase } from "./lib/db";
 import { worker } from "./mocks/browser";
 import { resetState } from "./mocks/handlers";
+import { itemStore } from "./lib/item-store";
 
 // Force UTC timezone for consistent snapshot testing
 const originalToLocaleString = Date.prototype.toLocaleString;
@@ -54,6 +55,7 @@ afterEach(() => {
   worker.resetHandlers();
   resetState();
   resetDatabase();
+  itemStore.reset();
   vi.useRealTimers();
   vi.clearAllMocks();
 });

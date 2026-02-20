@@ -25,6 +25,7 @@ describe("ItemList Reactivity", () => {
     if (dispose) dispose();
     document.body.innerHTML = "";
     vi.clearAllMocks();
+    itemStore.reset();
   });
 
   const setupMockData = (
