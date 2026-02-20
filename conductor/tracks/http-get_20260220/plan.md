@@ -1,13 +1,13 @@
 # Implementation Plan: Enable HTTP GET for Idempotent RPCs
 
-## Phase 1: Research & Audit
+## Phase 1: Research & Audit [checkpoint: e805f99]
 In this phase, we will identify all the RPC methods that are side-effect-free and can be safely moved to HTTP GET.
 
 - [x] Task: Audit `proto/feed/v1/*.proto` to identify read-only methods.
 - [x] Task: Audit `proto/item/v1/*.proto` to identify read-only methods.
 - [x] Task: Audit `proto/tag/v1/*.proto` to identify read-only methods.
 - [x] Task: Audit Go backend handlers (`cmd/feed-reader/handler.go`, `cmd/feed-reader/item_handler.go`, `cmd/feed-reader/tag_service.go`) to confirm methods are truly idempotent.
-- [x] Task: Conductor - User Manual Verification 'Phase 1: Research & Audit' (Protocol in workflow.md) [45464f6]
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Research & Audit' (Protocol in workflow.md) [e805f99]
 
 ## Phase 2: Protobuf Updates & Generation
 In this phase, we will update the Protobuf definitions and regenerate the code for both the backend and frontend.
