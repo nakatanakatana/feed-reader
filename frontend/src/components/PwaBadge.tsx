@@ -1,4 +1,4 @@
-import { createEffect } from "solid-js";
+import { createEffect, onCleanup } from "solid-js";
 
 export interface PwaBadgeProps {
   unreadCount: number;
@@ -34,6 +34,17 @@ export function PwaBadge(props: PwaBadgeProps) {
           });
         }
       }
+    }
+  });
+
+  onCleanup(() => {
+    if (
+      "clearAppBadge" in navigator &&
+      typeof navigator.clearAppBadge === "function"
+    ) {
+      navigator.clearAppBadge().catch((err: unknown) => {
+        console.warn("Failed to clear app badge on cleanup:", err);
+      });
     }
   });
 

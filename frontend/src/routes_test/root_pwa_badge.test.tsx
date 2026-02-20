@@ -9,6 +9,7 @@ import { render } from "solid-js/web";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { worker } from "../mocks/browser";
 import { Route as RootRoute } from "../routes/__root";
+import "../styles.css";
 
 // Unmock solid-router to test component integration
 vi.unmock("@tanstack/solid-router");

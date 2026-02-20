@@ -58,4 +58,14 @@ describe("PwaBadge", () => {
     render(() => <PwaBadge unreadCount={5} />, document.body);
     // Should not throw
   });
+
+  it("calls clearAppBadge on cleanup (unmount)", async () => {
+    const dispose = render(() => <PwaBadge unreadCount={5} />, document.body);
+
+    await expect.poll(() => navigator.setAppBadge).toHaveBeenCalledWith(5);
+
+    dispose();
+
+    await expect.poll(() => navigator.clearAppBadge).toHaveBeenCalled();
+  });
 });
