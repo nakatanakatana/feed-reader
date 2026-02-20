@@ -13,18 +13,23 @@ export function PwaBadge(props: PwaBadgeProps) {
     // Limit the badge count to a reasonable maximum (e.g., 999)
     // Browsers typically handle overflow, but we can be explicit here.
     const count = Math.min(props.unreadCount, 999);
-    const nav = navigator as any;
 
-    if ("setAppBadge" in nav && typeof nav.setAppBadge === "function") {
+    if (
+      "setAppBadge" in navigator &&
+      typeof navigator.setAppBadge === "function"
+    ) {
       if (count > 0) {
-        nav.setAppBadge(count).catch((err: unknown) => {
+        navigator.setAppBadge(count).catch((err: unknown) => {
           // Log only if it's not a common "user denied" or "not installed" error
           // though usually these shouldn't be thrown as exceptions but rejected promises
           console.warn("Failed to set app badge:", err);
         });
       } else {
-        if ("clearAppBadge" in nav && typeof nav.clearAppBadge === "function") {
-          nav.clearAppBadge().catch((err: unknown) => {
+        if (
+          "clearAppBadge" in navigator &&
+          typeof navigator.clearAppBadge === "function"
+        ) {
+          navigator.clearAppBadge().catch((err: unknown) => {
             console.warn("Failed to clear app badge:", err);
           });
         }
