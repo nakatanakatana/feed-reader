@@ -24,6 +24,7 @@ describe("ItemRow Responsive Date", () => {
     createdAt: "2026-01-20T10:00:00Z",
     description: "Test description",
     isRead: false,
+    isHidden: false,
     feedId: "feed-1",
   };
 
