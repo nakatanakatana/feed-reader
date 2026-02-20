@@ -123,12 +123,14 @@ func (s *FetcherService) fetchAndSaveSync(ctx context.Context, f store.FullFeed)
 
 		rules, err := s.store.ListURLParsingRules(ctx)
 		if err != nil {
-			s.logger.WarnContext(ctx, "failed to list url parsing rules", "error", err)
+			s.logger.ErrorContext(ctx, "failed to list url parsing rules", "error", err)
+			return nil, err
 		}
 
 		blockingRules, err := s.store.ListBlockingRules(ctx)
 		if err != nil {
-			s.logger.WarnContext(ctx, "failed to list blocking rules", "error", err)
+			s.logger.ErrorContext(ctx, "failed to list blocking rules", "error", err)
+			return nil, err
 		}
 
 		for _, item := range parsedFeed.Items {
@@ -259,12 +261,14 @@ func (s *FetcherService) FetchAndSave(ctx context.Context, f store.FullFeed) err
 
 		rules, err := s.store.ListURLParsingRules(ctx)
 		if err != nil {
-			s.logger.WarnContext(ctx, "failed to list url parsing rules", "error", err)
+			s.logger.ErrorContext(ctx, "failed to list url parsing rules", "error", err)
+			return err
 		}
 
 		blockingRules, err := s.store.ListBlockingRules(ctx)
 		if err != nil {
-			s.logger.WarnContext(ctx, "failed to list blocking rules", "error", err)
+			s.logger.ErrorContext(ctx, "failed to list blocking rules", "error", err)
+			return err
 		}
 
 		for _, item := range parsedFeed.Items {
@@ -322,12 +326,6 @@ func (s *FetcherService) normalizeItem(ctx context.Context, feedID string, item 
 
 	if item.Image != nil {
 		params.ImageUrl = &item.Image.URL
-	}
-
-	if item.Author != nil && item.Author.Name != "" {
-		params.Author = &item.Author.Name
-	} else if len(item.Authors) > 0 && item.Authors[0].Name != "" {
-		params.Author = &item.Authors[0].Name
 	}
 
 	if len(item.Categories) > 0 {

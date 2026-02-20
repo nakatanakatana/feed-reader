@@ -96,9 +96,7 @@ function RootComponent() {
         </Link>
         <Link
           to="/blocking"
-          class={css(linkStyleConfig, {
-            display: { base: "none", md: "inline-block" },
-          })}
+          class={linkStyle}
           activeProps={{
             class: activeLinkStyle,
           }}

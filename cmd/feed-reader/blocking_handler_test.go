@@ -31,7 +31,8 @@ func TestBlockingServer_TriggerUpdate(t *testing.T) {
 	// We don't Wait() yet because we want to see it process the task
 
 	bs := NewBlockingService()
-	bgs := NewBlockingBackgroundService(s, bs, logger)
+	ue := NewUsernameExtractor()
+	bgs := NewBlockingBackgroundService(s, bs, ue, logger)
 	server := NewBlockingServer(s, bgs, pool, logger)
 
 	// 3. Create rule via server

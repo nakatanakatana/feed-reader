@@ -49,7 +49,8 @@ func TestBlockingBackgroundService(t *testing.T) {
 
 	// 3. Create service and run re-evaluation
 	bs := NewBlockingService()
-	service := NewBlockingBackgroundService(s, bs, logger)
+	ue := NewUsernameExtractor()
+	service := NewBlockingBackgroundService(s, bs, ue, logger)
 	
 	err := service.ReevaluateAll(ctx)
 	assert.NilError(t, err)

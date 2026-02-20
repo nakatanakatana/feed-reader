@@ -8,16 +8,18 @@ import (
 )
 
 type BlockingBackgroundService struct {
-	store           *store.Store
-	blockingService BlockingService
-	logger          *slog.Logger
+	store             *store.Store
+	blockingService   BlockingService
+	usernameExtractor UsernameExtractor
+	logger            *slog.Logger
 }
 
-func NewBlockingBackgroundService(s *store.Store, bs BlockingService, l *slog.Logger) *BlockingBackgroundService {
+func NewBlockingBackgroundService(s *store.Store, bs BlockingService, ue UsernameExtractor, l *slog.Logger) *BlockingBackgroundService {
 	return &BlockingBackgroundService{
-		store:           s,
-		blockingService: bs,
-		logger:          l,
+		store:             s,
+		blockingService:   bs,
+		usernameExtractor: ue,
+		logger:            l,
 	}
 }
 
@@ -25,6 +27,11 @@ func (s *BlockingBackgroundService) ReevaluateAll(ctx context.Context) error {
 	s.logger.InfoContext(ctx, "starting re-evaluation of all items against blocking rules")
 
 	rules, err := s.store.ListBlockingRules(ctx)
+	if err != nil {
+		return err
+	}
+
+	parsingRules, err := s.store.ListURLParsingRules(ctx)
 	if err != nil {
 		return err
 	}
@@ -48,7 +55,13 @@ func (s *BlockingBackgroundService) ReevaluateAll(ctx context.Context) error {
 		}
 
 		for _, item := range items {
-			// Convert store.Item to store.SaveFetchedItemParams for BlockingService
+			// 1. Re-extract username
+			newUsername := ""
+			if extracted, err := s.usernameExtractor.Extract(item.Url, parsingRules); err == nil && extracted != "" {
+				newUsername = extracted
+			}
+
+			// 2. Evaluate blocking
 			params := store.SaveFetchedItemParams{
 				Url:         item.Url,
 				Title:       item.Title,
@@ -58,7 +71,10 @@ func (s *BlockingBackgroundService) ReevaluateAll(ctx context.Context) error {
 				Content:     item.Content,
 				ImageUrl:    item.ImageUrl,
 				Categories:  item.Categories,
-				Username:    item.Username,
+				Username:    nil,
+			}
+			if newUsername != "" {
+				params.Username = &newUsername
 			}
 
 			blocked, _ := s.blockingService.ShouldBlock(params, rules)
@@ -67,13 +83,19 @@ func (s *BlockingBackgroundService) ReevaluateAll(ctx context.Context) error {
 				newIsHidden = 1
 			}
 
-			if item.IsHidden != newIsHidden {
-				err := s.store.UpdateItemHidden(ctx, store.UpdateItemHiddenParams{
+			var usernamePtr *string
+			if newUsername != "" {
+				usernamePtr = &newUsername
+			}
+
+			if item.IsHidden != newIsHidden || (item.Username == nil && usernamePtr != nil) || (item.Username != nil && usernamePtr == nil) || (item.Username != nil && usernamePtr != nil && *item.Username != *usernamePtr) {
+				err := s.store.UpdateItemDerivedFields(ctx, store.UpdateItemDerivedFieldsParams{
 					ID:       item.ID,
+					Username: usernamePtr,
 					IsHidden: newIsHidden,
 				})
 				if err != nil {
-					s.logger.ErrorContext(ctx, "failed to update item hidden status", "id", item.ID, "error", err)
+					s.logger.ErrorContext(ctx, "failed to update item derived fields", "id", item.ID, "error", err)
 					continue
 				}
 				updatedCount++

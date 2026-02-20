@@ -64,7 +64,7 @@ WHERE
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = ?3
   )) AND
   (?4 IS NULL OR i.created_at >= ?4) AND
-  (?5 IS NOT NULL OR i.is_hidden = 0)
+  (COALESCE(?5, 0) = 1 OR i.is_hidden = 0)
 `
 
 type CountItemsParams struct {
@@ -374,7 +374,7 @@ ON CONFLICT(url) DO UPDATE SET
   content = excluded.content,
   image_url = excluded.image_url,
   categories = excluded.categories,
-  username = excluded.username,
+  username = COALESCE(excluded.username, items.username),
   is_hidden = excluded.is_hidden,
   updated_at = (strftime('%FT%TZ', 'now'))
 RETURNING id, url, title, description, published_at, author, guid, content, image_url, categories, username, is_hidden, created_at, updated_at
@@ -1265,7 +1265,7 @@ WHERE
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = ?3
   )) AND
   (?4 IS NULL OR i.created_at >= ?4) AND
-  (?5 IS NOT NULL OR i.is_hidden = 0)
+  (COALESCE(?5, 0) = 1 OR i.is_hidden = 0)
 GROUP BY
   i.id
 ORDER BY
@@ -1723,6 +1723,28 @@ func (q *Queries) UpdateFeed(ctx context.Context, arg UpdateFeedParams) (Feed, e
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const updateItemDerivedFields = `-- name: UpdateItemDerivedFields :exec
+UPDATE
+  items
+SET
+  username = ?,
+  is_hidden = ?,
+  updated_at = (strftime('%FT%TZ', 'now'))
+WHERE
+  id = ?
+`
+
+type UpdateItemDerivedFieldsParams struct {
+	Username *string `json:"username"`
+	IsHidden int64   `json:"is_hidden"`
+	ID       string  `json:"id"`
+}
+
+func (q *Queries) UpdateItemDerivedFields(ctx context.Context, arg UpdateItemDerivedFieldsParams) error {
+	_, err := q.db.ExecContext(ctx, updateItemDerivedFields, arg.Username, arg.IsHidden, arg.ID)
+	return err
 }
 
 const updateItemHidden = `-- name: UpdateItemHidden :exec

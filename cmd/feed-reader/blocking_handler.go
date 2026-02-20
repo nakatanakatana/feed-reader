@@ -30,12 +30,21 @@ func NewBlockingServer(s *store.Store, bg *BlockingBackgroundService, p *WorkerP
 }
 
 func (s *BlockingServer) triggerReevaluation() {
+	if s.backgroundService == nil {
+		s.logger.Warn("cannot trigger re-evaluation: background service is nil")
+		return
+	}
+
 	if s.pool != nil {
 		s.pool.AddTask(func(ctx context.Context) error {
 			return s.backgroundService.ReevaluateAll(ctx)
 		})
-	} else {
-		s.logger.Warn("cannot trigger re-evaluation: worker pool is nil")
+		return
+	}
+
+	// Fallback: run re-evaluation synchronously when no worker pool is configured.
+	if err := s.backgroundService.ReevaluateAll(context.Background()); err != nil {
+		s.logger.Error("synchronous re-evaluation failed", "error", err)
 	}
 }
 

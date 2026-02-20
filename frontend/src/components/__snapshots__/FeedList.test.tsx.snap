@@ -32,7 +32,7 @@ exports[`FeedList > displays a list of feeds 1`] = `
     </a>
     <a
       activeprops="[object Object]"
-      class="pos_relative px_2 md:px_3 py_1.5 bdr_md c_gray.500 trs_all_0.2s fw_medium fs_sm hover:bg-c_gray.50 hover:c_gray.900 d_none md:d_inline-block"
+      class="pos_relative px_2 md:px_3 py_1.5 bdr_md c_gray.500 trs_all_0.2s fw_medium fs_sm hover:bg-c_gray.50 hover:c_gray.900"
       href="/blocking"
       to="/blocking"
     >

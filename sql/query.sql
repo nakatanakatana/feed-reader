@@ -115,7 +115,7 @@ ON CONFLICT(url) DO UPDATE SET
   content = excluded.content,
   image_url = excluded.image_url,
   categories = excluded.categories,
-  username = excluded.username,
+  username = COALESCE(excluded.username, items.username),
   is_hidden = excluded.is_hidden,
   updated_at = (strftime('%FT%TZ', 'now'))
 RETURNING *;
@@ -209,7 +209,7 @@ WHERE
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = sqlc.narg('tag_id')
   )) AND
   (sqlc.narg('since') IS NULL OR i.created_at >= sqlc.narg('since')) AND
-  (sqlc.narg('include_hidden') IS NOT NULL OR i.is_hidden = 0)
+  (COALESCE(sqlc.narg('include_hidden'), 0) = 1 OR i.is_hidden = 0)
 GROUP BY
   i.id
 ORDER BY
@@ -299,7 +299,7 @@ WHERE
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = sqlc.narg('tag_id')
   )) AND
   (sqlc.narg('since') IS NULL OR i.created_at >= sqlc.narg('since')) AND
-  (sqlc.narg('include_hidden') IS NOT NULL OR i.is_hidden = 0);
+  (COALESCE(sqlc.narg('include_hidden'), 0) = 1 OR i.is_hidden = 0);
 
 
 -- name: SetItemRead :one
@@ -531,6 +531,16 @@ WHERE
 UPDATE
   items
 SET
+  is_hidden = ?,
+  updated_at = (strftime('%FT%TZ', 'now'))
+WHERE
+  id = ?;
+
+-- name: UpdateItemDerivedFields :exec
+UPDATE
+  items
+SET
+  username = ?,
   is_hidden = ?,
   updated_at = (strftime('%FT%TZ', 'now'))
 WHERE
