@@ -9,14 +9,14 @@ In this phase, we will identify all the RPC methods that are side-effect-free an
 - [x] Task: Audit Go backend handlers (`cmd/feed-reader/handler.go`, `cmd/feed-reader/item_handler.go`, `cmd/feed-reader/tag_service.go`) to confirm methods are truly idempotent.
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Research & Audit' (Protocol in workflow.md) [e805f99]
 
-## Phase 2: Protobuf Updates & Generation
+## Phase 2: Protobuf Updates & Generation [checkpoint: 44115bc]
 In this phase, we will update the Protobuf definitions and regenerate the code for both the backend and frontend.
 
-- [ ] Task: Update `proto/feed/v1/feed.proto` with `idempotency_level = IDEMPOTENT` for identified methods.
-- [ ] Task: Update `proto/item/v1/item.proto` with `idempotency_level = IDEMPOTENT` for identified methods.
-- [ ] Task: Update `proto/tag/v1/tag.proto` with `idempotency_level = IDEMPOTENT` for identified methods.
-- [ ] Task: Regenerate code using `buf generate`.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Protobuf Updates & Generation' (Protocol in workflow.md)
+- [x] Task: Update `proto/feed/v1/feed.proto` with `idempotency_level = IDEMPOTENT` for identified methods.
+- [x] Task: Update `proto/item/v1/item.proto` with `idempotency_level = IDEMPOTENT` for identified methods.
+- [x] Task: Update `proto/tag/v1/tag.proto` with `idempotency_level = IDEMPOTENT` for identified methods.
+- [x] Task: Regenerate code using `buf generate`.
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Protobuf Updates & Generation' (Protocol in workflow.md) [44115bc]
 
 ## Phase 3: Frontend Implementation & Configuration
 In this phase, we will configure the Connect-Web frontend to utilize the newly enabled HTTP GET support.
