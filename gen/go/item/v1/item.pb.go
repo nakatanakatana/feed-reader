@@ -793,12 +793,12 @@ const file_item_v1_item_proto_rawDesc = "" +
 	"\v_feed_titleB\x0f\n" +
 	"\r_published_at\"@\n" +
 	"\x15ListItemFeedsResponse\x12'\n" +
-	"\x05feeds\x18\x01 \x03(\v2\x11.item.v1.ItemFeedR\x05feeds2\xb8\x02\n" +
-	"\vItemService\x12<\n" +
-	"\aGetItem\x12\x17.item.v1.GetItemRequest\x1a\x18.item.v1.GetItemResponse\x12B\n" +
-	"\tListItems\x12\x19.item.v1.ListItemsRequest\x1a\x1a.item.v1.ListItemsResponse\x12W\n" +
-	"\x10UpdateItemStatus\x12 .item.v1.UpdateItemStatusRequest\x1a!.item.v1.UpdateItemStatusResponse\x12N\n" +
-	"\rListItemFeeds\x12\x1d.item.v1.ListItemFeedsRequest\x1a\x1e.item.v1.ListItemFeedsResponseB=Z;github.com/nakatanakatana/feed-reader/gen/go/item/v1;itemv1b\x06proto3"
+	"\x05feeds\x18\x01 \x03(\v2\x11.item.v1.ItemFeedR\x05feeds2\xc7\x02\n" +
+	"\vItemService\x12A\n" +
+	"\aGetItem\x12\x17.item.v1.GetItemRequest\x1a\x18.item.v1.GetItemResponse\"\x03\x90\x02\x02\x12G\n" +
+	"\tListItems\x12\x19.item.v1.ListItemsRequest\x1a\x1a.item.v1.ListItemsResponse\"\x03\x90\x02\x02\x12W\n" +
+	"\x10UpdateItemStatus\x12 .item.v1.UpdateItemStatusRequest\x1a!.item.v1.UpdateItemStatusResponse\x12S\n" +
+	"\rListItemFeeds\x12\x1d.item.v1.ListItemFeedsRequest\x1a\x1e.item.v1.ListItemFeedsResponse\"\x03\x90\x02\x02B=Z;github.com/nakatanakatana/feed-reader/gen/go/item/v1;itemv1b\x06proto3"
 
 var (
 	file_item_v1_item_proto_rawDescOnce sync.Once

@@ -1852,10 +1852,10 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"\x13SuspendFeedsRequest\x12\x10\n" +
 	"\x03ids\x18\x01 \x03(\tR\x03ids\x12'\n" +
 	"\x0fsuspend_seconds\x18\x02 \x01(\x03R\x0esuspendSeconds\"\x16\n" +
-	"\x14SuspendFeedsResponse2\xf6\x06\n" +
-	"\vFeedService\x12<\n" +
-	"\aGetFeed\x12\x17.feed.v1.GetFeedRequest\x1a\x18.feed.v1.GetFeedResponse\x12B\n" +
-	"\tListFeeds\x12\x19.feed.v1.ListFeedsRequest\x1a\x1a.feed.v1.ListFeedsResponse\x12E\n" +
+	"\x14SuspendFeedsResponse2\x8a\a\n" +
+	"\vFeedService\x12A\n" +
+	"\aGetFeed\x12\x17.feed.v1.GetFeedRequest\x1a\x18.feed.v1.GetFeedResponse\"\x03\x90\x02\x02\x12G\n" +
+	"\tListFeeds\x12\x19.feed.v1.ListFeedsRequest\x1a\x1a.feed.v1.ListFeedsResponse\"\x03\x90\x02\x02\x12E\n" +
 	"\n" +
 	"CreateFeed\x12\x1a.feed.v1.CreateFeedRequest\x1a\x1b.feed.v1.CreateFeedResponse\x12E\n" +
 	"\n" +
@@ -1864,10 +1864,10 @@ const file_feed_v1_feed_proto_rawDesc = "" +
 	"DeleteFeed\x12\x1a.feed.v1.DeleteFeedRequest\x1a\x1b.feed.v1.DeleteFeedResponse\x12K\n" +
 	"\fRefreshFeeds\x12\x1c.feed.v1.RefreshFeedsRequest\x1a\x1d.feed.v1.RefreshFeedsResponse\x12E\n" +
 	"\n" +
-	"ImportOpml\x12\x1a.feed.v1.ImportOpmlRequest\x1a\x1b.feed.v1.ImportOpmlResponse\x12E\n" +
+	"ImportOpml\x12\x1a.feed.v1.ImportOpmlRequest\x1a\x1b.feed.v1.ImportOpmlResponse\x12J\n" +
 	"\n" +
-	"ExportOpml\x12\x1a.feed.v1.ExportOpmlRequest\x1a\x1b.feed.v1.ExportOpmlResponse\x12K\n" +
-	"\fListFeedTags\x12\x1c.feed.v1.ListFeedTagsRequest\x1a\x1d.feed.v1.ListFeedTagsResponse\x12H\n" +
+	"ExportOpml\x12\x1a.feed.v1.ExportOpmlRequest\x1a\x1b.feed.v1.ExportOpmlResponse\"\x03\x90\x02\x02\x12P\n" +
+	"\fListFeedTags\x12\x1c.feed.v1.ListFeedTagsRequest\x1a\x1d.feed.v1.ListFeedTagsResponse\"\x03\x90\x02\x02\x12H\n" +
 	"\vSetFeedTags\x12\x1b.feed.v1.SetFeedTagsRequest\x1a\x1c.feed.v1.SetFeedTagsResponse\x12Q\n" +
 	"\x0eManageFeedTags\x12\x1e.feed.v1.ManageFeedTagsRequest\x1a\x1f.feed.v1.ManageFeedTagsResponse\x12K\n" +
 	"\fSuspendFeeds\x12\x1c.feed.v1.SuspendFeedsRequest\x1a\x1d.feed.v1.SuspendFeedsResponseB=Z;github.com/nakatanakatana/feed-reader/gen/go/feed/v1;feedv1b\x06proto3"

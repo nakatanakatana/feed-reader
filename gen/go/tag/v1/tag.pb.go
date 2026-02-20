@@ -460,11 +460,11 @@ const file_tag_v1_tag_proto_rawDesc = "" +
 	"\x12total_unread_count\x18\x02 \x01(\x03R\x10totalUnreadCount\"\"\n" +
 	"\x10DeleteTagRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"\x13\n" +
-	"\x11DeleteTagResponse2\xcf\x01\n" +
+	"\x11DeleteTagResponse2\xd4\x01\n" +
 	"\n" +
 	"TagService\x12@\n" +
-	"\tCreateTag\x12\x18.tag.v1.CreateTagRequest\x1a\x19.tag.v1.CreateTagResponse\x12=\n" +
-	"\bListTags\x12\x17.tag.v1.ListTagsRequest\x1a\x18.tag.v1.ListTagsResponse\x12@\n" +
+	"\tCreateTag\x12\x18.tag.v1.CreateTagRequest\x1a\x19.tag.v1.CreateTagResponse\x12B\n" +
+	"\bListTags\x12\x17.tag.v1.ListTagsRequest\x1a\x18.tag.v1.ListTagsResponse\"\x03\x90\x02\x02\x12@\n" +
 	"\tDeleteTag\x12\x18.tag.v1.DeleteTagRequest\x1a\x19.tag.v1.DeleteTagResponseB;Z9github.com/nakatanakatana/feed-reader/gen/go/tag/v1;tagv1b\x06proto3"
 
 var (

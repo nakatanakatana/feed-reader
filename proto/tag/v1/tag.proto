@@ -6,7 +6,9 @@ option go_package = "github.com/nakatanakatana/feed-reader/gen/go/tag/v1;tagv1";
 
 service TagService {
   rpc CreateTag(CreateTagRequest) returns (CreateTagResponse);
-  rpc ListTags(ListTagsRequest) returns (ListTagsResponse);
+  rpc ListTags(ListTagsRequest) returns (ListTagsResponse) {
+    option idempotency_level = IDEMPOTENT;
+  }
   rpc DeleteTag(DeleteTagRequest) returns (DeleteTagResponse);
 }
 
