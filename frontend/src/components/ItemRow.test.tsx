@@ -5,7 +5,7 @@ import { HttpResponse, http } from "msw";
 import { Show } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { page } from "vitest/browser";
+import { page, userEvent } from "vitest/browser";
 import {
   ListItemSchema,
   ListItemsResponseSchema,
@@ -50,7 +50,7 @@ describe("ItemRow", () => {
     );
 
     expect(page.getByText("Test Article Title")).toBeInTheDocument();
-    expect(page.getByText(/Received:/)).toBeInTheDocument();
+    expect(page.getByText(/Received:/).first()).toBeInTheDocument();
     expect(
       page.getByText(
         "This is a test description snippet that should be displayed.",
@@ -94,6 +94,36 @@ describe("ItemRow", () => {
       name: "Test Article Title",
     });
     await titleButton.click();
+    expect(onClick).toHaveBeenCalledWith(mockItem);
+  });
+
+  it("handles keyboard interaction with Enter/Space keys", async () => {
+    const onClick = vi.fn();
+    dispose = render(
+      () => (
+        <TransportProvider transport={transport}>
+          <QueryClientProvider client={queryClient}>
+            <ItemRow item={mockItem} onClick={onClick} />
+          </QueryClientProvider>
+        </TransportProvider>
+      ),
+      document.body,
+    );
+
+    const titleButton = page.getByRole("button", {
+      name: "Test Article Title",
+    });
+
+    // Test Enter key
+    titleButton.element().focus();
+    await userEvent.keyboard("{Enter}");
+    expect(onClick).toHaveBeenCalledWith(mockItem);
+
+    onClick.mockClear();
+
+    // Test Space key
+    titleButton.element().focus();
+    await userEvent.keyboard(" ");
     expect(onClick).toHaveBeenCalledWith(mockItem);
   });
 

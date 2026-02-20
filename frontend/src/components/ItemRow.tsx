@@ -4,6 +4,7 @@ import { flex, stack } from "../../styled-system/patterns";
 import type { Item } from "../lib/db";
 import { items } from "../lib/db";
 import { formatDate } from "../lib/item-utils";
+import { PublishedIcon, ReceivedIcon } from "./ui/Icons";
 
 interface ItemRowProps {
   item: Item;
@@ -127,13 +128,80 @@ export function ItemRow(props: ItemRowProps) {
               {props.item.description}
             </div>
           </Show>
-          <div class={flex({ gap: "2", alignItems: "center", marginTop: "1" })}>
-            <span class={css({ fontSize: "xs", color: "gray.500" })}>
-              Received: {formatDate(props.item.createdAt)}
-              <Show when={props.item.publishedAt}>
-                <span class={css({ marginInline: "1" })}>•</span>
-                Published: {formatDate(props.item.publishedAt)}
-              </Show>
+          <div
+            class={flex({
+              gap: { base: "2", xs: "4" },
+              alignItems: "center",
+              marginTop: "1",
+              fontSize: "xs",
+              color: "gray.500",
+            })}
+          >
+            <Show when={props.item.publishedAt}>
+              {(publishedAt) => (
+                <span
+                  class={flex({ gap: "1", alignItems: "center" })}
+                  title={`Published: ${formatDate(publishedAt())}`}
+                >
+                  <span
+                    class={css({ display: { base: "none", xs: "inline" } })}
+                  >
+                    Published:
+                  </span>
+                  <span
+                    class={css({ display: { base: "inline", xs: "none" } })}
+                    title="Published"
+                  >
+                    <PublishedIcon />
+                    <span
+                      class={css({
+                        position: "absolute",
+                        width: "1px",
+                        height: "1px",
+                        padding: "0",
+                        margin: "-1px",
+                        overflow: "hidden",
+                        clip: "rect(0, 0, 0, 0)",
+                        whiteSpace: "nowrap",
+                        borderWidth: "0",
+                      })}
+                    >
+                      Published:
+                    </span>
+                  </span>
+                  {formatDate(publishedAt())}
+                </span>
+              )}
+            </Show>
+            <span
+              class={flex({ gap: "1", alignItems: "center" })}
+              title={`Received: ${formatDate(props.item.createdAt)}`}
+            >
+              <span class={css({ display: { base: "none", xs: "inline" } })}>
+                Received:
+              </span>
+              <span
+                class={css({ display: { base: "inline", xs: "none" } })}
+                title="Received"
+              >
+                <ReceivedIcon />
+                <span
+                  class={css({
+                    position: "absolute",
+                    width: "1px",
+                    height: "1px",
+                    padding: "0",
+                    margin: "-1px",
+                    overflow: "hidden",
+                    clip: "rect(0, 0, 0, 0)",
+                    whiteSpace: "nowrap",
+                    borderWidth: "0",
+                  })}
+                >
+                  Received:
+                </span>
+              </span>
+              {formatDate(props.item.createdAt)}
             </span>
             <Show when={props.item.isRead}>
               <span

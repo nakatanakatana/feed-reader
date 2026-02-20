@@ -31,18 +31,89 @@ exports[`ItemRow > renders item title, description and metadata 1`] = `
           This is a test description snippet that should be displayed.
         </div>
         <div
-          class="d_flex ai_center gap_2 mt_1"
+          class="d_flex ai_center gap_2 xs:gap_4 mt_1 fs_xs c_gray.500"
         >
           <span
-            class="fs_xs c_gray.500"
+            class="d_flex ai_center gap_1"
+            title="Published: 1/21/2026, 10:00:00 AM"
           >
-            Received: 1/20/2026, 10:00:00 AM
             <span
-              class="mx_1"
+              class="d_none xs:d_inline"
             >
-              •
+              Published:
             </span>
-            Published: 1/21/2026, 10:00:00 AM
+            <span
+              class="d_inline xs:d_none"
+              title="Published"
+            >
+              <svg
+                aria-hidden="true"
+                fill="none"
+                height="14"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="14"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m22 2-7 20-4-9-9-4Z"
+                />
+                <path
+                  d="M22 2 11 13"
+                />
+              </svg>
+              <span
+                class="pos_absolute w_1px h_1px p_0 m_-1px ov_hidden clip_rect(0,_0,_0,_0) white-space_nowrap bd-w_0"
+              >
+                Published:
+              </span>
+            </span>
+            1/21/2026, 10:00:00 AM
+          </span>
+          <span
+            class="d_flex ai_center gap_1"
+            title="Received: 1/20/2026, 10:00:00 AM"
+          >
+            <span
+              class="d_none xs:d_inline"
+            >
+              Received:
+            </span>
+            <span
+              class="d_inline xs:d_none"
+              title="Received"
+            >
+              <svg
+                aria-hidden="true"
+                fill="none"
+                height="14"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="14"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="10"
+                />
+                <polyline
+                  points="12 6 12 12 16 14"
+                />
+              </svg>
+              <span
+                class="pos_absolute w_1px h_1px p_0 m_-1px ov_hidden clip_rect(0,_0,_0,_0) white-space_nowrap bd-w_0"
+              >
+                Received:
+              </span>
+            </span>
+            1/20/2026, 10:00:00 AM
           </span>
         </div>
       </button>
