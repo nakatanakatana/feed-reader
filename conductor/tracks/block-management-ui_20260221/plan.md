@@ -5,13 +5,13 @@
 - [x] Task: Write failing unit tests for `parseBulkBlockingRules` in `frontend/src/lib/blocking-db.test.ts` (TDD Red phase). 2dd2436
 - [x] Task: Implement/Fix `parseBulkBlockingRules` to pass the tests (TDD Green phase). 2dd2436
 - [x] Task: Update `blocking.tsx` to use the refactored `parseBulkBlockingRules` function. 2dd2436
-- [ ] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md) 10dc8bf
 
 ## Phase 2: UI Update - Blocking Rules Page
-- [x] Task: Create `AddBlockingRuleForm` component in `frontend/src/components/AddBlockingRuleForm.tsx` (mimicking `AddFeedForm` style). 2dd2436
-- [x] Task: Create `BulkImportBlockingRuleForm` component in `frontend/src/components/BulkImportBlockingRuleForm.tsx`. 2dd2436
-- [~] Task: Update `frontend/src/routes/blocking.tsx` to use the new forms at the top of the page.
-- [ ] Task: Refactor the rule list in `blocking.tsx` to use a card-based layout instead of a table.
+- [x] Task: Create `AddBlockingRuleForm` component in `frontend/src/components/AddBlockingRuleForm.tsx` (mimicking `AddFeedForm` style). 4cdf082
+- [x] Task: Create `BulkImportBlockingRuleForm` component in `frontend/src/components/BulkImportBlockingRuleForm.tsx`. 4cdf082
+- [x] Task: Update `frontend/src/routes/blocking.tsx` to use the new forms at the top of the page. 4cdf082
+- [x] Task: Refactor the rule list in `blocking.tsx` to use a card-based layout instead of a table. 4cdf082
 - [ ] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)
 
 ## Phase 3: UI Update - Parsing Rules Page
