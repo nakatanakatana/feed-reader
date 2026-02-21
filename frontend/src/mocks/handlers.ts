@@ -31,11 +31,27 @@ import {
   TagSchema,
   TagService,
 } from "../gen/tag/v1/tag_pb";
+import {
+  BlockingRuleSchema,
+  BlockingService,
+  BulkCreateBlockingRulesResponseSchema,
+  CreateBlockingRuleResponseSchema,
+  CreateURLParsingRuleResponseSchema,
+  DeleteBlockingRuleResponseSchema,
+  DeleteURLParsingRuleResponseSchema,
+  ListBlockingRulesResponseSchema,
+  ListURLParsingRulesResponseSchema,
+  ReevaluateAllItemsResponseSchema,
+  type URLParsingRule,
+  URLParsingRuleSchema,
+} from "../gen/blocking/v1/blocking_pb";
 import { mockConnectWeb } from "./connect";
 
 const tags: Tag[] = [];
 const feeds: Feed[] = [];
 const items: Item[] = [];
+const blockingRules: any[] = [];
+const urlParsingRules: URLParsingRule[] = [];
 
 export const resetState = () => {
   console.log("MSW: resetState called");
@@ -105,6 +121,9 @@ export const resetState = () => {
       }),
     );
   }
+
+  blockingRules.length = 0;
+  urlParsingRules.length = 0;
 };
 
 // Initial state
@@ -406,6 +425,102 @@ export const handlers = [
         return create(GetItemResponseSchema, { item });
       }
       throw new Error("Item not found");
+    },
+  }),
+
+  mockConnectWeb(BlockingService)({
+    method: "listBlockingRules",
+    handler: () => {
+      return create(ListBlockingRulesResponseSchema, {
+        rules: blockingRules.map((r) => create(BlockingRuleSchema, r)),
+      });
+    },
+  }),
+
+  mockConnectWeb(BlockingService)({
+    method: "createBlockingRule",
+    handler: (req) => {
+      const newRule = {
+        id: crypto.randomUUID(),
+        ...req,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      blockingRules.push(newRule);
+      return create(CreateBlockingRuleResponseSchema, {
+        rule: create(BlockingRuleSchema, newRule),
+      });
+    },
+  }),
+
+  mockConnectWeb(BlockingService)({
+    method: "bulkCreateBlockingRules",
+    handler: (req) => {
+      const newRules = (req.rules || []).map((r) => ({
+        id: crypto.randomUUID(),
+        ...r,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }));
+      blockingRules.push(...newRules);
+      return create(BulkCreateBlockingRulesResponseSchema, {
+        rules: newRules.map((r) => create(BlockingRuleSchema, r)),
+      });
+    },
+  }),
+
+  mockConnectWeb(BlockingService)({
+    method: "deleteBlockingRule",
+    handler: (req) => {
+      const index = blockingRules.findIndex((r) => r.id === req.id);
+      if (index !== -1) {
+        blockingRules.splice(index, 1);
+      }
+      return create(DeleteBlockingRuleResponseSchema, {});
+    },
+  }),
+
+  mockConnectWeb(BlockingService)({
+    method: "listURLParsingRules",
+    handler: () => {
+      return create(ListURLParsingRulesResponseSchema, {
+        rules: urlParsingRules.map((r) => create(URLParsingRuleSchema, r)),
+      });
+    },
+  }),
+
+  mockConnectWeb(BlockingService)({
+    method: "createURLParsingRule",
+    handler: (req) => {
+      const newRule = create(URLParsingRuleSchema, {
+        id: crypto.randomUUID(),
+        domain: req.domain,
+        pattern: req.pattern,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+      urlParsingRules.push(newRule);
+      return create(CreateURLParsingRuleResponseSchema, {
+        rule: newRule,
+      });
+    },
+  }),
+
+  mockConnectWeb(BlockingService)({
+    method: "deleteURLParsingRule",
+    handler: (req) => {
+      const index = urlParsingRules.findIndex((r) => r.id === req.id);
+      if (index !== -1) {
+        urlParsingRules.splice(index, 1);
+      }
+      return create(DeleteURLParsingRuleResponseSchema, {});
+    },
+  }),
+
+  mockConnectWeb(BlockingService)({
+    method: "reevaluateAllItems",
+    handler: () => {
+      return create(ReevaluateAllItemsResponseSchema, {});
     },
   }),
 ];

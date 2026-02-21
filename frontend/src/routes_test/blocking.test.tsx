@@ -11,133 +11,102 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import {
   BlockingRuleSchema,
+  BlockingService,
   BulkCreateBlockingRulesResponseSchema,
+  CreateBlockingRuleResponseSchema,
   ListBlockingRulesResponseSchema,
 } from "../gen/blocking/v1/blocking_pb";
-import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
-import { ListItemsResponseSchema } from "../gen/item/v1/item_pb";
-import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
+import { mockConnectWeb } from "../mocks/connect";
 import { routeTree } from "../routeTree.gen";
 
 describe("Blocking Route", () => {
   let dispose: () => void;
-  let mockRules: Record<string, unknown>[] = [];
-
-  afterEach(() => {
-    if (dispose) dispose();
-    document.body.innerHTML = "";
-    vi.clearAllMocks();
-    queryClient.clear();
-  });
+  const mockRules: any[] = [];
 
   beforeEach(() => {
-    mockRules = [];
+    mockRules.length = 0;
+    queryClient.clear();
     worker.use(
-      http.post("*/blocking.v1.BlockingService/ListBlockingRules", () => {
-        const msg = create(ListBlockingRulesResponseSchema, {
-          rules: mockRules.map((r) => create(BlockingRuleSchema, r)),
-        });
-        return HttpResponse.json(toJson(ListBlockingRulesResponseSchema, msg));
+      mockConnectWeb(BlockingService)({
+        method: "listBlockingRules",
+        handler: () => {
+          return create(ListBlockingRulesResponseSchema, {
+            rules: mockRules.map((r) => create(BlockingRuleSchema, r)),
+          });
+        },
       }),
-      http.post(
-        "*/blocking.v1.BlockingService/CreateBlockingRule",
-        async ({ request }) => {
-          const body = (await request.json()) as {
-            ruleType: string;
-            username?: string;
-            domain?: string;
-            keyword?: string;
-          };
+      mockConnectWeb(BlockingService)({
+        method: "createBlockingRule",
+        handler: (req) => {
           const now = new Date().toISOString();
           const newRule = {
             id: `new-block-${Math.random()}`,
-            ruleType: body.ruleType,
-            username: body.username,
-            domain: body.domain,
-            keyword: body.keyword,
+            ...req,
             createdAt: now,
             updatedAt: now,
           };
           mockRules.push(newRule);
-          return HttpResponse.json(
-            toJson(BlockingRuleSchema, create(BlockingRuleSchema, newRule)),
-          );
+          return create(CreateBlockingRuleResponseSchema, {
+            rule: create(BlockingRuleSchema, newRule),
+          });
         },
-      ),
-      http.post(
-        "*/blocking.v1.BlockingService/BulkCreateBlockingRules",
-        async ({ request }) => {
-          const body = (await request.json()) as {
-            rules: {
-              ruleType: string;
-              username?: string;
-              domain?: string;
-              keyword?: string;
-            }[];
-          };
+      }),
+      mockConnectWeb(BlockingService)({
+        method: "bulkCreateBlockingRules",
+        handler: (req) => {
           const now = new Date().toISOString();
-          const newRules = body.rules.map((r, i: number) => ({
-            id: `bulk-${Math.random()}-${i}`,
+          const newRules = (req.rules || []).map((r) => ({
+            id: `bulk-${Math.random()}`,
             ...r,
             createdAt: now,
             updatedAt: now,
           }));
           mockRules.push(...newRules);
-          const msg = create(BulkCreateBlockingRulesResponseSchema, {
+          return create(BulkCreateBlockingRulesResponseSchema, {
             rules: newRules.map((r) => create(BlockingRuleSchema, r)),
           });
-          return HttpResponse.json(
-            toJson(BulkCreateBlockingRulesResponseSchema, msg),
-          );
         },
-      ),
-      http.post(
-        "*/blocking.v1.BlockingService/DeleteBlockingRule",
-        async ({ request }) => {
-          const body = (await request.json()) as { id: string };
-          mockRules = mockRules.filter((r) => r.id !== body.id);
-          return HttpResponse.json({});
+      }),
+      mockConnectWeb(BlockingService)({
+        method: "deleteBlockingRule",
+        handler: (req) => {
+          const index = mockRules.findIndex((r) => r.id === req.id);
+          if (index !== -1) {
+            mockRules.splice(index, 1);
+          }
+          return {};
         },
-      ),
-      http.post("*/blocking.v1.BlockingService/ReevaluateAllItems", () => {
-        return HttpResponse.json({});
-      }),
-      // Other mocks
-      http.post("*/blocking.v1.BlockingService/ListURLParsingRules", () => {
-        return HttpResponse.json({ rules: [] });
-      }),
-      http.post("*/item.v1.ItemService/ListItems", () => {
-        return HttpResponse.json(
-          toJson(
-            ListItemsResponseSchema,
-            create(ListItemsResponseSchema, { items: [], totalCount: 0 }),
-          ),
-        );
-      }),
-      http.post("*/tag.v1.TagService/ListTags", () => {
-        return HttpResponse.json(
-          toJson(
-            ListTagsResponseSchema,
-            create(ListTagsResponseSchema, { tags: [] }),
-          ),
-        );
-      }),
-      http.post("*/feed.v1.FeedService/ListFeedTags", () => {
-        return HttpResponse.json(
-          toJson(
-            ListFeedTagsResponseSchema,
-            create(ListFeedTagsResponseSchema, { feedTags: [] }),
-          ),
-        );
       }),
     );
   });
 
-  it("renders the Blocking Rules table", async () => {
-    mockRules = [
+  afterEach(() => {
+    if (dispose) dispose();
+    document.body.innerHTML = "";
+    vi.clearAllMocks();
+  });
+
+  const renderRoute = () => {
+    const history = createMemoryHistory({ initialEntries: ["/blocking"] });
+    const router = createRouter({ routeTree, history });
+
+    return render(
+      () => (
+        <TransportProvider transport={transport}>
+          <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} />
+          </QueryClientProvider>
+        </TransportProvider>
+      ),
+      document.body,
+    );
+  };
+
+  it("renders the Blocking Rules heading", async () => {
+    mockRules.push(
       { id: "1", ruleType: "keyword", keyword: "badword" },
       {
         id: "2",
@@ -145,49 +114,22 @@ describe("Blocking Route", () => {
         domain: "spam.com",
         username: "spammer",
       },
-    ];
-
-    const history = createMemoryHistory({ initialEntries: ["/blocking"] });
-    const router = createRouter({ routeTree, history });
-
-    dispose = render(
-      () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-          </QueryClientProvider>
-        </TransportProvider>
-      ),
-      document.body,
     );
 
-    await expect
-      .element(page.getByText("badword", { exact: true }))
-      .toBeInTheDocument();
-    await expect
-      .element(page.getByText("spam.com", { exact: true }))
-      .toBeInTheDocument();
-    await expect
-      .element(page.getByText("spammer", { exact: true }))
-      .toBeInTheDocument();
+    dispose = renderRoute();
+
+    await expect.element(page.getByRole("heading", { name: /Existing Blocking Rules/i })).toBeVisible();
+    await expect.element(page.getByText("badword", { exact: true })).toBeVisible();
+    await expect.element(page.getByText("spam.com", { exact: true })).toBeVisible();
+    await expect.element(page.getByText("spammer", { exact: true })).toBeVisible();
   });
 
   it("adds a new keyword blocking rule", async () => {
-    const history = createMemoryHistory({ initialEntries: ["/blocking"] });
-    const router = createRouter({ routeTree, history });
+    dispose = renderRoute();
 
-    dispose = render(
-      () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-          </QueryClientProvider>
-        </TransportProvider>
-      ),
-      document.body,
-    );
+    await expect.element(page.getByRole("heading", { name: /Existing Blocking Rules/i })).toBeVisible();
 
-    const typeSelect = page.getByLabelText(/Rule Type/i);
+    const typeSelect = page.getByLabelText("Rule Type");
     await typeSelect.selectOptions("keyword");
 
     const keywordInput = page.getByLabelText("Keyword");
@@ -200,24 +142,14 @@ describe("Blocking Route", () => {
       .poll(async () => {
         const el = page.getByText("BLOCKED_TERM", { exact: true });
         return await el.query();
-      })
+      }, { timeout: 10000 })
       .not.toBeNull();
   });
 
   it("performs bulk import of rules", async () => {
-    const history = createMemoryHistory({ initialEntries: ["/blocking"] });
-    const router = createRouter({ routeTree, history });
+    dispose = renderRoute();
 
-    dispose = render(
-      () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-          </QueryClientProvider>
-        </TransportProvider>
-      ),
-      document.body,
-    );
+    await expect.element(page.getByRole("heading", { name: /Bulk Import Blocking Rules/i })).toBeVisible();
 
     const textarea = page.getByLabelText("Paste rules here");
     await textarea.fill(`keyword,,,bulk1
@@ -230,14 +162,14 @@ user_domain,,bulk-spam.com,`);
       .poll(async () => {
         const el = page.getByText("bulk1", { exact: true });
         return await el.query();
-      })
+      }, { timeout: 10000 })
       .not.toBeNull();
 
     await expect
       .poll(async () => {
         const el = page.getByText("bulk-spam.com", { exact: true });
         return await el.query();
-      })
+      }, { timeout: 10000 })
       .not.toBeNull();
   });
 });

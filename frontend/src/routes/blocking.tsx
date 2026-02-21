@@ -1,6 +1,6 @@
 import { useLiveQuery } from "@tanstack/solid-db";
 import { createFileRoute } from "@tanstack/solid-router";
-import { createSignal, For, Show } from "solid-js";
+import { For } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { AddBlockingRuleForm } from "../components/AddBlockingRuleForm";
@@ -11,9 +11,6 @@ import {
   blockingRules,
   deleteBlockingRule,
   reevaluateAllItems,
-  urlParsingRules,
-  createURLParsingRule,
-  deleteURLParsingRule,
 } from "../lib/blocking-db";
 
 export const Route = createFileRoute("/blocking")({
@@ -21,19 +18,7 @@ export const Route = createFileRoute("/blocking")({
 });
 
 function BlockingComponent() {
-  const rules = useLiveQuery((q) => q.from({ rule: urlParsingRules }));
   const blocks = useLiveQuery((q) => q.from({ block: blockingRules }));
-
-  const [domain, setDomain] = createSignal("");
-  const [pattern, setPattern] = createSignal("");
-
-  const handleAddUrlRule = async (e: Event) => {
-    e.preventDefault();
-    if (!domain() || !pattern()) return;
-    await createURLParsingRule({ domain: domain(), pattern: pattern() });
-    setDomain("");
-    setPattern("");
-  };
 
   const sectionStyle = css({
     backgroundColor: "white",
@@ -50,22 +35,6 @@ function BlockingComponent() {
     fontWeight: "bold",
     marginBottom: "4",
     color: "gray.900",
-  });
-
-  const inputStyle = css({
-    paddingX: "3",
-    paddingY: "2",
-    borderRadius: "md",
-    borderWidth: "1px",
-    borderStyle: "solid",
-    borderColor: "gray.300",
-    width: "full",
-    fontSize: "sm",
-    _focus: {
-      outline: "none",
-      borderColor: "blue.500",
-      boxShadow: "0 0 0 2px rgba(59, 130, 246, 0.2)",
-    },
   });
 
   const cardStyle = flex({
@@ -104,85 +73,6 @@ function BlockingComponent() {
         <AddBlockingRuleForm />
         <BulkImportBlockingRuleForm />
 
-        {/* URL Parsing Rules Section */}
-        <section class={sectionStyle}>
-          <h2 class={headingStyle}>Domain URL Parsing Rules</h2>
-          <form onSubmit={handleAddUrlRule} class={stack({ gap: "4" })}>
-            <div class={flex({ gap: "4", flexDirection: { base: "column", md: "row" } })}>
-              <div class={css({ flex: "1" })}>
-                <label
-                  for="url-domain"
-                  class={css({
-                    display: "block",
-                    fontSize: "xs",
-                    fontWeight: "bold",
-                    marginBottom: "1",
-                    color: "gray.500",
-                  })}
-                >
-                  Domain
-                </label>
-                <input
-                  id="url-domain"
-                  type="text"
-                  placeholder="e.g. example.com"
-                  value={domain()}
-                  onInput={(e) => setDomain(e.currentTarget.value)}
-                  class={inputStyle}
-                />
-              </div>
-              <div class={css({ flex: "2" })}>
-                <label
-                  for="url-pattern"
-                  class={css({
-                    display: "block",
-                    fontSize: "xs",
-                    fontWeight: "bold",
-                    marginBottom: "1",
-                    color: "gray.500",
-                  })}
-                >
-                  Regex Pattern (first group is username)
-                </label>
-                <input
-                  id="url-pattern"
-                  type="text"
-                  placeholder="^https://example\.com/users/([^/]+)"
-                  value={pattern()}
-                  onInput={(e) => setPattern(e.currentTarget.value)}
-                  class={inputStyle}
-                />
-              </div>
-              <div class={css({ display: "flex", alignItems: "flex-end" })}>
-                <ActionButton type="submit" variant="primary">
-                  Add Parsing Rule
-                </ActionButton>
-              </div>
-            </div>
-          </form>
-
-          <div class={stack({ gap: "2", marginTop: "6" })}>
-            <For each={rules()}>
-              {(rule) => (
-                <div class={cardStyle}>
-                  <div class={stack({ gap: "1" })}>
-                    <div class={css({ fontWeight: "bold", fontSize: "sm" })}>{rule.domain}</div>
-                    <div class={css({ fontSize: "xs", color: "gray.600", fontFamily: "mono" })}>
-                      {rule.pattern}
-                    </div>
-                  </div>
-                  <ActionButton
-                    variant="ghost"
-                    onClick={() => deleteURLParsingRule(rule.id)}
-                  >
-                    Delete
-                  </ActionButton>
-                </div>
-              )}
-            </For>
-          </div>
-        </section>
-
         {/* Existing Blocking Rules Section */}
         <section class={sectionStyle}>
           <h2 class={headingStyle}>Existing Blocking Rules</h2>
@@ -191,7 +81,14 @@ function BlockingComponent() {
               {(block) => (
                 <div class={cardStyle}>
                   <div class={stack({ gap: "1" })}>
-                    <div class={css({ fontSize: "xs", fontWeight: "bold", color: "blue.600", textTransform: "uppercase" })}>
+                    <div
+                      class={css({
+                        fontSize: "xs",
+                        fontWeight: "bold",
+                        color: "blue.600",
+                        textTransform: "uppercase",
+                      })}
+                    >
                       {block.ruleType.replace("_", " ")}
                     </div>
                     <div class={css({ fontSize: "sm", color: "gray.800" })}>
