@@ -13,8 +13,11 @@
 - [x] Task: Verify the fix works by running the reproduction test (Green Phase).
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Implementation' (Protocol in workflow.md)
 
-## Phase 3: Final Verification
+## Phase 3: Final Verification [checkpoint: a0ea472]
 - [x] Task: Manually verify the behavior on Desktop (click whitespace -> no action, click image -> action).
 - [x] Task: Manually verify the behavior on Mobile (check layout and interaction).
 - [x] Task: Ensure no regressions in other modal functionality (navigation, closing).
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Final Verification' (Protocol in workflow.md)
+
+## Phase: Review Fixes
+- [x] Task: Apply review suggestions 029f1f4
