@@ -8,8 +8,7 @@
 ## Phase 2: Domain Extraction Utility
 - [x] Task: Write tests for the domain extraction utility function (`extractHostname`).
 - [x] Task: Implement the `extractHostname` utility function to return the full hostname from a URL. 44c876d
-- [~] Task: Conductor - User Manual Verification 'Domain Extraction Utility' (Protocol in workflow.md)
-- [ ] Task: Conductor - User Manual Verification 'Domain Extraction Utility' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Domain Extraction Utility' (Protocol in workflow.md)
 
 ## Phase 3: UI Implementation in ItemDetailModal
 - [ ] Task: Write failing integration tests for `ItemDetailModal` verifying the new domain metadata item is present in the DOM.
