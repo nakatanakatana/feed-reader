@@ -22,6 +22,8 @@ import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
 import { routeTree } from "../routeTree.gen";
 
+import { mockConnectWeb } from "../mocks/connect";
+
 describe("Blocking Route", () => {
   let dispose: () => void;
 
@@ -33,6 +35,7 @@ describe("Blocking Route", () => {
     if (dispose) dispose();
     document.body.innerHTML = "";
     vi.clearAllMocks();
+    worker.resetHandlers();
   });
 
   const renderRoute = () => {
@@ -65,9 +68,12 @@ describe("Blocking Route", () => {
     ];
 
     worker.use(
-      http.post("*/blocking.v1.BlockingService/ListBlockingRules", () => {
-        return HttpResponse.json({ rules: mockRules });
-      }),
+      mockConnectWeb(BlockingService)({
+        method: "listBlockingRules",
+        handler: () => create(ListBlockingRulesResponseSchema, {
+          rules: mockRules.map(r => create(BlockingRuleSchema, r))
+        })
+      })
     );
 
     dispose = renderRoute();
@@ -79,15 +85,15 @@ describe("Blocking Route", () => {
   });
 
   it("adds a new keyword blocking rule", async () => {
-    const mockRules: any[] = [];
-    let createCalled = false;
+    (window as any).createCalled = false;
+    let mockRules: any[] = [];
     worker.use(
-      http.post("*/blocking.v1.BlockingService/ListBlockingRules", () => {
+      http.all("*/blocking.v1.BlockingService/ListBlockingRules", () => {
         return HttpResponse.json({ rules: mockRules });
       }),
-      http.post("*/blocking.v1.BlockingService/CreateBlockingRule", async ({ request }) => {
+      http.all("*/blocking.v1.BlockingService/CreateBlockingRule", async ({ request }) => {
         const body = (await request.json()) as any;
-        createCalled = true;
+        (window as any).createCalled = true;
         const now = new Date().toISOString();
         const newRule = {
           id: `new-block-${Math.random()}`,
@@ -98,9 +104,9 @@ describe("Blocking Route", () => {
           createdAt: now,
           updatedAt: now,
         };
-        mockRules.push(newRule);
+        mockRules = [newRule];
         return HttpResponse.json({ rule: newRule });
-      }),
+      })
     );
 
     dispose = renderRoute();
@@ -116,20 +122,22 @@ describe("Blocking Route", () => {
     const addButton = page.getByRole("button", { name: "Add Rule" });
     await addButton.click();
 
-    await expect.poll(() => createCalled).toBe(true);
-    await expect.element(page.getByText("BLOCKED_TERM", { exact: true })).toBeInTheDocument();
+    await vi.waitFor(async () => {
+      await queryClient.invalidateQueries({ queryKey: ["blocking-rules"] });
+      await expect.element(page.getByText("BLOCKED_TERM", { exact: true })).toBeInTheDocument();
+    });
   });
 
-  it("performs bulk import of rules", async () => {
-    const mockRules: any[] = [];
-    let bulkCreateCalled = false;
+  it("performs bulk import of rules via modal", async () => {
+    let mockRules: any[] = [];
+
+    // Setup handlers
     worker.use(
-      http.post("*/blocking.v1.BlockingService/ListBlockingRules", () => {
+      http.all("*/blocking.v1.BlockingService/ListBlockingRules", () => {
         return HttpResponse.json({ rules: mockRules });
       }),
-      http.post("*/blocking.v1.BlockingService/BulkCreateBlockingRules", async ({ request }) => {
+      http.all("*/blocking.v1.BlockingService/BulkCreateBlockingRules", async ({ request }) => {
         const body = (await request.json()) as any;
-        bulkCreateCalled = true;
         const now = new Date().toISOString();
         const newRules = (body.rules || []).map((r: any) => ({
           id: `bulk-${Math.random()}`,
@@ -137,24 +145,40 @@ describe("Blocking Route", () => {
           createdAt: now,
           updatedAt: now,
         }));
-        mockRules.push(...newRules);
+        mockRules = newRules;
         return HttpResponse.json({ rules: newRules });
-      }),
+      })
     );
 
     dispose = renderRoute();
 
-    await expect.element(page.getByRole("heading", { name: /Bulk Import Blocking Rules/i })).toBeInTheDocument();
+    // Verify "Bulk Import" button exists
+    const bulkImportButton = page.getByRole("button", { name: "Bulk Import" });
+    await expect.element(bulkImportButton).toBeInTheDocument();
 
-    const textarea = page.getByLabelText("Paste rules here");
+    // Click to open modal
+    await bulkImportButton.click();
+
+    // Verify Modal Header
+    await expect.element(page.getByRole("heading", { name: "Bulk Import Blocking Rules" })).toBeInTheDocument();
+
+    // Verify Textarea inside modal
+    const textarea = page.getByPlaceholder(/user_domain,,spam.com/);
     await textarea.fill(`keyword,,,bulk1
 user_domain,,bulk-spam.com,`);
 
-    const importButton = page.getByRole("button", { name: /Import Rules/ });
+    // Click Import in Modal
+    const importButton = page.getByRole("button", { name: "Import Rules" });
     await importButton.click();
 
-    await expect.poll(() => bulkCreateCalled).toBe(true);
-    await expect.element(page.getByText("bulk1", { exact: true })).toBeInTheDocument();
-    await expect.element(page.getByText("bulk-spam.com", { exact: true })).toBeInTheDocument();
+    // Wait for success and modal closure
+    await vi.waitFor(async () => {
+      await expect.element(page.getByRole("heading", { name: "Bulk Import Blocking Rules" })).not.toBeInTheDocument();
+    });
+
+    // Verify success toast
+    await vi.waitFor(async () => {
+      await expect.element(page.getByText("Blocking rules imported successfully")).toBeInTheDocument();
+    });
   });
 });

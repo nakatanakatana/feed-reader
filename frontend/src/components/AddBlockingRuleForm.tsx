@@ -4,7 +4,11 @@ import { flex, stack } from "../../styled-system/patterns";
 import { createBlockingRule } from "../lib/blocking-db";
 import { ActionButton } from "./ui/ActionButton";
 
-export function AddBlockingRuleForm() {
+interface AddBlockingRuleFormProps {
+  onBulkImport?: () => void;
+}
+
+export function AddBlockingRuleForm(props: AddBlockingRuleFormProps) {
   const [blockType, setBlockType] = createSignal("user_domain");
   const [blockUsername, setBlockUsername] = createSignal("");
   const [blockDomain, setBlockDomain] = createSignal("");
@@ -138,10 +142,21 @@ export function AddBlockingRuleForm() {
               </div>
             )}
 
-            <div class={css({ display: "flex", alignItems: "flex-end" })}>
+            <div
+              class={css({ display: "flex", alignItems: "flex-end", gap: "2" })}
+            >
               <ActionButton type="submit" variant="primary">
                 Add Rule
               </ActionButton>
+              {props.onBulkImport && (
+                <ActionButton
+                  type="button"
+                  variant="secondary"
+                  onClick={props.onBulkImport}
+                >
+                  Bulk Import
+                </ActionButton>
+              )}
             </div>
           </div>
         </div>
@@ -149,3 +164,4 @@ export function AddBlockingRuleForm() {
     </div>
   );
 }
+

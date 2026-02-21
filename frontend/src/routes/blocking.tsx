@@ -1,10 +1,10 @@
 import { useLiveQuery } from "@tanstack/solid-db";
 import { createFileRoute } from "@tanstack/solid-router";
-import { For } from "solid-js";
+import { createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { AddBlockingRuleForm } from "../components/AddBlockingRuleForm";
-import { BulkImportBlockingRuleForm } from "../components/BulkImportBlockingRuleForm";
+import { BulkImportBlockingRulesModal } from "../components/BulkImportBlockingRulesModal";
 import { ActionButton } from "../components/ui/ActionButton";
 import { PageLayout } from "../components/ui/PageLayout";
 import {
@@ -19,6 +19,8 @@ export const Route = createFileRoute("/blocking")({
 
 function BlockingComponent() {
   const blocks = useLiveQuery((q) => q.from({ block: blockingRules }));
+  const [isBulkImportOpen, setIsBulkImportOpen] = createSignal(false);
+  const [showSuccessToast, setShowSuccessToast] = createSignal(false);
 
   const sectionStyle = css({
     backgroundColor: "white",
@@ -49,6 +51,11 @@ function BlockingComponent() {
     _hover: { backgroundColor: "gray.50" },
   });
 
+  const handleBulkImportSuccess = () => {
+    setShowSuccessToast(true);
+    setTimeout(() => setShowSuccessToast(false), 3000);
+  };
+
   return (
     <PageLayout>
       <div
@@ -70,8 +77,36 @@ function BlockingComponent() {
           </ActionButton>
         </div>
 
-        <AddBlockingRuleForm />
-        <BulkImportBlockingRuleForm />
+        <AddBlockingRuleForm onBulkImport={() => setIsBulkImportOpen(true)} />
+
+        <BulkImportBlockingRulesModal
+          isOpen={isBulkImportOpen()}
+          onClose={() => setIsBulkImportOpen(false)}
+          onSuccess={handleBulkImportSuccess}
+        />
+
+        {/* Success "Toast" */}
+        <Show when={showSuccessToast()}>
+          <div
+            class={css({
+              position: "fixed",
+              bottom: "4",
+              right: "4",
+              backgroundColor: "green.600",
+              color: "white",
+              paddingX: "4",
+              paddingY: "2",
+              borderRadius: "md",
+              boxShadow: "lg",
+              zIndex: 50,
+              fontSize: "sm",
+              fontWeight: "medium",
+              animation: "slideIn 0.3s ease-out",
+            })}
+          >
+            Blocking rules imported successfully
+          </div>
+        </Show>
 
         {/* Existing Blocking Rules Section */}
         <section class={sectionStyle}>
@@ -127,3 +162,4 @@ function BlockingComponent() {
     </PageLayout>
   );
 }
+
