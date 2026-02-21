@@ -1,9 +1,9 @@
 # Implementation Plan: Item Domain Metadata Display
 
 ## Phase 1: Research and Setup
-- [ ] Task: Identify the location of `ItemDetailModal` in the frontend codebase.
-- [ ] Task: Analyze the existing metadata display in `ItemDetailModal` and its subcomponents.
-- [ ] Task: Identify where to place the new domain extraction utility.
+- [x] Task: Identify the location of `ItemDetailModal` in the frontend codebase.
+- [x] Task: Analyze the existing metadata display in `ItemDetailModal` and its subcomponents.
+- [x] Task: Identify where to place the new domain extraction utility.
 
 ## Phase 2: Domain Extraction Utility
 - [ ] Task: Write tests for the domain extraction utility function (`extractHostname`).
