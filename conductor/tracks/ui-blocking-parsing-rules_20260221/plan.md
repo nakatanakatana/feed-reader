@@ -15,7 +15,7 @@ Focus on moving the bulk import functionality to a modal and adding the trigger 
     - [ ] Verify tests pass
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Blocking Rules - Modal & Actions' (Protocol in workflow.md)
 
-## Phase 2: List Layout Standardization
+## Phase 2: List Layout Standardization [checkpoint: 204d44b]
 Focus on updating the list layout for both Blocking and Parsing rules to match the Feeds page style (full width, independent scroll).
 
 - [x] Task: Refactor `BlockingRulesPage` Layout cdd8f5d
