@@ -18,7 +18,7 @@ Focus on moving the bulk import functionality to a modal and adding the trigger 
 ## Phase 2: List Layout Standardization
 Focus on updating the list layout for both Blocking and Parsing rules to match the Feeds page style (full width, independent scroll).
 
-- [ ] Task: Refactor `BlockingRulesPage` Layout
+- [x] Task: Refactor `BlockingRulesPage` Layout cdd8f5d
     - [ ] Update tests to verify layout structure (sticky header, scrollable list container)
     - [ ] Implement full-width container for the list
     - [ ] Apply CSS/Styling for independent scrolling of the list area
