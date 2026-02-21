@@ -6,7 +6,7 @@
     - [x] Define the expected structure where the click handler is attached to the image/wrapper, not the full-width container.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Analysis & Reproduction' (Protocol in workflow.md)
 
-## Phase 2: Implementation
+## Phase 2: Implementation [checkpoint: 5168485]
 - [x] Task: Apply CSS/Structure changes to `ItemDetailModal`. ff7c86f
     - [x] Ensure the click target size matches the rendered image size.
     - [x] Maintain existing responsive behavior (centering, scaling).
@@ -14,7 +14,7 @@
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Implementation' (Protocol in workflow.md)
 
 ## Phase 3: Final Verification
-- [ ] Task: Manually verify the behavior on Desktop (click whitespace -> no action, click image -> action).
-- [ ] Task: Manually verify the behavior on Mobile (check layout and interaction).
-- [ ] Task: Ensure no regressions in other modal functionality (navigation, closing).
+- [x] Task: Manually verify the behavior on Desktop (click whitespace -> no action, click image -> action).
+- [x] Task: Manually verify the behavior on Mobile (check layout and interaction).
+- [x] Task: Ensure no regressions in other modal functionality (navigation, closing).
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Final Verification' (Protocol in workflow.md)
