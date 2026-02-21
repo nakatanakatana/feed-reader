@@ -18,7 +18,7 @@
 - [x] Task: Verify the domain is NOT a clickable link. 044d624
 - [x] Task: Conductor - User Manual Verification 'UI Implementation in ItemDetailModal' (Protocol in workflow.md)
 
-## Phase 4: Final Verification and Polishing
-- [ ] Task: Run all frontend tests and ensure >80% coverage for new code.
-- [ ] Task: Manually verify the layout and appearance on both desktop and narrow viewports (< 480px).
-- [ ] Task: Conductor - User Manual Verification 'Final Verification and Polishing' (Protocol in workflow.md)
+## Phase 4: Final Verification and Polishing [checkpoint: cb10d44]
+- [x] Task: Run all frontend tests and ensure >80% coverage for new code.
+- [x] Task: Manually verify the layout and appearance on both desktop and narrow viewports (< 480px).
+- [x] Task: Conductor - User Manual Verification 'Final Verification and Polishing' (Protocol in workflow.md)
