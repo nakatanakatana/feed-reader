@@ -6,7 +6,10 @@ import {
   eq,
 } from "@tanstack/solid-db";
 import { createMemo, createRoot, createSignal } from "solid-js";
-import { ItemService, type ListItem } from "../gen/item/v1/item_pb";
+import {
+  ItemService,
+  type ListItem as ProtoListItem,
+} from "../gen/item/v1/item_pb";
 import { itemStore } from "./item-store";
 import {
   type DateFilterValue,
@@ -15,7 +18,7 @@ import {
 } from "./item-utils";
 import { queryClient, transport } from "./query";
 
-export interface Item {
+export interface ListItem {
   id: string;
   title: string;
   description?: string;
@@ -24,6 +27,9 @@ export interface Item {
   createdAt: string;
   feedId: string;
   url?: string;
+}
+
+export interface Item extends ListItem {
   author?: string;
   categories?: string;
   imageUrl?: string;
@@ -40,7 +46,7 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
   const sinceTimestamp = since !== "all" ? getPublishedSince(since) : undefined;
 
   return createCollection(
-    queryCollectionOptions<Item>({
+    queryCollectionOptions<ListItem>({
       id: "items",
       gcTime: 5 * 1000,
       queryClient,
@@ -52,7 +58,7 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
         itemStore.clearTransientRemovedIds();
 
         const existingData =
-          (queryClient.getQueryData(queryKey) as Item[]) || [];
+          (queryClient.getQueryData(queryKey) as ListItem[]) || [];
         const lastFetchedValue = lastFetched();
         const searchSince =
           lastFetchedValue === null
@@ -66,7 +72,7 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
         });
         setLastFetched(new Date());
 
-        const respList = response.items.map((item: ListItem) => ({
+        const respList = response.items.map((item: ProtoListItem) => ({
           id: item.id,
           title: item.title,
           description: item.description,
@@ -77,7 +83,7 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
           url: item.url,
         }));
 
-        const itemMap = new Map<string, Item>();
+        const itemMap = new Map<string, ListItem>();
         for (const item of existingData) {
           itemMap.set(item.id, item);
         }
@@ -87,7 +93,7 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
 
         return Array.from(itemMap.values());
       },
-      getKey: (item: Item) => item.id,
+      getKey: (item: ListItem) => item.id,
       onUpdate: async ({ transaction }) => {
         const ids = transaction.mutations.map((m) => {
           //NOTE: update localClientState
