@@ -64,7 +64,7 @@ The primary target audience is individuals and organizations seeking control ove
   - **Save-time Filtering:** Applied during item ingestion for zero performance impact on reading.
   - **Retroactive Updates:** Automatically re-evaluates and updates the visibility of existing items when blocking rules are created or modified.
   - **Flexible Visibility:** Integrated toggle in the item list to quickly show or hide blocked items for administrative review.
-  - **Rule Management UI:** Dedicated management interface for configuring both extraction and blocking rules.
+  - **Rule Management UI:** Dedicated management interface for configuring both extraction and blocking rules. Supports bulk creation of blocking rules via a newline-separated format.
 
 - **Deduplication & Storage:** Efficiently stores and retrieves articles with URL-based deduplication and normalized data structures, ensuring unique presentation even when items are associated with multiple feeds. Tracks per-feed metadata, including original publication and discovery timestamps for each association.
 
