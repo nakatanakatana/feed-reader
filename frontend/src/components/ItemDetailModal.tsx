@@ -10,11 +10,15 @@ import {
   updateItemReadStatus,
 } from "../lib/item-db";
 import { ITEM_STALE_TIME } from "../lib/item-query-constants";
-import { formatDate, normalizeCategories, extractHostname } from "../lib/item-utils";
+import {
+  extractHostname,
+  formatDate,
+  normalizeCategories,
+} from "../lib/item-utils";
 import { useSwipe } from "../lib/use-swipe";
 import { MarkdownRenderer } from "./MarkdownRenderer";
 import { ActionButton } from "./ui/ActionButton";
-import { PublishedIcon, ReceivedIcon, ExternalLinkIcon } from "./ui/Icons";
+import { ExternalLinkIcon, PublishedIcon, ReceivedIcon } from "./ui/Icons";
 import { Modal } from "./ui/Modal";
 
 interface ItemDetailModalProps {
@@ -491,7 +495,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                             color: "gray.500",
                           })}
                         >
-                          {extractHostname(itemData().url)}
+                          {extractHostname(itemData().url || "")}
                         </span>
                       </span>
                     </Show>
