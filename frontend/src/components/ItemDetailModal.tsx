@@ -489,9 +489,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                         title="Source Domain"
                       >
                         <GlobeIcon />
-                        <span>
-                          {extractHostname(itemData().url || "")}
-                        </span>
+                        <span>{extractHostname(itemData().url || "")}</span>
                       </span>
                     </Show>
                     <Show when={!!itemData().publishedAt}>

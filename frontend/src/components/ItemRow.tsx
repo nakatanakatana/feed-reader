@@ -140,10 +140,10 @@ export function ItemRow(props: ItemRowProps) {
             <Show when={props.item.url}>
               <span
                 class={flex({ gap: "1", alignItems: "center" })}
-                title={`Source: ${extractHostname(props.item.url)}`}
+                title={`Source: ${extractHostname(props.item.url || "")}`}
               >
                 <GlobeIcon />
-                <span>{extractHostname(props.item.url)}</span>
+                <span>{extractHostname(props.item.url || "")}</span>
               </span>
             </Show>
             <Show when={props.item.publishedAt}>
