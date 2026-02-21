@@ -7,15 +7,15 @@
 - [x] Task: Update `blocking.tsx` to use the refactored `parseBulkBlockingRules` function. 2dd2436
 - [x] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md) 10dc8bf
 
-## Phase 2: UI Update - Blocking Rules Page
+## Phase 2: UI Update - Blocking Rules Page [checkpoint: 4191b0b]
 - [x] Task: Create `AddBlockingRuleForm` component in `frontend/src/components/AddBlockingRuleForm.tsx` (mimicking `AddFeedForm` style). 4cdf082
 - [x] Task: Create `BulkImportBlockingRuleForm` component in `frontend/src/components/BulkImportBlockingRuleForm.tsx`. 4cdf082
 - [x] Task: Update `frontend/src/routes/blocking.tsx` to use the new forms at the top of the page. 4cdf082
 - [x] Task: Refactor the rule list in `blocking.tsx` to use a card-based layout instead of a table. 4cdf082
-- [ ] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md) 4191b0b
 
 ## Phase 3: UI Update - Parsing Rules Page
-- [ ] Task: Create `AddParsingRuleForm` component in `frontend/src/components/AddParsingRuleForm.tsx`.
+- [x] Task: Create `AddParsingRuleForm` component in `frontend/src/components/AddParsingRuleForm.tsx`. 95e68b4
 - [ ] Task: Update `frontend/src/routes/parsing-rules.tsx` to use the new form at the top of the page.
 - [ ] Task: Refactor the rule list in `parsing-rules.tsx` to use a card-based layout instead of a table.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)
