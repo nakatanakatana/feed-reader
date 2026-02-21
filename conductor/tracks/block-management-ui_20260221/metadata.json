@@ -1,8 +1,0 @@
-{
-  "track_id": "block-management-ui_20260221",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-02-21T00:00:00Z",
-  "updated_at": "2026-02-21T00:00:00Z",
-  "description": "block関連の機能について、一括設定のテスト追加と、Blocking/Parsing Rulesページのレイアウト更新（トップにフォーム、下にカードリスト）を行う。"
-}
