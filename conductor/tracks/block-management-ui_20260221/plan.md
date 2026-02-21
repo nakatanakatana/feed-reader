@@ -1,6 +1,6 @@
 # Implementation Plan - Block Management UI Update and Bulk Configuration Tests
 
-## Phase 1: Test-Driven Refactoring for Bulk Configuration
+## Phase 1: Test-Driven Refactoring for Bulk Configuration [checkpoint: 10dc8bf]
 - [x] Task: Extract `parseBulkBlockingRules` logic from `blocking.tsx` to `frontend/src/lib/blocking-db.ts`. 2dd2436
 - [x] Task: Write failing unit tests for `parseBulkBlockingRules` in `frontend/src/lib/blocking-db.test.ts` (TDD Red phase). 2dd2436
 - [x] Task: Implement/Fix `parseBulkBlockingRules` to pass the tests (TDD Green phase). 2dd2436
