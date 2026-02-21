@@ -76,8 +76,15 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
           url: item.url,
         }));
 
-        // @ts-expect-error
-        return [...existingData, ...respList];
+        const itemMap = new Map();
+        for (const item of existingData) {
+          itemMap.set(item.id, item);
+        }
+        for (const item of respList) {
+          itemMap.set(item.id, item);
+        }
+
+        return Array.from(itemMap.values());
       },
       getKey: (item: ListItem) => item.id,
       onUpdate: async ({ transaction }) => {
