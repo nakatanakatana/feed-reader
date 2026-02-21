@@ -13,4 +13,3 @@ plugins:
     out: frontend/src/gen
     opt:
       - target=ts
-    include_imports: true
