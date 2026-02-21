@@ -51,8 +51,21 @@ export const createBlockingRule = async (params: {
   domain?: string;
   keyword?: string;
 }) => {
-  await blockingClient.createBlockingRule(params);
-  await queryClient.invalidateQueries({ queryKey: ["blocking-rules"] });
+  const response = await blockingClient.createBlockingRule(params);
+  if (response.rule) {
+    const newRule = {
+      id: response.rule.id,
+      ruleType: response.rule.ruleType,
+      username: response.rule.username,
+      domain: response.rule.domain,
+      keyword: response.rule.keyword,
+      createdAt: response.rule.createdAt,
+      updatedAt: response.rule.updatedAt,
+    };
+    queryClient.setQueryData(["blocking-rules"], (old: BlockingRule[] | undefined) =>
+      old ? [...old, newRule] : [newRule],
+    );
+  }
   // Invalidate items as some might have become hidden
   await queryClient.invalidateQueries({ queryKey: ["items"] });
 };
@@ -65,14 +78,27 @@ export const bulkCreateBlockingRules = async (
     keyword?: string;
   }[],
 ) => {
-  await blockingClient.bulkCreateBlockingRules({ rules });
-  await queryClient.invalidateQueries({ queryKey: ["blocking-rules"] });
+  const response = await blockingClient.bulkCreateBlockingRules({ rules });
+  const newRules = response.rules.map((rule) => ({
+    id: rule.id,
+    ruleType: rule.ruleType,
+    username: rule.username,
+    domain: rule.domain,
+    keyword: rule.keyword,
+    createdAt: rule.createdAt,
+    updatedAt: rule.updatedAt,
+  }));
+  queryClient.setQueryData(["blocking-rules"], (old: BlockingRule[] | undefined) =>
+    old ? [...old, ...newRules] : newRules,
+  );
   await queryClient.invalidateQueries({ queryKey: ["items"] });
 };
 
 export const deleteBlockingRule = async (id: string) => {
   await blockingClient.deleteBlockingRule({ id });
-  await queryClient.invalidateQueries({ queryKey: ["blocking-rules"] });
+  queryClient.setQueryData(["blocking-rules"], (old: BlockingRule[] | undefined) =>
+    old ? old.filter((r) => r.id !== id) : [],
+  );
   // Invalidate items as some might have become visible
   await queryClient.invalidateQueries({ queryKey: ["items"] });
 };
@@ -100,15 +126,28 @@ export const createURLParsingRule = async (params: {
   domain: string;
   pattern: string;
 }) => {
-  await blockingClient.createURLParsingRule(params);
-  await queryClient.invalidateQueries({ queryKey: ["url-parsing-rules"] });
+  const response = await blockingClient.createURLParsingRule(params);
+  if (response.rule) {
+    const newRule = {
+      id: response.rule.id,
+      domain: response.rule.domain,
+      pattern: response.rule.pattern,
+      createdAt: response.rule.createdAt,
+      updatedAt: response.rule.updatedAt,
+    };
+    queryClient.setQueryData(["url-parsing-rules"], (old: URLParsingRule[] | undefined) =>
+      old ? [...old, newRule] : [newRule],
+    );
+  }
   // Invalidate items as usernames might have changed, affecting blocking
   await queryClient.invalidateQueries({ queryKey: ["items"] });
 };
 
 export const deleteURLParsingRule = async (id: string) => {
   await blockingClient.deleteURLParsingRule({ id });
-  await queryClient.invalidateQueries({ queryKey: ["url-parsing-rules"] });
+  queryClient.setQueryData(["url-parsing-rules"], (old: URLParsingRule[] | undefined) =>
+    old ? old.filter((r) => r.id !== id) : [],
+  );
   await queryClient.invalidateQueries({ queryKey: ["items"] });
 };
 
