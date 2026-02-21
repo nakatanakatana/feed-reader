@@ -18,16 +18,6 @@ export const Route = createFileRoute("/parsing-rules")({
 function ParsingRulesComponent() {
   const rules = useLiveQuery((q) => q.from({ rule: urlParsingRules }));
 
-  const sectionStyle = css({
-    backgroundColor: "white",
-    padding: { base: "4", md: "6" },
-    borderRadius: "lg",
-    borderWidth: "1px",
-    borderStyle: "solid",
-    borderColor: "gray.200",
-    boxShadow: "sm",
-  });
-
   const headingStyle = css({
     fontSize: "lg",
     fontWeight: "bold",
@@ -49,49 +39,57 @@ function ParsingRulesComponent() {
 
   return (
     <PageLayout>
-      <div
-        class={stack({
-          gap: "8",
-          maxWidth: "4xl",
-          margin: "auto",
-          width: "full",
-          paddingY: "4",
-        })}
-      >
-        <AddParsingRuleForm />
+      <div class={stack({ gap: "2", flex: "1", minHeight: 0 })}>
+        <div class={stack({ gap: "4" })}>
+          <AddParsingRuleForm />
+        </div>
 
         {/* URL Parsing Rules Section */}
-        <section class={sectionStyle}>
-          <h2 class={headingStyle}>Domain URL Parsing Rules</h2>
-          <div class={stack({ gap: "2" })}>
-            <For each={rules()}>
-              {(rule) => (
-                <div class={cardStyle}>
-                  <div class={stack({ gap: "1" })}>
-                    <div class={css({ fontWeight: "bold", fontSize: "sm" })}>
-                      {rule.domain}
+        <div
+          class={css({
+            flex: "1",
+            minHeight: 0,
+            overflowY: "auto",
+            backgroundColor: "white",
+            borderRadius: "lg",
+            borderWidth: "1px",
+            borderStyle: "solid",
+            borderColor: "gray.200",
+            boxShadow: "sm",
+          })}
+        >
+          <section class={css({ padding: { base: "4", md: "6" } })}>
+            <h2 class={headingStyle}>Domain URL Parsing Rules</h2>
+            <div class={stack({ gap: "2" })}>
+              <For each={rules()}>
+                {(rule) => (
+                  <div class={cardStyle}>
+                    <div class={stack({ gap: "1" })}>
+                      <div class={css({ fontWeight: "bold", fontSize: "sm" })}>
+                        {rule.domain}
+                      </div>
+                      <div
+                        class={css({
+                          fontSize: "xs",
+                          color: "gray.600",
+                          fontFamily: "mono",
+                        })}
+                      >
+                        {rule.pattern}
+                      </div>
                     </div>
-                    <div
-                      class={css({
-                        fontSize: "xs",
-                        color: "gray.600",
-                        fontFamily: "mono",
-                      })}
+                    <ActionButton
+                      variant="ghost"
+                      onClick={() => deleteURLParsingRule(rule.id)}
                     >
-                      {rule.pattern}
-                    </div>
+                      Delete
+                    </ActionButton>
                   </div>
-                  <ActionButton
-                    variant="ghost"
-                    onClick={() => deleteURLParsingRule(rule.id)}
-                  >
-                    Delete
-                  </ActionButton>
-                </div>
-              )}
-            </For>
-          </div>
-        </section>
+                )}
+              </For>
+            </div>
+          </section>
+        </div>
       </div>
     </PageLayout>
   );
