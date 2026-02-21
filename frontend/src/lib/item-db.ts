@@ -40,7 +40,7 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
   const sinceTimestamp = since !== "all" ? getPublishedSince(since) : undefined;
 
   return createCollection(
-    queryCollectionOptions({
+    queryCollectionOptions<Item>({
       id: "items",
       gcTime: 5 * 1000,
       queryClient,
@@ -51,7 +51,8 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
         // Clear transient removed items on any fresh fetch/refetch
         itemStore.clearTransientRemovedIds();
 
-        const existingData = queryClient.getQueryData(queryKey) || [];
+        const existingData =
+          (queryClient.getQueryData(queryKey) as Item[]) || [];
         const lastFetchedValue = lastFetched();
         const searchSince =
           lastFetchedValue === null
@@ -76,7 +77,7 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
           url: item.url,
         }));
 
-        const itemMap = new Map();
+        const itemMap = new Map<string, Item>();
         for (const item of existingData) {
           itemMap.set(item.id, item);
         }
@@ -86,7 +87,7 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
 
         return Array.from(itemMap.values());
       },
-      getKey: (item: ListItem) => item.id,
+      getKey: (item: Item) => item.id,
       onUpdate: async ({ transaction }) => {
         const ids = transaction.mutations.map((m) => {
           //NOTE: update localClientState
@@ -125,9 +126,23 @@ export const itemsUnreadQuery = createRoot(() => {
   return () => collection;
 });
 
-export const getItem = async (id: string) => {
+export const getItem = async (id: string): Promise<Item | null> => {
   const response = await itemClient.getItem({ id });
-  return response.item;
+  if (!response.item) return null;
+  return {
+    id: response.item.id,
+    title: response.item.title,
+    description: response.item.description,
+    publishedAt: response.item.publishedAt,
+    isRead: response.item.isRead,
+    createdAt: response.item.createdAt,
+    feedId: response.item.feedId,
+    url: response.item.url,
+    author: response.item.author,
+    categories: response.item.categories,
+    imageUrl: response.item.imageUrl,
+    content: response.item.content,
+  };
 };
 
 export const updateItemReadStatus = async (ids: string[], isRead: boolean) => {
