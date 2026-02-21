@@ -7,10 +7,10 @@
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Analysis & Reproduction' (Protocol in workflow.md)
 
 ## Phase 2: Implementation
-- [x] Task: Apply CSS/Structure changes to `ItemDetailModal`.
+- [x] Task: Apply CSS/Structure changes to `ItemDetailModal`. ff7c86f
     - [x] Ensure the click target size matches the rendered image size.
     - [x] Maintain existing responsive behavior (centering, scaling).
-- [ ] Task: Verify the fix works by running the reproduction test (Green Phase).
+- [x] Task: Verify the fix works by running the reproduction test (Green Phase).
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Implementation' (Protocol in workflow.md)
 
 ## Phase 3: Final Verification
