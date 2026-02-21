@@ -18,7 +18,9 @@ type MethodDef = {
     | "bidi_streaming";
 };
 
-export const parseConnectMessage = async (request: Request): Promise<JsonValue> => {
+export const parseConnectMessage = async (
+  request: Request,
+): Promise<JsonValue> => {
   if (request.method === "GET") {
     const url = new URL(request.url);
     const messageParam = url.searchParams.get("message");
@@ -66,7 +68,7 @@ export const mockConnectWeb =
       let jsonBody: JsonValue;
       try {
         jsonBody = await parseConnectMessage(request);
-      } catch (e) {
+      } catch (_e) {
         return new HttpResponse(null, { status: 400 });
       }
 

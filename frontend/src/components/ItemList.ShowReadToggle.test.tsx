@@ -32,7 +32,10 @@ describe("ItemList Show Read Toggle", () => {
   ) => {
     worker.use(
       http.all("*/item.v1.ItemService/ListItems", async ({ request }) => {
-        const body = (await parseConnectMessage(request)) as Record<string, unknown>;
+        const body = (await parseConnectMessage(request)) as Record<
+          string,
+          unknown
+        >;
         onListItems?.(body);
         return HttpResponse.json(
           toJson(
