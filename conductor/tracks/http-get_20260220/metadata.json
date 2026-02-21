@@ -1,8 +1,0 @@
-{
-  "track_id": "http-get_20260220",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-02-20T10:00:00Z",
-  "updated_at": "2026-02-20T10:00:00Z",
-  "description": "Enable HTTP GET for idempotent RPC methods in Connect-Web and mark idempotent methods in Protobuf definitions."
-}
