@@ -1,0 +1,8 @@
+{
+  "track_id": "ui-blocking-parsing-rules_20260221",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-02-21T00:00:00Z",
+  "updated_at": "2026-02-21T00:00:00Z",
+  "description": "Adjust UI for blocking and parsing rules: modal for bulk import and full-width scrollable lists."
+}
