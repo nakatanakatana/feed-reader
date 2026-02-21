@@ -22,16 +22,6 @@ function BlockingComponent() {
   const [isBulkImportOpen, setIsBulkImportOpen] = createSignal(false);
   const [showSuccessToast, setShowSuccessToast] = createSignal(false);
 
-  const sectionStyle = css({
-    backgroundColor: "white",
-    padding: { base: "4", md: "6" },
-    borderRadius: "lg",
-    borderWidth: "1px",
-    borderStyle: "solid",
-    borderColor: "gray.200",
-    boxShadow: "sm",
-  });
-
   const headingStyle = css({
     fontSize: "lg",
     fontWeight: "bold",
@@ -58,26 +48,20 @@ function BlockingComponent() {
 
   return (
     <PageLayout>
-      <div
-        class={stack({
-          gap: "8",
-          maxWidth: "4xl",
-          margin: "auto",
-          width: "full",
-          paddingY: "4",
-        })}
-      >
-        {/* Re-evaluation Trigger */}
-        <div class={flex({ justifyContent: "flex-end" })}>
-          <ActionButton
-            onClick={() => reevaluateAllItems()}
-            variant="secondary"
-          >
-            Re-evaluate All Items
-          </ActionButton>
-        </div>
+      <div class={stack({ gap: "2", flex: "1", minHeight: 0 })}>
+        <div class={stack({ gap: "4" })}>
+          {/* Re-evaluation Trigger */}
+          <div class={flex({ justifyContent: "flex-end" })}>
+            <ActionButton
+              onClick={() => reevaluateAllItems()}
+              variant="secondary"
+            >
+              Re-evaluate All Items
+            </ActionButton>
+          </div>
 
-        <AddBlockingRuleForm onBulkImport={() => setIsBulkImportOpen(true)} />
+          <AddBlockingRuleForm onBulkImport={() => setIsBulkImportOpen(true)} />
+        </div>
 
         <BulkImportBlockingRulesModal
           isOpen={isBulkImportOpen()}
@@ -109,55 +93,69 @@ function BlockingComponent() {
         </Show>
 
         {/* Existing Blocking Rules Section */}
-        <section class={sectionStyle}>
-          <h2 class={headingStyle}>Existing Blocking Rules</h2>
-          <div class={stack({ gap: "2" })}>
-            <For each={blocks()}>
-              {(block) => (
-                <div class={cardStyle}>
-                  <div class={stack({ gap: "1" })}>
-                    <div
-                      class={css({
-                        fontSize: "xs",
-                        fontWeight: "bold",
-                        color: "blue.600",
-                        textTransform: "uppercase",
-                      })}
+        <div
+          class={css({
+            flex: "1",
+            minHeight: 0,
+            overflowY: "auto",
+            backgroundColor: "white",
+            borderRadius: "lg",
+            borderWidth: "1px",
+            borderStyle: "solid",
+            borderColor: "gray.200",
+            boxShadow: "sm",
+          })}
+        >
+          <section class={css({ padding: { base: "4", md: "6" } })}>
+            <h2 class={headingStyle}>Existing Blocking Rules</h2>
+            <div class={stack({ gap: "2" })}>
+              <For each={blocks()}>
+                {(block) => (
+                  <div class={cardStyle}>
+                    <div class={stack({ gap: "1" })}>
+                      <div
+                        class={css({
+                          fontSize: "xs",
+                          fontWeight: "bold",
+                          color: "blue.600",
+                          textTransform: "uppercase",
+                        })}
+                      >
+                        {block.ruleType.replace("_", " ")}
+                      </div>
+                      <div class={css({ fontSize: "sm", color: "gray.800" })}>
+                        {block.ruleType === "user_domain" ? (
+                          <>
+                            {block.username && (
+                              <span>
+                                User: <strong>{block.username}</strong>{" "}
+                              </span>
+                            )}
+                            {block.domain && (
+                              <span>
+                                Domain: <strong>{block.domain}</strong>
+                              </span>
+                            )}
+                          </>
+                        ) : (
+                          <span>
+                            Keyword: <strong>{block.keyword}</strong>
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <ActionButton
+                      variant="ghost"
+                      onClick={() => deleteBlockingRule(block.id)}
                     >
-                      {block.ruleType.replace("_", " ")}
-                    </div>
-                    <div class={css({ fontSize: "sm", color: "gray.800" })}>
-                      {block.ruleType === "user_domain" ? (
-                        <>
-                          {block.username && (
-                            <span>
-                              User: <strong>{block.username}</strong>{" "}
-                            </span>
-                          )}
-                          {block.domain && (
-                            <span>
-                              Domain: <strong>{block.domain}</strong>
-                            </span>
-                          )}
-                        </>
-                      ) : (
-                        <span>
-                          Keyword: <strong>{block.keyword}</strong>
-                        </span>
-                      )}
-                    </div>
+                      Delete
+                    </ActionButton>
                   </div>
-                  <ActionButton
-                    variant="ghost"
-                    onClick={() => deleteBlockingRule(block.id)}
-                  >
-                    Delete
-                  </ActionButton>
-                </div>
-              )}
-            </For>
-          </div>
-        </section>
+                )}
+              </For>
+            </div>
+          </section>
+        </div>
       </div>
     </PageLayout>
   );
