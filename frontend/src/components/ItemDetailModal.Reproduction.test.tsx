@@ -81,7 +81,9 @@ describe("ItemDetailModal Reproduction", () => {
     }
 
     // Wait for next animation frame to ensure layout has been updated
-    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+    await new Promise<void>((resolve) =>
+      requestAnimationFrame(() => resolve()),
+    );
 
     const anchor = img.closest("a");
     expect(anchor).not.toBeNull();
@@ -132,7 +134,9 @@ describe("ItemDetailModal Reproduction", () => {
     }
 
     // Wait for next animation frame to ensure layout has been updated
-    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+    await new Promise<void>((resolve) =>
+      requestAnimationFrame(() => resolve()),
+    );
 
     const anchor = img.closest("a");
     expect(anchor).not.toBeNull();
