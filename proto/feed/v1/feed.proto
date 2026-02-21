@@ -3,17 +3,14 @@ syntax = "proto3";
 package feed.v1;
 
 import "tag/v1/tag.proto";
-import "google/api/annotations.proto";
 
 option go_package = "github.com/nakatanakatana/feed-reader/gen/go/feed/v1;feedv1";
 
 service FeedService {
   rpc GetFeed(GetFeedRequest) returns (GetFeedResponse) {
-    option (google.api.http).get = "/feed.v1.FeedService/GetFeed";
     option idempotency_level = NO_SIDE_EFFECTS;
   }
   rpc ListFeeds(ListFeedsRequest) returns (ListFeedsResponse) {
-    option (google.api.http).get = "/feed.v1.FeedService/ListFeeds";
     option idempotency_level = NO_SIDE_EFFECTS;
   }
   rpc CreateFeed(CreateFeedRequest) returns (CreateFeedResponse);
@@ -22,14 +19,12 @@ service FeedService {
   rpc RefreshFeeds(RefreshFeedsRequest) returns (RefreshFeedsResponse);
   rpc ImportOpml(ImportOpmlRequest) returns (ImportOpmlResponse);
   rpc ExportOpml(ExportOpmlRequest) returns (ExportOpmlResponse) {
-    option (google.api.http).get = "/feed.v1.FeedService/ExportOpml";
     option idempotency_level = NO_SIDE_EFFECTS;
   }
 
 
   // Tag management
   rpc ListFeedTags(ListFeedTagsRequest) returns (ListFeedTagsResponse) {
-    option (google.api.http).get = "/feed.v1.FeedService/ListFeedTags";
     option idempotency_level = NO_SIDE_EFFECTS;
   }
   rpc SetFeedTags(SetFeedTagsRequest) returns (SetFeedTagsResponse);

@@ -7,7 +7,6 @@
 package itemv1
 
 import (
-	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
@@ -727,7 +726,7 @@ var File_item_v1_item_proto protoreflect.FileDescriptor
 
 const file_item_v1_item_proto_rawDesc = "" +
 	"\n" +
-	"\x12item/v1/item.proto\x12\aitem.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/api/annotations.proto\"\xc3\x02\n" +
+	"\x12item/v1/item.proto\x12\aitem.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc3\x02\n" +
 	"\x04Item\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x10\n" +
 	"\x03url\x18\x02 \x01(\tR\x03url\x12\x14\n" +
@@ -794,12 +793,12 @@ const file_item_v1_item_proto_rawDesc = "" +
 	"\v_feed_titleB\x0f\n" +
 	"\r_published_at\"@\n" +
 	"\x15ListItemFeedsResponse\x12'\n" +
-	"\x05feeds\x18\x01 \x03(\v2\x11.item.v1.ItemFeedR\x05feeds2\xbb\x03\n" +
-	"\vItemService\x12e\n" +
-	"\aGetItem\x12\x17.item.v1.GetItemRequest\x1a\x18.item.v1.GetItemResponse\"'\x82\xd3\xe4\x93\x02\x1e\x12\x1c/item.v1.ItemService/GetItem\x90\x02\x01\x12m\n" +
-	"\tListItems\x12\x19.item.v1.ListItemsRequest\x1a\x1a.item.v1.ListItemsResponse\")\x82\xd3\xe4\x93\x02 \x12\x1e/item.v1.ItemService/ListItems\x90\x02\x01\x12W\n" +
-	"\x10UpdateItemStatus\x12 .item.v1.UpdateItemStatusRequest\x1a!.item.v1.UpdateItemStatusResponse\x12}\n" +
-	"\rListItemFeeds\x12\x1d.item.v1.ListItemFeedsRequest\x1a\x1e.item.v1.ListItemFeedsResponse\"-\x82\xd3\xe4\x93\x02$\x12\"/item.v1.ItemService/ListItemFeeds\x90\x02\x01B=Z;github.com/nakatanakatana/feed-reader/gen/go/item/v1;itemv1b\x06proto3"
+	"\x05feeds\x18\x01 \x03(\v2\x11.item.v1.ItemFeedR\x05feeds2\xc7\x02\n" +
+	"\vItemService\x12A\n" +
+	"\aGetItem\x12\x17.item.v1.GetItemRequest\x1a\x18.item.v1.GetItemResponse\"\x03\x90\x02\x01\x12G\n" +
+	"\tListItems\x12\x19.item.v1.ListItemsRequest\x1a\x1a.item.v1.ListItemsResponse\"\x03\x90\x02\x01\x12W\n" +
+	"\x10UpdateItemStatus\x12 .item.v1.UpdateItemStatusRequest\x1a!.item.v1.UpdateItemStatusResponse\x12S\n" +
+	"\rListItemFeeds\x12\x1d.item.v1.ListItemFeedsRequest\x1a\x1e.item.v1.ListItemFeedsResponse\"\x03\x90\x02\x01B=Z;github.com/nakatanakatana/feed-reader/gen/go/item/v1;itemv1b\x06proto3"
 
 var (
 	file_item_v1_item_proto_rawDescOnce sync.Once

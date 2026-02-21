@@ -7,7 +7,6 @@
 package tagv1
 
 import (
-	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -434,7 +433,7 @@ var File_tag_v1_tag_proto protoreflect.FileDescriptor
 
 const file_tag_v1_tag_proto_rawDesc = "" +
 	"\n" +
-	"\x10tag/v1/tag.proto\x12\x06tag.v1\x1a\x1cgoogle/api/annotations.proto\"\xa9\x01\n" +
+	"\x10tag/v1/tag.proto\x12\x06tag.v1\"\xa9\x01\n" +
 	"\x03Tag\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x1d\n" +
@@ -461,11 +460,11 @@ const file_tag_v1_tag_proto_rawDesc = "" +
 	"\x12total_unread_count\x18\x02 \x01(\x03R\x10totalUnreadCount\"\"\n" +
 	"\x10DeleteTagRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"\x13\n" +
-	"\x11DeleteTagResponse2\xf7\x01\n" +
+	"\x11DeleteTagResponse2\xd4\x01\n" +
 	"\n" +
 	"TagService\x12@\n" +
-	"\tCreateTag\x12\x18.tag.v1.CreateTagRequest\x1a\x19.tag.v1.CreateTagResponse\x12e\n" +
-	"\bListTags\x12\x17.tag.v1.ListTagsRequest\x1a\x18.tag.v1.ListTagsResponse\"&\x82\xd3\xe4\x93\x02\x1d\x12\x1b/tag.v1.TagService/ListTags\x90\x02\x01\x12@\n" +
+	"\tCreateTag\x12\x18.tag.v1.CreateTagRequest\x1a\x19.tag.v1.CreateTagResponse\x12B\n" +
+	"\bListTags\x12\x17.tag.v1.ListTagsRequest\x1a\x18.tag.v1.ListTagsResponse\"\x03\x90\x02\x01\x12@\n" +
 	"\tDeleteTag\x12\x18.tag.v1.DeleteTagRequest\x1a\x19.tag.v1.DeleteTagResponseB;Z9github.com/nakatanakatana/feed-reader/gen/go/tag/v1;tagv1b\x06proto3"
 
 var (
