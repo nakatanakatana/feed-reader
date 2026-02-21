@@ -21,7 +21,7 @@ import { itemStore } from "../lib/item-store";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
-import { parseRequest } from "../mocks/request-utils";
+import { parseConnectMessage } from "../mocks/connect";
 import { routeTree } from "../routeTree.gen";
 
 describe("ItemDetailRouteView Reactivity", () => {
@@ -44,7 +44,7 @@ describe("ItemDetailRouteView Reactivity", () => {
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),
       http.all("*/item.v1.ItemService/GetItem", async ({ request }) => {
-        const body = (await parseRequest(request)) as { id: string };
+        const body = (await parseConnectMessage(request)) as { id: string };
         const found = itemsData.find((i) => i.id === body.id);
         const msg = create(GetItemResponseSchema, {
           item: create(ItemSchema, {

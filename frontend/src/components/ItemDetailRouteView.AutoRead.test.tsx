@@ -21,7 +21,7 @@ import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
-import { parseRequest } from "../mocks/request-utils";
+import { parseConnectMessage } from "../mocks/connect";
 import { routeTree } from "../routeTree.gen";
 
 describe("ItemDetailRouteView Auto-Read", () => {
@@ -46,7 +46,7 @@ describe("ItemDetailRouteView Auto-Read", () => {
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),
       http.all("*/item.v1.ItemService/GetItem", async ({ request }) => {
-        const body = (await parseRequest(request)) as { id: string };
+        const body = (await parseConnectMessage(request)) as { id: string };
         const msg = create(GetItemResponseSchema, {
           item: create(ItemSchema, {
             id: body.id,

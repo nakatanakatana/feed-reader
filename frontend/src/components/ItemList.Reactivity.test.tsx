@@ -16,7 +16,7 @@ import { itemStore } from "../lib/item-store";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
-import { parseRequest } from "../mocks/request-utils";
+import { parseConnectMessage } from "../mocks/connect";
 import { routeTree } from "../routeTree.gen";
 
 describe("ItemList Reactivity", () => {
@@ -33,7 +33,7 @@ describe("ItemList Reactivity", () => {
   ) => {
     worker.use(
       http.all("*/item.v1.ItemService/ListItems", async ({ request }) => {
-        const body = (await parseRequest(request)) as Record<string, unknown>;
+        const body = (await parseConnectMessage(request)) as Record<string, unknown>;
         onListItems?.(body);
         return HttpResponse.json(
           toJson(

@@ -12,6 +12,7 @@ require (
 	github.com/sqldef/sqldef/v3 v3.9.8
 	golang.org/x/net v0.50.0
 	golang.org/x/sync v0.19.0
+	google.golang.org/genproto/googleapis/api v0.0.0-20260217215200-42d3e9bedb6d
 	google.golang.org/protobuf v1.36.11
 	gotest.tools/v3 v3.5.2
 	modernc.org/sqlite v1.46.1

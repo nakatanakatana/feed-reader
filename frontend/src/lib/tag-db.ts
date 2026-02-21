@@ -35,14 +35,18 @@ export const tags = createCollection(
       }));
     },
     onInsert: async ({ transaction }) => {
-      transaction.mutations.map(async (m) => {
-        await tagClient.createTag({ name: m.modified.name });
-      });
+      await Promise.all(
+        transaction.mutations.map(async (m) => {
+          await tagClient.createTag({ name: m.modified.name });
+        }),
+      );
     },
     onDelete: async ({ transaction }) => {
-      transaction.mutations.map(async (m) => {
-        await tagClient.deleteTag({ id: m.modified.id });
-      });
+      await Promise.all(
+        transaction.mutations.map(async (m) => {
+          await tagClient.deleteTag({ id: m.modified.id });
+        }),
+      );
     },
     getKey: (tag: Tag) => tag.id,
   }),
