@@ -14,11 +14,11 @@
 - [x] Task: Refactor the rule list in `blocking.tsx` to use a card-based layout instead of a table. 4cdf082
 - [x] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md) 4191b0b
 
-## Phase 3: UI Update - Parsing Rules Page
+## Phase 3: UI Update - Parsing Rules Page [checkpoint: 07cd7ee]
 - [x] Task: Create `AddParsingRuleForm` component in `frontend/src/components/AddParsingRuleForm.tsx`. 95e68b4
 - [x] Task: Update `frontend/src/routes/parsing-rules.tsx` to use the new form at the top of the page. 3d27cb9
 - [x] Task: Refactor the rule list in `parsing-rules.tsx` to use a card-based layout instead of a table. 3d27cb9
-- [~] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md) 07cd7ee
 
 ## Phase 4: Final Polish & Verification
 - [ ] Task: Run all frontend tests and ensure 100% pass rate.
