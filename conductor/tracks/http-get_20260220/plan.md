@@ -33,3 +33,6 @@ In this phase, we will add tests to ensure that the correct HTTP methods are bei
 - [x] Task: Verify that non-idempotent RPC calls continue to use the `POST` method.
 - [x] Task: Perform manual verification using browser developer tools to confirm `GET` request usage and correct parameter serialization.
 - [x] Task: Conductor - User Manual Verification 'Phase 4: Verification & Automated Testing' (Protocol in workflow.md)
+
+## Phase: Review Fixes
+- [x] Task: Apply review suggestions [6d7d787]
