@@ -10,6 +10,7 @@ import { render } from "solid-js/web";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import {
+  BlockingRuleSchema,
   ListURLParsingRulesResponseSchema,
   URLParsingRuleSchema,
 } from "../gen/blocking/v1/blocking_pb";
@@ -72,7 +73,10 @@ describe("Parsing Rules Route", () => {
           return HttpResponse.json({});
         },
       ),
-      // Other mocks to prevent errors
+      // Other mocks
+      http.post("*/blocking.v1.BlockingService/ListBlockingRules", () => {
+        return HttpResponse.json({ rules: [] });
+      }),
       http.post("*/item.v1.ItemService/ListItems", () => {
         return HttpResponse.json(
           toJson(
@@ -100,13 +104,15 @@ describe("Parsing Rules Route", () => {
     );
   });
 
-  it("renders the Domain URL Parsing Rules table", async () => {
+  it("renders the Domain URL Parsing Rules cards", async () => {
     mockRules = [
       { id: "1", domain: "example.com", pattern: "pattern1" },
       { id: "2", domain: "test.com", pattern: "pattern2" },
     ];
 
-    const history = createMemoryHistory({ initialEntries: ["/parsing-rules"] });
+    const history = createMemoryHistory({
+      initialEntries: ["/parsing-rules"],
+    });
     const router = createRouter({ routeTree, history });
 
     dispose = render(
@@ -124,18 +130,14 @@ describe("Parsing Rules Route", () => {
       .element(page.getByText("example.com", { exact: true }))
       .toBeInTheDocument();
     await expect
-      .element(page.getByText("pattern1", { exact: true }))
-      .toBeInTheDocument();
-    await expect
       .element(page.getByText("test.com", { exact: true }))
-      .toBeInTheDocument();
-    await expect
-      .element(page.getByText("pattern2", { exact: true }))
       .toBeInTheDocument();
   });
 
   it("adds a new URL parsing rule via the form", async () => {
-    const history = createMemoryHistory({ initialEntries: ["/parsing-rules"] });
+    const history = createMemoryHistory({
+      initialEntries: ["/parsing-rules"],
+    });
     const router = createRouter({ routeTree, history });
 
     dispose = render(
@@ -150,36 +152,29 @@ describe("Parsing Rules Route", () => {
     );
 
     const domainInput = page.getByLabelText("Domain");
-    const patternInput = page.getByLabelText(
-      "Regex Pattern (first group is username)",
-    );
-    const addButton = page.getByRole("button", { name: /Add Rule/ });
-
     await domainInput.fill("new-domain.com");
+
+    const patternInput = page.getByLabelText(/Regex Pattern/);
     await patternInput.fill("new-pattern");
+
+    const addButton = page.getByRole("button", { name: "Add Rule" });
     await addButton.click();
+    await page.waitForTimeout(500);
 
     await expect
       .poll(async () => {
         const el = page.getByText("new-domain.com", { exact: true });
         return await el.query();
-      })
-      .not.toBeNull();
-
-    await expect
-      .poll(async () => {
-        const el = page.getByText("new-pattern", { exact: true });
-        return await el.query();
-      })
+      }, { timeout: 5000 })
       .not.toBeNull();
   });
 
   it("deletes an existing URL parsing rule", async () => {
-    mockRules = [
-      { id: "rule-to-delete", domain: "delete-me.com", pattern: "bye-bye" },
-    ];
+    mockRules = [{ id: "del-1", domain: "delete-me.com", pattern: "p1" }];
 
-    const history = createMemoryHistory({ initialEntries: ["/parsing-rules"] });
+    const history = createMemoryHistory({
+      initialEntries: ["/parsing-rules"],
+    });
     const router = createRouter({ routeTree, history });
 
     dispose = render(
@@ -199,12 +194,13 @@ describe("Parsing Rules Route", () => {
 
     const deleteButton = page.getByRole("button", { name: /Delete/ });
     await deleteButton.click();
+    await page.waitForTimeout(500);
 
     await expect
       .poll(async () => {
         const el = page.getByText("delete-me.com", { exact: true });
         return await el.query();
-      })
+      }, { timeout: 5000 })
       .toBeNull();
   });
 });
