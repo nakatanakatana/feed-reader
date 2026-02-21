@@ -1,8 +1,0 @@
-{
-  "track_id": "fix-image-click-area_20260221",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-02-21T00:00:00Z",
-  "updated_at": "2026-02-21T00:00:00Z",
-  "description": "Adjust CSS in ItemDetailModal to prevent full-width click area for centered images"
-}
