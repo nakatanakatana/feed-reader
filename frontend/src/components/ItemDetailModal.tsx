@@ -18,7 +18,7 @@ import {
 import { useSwipe } from "../lib/use-swipe";
 import { MarkdownRenderer } from "./MarkdownRenderer";
 import { ActionButton } from "./ui/ActionButton";
-import { ExternalLinkIcon, PublishedIcon, ReceivedIcon } from "./ui/Icons";
+import { GlobeIcon, PublishedIcon, ReceivedIcon } from "./ui/Icons";
 import { Modal } from "./ui/Modal";
 
 interface ItemDetailModalProps {
@@ -488,10 +488,10 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                         class={flex({ gap: "1", alignItems: "center" })}
                         title="Source Domain"
                       >
-                        <ExternalLinkIcon />
+                        <GlobeIcon />
                         <span
                           class={css({
-                            fontSize: "xs",
+                            fontSize: "sm",
                             color: "gray.500",
                           })}
                         >
