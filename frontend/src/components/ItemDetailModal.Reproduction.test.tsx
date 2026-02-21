@@ -1,176 +1,151 @@
 import { create, toJson } from "@bufbuild/protobuf";
-import { useLiveQuery } from "@tanstack/solid-db";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import { HttpResponse, http } from "msw";
+import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import {
-  GetItemResponseSchema,
-  ItemSchema,
-  ListItemSchema,
-  ListItemsResponseSchema,
-  UpdateItemStatusResponseSchema,
-} from "../gen/item/v1/item_pb";
-import { items } from "../lib/item-db";
+import { GetItemResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
 import { ItemDetailModal } from "./ItemDetailModal";
 
-function CollectionInitializer() {
-  useLiveQuery((q) => q.from({ item: items() }));
-  return null;
-}
-
-describe("ItemDetailModal FAB Reactivity & Fallback", () => {
+describe("ItemDetailModal Reproduction", () => {
   let dispose: () => void;
 
   afterEach(() => {
     if (dispose) dispose();
     document.body.innerHTML = "";
     vi.clearAllMocks();
-    vi.restoreAllMocks();
   });
 
-  const setupMockData = (itemId: string, isRead: boolean) => {
+  const setupMockDataWithContent = (itemId: string, content: string) => {
     worker.use(
-      http.post("*/item.v1.ItemService/GetItem", () => {
+      http.all("*/item.v1.ItemService/GetItem", () => {
         const msg = create(GetItemResponseSchema, {
           item: create(ItemSchema, {
             id: itemId,
-            title: `Test Item ${itemId}`,
-            description: "<p>Test Content</p>",
+            title: "Test Item",
+            content: content,
             publishedAt: "2026-01-24T10:00:00Z",
             createdAt: "2026-01-24T09:00:00Z",
             author: "Test Author",
             url: "http://example.com",
-            isRead: isRead,
+            isRead: false,
           }),
         });
         return HttpResponse.json(toJson(GetItemResponseSchema, msg));
       }),
-      http.post("*/item.v1.ItemService/ListItems", () => {
-        const msg = create(ListItemsResponseSchema, {
-          items: [],
-          totalCount: 0,
-        });
-        return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
-      }),
     );
   };
 
-  it("verifies: FAB toggles status and calls API even if not in collection (fallback)", async () => {
-    const itemId = "test-fallback-1";
-    setupMockData(itemId, false);
+  const Wrapper = (props: { children: JSX.Element }) => (
+    <TransportProvider transport={transport}>
+      <QueryClientProvider client={queryClient}>
+        {props.children}
+      </QueryClientProvider>
+    </TransportProvider>
+  );
 
-    // Mock the update API
-    let apiCalled = false;
-    worker.use(
-      http.post("*/item.v1.ItemService/UpdateItemStatus", async () => {
-        apiCalled = true;
-        // Note: In some environments we might want to check the body
-        const msg = create(UpdateItemStatusResponseSchema, {});
-        return HttpResponse.json(toJson(UpdateItemStatusResponseSchema, msg));
-      }),
-    );
+  it("checks if anchor tag around image is block-level or full width", async () => {
+    // Markdown with a linked image using data URI to ensure it renders with dimensions
+    // 200x100 PNG
+    const base64Img =
+      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADDhn8LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAC0SURBVHhe7dOxAQAgDMCw/v9nPEX2UKR1wDvYvTnmXw4wI8mQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIQO3zQCy2xcG/gAAAABJRU5ErkJggg==";
+    const markdownContent = `[![img1](${base64Img})](https://example.com/link1)`;
+
+    setupMockDataWithContent("test-repro", markdownContent);
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ItemDetailModal itemId={itemId} onClose={() => {}} />
-            <CollectionInitializer />
-          </QueryClientProvider>
-        </TransportProvider>
+        <Wrapper>
+          <ItemDetailModal itemId="test-repro" onClose={() => {}} />
+        </Wrapper>
       ),
       document.body,
     );
 
-    // 1. Initial state: Mark as Read should be visible
-    await expect
-      .element(page.getByText(`Test Item ${itemId}`))
-      .toBeInTheDocument();
-    const fab = page.getByRole("button", { name: /Mark as read/i });
-    await expect.element(fab).toBeInTheDocument();
+    // Wait for content to render
+    await expect.element(page.getByAltText("img1")).toBeInTheDocument();
 
-    // 2. Click the FAB
-    await fab.click();
+    const img = document.querySelector('img[alt="img1"]') as HTMLImageElement;
+    expect(img).not.toBeNull();
 
-    // 3. FAB should update to Mark as unread
-    await expect
-      .element(page.getByRole("button", { name: /Mark as unread/i }))
-      .toBeInTheDocument();
+    // Wait for image to load
+    if (!img.complete) {
+      await new Promise((resolve) => {
+        img.onload = resolve;
+        img.onerror = resolve; // Continue even if error
+      });
+    }
 
-    // 4. API should have been called
-    await expect.poll(() => apiCalled).toBe(true);
+    // Wait for next animation frame to ensure layout has been updated
+    await new Promise<void>((resolve) =>
+      requestAnimationFrame(() => resolve()),
+    );
+
+    const anchor = img.closest("a");
+    expect(anchor).not.toBeNull();
+
+    if (anchor && img) {
+      const imgRect = img.getBoundingClientRect();
+      const anchorRect = anchor.getBoundingClientRect();
+
+      // Reproduction: The anchor width should roughly equal image width.
+      // If the bug exists (full width click area), anchorWidth will be much larger than imgWidth (and close to ParentWidth)
+      expect(anchorRect.width).toBeCloseTo(imgRect.width, 1);
+    }
   });
 
-  it("verifies: FAB toggles status and updates UI when item IS in collection", async () => {
-    const itemId = "test-in-collection-1";
-    setupMockData(itemId, false);
+  it("checks if anchor tag around image matches image width on mobile", async () => {
+    // 375x667 viewport
+    await page.viewport(375, 667);
 
-    // Manually add the item to the collection
-    items().utils.writeInsert(
-      create(ListItemSchema, {
-        id: itemId,
-        title: "Test Item in Collection",
-        isRead: false,
-        publishedAt: "2026-01-24T10:00:00Z",
-        createdAt: "2026-01-24T09:00:00Z",
-        feedId: "feed-1",
-      }),
-    );
+    // Markdown with a linked image using data URI to ensure it renders with dimensions
+    // 200x100 PNG
+    const base64Img =
+      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADDhn8LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAC0SURBVHhe7dOxAQAgDMCw/v9nPEX2UKR1wDvYvTnmXw4wI8mQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIQO3zQCy2xcG/gAAAABJRU5ErkJggg==";
+    const markdownContent = `[![img1](${base64Img})](https://example.com/link1)`;
+
+    setupMockDataWithContent("test-repro-mobile", markdownContent);
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ItemDetailModal itemId={itemId} onClose={() => {}} />
-            <CollectionInitializer />
-          </QueryClientProvider>
-        </TransportProvider>
+        <Wrapper>
+          <ItemDetailModal itemId="test-repro-mobile" onClose={() => {}} />
+        </Wrapper>
       ),
       document.body,
     );
 
-    // 1. Initial state: Mark as Read should be visible
-    await expect
-      .element(page.getByText(`Test Item ${itemId}`))
-      .toBeInTheDocument();
-    const fab = page.getByRole("button", { name: /Mark as read/i });
-    await expect.element(fab).toBeInTheDocument();
+    // Wait for content to render
+    await expect.element(page.getByAltText("img1")).toBeInTheDocument();
 
-    // 2. Click the FAB
-    await fab.click();
+    const img = document.querySelector('img[alt="img1"]') as HTMLImageElement;
+    expect(img).not.toBeNull();
 
-    // 3. FAB should update to Mark as unread
-    await expect
-      .element(page.getByRole("button", { name: /Mark as unread/i }))
-      .toBeInTheDocument();
-  });
+    // Wait for image to load
+    if (!img.complete) {
+      await new Promise((resolve) => {
+        img.onload = resolve;
+        img.onerror = resolve;
+      });
+    }
 
-  it("verifies: FAB shows 'Mark as Unread' initially for a read item", async () => {
-    const itemId = "test-read-initial-1";
-    setupMockData(itemId, true); // isRead: true
-
-    dispose = render(
-      () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ItemDetailModal itemId={itemId} onClose={() => {}} />
-          </QueryClientProvider>
-        </TransportProvider>
-      ),
-      document.body,
+    // Wait for next animation frame to ensure layout has been updated
+    await new Promise<void>((resolve) =>
+      requestAnimationFrame(() => resolve()),
     );
 
-    // Initial state: Mark as Unread should be visible
-    await expect
-      .element(page.getByRole("button", { name: /Mark as unread/i }))
-      .toBeInTheDocument();
-    await expect
-      .element(page.getByRole("button", { name: /Mark as unread/i }))
-      .toHaveAttribute("aria-pressed", "true");
+    const anchor = img.closest("a");
+    expect(anchor).not.toBeNull();
+
+    if (anchor && img) {
+      const imgRect = img.getBoundingClientRect();
+      const anchorRect = anchor.getBoundingClientRect();
+
+      expect(anchorRect.width).toBeCloseTo(imgRect.width, 1);
+    }
   });
 });

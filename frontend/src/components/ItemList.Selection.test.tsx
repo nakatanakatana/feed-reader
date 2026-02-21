@@ -31,14 +31,14 @@ describe("ItemList Selection", () => {
 
   const setupMockData = (items: Record<string, unknown>[] = []) => {
     worker.use(
-      http.post("*/item.v1.ItemService/ListItems", () => {
+      http.all("*/item.v1.ItemService/ListItems", () => {
         const msg = create(ListItemsResponseSchema, {
           items: items.map((i) => create(ListItemSchema, i)),
           totalCount: items.length,
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),
-      http.post("*/tag.v1.TagService/ListTags", () => {
+      http.all("*/tag.v1.TagService/ListTags", () => {
         return HttpResponse.json(
           toJson(
             ListTagsResponseSchema,
@@ -46,7 +46,7 @@ describe("ItemList Selection", () => {
           ),
         );
       }),
-      http.post("*/feed.v1.FeedService/ListFeedTags", () => {
+      http.all("*/feed.v1.FeedService/ListFeedTags", () => {
         return HttpResponse.json(
           toJson(
             ListFeedTagsResponseSchema,

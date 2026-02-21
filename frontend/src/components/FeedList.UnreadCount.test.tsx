@@ -38,7 +38,7 @@ describe("FeedList Unread Counts", () => {
 
   it("displays unread count for each feed", async () => {
     worker.use(
-      http.post("*/feed.v1.FeedService/ListFeeds", () => {
+      http.all("*/feed.v1.FeedService/ListFeeds", () => {
         const msg = create(ListFeedsResponseSchema, {
           feeds: [
             create(ListFeedSchema, {

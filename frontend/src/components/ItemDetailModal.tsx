@@ -10,11 +10,15 @@ import {
   updateItemReadStatus,
 } from "../lib/item-db";
 import { ITEM_STALE_TIME } from "../lib/item-query-constants";
-import { formatDate, normalizeCategories } from "../lib/item-utils";
+import {
+  extractHostname,
+  formatDate,
+  normalizeCategories,
+} from "../lib/item-utils";
 import { useSwipe } from "../lib/use-swipe";
 import { MarkdownRenderer } from "./MarkdownRenderer";
 import { ActionButton } from "./ui/ActionButton";
-import { PublishedIcon, ReceivedIcon } from "./ui/Icons";
+import { GlobeIcon, PublishedIcon, ReceivedIcon } from "./ui/Icons";
 import { Modal } from "./ui/Modal";
 
 interface ItemDetailModalProps {
@@ -461,11 +465,11 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
           <Show when={!isEndOfList() && item()}>
             {(itemData) => {
               const isImageInContent = () => {
-                const content =
-                  itemData().content || itemData().description || "";
-                return (
-                  itemData().imageUrl && content.includes(itemData().imageUrl)
-                );
+                const data = itemData();
+                const imageUrl = data.imageUrl;
+                if (!imageUrl) return false;
+                const content = data.content || data.description || "";
+                return content.includes(imageUrl);
               };
 
               return (
@@ -479,6 +483,15 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                       alignItems: "center",
                     })}
                   >
+                    <Show when={itemData().url}>
+                      <span
+                        class={flex({ gap: "1", alignItems: "center" })}
+                        title="Source Domain"
+                      >
+                        <GlobeIcon />
+                        <span>{extractHostname(itemData().url || "")}</span>
+                      </span>
+                    </Show>
                     <Show when={!!itemData().publishedAt}>
                       <span
                         class={flex({ gap: "1", alignItems: "center" })}
@@ -605,7 +618,15 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                   <div
                     class={css({
                       lineHeight: "relaxed",
-                      "& a": { color: "blue.600", textDecoration: "underline" },
+                      "& a": {
+                        color: "blue.600",
+                        textDecoration: "underline",
+                        "&:has(img)": {
+                          display: "inline-block",
+                          maxWidth: "full",
+                          verticalAlign: "bottom",
+                        },
+                      },
                       "& p": {
                         marginBottom: "4",
                       },

@@ -2,6 +2,7 @@ import { useLiveQuery } from "@tanstack/solid-db";
 import { createRootRoute, Link, Outlet } from "@tanstack/solid-router";
 import { css } from "../../styled-system/css";
 import { DynamicFavicon } from "../components/DynamicFavicon";
+import { PwaBadge } from "../components/PwaBadge";
 import { itemsUnreadQuery } from "../lib/item-db";
 
 export const Route = createRootRoute({
@@ -65,6 +66,7 @@ function RootComponent() {
   return (
     <>
       <DynamicFavicon unreadCount={unreadItems().length} />
+      <PwaBadge unreadCount={unreadItems().length} />
       <header class={headerStyle}>
         <nav
           class={css({

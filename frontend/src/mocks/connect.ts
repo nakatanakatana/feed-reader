@@ -18,6 +18,26 @@ type MethodDef = {
     | "bidi_streaming";
 };
 
+export const parseConnectMessage = async (
+  request: Request,
+): Promise<JsonValue> => {
+  if (request.method === "GET") {
+    const url = new URL(request.url);
+    const messageParam = url.searchParams.get("message");
+
+    if (!messageParam) {
+      return {};
+    }
+    try {
+      const decoded = atob(messageParam.replace(/-/g, "+").replace(/_/g, "/"));
+      return JSON.parse(decoded) as JsonValue;
+    } catch {
+      return JSON.parse(decodeURIComponent(messageParam)) as JsonValue;
+    }
+  }
+  return (await request.json()) as JsonValue;
+};
+
 export const mockConnectWeb =
   <T extends Record<string, MethodDef>>(service: GenService<T>) =>
   <U extends keyof T & string>(props: {
@@ -45,9 +65,12 @@ export const mockConnectWeb =
         );
       }
 
-      // Cast to any/JsonValue because msw request.json() might return unknown/DefaultBodyType
-      // and fromJson expects JsonValue.
-      const jsonBody = (await request.json()) as JsonValue;
+      let jsonBody: JsonValue;
+      try {
+        jsonBody = await parseConnectMessage(request);
+      } catch (_e) {
+        return new HttpResponse(null, { status: 400 });
+      }
 
       // Decode the JSON request into a typed Message
       const req = fromJson(methodDef.input, jsonBody);

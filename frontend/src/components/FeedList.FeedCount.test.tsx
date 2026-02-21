@@ -39,7 +39,7 @@ describe("FeedList Feed Counts", () => {
 
   it("displays feed counts for tags in filter bar", async () => {
     worker.use(
-      http.post("*/tag.v1.TagService/ListTags", () => {
+      http.all("*/tag.v1.TagService/ListTags", () => {
         const msg = create(ListTagsResponseSchema, {
           tags: [
             create(ListTagSchema, {
@@ -58,7 +58,7 @@ describe("FeedList Feed Counts", () => {
         });
         return HttpResponse.json(toJson(ListTagsResponseSchema, msg));
       }),
-      http.post("*/feed.v1.FeedService/ListFeeds", () => {
+      http.all("*/feed.v1.FeedService/ListFeeds", () => {
         const msg = create(ListFeedsResponseSchema, {
           feeds: [
             create(ListFeedSchema, {
@@ -98,7 +98,7 @@ describe("FeedList Feed Counts", () => {
 
   it("displays feed counts correctly regardless of unread counts", async () => {
     worker.use(
-      http.post("*/tag.v1.TagService/ListTags", () => {
+      http.all("*/tag.v1.TagService/ListTags", () => {
         const msg = create(ListTagsResponseSchema, {
           tags: [
             create(ListTagSchema, {

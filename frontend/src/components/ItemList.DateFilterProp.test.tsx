@@ -28,7 +28,7 @@ describe("ItemList Date Filter Prop", () => {
 
   const setupMockData = () => {
     worker.use(
-      http.post("*/item.v1.ItemService/ListItems", () => {
+      http.all("*/item.v1.ItemService/ListItems", () => {
         return HttpResponse.json(
           toJson(
             ListItemsResponseSchema,
@@ -36,7 +36,7 @@ describe("ItemList Date Filter Prop", () => {
           ),
         );
       }),
-      http.post("*/tag.v1.TagService/ListTags", () => {
+      http.all("*/tag.v1.TagService/ListTags", () => {
         return HttpResponse.json(
           toJson(
             ListTagsResponseSchema,
@@ -44,7 +44,7 @@ describe("ItemList Date Filter Prop", () => {
           ),
         );
       }),
-      http.post("*/feed.v1.FeedService/ListFeedTags", () => {
+      http.all("*/feed.v1.FeedService/ListFeedTags", () => {
         return HttpResponse.json(
           toJson(
             ListFeedTagsResponseSchema,

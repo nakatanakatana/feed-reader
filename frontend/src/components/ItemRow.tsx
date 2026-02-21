@@ -3,8 +3,8 @@ import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import type { Item } from "../lib/db";
 import { items } from "../lib/db";
-import { formatDate } from "../lib/item-utils";
-import { PublishedIcon, ReceivedIcon } from "./ui/Icons";
+import { extractHostname, formatDate } from "../lib/item-utils";
+import { GlobeIcon, PublishedIcon, ReceivedIcon } from "./ui/Icons";
 
 interface ItemRowProps {
   item: Item;
@@ -137,6 +137,15 @@ export function ItemRow(props: ItemRowProps) {
               color: "gray.500",
             })}
           >
+            <Show when={props.item.url}>
+              <span
+                class={flex({ gap: "1", alignItems: "center" })}
+                title={`Source: ${extractHostname(props.item.url || "")}`}
+              >
+                <GlobeIcon />
+                <span>{extractHostname(props.item.url || "")}</span>
+              </span>
+            </Show>
             <Show when={props.item.publishedAt}>
               {(publishedAt) => (
                 <span

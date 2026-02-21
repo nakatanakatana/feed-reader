@@ -138,7 +138,7 @@ exports[`ItemDetailModal UI Updates > falls back to CSV parsing when JSON is mal
             </div>
           </div>
           <div
-            class="lh_relaxed [&_a]:c_blue.600 [&_a]:td_underline [&_p]:mb_4 [&_p:has(img_+_img),_&_p:has(a_+_a),_&_p:has(img_+_a),_&_p:has(a_+_img)]:d_flex [&_p:has(img_+_img),_&_p:has(a_+_a),_&_p:has(img_+_a),_&_p:has(a_+_img)]:flex-wrap_wrap [&_p:has(img_+_img),_&_p:has(a_+_a),_&_p:has(img_+_a),_&_p:has(a_+_img)]:gap_2 [&_p:has(img_+_img),_&_p:has(a_+_a),_&_p:has(img_+_a),_&_p:has(a_+_img)]:ai_center [&_img]:max-w_full [&_img]:h_auto [&_img]:my_4 [&_img]:op_0 [&_img]:trs_opacity_0.2s [&_img]:max-h_10vh [&_img]:[&[data-layout]]:op_1 [&_img]:[&[data-layout='hero']]:max-h_30vh [&_img]:[&[data-layout='icon']]:max-h_5vh [&_img]:[&[data-layout='other']]:max-h_10vh [&_pre]:ov-x_auto [&_pre]:max-w_full [&_pre]:bg-c_gray.50 [&_pre]:p_4 [&_pre]:bdr_md [&_pre]:bd_1px_solid [&_pre]:bd-c_gray.200 [&_pre]:my_4 [&_code]:ff_mono [&_code]:fs_0.9em [&_code]:bg-c_gray.100 [&_code]:p_0.2em_0.4em [&_code]:bdr_sm [&_pre_code]:bg-c_transparent [&_pre_code]:p_0 [&_pre_code]:bdr_0 [&_pre_code]:fs_sm [&_a:is([href*="#gh-light-mode-only"],_[href*="%23gh-light-mode-only"])_img]:d_inline-block [&_a:is([href*="#gh-dark-mode-only"],_[href*="%23gh-dark-mode-only"])_img]:d_none [@media_(prefers-color-scheme:_dark)]:[&_a:is([href*="#gh-light-mode-only"],_[href*="%23gh-light-mode-only"])_img]:d_none! [@media_(prefers-color-scheme:_dark)]:[&_a:is([href*="#gh-dark-mode-only"],_[href*="%23gh-dark-mode-only"])_img]:d_inline-block! [@media_(prefers-color-scheme:_light)]:[&_a:is([href*="#gh-light-mode-only"],_[href*="%23gh-light-mode-only"])_img]:d_inline-block! [@media_(prefers-color-scheme:_light)]:[&_a:is([href*="#gh-dark-mode-only"],_[href*="%23gh-dark-mode-only"])_img]:d_none!"
+            class="lh_relaxed [&_a]:c_blue.600 [&_a]:td_underline [&_a]:[&:has(img)]:d_inline-block [&_a]:[&:has(img)]:max-w_full [&_a]:[&:has(img)]:va_bottom [&_p]:mb_4 [&_p:has(img_+_img),_&_p:has(a_+_a),_&_p:has(img_+_a),_&_p:has(a_+_img)]:d_flex [&_p:has(img_+_img),_&_p:has(a_+_a),_&_p:has(img_+_a),_&_p:has(a_+_img)]:flex-wrap_wrap [&_p:has(img_+_img),_&_p:has(a_+_a),_&_p:has(img_+_a),_&_p:has(a_+_img)]:gap_2 [&_p:has(img_+_img),_&_p:has(a_+_a),_&_p:has(img_+_a),_&_p:has(a_+_img)]:ai_center [&_img]:max-w_full [&_img]:h_auto [&_img]:my_4 [&_img]:op_0 [&_img]:trs_opacity_0.2s [&_img]:max-h_10vh [&_img]:[&[data-layout]]:op_1 [&_img]:[&[data-layout='hero']]:max-h_30vh [&_img]:[&[data-layout='icon']]:max-h_5vh [&_img]:[&[data-layout='other']]:max-h_10vh [&_pre]:ov-x_auto [&_pre]:max-w_full [&_pre]:bg-c_gray.50 [&_pre]:p_4 [&_pre]:bdr_md [&_pre]:bd_1px_solid [&_pre]:bd-c_gray.200 [&_pre]:my_4 [&_code]:ff_mono [&_code]:fs_0.9em [&_code]:bg-c_gray.100 [&_code]:p_0.2em_0.4em [&_code]:bdr_sm [&_pre_code]:bg-c_transparent [&_pre_code]:p_0 [&_pre_code]:bdr_0 [&_pre_code]:fs_sm [&_a:is([href*="#gh-light-mode-only"],_[href*="%23gh-light-mode-only"])_img]:d_inline-block [&_a:is([href*="#gh-dark-mode-only"],_[href*="%23gh-dark-mode-only"])_img]:d_none [@media_(prefers-color-scheme:_dark)]:[&_a:is([href*="#gh-light-mode-only"],_[href*="%23gh-light-mode-only"])_img]:d_none! [@media_(prefers-color-scheme:_dark)]:[&_a:is([href*="#gh-dark-mode-only"],_[href*="%23gh-dark-mode-only"])_img]:d_inline-block! [@media_(prefers-color-scheme:_light)]:[&_a:is([href*="#gh-light-mode-only"],_[href*="%23gh-light-mode-only"])_img]:d_inline-block! [@media_(prefers-color-scheme:_light)]:[&_a:is([href*="#gh-dark-mode-only"],_[href*="%23gh-dark-mode-only"])_img]:d_none!"
           >
             <div />
           </div>
@@ -287,7 +287,7 @@ exports[`ItemDetailModal UI Updates > renders comma-separated categories when JS
             </div>
           </div>
           <div
-            class="lh_relaxed [&_a]:c_blue.600 [&_a]:td_underline [&_p]:mb_4 [&_p:has(img_+_img),_&_p:has(a_+_a),_&_p:has(img_+_a),_&_p:has(a_+_img)]:d_flex [&_p:has(img_+_img),_&_p:has(a_+_a),_&_p:has(img_+_a),_&_p:has(a_+_img)]:flex-wrap_wrap [&_p:has(img_+_img),_&_p:has(a_+_a),_&_p:has(img_+_a),_&_p:has(a_+_img)]:gap_2 [&_p:has(img_+_img),_&_p:has(a_+_a),_&_p:has(img_+_a),_&_p:has(a_+_img)]:ai_center [&_img]:max-w_full [&_img]:h_auto [&_img]:my_4 [&_img]:op_0 [&_img]:trs_opacity_0.2s [&_img]:max-h_10vh [&_img]:[&[data-layout]]:op_1 [&_img]:[&[data-layout='hero']]:max-h_30vh [&_img]:[&[data-layout='icon']]:max-h_5vh [&_img]:[&[data-layout='other']]:max-h_10vh [&_pre]:ov-x_auto [&_pre]:max-w_full [&_pre]:bg-c_gray.50 [&_pre]:p_4 [&_pre]:bdr_md [&_pre]:bd_1px_solid [&_pre]:bd-c_gray.200 [&_pre]:my_4 [&_code]:ff_mono [&_code]:fs_0.9em [&_code]:bg-c_gray.100 [&_code]:p_0.2em_0.4em [&_code]:bdr_sm [&_pre_code]:bg-c_transparent [&_pre_code]:p_0 [&_pre_code]:bdr_0 [&_pre_code]:fs_sm [&_a:is([href*="#gh-light-mode-only"],_[href*="%23gh-light-mode-only"])_img]:d_inline-block [&_a:is([href*="#gh-dark-mode-only"],_[href*="%23gh-dark-mode-only"])_img]:d_none [@media_(prefers-color-scheme:_dark)]:[&_a:is([href*="#gh-light-mode-only"],_[href*="%23gh-light-mode-only"])_img]:d_none! [@media_(prefers-color-scheme:_dark)]:[&_a:is([href*="#gh-dark-mode-only"],_[href*="%23gh-dark-mode-only"])_img]:d_inline-block! [@media_(prefers-color-scheme:_light)]:[&_a:is([href*="#gh-light-mode-only"],_[href*="%23gh-light-mode-only"])_img]:d_inline-block! [@media_(prefers-color-scheme:_light)]:[&_a:is([href*="#gh-dark-mode-only"],_[href*="%23gh-dark-mode-only"])_img]:d_none!"
+            class="lh_relaxed [&_a]:c_blue.600 [&_a]:td_underline [&_a]:[&:has(img)]:d_inline-block [&_a]:[&:has(img)]:max-w_full [&_a]:[&:has(img)]:va_bottom [&_p]:mb_4 [&_p:has(img_+_img),_&_p:has(a_+_a),_&_p:has(img_+_a),_&_p:has(a_+_img)]:d_flex [&_p:has(img_+_img),_&_p:has(a_+_a),_&_p:has(img_+_a),_&_p:has(a_+_img)]:flex-wrap_wrap [&_p:has(img_+_img),_&_p:has(a_+_a),_&_p:has(img_+_a),_&_p:has(a_+_img)]:gap_2 [&_p:has(img_+_img),_&_p:has(a_+_a),_&_p:has(img_+_a),_&_p:has(a_+_img)]:ai_center [&_img]:max-w_full [&_img]:h_auto [&_img]:my_4 [&_img]:op_0 [&_img]:trs_opacity_0.2s [&_img]:max-h_10vh [&_img]:[&[data-layout]]:op_1 [&_img]:[&[data-layout='hero']]:max-h_30vh [&_img]:[&[data-layout='icon']]:max-h_5vh [&_img]:[&[data-layout='other']]:max-h_10vh [&_pre]:ov-x_auto [&_pre]:max-w_full [&_pre]:bg-c_gray.50 [&_pre]:p_4 [&_pre]:bdr_md [&_pre]:bd_1px_solid [&_pre]:bd-c_gray.200 [&_pre]:my_4 [&_code]:ff_mono [&_code]:fs_0.9em [&_code]:bg-c_gray.100 [&_code]:p_0.2em_0.4em [&_code]:bdr_sm [&_pre_code]:bg-c_transparent [&_pre_code]:p_0 [&_pre_code]:bdr_0 [&_pre_code]:fs_sm [&_a:is([href*="#gh-light-mode-only"],_[href*="%23gh-light-mode-only"])_img]:d_inline-block [&_a:is([href*="#gh-dark-mode-only"],_[href*="%23gh-dark-mode-only"])_img]:d_none [@media_(prefers-color-scheme:_dark)]:[&_a:is([href*="#gh-light-mode-only"],_[href*="%23gh-light-mode-only"])_img]:d_none! [@media_(prefers-color-scheme:_dark)]:[&_a:is([href*="#gh-dark-mode-only"],_[href*="%23gh-dark-mode-only"])_img]:d_inline-block! [@media_(prefers-color-scheme:_light)]:[&_a:is([href*="#gh-light-mode-only"],_[href*="%23gh-light-mode-only"])_img]:d_inline-block! [@media_(prefers-color-scheme:_light)]:[&_a:is([href*="#gh-dark-mode-only"],_[href*="%23gh-dark-mode-only"])_img]:d_none!"
           >
             <div />
           </div>
@@ -381,6 +381,41 @@ exports[`ItemDetailModal UI Updates > renders title as a link and displays conte
           >
             <span
               class="d_flex ai_center gap_1"
+              title="Source Domain"
+            >
+              <svg
+                aria-hidden="true"
+                fill="none"
+                height="14"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="14"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="10"
+                />
+                <line
+                  x1="2"
+                  x2="22"
+                  y1="12"
+                  y2="12"
+                />
+                <path
+                  d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"
+                />
+              </svg>
+              <span>
+                example.com
+              </span>
+            </span>
+            <span
+              class="d_flex ai_center gap_1"
               title="Received Date"
             >
               <span
@@ -445,7 +480,7 @@ exports[`ItemDetailModal UI Updates > renders title as a link and displays conte
             />
           </div>
           <div
-            class="lh_relaxed [&_a]:c_blue.600 [&_a]:td_underline [&_p]:mb_4 [&_p:has(img_+_img),_&_p:has(a_+_a),_&_p:has(img_+_a),_&_p:has(a_+_img)]:d_flex [&_p:has(img_+_img),_&_p:has(a_+_a),_&_p:has(img_+_a),_&_p:has(a_+_img)]:flex-wrap_wrap [&_p:has(img_+_img),_&_p:has(a_+_a),_&_p:has(img_+_a),_&_p:has(a_+_img)]:gap_2 [&_p:has(img_+_img),_&_p:has(a_+_a),_&_p:has(img_+_a),_&_p:has(a_+_img)]:ai_center [&_img]:max-w_full [&_img]:h_auto [&_img]:my_4 [&_img]:op_0 [&_img]:trs_opacity_0.2s [&_img]:max-h_10vh [&_img]:[&[data-layout]]:op_1 [&_img]:[&[data-layout='hero']]:max-h_30vh [&_img]:[&[data-layout='icon']]:max-h_5vh [&_img]:[&[data-layout='other']]:max-h_10vh [&_pre]:ov-x_auto [&_pre]:max-w_full [&_pre]:bg-c_gray.50 [&_pre]:p_4 [&_pre]:bdr_md [&_pre]:bd_1px_solid [&_pre]:bd-c_gray.200 [&_pre]:my_4 [&_code]:ff_mono [&_code]:fs_0.9em [&_code]:bg-c_gray.100 [&_code]:p_0.2em_0.4em [&_code]:bdr_sm [&_pre_code]:bg-c_transparent [&_pre_code]:p_0 [&_pre_code]:bdr_0 [&_pre_code]:fs_sm [&_a:is([href*="#gh-light-mode-only"],_[href*="%23gh-light-mode-only"])_img]:d_inline-block [&_a:is([href*="#gh-dark-mode-only"],_[href*="%23gh-dark-mode-only"])_img]:d_none [@media_(prefers-color-scheme:_dark)]:[&_a:is([href*="#gh-light-mode-only"],_[href*="%23gh-light-mode-only"])_img]:d_none! [@media_(prefers-color-scheme:_dark)]:[&_a:is([href*="#gh-dark-mode-only"],_[href*="%23gh-dark-mode-only"])_img]:d_inline-block! [@media_(prefers-color-scheme:_light)]:[&_a:is([href*="#gh-light-mode-only"],_[href*="%23gh-light-mode-only"])_img]:d_inline-block! [@media_(prefers-color-scheme:_light)]:[&_a:is([href*="#gh-dark-mode-only"],_[href*="%23gh-dark-mode-only"])_img]:d_none!"
+            class="lh_relaxed [&_a]:c_blue.600 [&_a]:td_underline [&_a]:[&:has(img)]:d_inline-block [&_a]:[&:has(img)]:max-w_full [&_a]:[&:has(img)]:va_bottom [&_p]:mb_4 [&_p:has(img_+_img),_&_p:has(a_+_a),_&_p:has(img_+_a),_&_p:has(a_+_img)]:d_flex [&_p:has(img_+_img),_&_p:has(a_+_a),_&_p:has(img_+_a),_&_p:has(a_+_img)]:flex-wrap_wrap [&_p:has(img_+_img),_&_p:has(a_+_a),_&_p:has(img_+_a),_&_p:has(a_+_img)]:gap_2 [&_p:has(img_+_img),_&_p:has(a_+_a),_&_p:has(img_+_a),_&_p:has(a_+_img)]:ai_center [&_img]:max-w_full [&_img]:h_auto [&_img]:my_4 [&_img]:op_0 [&_img]:trs_opacity_0.2s [&_img]:max-h_10vh [&_img]:[&[data-layout]]:op_1 [&_img]:[&[data-layout='hero']]:max-h_30vh [&_img]:[&[data-layout='icon']]:max-h_5vh [&_img]:[&[data-layout='other']]:max-h_10vh [&_pre]:ov-x_auto [&_pre]:max-w_full [&_pre]:bg-c_gray.50 [&_pre]:p_4 [&_pre]:bdr_md [&_pre]:bd_1px_solid [&_pre]:bd-c_gray.200 [&_pre]:my_4 [&_code]:ff_mono [&_code]:fs_0.9em [&_code]:bg-c_gray.100 [&_code]:p_0.2em_0.4em [&_code]:bdr_sm [&_pre_code]:bg-c_transparent [&_pre_code]:p_0 [&_pre_code]:bdr_0 [&_pre_code]:fs_sm [&_a:is([href*="#gh-light-mode-only"],_[href*="%23gh-light-mode-only"])_img]:d_inline-block [&_a:is([href*="#gh-dark-mode-only"],_[href*="%23gh-dark-mode-only"])_img]:d_none [@media_(prefers-color-scheme:_dark)]:[&_a:is([href*="#gh-light-mode-only"],_[href*="%23gh-light-mode-only"])_img]:d_none! [@media_(prefers-color-scheme:_dark)]:[&_a:is([href*="#gh-dark-mode-only"],_[href*="%23gh-dark-mode-only"])_img]:d_inline-block! [@media_(prefers-color-scheme:_light)]:[&_a:is([href*="#gh-light-mode-only"],_[href*="%23gh-light-mode-only"])_img]:d_inline-block! [@media_(prefers-color-scheme:_light)]:[&_a:is([href*="#gh-dark-mode-only"],_[href*="%23gh-dark-mode-only"])_img]:d_none!"
           >
             <div>
               <p>

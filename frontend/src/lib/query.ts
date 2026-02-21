@@ -3,6 +3,7 @@ import { QueryClient } from "@tanstack/solid-query";
 
 export const transport = createConnectTransport({
   baseUrl: "/api",
+  useHttpGet: true,
 });
 
 export const queryClient = new QueryClient();

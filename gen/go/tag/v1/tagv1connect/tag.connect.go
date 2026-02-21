@@ -69,6 +69,7 @@ func NewTagServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...
 			httpClient,
 			baseURL+TagServiceListTagsProcedure,
 			connect.WithSchema(tagServiceMethods.ByName("ListTags")),
+			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		deleteTag: connect.NewClient[v1.DeleteTagRequest, v1.DeleteTagResponse](
@@ -126,6 +127,7 @@ func NewTagServiceHandler(svc TagServiceHandler, opts ...connect.HandlerOption) 
 		TagServiceListTagsProcedure,
 		svc.ListTags,
 		connect.WithSchema(tagServiceMethods.ByName("ListTags")),
+		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	tagServiceDeleteTagHandler := connect.NewUnaryHandler(

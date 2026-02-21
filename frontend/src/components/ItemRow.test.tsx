@@ -139,7 +139,7 @@ describe("ItemRow", () => {
 
     let updateCalled = false;
     worker.use(
-      http.post("*/item.v1.ItemService/ListItems", () => {
+      http.all("*/item.v1.ItemService/ListItems", () => {
         return HttpResponse.json(
           toJson(
             ListItemsResponseSchema,

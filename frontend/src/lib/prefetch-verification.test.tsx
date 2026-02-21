@@ -21,7 +21,7 @@ describe("Prefetch Verification", () => {
 
     // Setup MSW to count GetItem requests
     worker.use(
-      http.post("*/item.v1.ItemService/GetItem", () => {
+      http.all("*/item.v1.ItemService/GetItem", () => {
         fetchCount++;
         const msg = create(GetItemResponseSchema, {
           item: create(ItemSchema, {
