@@ -3,7 +3,7 @@
 ## Phase 1: Blocking Rules - Modal & Actions
 Focus on moving the bulk import functionality to a modal and adding the trigger button.
 
-- [ ] Task: Create `BulkImportBlockingRulesModal` component
+- [x] Task: Create `BulkImportBlockingRulesModal` component 76819e6
     - [ ] Create failing test for modal rendering and submission logic
     - [ ] Implement the modal component using existing UI primitives
     - [ ] Verify tests pass
