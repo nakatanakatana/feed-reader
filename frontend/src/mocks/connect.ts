@@ -28,7 +28,7 @@ export const mockConnectWeb =
     const rpcName =
       props.method.charAt(0).toUpperCase() + props.method.slice(1);
 
-    return http.post(`*/${service.typeName}/${rpcName}`, async ({ request }) => {
+    return http.all(`*/${service.typeName}/${rpcName}`, async ({ request }) => {
       // biome-ignore lint/suspicious/noExplicitAny: service.methods can be array or object at runtime
       const methods = service.methods as any;
       let methodDef: MethodDef | undefined;
