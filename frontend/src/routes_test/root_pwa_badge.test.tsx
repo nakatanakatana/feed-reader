@@ -49,7 +49,7 @@ describe("Root PWA Badge Integration", () => {
 
     // 2. Mock API to return 5 unread items
     worker.use(
-      http.post("*/item.v1.ItemService/ListItems", () => {
+      http.all("*/item.v1.ItemService/ListItems", () => {
         return HttpResponse.json({
           items: Array.from({ length: 5 }, (_, i) => ({
             id: `item-${i}`,
@@ -72,7 +72,7 @@ describe("Root PWA Badge Integration", () => {
 
     // 5. Mock API to return 0 unread items
     worker.use(
-      http.post("*/item.v1.ItemService/ListItems", () => {
+      http.all("*/item.v1.ItemService/ListItems", () => {
         return HttpResponse.json({
           items: [],
           totalCount: 0,

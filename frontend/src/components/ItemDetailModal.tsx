@@ -461,11 +461,11 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
           <Show when={!isEndOfList() && item()}>
             {(itemData) => {
               const isImageInContent = () => {
-                const content =
-                  itemData().content || itemData().description || "";
-                return (
-                  itemData().imageUrl && content.includes(itemData().imageUrl)
-                );
+                const data = itemData();
+                const imageUrl = data.imageUrl;
+                if (!imageUrl) return false;
+                const content = data.content || data.description || "";
+                return content.includes(imageUrl);
               };
 
               return (

@@ -68,12 +68,14 @@ func NewItemServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			httpClient,
 			baseURL+ItemServiceGetItemProcedure,
 			connect.WithSchema(itemServiceMethods.ByName("GetItem")),
+			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		listItems: connect.NewClient[v1.ListItemsRequest, v1.ListItemsResponse](
 			httpClient,
 			baseURL+ItemServiceListItemsProcedure,
 			connect.WithSchema(itemServiceMethods.ByName("ListItems")),
+			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 		updateItemStatus: connect.NewClient[v1.UpdateItemStatusRequest, v1.UpdateItemStatusResponse](
@@ -86,6 +88,7 @@ func NewItemServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			httpClient,
 			baseURL+ItemServiceListItemFeedsProcedure,
 			connect.WithSchema(itemServiceMethods.ByName("ListItemFeeds")),
+			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -138,12 +141,14 @@ func NewItemServiceHandler(svc ItemServiceHandler, opts ...connect.HandlerOption
 		ItemServiceGetItemProcedure,
 		svc.GetItem,
 		connect.WithSchema(itemServiceMethods.ByName("GetItem")),
+		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	itemServiceListItemsHandler := connect.NewUnaryHandler(
 		ItemServiceListItemsProcedure,
 		svc.ListItems,
 		connect.WithSchema(itemServiceMethods.ByName("ListItems")),
+		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	itemServiceUpdateItemStatusHandler := connect.NewUnaryHandler(
@@ -156,6 +161,7 @@ func NewItemServiceHandler(svc ItemServiceHandler, opts ...connect.HandlerOption
 		ItemServiceListItemFeedsProcedure,
 		svc.ListItemFeeds,
 		connect.WithSchema(itemServiceMethods.ByName("ListItemFeeds")),
+		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/item.v1.ItemService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

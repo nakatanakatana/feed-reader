@@ -60,7 +60,7 @@ describe("FeedList Tag Filters", () => {
 
   it("keeps feeds visible when tag filters change", async () => {
     worker.use(
-      http.post("*/feed.v1.FeedService/ListFeeds", () => {
+      http.all("*/feed.v1.FeedService/ListFeeds", () => {
         const msg = create(ListFeedsResponseSchema, {
           feeds: [
             create(ListFeedSchema, {
@@ -79,13 +79,13 @@ describe("FeedList Tag Filters", () => {
         });
         return HttpResponse.json(toJson(ListFeedsResponseSchema, msg));
       }),
-      http.post("*/tag.v1.TagService/ListTags", () => {
+      http.all("*/tag.v1.TagService/ListTags", () => {
         const msg = create(ListTagsResponseSchema, {
           tags: [create(ListTagSchema, { id: "t1", name: "Tech" })],
         });
         return HttpResponse.json(toJson(ListTagsResponseSchema, msg));
       }),
-      http.post("*/feed.v1.FeedService/ListFeedTags", () => {
+      http.all("*/feed.v1.FeedService/ListFeedTags", () => {
         const msg = create(ListFeedTagsResponseSchema, {
           feedTags: [{ feedId: "1", tagId: "t1" }],
         });

@@ -16,6 +16,7 @@ import { itemStore } from "../lib/item-store";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
+import { parseConnectMessage } from "../mocks/connect";
 import { routeTree } from "../routeTree.gen";
 
 describe("ItemList Reactivity", () => {
@@ -31,8 +32,11 @@ describe("ItemList Reactivity", () => {
     onListItems?: (req: Record<string, unknown>) => void,
   ) => {
     worker.use(
-      http.post("*/item.v1.ItemService/ListItems", async ({ request }) => {
-        const body = (await request.json()) as Record<string, unknown>;
+      http.all("*/item.v1.ItemService/ListItems", async ({ request }) => {
+        const body = (await parseConnectMessage(request)) as Record<
+          string,
+          unknown
+        >;
         onListItems?.(body);
         return HttpResponse.json(
           toJson(
@@ -41,7 +45,7 @@ describe("ItemList Reactivity", () => {
           ),
         );
       }),
-      http.post("*/tag.v1.TagService/ListTags", () => {
+      http.all("*/tag.v1.TagService/ListTags", () => {
         return HttpResponse.json(
           toJson(
             ListTagsResponseSchema,
@@ -49,7 +53,7 @@ describe("ItemList Reactivity", () => {
           ),
         );
       }),
-      http.post("*/feed.v1.FeedService/ListFeedTags", () => {
+      http.all("*/feed.v1.FeedService/ListFeedTags", () => {
         return HttpResponse.json(
           toJson(
             ListFeedTagsResponseSchema,

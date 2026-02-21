@@ -7,18 +7,26 @@ import "tag/v1/tag.proto";
 option go_package = "github.com/nakatanakatana/feed-reader/gen/go/feed/v1;feedv1";
 
 service FeedService {
-  rpc GetFeed(GetFeedRequest) returns (GetFeedResponse);
-  rpc ListFeeds(ListFeedsRequest) returns (ListFeedsResponse);
+  rpc GetFeed(GetFeedRequest) returns (GetFeedResponse) {
+    option idempotency_level = NO_SIDE_EFFECTS;
+  }
+  rpc ListFeeds(ListFeedsRequest) returns (ListFeedsResponse) {
+    option idempotency_level = NO_SIDE_EFFECTS;
+  }
   rpc CreateFeed(CreateFeedRequest) returns (CreateFeedResponse);
   rpc UpdateFeed(UpdateFeedRequest) returns (UpdateFeedResponse);
   rpc DeleteFeed(DeleteFeedRequest) returns (DeleteFeedResponse);
   rpc RefreshFeeds(RefreshFeedsRequest) returns (RefreshFeedsResponse);
   rpc ImportOpml(ImportOpmlRequest) returns (ImportOpmlResponse);
-  rpc ExportOpml(ExportOpmlRequest) returns (ExportOpmlResponse);
+  rpc ExportOpml(ExportOpmlRequest) returns (ExportOpmlResponse) {
+    option idempotency_level = NO_SIDE_EFFECTS;
+  }
 
 
   // Tag management
-  rpc ListFeedTags(ListFeedTagsRequest) returns (ListFeedTagsResponse);
+  rpc ListFeedTags(ListFeedTagsRequest) returns (ListFeedTagsResponse) {
+    option idempotency_level = NO_SIDE_EFFECTS;
+  }
   rpc SetFeedTags(SetFeedTagsRequest) returns (SetFeedTagsResponse);
   rpc ManageFeedTags(ManageFeedTagsRequest) returns (ManageFeedTagsResponse);
 

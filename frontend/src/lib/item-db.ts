@@ -6,7 +6,10 @@ import {
   eq,
 } from "@tanstack/solid-db";
 import { createMemo, createRoot, createSignal } from "solid-js";
-import { ItemService, type ListItem } from "../gen/item/v1/item_pb";
+import {
+  ItemService,
+  type ListItem as ProtoListItem,
+} from "../gen/item/v1/item_pb";
 import { itemStore } from "./item-store";
 import {
   type DateFilterValue,
@@ -15,7 +18,7 @@ import {
 } from "./item-utils";
 import { queryClient, transport } from "./query";
 
-export interface Item {
+export interface ListItem {
   id: string;
   title: string;
   description?: string;
@@ -24,6 +27,9 @@ export interface Item {
   createdAt: string;
   feedId: string;
   url?: string;
+}
+
+export interface Item extends ListItem {
   author?: string;
   categories?: string;
   imageUrl?: string;
@@ -40,7 +46,7 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
   const sinceTimestamp = since !== "all" ? getPublishedSince(since) : undefined;
 
   return createCollection(
-    queryCollectionOptions({
+    queryCollectionOptions<ListItem>({
       id: "items",
       gcTime: 5 * 1000,
       queryClient,
@@ -51,7 +57,8 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
         // Clear transient removed items on any fresh fetch/refetch
         itemStore.clearTransientRemovedIds();
 
-        const existingData = queryClient.getQueryData(queryKey) || [];
+        const existingData =
+          (queryClient.getQueryData(queryKey) as ListItem[]) || [];
         const lastFetchedValue = lastFetched();
         const searchSince =
           lastFetchedValue === null
@@ -65,7 +72,7 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
         });
         setLastFetched(new Date());
 
-        const respList = response.items.map((item: ListItem) => ({
+        const respList = response.items.map((item: ProtoListItem) => ({
           id: item.id,
           title: item.title,
           description: item.description,
@@ -76,8 +83,15 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
           url: item.url,
         }));
 
-        // @ts-expect-error
-        return [...existingData, ...respList];
+        const itemMap = new Map<string, ListItem>();
+        for (const item of existingData) {
+          itemMap.set(item.id, item);
+        }
+        for (const item of respList) {
+          itemMap.set(item.id, item);
+        }
+
+        return Array.from(itemMap.values());
       },
       getKey: (item: ListItem) => item.id,
       onUpdate: async ({ transaction }) => {
@@ -118,9 +132,23 @@ export const itemsUnreadQuery = createRoot(() => {
   return () => collection;
 });
 
-export const getItem = async (id: string) => {
+export const getItem = async (id: string): Promise<Item | null> => {
   const response = await itemClient.getItem({ id });
-  return response.item;
+  if (!response.item) return null;
+  return {
+    id: response.item.id,
+    title: response.item.title,
+    description: response.item.description,
+    publishedAt: response.item.publishedAt,
+    isRead: response.item.isRead,
+    createdAt: response.item.createdAt,
+    feedId: response.item.feedId,
+    url: response.item.url,
+    author: response.item.author,
+    categories: response.item.categories,
+    imageUrl: response.item.imageUrl,
+    content: response.item.content,
+  };
 };
 
 export const updateItemReadStatus = async (ids: string[], isRead: boolean) => {

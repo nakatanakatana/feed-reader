@@ -35,7 +35,7 @@ describe("ItemDetailModal FAB Reactivity & Fallback", () => {
 
   const setupMockData = (itemId: string, isRead: boolean) => {
     worker.use(
-      http.post("*/item.v1.ItemService/GetItem", () => {
+      http.all("*/item.v1.ItemService/GetItem", () => {
         const msg = create(GetItemResponseSchema, {
           item: create(ItemSchema, {
             id: itemId,
@@ -50,7 +50,7 @@ describe("ItemDetailModal FAB Reactivity & Fallback", () => {
         });
         return HttpResponse.json(toJson(GetItemResponseSchema, msg));
       }),
-      http.post("*/item.v1.ItemService/ListItems", () => {
+      http.all("*/item.v1.ItemService/ListItems", () => {
         const msg = create(ListItemsResponseSchema, {
           items: [],
           totalCount: 0,

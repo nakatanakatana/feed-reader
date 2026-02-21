@@ -10,6 +10,7 @@ import { GetItemResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
+import { parseConnectMessage } from "../mocks/connect";
 import { ItemDetailModal } from "./ItemDetailModal";
 
 describe("ItemDetailModal Focus", () => {
@@ -23,7 +24,7 @@ describe("ItemDetailModal Focus", () => {
 
   const setupMockData = (itemId: string) => {
     worker.use(
-      http.post("*/item.v1.ItemService/GetItem", () => {
+      http.all("*/item.v1.ItemService/GetItem", () => {
         const msg = create(GetItemResponseSchema, {
           item: create(ItemSchema, {
             id: itemId,
@@ -142,8 +143,8 @@ describe("ItemDetailModal Focus", () => {
 
     // Setup both mocks initially to simulate "cached" availability
     worker.use(
-      http.post("*/item.v1.ItemService/GetItem", async (info) => {
-        const body = (await info.request.json()) as { id: string };
+      http.all("*/item.v1.ItemService/GetItem", async ({ request }) => {
+        const body = (await parseConnectMessage(request)) as { id: string };
         const id = body.id;
         const msg = create(GetItemResponseSchema, {
           item: create(ItemSchema, {

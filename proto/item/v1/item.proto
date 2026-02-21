@@ -7,10 +7,16 @@ import "google/protobuf/timestamp.proto";
 option go_package = "github.com/nakatanakatana/feed-reader/gen/go/item/v1;itemv1";
 
 service ItemService {
-  rpc GetItem(GetItemRequest) returns (GetItemResponse);
-  rpc ListItems(ListItemsRequest) returns (ListItemsResponse);
+  rpc GetItem(GetItemRequest) returns (GetItemResponse) {
+    option idempotency_level = NO_SIDE_EFFECTS;
+  }
+  rpc ListItems(ListItemsRequest) returns (ListItemsResponse) {
+    option idempotency_level = NO_SIDE_EFFECTS;
+  }
   rpc UpdateItemStatus(UpdateItemStatusRequest) returns (UpdateItemStatusResponse);
-  rpc ListItemFeeds(ListItemFeedsRequest) returns (ListItemFeedsResponse);
+  rpc ListItemFeeds(ListItemFeedsRequest) returns (ListItemFeedsResponse) {
+    option idempotency_level = NO_SIDE_EFFECTS;
+  }
 }
 
 message Item {
