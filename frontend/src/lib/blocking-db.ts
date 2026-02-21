@@ -66,6 +66,8 @@ export const createBlockingRule = async (params: {
       old ? [...old, newRule] : [newRule],
     );
   }
+  // Invalidate blocking rules to ensure all components refresh
+  await queryClient.invalidateQueries({ queryKey: ["blocking-rules"] });
   // Invalidate items as some might have become hidden
   await queryClient.invalidateQueries({ queryKey: ["items"] });
 };

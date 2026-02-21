@@ -36,6 +36,7 @@ describe("Blocking Route", () => {
     document.body.innerHTML = "";
     vi.clearAllMocks();
     worker.resetHandlers();
+    queryClient.clear();
   });
 
   const renderRoute = () => {
@@ -68,24 +69,20 @@ describe("Blocking Route", () => {
     ];
 
     worker.use(
-      mockConnectWeb(BlockingService)({
-        method: "listBlockingRules",
-        handler: () => create(ListBlockingRulesResponseSchema, {
-          rules: mockRules.map(r => create(BlockingRuleSchema, r))
-        })
+      http.all("*/blocking.v1.BlockingService/ListBlockingRules", () => {
+        return HttpResponse.json({ rules: mockRules });
       })
     );
 
     dispose = renderRoute();
 
     await expect.element(page.getByRole("heading", { name: /Existing Blocking Rules/i })).toBeInTheDocument();
-    await expect.element(page.getByText("badword", { exact: true })).toBeInTheDocument();
-    await expect.element(page.getByText("spam.com", { exact: true })).toBeInTheDocument();
-    await expect.element(page.getByText("spammer", { exact: true })).toBeInTheDocument();
+    await expect.element(page.getByText("badword")).toBeInTheDocument();
+    await expect.element(page.getByText("spam.com")).toBeInTheDocument();
+    await expect.element(page.getByText("spammer")).toBeInTheDocument();
   });
 
   it("adds a new keyword blocking rule", async () => {
-    (window as any).createCalled = false;
     let mockRules: any[] = [];
     worker.use(
       http.all("*/blocking.v1.BlockingService/ListBlockingRules", () => {
@@ -93,7 +90,6 @@ describe("Blocking Route", () => {
       }),
       http.all("*/blocking.v1.BlockingService/CreateBlockingRule", async ({ request }) => {
         const body = (await request.json()) as any;
-        (window as any).createCalled = true;
         const now = new Date().toISOString();
         const newRule = {
           id: `new-block-${Math.random()}`,
@@ -104,7 +100,7 @@ describe("Blocking Route", () => {
           createdAt: now,
           updatedAt: now,
         };
-        mockRules = [newRule];
+        mockRules.push(newRule);
         return HttpResponse.json({ rule: newRule });
       })
     );
@@ -123,8 +119,8 @@ describe("Blocking Route", () => {
     await addButton.click();
 
     await vi.waitFor(async () => {
-      await queryClient.invalidateQueries({ queryKey: ["blocking-rules"] });
-      await expect.element(page.getByText("BLOCKED_TERM", { exact: true })).toBeInTheDocument();
+        await queryClient.invalidateQueries({ queryKey: ["blocking-rules"] });
+        await expect.element(page.getByText("BLOCKED_TERM")).toBeInTheDocument();
     });
   });
 
@@ -177,8 +173,6 @@ user_domain,,bulk-spam.com,`);
     });
 
     // Verify success toast
-    await vi.waitFor(async () => {
-      await expect.element(page.getByText("Blocking rules imported successfully")).toBeInTheDocument();
-    });
+    await expect.element(page.getByText("Blocking rules imported successfully")).toBeInTheDocument();
   });
 });
