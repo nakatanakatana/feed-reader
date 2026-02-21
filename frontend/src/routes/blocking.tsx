@@ -69,32 +69,7 @@ function BlockingComponent() {
     const input = bulkInput().trim();
     if (!input) return;
 
-    const lines = input.split("\n");
-    const rulesToCreate = lines
-      .map((line) => {
-        const [ruleType, username, domain, keyword] = line
-          .split(",")
-          .map((s) => s.trim());
-        if (!ruleType) return null;
-
-        if (ruleType === "user_domain") {
-          if (!username && !domain) return null;
-          return {
-            ruleType,
-            username: username || undefined,
-            domain: domain || undefined,
-          };
-        }
-        if (ruleType === "keyword") {
-          if (!keyword) return null;
-          return {
-            ruleType,
-            keyword,
-          };
-        }
-        return null;
-      })
-      .filter((r): r is NonNullable<typeof r> => r !== null);
+    const rulesToCreate = parseBulkBlockingRules(input);
 
     if (rulesToCreate.length > 0) {
       await bulkCreateBlockingRules(rulesToCreate);

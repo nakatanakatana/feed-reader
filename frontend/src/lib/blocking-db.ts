@@ -116,3 +116,39 @@ export const reevaluateAllItems = async () => {
   await blockingClient.reevaluateAllItems({});
   await queryClient.invalidateQueries({ queryKey: ["items"] });
 };
+
+export interface BulkBlockingRuleInput {
+  ruleType: string;
+  username?: string;
+  domain?: string;
+  keyword?: string;
+}
+
+export function parseBulkBlockingRules(input: string): BulkBlockingRuleInput[] {
+  const lines = input.split("\n");
+  return lines
+    .map((line) => {
+      const parts = line.split(",").map((s) => s.trim());
+      if (parts.length < 1) return null;
+      const [ruleType, username, domain, keyword] = parts;
+      if (!ruleType) return null;
+
+      if (ruleType === "user_domain") {
+        if (!username && !domain) return null;
+        return {
+          ruleType,
+          username: username || undefined,
+          domain: domain || undefined,
+        };
+      }
+      if (ruleType === "keyword") {
+        if (!keyword) return null;
+        return {
+          ruleType,
+          keyword,
+        };
+      }
+      return null;
+    })
+    .filter((r): r is BulkBlockingRuleInput => r !== null);
+}
