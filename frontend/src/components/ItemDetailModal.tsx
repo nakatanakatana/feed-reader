@@ -605,7 +605,15 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                   <div
                     class={css({
                       lineHeight: "relaxed",
-                      "& a": { color: "blue.600", textDecoration: "underline" },
+                      "& a": {
+                        color: "blue.600",
+                        textDecoration: "underline",
+                        "&:has(img)": {
+                          display: "inline-block",
+                          maxWidth: "full",
+                          verticalAlign: "bottom",
+                        },
+                      },
                       "& p": {
                         marginBottom: "4",
                       },
