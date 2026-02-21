@@ -7,7 +7,7 @@ Focus on moving the bulk import functionality to a modal and adding the trigger 
     - [ ] Create failing test for modal rendering and submission logic
     - [ ] Implement the modal component using existing UI primitives
     - [ ] Verify tests pass
-- [ ] Task: Integrate Modal into `BlockingRulesPage`
+- [x] Task: Integrate Modal into `BlockingRulesPage` 27e6c12
     - [ ] Update `BlockingRulesPage` test to verify the "Bulk Import" button exists and opens the modal
     - [ ] Add "Bulk Import" button to the right of "Add Rule" button
     - [ ] Implement state logic to control modal visibility
