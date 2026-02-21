@@ -141,3 +141,13 @@ export const normalizeCategories = (categories: string): string[] => {
     .map((value) => normalizeValue(value))
     .filter((value) => value.length > 0);
 };
+
+export const extractHostname = (url: string): string => {
+  if (!url) return "";
+  try {
+    const urlObj = new URL(url);
+    return urlObj.hostname;
+  } catch (_e) {
+    return "";
+  }
+};

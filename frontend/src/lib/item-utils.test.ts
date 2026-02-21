@@ -5,9 +5,36 @@ import {
   formatUnreadCount,
   getPublishedSince,
   normalizeCategories,
+  extractHostname,
 } from "./item-utils";
 
 describe("item-utils", () => {
+  describe("extractHostname", () => {
+    it("extracts hostname from a full URL", () => {
+      expect(extractHostname("https://www.example.com/path/to/page")).toBe(
+        "www.example.com",
+      );
+    });
+
+    it("extracts hostname from a URL without path", () => {
+      expect(extractHostname("http://subdomain.domain.org")).toBe(
+        "subdomain.domain.org",
+      );
+    });
+
+    it("returns an empty string for invalid URLs", () => {
+      expect(extractHostname("not-a-url")).toBe("");
+    });
+
+    it("returns an empty string for empty input", () => {
+      expect(extractHostname("")).toBe("");
+    });
+
+    it("handles URLs with ports", () => {
+      expect(extractHostname("http://localhost:3000/api")).toBe("localhost");
+    });
+  });
+
   describe("getPublishedSince", () => {
     it("should return undefined for 'all'", () => {
       expect(getPublishedSince("all")).toBeUndefined();
