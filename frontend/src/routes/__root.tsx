@@ -66,43 +66,66 @@ function RootComponent() {
     <>
       <DynamicFavicon unreadCount={unreadItems().length} />
       <header class={headerStyle}>
-        <Link
-          to="/"
-          class={linkStyle}
-          activeProps={{
-            class: activeLinkStyle,
-          }}
-          activeOptions={{ exact: true }}
+        <nav
+          class={css({
+            display: "flex",
+            alignItems: "center",
+            gap: { base: "2", md: "6" },
+            overflowX: "auto",
+            scrollbarWidth: "none",
+            "&::-webkit-scrollbar": {
+              display: "none",
+            },
+            width: "full",
+          })}
         >
-          Home
-        </Link>
-        <Link
-          to="/feeds"
-          class={linkStyle}
-          activeProps={{
-            class: activeLinkStyle,
-          }}
-        >
-          Feeds
-        </Link>
-        <Link
-          to="/tags"
-          class={linkStyle}
-          activeProps={{
-            class: activeLinkStyle,
-          }}
-        >
-          Tags
-        </Link>
-        <Link
-          to="/blocking"
-          class={linkStyle}
-          activeProps={{
-            class: activeLinkStyle,
-          }}
-        >
-          Blocking
-        </Link>
+          <Link
+            to="/"
+            class={linkStyle}
+            activeProps={{
+              class: activeLinkStyle,
+            }}
+            activeOptions={{ exact: true }}
+          >
+            Home
+          </Link>
+          <Link
+            to="/feeds"
+            class={linkStyle}
+            activeProps={{
+              class: activeLinkStyle,
+            }}
+          >
+            Feeds
+          </Link>
+          <Link
+            to="/tags"
+            class={linkStyle}
+            activeProps={{
+              class: activeLinkStyle,
+            }}
+          >
+            Tags
+          </Link>
+          <Link
+            to="/parsing-rules"
+            class={linkStyle}
+            activeProps={{
+              class: activeLinkStyle,
+            }}
+          >
+            Parsing Rules
+          </Link>
+          <Link
+            to="/blocking"
+            class={linkStyle}
+            activeProps={{
+              class: activeLinkStyle,
+            }}
+          >
+            Blocking
+          </Link>
+        </nav>
       </header>
       <Outlet />
       {/* Start rendering router matches */}

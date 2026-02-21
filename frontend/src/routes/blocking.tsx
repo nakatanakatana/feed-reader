@@ -1,19 +1,19 @@
 import { useLiveQuery } from "@tanstack/solid-db";
 import { createFileRoute } from "@tanstack/solid-router";
-import { createSignal, For } from "solid-js";
+import { createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
+import { AddBlockingRuleForm } from "../components/AddBlockingRuleForm";
+import { BulkImportBlockingRuleForm } from "../components/BulkImportBlockingRuleForm";
 import { ActionButton } from "../components/ui/ActionButton";
 import { PageLayout } from "../components/ui/PageLayout";
 import {
   blockingRules,
-  bulkCreateBlockingRules,
-  createBlockingRule,
-  createURLParsingRule,
   deleteBlockingRule,
-  deleteURLParsingRule,
   reevaluateAllItems,
   urlParsingRules,
+  createURLParsingRule,
+  deleteURLParsingRule,
 } from "../lib/blocking-db";
 
 export const Route = createFileRoute("/blocking")({
@@ -27,13 +27,6 @@ function BlockingComponent() {
   const [domain, setDomain] = createSignal("");
   const [pattern, setPattern] = createSignal("");
 
-  const [blockType, setBlockType] = createSignal("user_domain");
-  const [blockUsername, setBlockUsername] = createSignal("");
-  const [blockDomain, setBlockDomain] = createSignal("");
-  const [blockKeyword, setBlockKeyword] = createSignal("");
-
-  const [bulkInput, setBulkInput] = createSignal("");
-
   const handleAddUrlRule = async (e: Event) => {
     e.preventDefault();
     if (!domain() || !pattern()) return;
@@ -42,44 +35,9 @@ function BlockingComponent() {
     setPattern("");
   };
 
-  const handleAddBlockingRule = async (e: Event) => {
-    e.preventDefault();
-    const type = blockType();
-    if (type === "user_domain") {
-      if (!blockUsername() && !blockDomain()) return;
-      await createBlockingRule({
-        ruleType: type,
-        username: blockUsername() || undefined,
-        domain: blockDomain() || undefined,
-      });
-    } else {
-      if (!blockKeyword()) return;
-      await createBlockingRule({
-        ruleType: type,
-        keyword: blockKeyword(),
-      });
-    }
-    setBlockUsername("");
-    setBlockDomain("");
-    setBlockKeyword("");
-  };
-
-  const handleBulkImport = async (e: Event) => {
-    e.preventDefault();
-    const input = bulkInput().trim();
-    if (!input) return;
-
-    const rulesToCreate = parseBulkBlockingRules(input);
-
-    if (rulesToCreate.length > 0) {
-      await bulkCreateBlockingRules(rulesToCreate);
-      setBulkInput("");
-    }
-  };
-
   const sectionStyle = css({
     backgroundColor: "white",
-    padding: "6",
+    padding: { base: "4", md: "6" },
     borderRadius: "lg",
     borderWidth: "1px",
     borderStyle: "solid",
@@ -94,7 +52,7 @@ function BlockingComponent() {
     color: "gray.900",
   });
 
-  const inputStyleConfig = {
+  const inputStyle = css({
     paddingX: "3",
     paddingY: "2",
     borderRadius: "md",
@@ -108,33 +66,18 @@ function BlockingComponent() {
       borderColor: "blue.500",
       boxShadow: "0 0 0 2px rgba(59, 130, 246, 0.2)",
     },
-  };
-
-  const inputStyle = css(inputStyleConfig);
-
-  const tableStyle = css({
-    width: "full",
-    borderCollapse: "collapse",
-    marginTop: "4",
-    fontSize: "sm",
   });
 
-  const thStyle = css({
-    textAlign: "left",
-    padding: "3",
-    borderBottomWidth: "1px",
-    borderBottomStyle: "solid",
-    borderBottomColor: "gray.200",
-    fontWeight: "semibold",
-    color: "gray.600",
-  });
-
-  const tdStyle = css({
-    padding: "3",
-    borderBottomWidth: "1px",
-    borderBottomStyle: "solid",
-    borderBottomColor: "gray.50",
-    color: "gray.800",
+  const cardStyle = flex({
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "4",
+    border: "1px solid",
+    borderColor: "gray.100",
+    borderRadius: "md",
+    gap: "3",
+    bg: "white",
+    _hover: { backgroundColor: "gray.50" },
   });
 
   return (
@@ -158,13 +101,17 @@ function BlockingComponent() {
           </ActionButton>
         </div>
 
+        <AddBlockingRuleForm />
+        <BulkImportBlockingRuleForm />
+
         {/* URL Parsing Rules Section */}
         <section class={sectionStyle}>
           <h2 class={headingStyle}>Domain URL Parsing Rules</h2>
           <form onSubmit={handleAddUrlRule} class={stack({ gap: "4" })}>
-            <div class={flex({ gap: "4" })}>
+            <div class={flex({ gap: "4", flexDirection: { base: "column", md: "row" } })}>
               <div class={css({ flex: "1" })}>
                 <label
+                  for="url-domain"
                   class={css({
                     display: "block",
                     fontSize: "xs",
@@ -174,17 +121,19 @@ function BlockingComponent() {
                   })}
                 >
                   Domain
-                  <input
-                    type="text"
-                    placeholder="e.g. example.com"
-                    value={domain()}
-                    onInput={(e) => setDomain(e.currentTarget.value)}
-                    class={inputStyle}
-                  />
                 </label>
+                <input
+                  id="url-domain"
+                  type="text"
+                  placeholder="e.g. example.com"
+                  value={domain()}
+                  onInput={(e) => setDomain(e.currentTarget.value)}
+                  class={inputStyle}
+                />
               </div>
               <div class={css({ flex: "2" })}>
                 <label
+                  for="url-pattern"
                   class={css({
                     display: "block",
                     fontSize: "xs",
@@ -194,213 +143,58 @@ function BlockingComponent() {
                   })}
                 >
                   Regex Pattern (first group is username)
-                  <input
-                    type="text"
-                    placeholder="^https://example\.com/users/([^/]+)"
-                    value={pattern()}
-                    onInput={(e) => setPattern(e.currentTarget.value)}
-                    class={inputStyle}
-                  />
                 </label>
+                <input
+                  id="url-pattern"
+                  type="text"
+                  placeholder="^https://example\.com/users/([^/]+)"
+                  value={pattern()}
+                  onInput={(e) => setPattern(e.currentTarget.value)}
+                  class={inputStyle}
+                />
               </div>
               <div class={css({ display: "flex", alignItems: "flex-end" })}>
                 <ActionButton type="submit" variant="primary">
-                  Add Rule
+                  Add Parsing Rule
                 </ActionButton>
               </div>
             </div>
           </form>
 
-          <table class={tableStyle}>
-            <thead>
-              <tr>
-                <th class={thStyle}>Domain</th>
-                <th class={thStyle}>Pattern</th>
-                <th class={thStyle}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <For each={rules()}>
-                {(rule) => (
-                  <tr>
-                    <td class={tdStyle}>{rule.domain}</td>
-                    <td class={tdStyle}>
-                      <code>{rule.pattern}</code>
-                    </td>
-                    <td class={tdStyle}>
-                      <ActionButton
-                        variant="ghost"
-                        onClick={() => deleteURLParsingRule(rule.id)}
-                      >
-                        Delete
-                      </ActionButton>
-                    </td>
-                  </tr>
-                )}
-              </For>
-            </tbody>
-          </table>
-        </section>
-
-        {/* Bulk Import Section */}
-        <section class={sectionStyle}>
-          <h2 class={headingStyle}>Bulk Import Blocking Rules</h2>
-          <form onSubmit={handleBulkImport} class={stack({ gap: "4" })}>
-            <div>
-              <p
-                class={css({
-                  fontSize: "xs",
-                  color: "gray.500",
-                  marginBottom: "2",
-                })}
-              >
-                Format: <code>rule_type,username,domain,keyword</code> (one per
-                line).
-                <br />
-                Example: <code>user_domain,,spam.com,</code> or{" "}
-                <code>keyword,,,badword</code>
-              </p>
-              <textarea
-                placeholder="user_domain,,spam.com,&#10;keyword,,,badword"
-                value={bulkInput()}
-                onInput={(e) => setBulkInput(e.currentTarget.value)}
-                class={css(inputStyleConfig, {
-                  minHeight: "100px",
-                  fontFamily: "mono",
-                })}
-              />
-            </div>
-            <div class={flex({ justifyContent: "flex-end" })}>
-              <ActionButton
-                type="submit"
-                variant="primary"
-                disabled={!bulkInput().trim()}
-              >
-                Import Rules
-              </ActionButton>
-            </div>
-          </form>
-        </section>
-
-        {/* Blocking Rules Section */}
-        <section class={sectionStyle}>
-          <h2 class={headingStyle}>Blocking Rules</h2>
-          <form onSubmit={handleAddBlockingRule} class={stack({ gap: "4" })}>
-            <div class={stack({ gap: "4" })}>
-              <div class={flex({ gap: "4" })}>
-                <div class={css({ flex: "1" })}>
-                  <label
-                    class={css({
-                      display: "block",
-                      fontSize: "xs",
-                      fontWeight: "bold",
-                      marginBottom: "1",
-                      color: "gray.500",
-                    })}
-                  >
-                    Rule Type
-                    <select
-                      value={blockType()}
-                      onChange={(e) => setBlockType(e.currentTarget.value)}
-                      class={inputStyle}
-                    >
-                      <option value="user_domain">User/Domain Block</option>
-                      <option value="keyword">Keyword Block</option>
-                    </select>
-                  </label>
-                </div>
-
-                {blockType() === "user_domain" ? (
-                  <>
-                    <div class={css({ flex: "1" })}>
-                      <label
-                        class={css({
-                          display: "block",
-                          fontSize: "xs",
-                          fontWeight: "bold",
-                          marginBottom: "1",
-                          color: "gray.500",
-                        })}
-                      >
-                        Username (Optional)
-                        <input
-                          type="text"
-                          placeholder="spammer"
-                          value={blockUsername()}
-                          onInput={(e) =>
-                            setBlockUsername(e.currentTarget.value)
-                          }
-                          class={inputStyle}
-                        />
-                      </label>
+          <div class={stack({ gap: "2", marginTop: "6" })}>
+            <For each={rules()}>
+              {(rule) => (
+                <div class={cardStyle}>
+                  <div class={stack({ gap: "1" })}>
+                    <div class={css({ fontWeight: "bold", fontSize: "sm" })}>{rule.domain}</div>
+                    <div class={css({ fontSize: "xs", color: "gray.600", fontFamily: "mono" })}>
+                      {rule.pattern}
                     </div>
-                    <div class={css({ flex: "1" })}>
-                      <label
-                        class={css({
-                          display: "block",
-                          fontSize: "xs",
-                          fontWeight: "bold",
-                          marginBottom: "1",
-                          color: "gray.500",
-                        })}
-                      >
-                        Domain (Optional)
-                        <input
-                          type="text"
-                          placeholder="example.com"
-                          value={blockDomain()}
-                          onInput={(e) => setBlockDomain(e.currentTarget.value)}
-                          class={inputStyle}
-                        />
-                      </label>
-                    </div>
-                  </>
-                ) : (
-                  <div class={css({ flex: "2" })}>
-                    <label
-                      class={css({
-                        display: "block",
-                        fontSize: "xs",
-                        fontWeight: "bold",
-                        marginBottom: "1",
-                        color: "gray.500",
-                      })}
-                    >
-                      Keyword
-                      <input
-                        type="text"
-                        placeholder="SPAM"
-                        value={blockKeyword()}
-                        onInput={(e) => setBlockKeyword(e.currentTarget.value)}
-                        class={inputStyle}
-                      />
-                    </label>
                   </div>
-                )}
-
-                <div class={css({ display: "flex", alignItems: "flex-end" })}>
-                  <ActionButton type="submit" variant="primary">
-                    Add Rule
+                  <ActionButton
+                    variant="ghost"
+                    onClick={() => deleteURLParsingRule(rule.id)}
+                  >
+                    Delete
                   </ActionButton>
                 </div>
-              </div>
-            </div>
-          </form>
+              )}
+            </For>
+          </div>
+        </section>
 
-          <table class={tableStyle}>
-            <thead>
-              <tr>
-                <th class={thStyle}>Type</th>
-                <th class={thStyle}>Details</th>
-                <th class={thStyle}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <For each={blocks()}>
-                {(block) => (
-                  <tr>
-                    <td class={tdStyle}>{block.ruleType}</td>
-                    <td class={tdStyle}>
+        {/* Existing Blocking Rules Section */}
+        <section class={sectionStyle}>
+          <h2 class={headingStyle}>Existing Blocking Rules</h2>
+          <div class={stack({ gap: "2" })}>
+            <For each={blocks()}>
+              {(block) => (
+                <div class={cardStyle}>
+                  <div class={stack({ gap: "1" })}>
+                    <div class={css({ fontSize: "xs", fontWeight: "bold", color: "blue.600", textTransform: "uppercase" })}>
+                      {block.ruleType.replace("_", " ")}
+                    </div>
+                    <div class={css({ fontSize: "sm", color: "gray.800" })}>
                       {block.ruleType === "user_domain" ? (
                         <>
                           {block.username && (
@@ -419,20 +213,18 @@ function BlockingComponent() {
                           Keyword: <strong>{block.keyword}</strong>
                         </span>
                       )}
-                    </td>
-                    <td class={tdStyle}>
-                      <ActionButton
-                        variant="ghost"
-                        onClick={() => deleteBlockingRule(block.id)}
-                      >
-                        Delete
-                      </ActionButton>
-                    </td>
-                  </tr>
-                )}
-              </For>
-            </tbody>
-          </table>
+                    </div>
+                  </div>
+                  <ActionButton
+                    variant="ghost"
+                    onClick={() => deleteBlockingRule(block.id)}
+                  >
+                    Delete
+                  </ActionButton>
+                </div>
+              )}
+            </For>
+          </div>
         </section>
       </div>
     </PageLayout>

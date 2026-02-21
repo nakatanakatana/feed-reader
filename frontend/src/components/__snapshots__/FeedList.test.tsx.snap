@@ -5,39 +5,51 @@ exports[`FeedList > displays a list of feeds 1`] = `
   <header
     class="px_4 py_2 d_flex ai_center bd-b-w_1px border-bottom-style_solid bd-b-c_gray.100 gap_2 md:gap_6 fs_md bg-c_white pos_sticky top_0 z_10"
   >
-    <a
-      activeoptions="[object Object]"
-      activeprops="[object Object]"
-      class="pos_relative px_2 md:px_3 py_1.5 bdr_md c_gray.500 trs_all_0.2s fw_medium fs_sm hover:bg-c_gray.50 hover:c_gray.900"
-      href="/"
-      to="/"
+    <nav
+      class="d_flex ai_center gap_2 md:gap_6 ov-x_auto scr-bar-w_none [&::-webkit-scrollbar]:d_none w_full"
     >
-      Home
-    </a>
-    <a
-      activeprops="[object Object]"
-      class="pos_relative px_2 md:px_3 py_1.5 bdr_md c_gray.500 trs_all_0.2s fw_medium fs_sm hover:bg-c_gray.50 hover:c_gray.900"
-      href="/feeds"
-      to="/feeds"
-    >
-      Feeds
-    </a>
-    <a
-      activeprops="[object Object]"
-      class="pos_relative px_2 md:px_3 py_1.5 bdr_md c_gray.500 trs_all_0.2s fw_medium fs_sm hover:bg-c_gray.50 hover:c_gray.900"
-      href="/tags"
-      to="/tags"
-    >
-      Tags
-    </a>
-    <a
-      activeprops="[object Object]"
-      class="pos_relative px_2 md:px_3 py_1.5 bdr_md c_gray.500 trs_all_0.2s fw_medium fs_sm hover:bg-c_gray.50 hover:c_gray.900"
-      href="/blocking"
-      to="/blocking"
-    >
-      Blocking
-    </a>
+      <a
+        activeoptions="[object Object]"
+        activeprops="[object Object]"
+        class="pos_relative px_2 md:px_3 py_1.5 bdr_md c_gray.500 trs_all_0.2s fw_medium fs_sm hover:bg-c_gray.50 hover:c_gray.900"
+        href="/"
+        to="/"
+      >
+        Home
+      </a>
+      <a
+        activeprops="[object Object]"
+        class="pos_relative px_2 md:px_3 py_1.5 bdr_md c_gray.500 trs_all_0.2s fw_medium fs_sm hover:bg-c_gray.50 hover:c_gray.900"
+        href="/feeds"
+        to="/feeds"
+      >
+        Feeds
+      </a>
+      <a
+        activeprops="[object Object]"
+        class="pos_relative px_2 md:px_3 py_1.5 bdr_md c_gray.500 trs_all_0.2s fw_medium fs_sm hover:bg-c_gray.50 hover:c_gray.900"
+        href="/tags"
+        to="/tags"
+      >
+        Tags
+      </a>
+      <a
+        activeprops="[object Object]"
+        class="pos_relative px_2 md:px_3 py_1.5 bdr_md c_gray.500 trs_all_0.2s fw_medium fs_sm hover:bg-c_gray.50 hover:c_gray.900"
+        href="/parsing-rules"
+        to="/parsing-rules"
+      >
+        Parsing Rules
+      </a>
+      <a
+        activeprops="[object Object]"
+        class="pos_relative px_2 md:px_3 py_1.5 bdr_md c_gray.500 trs_all_0.2s fw_medium fs_sm hover:bg-c_gray.50 hover:c_gray.900"
+        href="/blocking"
+        to="/blocking"
+      >
+        Blocking
+      </a>
+    </nav>
   </header>
   <div
     class="d_flex flex-d_column gap_2 md:gap_6 p_2 md:p_4 h_calc(100vh_-_56px) min-h_0 ov_hidden bg-c_gray.50"

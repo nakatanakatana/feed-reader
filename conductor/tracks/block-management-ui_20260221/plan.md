@@ -8,9 +8,9 @@
 - [ ] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)
 
 ## Phase 2: UI Update - Blocking Rules Page
-- [ ] Task: Create `AddBlockingRuleForm` component in `frontend/src/components/AddBlockingRuleForm.tsx` (mimicking `AddFeedForm` style).
-- [ ] Task: Create `BulkImportBlockingRuleForm` component in `frontend/src/components/BulkImportBlockingRuleForm.tsx`.
-- [ ] Task: Update `frontend/src/routes/blocking.tsx` to use the new forms at the top of the page.
+- [x] Task: Create `AddBlockingRuleForm` component in `frontend/src/components/AddBlockingRuleForm.tsx` (mimicking `AddFeedForm` style). 2dd2436
+- [x] Task: Create `BulkImportBlockingRuleForm` component in `frontend/src/components/BulkImportBlockingRuleForm.tsx`. 2dd2436
+- [~] Task: Update `frontend/src/routes/blocking.tsx` to use the new forms at the top of the page.
 - [ ] Task: Refactor the rule list in `blocking.tsx` to use a card-based layout instead of a table.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)
 

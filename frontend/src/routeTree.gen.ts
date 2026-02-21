@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TagsRouteImport } from './routes/tags'
+import { Route as ParsingRulesRouteImport } from './routes/parsing-rules'
 import { Route as FeedsRouteImport } from './routes/feeds'
 import { Route as BlockingRouteImport } from './routes/blocking'
 import { Route as ItemsRouteImport } from './routes/_items'
@@ -19,6 +20,11 @@ import { Route as ItemsItemsItemIdRouteImport } from './routes/_items.items.$ite
 const TagsRoute = TagsRouteImport.update({
   id: '/tags',
   path: '/tags',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ParsingRulesRoute = ParsingRulesRouteImport.update({
+  id: '/parsing-rules',
+  path: '/parsing-rules',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FeedsRoute = FeedsRouteImport.update({
@@ -50,12 +56,14 @@ export interface FileRoutesByFullPath {
   '/': typeof ItemsIndexRoute
   '/blocking': typeof BlockingRoute
   '/feeds': typeof FeedsRoute
+  '/parsing-rules': typeof ParsingRulesRoute
   '/tags': typeof TagsRoute
   '/items/$itemId': typeof ItemsItemsItemIdRoute
 }
 export interface FileRoutesByTo {
   '/blocking': typeof BlockingRoute
   '/feeds': typeof FeedsRoute
+  '/parsing-rules': typeof ParsingRulesRoute
   '/tags': typeof TagsRoute
   '/': typeof ItemsIndexRoute
   '/items/$itemId': typeof ItemsItemsItemIdRoute
@@ -65,20 +73,34 @@ export interface FileRoutesById {
   '/_items': typeof ItemsRouteWithChildren
   '/blocking': typeof BlockingRoute
   '/feeds': typeof FeedsRoute
+  '/parsing-rules': typeof ParsingRulesRoute
   '/tags': typeof TagsRoute
   '/_items/': typeof ItemsIndexRoute
   '/_items/items/$itemId': typeof ItemsItemsItemIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/blocking' | '/feeds' | '/tags' | '/items/$itemId'
+  fullPaths:
+    | '/'
+    | '/blocking'
+    | '/feeds'
+    | '/parsing-rules'
+    | '/tags'
+    | '/items/$itemId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/blocking' | '/feeds' | '/tags' | '/' | '/items/$itemId'
+  to:
+    | '/blocking'
+    | '/feeds'
+    | '/parsing-rules'
+    | '/tags'
+    | '/'
+    | '/items/$itemId'
   id:
     | '__root__'
     | '/_items'
     | '/blocking'
     | '/feeds'
+    | '/parsing-rules'
     | '/tags'
     | '/_items/'
     | '/_items/items/$itemId'
@@ -88,6 +110,7 @@ export interface RootRouteChildren {
   ItemsRoute: typeof ItemsRouteWithChildren
   BlockingRoute: typeof BlockingRoute
   FeedsRoute: typeof FeedsRoute
+  ParsingRulesRoute: typeof ParsingRulesRoute
   TagsRoute: typeof TagsRoute
 }
 
@@ -98,6 +121,13 @@ declare module '@tanstack/solid-router' {
       path: '/tags'
       fullPath: '/tags'
       preLoaderRoute: typeof TagsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/parsing-rules': {
+      id: '/parsing-rules'
+      path: '/parsing-rules'
+      fullPath: '/parsing-rules'
+      preLoaderRoute: typeof ParsingRulesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/feeds': {
@@ -154,6 +184,7 @@ const rootRouteChildren: RootRouteChildren = {
   ItemsRoute: ItemsRouteWithChildren,
   BlockingRoute: BlockingRoute,
   FeedsRoute: FeedsRoute,
+  ParsingRulesRoute: ParsingRulesRoute,
   TagsRoute: TagsRoute,
 }
 export const routeTree = rootRouteImport
