@@ -20,7 +20,7 @@
 - [x] Task: Refactor the rule list in `parsing-rules.tsx` to use a card-based layout instead of a table. 3d27cb9
 - [x] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md) 07cd7ee
 
-## Phase 4: Final Polish & Verification
-- [ ] Task: Run all frontend tests and ensure 100% pass rate.
-- [ ] Task: Perform manual verification of mobile responsiveness for the new layouts.
-- [ ] Task: Conductor - User Manual Verification 'Phase 4' (Protocol in workflow.md)
+## Phase 4: Final Polish & Verification [checkpoint: b64c53d]
+- [x] Task: Run all frontend tests and ensure 100% pass rate. 606e21a
+- [x] Task: Perform manual verification of mobile responsiveness for the new layouts. b64c53d
+- [x] Task: Conductor - User Manual Verification 'Phase 4' (Protocol in workflow.md) b64c53d
