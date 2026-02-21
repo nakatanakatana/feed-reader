@@ -80,8 +80,8 @@ describe("ItemDetailModal Reproduction", () => {
       });
     }
 
-    // Small delay for layout
-    await new Promise((r) => setTimeout(r, 100));
+    // Wait for next animation frame to ensure layout has been updated
+    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
 
     const anchor = img.closest("a");
     expect(anchor).not.toBeNull();
@@ -89,14 +89,6 @@ describe("ItemDetailModal Reproduction", () => {
     if (anchor && img) {
       const imgRect = img.getBoundingClientRect();
       const anchorRect = anchor.getBoundingClientRect();
-      const computedStyle = window.getComputedStyle(anchor);
-      const parentRect = anchor.parentElement?.getBoundingClientRect();
-
-      console.log("Image Width (Desktop):", imgRect.width);
-      console.log("Anchor Width (Desktop):", anchorRect.width);
-      console.log("Parent Width (Desktop):", parentRect?.width);
-      console.log("Anchor Display:", computedStyle.display);
-      console.log("Image Display:", window.getComputedStyle(img).display);
 
       // Reproduction: The anchor width should roughly equal image width.
       // If the bug exists (full width click area), anchorWidth will be much larger than imgWidth (and close to ParentWidth)
@@ -139,8 +131,8 @@ describe("ItemDetailModal Reproduction", () => {
       });
     }
 
-    // Small delay for layout
-    await new Promise((r) => setTimeout(r, 100));
+    // Wait for next animation frame to ensure layout has been updated
+    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
 
     const anchor = img.closest("a");
     expect(anchor).not.toBeNull();
@@ -148,11 +140,6 @@ describe("ItemDetailModal Reproduction", () => {
     if (anchor && img) {
       const imgRect = img.getBoundingClientRect();
       const anchorRect = anchor.getBoundingClientRect();
-      const parentRect = anchor.parentElement?.getBoundingClientRect();
-
-      console.log("Image Width (Mobile):", imgRect.width);
-      console.log("Anchor Width (Mobile):", anchorRect.width);
-      console.log("Parent Width (Mobile):", parentRect?.width);
 
       expect(anchorRect.width).toBeCloseTo(imgRect.width, 1);
     }
