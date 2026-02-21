@@ -23,7 +23,7 @@ Focus on updating the list layout for both Blocking and Parsing rules to match t
     - [ ] Implement full-width container for the list
     - [ ] Apply CSS/Styling for independent scrolling of the list area
     - [ ] Verify tests pass
-- [ ] Task: Refactor `ParsingRulesPage` Layout
+- [x] Task: Refactor `ParsingRulesPage` Layout a2734a5
     - [ ] Update tests to verify layout structure
     - [ ] Implement full-width container for the parsing rules list
     - [ ] Apply CSS/Styling for independent scrolling
