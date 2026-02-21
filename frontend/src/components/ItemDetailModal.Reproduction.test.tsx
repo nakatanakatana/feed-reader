@@ -95,6 +95,7 @@ describe("ItemDetailModal Reproduction", () => {
         console.log("Anchor Width:", anchorRect.width);
         console.log("Parent Width:", parentRect?.width);
         console.log("Anchor Display:", computedStyle.display);
+        console.log("Image Display:", window.getComputedStyle(img).display);
 
         // Reproduction: The anchor width should roughly equal image width.
         // If the bug exists (full width click area), anchorWidth will be much larger than imgWidth (and close to ParentWidth)
