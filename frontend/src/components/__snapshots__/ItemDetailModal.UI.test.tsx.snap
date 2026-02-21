@@ -410,9 +410,7 @@ exports[`ItemDetailModal UI Updates > renders title as a link and displays conte
                   d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"
                 />
               </svg>
-              <span
-                class="fs_sm c_gray.500"
-              >
+              <span>
                 example.com
               </span>
             </span>

@@ -489,12 +489,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                         title="Source Domain"
                       >
                         <GlobeIcon />
-                        <span
-                          class={css({
-                            fontSize: "sm",
-                            color: "gray.500",
-                          })}
-                        >
+                        <span>
                           {extractHostname(itemData().url || "")}
                         </span>
                       </span>
