@@ -19,6 +19,7 @@ The primary target audience is individuals and organizations seeking control ove
 - **Full-Stack Application:** Includes both a backend API and a web frontend.
 
 - **Progressive Web App (PWA):** Fully installable on mobile and desktop devices. Features automatic background updates and a standalone display mode for a native-like app experience.
+  - **Badging API Support:** Displays the total unread count directly on the application icon when installed as a PWA, providing immediate visual feedback without opening the app. The badge updates in real-time as articles are marked as read or unread and is cleared when all items are caught up.
 
 - **Single Binary Distribution:** Both the backend API and the frontend Web UI are bundled into a single executable for simplified deployment and distribution.
 
