@@ -5,7 +5,7 @@
 - [x] Task: Analyze the existing metadata display in `ItemDetailModal` and its subcomponents.
 - [x] Task: Identify where to place the new domain extraction utility.
 
-## Phase 2: Domain Extraction Utility
+## Phase 2: Domain Extraction Utility [checkpoint: 351c5cb]
 - [x] Task: Write tests for the domain extraction utility function (`extractHostname`).
 - [x] Task: Implement the `extractHostname` utility function to return the full hostname from a URL. 44c876d
 - [x] Task: Conductor - User Manual Verification 'Domain Extraction Utility' (Protocol in workflow.md)
