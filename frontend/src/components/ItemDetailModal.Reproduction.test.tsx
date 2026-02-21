@@ -51,7 +51,8 @@ describe("ItemDetailModal Reproduction", () => {
   it("checks if anchor tag around image is block-level or full width", async () => {
     // Markdown with a linked image using data URI to ensure it renders with dimensions
     // 200x100 PNG
-    const base64Img = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADDhn8LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAC0SURBVHhe7dOxAQAgDMCw/v9nPEX2UKR1wDvYvTnmXw4wI8mQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIQO3zQCy2xcG/gAAAABJRU5ErkJggg==";
+    const base64Img =
+      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADDhn8LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAC0SURBVHhe7dOxAQAgDMCw/v9nPEX2UKR1wDvYvTnmXw4wI8mQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIQO3zQCy2xcG/gAAAABJRU5ErkJggg==";
     const markdownContent = `[![img1](${base64Img})](https://example.com/link1)`;
 
     setupMockDataWithContent("test-repro", markdownContent);
@@ -70,36 +71,36 @@ describe("ItemDetailModal Reproduction", () => {
 
     const img = document.querySelector('img[alt="img1"]') as HTMLImageElement;
     expect(img).not.toBeNull();
-    
+
     // Wait for image to load
     if (!img.complete) {
-        await new Promise((resolve) => {
-            img.onload = resolve;
-            img.onerror = resolve; // Continue even if error
-        });
+      await new Promise((resolve) => {
+        img.onload = resolve;
+        img.onerror = resolve; // Continue even if error
+      });
     }
 
     // Small delay for layout
-    await new Promise(r => setTimeout(r, 100));
+    await new Promise((r) => setTimeout(r, 100));
 
     const anchor = img.closest("a");
     expect(anchor).not.toBeNull();
 
     if (anchor && img) {
-        const imgRect = img.getBoundingClientRect();
-        const anchorRect = anchor.getBoundingClientRect();
-        const computedStyle = window.getComputedStyle(anchor);
-        const parentRect = anchor.parentElement?.getBoundingClientRect();
+      const imgRect = img.getBoundingClientRect();
+      const anchorRect = anchor.getBoundingClientRect();
+      const computedStyle = window.getComputedStyle(anchor);
+      const parentRect = anchor.parentElement?.getBoundingClientRect();
 
-        console.log("Image Width (Desktop):", imgRect.width);
-        console.log("Anchor Width (Desktop):", anchorRect.width);
-        console.log("Parent Width (Desktop):", parentRect?.width);
-        console.log("Anchor Display:", computedStyle.display);
-        console.log("Image Display:", window.getComputedStyle(img).display);
+      console.log("Image Width (Desktop):", imgRect.width);
+      console.log("Anchor Width (Desktop):", anchorRect.width);
+      console.log("Parent Width (Desktop):", parentRect?.width);
+      console.log("Anchor Display:", computedStyle.display);
+      console.log("Image Display:", window.getComputedStyle(img).display);
 
-        // Reproduction: The anchor width should roughly equal image width.
-        // If the bug exists (full width click area), anchorWidth will be much larger than imgWidth (and close to ParentWidth)
-        expect(anchorRect.width).toBeCloseTo(imgRect.width, 1);
+      // Reproduction: The anchor width should roughly equal image width.
+      // If the bug exists (full width click area), anchorWidth will be much larger than imgWidth (and close to ParentWidth)
+      expect(anchorRect.width).toBeCloseTo(imgRect.width, 1);
     }
   });
 
@@ -109,7 +110,8 @@ describe("ItemDetailModal Reproduction", () => {
 
     // Markdown with a linked image using data URI to ensure it renders with dimensions
     // 200x100 PNG
-    const base64Img = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADDhn8LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAC0SURBVHhe7dOxAQAgDMCw/v9nPEX2UKR1wDvYvTnmXw4wI8mQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIQO3zQCy2xcG/gAAAABJRU5ErkJggg==";
+    const base64Img =
+      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADDhn8LAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAC0SURBVHhe7dOxAQAgDMCw/v9nPEX2UKR1wDvYvTnmXw4wI8mQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIcmQZEgyJBmSDEmGJEOSIQO3zQCy2xcG/gAAAABJRU5ErkJggg==";
     const markdownContent = `[![img1](${base64Img})](https://example.com/link1)`;
 
     setupMockDataWithContent("test-repro-mobile", markdownContent);
@@ -128,31 +130,31 @@ describe("ItemDetailModal Reproduction", () => {
 
     const img = document.querySelector('img[alt="img1"]') as HTMLImageElement;
     expect(img).not.toBeNull();
-    
+
     // Wait for image to load
     if (!img.complete) {
-        await new Promise((resolve) => {
-            img.onload = resolve;
-            img.onerror = resolve;
-        });
+      await new Promise((resolve) => {
+        img.onload = resolve;
+        img.onerror = resolve;
+      });
     }
 
     // Small delay for layout
-    await new Promise(r => setTimeout(r, 100));
+    await new Promise((r) => setTimeout(r, 100));
 
     const anchor = img.closest("a");
     expect(anchor).not.toBeNull();
 
     if (anchor && img) {
-        const imgRect = img.getBoundingClientRect();
-        const anchorRect = anchor.getBoundingClientRect();
-        const parentRect = anchor.parentElement?.getBoundingClientRect();
+      const imgRect = img.getBoundingClientRect();
+      const anchorRect = anchor.getBoundingClientRect();
+      const parentRect = anchor.parentElement?.getBoundingClientRect();
 
-        console.log("Image Width (Mobile):", imgRect.width);
-        console.log("Anchor Width (Mobile):", anchorRect.width);
-        console.log("Parent Width (Mobile):", parentRect?.width);
+      console.log("Image Width (Mobile):", imgRect.width);
+      console.log("Anchor Width (Mobile):", anchorRect.width);
+      console.log("Parent Width (Mobile):", parentRect?.width);
 
-        expect(anchorRect.width).toBeCloseTo(imgRect.width, 1);
+      expect(anchorRect.width).toBeCloseTo(imgRect.width, 1);
     }
   });
 });
