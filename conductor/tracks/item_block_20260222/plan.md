@@ -3,7 +3,7 @@
 **Phase 1: URL Parsing Rules**
 - [x] Task: Create migration and table for `url_parsing_rules`. 34e6eda
 - [x] Task: Update `sql/query.sql` and run `sqlc generate` for `url_parsing_rules` CRUD. f1f0121
-- [ ] Task: Add `AddURLParsingRule`, `DeleteURLParsingRule`, and `ListURLParsingRules` RPCs to `item.proto`.
+- [x] Task: Add `AddURLParsingRule`, `DeleteURLParsingRule`, and `ListURLParsingRules` RPCs to `item.proto`. b97cde3
 - [ ] Task: Write TDD tests for `url_parsing_rules` repository logic.
 - [ ] Task: Implement repository logic for `url_parsing_rules`.
 - [ ] Task: Implement service-level handlers for URL parsing rules.
