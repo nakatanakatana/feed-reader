@@ -16,7 +16,7 @@
 - [x] Task: Add `AddItemBlockRules`, `DeleteItemBlockRule`, and `ListItemBlockRules` RPCs to `item.proto`. b9e4b5c
 - [x] Task: Write TDD tests for `item_block_rules` repository logic. 213ca67
 - [x] Task: Implement repository logic for `item_block_rules` (including bulk insertion). 213ca67
-- [ ] Task: Implement service-level handlers for item block rules.
+- [x] Task: Implement service-level handlers for item block rules. 8a6e074
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Item Block Rules Management' (Protocol in workflow.md)
 
 **Phase 3: Item Filtering (Block) Integration and Hooks**
