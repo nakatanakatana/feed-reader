@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -201,6 +202,87 @@ func (s *Store) SaveFetchedItem(ctx context.Context, params SaveFetchedItemParam
 			return fmt.Errorf("failed to initialize read status: %w", err)
 		}
 
+		// 4. Check for blocking rules
+		// We fetch rules inside the transaction for consistency, 
+		// but for performance with many items we might want to cache these outside.
+		blockRules, err := qtx.ListItemBlockRules(ctx)
+		if err != nil {
+			return fmt.Errorf("failed to list block rules: %w", err)
+		}
+
+		if len(blockRules) > 0 {
+			urlRules, err := qtx.ListURLParsingRules(ctx)
+			if err != nil {
+				return fmt.Errorf("failed to list url parsing rules: %w", err)
+			}
+
+			// We need a way to use URLParser here. 
+			// Since URLParser is in 'main' package, we can't use it directly in 'store'.
+			// We'll implement a simple one or move it. 
+			// Given the current structure, let's implement extraction here or move URLParser to a shared package.
+			// I'll move URLParser logic to a shared internal logic or redefine it here.
+			// Actually, let's just use a simple extraction logic for now or move it to store.
+			
+			extractedUser, extractedDomain := extractUserInfoLocally(item.Url, urlRules)
+			
+			fullItem := FullItem{
+				ID:      item.ID,
+				Url:     item.Url,
+				Title:   item.Title,
+				Content: item.Content,
+			}
+
+			for _, rule := range blockRules {
+				if ShouldBlockItem(fullItem, rule, extractedUser, extractedDomain) {
+					err := qtx.CreateItemBlock(ctx, CreateItemBlockParams{
+						ItemID: item.ID,
+						RuleID: rule.ID,
+					})
+					if err != nil {
+						return fmt.Errorf("failed to create item block: %w", err)
+					}
+				}
+			}
+		}
+
 		return nil
 	})
+}
+
+func extractUserInfoLocally(urlStr string, rules []UrlParsingRule) (*string, *string) {
+	for _, rule := range rules {
+		if rule.RuleType == "subdomain" {
+			domainPart := getDomainFromURLLocally(urlStr)
+			if strings.HasSuffix(domainPart, "."+rule.Pattern) {
+				user := strings.TrimSuffix(domainPart, "."+rule.Pattern)
+				if user != "" && !strings.Contains(user, ".") {
+					return &user, &rule.Pattern
+				}
+			}
+		} else if rule.RuleType == "path" {
+			if strings.Contains(urlStr, "://"+rule.Pattern+"/") {
+				parts := strings.Split(urlStr, "://"+rule.Pattern+"/")
+				if len(parts) > 1 {
+					userPart := parts[1]
+					user := strings.Split(userPart, "/")[0]
+					if user != "" {
+						domain := strings.Split(rule.Pattern, "/")[0]
+						return &user, &domain
+					}
+				}
+			}
+		}
+	}
+	return nil, nil
+}
+
+func getDomainFromURLLocally(urlStr string) string {
+	parts := strings.Split(urlStr, "://")
+	if len(parts) < 2 {
+		return ""
+	}
+	remaining := parts[1]
+	domain := strings.Split(remaining, "/")[0]
+	domain = strings.Split(domain, ":")[0]
+	return domain
 }

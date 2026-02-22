@@ -98,6 +98,72 @@ func TestStore_SaveFetchedItem(t *testing.T) {
 		assert.Equal(t, readCount, 1)
 	})
 
+	t.Run("Blocked Item (Keyword)", func(t *testing.T) {
+		// Setup block rule
+		ruleID := uuid.NewString()
+		_, err := s.CreateItemBlockRule(ctx, store.CreateItemBlockRuleParams{
+			ID:        ruleID,
+			RuleType:  "keyword",
+			RuleValue: "spam",
+		})
+		assert.NilError(t, err)
+
+		blockedURL := "http://example.com/spam-article"
+		blockedTitle := "This is a spam article"
+		err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
+			FeedID: feedID,
+			Url:    blockedURL,
+			Title:  &blockedTitle,
+		})
+		assert.NilError(t, err)
+
+		// Verify ItemBlock exists
+		var blockedItemID string
+		err = s.DB.QueryRow("SELECT id FROM items WHERE url = ?", blockedURL).Scan(&blockedItemID)
+		assert.NilError(t, err)
+
+		var blockCount int
+		err = s.DB.QueryRow("SELECT count(*) FROM item_blocks WHERE item_id = ? AND rule_id = ?", blockedItemID, ruleID).Scan(&blockCount)
+		assert.NilError(t, err)
+		assert.Equal(t, blockCount, 1)
+	})
+
+	t.Run("Blocked Item (User Subdomain)", func(t *testing.T) {
+		// Setup URL parsing rule
+		_, _ = s.CreateURLParsingRule(ctx, store.CreateURLParsingRuleParams{
+			ID:       "u1",
+			Domain:   "example.com",
+			RuleType: "subdomain",
+			Pattern:  "example.com",
+		})
+
+		// Setup block rule
+		ruleID := uuid.NewString()
+		_, err := s.CreateItemBlockRule(ctx, store.CreateItemBlockRuleParams{
+			ID:        ruleID,
+			RuleType:  "user",
+			RuleValue: "baduser",
+		})
+		assert.NilError(t, err)
+
+		blockedURL := "https://baduser.example.com/post"
+		err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
+			FeedID: feedID,
+			Url:    blockedURL,
+		})
+		assert.NilError(t, err)
+
+		// Verify ItemBlock exists
+		var blockedItemID string
+		err = s.DB.QueryRow("SELECT id FROM items WHERE url = ?", blockedURL).Scan(&blockedItemID)
+		assert.NilError(t, err)
+
+		var blockCount int
+		err = s.DB.QueryRow("SELECT count(*) FROM item_blocks WHERE item_id = ? AND rule_id = ?", blockedItemID, ruleID).Scan(&blockCount)
+		assert.NilError(t, err)
+		assert.Equal(t, blockCount, 1)
+	})
+
 	// 4. Second Save (Idempotent)
 	t.Run("Second Save (Idempotent)", func(t *testing.T) {
 		newTitle := "Article 1 Updated"
