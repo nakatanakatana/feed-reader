@@ -14,8 +14,8 @@
 - [x] Task: Create table for `item_blocks` (blocked item associations). 5503bf6
 - [x] Task: Update `sql/query.sql` and run `sqlc generate` for `item_block_rules` and `item_blocks` operations. 213ca67
 - [x] Task: Add `AddItemBlockRules`, `DeleteItemBlockRule`, and `ListItemBlockRules` RPCs to `item.proto`. b9e4b5c
-- [ ] Task: Write TDD tests for `item_block_rules` repository logic.
-- [ ] Task: Implement repository logic for `item_block_rules` (including bulk insertion).
+- [x] Task: Write TDD tests for `item_block_rules` repository logic. 213ca67
+- [x] Task: Implement repository logic for `item_block_rules` (including bulk insertion). 213ca67
 - [ ] Task: Implement service-level handlers for item block rules.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Item Block Rules Management' (Protocol in workflow.md)
 
