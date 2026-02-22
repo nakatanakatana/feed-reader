@@ -24,5 +24,5 @@
 - [x] Task: Implement logic to scan and populate `item_blocks` when a new rule is added. e2f19bb
 - [x] Task: Implement logic to check new items against active block rules during the fetch/store process. e76136c
 - [x] Task: Update item repository logic to allow filtering by `item_blocks` in SQL queries. 9f18b54
-- [ ] Task: Update `ItemService.ListItems` to exclude items present in `item_blocks`.
+- [x] Task: Update `ItemService.ListItems` to exclude items present in `item_blocks`. 450cde9
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Item Filtering (Block) Integration and Hooks' (Protocol in workflow.md)
