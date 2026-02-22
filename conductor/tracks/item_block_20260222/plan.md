@@ -20,7 +20,7 @@
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Item Block Rules Management' (Protocol in workflow.md)
 
 **Phase 3: Item Filtering (Block) Integration and Hooks**
-- [ ] Task: Implement a utility to extract user info from item URLs based on configured patterns in `url_parsing_rules`.
+- [x] Task: Implement a utility to extract user info from item URLs based on configured patterns in `url_parsing_rules`. 068b532
 - [ ] Task: Implement logic to scan and populate `item_blocks` when a new rule is added.
 - [ ] Task: Implement logic to check new items against active block rules during the fetch/store process.
 - [ ] Task: Update item repository logic to allow filtering by `item_blocks` in SQL queries.
