@@ -1,11 +1,11 @@
 # Implementation Plan: Block Management Frontend
 
-## Phase 1: Routing & Navigation
+## Phase 1: Routing & Navigation [checkpoint: 16c878e]
 - [x] Task: Create new routes for URL Rules and Block Rules in TanStack Router. ead0b52
     - [x] Create `frontend/src/routes/url-rules.tsx`.
     - [x] Create `frontend/src/routes/block-rules.tsx`.
 - [x] Task: Add navigation links to the main header in `frontend/src/routes/__root.tsx`. ead0b52
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Routing & Navigation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Routing & Navigation' (Protocol in workflow.md) 16c878e
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Routing & Navigation' (Protocol in workflow.md)
 
 ## Phase 2: URL Rules Management Page
