@@ -24,7 +24,7 @@ func TestCleanMigration(t *testing.T) {
 	assert.NilError(t, err)
 	defer func() { _ = db.Close() }()
 
-	tables := []string{"feeds", "items", "feed_items", "item_reads", "tags", "feed_tags", "feed_fetcher"}
+	tables := []string{"feeds", "items", "feed_items", "item_reads", "tags", "feed_tags", "feed_fetcher", "url_parsing_rules"}
 	for _, table := range tables {
 		var name string
 		err = db.QueryRow("SELECT name FROM sqlite_master WHERE type='table' AND name=?", table).Scan(&name)

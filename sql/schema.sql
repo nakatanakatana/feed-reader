@@ -82,3 +82,13 @@ CREATE INDEX idx_tags_updated_at ON tags(updated_at);
 CREATE INDEX idx_items_created_at ON items(created_at);
 CREATE INDEX idx_feed_fetcher_next_fetch ON feed_fetcher(next_fetch);
 CREATE INDEX idx_feed_items_feed_id_published_at ON feed_items(feed_id, published_at DESC);
+
+CREATE TABLE url_parsing_rules (
+  id          TEXT PRIMARY KEY,
+  domain      TEXT NOT NULL,
+  rule_type   TEXT NOT NULL, -- 'subdomain', 'path'
+  pattern     TEXT NOT NULL,
+  created_at  TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now')),
+  updated_at  TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now')),
+  UNIQUE(domain, rule_type)
+);
