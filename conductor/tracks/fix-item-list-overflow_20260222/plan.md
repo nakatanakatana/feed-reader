@@ -1,15 +1,15 @@
 # Implementation Plan: Fix ItemList Horizontal Overflow
 
 ## Phase 1: Research and Reproduction
-- [ ] Task: Identify the CSS responsible for the `ItemList` metadata layout.
-- [ ] Task: Reproduce the horizontal overflow bug in a Vitest integration test (e.g., using a long domain name and narrow viewport).
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Research and Reproduction' (Protocol in workflow.md)
+- [x] Task: Identify the CSS responsible for the `ItemList` metadata layout.
+- [x] Task: Reproduce the horizontal overflow bug in a Vitest integration test (e.g., using a long domain name and narrow viewport).
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Research and Reproduction' (Protocol in workflow.md) [checkpoint: 0add895]
 
 ## Phase 2: Implementation
-- [ ] Task: Write failing CSS/layout tests that verify the overflow on narrow viewports.
-- [ ] Task: Implement the `flex-wrap` fix and any necessary spacing adjustments in the ItemList component.
-- [ ] Task: Verify that the tests now pass and the metadata wraps on narrow viewports.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Implementation' (Protocol in workflow.md)
+- [x] Task: Write failing CSS/layout tests that verify the overflow on narrow viewports.
+- [x] Task: Implement the `flex-wrap` fix and any necessary spacing adjustments in the ItemList component.
+- [x] Task: Verify that the tests now pass and the metadata wraps on narrow viewports.
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Implementation' (Protocol in workflow.md) [checkpoint: 47afa8f]
 
 ## Phase 3: Validation and Refinement
 - [ ] Task: Manually verify the fix on a narrow viewport using the browser's developer tools.
