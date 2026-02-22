@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"net/url"
 	"strings"
 	"time"
 
@@ -245,10 +246,15 @@ func (s *Store) SaveFetchedItem(ctx context.Context, params SaveFetchedItemParam
 }
 
 func extractUserInfoLocally(urlStr string, rules []UrlParsingRule) (*string, *string) {
+	u, err := url.Parse(urlStr)
+	if err != nil {
+		return nil, nil
+	}
+	domainPart := u.Hostname()
+
 	for _, rule := range rules {
 		switch rule.RuleType {
 		case "subdomain":
-			domainPart := getDomainFromURLLocally(urlStr)
 			if strings.HasSuffix(domainPart, "."+rule.Pattern) {
 				user := strings.TrimSuffix(domainPart, "."+rule.Pattern)
 				if user != "" && !strings.Contains(user, ".") {
@@ -256,11 +262,15 @@ func extractUserInfoLocally(urlStr string, rules []UrlParsingRule) (*string, *st
 				}
 			}
 		case "path":
-			if strings.Contains(urlStr, "://"+rule.Pattern+"/") {
-				parts := strings.Split(urlStr, "://"+rule.Pattern+"/")
-				if len(parts) > 1 {
-					userPart := parts[1]
-					user := strings.Split(userPart, "/")[0]
+			// Expected pattern: <rule.Pattern>/<user>
+			// Example: rule.Pattern = "domain.com/users", urlPath = "/users/user1/post"
+			if strings.HasPrefix(u.Host, rule.Pattern) || strings.HasPrefix(u.Host+u.Path, rule.Pattern) {
+				// Simplistic check for path-based. 
+				// Pattern might include host like "github.com/user"
+				fullPath := u.Host + u.Path
+				if strings.HasPrefix(fullPath, rule.Pattern+"/") {
+					remaining := strings.TrimPrefix(fullPath, rule.Pattern+"/")
+					user := strings.Split(remaining, "/")[0]
 					if user != "" {
 						domain := strings.Split(rule.Pattern, "/")[0]
 						return &user, &domain
@@ -273,12 +283,9 @@ func extractUserInfoLocally(urlStr string, rules []UrlParsingRule) (*string, *st
 }
 
 func getDomainFromURLLocally(urlStr string) string {
-	parts := strings.Split(urlStr, "://")
-	if len(parts) < 2 {
+	u, err := url.Parse(urlStr)
+	if err != nil {
 		return ""
 	}
-	remaining := parts[1]
-	domain := strings.Split(remaining, "/")[0]
-	domain = strings.Split(domain, ":")[0]
-	return domain
+	return u.Hostname()
 }

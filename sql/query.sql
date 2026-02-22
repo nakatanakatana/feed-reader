@@ -224,7 +224,7 @@ LIMIT ?;
 -- name: CountUnreadItemsPerFeed :many
 SELECT
   fi.feed_id,
-  COUNT(*) AS count
+  COUNT(DISTINCT fi.item_id) AS count
 FROM
   feed_items fi
 LEFT JOIN
@@ -558,11 +558,8 @@ WHERE
 -- name: ListItemsForBlocking :many
 SELECT
   i.*,
-  fi.feed_id,
   CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read
 FROM
   items i
-JOIN
-  feed_items fi ON i.id = fi.item_id
 LEFT JOIN
   item_reads ir ON i.id = ir.item_id;

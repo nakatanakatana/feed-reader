@@ -296,7 +296,7 @@ func (s *ItemServer) AddItemBlockRules(ctx context.Context, req *connect.Request
 
 		// 4. For each new rule, populate blocks
 		for _, rule := range rules {
-			if err := s.store.PopulateItemBlocksForRule(ctx, rule, extractedInfoMap); err != nil {
+			if err := s.store.PopulateItemBlocksForRule(ctx, rule, items, extractedInfoMap); err != nil {
 				slog.Error("Background block scan failed for rule", "rule_id", rule.ID, "error", err)
 			}
 		}
@@ -320,12 +320,16 @@ func (s *ItemServer) ListItemBlockRules(ctx context.Context, req *connect.Reques
 
 	protoRules := make([]*itemv1.ItemBlockRule, len(rules))
 	for i, rule := range rules {
-		domain := rule.Domain
+		var domain *string
+		if rule.Domain != "" {
+			d := rule.Domain
+			domain = &d
+		}
 		protoRules[i] = &itemv1.ItemBlockRule{
 			Id:       rule.ID,
 			RuleType: rule.RuleType,
 			Value:    rule.RuleValue,
-			Domain:   &domain,
+			Domain:   domain,
 		}
 	}
 

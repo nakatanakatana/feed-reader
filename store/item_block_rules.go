@@ -76,7 +76,6 @@ func (s *Store) ListItemsForBlocking(ctx context.Context) ([]FullItem, error) {
 			Categories:  r.Categories,
 			CreatedAt:   r.CreatedAt,
 			UpdatedAt:   r.UpdatedAt,
-			FeedID:      r.FeedID,
 			IsRead:      r.IsRead == 1,
 		}
 	}
@@ -119,14 +118,9 @@ func containsKeyword(s, keyword string) bool {
 	return strings.Contains(strings.ToLower(s), strings.ToLower(keyword))
 }
 
-// PopulateItemBlocksForRule scans all items and populates item_blocks for the given rule.
+// PopulateItemBlocksForRule scans provided items and populates item_blocks for the given rule.
 // extractedInfoMap is a map from item URL to extracted user and domain info.
-func (s *Store) PopulateItemBlocksForRule(ctx context.Context, rule ItemBlockRule, extractedInfoMap map[string]ExtractedUserInfo) error {
-	items, err := s.ListItemsForBlocking(ctx)
-	if err != nil {
-		return err
-	}
-
+func (s *Store) PopulateItemBlocksForRule(ctx context.Context, rule ItemBlockRule, items []FullItem, extractedInfoMap map[string]ExtractedUserInfo) error {
 	return s.WithTransaction(ctx, func(qtx *Queries) error {
 		for _, item := range items {
 			var user, domain *string

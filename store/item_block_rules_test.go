@@ -163,14 +163,21 @@ func TestStore_PopulateItemBlocksForRule(t *testing.T) {
 		item2URL: {User: "user2", Domain: "example.com"},
 	}
 
+	// 3. Pre-fetch items
+	items, err := s.ListItemsForBlocking(ctx)
+	assert.NilError(t, err)
+
 	t.Run("Keyword Rule", func(t *testing.T) {
-		rule := store.ItemBlockRule{
+		rules, err := s.CreateItemBlockRules(ctx, []store.CreateItemBlockRuleParams{{
 			ID:        uuid.NewString(),
 			RuleType:  "keyword",
 			RuleValue: "keyword",
 			Domain:    "",
-		}
-		err := s.PopulateItemBlocksForRule(ctx, rule, extractedInfo)
+		}})
+		assert.NilError(t, err)
+		rule := rules[0]
+
+		err = s.PopulateItemBlocksForRule(ctx, rule, items, extractedInfo)
 		assert.NilError(t, err)
 
 		var count int
@@ -179,13 +186,16 @@ func TestStore_PopulateItemBlocksForRule(t *testing.T) {
 	})
 
 	t.Run("User Rule", func(t *testing.T) {
-		rule := store.ItemBlockRule{
+		rules, err := s.CreateItemBlockRules(ctx, []store.CreateItemBlockRuleParams{{
 			ID:        uuid.NewString(),
 			RuleType:  "user",
 			RuleValue: "user1",
 			Domain:    "",
-		}
-		err := s.PopulateItemBlocksForRule(ctx, rule, extractedInfo)
+		}})
+		assert.NilError(t, err)
+		rule := rules[0]
+
+		err = s.PopulateItemBlocksForRule(ctx, rule, items, extractedInfo)
 		assert.NilError(t, err)
 
 		var count int
@@ -194,13 +204,16 @@ func TestStore_PopulateItemBlocksForRule(t *testing.T) {
 	})
 
 	t.Run("Domain Rule (Extracted)", func(t *testing.T) {
-		rule := store.ItemBlockRule{
+		rules, err := s.CreateItemBlockRules(ctx, []store.CreateItemBlockRuleParams{{
 			ID:        uuid.NewString(),
 			RuleType:  "domain",
 			RuleValue: "example.com",
 			Domain:    "",
-		}
-		err := s.PopulateItemBlocksForRule(ctx, rule, extractedInfo)
+		}})
+		assert.NilError(t, err)
+		rule := rules[0]
+
+		err = s.PopulateItemBlocksForRule(ctx, rule, items, extractedInfo)
 		assert.NilError(t, err)
 
 		var count int
@@ -210,14 +223,17 @@ func TestStore_PopulateItemBlocksForRule(t *testing.T) {
 	})
 
 	t.Run("Domain Rule (Fallback)", func(t *testing.T) {
-		rule := store.ItemBlockRule{
+		rules, err := s.CreateItemBlockRules(ctx, []store.CreateItemBlockRuleParams{{
 			ID:        uuid.NewString(),
 			RuleType:  "domain",
 			RuleValue: "other-domain.com",
 			Domain:    "",
-		}
+		}})
+		assert.NilError(t, err)
+		rule := rules[0]
+
 		// item3URL is not in extractedInfo, should use fallback
-		err := s.PopulateItemBlocksForRule(ctx, rule, extractedInfo)
+		err = s.PopulateItemBlocksForRule(ctx, rule, items, extractedInfo)
 		assert.NilError(t, err)
 
 		var count int
@@ -227,13 +243,16 @@ func TestStore_PopulateItemBlocksForRule(t *testing.T) {
 
 	t.Run("User Domain Rule", func(t *testing.T) {
 		domain := "example.com"
-		rule := store.ItemBlockRule{
+		rules, err := s.CreateItemBlockRules(ctx, []store.CreateItemBlockRuleParams{{
 			ID:        uuid.NewString(),
 			RuleType:  "user_domain",
 			RuleValue: "user2",
 			Domain:    domain,
-		}
-		err := s.PopulateItemBlocksForRule(ctx, rule, extractedInfo)
+		}})
+		assert.NilError(t, err)
+		rule := rules[0]
+
+		err = s.PopulateItemBlocksForRule(ctx, rule, items, extractedInfo)
 		assert.NilError(t, err)
 
 		var count int
