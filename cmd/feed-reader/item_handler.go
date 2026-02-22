@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"time"
 
 	"connectrpc.com/connect"
@@ -13,11 +14,18 @@ import (
 )
 
 type ItemServer struct {
-	store *store.Store
+	store         *store.Store
+	uuidGenerator UUIDGenerator
 }
 
-func NewItemServer(s *store.Store) itemv1connect.ItemServiceHandler {
-	return &ItemServer{store: s}
+func NewItemServer(s *store.Store, uuidGen UUIDGenerator) itemv1connect.ItemServiceHandler {
+	if uuidGen == nil {
+		uuidGen = realUUIDGenerator{}
+	}
+	return &ItemServer{
+		store:         s,
+		uuidGenerator: uuidGen,
+	}
 }
 
 func (s *ItemServer) GetItem(ctx context.Context, req *connect.Request[itemv1.GetItemRequest]) (*connect.Response[itemv1.GetItemResponse], error) {
@@ -150,15 +158,57 @@ func (s *ItemServer) ListItemFeeds(ctx context.Context, req *connect.Request[ite
 }
 
 func (s *ItemServer) AddURLParsingRule(ctx context.Context, req *connect.Request[itemv1.AddURLParsingRuleRequest]) (*connect.Response[itemv1.AddURLParsingRuleResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("not implemented"))
+	newUUID, err := s.uuidGenerator.NewRandom()
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to generate UUID: %w", err))
+	}
+
+	rule, err := s.store.CreateURLParsingRule(ctx, store.CreateURLParsingRuleParams{
+		ID:       newUUID.String(),
+		Domain:   req.Msg.Domain,
+		RuleType: req.Msg.RuleType,
+		Pattern:  req.Msg.Pattern,
+	})
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	return connect.NewResponse(&itemv1.AddURLParsingRuleResponse{
+		Rule: &itemv1.URLParsingRule{
+			Id:       rule.ID,
+			Domain:   rule.Domain,
+			RuleType: rule.RuleType,
+			Pattern:  rule.Pattern,
+		},
+	}), nil
 }
 
 func (s *ItemServer) DeleteURLParsingRule(ctx context.Context, req *connect.Request[itemv1.DeleteURLParsingRuleRequest]) (*connect.Response[itemv1.DeleteURLParsingRuleResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("not implemented"))
+	if err := s.store.DeleteURLParsingRule(ctx, req.Msg.Id); err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	return connect.NewResponse(&itemv1.DeleteURLParsingRuleResponse{}), nil
 }
 
 func (s *ItemServer) ListURLParsingRules(ctx context.Context, req *connect.Request[itemv1.ListURLParsingRulesRequest]) (*connect.Response[itemv1.ListURLParsingRulesResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("not implemented"))
+	rules, err := s.store.ListURLParsingRules(ctx)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	protoRules := make([]*itemv1.URLParsingRule, len(rules))
+	for i, rule := range rules {
+		protoRules[i] = &itemv1.URLParsingRule{
+			Id:       rule.ID,
+			Domain:   rule.Domain,
+			RuleType: rule.RuleType,
+			Pattern:  rule.Pattern,
+		}
+	}
+
+	return connect.NewResponse(&itemv1.ListURLParsingRulesResponse{
+		Rules: protoRules,
+	}), nil
 }
 
 func GetItemRowFromListItemsRow(row store.ListItemsRow) store.GetItemRow {
