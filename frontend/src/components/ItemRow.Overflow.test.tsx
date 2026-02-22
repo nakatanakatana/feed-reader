@@ -15,8 +15,9 @@ describe("ItemRow Overflow", () => {
     await page.viewport(375, 667);
 
     // Use a long string WITHOUT hyphens to prevent wrapping at hyphens
-    const longUrl = "https://verylongsubdomainnamethatisquitelongindeedandshouldcauseoverflowwithoutanyspacesorhyphenswhatsoever.com/article";
-    
+    const longUrl =
+      "https://verylongsubdomainnamethatisquitelongindeedandshouldcauseoverflowwithoutanyspacesorhyphenswhatsoever.com/article";
+
     // Create a mock item with a long URL and dates
     const mockItem = {
       id: "1",
@@ -30,37 +31,41 @@ describe("ItemRow Overflow", () => {
       feedId: "feed-1",
     };
 
-    dispose = render(() => (
-      <div style={{ width: "100%", overflow: "hidden" }}>
-        <ItemRow item={mockItem} onClick={() => {}} />
-      </div>
-    ), document.body);
+    dispose = render(
+      () => (
+        <div style={{ width: "100%", overflow: "hidden" }}>
+          <ItemRow item={mockItem} onClick={() => {}} />
+        </div>
+      ),
+      document.body,
+    );
 
     // Wait for render
     await expect.element(page.getByText("Test Article")).toBeInTheDocument();
 
     // Find the metadata row via hostname
-    const hostname = "verylongsubdomainnamethatisquitelongindeedandshouldcauseoverflowwithoutanyspacesorhyphenswhatsoever.com";
+    const hostname =
+      "verylongsubdomainnamethatisquitelongindeedandshouldcauseoverflowwithoutanyspacesorhyphenswhatsoever.com";
     const hostnameSpan = page.getByText(hostname);
-    
-    // Structure: 
+
+    // Structure:
     // MetadataRow (div) > SourceSpan (span) > HostnameSpan (span)
     // So we need: HostnameSpan -> parent -> parent
-    
-    // Use locator chaining
-    const sourceSpan = hostnameSpan.locator("xpath=..");
-    const metadataRow = sourceSpan.locator("xpath=..");
-    
-    const scrollWidth = await metadataRow.element().scrollWidth;
-    const clientWidth = await metadataRow.element().clientWidth;
-    const bodyScrollWidth = document.body.scrollWidth;
+    const hostnameElement = hostnameSpan.element();
+    const metadataRowElement = hostnameElement.parentElement?.parentElement;
+
+    if (!metadataRowElement) {
+      throw new Error("Metadata row element not found");
+    }
+
+    const scrollWidth = metadataRowElement.scrollWidth;
 
     // Expectation for CORRECT behavior:
     // The metadata row should wrap, so its width should not exceed the viewport width significantly.
     // (Allowing for some margin/padding difference, but definitely NOT 904px).
     // The clientWidth should be constrained by the parent (approx 300px).
     // The scrollWidth should be equal to clientWidth if it wraps correctly.
-    
+
     expect(scrollWidth).toBeLessThanOrEqual(375);
   });
 });
