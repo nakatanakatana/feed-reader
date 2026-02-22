@@ -55,9 +55,6 @@ describe("ItemRow Overflow", () => {
     const clientWidth = await metadataRow.element().clientWidth;
     const bodyScrollWidth = document.body.scrollWidth;
 
-    console.log(`MetadataRow: scrollWidth=${scrollWidth}, clientWidth=${clientWidth}`);
-    console.log(`Body: scrollWidth=${bodyScrollWidth}`);
-    
     // Expectation for CORRECT behavior:
     // The metadata row should wrap, so its width should not exceed the viewport width significantly.
     // (Allowing for some margin/padding difference, but definitely NOT 904px).
