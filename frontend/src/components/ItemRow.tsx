@@ -135,6 +135,8 @@ export function ItemRow(props: ItemRowProps) {
               marginTop: "1",
               fontSize: "xs",
               color: "gray.500",
+              flexWrap: "wrap",
+              overflowWrap: "anywhere",
             })}
           >
             <Show when={props.item.url}>
@@ -146,72 +148,81 @@ export function ItemRow(props: ItemRowProps) {
                 <span>{extractHostname(props.item.url || "")}</span>
               </span>
             </Show>
-            <Show when={props.item.publishedAt}>
-              {(publishedAt) => (
-                <span
-                  class={flex({ gap: "1", alignItems: "center" })}
-                  title={`Published: ${formatDate(publishedAt())}`}
-                >
+            <div
+              class={flex({
+                gap: { base: "2", xs: "4" },
+                alignItems: "center",
+                flexWrap: "nowrap",
+                flexShrink: 0,
+              })}
+            >
+              <Show when={props.item.publishedAt}>
+                {(publishedAt) => (
                   <span
-                    class={css({ display: { base: "none", xs: "inline" } })}
+                    class={flex({ gap: "1", alignItems: "center" })}
+                    title={`Published: ${formatDate(publishedAt())}`}
                   >
-                    Published:
-                  </span>
-                  <span
-                    class={css({ display: { base: "inline", xs: "none" } })}
-                    title="Published"
-                  >
-                    <PublishedIcon />
                     <span
-                      class={css({
-                        position: "absolute",
-                        width: "1px",
-                        height: "1px",
-                        padding: "0",
-                        margin: "-1px",
-                        overflow: "hidden",
-                        clip: "rect(0, 0, 0, 0)",
-                        whiteSpace: "nowrap",
-                        borderWidth: "0",
-                      })}
+                      class={css({ display: { base: "none", xs: "inline" } })}
                     >
                       Published:
                     </span>
+                    <span
+                      class={css({ display: { base: "inline", xs: "none" } })}
+                      title="Published"
+                    >
+                      <PublishedIcon />
+                      <span
+                        class={css({
+                          position: "absolute",
+                          width: "1px",
+                          height: "1px",
+                          padding: "0",
+                          margin: "-1px",
+                          overflow: "hidden",
+                          clip: "rect(0, 0, 0, 0)",
+                          whiteSpace: "nowrap",
+                          borderWidth: "0",
+                        })}
+                      >
+                        Published:
+                      </span>
+                    </span>
+                    {formatDate(publishedAt())}
                   </span>
-                  {formatDate(publishedAt())}
-                </span>
-              )}
-            </Show>
-            <span
-              class={flex({ gap: "1", alignItems: "center" })}
-              title={`Received: ${formatDate(props.item.createdAt)}`}
-            >
-              <span class={css({ display: { base: "none", xs: "inline" } })}>
-                Received:
-              </span>
+                )}
+              </Show>
               <span
-                class={css({ display: { base: "inline", xs: "none" } })}
-                title="Received"
+                class={flex({ gap: "1", alignItems: "center" })}
+                title={`Received: ${formatDate(props.item.createdAt)}`}
               >
-                <ReceivedIcon />
-                <span
-                  class={css({
-                    position: "absolute",
-                    width: "1px",
-                    height: "1px",
-                    padding: "0",
-                    margin: "-1px",
-                    overflow: "hidden",
-                    clip: "rect(0, 0, 0, 0)",
-                    whiteSpace: "nowrap",
-                    borderWidth: "0",
-                  })}
-                >
+                <span class={css({ display: { base: "none", xs: "inline" } })}>
                   Received:
                 </span>
+                <span
+                  class={css({ display: { base: "inline", xs: "none" } })}
+                  title="Received"
+                >
+                  <ReceivedIcon />
+                  <span
+                    class={css({
+                      position: "absolute",
+                      width: "1px",
+                      height: "1px",
+                      padding: "0",
+                      margin: "-1px",
+                      overflow: "hidden",
+                      clip: "rect(0, 0, 0, 0)",
+                      whiteSpace: "nowrap",
+                      borderWidth: "0",
+                    })}
+                  >
+                    Received:
+                  </span>
+                </span>
+                {formatDate(props.item.createdAt)}
               </span>
-              {formatDate(props.item.createdAt)}
-            </span>
+            </div>
             <Show when={props.item.isRead}>
               <span
                 class={css({
