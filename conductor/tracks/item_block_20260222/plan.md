@@ -26,3 +26,6 @@
 - [x] Task: Update item repository logic to allow filtering by `item_blocks` in SQL queries. 9f18b54
 - [x] Task: Update `ItemService.ListItems` to exclude items present in `item_blocks`. 450cde9
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Item Filtering (Block) Integration and Hooks' (Protocol in workflow.md) de8c782
+
+## Phase: Review Fixes
+- [x] Task: Apply review suggestions 742726c
