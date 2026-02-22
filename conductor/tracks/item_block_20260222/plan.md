@@ -1,7 +1,7 @@
 ### Implementation Plan: Item Hiding (Block) Feature based on URL Parsing
 
 **Phase 1: URL Parsing Rules**
-- [ ] Task: Create migration and table for `url_parsing_rules`.
+- [x] Task: Create migration and table for `url_parsing_rules`. 34e6eda
 - [ ] Task: Update `sql/query.sql` and run `sqlc generate` for `url_parsing_rules` CRUD.
 - [ ] Task: Add `AddURLParsingRule`, `DeleteURLParsingRule`, and `ListURLParsingRules` RPCs to `item.proto`.
 - [ ] Task: Write TDD tests for `url_parsing_rules` repository logic.
