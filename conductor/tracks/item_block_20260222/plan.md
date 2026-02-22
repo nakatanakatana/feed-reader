@@ -19,10 +19,10 @@
 - [x] Task: Implement service-level handlers for item block rules. 8a6e074
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Item Block Rules Management' (Protocol in workflow.md)
 
-**Phase 3: Item Filtering (Block) Integration and Hooks**
+**Phase 3: Item Filtering (Block) Integration and Hooks** [checkpoint: de8c782]
 - [x] Task: Implement a utility to extract user info from item URLs based on configured patterns in `url_parsing_rules`. 068b532
 - [x] Task: Implement logic to scan and populate `item_blocks` when a new rule is added. e2f19bb
 - [x] Task: Implement logic to check new items against active block rules during the fetch/store process. e76136c
 - [x] Task: Update item repository logic to allow filtering by `item_blocks` in SQL queries. 9f18b54
 - [x] Task: Update `ItemService.ListItems` to exclude items present in `item_blocks`. 450cde9
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Item Filtering (Block) Integration and Hooks' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Item Filtering (Block) Integration and Hooks' (Protocol in workflow.md) de8c782
