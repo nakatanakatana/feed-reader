@@ -16,7 +16,7 @@ func TestItemServer_Blocking(t *testing.T) {
 	ctx := context.Background()
 	queries, db := setupTestDB(t)
 	s := store.NewStore(db)
-	server := &ItemServer{store: s}
+	server := NewItemServer(s, nil)
 
 	// Setup Feed
 	feedID := uuid.NewString()

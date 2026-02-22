@@ -41,8 +41,26 @@ func TestItemServer_ItemBlockRules(t *testing.T) {
 		_, err := server.AddItemBlockRules(ctx, connect.NewRequest(req))
 		assert.NilError(t, err)
 
-		// Wait for background scanning
-		time.Sleep(100 * time.Millisecond)
+		// Wait for background scanning by polling the item_blocks table with a timeout
+		waitCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		defer cancel()
+
+		for {
+			select {
+			case <-waitCtx.Done():
+				t.Fatalf("timed out waiting for item_blocks to be populated")
+			default:
+			}
+
+			var count int
+			err := db.QueryRow("SELECT count(*) FROM item_blocks").Scan(&count)
+			assert.NilError(t, err)
+			if count >= 1 {
+				break
+			}
+
+			time.Sleep(50 * time.Millisecond)
+		}
 
 		// Verify item_blocks
 		var count int

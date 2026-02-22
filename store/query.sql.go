@@ -112,7 +112,7 @@ func (q *Queries) CountTotalUnreadItems(ctx context.Context) (int64, error) {
 const countUnreadItemsPerFeed = `-- name: CountUnreadItemsPerFeed :many
 SELECT
   fi.feed_id,
-  COUNT(*) AS count
+  COUNT(DISTINCT fi.item_id) AS count
 FROM
   feed_items fi
 LEFT JOIN
@@ -1407,14 +1407,11 @@ func (q *Queries) ListItems(ctx context.Context, arg ListItemsParams) ([]ListIte
 }
 
 const listItemsForBlocking = `-- name: ListItemsForBlocking :many
-SELECT
+SELECT DISTINCT
   i.id, i.url, i.title, i.description, i.published_at, i.author, i.guid, i.content, i.image_url, i.categories, i.created_at, i.updated_at,
-  fi.feed_id,
   CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read
 FROM
   items i
-JOIN
-  feed_items fi ON i.id = fi.item_id
 LEFT JOIN
   item_reads ir ON i.id = ir.item_id
 `
@@ -1432,7 +1429,6 @@ type ListItemsForBlockingRow struct {
 	Categories  *string `json:"categories"`
 	CreatedAt   string  `json:"created_at"`
 	UpdatedAt   string  `json:"updated_at"`
-	FeedID      string  `json:"feed_id"`
 	IsRead      int64   `json:"is_read"`
 }
 
@@ -1458,7 +1454,6 @@ func (q *Queries) ListItemsForBlocking(ctx context.Context) ([]ListItemsForBlock
 			&i.Categories,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.FeedID,
 			&i.IsRead,
 		); err != nil {
 			return nil, err

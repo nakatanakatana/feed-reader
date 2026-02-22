@@ -556,8 +556,8 @@ WHERE
   rule_id = ?;
 
 -- name: ListItemsForBlocking :many
-SELECT
-  i.*,
+SELECT DISTINCT
+  i.id, i.url, i.title, i.description, i.published_at, i.author, i.guid, i.content, i.image_url, i.categories, i.created_at, i.updated_at,
   CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read
 FROM
   items i
