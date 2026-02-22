@@ -13,7 +13,7 @@
 - [x] Task: Create migration and table for `item_block_rules`. 5503bf6
 - [x] Task: Create table for `item_blocks` (blocked item associations). 5503bf6
 - [x] Task: Update `sql/query.sql` and run `sqlc generate` for `item_block_rules` and `item_blocks` operations. 213ca67
-- [ ] Task: Add `AddItemBlockRules`, `DeleteItemBlockRule`, and `ListItemBlockRules` RPCs to `item.proto`.
+- [x] Task: Add `AddItemBlockRules`, `DeleteItemBlockRule`, and `ListItemBlockRules` RPCs to `item.proto`. b9e4b5c
 - [ ] Task: Write TDD tests for `item_block_rules` repository logic.
 - [ ] Task: Implement repository logic for `item_block_rules` (including bulk insertion).
 - [ ] Task: Implement service-level handlers for item block rules.
