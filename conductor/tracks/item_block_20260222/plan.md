@@ -9,7 +9,7 @@
 - [x] Task: Implement service-level handlers for URL parsing rules. 0de8505
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: URL Parsing Rules' (Protocol in workflow.md)
 
-**Phase 2: Item Block Rules Management**
+**Phase 2: Item Block Rules Management** [checkpoint: 84cb67a]
 - [x] Task: Create migration and table for `item_block_rules`. 5503bf6
 - [x] Task: Create table for `item_blocks` (blocked item associations). 5503bf6
 - [x] Task: Update `sql/query.sql` and run `sqlc generate` for `item_block_rules` and `item_blocks` operations. 213ca67
