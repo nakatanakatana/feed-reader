@@ -94,6 +94,24 @@ function RootComponent() {
         >
           Tags
         </Link>
+        <Link
+          to="/url-rules"
+          class={linkStyle}
+          activeProps={{
+            class: activeLinkStyle,
+          }}
+        >
+          URL Rules
+        </Link>
+        <Link
+          to="/block-rules"
+          class={linkStyle}
+          activeProps={{
+            class: activeLinkStyle,
+          }}
+        >
+          Block Rules
+        </Link>
       </header>
       <Outlet />
       {/* Start rendering router matches */}

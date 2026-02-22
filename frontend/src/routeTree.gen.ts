@@ -9,12 +9,19 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UrlRulesRouteImport } from './routes/url-rules'
 import { Route as TagsRouteImport } from './routes/tags'
 import { Route as FeedsRouteImport } from './routes/feeds'
+import { Route as BlockRulesRouteImport } from './routes/block-rules'
 import { Route as ItemsRouteImport } from './routes/_items'
 import { Route as ItemsIndexRouteImport } from './routes/_items.index'
 import { Route as ItemsItemsItemIdRouteImport } from './routes/_items.items.$itemId'
 
+const UrlRulesRoute = UrlRulesRouteImport.update({
+  id: '/url-rules',
+  path: '/url-rules',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TagsRoute = TagsRouteImport.update({
   id: '/tags',
   path: '/tags',
@@ -23,6 +30,11 @@ const TagsRoute = TagsRouteImport.update({
 const FeedsRoute = FeedsRouteImport.update({
   id: '/feeds',
   path: '/feeds',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlockRulesRoute = BlockRulesRouteImport.update({
+  id: '/block-rules',
+  path: '/block-rules',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ItemsRoute = ItemsRouteImport.update({
@@ -42,46 +54,75 @@ const ItemsItemsItemIdRoute = ItemsItemsItemIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof ItemsIndexRoute
+  '/block-rules': typeof BlockRulesRoute
   '/feeds': typeof FeedsRoute
   '/tags': typeof TagsRoute
+  '/url-rules': typeof UrlRulesRoute
   '/items/$itemId': typeof ItemsItemsItemIdRoute
 }
 export interface FileRoutesByTo {
+  '/block-rules': typeof BlockRulesRoute
   '/feeds': typeof FeedsRoute
   '/tags': typeof TagsRoute
+  '/url-rules': typeof UrlRulesRoute
   '/': typeof ItemsIndexRoute
   '/items/$itemId': typeof ItemsItemsItemIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_items': typeof ItemsRouteWithChildren
+  '/block-rules': typeof BlockRulesRoute
   '/feeds': typeof FeedsRoute
   '/tags': typeof TagsRoute
+  '/url-rules': typeof UrlRulesRoute
   '/_items/': typeof ItemsIndexRoute
   '/_items/items/$itemId': typeof ItemsItemsItemIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/feeds' | '/tags' | '/items/$itemId'
+  fullPaths:
+    | '/'
+    | '/block-rules'
+    | '/feeds'
+    | '/tags'
+    | '/url-rules'
+    | '/items/$itemId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/feeds' | '/tags' | '/' | '/items/$itemId'
+  to:
+    | '/block-rules'
+    | '/feeds'
+    | '/tags'
+    | '/url-rules'
+    | '/'
+    | '/items/$itemId'
   id:
     | '__root__'
     | '/_items'
+    | '/block-rules'
     | '/feeds'
     | '/tags'
+    | '/url-rules'
     | '/_items/'
     | '/_items/items/$itemId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   ItemsRoute: typeof ItemsRouteWithChildren
+  BlockRulesRoute: typeof BlockRulesRoute
   FeedsRoute: typeof FeedsRoute
   TagsRoute: typeof TagsRoute
+  UrlRulesRoute: typeof UrlRulesRoute
 }
 
 declare module '@tanstack/solid-router' {
   interface FileRoutesByPath {
+    '/url-rules': {
+      id: '/url-rules'
+      path: '/url-rules'
+      fullPath: '/url-rules'
+      preLoaderRoute: typeof UrlRulesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tags': {
       id: '/tags'
       path: '/tags'
@@ -94,6 +135,13 @@ declare module '@tanstack/solid-router' {
       path: '/feeds'
       fullPath: '/feeds'
       preLoaderRoute: typeof FeedsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/block-rules': {
+      id: '/block-rules'
+      path: '/block-rules'
+      fullPath: '/block-rules'
+      preLoaderRoute: typeof BlockRulesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_items': {
@@ -134,8 +182,10 @@ const ItemsRouteWithChildren = ItemsRoute._addFileChildren(ItemsRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   ItemsRoute: ItemsRouteWithChildren,
+  BlockRulesRoute: BlockRulesRoute,
   FeedsRoute: FeedsRoute,
   TagsRoute: TagsRoute,
+  UrlRulesRoute: UrlRulesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
