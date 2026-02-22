@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file item/v1/item.proto.
  */
 export const file_item_v1_item: GenFile = /*@__PURE__*/
-  fileDesc("ChJpdGVtL3YxL2l0ZW0ucHJvdG8SB2l0ZW0udjEi1wEKBEl0ZW0SCgoCaWQYASABKAkSCwoDdXJsGAIgASgJEg0KBXRpdGxlGAMgASgJEhMKC2Rlc2NyaXB0aW9uGAQgASgJEhQKDHB1Ymxpc2hlZF9hdBgFIAEoCRIPCgdmZWVkX2lkGAYgASgJEg8KB2lzX3JlYWQYByABKAgSDgoGYXV0aG9yGAkgASgJEg8KB2NvbnRlbnQYCiABKAkSEQoJaW1hZ2VfdXJsGAsgASgJEhIKCmNhdGVnb3JpZXMYDCABKAkSEgoKY3JlYXRlZF9hdBgNIAEoCSKTAQoITGlzdEl0ZW0SCgoCaWQYASABKAkSDQoFdGl0bGUYAiABKAkSEwoLZGVzY3JpcHRpb24YAyABKAkSFAoMcHVibGlzaGVkX2F0GAQgASgJEhIKCmNyZWF0ZWRfYXQYBSABKAkSDwoHaXNfcmVhZBgGIAEoCBIPCgdmZWVkX2lkGAcgASgJEgsKA3VybBgIIAEoCSIcCg5HZXRJdGVtUmVxdWVzdBIKCgJpZBgBIAEoCSIuCg9HZXRJdGVtUmVzcG9uc2USGwoEaXRlbRgBIAEoCzINLml0ZW0udjEuSXRlbSLPAQoQTGlzdEl0ZW1zUmVxdWVzdBIUCgdmZWVkX2lkGAEgASgJSACIAQESFAoHaXNfcmVhZBgCIAEoCEgBiAEBEhMKBnRhZ19pZBgHIAEoCUgCiAEBEi4KBXNpbmNlGAggASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgDiAEBEg0KBWxpbWl0GAUgASgFEg4KBm9mZnNldBgGIAEoBUIKCghfZmVlZF9pZEIKCghfaXNfcmVhZEIJCgdfdGFnX2lkQggKBl9zaW5jZSJKChFMaXN0SXRlbXNSZXNwb25zZRIgCgVpdGVtcxgBIAMoCzIRLml0ZW0udjEuTGlzdEl0ZW0SEwoLdG90YWxfY291bnQYAiABKAUiSAoXVXBkYXRlSXRlbVN0YXR1c1JlcXVlc3QSCwoDaWRzGAEgAygJEhQKB2lzX3JlYWQYAiABKAhIAIgBAUIKCghfaXNfcmVhZCIaChhVcGRhdGVJdGVtU3RhdHVzUmVzcG9uc2UiJwoUTGlzdEl0ZW1GZWVkc1JlcXVlc3QSDwoHaXRlbV9pZBgBIAEoCSKDAQoISXRlbUZlZWQSDwoHZmVlZF9pZBgBIAEoCRIXCgpmZWVkX3RpdGxlGAIgASgJSACIAQESGQoMcHVibGlzaGVkX2F0GAMgASgJSAGIAQESEgoKY3JlYXRlZF9hdBgEIAEoCUINCgtfZmVlZF90aXRsZUIPCg1fcHVibGlzaGVkX2F0IjkKFUxpc3RJdGVtRmVlZHNSZXNwb25zZRIgCgVmZWVkcxgBIAMoCzIRLml0ZW0udjEuSXRlbUZlZWQyxwIKC0l0ZW1TZXJ2aWNlEkEKB0dldEl0ZW0SFy5pdGVtLnYxLkdldEl0ZW1SZXF1ZXN0GhguaXRlbS52MS5HZXRJdGVtUmVzcG9uc2UiA5ACARJHCglMaXN0SXRlbXMSGS5pdGVtLnYxLkxpc3RJdGVtc1JlcXVlc3QaGi5pdGVtLnYxLkxpc3RJdGVtc1Jlc3BvbnNlIgOQAgESVwoQVXBkYXRlSXRlbVN0YXR1cxIgLml0ZW0udjEuVXBkYXRlSXRlbVN0YXR1c1JlcXVlc3QaIS5pdGVtLnYxLlVwZGF0ZUl0ZW1TdGF0dXNSZXNwb25zZRJTCg1MaXN0SXRlbUZlZWRzEh0uaXRlbS52MS5MaXN0SXRlbUZlZWRzUmVxdWVzdBoeLml0ZW0udjEuTGlzdEl0ZW1GZWVkc1Jlc3BvbnNlIgOQAgFCPVo7Z2l0aHViLmNvbS9uYWthdGFuYWthdGFuYS9mZWVkLXJlYWRlci9nZW4vZ28vaXRlbS92MTtpdGVtdjFiBnByb3RvMw", [file_google_protobuf_timestamp]);
+  fileDesc("ChJpdGVtL3YxL2l0ZW0ucHJvdG8SB2l0ZW0udjEi1wEKBEl0ZW0SCgoCaWQYASABKAkSCwoDdXJsGAIgASgJEg0KBXRpdGxlGAMgASgJEhMKC2Rlc2NyaXB0aW9uGAQgASgJEhQKDHB1Ymxpc2hlZF9hdBgFIAEoCRIPCgdmZWVkX2lkGAYgASgJEg8KB2lzX3JlYWQYByABKAgSDgoGYXV0aG9yGAkgASgJEg8KB2NvbnRlbnQYCiABKAkSEQoJaW1hZ2VfdXJsGAsgASgJEhIKCmNhdGVnb3JpZXMYDCABKAkSEgoKY3JlYXRlZF9hdBgNIAEoCSKTAQoITGlzdEl0ZW0SCgoCaWQYASABKAkSDQoFdGl0bGUYAiABKAkSEwoLZGVzY3JpcHRpb24YAyABKAkSFAoMcHVibGlzaGVkX2F0GAQgASgJEhIKCmNyZWF0ZWRfYXQYBSABKAkSDwoHaXNfcmVhZBgGIAEoCBIPCgdmZWVkX2lkGAcgASgJEgsKA3VybBgIIAEoCSIcCg5HZXRJdGVtUmVxdWVzdBIKCgJpZBgBIAEoCSIuCg9HZXRJdGVtUmVzcG9uc2USGwoEaXRlbRgBIAEoCzINLml0ZW0udjEuSXRlbSLPAQoQTGlzdEl0ZW1zUmVxdWVzdBIUCgdmZWVkX2lkGAEgASgJSACIAQESFAoHaXNfcmVhZBgCIAEoCEgBiAEBEhMKBnRhZ19pZBgHIAEoCUgCiAEBEi4KBXNpbmNlGAggASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgDiAEBEg0KBWxpbWl0GAUgASgFEg4KBm9mZnNldBgGIAEoBUIKCghfZmVlZF9pZEIKCghfaXNfcmVhZEIJCgdfdGFnX2lkQggKBl9zaW5jZSJKChFMaXN0SXRlbXNSZXNwb25zZRIgCgVpdGVtcxgBIAMoCzIRLml0ZW0udjEuTGlzdEl0ZW0SEwoLdG90YWxfY291bnQYAiABKAUiSAoXVXBkYXRlSXRlbVN0YXR1c1JlcXVlc3QSCwoDaWRzGAEgAygJEhQKB2lzX3JlYWQYAiABKAhIAIgBAUIKCghfaXNfcmVhZCIaChhVcGRhdGVJdGVtU3RhdHVzUmVzcG9uc2UiJwoUTGlzdEl0ZW1GZWVkc1JlcXVlc3QSDwoHaXRlbV9pZBgBIAEoCSKDAQoISXRlbUZlZWQSDwoHZmVlZF9pZBgBIAEoCRIXCgpmZWVkX3RpdGxlGAIgASgJSACIAQESGQoMcHVibGlzaGVkX2F0GAMgASgJSAGIAQESEgoKY3JlYXRlZF9hdBgEIAEoCUINCgtfZmVlZF90aXRsZUIPCg1fcHVibGlzaGVkX2F0IjkKFUxpc3RJdGVtRmVlZHNSZXNwb25zZRIgCgVmZWVkcxgBIAMoCzIRLml0ZW0udjEuSXRlbUZlZWQiUAoOVVJMUGFyc2luZ1J1bGUSCgoCaWQYASABKAkSDgoGZG9tYWluGAIgASgJEhEKCXJ1bGVfdHlwZRgDIAEoCRIPCgdwYXR0ZXJuGAQgASgJIk4KGEFkZFVSTFBhcnNpbmdSdWxlUmVxdWVzdBIOCgZkb21haW4YASABKAkSEQoJcnVsZV90eXBlGAIgASgJEg8KB3BhdHRlcm4YAyABKAkiQgoZQWRkVVJMUGFyc2luZ1J1bGVSZXNwb25zZRIlCgRydWxlGAEgASgLMhcuaXRlbS52MS5VUkxQYXJzaW5nUnVsZSIpChtEZWxldGVVUkxQYXJzaW5nUnVsZVJlcXVlc3QSCgoCaWQYASABKAkiHgocRGVsZXRlVVJMUGFyc2luZ1J1bGVSZXNwb25zZSIcChpMaXN0VVJMUGFyc2luZ1J1bGVzUmVxdWVzdCJFChtMaXN0VVJMUGFyc2luZ1J1bGVzUmVzcG9uc2USJgoFcnVsZXMYASADKAsyFy5pdGVtLnYxLlVSTFBhcnNpbmdSdWxlMu8ECgtJdGVtU2VydmljZRJBCgdHZXRJdGVtEhcuaXRlbS52MS5HZXRJdGVtUmVxdWVzdBoYLml0ZW0udjEuR2V0SXRlbVJlc3BvbnNlIgOQAgESRwoJTGlzdEl0ZW1zEhkuaXRlbS52MS5MaXN0SXRlbXNSZXF1ZXN0GhouaXRlbS52MS5MaXN0SXRlbXNSZXNwb25zZSIDkAIBElcKEFVwZGF0ZUl0ZW1TdGF0dXMSIC5pdGVtLnYxLlVwZGF0ZUl0ZW1TdGF0dXNSZXF1ZXN0GiEuaXRlbS52MS5VcGRhdGVJdGVtU3RhdHVzUmVzcG9uc2USUwoNTGlzdEl0ZW1GZWVkcxIdLml0ZW0udjEuTGlzdEl0ZW1GZWVkc1JlcXVlc3QaHi5pdGVtLnYxLkxpc3RJdGVtRmVlZHNSZXNwb25zZSIDkAIBEloKEUFkZFVSTFBhcnNpbmdSdWxlEiEuaXRlbS52MS5BZGRVUkxQYXJzaW5nUnVsZVJlcXVlc3QaIi5pdGVtLnYxLkFkZFVSTFBhcnNpbmdSdWxlUmVzcG9uc2USYwoURGVsZXRlVVJMUGFyc2luZ1J1bGUSJC5pdGVtLnYxLkRlbGV0ZVVSTFBhcnNpbmdSdWxlUmVxdWVzdBolLml0ZW0udjEuRGVsZXRlVVJMUGFyc2luZ1J1bGVSZXNwb25zZRJlChNMaXN0VVJMUGFyc2luZ1J1bGVzEiMuaXRlbS52MS5MaXN0VVJMUGFyc2luZ1J1bGVzUmVxdWVzdBokLml0ZW0udjEuTGlzdFVSTFBhcnNpbmdSdWxlc1Jlc3BvbnNlIgOQAgFCPVo7Z2l0aHViLmNvbS9uYWthdGFuYWthdGFuYS9mZWVkLXJlYWRlci9nZW4vZ28vaXRlbS92MTtpdGVtdjFiBnByb3RvMw", [file_google_protobuf_timestamp]);
 
 /**
  * @generated from message item.v1.Item
@@ -338,6 +338,142 @@ export const ListItemFeedsResponseSchema: GenMessage<ListItemFeedsResponse> = /*
   messageDesc(file_item_v1_item, 10);
 
 /**
+ * @generated from message item.v1.URLParsingRule
+ */
+export type URLParsingRule = Message<"item.v1.URLParsingRule"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * @generated from field: string domain = 2;
+   */
+  domain: string;
+
+  /**
+   * @generated from field: string rule_type = 3;
+   */
+  ruleType: string;
+
+  /**
+   * @generated from field: string pattern = 4;
+   */
+  pattern: string;
+};
+
+/**
+ * Describes the message item.v1.URLParsingRule.
+ * Use `create(URLParsingRuleSchema)` to create a new message.
+ */
+export const URLParsingRuleSchema: GenMessage<URLParsingRule> = /*@__PURE__*/
+  messageDesc(file_item_v1_item, 11);
+
+/**
+ * @generated from message item.v1.AddURLParsingRuleRequest
+ */
+export type AddURLParsingRuleRequest = Message<"item.v1.AddURLParsingRuleRequest"> & {
+  /**
+   * @generated from field: string domain = 1;
+   */
+  domain: string;
+
+  /**
+   * @generated from field: string rule_type = 2;
+   */
+  ruleType: string;
+
+  /**
+   * @generated from field: string pattern = 3;
+   */
+  pattern: string;
+};
+
+/**
+ * Describes the message item.v1.AddURLParsingRuleRequest.
+ * Use `create(AddURLParsingRuleRequestSchema)` to create a new message.
+ */
+export const AddURLParsingRuleRequestSchema: GenMessage<AddURLParsingRuleRequest> = /*@__PURE__*/
+  messageDesc(file_item_v1_item, 12);
+
+/**
+ * @generated from message item.v1.AddURLParsingRuleResponse
+ */
+export type AddURLParsingRuleResponse = Message<"item.v1.AddURLParsingRuleResponse"> & {
+  /**
+   * @generated from field: item.v1.URLParsingRule rule = 1;
+   */
+  rule?: URLParsingRule;
+};
+
+/**
+ * Describes the message item.v1.AddURLParsingRuleResponse.
+ * Use `create(AddURLParsingRuleResponseSchema)` to create a new message.
+ */
+export const AddURLParsingRuleResponseSchema: GenMessage<AddURLParsingRuleResponse> = /*@__PURE__*/
+  messageDesc(file_item_v1_item, 13);
+
+/**
+ * @generated from message item.v1.DeleteURLParsingRuleRequest
+ */
+export type DeleteURLParsingRuleRequest = Message<"item.v1.DeleteURLParsingRuleRequest"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+};
+
+/**
+ * Describes the message item.v1.DeleteURLParsingRuleRequest.
+ * Use `create(DeleteURLParsingRuleRequestSchema)` to create a new message.
+ */
+export const DeleteURLParsingRuleRequestSchema: GenMessage<DeleteURLParsingRuleRequest> = /*@__PURE__*/
+  messageDesc(file_item_v1_item, 14);
+
+/**
+ * @generated from message item.v1.DeleteURLParsingRuleResponse
+ */
+export type DeleteURLParsingRuleResponse = Message<"item.v1.DeleteURLParsingRuleResponse"> & {
+};
+
+/**
+ * Describes the message item.v1.DeleteURLParsingRuleResponse.
+ * Use `create(DeleteURLParsingRuleResponseSchema)` to create a new message.
+ */
+export const DeleteURLParsingRuleResponseSchema: GenMessage<DeleteURLParsingRuleResponse> = /*@__PURE__*/
+  messageDesc(file_item_v1_item, 15);
+
+/**
+ * @generated from message item.v1.ListURLParsingRulesRequest
+ */
+export type ListURLParsingRulesRequest = Message<"item.v1.ListURLParsingRulesRequest"> & {
+};
+
+/**
+ * Describes the message item.v1.ListURLParsingRulesRequest.
+ * Use `create(ListURLParsingRulesRequestSchema)` to create a new message.
+ */
+export const ListURLParsingRulesRequestSchema: GenMessage<ListURLParsingRulesRequest> = /*@__PURE__*/
+  messageDesc(file_item_v1_item, 16);
+
+/**
+ * @generated from message item.v1.ListURLParsingRulesResponse
+ */
+export type ListURLParsingRulesResponse = Message<"item.v1.ListURLParsingRulesResponse"> & {
+  /**
+   * @generated from field: repeated item.v1.URLParsingRule rules = 1;
+   */
+  rules: URLParsingRule[];
+};
+
+/**
+ * Describes the message item.v1.ListURLParsingRulesResponse.
+ * Use `create(ListURLParsingRulesResponseSchema)` to create a new message.
+ */
+export const ListURLParsingRulesResponseSchema: GenMessage<ListURLParsingRulesResponse> = /*@__PURE__*/
+  messageDesc(file_item_v1_item, 17);
+
+/**
  * @generated from service item.v1.ItemService
  */
 export const ItemService: GenService<{
@@ -372,6 +508,30 @@ export const ItemService: GenService<{
     methodKind: "unary";
     input: typeof ListItemFeedsRequestSchema;
     output: typeof ListItemFeedsResponseSchema;
+  },
+  /**
+   * @generated from rpc item.v1.ItemService.AddURLParsingRule
+   */
+  addURLParsingRule: {
+    methodKind: "unary";
+    input: typeof AddURLParsingRuleRequestSchema;
+    output: typeof AddURLParsingRuleResponseSchema;
+  },
+  /**
+   * @generated from rpc item.v1.ItemService.DeleteURLParsingRule
+   */
+  deleteURLParsingRule: {
+    methodKind: "unary";
+    input: typeof DeleteURLParsingRuleRequestSchema;
+    output: typeof DeleteURLParsingRuleResponseSchema;
+  },
+  /**
+   * @generated from rpc item.v1.ItemService.ListURLParsingRules
+   */
+  listURLParsingRules: {
+    methodKind: "unary";
+    input: typeof ListURLParsingRulesRequestSchema;
+    output: typeof ListURLParsingRulesResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_item_v1_item, 0);

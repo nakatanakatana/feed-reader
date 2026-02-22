@@ -20,7 +20,7 @@ func TestItemRouting(t *testing.T) {
 	s := store.NewStore(db)
 
 	// Create the server
-	server := NewItemServer(s)
+	server := NewItemServer(s, nil)
 
 	// Create the handler
 	path, handler := itemv1connect.NewItemServiceHandler(server)
