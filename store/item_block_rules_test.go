@@ -59,6 +59,7 @@ func TestItemBlocks(t *testing.T) {
 	_, _ = s.CreateFeed(ctx, store.CreateFeedParams{ID: feedID, Url: "http://example.com/feed"})
 	itemID := uuid.NewString()
 	_, _ = s.CreateItem(ctx, store.CreateItemParams{ID: itemID, Url: "http://example.com/item"})
+	_ = s.CreateFeedItem(ctx, store.CreateFeedItemParams{FeedID: feedID, ItemID: itemID})
 
 	// Setup Rule
 	ruleID := uuid.NewString()
@@ -81,6 +82,33 @@ func TestItemBlocks(t *testing.T) {
 	err = s.DB.QueryRowContext(ctx, "SELECT count(*) FROM item_blocks WHERE item_id = ? AND rule_id = ?", itemID, ruleID).Scan(&count)
 	assert.NilError(t, err)
 	assert.Equal(t, count, 1)
+
+	// 3. Verify filtering in ListItems
+	t.Run("Filtering in ListItems", func(t *testing.T) {
+		// Non-blocked item
+		_, _ = s.CreateItem(ctx, store.CreateItemParams{ID: "non-blocked", Url: "http://example.com/ok"})
+		_ = s.CreateFeedItem(ctx, store.CreateFeedItemParams{FeedID: feedID, ItemID: "non-blocked"})
+
+		// List blocked (is_blocked = true)
+		blockedItems, err := s.ListItems(ctx, store.StoreListItemsParams{IsBlocked: true, Limit: 10})
+		assert.NilError(t, err)
+		assert.Assert(t, len(blockedItems) >= 1)
+		found := false
+		for _, item := range blockedItems {
+			if item.ID == itemID {
+				found = true
+				break
+			}
+		}
+		assert.Assert(t, found)
+
+		// List non-blocked (is_blocked = false)
+		nonBlockedItems, err := s.ListItems(ctx, store.StoreListItemsParams{IsBlocked: false, Limit: 10})
+		assert.NilError(t, err)
+		for _, item := range nonBlockedItems {
+			assert.Assert(t, item.ID != itemID)
+		}
+	})
 }
 
 func TestStore_PopulateItemBlocksForRule(t *testing.T) {

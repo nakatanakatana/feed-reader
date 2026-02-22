@@ -108,7 +108,7 @@ func TestQueries_CreateItem(t *testing.T) {
 }
 
 func TestQueries_CreateFeedItem(t *testing.T) {
-	q, _ := setupDB(t)
+	q, s := setupDB(t)
 	ctx := context.Background()
 
 	// Create Feed
@@ -144,8 +144,9 @@ func TestQueries_CreateFeedItem(t *testing.T) {
 	})
 
 	t.Run("ListItems returns CreatedAt", func(t *testing.T) {
-		items, err := q.ListItems(ctx, store.ListItemsParams{
-			Limit: 10,
+		items, err := s.ListItems(ctx, store.StoreListItemsParams{
+			Limit:     10,
+			IsBlocked: false,
 		})
 		assert.NilError(t, err)
 		golden.Assert(t, maskJSON(t, items), "list_items_with_created_at.golden")
