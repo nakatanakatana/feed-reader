@@ -211,6 +211,18 @@ func (s *ItemServer) ListURLParsingRules(ctx context.Context, req *connect.Reque
 	}), nil
 }
 
+func (s *ItemServer) AddItemBlockRules(ctx context.Context, req *connect.Request[itemv1.AddItemBlockRulesRequest]) (*connect.Response[itemv1.AddItemBlockRulesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("not implemented"))
+}
+
+func (s *ItemServer) DeleteItemBlockRule(ctx context.Context, req *connect.Request[itemv1.DeleteItemBlockRuleRequest]) (*connect.Response[itemv1.DeleteItemBlockRuleResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("not implemented"))
+}
+
+func (s *ItemServer) ListItemBlockRules(ctx context.Context, req *connect.Request[itemv1.ListItemBlockRulesRequest]) (*connect.Response[itemv1.ListItemBlockRulesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("not implemented"))
+}
+
 func GetItemRowFromListItemsRow(row store.ListItemsRow) store.GetItemRow {
 	return store.GetItemRow{
 		ID:          row.ID,

@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file item/v1/item.proto.
  */
 export const file_item_v1_item: GenFile = /*@__PURE__*/
-  fileDesc("ChJpdGVtL3YxL2l0ZW0ucHJvdG8SB2l0ZW0udjEi1wEKBEl0ZW0SCgoCaWQYASABKAkSCwoDdXJsGAIgASgJEg0KBXRpdGxlGAMgASgJEhMKC2Rlc2NyaXB0aW9uGAQgASgJEhQKDHB1Ymxpc2hlZF9hdBgFIAEoCRIPCgdmZWVkX2lkGAYgASgJEg8KB2lzX3JlYWQYByABKAgSDgoGYXV0aG9yGAkgASgJEg8KB2NvbnRlbnQYCiABKAkSEQoJaW1hZ2VfdXJsGAsgASgJEhIKCmNhdGVnb3JpZXMYDCABKAkSEgoKY3JlYXRlZF9hdBgNIAEoCSKTAQoITGlzdEl0ZW0SCgoCaWQYASABKAkSDQoFdGl0bGUYAiABKAkSEwoLZGVzY3JpcHRpb24YAyABKAkSFAoMcHVibGlzaGVkX2F0GAQgASgJEhIKCmNyZWF0ZWRfYXQYBSABKAkSDwoHaXNfcmVhZBgGIAEoCBIPCgdmZWVkX2lkGAcgASgJEgsKA3VybBgIIAEoCSIcCg5HZXRJdGVtUmVxdWVzdBIKCgJpZBgBIAEoCSIuCg9HZXRJdGVtUmVzcG9uc2USGwoEaXRlbRgBIAEoCzINLml0ZW0udjEuSXRlbSLPAQoQTGlzdEl0ZW1zUmVxdWVzdBIUCgdmZWVkX2lkGAEgASgJSACIAQESFAoHaXNfcmVhZBgCIAEoCEgBiAEBEhMKBnRhZ19pZBgHIAEoCUgCiAEBEi4KBXNpbmNlGAggASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgDiAEBEg0KBWxpbWl0GAUgASgFEg4KBm9mZnNldBgGIAEoBUIKCghfZmVlZF9pZEIKCghfaXNfcmVhZEIJCgdfdGFnX2lkQggKBl9zaW5jZSJKChFMaXN0SXRlbXNSZXNwb25zZRIgCgVpdGVtcxgBIAMoCzIRLml0ZW0udjEuTGlzdEl0ZW0SEwoLdG90YWxfY291bnQYAiABKAUiSAoXVXBkYXRlSXRlbVN0YXR1c1JlcXVlc3QSCwoDaWRzGAEgAygJEhQKB2lzX3JlYWQYAiABKAhIAIgBAUIKCghfaXNfcmVhZCIaChhVcGRhdGVJdGVtU3RhdHVzUmVzcG9uc2UiJwoUTGlzdEl0ZW1GZWVkc1JlcXVlc3QSDwoHaXRlbV9pZBgBIAEoCSKDAQoISXRlbUZlZWQSDwoHZmVlZF9pZBgBIAEoCRIXCgpmZWVkX3RpdGxlGAIgASgJSACIAQESGQoMcHVibGlzaGVkX2F0GAMgASgJSAGIAQESEgoKY3JlYXRlZF9hdBgEIAEoCUINCgtfZmVlZF90aXRsZUIPCg1fcHVibGlzaGVkX2F0IjkKFUxpc3RJdGVtRmVlZHNSZXNwb25zZRIgCgVmZWVkcxgBIAMoCzIRLml0ZW0udjEuSXRlbUZlZWQiUAoOVVJMUGFyc2luZ1J1bGUSCgoCaWQYASABKAkSDgoGZG9tYWluGAIgASgJEhEKCXJ1bGVfdHlwZRgDIAEoCRIPCgdwYXR0ZXJuGAQgASgJIk4KGEFkZFVSTFBhcnNpbmdSdWxlUmVxdWVzdBIOCgZkb21haW4YASABKAkSEQoJcnVsZV90eXBlGAIgASgJEg8KB3BhdHRlcm4YAyABKAkiQgoZQWRkVVJMUGFyc2luZ1J1bGVSZXNwb25zZRIlCgRydWxlGAEgASgLMhcuaXRlbS52MS5VUkxQYXJzaW5nUnVsZSIpChtEZWxldGVVUkxQYXJzaW5nUnVsZVJlcXVlc3QSCgoCaWQYASABKAkiHgocRGVsZXRlVVJMUGFyc2luZ1J1bGVSZXNwb25zZSIcChpMaXN0VVJMUGFyc2luZ1J1bGVzUmVxdWVzdCJFChtMaXN0VVJMUGFyc2luZ1J1bGVzUmVzcG9uc2USJgoFcnVsZXMYASADKAsyFy5pdGVtLnYxLlVSTFBhcnNpbmdSdWxlMu8ECgtJdGVtU2VydmljZRJBCgdHZXRJdGVtEhcuaXRlbS52MS5HZXRJdGVtUmVxdWVzdBoYLml0ZW0udjEuR2V0SXRlbVJlc3BvbnNlIgOQAgESRwoJTGlzdEl0ZW1zEhkuaXRlbS52MS5MaXN0SXRlbXNSZXF1ZXN0GhouaXRlbS52MS5MaXN0SXRlbXNSZXNwb25zZSIDkAIBElcKEFVwZGF0ZUl0ZW1TdGF0dXMSIC5pdGVtLnYxLlVwZGF0ZUl0ZW1TdGF0dXNSZXF1ZXN0GiEuaXRlbS52MS5VcGRhdGVJdGVtU3RhdHVzUmVzcG9uc2USUwoNTGlzdEl0ZW1GZWVkcxIdLml0ZW0udjEuTGlzdEl0ZW1GZWVkc1JlcXVlc3QaHi5pdGVtLnYxLkxpc3RJdGVtRmVlZHNSZXNwb25zZSIDkAIBEloKEUFkZFVSTFBhcnNpbmdSdWxlEiEuaXRlbS52MS5BZGRVUkxQYXJzaW5nUnVsZVJlcXVlc3QaIi5pdGVtLnYxLkFkZFVSTFBhcnNpbmdSdWxlUmVzcG9uc2USYwoURGVsZXRlVVJMUGFyc2luZ1J1bGUSJC5pdGVtLnYxLkRlbGV0ZVVSTFBhcnNpbmdSdWxlUmVxdWVzdBolLml0ZW0udjEuRGVsZXRlVVJMUGFyc2luZ1J1bGVSZXNwb25zZRJlChNMaXN0VVJMUGFyc2luZ1J1bGVzEiMuaXRlbS52MS5MaXN0VVJMUGFyc2luZ1J1bGVzUmVxdWVzdBokLml0ZW0udjEuTGlzdFVSTFBhcnNpbmdSdWxlc1Jlc3BvbnNlIgOQAgFCPVo7Z2l0aHViLmNvbS9uYWthdGFuYWthdGFuYS9mZWVkLXJlYWRlci9nZW4vZ28vaXRlbS92MTtpdGVtdjFiBnByb3RvMw", [file_google_protobuf_timestamp]);
+  fileDesc("ChJpdGVtL3YxL2l0ZW0ucHJvdG8SB2l0ZW0udjEi1wEKBEl0ZW0SCgoCaWQYASABKAkSCwoDdXJsGAIgASgJEg0KBXRpdGxlGAMgASgJEhMKC2Rlc2NyaXB0aW9uGAQgASgJEhQKDHB1Ymxpc2hlZF9hdBgFIAEoCRIPCgdmZWVkX2lkGAYgASgJEg8KB2lzX3JlYWQYByABKAgSDgoGYXV0aG9yGAkgASgJEg8KB2NvbnRlbnQYCiABKAkSEQoJaW1hZ2VfdXJsGAsgASgJEhIKCmNhdGVnb3JpZXMYDCABKAkSEgoKY3JlYXRlZF9hdBgNIAEoCSKTAQoITGlzdEl0ZW0SCgoCaWQYASABKAkSDQoFdGl0bGUYAiABKAkSEwoLZGVzY3JpcHRpb24YAyABKAkSFAoMcHVibGlzaGVkX2F0GAQgASgJEhIKCmNyZWF0ZWRfYXQYBSABKAkSDwoHaXNfcmVhZBgGIAEoCBIPCgdmZWVkX2lkGAcgASgJEgsKA3VybBgIIAEoCSIcCg5HZXRJdGVtUmVxdWVzdBIKCgJpZBgBIAEoCSIuCg9HZXRJdGVtUmVzcG9uc2USGwoEaXRlbRgBIAEoCzINLml0ZW0udjEuSXRlbSLPAQoQTGlzdEl0ZW1zUmVxdWVzdBIUCgdmZWVkX2lkGAEgASgJSACIAQESFAoHaXNfcmVhZBgCIAEoCEgBiAEBEhMKBnRhZ19pZBgHIAEoCUgCiAEBEi4KBXNpbmNlGAggASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgDiAEBEg0KBWxpbWl0GAUgASgFEg4KBm9mZnNldBgGIAEoBUIKCghfZmVlZF9pZEIKCghfaXNfcmVhZEIJCgdfdGFnX2lkQggKBl9zaW5jZSJKChFMaXN0SXRlbXNSZXNwb25zZRIgCgVpdGVtcxgBIAMoCzIRLml0ZW0udjEuTGlzdEl0ZW0SEwoLdG90YWxfY291bnQYAiABKAUiSAoXVXBkYXRlSXRlbVN0YXR1c1JlcXVlc3QSCwoDaWRzGAEgAygJEhQKB2lzX3JlYWQYAiABKAhIAIgBAUIKCghfaXNfcmVhZCIaChhVcGRhdGVJdGVtU3RhdHVzUmVzcG9uc2UiJwoUTGlzdEl0ZW1GZWVkc1JlcXVlc3QSDwoHaXRlbV9pZBgBIAEoCSKDAQoISXRlbUZlZWQSDwoHZmVlZF9pZBgBIAEoCRIXCgpmZWVkX3RpdGxlGAIgASgJSACIAQESGQoMcHVibGlzaGVkX2F0GAMgASgJSAGIAQESEgoKY3JlYXRlZF9hdBgEIAEoCUINCgtfZmVlZF90aXRsZUIPCg1fcHVibGlzaGVkX2F0IjkKFUxpc3RJdGVtRmVlZHNSZXNwb25zZRIgCgVmZWVkcxgBIAMoCzIRLml0ZW0udjEuSXRlbUZlZWQiUAoOVVJMUGFyc2luZ1J1bGUSCgoCaWQYASABKAkSDgoGZG9tYWluGAIgASgJEhEKCXJ1bGVfdHlwZRgDIAEoCRIPCgdwYXR0ZXJuGAQgASgJIk4KGEFkZFVSTFBhcnNpbmdSdWxlUmVxdWVzdBIOCgZkb21haW4YASABKAkSEQoJcnVsZV90eXBlGAIgASgJEg8KB3BhdHRlcm4YAyABKAkiQgoZQWRkVVJMUGFyc2luZ1J1bGVSZXNwb25zZRIlCgRydWxlGAEgASgLMhcuaXRlbS52MS5VUkxQYXJzaW5nUnVsZSIpChtEZWxldGVVUkxQYXJzaW5nUnVsZVJlcXVlc3QSCgoCaWQYASABKAkiHgocRGVsZXRlVVJMUGFyc2luZ1J1bGVSZXNwb25zZSIcChpMaXN0VVJMUGFyc2luZ1J1bGVzUmVxdWVzdCJFChtMaXN0VVJMUGFyc2luZ1J1bGVzUmVzcG9uc2USJgoFcnVsZXMYASADKAsyFy5pdGVtLnYxLlVSTFBhcnNpbmdSdWxlIl0KDUl0ZW1CbG9ja1J1bGUSCgoCaWQYASABKAkSEQoJcnVsZV90eXBlGAIgASgJEg0KBXZhbHVlGAMgASgJEhMKBmRvbWFpbhgEIAEoCUgAiAEBQgkKB19kb21haW4imwEKGEFkZEl0ZW1CbG9ja1J1bGVzUmVxdWVzdBI1CgVydWxlcxgBIAMoCzImLml0ZW0udjEuQWRkSXRlbUJsb2NrUnVsZXNSZXF1ZXN0LlJ1bGUaSAoEUnVsZRIRCglydWxlX3R5cGUYASABKAkSDQoFdmFsdWUYAiABKAkSEwoGZG9tYWluGAMgASgJSACIAQFCCQoHX2RvbWFpbiIbChlBZGRJdGVtQmxvY2tSdWxlc1Jlc3BvbnNlIigKGkRlbGV0ZUl0ZW1CbG9ja1J1bGVSZXF1ZXN0EgoKAmlkGAEgASgJIh0KG0RlbGV0ZUl0ZW1CbG9ja1J1bGVSZXNwb25zZSIbChlMaXN0SXRlbUJsb2NrUnVsZXNSZXF1ZXN0IkMKGkxpc3RJdGVtQmxvY2tSdWxlc1Jlc3BvbnNlEiUKBXJ1bGVzGAEgAygLMhYuaXRlbS52MS5JdGVtQmxvY2tSdWxlMpEHCgtJdGVtU2VydmljZRJBCgdHZXRJdGVtEhcuaXRlbS52MS5HZXRJdGVtUmVxdWVzdBoYLml0ZW0udjEuR2V0SXRlbVJlc3BvbnNlIgOQAgESRwoJTGlzdEl0ZW1zEhkuaXRlbS52MS5MaXN0SXRlbXNSZXF1ZXN0GhouaXRlbS52MS5MaXN0SXRlbXNSZXNwb25zZSIDkAIBElcKEFVwZGF0ZUl0ZW1TdGF0dXMSIC5pdGVtLnYxLlVwZGF0ZUl0ZW1TdGF0dXNSZXF1ZXN0GiEuaXRlbS52MS5VcGRhdGVJdGVtU3RhdHVzUmVzcG9uc2USUwoNTGlzdEl0ZW1GZWVkcxIdLml0ZW0udjEuTGlzdEl0ZW1GZWVkc1JlcXVlc3QaHi5pdGVtLnYxLkxpc3RJdGVtRmVlZHNSZXNwb25zZSIDkAIBEloKEUFkZFVSTFBhcnNpbmdSdWxlEiEuaXRlbS52MS5BZGRVUkxQYXJzaW5nUnVsZVJlcXVlc3QaIi5pdGVtLnYxLkFkZFVSTFBhcnNpbmdSdWxlUmVzcG9uc2USYwoURGVsZXRlVVJMUGFyc2luZ1J1bGUSJC5pdGVtLnYxLkRlbGV0ZVVSTFBhcnNpbmdSdWxlUmVxdWVzdBolLml0ZW0udjEuRGVsZXRlVVJMUGFyc2luZ1J1bGVSZXNwb25zZRJlChNMaXN0VVJMUGFyc2luZ1J1bGVzEiMuaXRlbS52MS5MaXN0VVJMUGFyc2luZ1J1bGVzUmVxdWVzdBokLml0ZW0udjEuTGlzdFVSTFBhcnNpbmdSdWxlc1Jlc3BvbnNlIgOQAgESWgoRQWRkSXRlbUJsb2NrUnVsZXMSIS5pdGVtLnYxLkFkZEl0ZW1CbG9ja1J1bGVzUmVxdWVzdBoiLml0ZW0udjEuQWRkSXRlbUJsb2NrUnVsZXNSZXNwb25zZRJgChNEZWxldGVJdGVtQmxvY2tSdWxlEiMuaXRlbS52MS5EZWxldGVJdGVtQmxvY2tSdWxlUmVxdWVzdBokLml0ZW0udjEuRGVsZXRlSXRlbUJsb2NrUnVsZVJlc3BvbnNlEmIKEkxpc3RJdGVtQmxvY2tSdWxlcxIiLml0ZW0udjEuTGlzdEl0ZW1CbG9ja1J1bGVzUmVxdWVzdBojLml0ZW0udjEuTGlzdEl0ZW1CbG9ja1J1bGVzUmVzcG9uc2UiA5ACAUI9WjtnaXRodWIuY29tL25ha2F0YW5ha2F0YW5hL2ZlZWQtcmVhZGVyL2dlbi9nby9pdGVtL3YxO2l0ZW12MWIGcHJvdG8z", [file_google_protobuf_timestamp]);
 
 /**
  * @generated from message item.v1.Item
@@ -474,6 +474,155 @@ export const ListURLParsingRulesResponseSchema: GenMessage<ListURLParsingRulesRe
   messageDesc(file_item_v1_item, 17);
 
 /**
+ * @generated from message item.v1.ItemBlockRule
+ */
+export type ItemBlockRule = Message<"item.v1.ItemBlockRule"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * @generated from field: string rule_type = 2;
+   */
+  ruleType: string;
+
+  /**
+   * @generated from field: string value = 3;
+   */
+  value: string;
+
+  /**
+   * @generated from field: optional string domain = 4;
+   */
+  domain?: string;
+};
+
+/**
+ * Describes the message item.v1.ItemBlockRule.
+ * Use `create(ItemBlockRuleSchema)` to create a new message.
+ */
+export const ItemBlockRuleSchema: GenMessage<ItemBlockRule> = /*@__PURE__*/
+  messageDesc(file_item_v1_item, 18);
+
+/**
+ * @generated from message item.v1.AddItemBlockRulesRequest
+ */
+export type AddItemBlockRulesRequest = Message<"item.v1.AddItemBlockRulesRequest"> & {
+  /**
+   * @generated from field: repeated item.v1.AddItemBlockRulesRequest.Rule rules = 1;
+   */
+  rules: AddItemBlockRulesRequest_Rule[];
+};
+
+/**
+ * Describes the message item.v1.AddItemBlockRulesRequest.
+ * Use `create(AddItemBlockRulesRequestSchema)` to create a new message.
+ */
+export const AddItemBlockRulesRequestSchema: GenMessage<AddItemBlockRulesRequest> = /*@__PURE__*/
+  messageDesc(file_item_v1_item, 19);
+
+/**
+ * @generated from message item.v1.AddItemBlockRulesRequest.Rule
+ */
+export type AddItemBlockRulesRequest_Rule = Message<"item.v1.AddItemBlockRulesRequest.Rule"> & {
+  /**
+   * @generated from field: string rule_type = 1;
+   */
+  ruleType: string;
+
+  /**
+   * @generated from field: string value = 2;
+   */
+  value: string;
+
+  /**
+   * @generated from field: optional string domain = 3;
+   */
+  domain?: string;
+};
+
+/**
+ * Describes the message item.v1.AddItemBlockRulesRequest.Rule.
+ * Use `create(AddItemBlockRulesRequest_RuleSchema)` to create a new message.
+ */
+export const AddItemBlockRulesRequest_RuleSchema: GenMessage<AddItemBlockRulesRequest_Rule> = /*@__PURE__*/
+  messageDesc(file_item_v1_item, 19, 0);
+
+/**
+ * @generated from message item.v1.AddItemBlockRulesResponse
+ */
+export type AddItemBlockRulesResponse = Message<"item.v1.AddItemBlockRulesResponse"> & {
+};
+
+/**
+ * Describes the message item.v1.AddItemBlockRulesResponse.
+ * Use `create(AddItemBlockRulesResponseSchema)` to create a new message.
+ */
+export const AddItemBlockRulesResponseSchema: GenMessage<AddItemBlockRulesResponse> = /*@__PURE__*/
+  messageDesc(file_item_v1_item, 20);
+
+/**
+ * @generated from message item.v1.DeleteItemBlockRuleRequest
+ */
+export type DeleteItemBlockRuleRequest = Message<"item.v1.DeleteItemBlockRuleRequest"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+};
+
+/**
+ * Describes the message item.v1.DeleteItemBlockRuleRequest.
+ * Use `create(DeleteItemBlockRuleRequestSchema)` to create a new message.
+ */
+export const DeleteItemBlockRuleRequestSchema: GenMessage<DeleteItemBlockRuleRequest> = /*@__PURE__*/
+  messageDesc(file_item_v1_item, 21);
+
+/**
+ * @generated from message item.v1.DeleteItemBlockRuleResponse
+ */
+export type DeleteItemBlockRuleResponse = Message<"item.v1.DeleteItemBlockRuleResponse"> & {
+};
+
+/**
+ * Describes the message item.v1.DeleteItemBlockRuleResponse.
+ * Use `create(DeleteItemBlockRuleResponseSchema)` to create a new message.
+ */
+export const DeleteItemBlockRuleResponseSchema: GenMessage<DeleteItemBlockRuleResponse> = /*@__PURE__*/
+  messageDesc(file_item_v1_item, 22);
+
+/**
+ * @generated from message item.v1.ListItemBlockRulesRequest
+ */
+export type ListItemBlockRulesRequest = Message<"item.v1.ListItemBlockRulesRequest"> & {
+};
+
+/**
+ * Describes the message item.v1.ListItemBlockRulesRequest.
+ * Use `create(ListItemBlockRulesRequestSchema)` to create a new message.
+ */
+export const ListItemBlockRulesRequestSchema: GenMessage<ListItemBlockRulesRequest> = /*@__PURE__*/
+  messageDesc(file_item_v1_item, 23);
+
+/**
+ * @generated from message item.v1.ListItemBlockRulesResponse
+ */
+export type ListItemBlockRulesResponse = Message<"item.v1.ListItemBlockRulesResponse"> & {
+  /**
+   * @generated from field: repeated item.v1.ItemBlockRule rules = 1;
+   */
+  rules: ItemBlockRule[];
+};
+
+/**
+ * Describes the message item.v1.ListItemBlockRulesResponse.
+ * Use `create(ListItemBlockRulesResponseSchema)` to create a new message.
+ */
+export const ListItemBlockRulesResponseSchema: GenMessage<ListItemBlockRulesResponse> = /*@__PURE__*/
+  messageDesc(file_item_v1_item, 24);
+
+/**
  * @generated from service item.v1.ItemService
  */
 export const ItemService: GenService<{
@@ -532,6 +681,30 @@ export const ItemService: GenService<{
     methodKind: "unary";
     input: typeof ListURLParsingRulesRequestSchema;
     output: typeof ListURLParsingRulesResponseSchema;
+  },
+  /**
+   * @generated from rpc item.v1.ItemService.AddItemBlockRules
+   */
+  addItemBlockRules: {
+    methodKind: "unary";
+    input: typeof AddItemBlockRulesRequestSchema;
+    output: typeof AddItemBlockRulesResponseSchema;
+  },
+  /**
+   * @generated from rpc item.v1.ItemService.DeleteItemBlockRule
+   */
+  deleteItemBlockRule: {
+    methodKind: "unary";
+    input: typeof DeleteItemBlockRuleRequestSchema;
+    output: typeof DeleteItemBlockRuleResponseSchema;
+  },
+  /**
+   * @generated from rpc item.v1.ItemService.ListItemBlockRules
+   */
+  listItemBlockRules: {
+    methodKind: "unary";
+    input: typeof ListItemBlockRulesRequestSchema;
+    output: typeof ListItemBlockRulesResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_item_v1_item, 0);

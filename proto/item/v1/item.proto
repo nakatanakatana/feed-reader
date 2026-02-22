@@ -22,6 +22,11 @@ service ItemService {
   rpc ListURLParsingRules(ListURLParsingRulesRequest) returns (ListURLParsingRulesResponse) {
     option idempotency_level = NO_SIDE_EFFECTS;
   }
+  rpc AddItemBlockRules(AddItemBlockRulesRequest) returns (AddItemBlockRulesResponse);
+  rpc DeleteItemBlockRule(DeleteItemBlockRuleRequest) returns (DeleteItemBlockRuleResponse);
+  rpc ListItemBlockRules(ListItemBlockRulesRequest) returns (ListItemBlockRulesResponse) {
+    option idempotency_level = NO_SIDE_EFFECTS;
+  }
 }
 
 message Item {
@@ -122,4 +127,34 @@ message ListURLParsingRulesRequest {}
 
 message ListURLParsingRulesResponse {
   repeated URLParsingRule rules = 1;
+}
+
+message ItemBlockRule {
+  string id = 1;
+  string rule_type = 2;
+  string value = 3;
+  optional string domain = 4;
+}
+
+message AddItemBlockRulesRequest {
+  message Rule {
+    string rule_type = 1;
+    string value = 2;
+    optional string domain = 3;
+  }
+  repeated Rule rules = 1;
+}
+
+message AddItemBlockRulesResponse {}
+
+message DeleteItemBlockRuleRequest {
+  string id = 1;
+}
+
+message DeleteItemBlockRuleResponse {}
+
+message ListItemBlockRulesRequest {}
+
+message ListItemBlockRulesResponse {
+  repeated ItemBlockRule rules = 1;
 }
