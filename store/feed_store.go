@@ -251,7 +251,8 @@ func (s *Store) SaveFetchedItem(ctx context.Context, params SaveFetchedItemParam
 
 func extractUserInfoLocally(urlStr string, rules []UrlParsingRule) (*string, *string) {
 	for _, rule := range rules {
-		if rule.RuleType == "subdomain" {
+		switch rule.RuleType {
+		case "subdomain":
 			domainPart := getDomainFromURLLocally(urlStr)
 			if strings.HasSuffix(domainPart, "."+rule.Pattern) {
 				user := strings.TrimSuffix(domainPart, "."+rule.Pattern)
@@ -259,7 +260,7 @@ func extractUserInfoLocally(urlStr string, rules []UrlParsingRule) (*string, *st
 					return &user, &rule.Pattern
 				}
 			}
-		} else if rule.RuleType == "path" {
+		case "path":
 			if strings.Contains(urlStr, "://"+rule.Pattern+"/") {
 				parts := strings.Split(urlStr, "://"+rule.Pattern+"/")
 				if len(parts) > 1 {

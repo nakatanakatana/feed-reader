@@ -36,14 +36,7 @@ type StoreCountItemsParams struct {
 }
 
 func (s *Store) CountItems(ctx context.Context, params StoreCountItemsParams) (int64, error) {
-	arg := CountItemsParams{
-		FeedID:    params.FeedID,
-		IsRead:    params.IsRead,
-		TagID:     params.TagID,
-		Since:     params.Since,
-		IsBlocked: params.IsBlocked,
-	}
-	return s.Queries.CountItems(ctx, arg)
+	return s.Queries.CountItems(ctx, CountItemsParams(params))
 }
 
 func (s *Store) GetItem(ctx context.Context, id string) (GetItemRow, error) {

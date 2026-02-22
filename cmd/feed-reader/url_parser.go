@@ -20,7 +20,8 @@ func (p *URLParser) ExtractUserInfo(urlStr string) *store.ExtractedUserInfo {
 	// Simple implementation: check each rule.
 	// For better performance with many rules, we could index by domain.
 	for _, rule := range p.rules {
-		if rule.RuleType == "subdomain" {
+		switch rule.RuleType {
+		case "subdomain":
 			// Expected pattern: <user>.<rule.Pattern>
 			// Example: rule.Pattern = "example.com", url = "https://user1.example.com/post"
 			// Extract domain part from URL first
@@ -34,7 +35,7 @@ func (p *URLParser) ExtractUserInfo(urlStr string) *store.ExtractedUserInfo {
 					}
 				}
 			}
-		} else if rule.RuleType == "path" {
+		case "path":
 			// Expected pattern: <rule.Pattern>/<user>
 			// Example: rule.Pattern = "domain.com/users", url = "https://domain.com/users/user1/post"
 			if strings.Contains(urlStr, "://"+rule.Pattern+"/") {
