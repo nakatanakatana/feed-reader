@@ -10,8 +10,8 @@
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: URL Parsing Rules' (Protocol in workflow.md)
 
 **Phase 2: Item Block Rules Management**
-- [ ] Task: Create migration and table for `item_block_rules`.
-- [ ] Task: Create table for `item_blocks` (blocked item associations).
+- [x] Task: Create migration and table for `item_block_rules`. 5503bf6
+- [x] Task: Create table for `item_blocks` (blocked item associations). 5503bf6
 - [ ] Task: Update `sql/query.sql` and run `sqlc generate` for `item_block_rules` and `item_blocks` operations.
 - [ ] Task: Add `AddItemBlockRules`, `DeleteItemBlockRule`, and `ListItemBlockRules` RPCs to `item.proto`.
 - [ ] Task: Write TDD tests for `item_block_rules` repository logic.
