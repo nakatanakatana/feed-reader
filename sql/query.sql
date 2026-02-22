@@ -446,3 +446,39 @@ WHERE
   ff.next_fetch IS NULL OR ff.next_fetch <= (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
 ORDER BY
   ff.next_fetch ASC;
+
+-- name: CreateURLParsingRule :one
+INSERT INTO url_parsing_rules (
+  id,
+  domain,
+  rule_type,
+  pattern
+) VALUES (
+  ?, ?, ?, ?
+)
+ON CONFLICT(domain, rule_type) DO UPDATE SET
+  pattern = excluded.pattern,
+  updated_at = (strftime('%FT%TZ', 'now'))
+RETURNING *;
+
+-- name: ListURLParsingRules :many
+SELECT
+  *
+FROM
+  url_parsing_rules
+ORDER BY
+  domain ASC, rule_type ASC;
+
+-- name: GetURLParsingRule :one
+SELECT
+  *
+FROM
+  url_parsing_rules
+WHERE
+  id = ?;
+
+-- name: DeleteURLParsingRule :exec
+DELETE FROM
+  url_parsing_rules
+WHERE
+  id = ?;

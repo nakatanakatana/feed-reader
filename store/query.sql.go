@@ -409,6 +409,47 @@ func (q *Queries) CreateTag(ctx context.Context, arg CreateTagParams) (Tag, erro
 	return i, err
 }
 
+const createURLParsingRule = `-- name: CreateURLParsingRule :one
+INSERT INTO url_parsing_rules (
+  id,
+  domain,
+  rule_type,
+  pattern
+) VALUES (
+  ?, ?, ?, ?
+)
+ON CONFLICT(domain, rule_type) DO UPDATE SET
+  pattern = excluded.pattern,
+  updated_at = (strftime('%FT%TZ', 'now'))
+RETURNING id, domain, rule_type, pattern, created_at, updated_at
+`
+
+type CreateURLParsingRuleParams struct {
+	ID       string `json:"id"`
+	Domain   string `json:"domain"`
+	RuleType string `json:"rule_type"`
+	Pattern  string `json:"pattern"`
+}
+
+func (q *Queries) CreateURLParsingRule(ctx context.Context, arg CreateURLParsingRuleParams) (UrlParsingRule, error) {
+	row := q.db.QueryRowContext(ctx, createURLParsingRule,
+		arg.ID,
+		arg.Domain,
+		arg.RuleType,
+		arg.Pattern,
+	)
+	var i UrlParsingRule
+	err := row.Scan(
+		&i.ID,
+		&i.Domain,
+		&i.RuleType,
+		&i.Pattern,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const deleteFeed = `-- name: DeleteFeed :exec
 DELETE FROM
   feeds
@@ -471,6 +512,18 @@ WHERE
 
 func (q *Queries) DeleteTag(ctx context.Context, id string) error {
 	_, err := q.db.ExecContext(ctx, deleteTag, id)
+	return err
+}
+
+const deleteURLParsingRule = `-- name: DeleteURLParsingRule :exec
+DELETE FROM
+  url_parsing_rules
+WHERE
+  id = ?
+`
+
+func (q *Queries) DeleteURLParsingRule(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, deleteURLParsingRule, id)
 	return err
 }
 
@@ -679,6 +732,29 @@ func (q *Queries) GetTagByName(ctx context.Context, name string) (Tag, error) {
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getURLParsingRule = `-- name: GetURLParsingRule :one
+SELECT
+  id, domain, rule_type, pattern, created_at, updated_at
+FROM
+  url_parsing_rules
+WHERE
+  id = ?
+`
+
+func (q *Queries) GetURLParsingRule(ctx context.Context, id string) (UrlParsingRule, error) {
+	row := q.db.QueryRowContext(ctx, getURLParsingRule, id)
+	var i UrlParsingRule
+	err := row.Scan(
+		&i.ID,
+		&i.Domain,
+		&i.RuleType,
+		&i.Pattern,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -1262,6 +1338,45 @@ func (q *Queries) ListTagsByFeedId(ctx context.Context, feedID string) ([]Tag, e
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listURLParsingRules = `-- name: ListURLParsingRules :many
+SELECT
+  id, domain, rule_type, pattern, created_at, updated_at
+FROM
+  url_parsing_rules
+ORDER BY
+  domain ASC, rule_type ASC
+`
+
+func (q *Queries) ListURLParsingRules(ctx context.Context) ([]UrlParsingRule, error) {
+	rows, err := q.db.QueryContext(ctx, listURLParsingRules)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []UrlParsingRule
+	for rows.Next() {
+		var i UrlParsingRule
+		if err := rows.Scan(
+			&i.ID,
+			&i.Domain,
+			&i.RuleType,
+			&i.Pattern,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {

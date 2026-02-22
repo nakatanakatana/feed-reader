@@ -73,3 +73,12 @@ type Tag struct {
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
 }
+
+type UrlParsingRule struct {
+	ID        string `json:"id"`
+	Domain    string `json:"domain"`
+	RuleType  string `json:"rule_type"`
+	Pattern   string `json:"pattern"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
+}
