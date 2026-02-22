@@ -1,0 +1,8 @@
+{
+  "track_id": "fix-item-list-overflow_20260222",
+  "type": "bug",
+  "status": "new",
+  "created_at": "2026-02-22T00:00:00Z",
+  "updated_at": "2026-02-22T00:00:00Z",
+  "description": "ItemListのページで画面幅が狭い端末で横スクロールが出るようになっているので調整してください itemのドメインを表示するようにしたときから入っていそうなので、ドメインが長い時にドメインの表示とPublishedAtの間で改行すると良さそうかもです"
+}
