@@ -57,20 +57,24 @@ JOIN
   feed_items fi ON i.id = fi.item_id
 LEFT JOIN
   item_reads ir ON i.id = ir.item_id
+LEFT JOIN
+  item_blocks ib ON i.id = ib.item_id
 WHERE
   (?1 IS NULL OR fi.feed_id = ?1) AND
   (?2 IS NULL OR COALESCE(ir.is_read, 0) = ?2) AND
   (?3 IS NULL OR EXISTS (
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = ?3
   )) AND
-  (?4 IS NULL OR i.created_at >= ?4)
+  (?4 IS NULL OR i.created_at >= ?4) AND
+  (?5 IS NULL OR (CASE WHEN ib.item_id IS NOT NULL THEN 1 ELSE 0 END = ?5))
 `
 
 type CountItemsParams struct {
-	FeedID interface{} `json:"feed_id"`
-	IsRead interface{} `json:"is_read"`
-	TagID  interface{} `json:"tag_id"`
-	Since  interface{} `json:"since"`
+	FeedID    interface{} `json:"feed_id"`
+	IsRead    interface{} `json:"is_read"`
+	TagID     interface{} `json:"tag_id"`
+	Since     interface{} `json:"since"`
+	IsBlocked interface{} `json:"is_blocked"`
 }
 
 func (q *Queries) CountItems(ctx context.Context, arg CountItemsParams) (int64, error) {
@@ -79,6 +83,7 @@ func (q *Queries) CountItems(ctx context.Context, arg CountItemsParams) (int64, 
 		arg.IsRead,
 		arg.TagID,
 		arg.Since,
+		arg.IsBlocked,
 	)
 	var count int64
 	err := row.Scan(&count)
@@ -93,7 +98,8 @@ FROM
 LEFT JOIN
   item_reads ir ON fi.item_id = ir.item_id
 WHERE
-  COALESCE(ir.is_read, 0) = 0
+  COALESCE(ir.is_read, 0) = 0 AND
+  NOT EXISTS (SELECT 1 FROM item_blocks ib WHERE ib.item_id = fi.item_id)
 `
 
 func (q *Queries) CountTotalUnreadItems(ctx context.Context) (int64, error) {
@@ -106,13 +112,14 @@ func (q *Queries) CountTotalUnreadItems(ctx context.Context) (int64, error) {
 const countUnreadItemsPerFeed = `-- name: CountUnreadItemsPerFeed :many
 SELECT
   fi.feed_id,
-  COUNT(*) AS count
+  COUNT(DISTINCT fi.item_id) AS count
 FROM
   feed_items fi
 LEFT JOIN
   item_reads ir ON fi.item_id = ir.item_id
 WHERE
-  COALESCE(ir.is_read, 0) = 0
+  COALESCE(ir.is_read, 0) = 0 AND
+  NOT EXISTS (SELECT 1 FROM item_blocks ib WHERE ib.item_id = fi.item_id)
 GROUP BY
   fi.feed_id
 `
@@ -156,7 +163,8 @@ JOIN
 LEFT JOIN
   item_reads ir ON fi.item_id = ir.item_id
 WHERE
-  COALESCE(ir.is_read, 0) = 0
+  COALESCE(ir.is_read, 0) = 0 AND
+  NOT EXISTS (SELECT 1 FROM item_blocks ib WHERE ib.item_id = fi.item_id)
 GROUP BY
   ft.tag_id
 `
@@ -366,6 +374,64 @@ func (q *Queries) CreateItem(ctx context.Context, arg CreateItemParams) (Item, e
 	return i, err
 }
 
+const createItemBlock = `-- name: CreateItemBlock :exec
+INSERT INTO item_blocks (
+  item_id,
+  rule_id
+) VALUES (
+  ?, ?
+)
+ON CONFLICT(item_id, rule_id) DO NOTHING
+`
+
+type CreateItemBlockParams struct {
+	ItemID string `json:"item_id"`
+	RuleID string `json:"rule_id"`
+}
+
+func (q *Queries) CreateItemBlock(ctx context.Context, arg CreateItemBlockParams) error {
+	_, err := q.db.ExecContext(ctx, createItemBlock, arg.ItemID, arg.RuleID)
+	return err
+}
+
+const createItemBlockRule = `-- name: CreateItemBlockRule :one
+INSERT INTO item_block_rules (
+  id,
+  rule_type,
+  rule_value,
+  domain
+) VALUES (
+  ?, ?, ?, ?
+)
+RETURNING id, rule_type, rule_value, domain, created_at, updated_at
+`
+
+type CreateItemBlockRuleParams struct {
+	ID        string `json:"id"`
+	RuleType  string `json:"rule_type"`
+	RuleValue string `json:"rule_value"`
+	Domain    string `json:"domain"`
+}
+
+func (q *Queries) CreateItemBlockRule(ctx context.Context, arg CreateItemBlockRuleParams) (ItemBlockRule, error) {
+	row := q.db.QueryRowContext(ctx, createItemBlockRule,
+		arg.ID,
+		arg.RuleType,
+		arg.RuleValue,
+		arg.Domain,
+	)
+	var i ItemBlockRule
+	err := row.Scan(
+		&i.ID,
+		&i.RuleType,
+		&i.RuleValue,
+		&i.Domain,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const createItemRead = `-- name: CreateItemRead :exec
 INSERT INTO item_reads (
   item_id
@@ -403,6 +469,44 @@ func (q *Queries) CreateTag(ctx context.Context, arg CreateTagParams) (Tag, erro
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const createURLParsingRule = `-- name: CreateURLParsingRule :one
+INSERT INTO url_parsing_rules (
+  id,
+  domain,
+  rule_type,
+  pattern
+) VALUES (
+  ?, ?, ?, ?
+)
+RETURNING id, domain, rule_type, pattern, created_at, updated_at
+`
+
+type CreateURLParsingRuleParams struct {
+	ID       string `json:"id"`
+	Domain   string `json:"domain"`
+	RuleType string `json:"rule_type"`
+	Pattern  string `json:"pattern"`
+}
+
+func (q *Queries) CreateURLParsingRule(ctx context.Context, arg CreateURLParsingRuleParams) (UrlParsingRule, error) {
+	row := q.db.QueryRowContext(ctx, createURLParsingRule,
+		arg.ID,
+		arg.Domain,
+		arg.RuleType,
+		arg.Pattern,
+	)
+	var i UrlParsingRule
+	err := row.Scan(
+		&i.ID,
+		&i.Domain,
+		&i.RuleType,
+		&i.Pattern,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -462,6 +566,30 @@ func (q *Queries) DeleteFeedTags(ctx context.Context, feedID string) error {
 	return err
 }
 
+const deleteItemBlockRule = `-- name: DeleteItemBlockRule :exec
+DELETE FROM
+  item_block_rules
+WHERE
+  id = ?
+`
+
+func (q *Queries) DeleteItemBlockRule(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, deleteItemBlockRule, id)
+	return err
+}
+
+const deleteItemBlocksByRuleID = `-- name: DeleteItemBlocksByRuleID :exec
+DELETE FROM
+  item_blocks
+WHERE
+  rule_id = ?
+`
+
+func (q *Queries) DeleteItemBlocksByRuleID(ctx context.Context, ruleID string) error {
+	_, err := q.db.ExecContext(ctx, deleteItemBlocksByRuleID, ruleID)
+	return err
+}
+
 const deleteTag = `-- name: DeleteTag :exec
 DELETE FROM
   tags
@@ -471,6 +599,18 @@ WHERE
 
 func (q *Queries) DeleteTag(ctx context.Context, id string) error {
 	_, err := q.db.ExecContext(ctx, deleteTag, id)
+	return err
+}
+
+const deleteURLParsingRule = `-- name: DeleteURLParsingRule :exec
+DELETE FROM
+  url_parsing_rules
+WHERE
+  id = ?
+`
+
+func (q *Queries) DeleteURLParsingRule(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, deleteURLParsingRule, id)
 	return err
 }
 
@@ -664,6 +804,37 @@ func (q *Queries) GetItem(ctx context.Context, id string) (GetItemRow, error) {
 	return i, err
 }
 
+const getItemBlockRuleByValue = `-- name: GetItemBlockRuleByValue :one
+SELECT
+  id, rule_type, rule_value, domain, created_at, updated_at
+FROM
+  item_block_rules
+WHERE
+  rule_type = ? AND 
+  rule_value = ? AND 
+  domain = ?
+`
+
+type GetItemBlockRuleByValueParams struct {
+	RuleType  string `json:"rule_type"`
+	RuleValue string `json:"rule_value"`
+	Domain    string `json:"domain"`
+}
+
+func (q *Queries) GetItemBlockRuleByValue(ctx context.Context, arg GetItemBlockRuleByValueParams) (ItemBlockRule, error) {
+	row := q.db.QueryRowContext(ctx, getItemBlockRuleByValue, arg.RuleType, arg.RuleValue, arg.Domain)
+	var i ItemBlockRule
+	err := row.Scan(
+		&i.ID,
+		&i.RuleType,
+		&i.RuleValue,
+		&i.Domain,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const getTagByName = `-- name: GetTagByName :one
 SELECT
   id, name, created_at, updated_at
@@ -679,6 +850,57 @@ func (q *Queries) GetTagByName(ctx context.Context, name string) (Tag, error) {
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getURLParsingRule = `-- name: GetURLParsingRule :one
+SELECT
+  id, domain, rule_type, pattern, created_at, updated_at
+FROM
+  url_parsing_rules
+WHERE
+  id = ?
+`
+
+func (q *Queries) GetURLParsingRule(ctx context.Context, id string) (UrlParsingRule, error) {
+	row := q.db.QueryRowContext(ctx, getURLParsingRule, id)
+	var i UrlParsingRule
+	err := row.Scan(
+		&i.ID,
+		&i.Domain,
+		&i.RuleType,
+		&i.Pattern,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getURLParsingRuleByDomain = `-- name: GetURLParsingRuleByDomain :one
+SELECT
+  id, domain, rule_type, pattern, created_at, updated_at
+FROM
+  url_parsing_rules
+WHERE
+  domain = ? AND rule_type = ?
+`
+
+type GetURLParsingRuleByDomainParams struct {
+	Domain   string `json:"domain"`
+	RuleType string `json:"rule_type"`
+}
+
+func (q *Queries) GetURLParsingRuleByDomain(ctx context.Context, arg GetURLParsingRuleByDomainParams) (UrlParsingRule, error) {
+	row := q.db.QueryRowContext(ctx, getURLParsingRuleByDomain, arg.Domain, arg.RuleType)
+	var i UrlParsingRule
+	err := row.Scan(
+		&i.ID,
+		&i.Domain,
+		&i.RuleType,
+		&i.Pattern,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -955,6 +1177,77 @@ func (q *Queries) ListFeedsToFetch(ctx context.Context) ([]ListFeedsToFetchRow, 
 	return items, nil
 }
 
+const listItemBlockRules = `-- name: ListItemBlockRules :many
+SELECT
+  id, rule_type, rule_value, domain, created_at, updated_at
+FROM
+  item_block_rules
+ORDER BY
+  rule_type ASC, rule_value ASC
+`
+
+func (q *Queries) ListItemBlockRules(ctx context.Context) ([]ItemBlockRule, error) {
+	rows, err := q.db.QueryContext(ctx, listItemBlockRules)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ItemBlockRule
+	for rows.Next() {
+		var i ItemBlockRule
+		if err := rows.Scan(
+			&i.ID,
+			&i.RuleType,
+			&i.RuleValue,
+			&i.Domain,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listItemBlocks = `-- name: ListItemBlocks :many
+SELECT
+  item_id, rule_id, created_at
+FROM
+  item_blocks
+WHERE
+  item_id = ?
+`
+
+func (q *Queries) ListItemBlocks(ctx context.Context, itemID string) ([]ItemBlock, error) {
+	rows, err := q.db.QueryContext(ctx, listItemBlocks, itemID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ItemBlock
+	for rows.Next() {
+		var i ItemBlock
+		if err := rows.Scan(&i.ItemID, &i.RuleID, &i.CreatedAt); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listItemFeeds = `-- name: ListItemFeeds :many
 SELECT
   fi.feed_id,
@@ -1025,27 +1318,31 @@ JOIN
   feed_items fi ON i.id = fi.item_id
 LEFT JOIN
   item_reads ir ON i.id = ir.item_id
+LEFT JOIN
+  item_blocks ib ON i.id = ib.item_id
 WHERE
   (?1 IS NULL OR fi.feed_id = ?1) AND
   (?2 IS NULL OR COALESCE(ir.is_read, 0) = ?2) AND
   (?3 IS NULL OR EXISTS (
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = ?3
   )) AND
-  (?4 IS NULL OR i.created_at >= ?4)
+  (?4 IS NULL OR i.created_at >= ?4) AND
+  (?5 IS NULL OR (CASE WHEN ib.item_id IS NOT NULL THEN 1 ELSE 0 END = ?5))
 GROUP BY
   i.id
 ORDER BY
   i.created_at ASC
-LIMIT ?6 OFFSET ?5
+LIMIT ?7 OFFSET ?6
 `
 
 type ListItemsParams struct {
-	FeedID interface{} `json:"feed_id"`
-	IsRead interface{} `json:"is_read"`
-	TagID  interface{} `json:"tag_id"`
-	Since  interface{} `json:"since"`
-	Offset int64       `json:"offset"`
-	Limit  int64       `json:"limit"`
+	FeedID    interface{} `json:"feed_id"`
+	IsRead    interface{} `json:"is_read"`
+	TagID     interface{} `json:"tag_id"`
+	Since     interface{} `json:"since"`
+	IsBlocked interface{} `json:"is_blocked"`
+	Offset    int64       `json:"offset"`
+	Limit     int64       `json:"limit"`
 }
 
 type ListItemsRow struct {
@@ -1070,6 +1367,7 @@ func (q *Queries) ListItems(ctx context.Context, arg ListItemsParams) ([]ListIte
 		arg.IsRead,
 		arg.TagID,
 		arg.Since,
+		arg.IsBlocked,
 		arg.Offset,
 		arg.Limit,
 	)
@@ -1093,6 +1391,69 @@ func (q *Queries) ListItems(ctx context.Context, arg ListItemsParams) ([]ListIte
 			&i.Categories,
 			&i.CreatedAt,
 			&i.FeedID,
+			&i.IsRead,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listItemsForBlocking = `-- name: ListItemsForBlocking :many
+SELECT DISTINCT
+  i.id, i.url, i.title, i.description, i.published_at, i.author, i.guid, i.content, i.image_url, i.categories, i.created_at, i.updated_at,
+  CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read
+FROM
+  items i
+LEFT JOIN
+  item_reads ir ON i.id = ir.item_id
+`
+
+type ListItemsForBlockingRow struct {
+	ID          string  `json:"id"`
+	Url         string  `json:"url"`
+	Title       *string `json:"title"`
+	Description *string `json:"description"`
+	PublishedAt *string `json:"published_at"`
+	Author      *string `json:"author"`
+	Guid        *string `json:"guid"`
+	Content     *string `json:"content"`
+	ImageUrl    *string `json:"image_url"`
+	Categories  *string `json:"categories"`
+	CreatedAt   string  `json:"created_at"`
+	UpdatedAt   string  `json:"updated_at"`
+	IsRead      int64   `json:"is_read"`
+}
+
+func (q *Queries) ListItemsForBlocking(ctx context.Context) ([]ListItemsForBlockingRow, error) {
+	rows, err := q.db.QueryContext(ctx, listItemsForBlocking)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListItemsForBlockingRow
+	for rows.Next() {
+		var i ListItemsForBlockingRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Url,
+			&i.Title,
+			&i.Description,
+			&i.PublishedAt,
+			&i.Author,
+			&i.Guid,
+			&i.Content,
+			&i.ImageUrl,
+			&i.Categories,
+			&i.CreatedAt,
+			&i.UpdatedAt,
 			&i.IsRead,
 		); err != nil {
 			return nil, err
@@ -1262,6 +1623,45 @@ func (q *Queries) ListTagsByFeedId(ctx context.Context, feedID string) ([]Tag, e
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listURLParsingRules = `-- name: ListURLParsingRules :many
+SELECT
+  id, domain, rule_type, pattern, created_at, updated_at
+FROM
+  url_parsing_rules
+ORDER BY
+  domain ASC, rule_type ASC
+`
+
+func (q *Queries) ListURLParsingRules(ctx context.Context) ([]UrlParsingRule, error) {
+	rows, err := q.db.QueryContext(ctx, listURLParsingRules)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []UrlParsingRule
+	for rows.Next() {
+		var i UrlParsingRule
+		if err := rows.Scan(
+			&i.ID,
+			&i.Domain,
+			&i.RuleType,
+			&i.Pattern,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {

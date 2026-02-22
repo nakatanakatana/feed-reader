@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
+	"log/slog"
 	"time"
 
 	"connectrpc.com/connect"
@@ -13,11 +15,18 @@ import (
 )
 
 type ItemServer struct {
-	store *store.Store
+	store         *store.Store
+	uuidGenerator UUIDGenerator
 }
 
-func NewItemServer(s *store.Store) itemv1connect.ItemServiceHandler {
-	return &ItemServer{store: s}
+func NewItemServer(s *store.Store, uuidGen UUIDGenerator) itemv1connect.ItemServiceHandler {
+	if uuidGen == nil {
+		uuidGen = realUUIDGenerator{}
+	}
+	return &ItemServer{
+		store:         s,
+		uuidGenerator: uuidGen,
+	}
 }
 
 func (s *ItemServer) GetItem(ctx context.Context, req *connect.Request[itemv1.GetItemRequest]) (*connect.Response[itemv1.GetItemResponse], error) {
@@ -65,23 +74,25 @@ func (s *ItemServer) ListItems(ctx context.Context, req *connect.Request[itemv1.
 	var totalCount int64
 	var err error
 
-	totalCount, err = s.store.CountItems(ctx, store.CountItemsParams{
-		FeedID: feedID,
-		IsRead: isRead,
-		TagID:  tagID,
-		Since:  since,
+	totalCount, err = s.store.CountItems(ctx, store.StoreCountItemsParams{
+		FeedID:    feedID,
+		IsRead:    isRead,
+		TagID:     tagID,
+		Since:     since,
+		IsBlocked: false,
 	})
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	rows, err := s.store.ListItems(ctx, store.ListItemsParams{
-		FeedID: feedID,
-		IsRead: isRead,
-		TagID:  tagID,
-		Since:  since,
-		Limit:  limit,
-		Offset: offset,
+	rows, err := s.store.ListItems(ctx, store.StoreListItemsParams{
+		FeedID:    feedID,
+		IsRead:    isRead,
+		TagID:     tagID,
+		Since:     since,
+		Limit:     limit,
+		Offset:    offset,
+		IsBlocked: false,
 	})
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
@@ -146,6 +157,184 @@ func (s *ItemServer) ListItemFeeds(ctx context.Context, req *connect.Request[ite
 
 	return connect.NewResponse(&itemv1.ListItemFeedsResponse{
 		Feeds: protoFeeds,
+	}), nil
+}
+
+func (s *ItemServer) AddURLParsingRule(ctx context.Context, req *connect.Request[itemv1.AddURLParsingRuleRequest]) (*connect.Response[itemv1.AddURLParsingRuleResponse], error) {
+	if req.Msg.RuleType != "subdomain" && req.Msg.RuleType != "path" {
+		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("invalid rule_type: %s. Must be 'subdomain' or 'path'", req.Msg.RuleType))
+	}
+	if req.Msg.Domain == "" {
+		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("domain is required"))
+	}
+	if req.Msg.Pattern == "" {
+		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("pattern is required"))
+	}
+
+	newUUID, err := s.uuidGenerator.NewRandom()
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to generate UUID: %w", err))
+	}
+
+	rule, err := s.store.CreateURLParsingRule(ctx, store.CreateURLParsingRuleParams{
+		ID:       newUUID.String(),
+		Domain:   req.Msg.Domain,
+		RuleType: req.Msg.RuleType,
+		Pattern:  req.Msg.Pattern,
+	})
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	return connect.NewResponse(&itemv1.AddURLParsingRuleResponse{
+		Rule: &itemv1.URLParsingRule{
+			Id:       rule.ID,
+			Domain:   rule.Domain,
+			RuleType: rule.RuleType,
+			Pattern:  rule.Pattern,
+		},
+	}), nil
+}
+
+func (s *ItemServer) DeleteURLParsingRule(ctx context.Context, req *connect.Request[itemv1.DeleteURLParsingRuleRequest]) (*connect.Response[itemv1.DeleteURLParsingRuleResponse], error) {
+	if err := s.store.DeleteURLParsingRule(ctx, req.Msg.Id); err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	return connect.NewResponse(&itemv1.DeleteURLParsingRuleResponse{}), nil
+}
+
+func (s *ItemServer) ListURLParsingRules(ctx context.Context, req *connect.Request[itemv1.ListURLParsingRulesRequest]) (*connect.Response[itemv1.ListURLParsingRulesResponse], error) {
+	rules, err := s.store.ListURLParsingRules(ctx)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	protoRules := make([]*itemv1.URLParsingRule, len(rules))
+	for i, rule := range rules {
+		protoRules[i] = &itemv1.URLParsingRule{
+			Id:       rule.ID,
+			Domain:   rule.Domain,
+			RuleType: rule.RuleType,
+			Pattern:  rule.Pattern,
+		}
+	}
+
+	return connect.NewResponse(&itemv1.ListURLParsingRulesResponse{
+		Rules: protoRules,
+	}), nil
+}
+
+func (s *ItemServer) AddItemBlockRules(ctx context.Context, req *connect.Request[itemv1.AddItemBlockRulesRequest]) (*connect.Response[itemv1.AddItemBlockRulesResponse], error) {
+	params := make([]store.CreateItemBlockRuleParams, len(req.Msg.Rules))
+	for i, r := range req.Msg.Rules {
+		if r.Value == "" {
+			return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("value is required for rule at index %d", i))
+		}
+
+		switch r.RuleType {
+		case "user", "domain", "keyword":
+			// valid
+		case "user_domain":
+			if r.Domain == nil || *r.Domain == "" {
+				return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("domain is required for user_domain rule at index %d", i))
+			}
+		default:
+			return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("invalid rule_type at index %d: %s. Must be 'user', 'domain', 'user_domain', or 'keyword'", i, r.RuleType))
+		}
+
+		newUUID, err := s.uuidGenerator.NewRandom()
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to generate UUID: %w", err))
+		}
+
+		domain := ""
+		if r.Domain != nil {
+			domain = *r.Domain
+		}
+
+		params[i] = store.CreateItemBlockRuleParams{
+			ID:        newUUID.String(),
+			RuleType:  r.RuleType,
+			RuleValue: r.Value,
+			Domain:    domain,
+		}
+	}
+
+	rules, err := s.store.CreateItemBlockRules(ctx, params)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	// Trigger scanning of existing items for these new rules
+	go func() {
+		// Use a background context with timeout for the scanning process
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+		defer cancel()
+
+		// 1. Fetch all URL parsing rules
+		urlRules, err := s.store.ListURLParsingRules(ctx)
+		if err != nil {
+			slog.Error("Background block scan failed to list URL rules", "error", err)
+			return
+		}
+		parser := NewURLParser(urlRules)
+
+		// 2. Fetch all items
+		items, err := s.store.ListItemsForBlocking(ctx)
+		if err != nil {
+			slog.Error("Background block scan failed to list items", "error", err)
+			return
+		}
+
+		// 3. Pre-extract info for all items to avoid redundant parsing
+		extractedInfoMap := make(map[string]store.ExtractedUserInfo)
+		for _, item := range items {
+			if info := parser.ExtractUserInfo(item.Url); info != nil {
+				extractedInfoMap[item.Url] = *info
+			}
+		}
+
+		// 4. For each new rule, populate blocks
+		for _, rule := range rules {
+			if err := s.store.PopulateItemBlocksForRule(ctx, rule, items, extractedInfoMap); err != nil {
+				slog.Error("Background block scan failed for rule", "rule_id", rule.ID, "error", err)
+			}
+		}
+	}()
+
+	return connect.NewResponse(&itemv1.AddItemBlockRulesResponse{}), nil
+}
+
+func (s *ItemServer) DeleteItemBlockRule(ctx context.Context, req *connect.Request[itemv1.DeleteItemBlockRuleRequest]) (*connect.Response[itemv1.DeleteItemBlockRuleResponse], error) {
+	if err := s.store.DeleteItemBlockRule(ctx, req.Msg.Id); err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	return connect.NewResponse(&itemv1.DeleteItemBlockRuleResponse{}), nil
+}
+
+func (s *ItemServer) ListItemBlockRules(ctx context.Context, req *connect.Request[itemv1.ListItemBlockRulesRequest]) (*connect.Response[itemv1.ListItemBlockRulesResponse], error) {
+	rules, err := s.store.ListItemBlockRules(ctx)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	protoRules := make([]*itemv1.ItemBlockRule, len(rules))
+	for i, rule := range rules {
+		var domain *string
+		if rule.Domain != "" {
+			d := rule.Domain
+			domain = &d
+		}
+		protoRules[i] = &itemv1.ItemBlockRule{
+			Id:       rule.ID,
+			RuleType: rule.RuleType,
+			Value:    rule.RuleValue,
+			Domain:   domain,
+		}
+	}
+
+	return connect.NewResponse(&itemv1.ListItemBlockRulesResponse{
+		Rules: protoRules,
 	}), nil
 }
 

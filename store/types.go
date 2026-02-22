@@ -32,3 +32,26 @@ type FullFeed struct {
 type UUIDGenerator interface {
 	NewRandom() (uuid.UUID, error)
 }
+
+type FullItem struct {
+	ID          string  `json:"id"`
+	Url         string  `json:"url"`
+	Title       *string `json:"title"`
+	Description *string `json:"description"`
+	PublishedAt *string `json:"published_at"`
+	Author      *string `json:"author"`
+	Guid        *string `json:"guid"`
+	Content     *string `json:"content"`
+	ImageUrl    *string `json:"image_url"`
+	Categories  *string `json:"categories"`
+	CreatedAt   string  `json:"created_at"`
+	UpdatedAt   string  `json:"updated_at"`
+	FeedID      string  `json:"feed_id"`
+	IsRead      bool    `json:"is_read"`
+}
+
+// ExtractedUserInfo contains information parsed from a URL.
+type ExtractedUserInfo struct {
+	User   string
+	Domain string
+}

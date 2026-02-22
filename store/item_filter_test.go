@@ -46,10 +46,11 @@ func TestStore_ListItems_DateFilter(t *testing.T) {
 
 	t.Run("Filter by 24h", func(t *testing.T) {
 		since := now.Add(-24 * time.Hour).Format(time.RFC3339)
-		items, err := s.ListItems(ctx, store.ListItemsParams{
-			Since:  &since,
-			Limit:  10,
-			Offset: 0,
+		items, err := s.ListItems(ctx, store.StoreListItemsParams{
+			Since:     &since,
+			Limit:     10,
+			Offset:    0,
+			IsBlocked: false,
 		})
 		assert.NilError(t, err)
 		assert.Assert(t, cmp.Len(items, 2))
@@ -60,10 +61,11 @@ func TestStore_ListItems_DateFilter(t *testing.T) {
 
 	t.Run("Filter by 1h", func(t *testing.T) {
 		since := now.Add(-2 * time.Hour).Format(time.RFC3339)
-		items, err := s.ListItems(ctx, store.ListItemsParams{
-			Since:  &since,
-			Limit:  10,
-			Offset: 0,
+		items, err := s.ListItems(ctx, store.StoreListItemsParams{
+			Since:     &since,
+			Limit:     10,
+			Offset:    0,
+			IsBlocked: false,
 		})
 		assert.NilError(t, err)
 		assert.Assert(t, cmp.Len(items, 1))
@@ -71,10 +73,11 @@ func TestStore_ListItems_DateFilter(t *testing.T) {
 	})
 
 	t.Run("All Time", func(t *testing.T) {
-		items, err := s.ListItems(ctx, store.ListItemsParams{
-			Since:  nil,
-			Limit:  10,
-			Offset: 0,
+		items, err := s.ListItems(ctx, store.StoreListItemsParams{
+			Since:     nil,
+			Limit:     10,
+			Offset:    0,
+			IsBlocked: false,
 		})
 		assert.NilError(t, err)
 		assert.Assert(t, cmp.Len(items, 3))
@@ -82,8 +85,9 @@ func TestStore_ListItems_DateFilter(t *testing.T) {
 
 	t.Run("Count with Filter", func(t *testing.T) {
 		since := now.Add(-24 * time.Hour).Format(time.RFC3339)
-		count, err := s.CountItems(ctx, store.CountItemsParams{
-			Since: &since,
+		count, err := s.CountItems(ctx, store.StoreCountItemsParams{
+			Since:     &since,
+			IsBlocked: false,
 		})
 		assert.NilError(t, err)
 		assert.Equal(t, count, int64(2))
@@ -127,16 +131,18 @@ func TestStore_ListItems_DateFilter_Monotonic_PBT(t *testing.T) {
 		sinceA := now.Add(-time.Duration(offsetA) * time.Hour).Format(time.RFC3339)
 		sinceB := now.Add(-time.Duration(offsetB) * time.Hour).Format(time.RFC3339)
 
-		itemsA, err := s.ListItems(ctx, store.ListItemsParams{
-			Since:  &sinceA,
-			Limit:  100,
-			Offset: 0,
+		itemsA, err := s.ListItems(ctx, store.StoreListItemsParams{
+			Since:     &sinceA,
+			Limit:     100,
+			Offset:    0,
+			IsBlocked: false,
 		})
 		assert.NilError(t, err)
-		itemsB, err := s.ListItems(ctx, store.ListItemsParams{
-			Since:  &sinceB,
-			Limit:  100,
-			Offset: 0,
+		itemsB, err := s.ListItems(ctx, store.StoreListItemsParams{
+			Since:     &sinceB,
+			Limit:     100,
+			Offset:    0,
+			IsBlocked: false,
 		})
 		assert.NilError(t, err)
 
@@ -175,15 +181,17 @@ func TestStore_ListItems_CountMatches_List_PBT(t *testing.T) {
 		offset := rapid.Int64Range(0, maxHours).Draw(t, "offset")
 		since := now.Add(-time.Duration(offset) * time.Hour).Format(time.RFC3339)
 
-		items, err := s.ListItems(ctx, store.ListItemsParams{
-			Since:  &since,
-			Limit:  100,
-			Offset: 0,
+		items, err := s.ListItems(ctx, store.StoreListItemsParams{
+			Since:     &since,
+			Limit:     100,
+			Offset:    0,
+			IsBlocked: false,
 		})
 		assert.NilError(t, err)
 
-		count, err := s.CountItems(ctx, store.CountItemsParams{
-			Since: &since,
+		count, err := s.CountItems(ctx, store.StoreCountItemsParams{
+			Since:     &since,
+			IsBlocked: false,
 		})
 		assert.NilError(t, err)
 

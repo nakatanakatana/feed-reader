@@ -43,6 +43,24 @@ const (
 	// ItemServiceListItemFeedsProcedure is the fully-qualified name of the ItemService's ListItemFeeds
 	// RPC.
 	ItemServiceListItemFeedsProcedure = "/item.v1.ItemService/ListItemFeeds"
+	// ItemServiceAddURLParsingRuleProcedure is the fully-qualified name of the ItemService's
+	// AddURLParsingRule RPC.
+	ItemServiceAddURLParsingRuleProcedure = "/item.v1.ItemService/AddURLParsingRule"
+	// ItemServiceDeleteURLParsingRuleProcedure is the fully-qualified name of the ItemService's
+	// DeleteURLParsingRule RPC.
+	ItemServiceDeleteURLParsingRuleProcedure = "/item.v1.ItemService/DeleteURLParsingRule"
+	// ItemServiceListURLParsingRulesProcedure is the fully-qualified name of the ItemService's
+	// ListURLParsingRules RPC.
+	ItemServiceListURLParsingRulesProcedure = "/item.v1.ItemService/ListURLParsingRules"
+	// ItemServiceAddItemBlockRulesProcedure is the fully-qualified name of the ItemService's
+	// AddItemBlockRules RPC.
+	ItemServiceAddItemBlockRulesProcedure = "/item.v1.ItemService/AddItemBlockRules"
+	// ItemServiceDeleteItemBlockRuleProcedure is the fully-qualified name of the ItemService's
+	// DeleteItemBlockRule RPC.
+	ItemServiceDeleteItemBlockRuleProcedure = "/item.v1.ItemService/DeleteItemBlockRule"
+	// ItemServiceListItemBlockRulesProcedure is the fully-qualified name of the ItemService's
+	// ListItemBlockRules RPC.
+	ItemServiceListItemBlockRulesProcedure = "/item.v1.ItemService/ListItemBlockRules"
 )
 
 // ItemServiceClient is a client for the item.v1.ItemService service.
@@ -51,6 +69,12 @@ type ItemServiceClient interface {
 	ListItems(context.Context, *connect.Request[v1.ListItemsRequest]) (*connect.Response[v1.ListItemsResponse], error)
 	UpdateItemStatus(context.Context, *connect.Request[v1.UpdateItemStatusRequest]) (*connect.Response[v1.UpdateItemStatusResponse], error)
 	ListItemFeeds(context.Context, *connect.Request[v1.ListItemFeedsRequest]) (*connect.Response[v1.ListItemFeedsResponse], error)
+	AddURLParsingRule(context.Context, *connect.Request[v1.AddURLParsingRuleRequest]) (*connect.Response[v1.AddURLParsingRuleResponse], error)
+	DeleteURLParsingRule(context.Context, *connect.Request[v1.DeleteURLParsingRuleRequest]) (*connect.Response[v1.DeleteURLParsingRuleResponse], error)
+	ListURLParsingRules(context.Context, *connect.Request[v1.ListURLParsingRulesRequest]) (*connect.Response[v1.ListURLParsingRulesResponse], error)
+	AddItemBlockRules(context.Context, *connect.Request[v1.AddItemBlockRulesRequest]) (*connect.Response[v1.AddItemBlockRulesResponse], error)
+	DeleteItemBlockRule(context.Context, *connect.Request[v1.DeleteItemBlockRuleRequest]) (*connect.Response[v1.DeleteItemBlockRuleResponse], error)
+	ListItemBlockRules(context.Context, *connect.Request[v1.ListItemBlockRulesRequest]) (*connect.Response[v1.ListItemBlockRulesResponse], error)
 }
 
 // NewItemServiceClient constructs a client for the item.v1.ItemService service. By default, it uses
@@ -91,15 +115,59 @@ func NewItemServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
+		addURLParsingRule: connect.NewClient[v1.AddURLParsingRuleRequest, v1.AddURLParsingRuleResponse](
+			httpClient,
+			baseURL+ItemServiceAddURLParsingRuleProcedure,
+			connect.WithSchema(itemServiceMethods.ByName("AddURLParsingRule")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteURLParsingRule: connect.NewClient[v1.DeleteURLParsingRuleRequest, v1.DeleteURLParsingRuleResponse](
+			httpClient,
+			baseURL+ItemServiceDeleteURLParsingRuleProcedure,
+			connect.WithSchema(itemServiceMethods.ByName("DeleteURLParsingRule")),
+			connect.WithClientOptions(opts...),
+		),
+		listURLParsingRules: connect.NewClient[v1.ListURLParsingRulesRequest, v1.ListURLParsingRulesResponse](
+			httpClient,
+			baseURL+ItemServiceListURLParsingRulesProcedure,
+			connect.WithSchema(itemServiceMethods.ByName("ListURLParsingRules")),
+			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+			connect.WithClientOptions(opts...),
+		),
+		addItemBlockRules: connect.NewClient[v1.AddItemBlockRulesRequest, v1.AddItemBlockRulesResponse](
+			httpClient,
+			baseURL+ItemServiceAddItemBlockRulesProcedure,
+			connect.WithSchema(itemServiceMethods.ByName("AddItemBlockRules")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteItemBlockRule: connect.NewClient[v1.DeleteItemBlockRuleRequest, v1.DeleteItemBlockRuleResponse](
+			httpClient,
+			baseURL+ItemServiceDeleteItemBlockRuleProcedure,
+			connect.WithSchema(itemServiceMethods.ByName("DeleteItemBlockRule")),
+			connect.WithClientOptions(opts...),
+		),
+		listItemBlockRules: connect.NewClient[v1.ListItemBlockRulesRequest, v1.ListItemBlockRulesResponse](
+			httpClient,
+			baseURL+ItemServiceListItemBlockRulesProcedure,
+			connect.WithSchema(itemServiceMethods.ByName("ListItemBlockRules")),
+			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // itemServiceClient implements ItemServiceClient.
 type itemServiceClient struct {
-	getItem          *connect.Client[v1.GetItemRequest, v1.GetItemResponse]
-	listItems        *connect.Client[v1.ListItemsRequest, v1.ListItemsResponse]
-	updateItemStatus *connect.Client[v1.UpdateItemStatusRequest, v1.UpdateItemStatusResponse]
-	listItemFeeds    *connect.Client[v1.ListItemFeedsRequest, v1.ListItemFeedsResponse]
+	getItem              *connect.Client[v1.GetItemRequest, v1.GetItemResponse]
+	listItems            *connect.Client[v1.ListItemsRequest, v1.ListItemsResponse]
+	updateItemStatus     *connect.Client[v1.UpdateItemStatusRequest, v1.UpdateItemStatusResponse]
+	listItemFeeds        *connect.Client[v1.ListItemFeedsRequest, v1.ListItemFeedsResponse]
+	addURLParsingRule    *connect.Client[v1.AddURLParsingRuleRequest, v1.AddURLParsingRuleResponse]
+	deleteURLParsingRule *connect.Client[v1.DeleteURLParsingRuleRequest, v1.DeleteURLParsingRuleResponse]
+	listURLParsingRules  *connect.Client[v1.ListURLParsingRulesRequest, v1.ListURLParsingRulesResponse]
+	addItemBlockRules    *connect.Client[v1.AddItemBlockRulesRequest, v1.AddItemBlockRulesResponse]
+	deleteItemBlockRule  *connect.Client[v1.DeleteItemBlockRuleRequest, v1.DeleteItemBlockRuleResponse]
+	listItemBlockRules   *connect.Client[v1.ListItemBlockRulesRequest, v1.ListItemBlockRulesResponse]
 }
 
 // GetItem calls item.v1.ItemService.GetItem.
@@ -122,12 +190,48 @@ func (c *itemServiceClient) ListItemFeeds(ctx context.Context, req *connect.Requ
 	return c.listItemFeeds.CallUnary(ctx, req)
 }
 
+// AddURLParsingRule calls item.v1.ItemService.AddURLParsingRule.
+func (c *itemServiceClient) AddURLParsingRule(ctx context.Context, req *connect.Request[v1.AddURLParsingRuleRequest]) (*connect.Response[v1.AddURLParsingRuleResponse], error) {
+	return c.addURLParsingRule.CallUnary(ctx, req)
+}
+
+// DeleteURLParsingRule calls item.v1.ItemService.DeleteURLParsingRule.
+func (c *itemServiceClient) DeleteURLParsingRule(ctx context.Context, req *connect.Request[v1.DeleteURLParsingRuleRequest]) (*connect.Response[v1.DeleteURLParsingRuleResponse], error) {
+	return c.deleteURLParsingRule.CallUnary(ctx, req)
+}
+
+// ListURLParsingRules calls item.v1.ItemService.ListURLParsingRules.
+func (c *itemServiceClient) ListURLParsingRules(ctx context.Context, req *connect.Request[v1.ListURLParsingRulesRequest]) (*connect.Response[v1.ListURLParsingRulesResponse], error) {
+	return c.listURLParsingRules.CallUnary(ctx, req)
+}
+
+// AddItemBlockRules calls item.v1.ItemService.AddItemBlockRules.
+func (c *itemServiceClient) AddItemBlockRules(ctx context.Context, req *connect.Request[v1.AddItemBlockRulesRequest]) (*connect.Response[v1.AddItemBlockRulesResponse], error) {
+	return c.addItemBlockRules.CallUnary(ctx, req)
+}
+
+// DeleteItemBlockRule calls item.v1.ItemService.DeleteItemBlockRule.
+func (c *itemServiceClient) DeleteItemBlockRule(ctx context.Context, req *connect.Request[v1.DeleteItemBlockRuleRequest]) (*connect.Response[v1.DeleteItemBlockRuleResponse], error) {
+	return c.deleteItemBlockRule.CallUnary(ctx, req)
+}
+
+// ListItemBlockRules calls item.v1.ItemService.ListItemBlockRules.
+func (c *itemServiceClient) ListItemBlockRules(ctx context.Context, req *connect.Request[v1.ListItemBlockRulesRequest]) (*connect.Response[v1.ListItemBlockRulesResponse], error) {
+	return c.listItemBlockRules.CallUnary(ctx, req)
+}
+
 // ItemServiceHandler is an implementation of the item.v1.ItemService service.
 type ItemServiceHandler interface {
 	GetItem(context.Context, *connect.Request[v1.GetItemRequest]) (*connect.Response[v1.GetItemResponse], error)
 	ListItems(context.Context, *connect.Request[v1.ListItemsRequest]) (*connect.Response[v1.ListItemsResponse], error)
 	UpdateItemStatus(context.Context, *connect.Request[v1.UpdateItemStatusRequest]) (*connect.Response[v1.UpdateItemStatusResponse], error)
 	ListItemFeeds(context.Context, *connect.Request[v1.ListItemFeedsRequest]) (*connect.Response[v1.ListItemFeedsResponse], error)
+	AddURLParsingRule(context.Context, *connect.Request[v1.AddURLParsingRuleRequest]) (*connect.Response[v1.AddURLParsingRuleResponse], error)
+	DeleteURLParsingRule(context.Context, *connect.Request[v1.DeleteURLParsingRuleRequest]) (*connect.Response[v1.DeleteURLParsingRuleResponse], error)
+	ListURLParsingRules(context.Context, *connect.Request[v1.ListURLParsingRulesRequest]) (*connect.Response[v1.ListURLParsingRulesResponse], error)
+	AddItemBlockRules(context.Context, *connect.Request[v1.AddItemBlockRulesRequest]) (*connect.Response[v1.AddItemBlockRulesResponse], error)
+	DeleteItemBlockRule(context.Context, *connect.Request[v1.DeleteItemBlockRuleRequest]) (*connect.Response[v1.DeleteItemBlockRuleResponse], error)
+	ListItemBlockRules(context.Context, *connect.Request[v1.ListItemBlockRulesRequest]) (*connect.Response[v1.ListItemBlockRulesResponse], error)
 }
 
 // NewItemServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -164,6 +268,44 @@ func NewItemServiceHandler(svc ItemServiceHandler, opts ...connect.HandlerOption
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
+	itemServiceAddURLParsingRuleHandler := connect.NewUnaryHandler(
+		ItemServiceAddURLParsingRuleProcedure,
+		svc.AddURLParsingRule,
+		connect.WithSchema(itemServiceMethods.ByName("AddURLParsingRule")),
+		connect.WithHandlerOptions(opts...),
+	)
+	itemServiceDeleteURLParsingRuleHandler := connect.NewUnaryHandler(
+		ItemServiceDeleteURLParsingRuleProcedure,
+		svc.DeleteURLParsingRule,
+		connect.WithSchema(itemServiceMethods.ByName("DeleteURLParsingRule")),
+		connect.WithHandlerOptions(opts...),
+	)
+	itemServiceListURLParsingRulesHandler := connect.NewUnaryHandler(
+		ItemServiceListURLParsingRulesProcedure,
+		svc.ListURLParsingRules,
+		connect.WithSchema(itemServiceMethods.ByName("ListURLParsingRules")),
+		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+		connect.WithHandlerOptions(opts...),
+	)
+	itemServiceAddItemBlockRulesHandler := connect.NewUnaryHandler(
+		ItemServiceAddItemBlockRulesProcedure,
+		svc.AddItemBlockRules,
+		connect.WithSchema(itemServiceMethods.ByName("AddItemBlockRules")),
+		connect.WithHandlerOptions(opts...),
+	)
+	itemServiceDeleteItemBlockRuleHandler := connect.NewUnaryHandler(
+		ItemServiceDeleteItemBlockRuleProcedure,
+		svc.DeleteItemBlockRule,
+		connect.WithSchema(itemServiceMethods.ByName("DeleteItemBlockRule")),
+		connect.WithHandlerOptions(opts...),
+	)
+	itemServiceListItemBlockRulesHandler := connect.NewUnaryHandler(
+		ItemServiceListItemBlockRulesProcedure,
+		svc.ListItemBlockRules,
+		connect.WithSchema(itemServiceMethods.ByName("ListItemBlockRules")),
+		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/item.v1.ItemService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case ItemServiceGetItemProcedure:
@@ -174,6 +316,18 @@ func NewItemServiceHandler(svc ItemServiceHandler, opts ...connect.HandlerOption
 			itemServiceUpdateItemStatusHandler.ServeHTTP(w, r)
 		case ItemServiceListItemFeedsProcedure:
 			itemServiceListItemFeedsHandler.ServeHTTP(w, r)
+		case ItemServiceAddURLParsingRuleProcedure:
+			itemServiceAddURLParsingRuleHandler.ServeHTTP(w, r)
+		case ItemServiceDeleteURLParsingRuleProcedure:
+			itemServiceDeleteURLParsingRuleHandler.ServeHTTP(w, r)
+		case ItemServiceListURLParsingRulesProcedure:
+			itemServiceListURLParsingRulesHandler.ServeHTTP(w, r)
+		case ItemServiceAddItemBlockRulesProcedure:
+			itemServiceAddItemBlockRulesHandler.ServeHTTP(w, r)
+		case ItemServiceDeleteItemBlockRuleProcedure:
+			itemServiceDeleteItemBlockRuleHandler.ServeHTTP(w, r)
+		case ItemServiceListItemBlockRulesProcedure:
+			itemServiceListItemBlockRulesHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -197,4 +351,28 @@ func (UnimplementedItemServiceHandler) UpdateItemStatus(context.Context, *connec
 
 func (UnimplementedItemServiceHandler) ListItemFeeds(context.Context, *connect.Request[v1.ListItemFeedsRequest]) (*connect.Response[v1.ListItemFeedsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("item.v1.ItemService.ListItemFeeds is not implemented"))
+}
+
+func (UnimplementedItemServiceHandler) AddURLParsingRule(context.Context, *connect.Request[v1.AddURLParsingRuleRequest]) (*connect.Response[v1.AddURLParsingRuleResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("item.v1.ItemService.AddURLParsingRule is not implemented"))
+}
+
+func (UnimplementedItemServiceHandler) DeleteURLParsingRule(context.Context, *connect.Request[v1.DeleteURLParsingRuleRequest]) (*connect.Response[v1.DeleteURLParsingRuleResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("item.v1.ItemService.DeleteURLParsingRule is not implemented"))
+}
+
+func (UnimplementedItemServiceHandler) ListURLParsingRules(context.Context, *connect.Request[v1.ListURLParsingRulesRequest]) (*connect.Response[v1.ListURLParsingRulesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("item.v1.ItemService.ListURLParsingRules is not implemented"))
+}
+
+func (UnimplementedItemServiceHandler) AddItemBlockRules(context.Context, *connect.Request[v1.AddItemBlockRulesRequest]) (*connect.Response[v1.AddItemBlockRulesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("item.v1.ItemService.AddItemBlockRules is not implemented"))
+}
+
+func (UnimplementedItemServiceHandler) DeleteItemBlockRule(context.Context, *connect.Request[v1.DeleteItemBlockRuleRequest]) (*connect.Response[v1.DeleteItemBlockRuleResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("item.v1.ItemService.DeleteItemBlockRule is not implemented"))
+}
+
+func (UnimplementedItemServiceHandler) ListItemBlockRules(context.Context, *connect.Request[v1.ListItemBlockRulesRequest]) (*connect.Response[v1.ListItemBlockRulesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("item.v1.ItemService.ListItemBlockRules is not implemented"))
 }

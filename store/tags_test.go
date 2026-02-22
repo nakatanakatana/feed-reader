@@ -84,20 +84,22 @@ func TestTags(t *testing.T) {
 	assert.NilError(t, err)
 
 	// List Items with Tag 1
-	items, err := q.ListItems(ctx, store.ListItemsParams{
-		TagID:  "tag-1",
-		Limit:  10,
-		Offset: 0,
+	items, err := s.ListItems(ctx, store.StoreListItemsParams{
+		TagID:     "tag-1",
+		Limit:     10,
+		Offset:    0,
+		IsBlocked: false,
 	})
 	assert.NilError(t, err)
 	assert.Assert(t, cmp.Len(items, 1))
 	assert.Equal(t, items[0].ID, "item-1")
 
 	// List Items with Tag 2
-	items, err = q.ListItems(ctx, store.ListItemsParams{
-		TagID:  "tag-2",
-		Limit:  10,
-		Offset: 0,
+	items, err = s.ListItems(ctx, store.StoreListItemsParams{
+		TagID:     "tag-2",
+		Limit:     10,
+		Offset:    0,
+		IsBlocked: false,
 	})
 	assert.NilError(t, err)
 	assert.Assert(t, cmp.Len(items, 0))

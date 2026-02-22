@@ -194,13 +194,16 @@ JOIN
   feed_items fi ON i.id = fi.item_id
 LEFT JOIN
   item_reads ir ON i.id = ir.item_id
+LEFT JOIN
+  item_blocks ib ON i.id = ib.item_id
 WHERE
   (sqlc.narg('feed_id') IS NULL OR fi.feed_id = sqlc.narg('feed_id')) AND
   (sqlc.narg('is_read') IS NULL OR COALESCE(ir.is_read, 0) = sqlc.narg('is_read')) AND
   (sqlc.narg('tag_id') IS NULL OR EXISTS (
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = sqlc.narg('tag_id')
   )) AND
-  (sqlc.narg('since') IS NULL OR i.created_at >= sqlc.narg('since'))
+  (sqlc.narg('since') IS NULL OR i.created_at >= sqlc.narg('since')) AND
+  (sqlc.narg('is_blocked') IS NULL OR (CASE WHEN ib.item_id IS NOT NULL THEN 1 ELSE 0 END = sqlc.narg('is_blocked')))
 GROUP BY
   i.id
 ORDER BY
@@ -221,13 +224,14 @@ LIMIT ?;
 -- name: CountUnreadItemsPerFeed :many
 SELECT
   fi.feed_id,
-  COUNT(*) AS count
+  COUNT(DISTINCT fi.item_id) AS count
 FROM
   feed_items fi
 LEFT JOIN
   item_reads ir ON fi.item_id = ir.item_id
 WHERE
-  COALESCE(ir.is_read, 0) = 0
+  COALESCE(ir.is_read, 0) = 0 AND
+  NOT EXISTS (SELECT 1 FROM item_blocks ib WHERE ib.item_id = fi.item_id)
 GROUP BY
   fi.feed_id;
 
@@ -242,7 +246,8 @@ JOIN
 LEFT JOIN
   item_reads ir ON fi.item_id = ir.item_id
 WHERE
-  COALESCE(ir.is_read, 0) = 0
+  COALESCE(ir.is_read, 0) = 0 AND
+  NOT EXISTS (SELECT 1 FROM item_blocks ib WHERE ib.item_id = fi.item_id)
 GROUP BY
   ft.tag_id;
 
@@ -263,7 +268,8 @@ FROM
 LEFT JOIN
   item_reads ir ON fi.item_id = ir.item_id
 WHERE
-  COALESCE(ir.is_read, 0) = 0;
+  COALESCE(ir.is_read, 0) = 0 AND
+  NOT EXISTS (SELECT 1 FROM item_blocks ib WHERE ib.item_id = fi.item_id);
 
 -- name: CountItems :one
 SELECT
@@ -274,13 +280,16 @@ JOIN
   feed_items fi ON i.id = fi.item_id
 LEFT JOIN
   item_reads ir ON i.id = ir.item_id
+LEFT JOIN
+  item_blocks ib ON i.id = ib.item_id
 WHERE
   (sqlc.narg('feed_id') IS NULL OR fi.feed_id = sqlc.narg('feed_id')) AND
   (sqlc.narg('is_read') IS NULL OR COALESCE(ir.is_read, 0) = sqlc.narg('is_read')) AND
   (sqlc.narg('tag_id') IS NULL OR EXISTS (
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = sqlc.narg('tag_id')
   )) AND
-  (sqlc.narg('since') IS NULL OR i.created_at >= sqlc.narg('since'));
+  (sqlc.narg('since') IS NULL OR i.created_at >= sqlc.narg('since')) AND
+  (sqlc.narg('is_blocked') IS NULL OR (CASE WHEN ib.item_id IS NOT NULL THEN 1 ELSE 0 END = sqlc.narg('is_blocked')));
 
 
 -- name: SetItemRead :one
@@ -446,3 +455,111 @@ WHERE
   ff.next_fetch IS NULL OR ff.next_fetch <= (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
 ORDER BY
   ff.next_fetch ASC;
+
+-- name: CreateURLParsingRule :one
+INSERT INTO url_parsing_rules (
+  id,
+  domain,
+  rule_type,
+  pattern
+) VALUES (
+  ?, ?, ?, ?
+)
+RETURNING *;
+
+-- name: GetURLParsingRuleByDomain :one
+SELECT
+  *
+FROM
+  url_parsing_rules
+WHERE
+  domain = ? AND rule_type = ?;
+
+-- name: ListURLParsingRules :many
+SELECT
+  *
+FROM
+  url_parsing_rules
+ORDER BY
+  domain ASC, rule_type ASC;
+
+-- name: GetURLParsingRule :one
+SELECT
+  *
+FROM
+  url_parsing_rules
+WHERE
+  id = ?;
+
+-- name: DeleteURLParsingRule :exec
+DELETE FROM
+  url_parsing_rules
+WHERE
+  id = ?;
+
+-- name: CreateItemBlockRule :one
+INSERT INTO item_block_rules (
+  id,
+  rule_type,
+  rule_value,
+  domain
+) VALUES (
+  ?, ?, ?, ?
+)
+RETURNING *;
+
+-- name: GetItemBlockRuleByValue :one
+SELECT
+  *
+FROM
+  item_block_rules
+WHERE
+  rule_type = ? AND 
+  rule_value = ? AND 
+  domain = ?;
+
+-- name: ListItemBlockRules :many
+SELECT
+  *
+FROM
+  item_block_rules
+ORDER BY
+  rule_type ASC, rule_value ASC;
+
+-- name: DeleteItemBlockRule :exec
+DELETE FROM
+  item_block_rules
+WHERE
+  id = ?;
+
+-- name: CreateItemBlock :exec
+INSERT INTO item_blocks (
+  item_id,
+  rule_id
+) VALUES (
+  ?, ?
+)
+ON CONFLICT(item_id, rule_id) DO NOTHING;
+
+-- name: ListItemBlocks :many
+SELECT
+  *
+FROM
+  item_blocks
+WHERE
+  item_id = ?;
+
+-- name: DeleteItemBlocksByRuleID :exec
+DELETE FROM
+  item_blocks
+WHERE
+  rule_id = ?;
+
+-- name: ListItemsForBlocking :many
+SELECT DISTINCT
+  i.id, i.url, i.title, i.description, i.published_at, i.author, i.guid, i.content, i.image_url, i.categories, i.created_at, i.updated_at,
+  CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read
+FROM
+  items i
+LEFT JOIN
+  item_reads ir ON i.id = ir.item_id;

@@ -98,7 +98,7 @@ func main() {
 	feedServer := NewFeedServer(s, nil, fetcher, fetchService, opmlImporter)
 	feedPath, feedHandler := feedv1connect.NewFeedServiceHandler(feedServer)
 
-	itemServer := NewItemServer(s)
+	itemServer := NewItemServer(s, nil)
 	itemPath, itemHandler := itemv1connect.NewItemServiceHandler(itemServer)
 
 	tagServer := NewTagServer(s, nil)

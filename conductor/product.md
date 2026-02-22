@@ -36,6 +36,12 @@ The primary target audience is individuals and organizations seeking control ove
   - **Manual Suspend:** Temporarily halt updates for specific feeds for a set duration (1 Day, 3 Days, 1 Week, or 1 Month) directly from the context menu or bulk action bar.
   - **Visual Scheduling:** View the scheduled "Next fetch" time for each feed in the list view, providing transparency into the background fetch cycle.
 
+- **Item Hiding (Block):** Automatically hide unwanted articles based on customizable rules.
+  - **URL-Based Extraction:** Define rules to extract user information from complex URLs (e.g., subdomain or path-based) to block specific content creators across different domains.
+  - **Multiple Criteria:** Block items by keyword, domain, or specific user/domain combinations.
+  - **Pre-calculated Filtering:** Efficiently excludes blocked items from all retrieval APIs by pre-calculating block associations during rule creation and item ingestion.
+  - **Rule Management:** Robust APIs for managing URL parsing patterns and item block criteria.
+
 - **OPML Import:** High-performance bulk import of existing subscriptions using the standard OPML format. Features automatic deduplication and parallel metadata fetching. Optimized database operations ensure that even large imports (500+ feeds) complete efficiently. Synchronous processing provides immediate feedback on success and failure counts. Includes advanced tagging support and detailed error reporting for failed items.
 
 - **OPML Export:** Export selected feeds to a standard OPML 2.0 file. Tags associated with feeds are preserved using the `category` attribute, ensuring portability across different feed readers.

@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"net/url"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -201,6 +203,89 @@ func (s *Store) SaveFetchedItem(ctx context.Context, params SaveFetchedItemParam
 			return fmt.Errorf("failed to initialize read status: %w", err)
 		}
 
+		// 4. Check for blocking rules
+		// We fetch rules inside the transaction for consistency, 
+		// but for performance with many items we might want to cache these outside.
+		blockRules, err := qtx.ListItemBlockRules(ctx)
+		if err != nil {
+			return fmt.Errorf("failed to list block rules: %w", err)
+		}
+
+		if len(blockRules) > 0 {
+			urlRules, err := qtx.ListURLParsingRules(ctx)
+			if err != nil {
+				return fmt.Errorf("failed to list url parsing rules: %w", err)
+			}
+
+			// TODO: Deduplicate URL parsing by moving shared logic out of the main package
+			// into a reusable package that can be used here instead of extractUserInfoLocally.
+			extractedUser, extractedDomain := extractUserInfoLocally(item.Url, urlRules)
+			
+			fullItem := FullItem{
+				ID:      item.ID,
+				Url:     item.Url,
+				Title:   item.Title,
+				Content: item.Content,
+			}
+
+			for _, rule := range blockRules {
+				if ShouldBlockItem(fullItem, rule, extractedUser, extractedDomain) {
+					err := qtx.CreateItemBlock(ctx, CreateItemBlockParams{
+						ItemID: item.ID,
+						RuleID: rule.ID,
+					})
+					if err != nil {
+						return fmt.Errorf("failed to create item block: %w", err)
+					}
+				}
+			}
+		}
+
 		return nil
 	})
+}
+
+func extractUserInfoLocally(urlStr string, rules []UrlParsingRule) (*string, *string) {
+	u, err := url.Parse(urlStr)
+	if err != nil {
+		return nil, nil
+	}
+	domainPart := u.Hostname()
+
+	for _, rule := range rules {
+		switch rule.RuleType {
+		case "subdomain":
+			if strings.HasSuffix(domainPart, "."+rule.Pattern) {
+				user := strings.TrimSuffix(domainPart, "."+rule.Pattern)
+				if user != "" && !strings.Contains(user, ".") {
+					return &user, &rule.Pattern
+				}
+			}
+		case "path":
+			// Expected pattern: <rule.Pattern>/<user>
+			// Example: rule.Pattern = "domain.com/users", urlPath = "/users/user1/post"
+			if strings.HasPrefix(u.Hostname(), rule.Pattern) || strings.HasPrefix(u.Hostname()+u.Path, rule.Pattern) {
+				// Simplistic check for path-based. 
+				// Pattern might include host like "github.com/user"
+				fullPath := u.Hostname() + u.Path
+				if strings.HasPrefix(fullPath, rule.Pattern+"/") {
+					remaining := strings.TrimPrefix(fullPath, rule.Pattern+"/")
+					user := strings.Split(remaining, "/")[0]
+					if user != "" {
+						domain := strings.Split(rule.Pattern, "/")[0]
+						return &user, &domain
+					}
+				}
+			}
+		}
+	}
+	return nil, nil
+}
+
+func getDomainFromURLLocally(urlStr string) string {
+	u, err := url.Parse(urlStr)
+	if err != nil {
+		return ""
+	}
+	return u.Hostname()
 }

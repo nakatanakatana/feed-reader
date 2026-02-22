@@ -50,7 +50,11 @@ func TestStore_ItemDeduplication(t *testing.T) {
 
 	// 3. Verify duplicates in ListItems
 	t.Run("ListItems should not have duplicates", func(t *testing.T) {
-		items, err := s.ListItems(ctx, store.ListItemsParams{Limit: 10, Offset: 0})
+		items, err := s.ListItems(ctx, store.StoreListItemsParams{
+			Limit:     10,
+			Offset:    0,
+			IsBlocked: false,
+		})
 		assert.NilError(t, err)
 
 		// If deduplication is NOT working, this will likely be 2
@@ -58,7 +62,9 @@ func TestStore_ItemDeduplication(t *testing.T) {
 	})
 
 	t.Run("CountItems should not count duplicates", func(t *testing.T) {
-		count, err := s.CountItems(ctx, store.CountItemsParams{})
+		count, err := s.CountItems(ctx, store.StoreCountItemsParams{
+			IsBlocked: false,
+		})
 		assert.NilError(t, err)
 
 		// If deduplication is NOT working, this will likely be 2
@@ -109,10 +115,16 @@ func TestStore_ItemDeduplication_PBT(t *testing.T) {
 			}
 		}
 
-		items, err := s.ListItems(ctx, store.ListItemsParams{Limit: 1000, Offset: 0})
+		items, err := s.ListItems(ctx, store.StoreListItemsParams{
+			Limit:     1000,
+			Offset:    0,
+			IsBlocked: false,
+		})
 		assert.NilError(t, err)
 
-		count, err := s.CountItems(ctx, store.CountItemsParams{})
+		count, err := s.CountItems(ctx, store.StoreCountItemsParams{
+			IsBlocked: false,
+		})
 		assert.NilError(t, err)
 
 		assert.Equal(t, len(items), len(uniqueURLs))

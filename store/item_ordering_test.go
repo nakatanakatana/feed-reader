@@ -79,7 +79,10 @@ func TestStore_ItemOrdering(t *testing.T) {
 	createItemWithDates(itemD, "http://ex.com/d", "Item D", nil, c4) // Created 4th
 
 	t.Run("ListItems should sort by created_at ASC", func(t *testing.T) {
-		items, err := s.ListItems(ctx, store.ListItemsParams{Limit: 10})
+		items, err := s.ListItems(ctx, store.StoreListItemsParams{
+			Limit:     10,
+			IsBlocked: false,
+		})
 		assert.NilError(t, err)
 		assert.Assert(t, cmp.Len(items, 4))
 
@@ -90,7 +93,11 @@ func TestStore_ItemOrdering(t *testing.T) {
 	})
 
 	t.Run("ListItemsByFeed should sort by created_at ASC", func(t *testing.T) {
-		items, err := s.ListItems(ctx, store.ListItemsParams{FeedID: feedID, Limit: 10})
+		items, err := s.ListItems(ctx, store.StoreListItemsParams{
+			FeedID:    feedID,
+			Limit:     10,
+			IsBlocked: false,
+		})
 		assert.NilError(t, err)
 		assert.Assert(t, cmp.Len(items, 4))
 
@@ -157,7 +164,11 @@ func TestStore_ItemOrdering_PBT(t *testing.T) {
 			assert.NilError(t, err)
 		}
 
-		items, err := s.ListItems(ctx, store.ListItemsParams{FeedID: feedID, Limit: 100})
+		items, err := s.ListItems(ctx, store.StoreListItemsParams{
+			FeedID:    feedID,
+			Limit:     100,
+			IsBlocked: false,
+		})
 		assert.NilError(t, err)
 		assert.Assert(t, cmp.Len(items, count))
 

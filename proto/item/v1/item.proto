@@ -17,6 +17,16 @@ service ItemService {
   rpc ListItemFeeds(ListItemFeedsRequest) returns (ListItemFeedsResponse) {
     option idempotency_level = NO_SIDE_EFFECTS;
   }
+  rpc AddURLParsingRule(AddURLParsingRuleRequest) returns (AddURLParsingRuleResponse);
+  rpc DeleteURLParsingRule(DeleteURLParsingRuleRequest) returns (DeleteURLParsingRuleResponse);
+  rpc ListURLParsingRules(ListURLParsingRulesRequest) returns (ListURLParsingRulesResponse) {
+    option idempotency_level = NO_SIDE_EFFECTS;
+  }
+  rpc AddItemBlockRules(AddItemBlockRulesRequest) returns (AddItemBlockRulesResponse);
+  rpc DeleteItemBlockRule(DeleteItemBlockRuleRequest) returns (DeleteItemBlockRuleResponse);
+  rpc ListItemBlockRules(ListItemBlockRulesRequest) returns (ListItemBlockRulesResponse) {
+    option idempotency_level = NO_SIDE_EFFECTS;
+  }
 }
 
 message Item {
@@ -88,4 +98,63 @@ message ItemFeed {
 
 message ListItemFeedsResponse {
   repeated ItemFeed feeds = 1;
+}
+
+message URLParsingRule {
+  string id = 1;
+  string domain = 2;
+  string rule_type = 3;
+  string pattern = 4;
+}
+
+message AddURLParsingRuleRequest {
+  string domain = 1;
+  string rule_type = 2;
+  string pattern = 3;
+}
+
+message AddURLParsingRuleResponse {
+  URLParsingRule rule = 1;
+}
+
+message DeleteURLParsingRuleRequest {
+  string id = 1;
+}
+
+message DeleteURLParsingRuleResponse {}
+
+message ListURLParsingRulesRequest {}
+
+message ListURLParsingRulesResponse {
+  repeated URLParsingRule rules = 1;
+}
+
+message ItemBlockRule {
+  string id = 1;
+  string rule_type = 2;
+  string value = 3;
+  optional string domain = 4;
+}
+
+message AddItemBlockRulesRequest {
+  message Rule {
+    string rule_type = 1;
+    string value = 2;
+    optional string domain = 3;
+  }
+  repeated Rule rules = 1;
+}
+
+message AddItemBlockRulesResponse {}
+
+message DeleteItemBlockRuleRequest {
+  string id = 1;
+}
+
+message DeleteItemBlockRuleResponse {}
+
+message ListItemBlockRulesRequest {}
+
+message ListItemBlockRulesResponse {
+  repeated ItemBlockRule rules = 1;
 }

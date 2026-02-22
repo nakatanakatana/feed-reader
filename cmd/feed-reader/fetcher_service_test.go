@@ -115,7 +115,11 @@ func TestFetcherService_FetchAndSave(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 
 	// Verify items are saved
-	items, err := queries.ListItems(ctx, store.ListItemsParams{FeedID: feed.ID, Limit: 10})
+	items, err := s.ListItems(ctx, store.StoreListItemsParams{
+		FeedID:    feed.ID,
+		Limit:     10,
+		IsBlocked: false,
+	})
 	assert.NilError(t, err, "failed to get items")
 	assert.Equal(t, len(items), 2)
 
