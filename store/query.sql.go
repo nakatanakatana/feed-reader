@@ -63,14 +63,16 @@ WHERE
   (?3 IS NULL OR EXISTS (
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = ?3
   )) AND
-  (?4 IS NULL OR i.created_at >= ?4)
+  (?4 IS NULL OR i.created_at >= ?4) AND
+  (?5 IS NULL OR (EXISTS (SELECT 1 FROM item_blocks ib WHERE ib.item_id = i.id) = ?5))
 `
 
 type CountItemsParams struct {
-	FeedID interface{} `json:"feed_id"`
-	IsRead interface{} `json:"is_read"`
-	TagID  interface{} `json:"tag_id"`
-	Since  interface{} `json:"since"`
+	FeedID    interface{} `json:"feed_id"`
+	IsRead    interface{} `json:"is_read"`
+	TagID     interface{} `json:"tag_id"`
+	Since     interface{} `json:"since"`
+	IsBlocked interface{} `json:"is_blocked"`
 }
 
 func (q *Queries) CountItems(ctx context.Context, arg CountItemsParams) (int64, error) {
@@ -79,6 +81,7 @@ func (q *Queries) CountItems(ctx context.Context, arg CountItemsParams) (int64, 
 		arg.IsRead,
 		arg.TagID,
 		arg.Since,
+		arg.IsBlocked,
 	)
 	var count int64
 	err := row.Scan(&count)
@@ -93,7 +96,8 @@ FROM
 LEFT JOIN
   item_reads ir ON fi.item_id = ir.item_id
 WHERE
-  COALESCE(ir.is_read, 0) = 0
+  COALESCE(ir.is_read, 0) = 0 AND
+  NOT EXISTS (SELECT 1 FROM item_blocks ib WHERE ib.item_id = fi.item_id)
 `
 
 func (q *Queries) CountTotalUnreadItems(ctx context.Context) (int64, error) {
@@ -112,7 +116,8 @@ FROM
 LEFT JOIN
   item_reads ir ON fi.item_id = ir.item_id
 WHERE
-  COALESCE(ir.is_read, 0) = 0
+  COALESCE(ir.is_read, 0) = 0 AND
+  NOT EXISTS (SELECT 1 FROM item_blocks ib WHERE ib.item_id = fi.item_id)
 GROUP BY
   fi.feed_id
 `
@@ -156,7 +161,8 @@ JOIN
 LEFT JOIN
   item_reads ir ON fi.item_id = ir.item_id
 WHERE
-  COALESCE(ir.is_read, 0) = 0
+  COALESCE(ir.is_read, 0) = 0 AND
+  NOT EXISTS (SELECT 1 FROM item_blocks ib WHERE ib.item_id = fi.item_id)
 GROUP BY
   ft.tag_id
 `
@@ -1262,21 +1268,23 @@ WHERE
   (?3 IS NULL OR EXISTS (
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = ?3
   )) AND
-  (?4 IS NULL OR i.created_at >= ?4)
+  (?4 IS NULL OR i.created_at >= ?4) AND
+  (?5 IS NULL OR (EXISTS (SELECT 1 FROM item_blocks ib WHERE ib.item_id = i.id) = ?5))
 GROUP BY
   i.id
 ORDER BY
   i.created_at ASC
-LIMIT ?6 OFFSET ?5
+LIMIT ?7 OFFSET ?6
 `
 
 type ListItemsParams struct {
-	FeedID interface{} `json:"feed_id"`
-	IsRead interface{} `json:"is_read"`
-	TagID  interface{} `json:"tag_id"`
-	Since  interface{} `json:"since"`
-	Offset int64       `json:"offset"`
-	Limit  int64       `json:"limit"`
+	FeedID    interface{} `json:"feed_id"`
+	IsRead    interface{} `json:"is_read"`
+	TagID     interface{} `json:"tag_id"`
+	Since     interface{} `json:"since"`
+	IsBlocked interface{} `json:"is_blocked"`
+	Offset    int64       `json:"offset"`
+	Limit     int64       `json:"limit"`
 }
 
 type ListItemsRow struct {
@@ -1301,6 +1309,7 @@ func (q *Queries) ListItems(ctx context.Context, arg ListItemsParams) ([]ListIte
 		arg.IsRead,
 		arg.TagID,
 		arg.Since,
+		arg.IsBlocked,
 		arg.Offset,
 		arg.Limit,
 	)

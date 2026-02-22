@@ -70,27 +70,41 @@ func TestStore_ItemOperations(t *testing.T) {
 	// Test ListItems
 	t.Run("ListItems", func(t *testing.T) {
 		// All items, asc (standardized)
-		all, err := s.ListItems(ctx, store.ListItemsParams{Limit: 10, Offset: 0})
+		all, err := s.ListItems(ctx, store.StoreListItemsParams{
+			Limit:     10,
+			Offset:    0,
+			IsBlocked: false,
+		})
 		assert.NilError(t, err)
 		assert.Assert(t, cmp.Len(all, 3))
 		assert.Equal(t, all[0].ID, item1ID) // Oldest first
 		assert.Equal(t, all[2].ID, item3ID) // Newest last
 
 		// Filter by IsRead
-		reads, err := s.ListItems(ctx, store.ListItemsParams{IsRead: int64(1), Limit: 10})
+		reads, err := s.ListItems(ctx, store.StoreListItemsParams{
+			IsRead:    int64(1),
+			Limit:     10,
+			IsBlocked: false,
+		})
 		assert.NilError(t, err)
 		assert.Assert(t, cmp.Len(reads, 1))
 		assert.Equal(t, reads[0].ID, item1ID)
 
 		// Filter by Feed (should be all)
-		feedItems, err := s.ListItems(ctx, store.ListItemsParams{FeedID: feedID, Limit: 10})
+		feedItems, err := s.ListItems(ctx, store.StoreListItemsParams{
+			FeedID:    feedID,
+			Limit:     10,
+			IsBlocked: false,
+		})
 		assert.NilError(t, err)
 		assert.Assert(t, cmp.Len(feedItems, 3))
 	})
 
 	// Test CountItems
 	t.Run("CountItems", func(t *testing.T) {
-		count, err := s.CountItems(ctx, store.CountItemsParams{})
+		count, err := s.CountItems(ctx, store.StoreCountItemsParams{
+			IsBlocked: false,
+		})
 		assert.NilError(t, err)
 		assert.Equal(t, count, int64(3))
 	})
@@ -136,10 +150,17 @@ func TestStore_ListItems_IsRead_CountMatches_PBT(t *testing.T) {
 			}
 		}
 
-		items, err := s.ListItems(ctx, store.ListItemsParams{IsRead: int64(1), Limit: 100})
+		items, err := s.ListItems(ctx, store.StoreListItemsParams{
+			IsRead:    int64(1),
+			Limit:     100,
+			IsBlocked: false,
+		})
 		assert.NilError(t, err)
 
-		counted, err := s.CountItems(ctx, store.CountItemsParams{IsRead: int64(1)})
+		counted, err := s.CountItems(ctx, store.StoreCountItemsParams{
+			IsRead:    int64(1),
+			IsBlocked: false,
+		})
 		assert.NilError(t, err)
 
 		assert.Equal(t, len(items), readCount)

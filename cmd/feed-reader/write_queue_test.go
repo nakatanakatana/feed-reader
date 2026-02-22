@@ -107,7 +107,7 @@ func TestWriteQueueServiceIntegration(t *testing.T) {
 	time.Sleep(150 * time.Millisecond)
 
 	// Verify
-	items, _ := st.ListItems(ctx, store.ListItemsParams{FeedID: feed.ID, Limit: 10})
+	items, _ := st.ListItems(ctx, store.StoreListItemsParams{FeedID: feed.ID, Limit: 10})
 	if len(items) != 2 {
 		t.Errorf("expected 2 items, got %d", len(items))
 	}

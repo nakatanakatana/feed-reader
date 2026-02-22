@@ -73,23 +73,25 @@ func (s *ItemServer) ListItems(ctx context.Context, req *connect.Request[itemv1.
 	var totalCount int64
 	var err error
 
-	totalCount, err = s.store.CountItems(ctx, store.CountItemsParams{
-		FeedID: feedID,
-		IsRead: isRead,
-		TagID:  tagID,
-		Since:  since,
+	totalCount, err = s.store.CountItems(ctx, store.StoreCountItemsParams{
+		FeedID:    feedID,
+		IsRead:    isRead,
+		TagID:     tagID,
+		Since:     since,
+		IsBlocked: false,
 	})
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	rows, err := s.store.ListItems(ctx, store.ListItemsParams{
-		FeedID: feedID,
-		IsRead: isRead,
-		TagID:  tagID,
-		Since:  since,
-		Limit:  limit,
-		Offset: offset,
+	rows, err := s.store.ListItems(ctx, store.StoreListItemsParams{
+		FeedID:    feedID,
+		IsRead:    isRead,
+		TagID:     tagID,
+		Since:     since,
+		Limit:     limit,
+		Offset:    offset,
+		IsBlocked: false,
 	})
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
