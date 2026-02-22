@@ -1,0 +1,29 @@
+# Implementation Plan: Block Management Frontend
+
+## Phase 1: Routing & Navigation
+- [ ] Task: Create new routes for URL Rules and Block Rules in TanStack Router.
+    - [ ] Create `frontend/src/routes/url-rules.tsx`.
+    - [ ] Create `frontend/src/routes/block-rules.tsx`.
+- [ ] Task: Add navigation links to the main header in `frontend/src/routes/__root.tsx`.
+- [ ] Task: Conductor - User Manual Verification 'Phase 1: Routing & Navigation' (Protocol in workflow.md)
+
+## Phase 2: URL Rules Management Page
+- [ ] Task: Implement `AddURLParsingRule` form and rule list in `frontend/src/routes/url-rules.tsx`.
+    - [ ] Write failing tests for rule fetching and adding using MSW and Vitest.
+    - [ ] Implement UI for the input form (domain, rule_type, pattern).
+    - [ ] Implement UI for the rule list cards.
+    - [ ] Connect with `ItemService.AddURLParsingRule`, `ListURLParsingRules`, and `DeleteURLParsingRule` using TanStack Query.
+- [ ] Task: Conductor - User Manual Verification 'Phase 2: URL Rules Management Page' (Protocol in workflow.md)
+
+## Phase 3: Block Rules Management Page
+- [ ] Task: Implement `ItemBlockRule` form and rule list in `frontend/src/routes/block-rules.tsx`.
+    - [ ] Write failing tests for rule fetching and adding using MSW and Vitest.
+    - [ ] Implement UI for the input form (rule_type, value, domain).
+    - [ ] Implement UI for the rule list cards.
+    - [ ] Connect with `ItemService.AddItemBlockRules`, `ListItemBlockRules`, and `DeleteItemBlockRule` using TanStack Query.
+- [ ] Task: Conductor - User Manual Verification 'Phase 3: Block Rules Management Page' (Protocol in workflow.md)
+
+## Phase 4: Final Verification & Polish
+- [ ] Task: Ensure responsive design and mobile-friendliness.
+- [ ] Task: Verify that coverage meets the >80% requirement.
+- [ ] Task: Conductor - User Manual Verification 'Phase 4: Final Verification & Polish' (Protocol in workflow.md)
