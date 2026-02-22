@@ -212,15 +212,53 @@ func (s *ItemServer) ListURLParsingRules(ctx context.Context, req *connect.Reque
 }
 
 func (s *ItemServer) AddItemBlockRules(ctx context.Context, req *connect.Request[itemv1.AddItemBlockRulesRequest]) (*connect.Response[itemv1.AddItemBlockRulesResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("not implemented"))
+	params := make([]store.CreateItemBlockRuleParams, len(req.Msg.Rules))
+	for i, r := range req.Msg.Rules {
+		newUUID, err := s.uuidGenerator.NewRandom()
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to generate UUID: %w", err))
+		}
+		params[i] = store.CreateItemBlockRuleParams{
+			ID:        newUUID.String(),
+			RuleType:  r.RuleType,
+			RuleValue: r.Value,
+			Domain:    r.Domain,
+		}
+	}
+
+	if err := s.store.CreateItemBlockRules(ctx, params); err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	return connect.NewResponse(&itemv1.AddItemBlockRulesResponse{}), nil
 }
 
 func (s *ItemServer) DeleteItemBlockRule(ctx context.Context, req *connect.Request[itemv1.DeleteItemBlockRuleRequest]) (*connect.Response[itemv1.DeleteItemBlockRuleResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("not implemented"))
+	if err := s.store.DeleteItemBlockRule(ctx, req.Msg.Id); err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	return connect.NewResponse(&itemv1.DeleteItemBlockRuleResponse{}), nil
 }
 
 func (s *ItemServer) ListItemBlockRules(ctx context.Context, req *connect.Request[itemv1.ListItemBlockRulesRequest]) (*connect.Response[itemv1.ListItemBlockRulesResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("not implemented"))
+	rules, err := s.store.ListItemBlockRules(ctx)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	protoRules := make([]*itemv1.ItemBlockRule, len(rules))
+	for i, rule := range rules {
+		protoRules[i] = &itemv1.ItemBlockRule{
+			Id:       rule.ID,
+			RuleType: rule.RuleType,
+			Value:    rule.RuleValue,
+			Domain:   rule.Domain,
+		}
+	}
+
+	return connect.NewResponse(&itemv1.ListItemBlockRulesResponse{
+		Rules: protoRules,
+	}), nil
 }
 
 func GetItemRowFromListItemsRow(row store.ListItemsRow) store.GetItemRow {
