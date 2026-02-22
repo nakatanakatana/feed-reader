@@ -97,7 +97,7 @@ CREATE TABLE item_block_rules (
   id          TEXT PRIMARY KEY,
   rule_type   TEXT NOT NULL,
   rule_value  TEXT NOT NULL,
-  domain      TEXT,
+  domain      TEXT NOT NULL DEFAULT '',
   created_at  TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now')),
   updated_at  TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now')),
   UNIQUE(rule_type, rule_value, domain)

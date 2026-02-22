@@ -2,6 +2,8 @@ package store
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"strings"
 )
 
@@ -22,6 +24,9 @@ func (s *Store) CreateItemBlockRules(ctx context.Context, params []CreateItemBlo
 			if err == nil {
 				rules = append(rules, existing)
 				continue
+			}
+			if !errors.Is(err, sql.ErrNoRows) {
+				return err
 			}
 
 			rule, err := qtx.CreateItemBlockRule(ctx, p)
@@ -93,10 +98,10 @@ func ShouldBlockItem(item FullItem, rule ItemBlockRule, extractedUser *string, e
 		urlDomain := getDomainFromURLLocally(item.Url)
 		return urlDomain == rule.RuleValue || strings.HasSuffix(urlDomain, "."+rule.RuleValue)
 	case "user_domain":
-		if rule.Domain == nil {
+		if rule.Domain == "" {
 			return false
 		}
-		return extractedUser != nil && *extractedUser == rule.RuleValue && extractedDomain != nil && *extractedDomain == *rule.Domain
+		return extractedUser != nil && *extractedUser == rule.RuleValue && extractedDomain != nil && *extractedDomain == rule.Domain
 	case "keyword":
 		// Check title and content for keyword
 		if item.Title != nil && containsKeyword(*item.Title, rule.RuleValue) {

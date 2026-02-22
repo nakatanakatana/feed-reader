@@ -66,12 +66,12 @@ type ItemBlock struct {
 }
 
 type ItemBlockRule struct {
-	ID        string  `json:"id"`
-	RuleType  string  `json:"rule_type"`
-	RuleValue string  `json:"rule_value"`
-	Domain    *string `json:"domain"`
-	CreatedAt string  `json:"created_at"`
-	UpdatedAt string  `json:"updated_at"`
+	ID        string `json:"id"`
+	RuleType  string `json:"rule_type"`
+	RuleValue string `json:"rule_value"`
+	Domain    string `json:"domain"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
 }
 
 type ItemRead struct {

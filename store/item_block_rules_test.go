@@ -18,11 +18,13 @@ func TestItemBlockRules(t *testing.T) {
 		ID:        uuid.NewString(),
 		RuleType:  "user",
 		RuleValue: "user1",
+		Domain:    "",
 	}
 	rule2 := store.CreateItemBlockRuleParams{
 		ID:        uuid.NewString(),
 		RuleType:  "domain",
 		RuleValue: "example.com",
+		Domain:    "",
 	}
 
 	rules, err := s.CreateItemBlockRules(ctx, []store.CreateItemBlockRuleParams{rule1, rule2})
@@ -31,19 +33,18 @@ func TestItemBlockRules(t *testing.T) {
 	assert.Equal(t, rules[0].RuleValue, "user1")
 
 	// 2. Test Conflict (ID consistency)
+	// When a rule with the same type/value/domain already exists, the store implementation
+	// should return the existing rule instead of creating a new one, preserving its ID.
 	newID := uuid.NewString()
 	conflictRule := store.CreateItemBlockRuleParams{
 		ID:        newID,
 		RuleType:  "user",
 		RuleValue: "user1", // Same type/value
+		Domain:    "",      // Same domain
 	}
 	rules2, err := s.CreateItemBlockRules(ctx, []store.CreateItemBlockRuleParams{conflictRule})
 	assert.NilError(t, err)
 	assert.Equal(t, len(rules2), 1)
-	// Should return the ORIGINAL ID if it was an upsert/conflict that didn't change ID, 
-	// OR the new ID if our SQL query updates it.
-	// Our SQL is: ON CONFLICT(rule_type, rule_value, domain) DO UPDATE SET updated_at = ... RETURNING id
-	// RETURNING id should return the id of the row.
 	assert.Equal(t, rules2[0].ID, rule1.ID)
 	assert.Assert(t, rules2[0].ID != newID)
 
@@ -86,6 +87,7 @@ func TestItemBlocks(t *testing.T) {
 		ID:        ruleID,
 		RuleType:  "keyword",
 		RuleValue: "badword",
+		Domain:    "",
 	}})
 
 	// 1. Create block association
@@ -166,6 +168,7 @@ func TestStore_PopulateItemBlocksForRule(t *testing.T) {
 			ID:        uuid.NewString(),
 			RuleType:  "keyword",
 			RuleValue: "keyword",
+			Domain:    "",
 		}
 		err := s.PopulateItemBlocksForRule(ctx, rule, extractedInfo)
 		assert.NilError(t, err)
@@ -180,6 +183,7 @@ func TestStore_PopulateItemBlocksForRule(t *testing.T) {
 			ID:        uuid.NewString(),
 			RuleType:  "user",
 			RuleValue: "user1",
+			Domain:    "",
 		}
 		err := s.PopulateItemBlocksForRule(ctx, rule, extractedInfo)
 		assert.NilError(t, err)
@@ -194,6 +198,7 @@ func TestStore_PopulateItemBlocksForRule(t *testing.T) {
 			ID:        uuid.NewString(),
 			RuleType:  "domain",
 			RuleValue: "example.com",
+			Domain:    "",
 		}
 		err := s.PopulateItemBlocksForRule(ctx, rule, extractedInfo)
 		assert.NilError(t, err)
@@ -209,6 +214,7 @@ func TestStore_PopulateItemBlocksForRule(t *testing.T) {
 			ID:        uuid.NewString(),
 			RuleType:  "domain",
 			RuleValue: "other-domain.com",
+			Domain:    "",
 		}
 		// item3URL is not in extractedInfo, should use fallback
 		err := s.PopulateItemBlocksForRule(ctx, rule, extractedInfo)
@@ -225,7 +231,7 @@ func TestStore_PopulateItemBlocksForRule(t *testing.T) {
 			ID:        uuid.NewString(),
 			RuleType:  "user_domain",
 			RuleValue: "user2",
-			Domain:    &domain,
+			Domain:    domain,
 		}
 		err := s.PopulateItemBlocksForRule(ctx, rule, extractedInfo)
 		assert.NilError(t, err)

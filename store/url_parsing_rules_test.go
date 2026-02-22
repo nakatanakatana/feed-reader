@@ -33,6 +33,19 @@ func TestURLParsingRules(t *testing.T) {
 	assert.Equal(t, rule.RuleType, ruleType)
 	assert.Equal(t, rule.Pattern, pattern)
 
+	// Test conflict
+	newID := uuid.NewString()
+	conflictParams := store.CreateURLParsingRuleParams{
+		ID:       newID,
+		Domain:   domain,
+		RuleType: ruleType,
+		Pattern:  "ignored",
+	}
+	rule2, err := s.CreateURLParsingRule(ctx, conflictParams)
+	assert.NilError(t, err)
+	assert.Equal(t, rule2.ID, id)
+	assert.Assert(t, rule2.ID != newID)
+
 	// 2. List rules
 	rules, err := s.ListURLParsingRules(ctx)
 	assert.NilError(t, err)

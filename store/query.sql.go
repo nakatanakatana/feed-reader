@@ -407,10 +407,10 @@ RETURNING id, rule_type, rule_value, domain, created_at, updated_at
 `
 
 type CreateItemBlockRuleParams struct {
-	ID        string  `json:"id"`
-	RuleType  string  `json:"rule_type"`
-	RuleValue string  `json:"rule_value"`
-	Domain    *string `json:"domain"`
+	ID        string `json:"id"`
+	RuleType  string `json:"rule_type"`
+	RuleValue string `json:"rule_value"`
+	Domain    string `json:"domain"`
 }
 
 func (q *Queries) CreateItemBlockRule(ctx context.Context, arg CreateItemBlockRuleParams) (ItemBlockRule, error) {
@@ -812,22 +812,17 @@ FROM
 WHERE
   rule_type = ? AND 
   rule_value = ? AND 
-  (domain = ? OR (domain IS NULL AND ?4 IS NULL))
+  domain = ?
 `
 
 type GetItemBlockRuleByValueParams struct {
-	RuleType  string  `json:"rule_type"`
-	RuleValue string  `json:"rule_value"`
-	Domain    *string `json:"domain"`
+	RuleType  string `json:"rule_type"`
+	RuleValue string `json:"rule_value"`
+	Domain    string `json:"domain"`
 }
 
 func (q *Queries) GetItemBlockRuleByValue(ctx context.Context, arg GetItemBlockRuleByValueParams) (ItemBlockRule, error) {
-	row := q.db.QueryRowContext(ctx, getItemBlockRuleByValue,
-		arg.RuleType,
-		arg.RuleValue,
-		arg.Domain,
-		arg.Domain,
-	)
+	row := q.db.QueryRowContext(ctx, getItemBlockRuleByValue, arg.RuleType, arg.RuleValue, arg.Domain)
 	var i ItemBlockRule
 	err := row.Scan(
 		&i.ID,

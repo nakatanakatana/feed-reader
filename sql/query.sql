@@ -516,7 +516,7 @@ FROM
 WHERE
   rule_type = ? AND 
   rule_value = ? AND 
-  (domain = ? OR (domain IS NULL AND sqlc.narg('domain') IS NULL));
+  domain = ?;
 
 -- name: ListItemBlockRules :many
 SELECT

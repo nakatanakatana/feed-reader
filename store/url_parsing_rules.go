@@ -2,6 +2,8 @@ package store
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 )
 
 func (s *Store) CreateURLParsingRule(ctx context.Context, params CreateURLParsingRuleParams) (UrlParsingRule, error) {
@@ -14,6 +16,9 @@ func (s *Store) CreateURLParsingRule(ctx context.Context, params CreateURLParsin
 		if err == nil {
 			rule = existing
 			return nil
+		}
+		if !errors.Is(err, sql.ErrNoRows) {
+			return err
 		}
 
 		rule, err = qtx.CreateURLParsingRule(ctx, params)
