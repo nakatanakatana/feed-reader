@@ -59,6 +59,21 @@ type Item struct {
 	UpdatedAt   string  `json:"updated_at"`
 }
 
+type ItemBlock struct {
+	ItemID    string `json:"item_id"`
+	RuleID    string `json:"rule_id"`
+	CreatedAt string `json:"created_at"`
+}
+
+type ItemBlockRule struct {
+	ID        string  `json:"id"`
+	RuleType  string  `json:"rule_type"`
+	RuleValue string  `json:"rule_value"`
+	Domain    *string `json:"domain"`
+	CreatedAt string  `json:"created_at"`
+	UpdatedAt string  `json:"updated_at"`
+}
+
 type ItemRead struct {
 	ItemID    string  `json:"item_id"`
 	IsRead    int64   `json:"is_read"`

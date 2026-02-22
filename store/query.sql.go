@@ -366,6 +366,66 @@ func (q *Queries) CreateItem(ctx context.Context, arg CreateItemParams) (Item, e
 	return i, err
 }
 
+const createItemBlock = `-- name: CreateItemBlock :exec
+INSERT INTO item_blocks (
+  item_id,
+  rule_id
+) VALUES (
+  ?, ?
+)
+ON CONFLICT(item_id, rule_id) DO NOTHING
+`
+
+type CreateItemBlockParams struct {
+	ItemID string `json:"item_id"`
+	RuleID string `json:"rule_id"`
+}
+
+func (q *Queries) CreateItemBlock(ctx context.Context, arg CreateItemBlockParams) error {
+	_, err := q.db.ExecContext(ctx, createItemBlock, arg.ItemID, arg.RuleID)
+	return err
+}
+
+const createItemBlockRule = `-- name: CreateItemBlockRule :one
+INSERT INTO item_block_rules (
+  id,
+  rule_type,
+  rule_value,
+  domain
+) VALUES (
+  ?, ?, ?, ?
+)
+ON CONFLICT(rule_type, rule_value, domain) DO UPDATE SET
+  updated_at = (strftime('%FT%TZ', 'now'))
+RETURNING id, rule_type, rule_value, domain, created_at, updated_at
+`
+
+type CreateItemBlockRuleParams struct {
+	ID        string  `json:"id"`
+	RuleType  string  `json:"rule_type"`
+	RuleValue string  `json:"rule_value"`
+	Domain    *string `json:"domain"`
+}
+
+func (q *Queries) CreateItemBlockRule(ctx context.Context, arg CreateItemBlockRuleParams) (ItemBlockRule, error) {
+	row := q.db.QueryRowContext(ctx, createItemBlockRule,
+		arg.ID,
+		arg.RuleType,
+		arg.RuleValue,
+		arg.Domain,
+	)
+	var i ItemBlockRule
+	err := row.Scan(
+		&i.ID,
+		&i.RuleType,
+		&i.RuleValue,
+		&i.Domain,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const createItemRead = `-- name: CreateItemRead :exec
 INSERT INTO item_reads (
   item_id
@@ -500,6 +560,30 @@ WHERE
 
 func (q *Queries) DeleteFeedTags(ctx context.Context, feedID string) error {
 	_, err := q.db.ExecContext(ctx, deleteFeedTags, feedID)
+	return err
+}
+
+const deleteItemBlockRule = `-- name: DeleteItemBlockRule :exec
+DELETE FROM
+  item_block_rules
+WHERE
+  id = ?
+`
+
+func (q *Queries) DeleteItemBlockRule(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, deleteItemBlockRule, id)
+	return err
+}
+
+const deleteItemBlocksByRuleID = `-- name: DeleteItemBlocksByRuleID :exec
+DELETE FROM
+  item_blocks
+WHERE
+  rule_id = ?
+`
+
+func (q *Queries) DeleteItemBlocksByRuleID(ctx context.Context, ruleID string) error {
+	_, err := q.db.ExecContext(ctx, deleteItemBlocksByRuleID, ruleID)
 	return err
 }
 
@@ -1018,6 +1102,77 @@ func (q *Queries) ListFeedsToFetch(ctx context.Context) ([]ListFeedsToFetchRow, 
 			&i.Etag,
 			&i.LastModified,
 		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listItemBlockRules = `-- name: ListItemBlockRules :many
+SELECT
+  id, rule_type, rule_value, domain, created_at, updated_at
+FROM
+  item_block_rules
+ORDER BY
+  rule_type ASC, rule_value ASC
+`
+
+func (q *Queries) ListItemBlockRules(ctx context.Context) ([]ItemBlockRule, error) {
+	rows, err := q.db.QueryContext(ctx, listItemBlockRules)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ItemBlockRule
+	for rows.Next() {
+		var i ItemBlockRule
+		if err := rows.Scan(
+			&i.ID,
+			&i.RuleType,
+			&i.RuleValue,
+			&i.Domain,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listItemBlocks = `-- name: ListItemBlocks :many
+SELECT
+  item_id, rule_id, created_at
+FROM
+  item_blocks
+WHERE
+  item_id = ?
+`
+
+func (q *Queries) ListItemBlocks(ctx context.Context, itemID string) ([]ItemBlock, error) {
+	rows, err := q.db.QueryContext(ctx, listItemBlocks, itemID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ItemBlock
+	for rows.Next() {
+		var i ItemBlock
+		if err := rows.Scan(&i.ItemID, &i.RuleID, &i.CreatedAt); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

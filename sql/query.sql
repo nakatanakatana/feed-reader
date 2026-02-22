@@ -482,3 +482,53 @@ DELETE FROM
   url_parsing_rules
 WHERE
   id = ?;
+
+-- name: CreateItemBlockRule :one
+INSERT INTO item_block_rules (
+  id,
+  rule_type,
+  rule_value,
+  domain
+) VALUES (
+  ?, ?, ?, ?
+)
+ON CONFLICT(rule_type, rule_value, domain) DO UPDATE SET
+  updated_at = (strftime('%FT%TZ', 'now'))
+RETURNING *;
+
+-- name: ListItemBlockRules :many
+SELECT
+  *
+FROM
+  item_block_rules
+ORDER BY
+  rule_type ASC, rule_value ASC;
+
+-- name: DeleteItemBlockRule :exec
+DELETE FROM
+  item_block_rules
+WHERE
+  id = ?;
+
+-- name: CreateItemBlock :exec
+INSERT INTO item_blocks (
+  item_id,
+  rule_id
+) VALUES (
+  ?, ?
+)
+ON CONFLICT(item_id, rule_id) DO NOTHING;
+
+-- name: ListItemBlocks :many
+SELECT
+  *
+FROM
+  item_blocks
+WHERE
+  item_id = ?;
+
+-- name: DeleteItemBlocksByRuleID :exec
+DELETE FROM
+  item_blocks
+WHERE
+  rule_id = ?;
