@@ -21,7 +21,7 @@
 
 **Phase 3: Item Filtering (Block) Integration and Hooks**
 - [x] Task: Implement a utility to extract user info from item URLs based on configured patterns in `url_parsing_rules`. 068b532
-- [ ] Task: Implement logic to scan and populate `item_blocks` when a new rule is added.
+- [x] Task: Implement logic to scan and populate `item_blocks` when a new rule is added. e2f19bb
 - [ ] Task: Implement logic to check new items against active block rules during the fetch/store process.
 - [ ] Task: Update item repository logic to allow filtering by `item_blocks` in SQL queries.
 - [ ] Task: Update `ItemService.ListItems` to exclude items present in `item_blocks`.
