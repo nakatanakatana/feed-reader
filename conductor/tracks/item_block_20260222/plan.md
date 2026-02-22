@@ -6,7 +6,7 @@
 - [x] Task: Add `AddURLParsingRule`, `DeleteURLParsingRule`, and `ListURLParsingRules` RPCs to `item.proto`. b97cde3
 - [x] Task: Write TDD tests for `url_parsing_rules` repository logic. f1f0121
 - [x] Task: Implement repository logic for `url_parsing_rules`. f1f0121
-- [ ] Task: Implement service-level handlers for URL parsing rules.
+- [x] Task: Implement service-level handlers for URL parsing rules. 0de8505
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: URL Parsing Rules' (Protocol in workflow.md)
 
 **Phase 2: Item Block Rules Management**
