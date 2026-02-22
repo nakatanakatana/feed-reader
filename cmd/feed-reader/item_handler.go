@@ -221,8 +221,12 @@ func (s *ItemServer) AddItemBlockRules(ctx context.Context, req *connect.Request
 	params := make([]store.CreateItemBlockRuleParams, len(req.Msg.Rules))
 	for i, r := range req.Msg.Rules {
 		switch r.RuleType {
-		case "user", "domain", "user_domain", "keyword":
+		case "user", "domain", "keyword":
 			// valid
+		case "user_domain":
+			if r.Domain == nil || *r.Domain == "" {
+				return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("domain is required for user_domain rule at index %d", i))
+			}
 		default:
 			return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("invalid rule_type at index %d: %s. Must be 'user', 'domain', 'user_domain', or 'keyword'", i, r.RuleType))
 		}
@@ -239,7 +243,8 @@ func (s *ItemServer) AddItemBlockRules(ctx context.Context, req *connect.Request
 		}
 	}
 
-	if err := s.store.CreateItemBlockRules(ctx, params); err != nil {
+	rules, err := s.store.CreateItemBlockRules(ctx, params)
+	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
@@ -273,13 +278,7 @@ func (s *ItemServer) AddItemBlockRules(ctx context.Context, req *connect.Request
 		}
 
 		// 4. For each new rule, populate blocks
-		for _, p := range params {
-			rule := store.ItemBlockRule{
-				ID:        p.ID,
-				RuleType:  p.RuleType,
-				RuleValue: p.RuleValue,
-				Domain:    p.Domain,
-			}
+		for _, rule := range rules {
 			if err := s.store.PopulateItemBlocksForRule(ctx, rule, extractedInfoMap); err != nil {
 				fmt.Printf("Background block scan failed for rule %s: %v\n", rule.ID, err)
 			}

@@ -465,10 +465,15 @@ INSERT INTO url_parsing_rules (
 ) VALUES (
   ?, ?, ?, ?
 )
-ON CONFLICT(domain, rule_type) DO UPDATE SET
-  pattern = excluded.pattern,
-  updated_at = (strftime('%FT%TZ', 'now'))
 RETURNING *;
+
+-- name: GetURLParsingRuleByDomain :one
+SELECT
+  *
+FROM
+  url_parsing_rules
+WHERE
+  domain = ? AND rule_type = ?;
 
 -- name: ListURLParsingRules :many
 SELECT
@@ -501,9 +506,17 @@ INSERT INTO item_block_rules (
 ) VALUES (
   ?, ?, ?, ?
 )
-ON CONFLICT(rule_type, rule_value, domain) DO UPDATE SET
-  updated_at = (strftime('%FT%TZ', 'now'))
 RETURNING *;
+
+-- name: GetItemBlockRuleByValue :one
+SELECT
+  *
+FROM
+  item_block_rules
+WHERE
+  rule_type = ? AND 
+  rule_value = ? AND 
+  (domain = ? OR (domain IS NULL AND sqlc.narg('domain') IS NULL));
 
 -- name: ListItemBlockRules :many
 SELECT

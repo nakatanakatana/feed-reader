@@ -403,8 +403,6 @@ INSERT INTO item_block_rules (
 ) VALUES (
   ?, ?, ?, ?
 )
-ON CONFLICT(rule_type, rule_value, domain) DO UPDATE SET
-  updated_at = (strftime('%FT%TZ', 'now'))
 RETURNING id, rule_type, rule_value, domain, created_at, updated_at
 `
 
@@ -486,9 +484,6 @@ INSERT INTO url_parsing_rules (
 ) VALUES (
   ?, ?, ?, ?
 )
-ON CONFLICT(domain, rule_type) DO UPDATE SET
-  pattern = excluded.pattern,
-  updated_at = (strftime('%FT%TZ', 'now'))
 RETURNING id, domain, rule_type, pattern, created_at, updated_at
 `
 
@@ -809,6 +804,42 @@ func (q *Queries) GetItem(ctx context.Context, id string) (GetItemRow, error) {
 	return i, err
 }
 
+const getItemBlockRuleByValue = `-- name: GetItemBlockRuleByValue :one
+SELECT
+  id, rule_type, rule_value, domain, created_at, updated_at
+FROM
+  item_block_rules
+WHERE
+  rule_type = ? AND 
+  rule_value = ? AND 
+  (domain = ? OR (domain IS NULL AND ?4 IS NULL))
+`
+
+type GetItemBlockRuleByValueParams struct {
+	RuleType  string  `json:"rule_type"`
+	RuleValue string  `json:"rule_value"`
+	Domain    *string `json:"domain"`
+}
+
+func (q *Queries) GetItemBlockRuleByValue(ctx context.Context, arg GetItemBlockRuleByValueParams) (ItemBlockRule, error) {
+	row := q.db.QueryRowContext(ctx, getItemBlockRuleByValue,
+		arg.RuleType,
+		arg.RuleValue,
+		arg.Domain,
+		arg.Domain,
+	)
+	var i ItemBlockRule
+	err := row.Scan(
+		&i.ID,
+		&i.RuleType,
+		&i.RuleValue,
+		&i.Domain,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const getTagByName = `-- name: GetTagByName :one
 SELECT
   id, name, created_at, updated_at
@@ -841,6 +872,34 @@ WHERE
 
 func (q *Queries) GetURLParsingRule(ctx context.Context, id string) (UrlParsingRule, error) {
 	row := q.db.QueryRowContext(ctx, getURLParsingRule, id)
+	var i UrlParsingRule
+	err := row.Scan(
+		&i.ID,
+		&i.Domain,
+		&i.RuleType,
+		&i.Pattern,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getURLParsingRuleByDomain = `-- name: GetURLParsingRuleByDomain :one
+SELECT
+  id, domain, rule_type, pattern, created_at, updated_at
+FROM
+  url_parsing_rules
+WHERE
+  domain = ? AND rule_type = ?
+`
+
+type GetURLParsingRuleByDomainParams struct {
+	Domain   string `json:"domain"`
+	RuleType string `json:"rule_type"`
+}
+
+func (q *Queries) GetURLParsingRuleByDomain(ctx context.Context, arg GetURLParsingRuleByDomainParams) (UrlParsingRule, error) {
+	row := q.db.QueryRowContext(ctx, getURLParsingRuleByDomain, arg.Domain, arg.RuleType)
 	var i UrlParsingRule
 	err := row.Scan(
 		&i.ID,

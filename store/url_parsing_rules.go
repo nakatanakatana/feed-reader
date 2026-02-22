@@ -5,7 +5,21 @@ import (
 )
 
 func (s *Store) CreateURLParsingRule(ctx context.Context, params CreateURLParsingRuleParams) (UrlParsingRule, error) {
-	return s.Queries.CreateURLParsingRule(ctx, params)
+	var rule UrlParsingRule
+	err := s.WithTransaction(ctx, func(qtx *Queries) error {
+		existing, err := qtx.GetURLParsingRuleByDomain(ctx, GetURLParsingRuleByDomainParams{
+			Domain:   params.Domain,
+			RuleType: params.RuleType,
+		})
+		if err == nil {
+			rule = existing
+			return nil
+		}
+
+		rule, err = qtx.CreateURLParsingRule(ctx, params)
+		return err
+	})
+	return rule, err
 }
 
 func (s *Store) ListURLParsingRules(ctx context.Context) ([]UrlParsingRule, error) {

@@ -9,15 +9,30 @@ func (s *Store) CreateItemBlockRule(ctx context.Context, params CreateItemBlockR
 	return s.Queries.CreateItemBlockRule(ctx, params)
 }
 
-func (s *Store) CreateItemBlockRules(ctx context.Context, params []CreateItemBlockRuleParams) error {
-	return s.WithTransaction(ctx, func(qtx *Queries) error {
+func (s *Store) CreateItemBlockRules(ctx context.Context, params []CreateItemBlockRuleParams) ([]ItemBlockRule, error) {
+	var rules []ItemBlockRule
+	err := s.WithTransaction(ctx, func(qtx *Queries) error {
 		for _, p := range params {
-			if _, err := qtx.CreateItemBlockRule(ctx, p); err != nil {
+			// Try to find existing rule first to handle conflict and get original ID
+			existing, err := qtx.GetItemBlockRuleByValue(ctx, GetItemBlockRuleByValueParams{
+				RuleType:  p.RuleType,
+				RuleValue: p.RuleValue,
+				Domain:    p.Domain,
+			})
+			if err == nil {
+				rules = append(rules, existing)
+				continue
+			}
+
+			rule, err := qtx.CreateItemBlockRule(ctx, p)
+			if err != nil {
 				return err
 			}
+			rules = append(rules, rule)
 		}
 		return nil
 	})
+	return rules, err
 }
 
 func (s *Store) ListItemBlockRules(ctx context.Context) ([]ItemBlockRule, error) {
@@ -70,7 +85,13 @@ func ShouldBlockItem(item FullItem, rule ItemBlockRule, extractedUser *string, e
 	case "user":
 		return extractedUser != nil && *extractedUser == rule.RuleValue
 	case "domain":
-		return extractedDomain != nil && *extractedDomain == rule.RuleValue
+		// Match against extracted domain if available
+		if extractedDomain != nil && *extractedDomain == rule.RuleValue {
+			return true
+		}
+		// Fallback: extract domain directly from URL
+		urlDomain := getDomainFromURLLocally(item.Url)
+		return urlDomain == rule.RuleValue || strings.HasSuffix(urlDomain, "."+rule.RuleValue)
 	case "user_domain":
 		if rule.Domain == nil {
 			return false

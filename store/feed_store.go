@@ -216,13 +216,8 @@ func (s *Store) SaveFetchedItem(ctx context.Context, params SaveFetchedItemParam
 				return fmt.Errorf("failed to list url parsing rules: %w", err)
 			}
 
-			// We need a way to use URLParser here. 
-			// Since URLParser is in 'main' package, we can't use it directly in 'store'.
-			// We'll implement a simple one or move it. 
-			// Given the current structure, let's implement extraction here or move URLParser to a shared package.
-			// I'll move URLParser logic to a shared internal logic or redefine it here.
-			// Actually, let's just use a simple extraction logic for now or move it to store.
-			
+			// TODO: Deduplicate URL parsing by moving shared logic out of the main package
+			// into a reusable package that can be used here instead of extractUserInfoLocally.
 			extractedUser, extractedDomain := extractUserInfoLocally(item.Url, urlRules)
 			
 			fullItem := FullItem{
