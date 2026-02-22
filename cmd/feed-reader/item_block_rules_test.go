@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"testing"
+	"time"
 
 	"connectrpc.com/connect"
 	"github.com/nakatanakatana/feed-reader/gen/go/item/v1"
@@ -17,14 +18,36 @@ func TestItemServer_ItemBlockRules(t *testing.T) {
 	server := NewItemServer(s, nil)
 
 	t.Run("AddItemBlockRules", func(t *testing.T) {
+		// Pre-setup some items and a URL rule
+		_, _ = s.CreateURLParsingRule(ctx, store.CreateURLParsingRuleParams{
+			ID:       "u1",
+			Domain:   "example.com",
+			RuleType: "subdomain",
+			Pattern:  "example.com",
+		})
+		_, _ = s.CreateFeed(ctx, store.CreateFeedParams{ID: "f1", Url: "u1"})
+		_ = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
+			FeedID: "f1",
+			Url:    "https://user1.example.com/post1",
+			Title:  func() *string { s := "Bad keyword here"; return &s }(),
+		})
+
 		req := &itemv1.AddItemBlockRulesRequest{
 			Rules: []*itemv1.AddItemBlockRulesRequest_Rule{
 				{RuleType: "user", Value: "user1"},
-				{RuleType: "domain", Value: "example.com"},
+				{RuleType: "keyword", Value: "keyword"},
 			},
 		}
 		_, err := server.AddItemBlockRules(ctx, connect.NewRequest(req))
 		assert.NilError(t, err)
+
+		// Wait for background scanning
+		time.Sleep(100 * time.Millisecond)
+
+		// Verify item_blocks
+		var count int
+		_ = db.QueryRow("SELECT count(*) FROM item_blocks").Scan(&count)
+		assert.Assert(t, count >= 1, "Should have populated item_blocks")
 	})
 
 	t.Run("ListItemBlockRules", func(t *testing.T) {

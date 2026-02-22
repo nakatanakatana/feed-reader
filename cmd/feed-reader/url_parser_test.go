@@ -17,12 +17,12 @@ func TestURLParser_ExtractUserInfo(t *testing.T) {
 	tests := []struct {
 		name     string
 		url      string
-		expected *ExtractedUserInfo
+		expected *store.ExtractedUserInfo
 	}{
 		{
 			name: "Subdomain match",
 			url:  "https://user1.example.com/post/123",
-			expected: &ExtractedUserInfo{
+			expected: &store.ExtractedUserInfo{
 				User:   "user1",
 				Domain: "example.com",
 			},
@@ -40,7 +40,7 @@ func TestURLParser_ExtractUserInfo(t *testing.T) {
 		{
 			name: "Path match",
 			url:  "https://domain.com/users/user2/article/456",
-			expected: &ExtractedUserInfo{
+			expected: &store.ExtractedUserInfo{
 				User:   "user2",
 				Domain: "domain.com",
 			},

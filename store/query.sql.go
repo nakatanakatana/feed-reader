@@ -1339,6 +1339,74 @@ func (q *Queries) ListItems(ctx context.Context, arg ListItemsParams) ([]ListIte
 	return items, nil
 }
 
+const listItemsForBlocking = `-- name: ListItemsForBlocking :many
+SELECT
+  i.id, i.url, i.title, i.description, i.published_at, i.author, i.guid, i.content, i.image_url, i.categories, i.created_at, i.updated_at,
+  fi.feed_id,
+  CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read
+FROM
+  items i
+JOIN
+  feed_items fi ON i.id = fi.item_id
+LEFT JOIN
+  item_reads ir ON i.id = ir.item_id
+`
+
+type ListItemsForBlockingRow struct {
+	ID          string  `json:"id"`
+	Url         string  `json:"url"`
+	Title       *string `json:"title"`
+	Description *string `json:"description"`
+	PublishedAt *string `json:"published_at"`
+	Author      *string `json:"author"`
+	Guid        *string `json:"guid"`
+	Content     *string `json:"content"`
+	ImageUrl    *string `json:"image_url"`
+	Categories  *string `json:"categories"`
+	CreatedAt   string  `json:"created_at"`
+	UpdatedAt   string  `json:"updated_at"`
+	FeedID      string  `json:"feed_id"`
+	IsRead      int64   `json:"is_read"`
+}
+
+func (q *Queries) ListItemsForBlocking(ctx context.Context) ([]ListItemsForBlockingRow, error) {
+	rows, err := q.db.QueryContext(ctx, listItemsForBlocking)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListItemsForBlockingRow
+	for rows.Next() {
+		var i ListItemsForBlockingRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Url,
+			&i.Title,
+			&i.Description,
+			&i.PublishedAt,
+			&i.Author,
+			&i.Guid,
+			&i.Content,
+			&i.ImageUrl,
+			&i.Categories,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.FeedID,
+			&i.IsRead,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listRecentItemPublishedDates = `-- name: ListRecentItemPublishedDates :many
 SELECT
   published_at

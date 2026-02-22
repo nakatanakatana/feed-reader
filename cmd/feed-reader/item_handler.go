@@ -230,6 +230,44 @@ func (s *ItemServer) AddItemBlockRules(ctx context.Context, req *connect.Request
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
+	// Trigger scanning of existing items for these new rules
+	go func() {
+		// Create a background context for the scanning process
+		ctx := context.Background()
+
+		// 1. Fetch all URL parsing rules
+		urlRules, err := s.store.ListURLParsingRules(ctx)
+		if err != nil {
+			return
+		}
+		parser := NewURLParser(urlRules)
+
+		// 2. Fetch all items
+		items, err := s.store.ListItemsForBlocking(ctx)
+		if err != nil {
+			return
+		}
+
+		// 3. Pre-extract info for all items to avoid redundant parsing
+		extractedInfoMap := make(map[string]store.ExtractedUserInfo)
+		for _, item := range items {
+			if info := parser.ExtractUserInfo(item.Url); info != nil {
+				extractedInfoMap[item.Url] = *info
+			}
+		}
+
+		// 4. For each new rule, populate blocks
+		for _, p := range params {
+			rule := store.ItemBlockRule{
+				ID:        p.ID,
+				RuleType:  p.RuleType,
+				RuleValue: p.RuleValue,
+				Domain:    p.Domain,
+			}
+			_ = s.store.PopulateItemBlocksForRule(ctx, rule, extractedInfoMap)
+		}
+	}()
+
 	return connect.NewResponse(&itemv1.AddItemBlockRulesResponse{}), nil
 }
 

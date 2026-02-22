@@ -82,3 +82,61 @@ func TestItemBlocks(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Equal(t, count, 1)
 }
+
+func TestStore_PopulateItemBlocksForRule(t *testing.T) {
+	s := setupStore(t)
+	ctx := context.Background()
+
+	// 1. Setup Items
+	item1 := store.SaveFetchedItemParams{
+		FeedID: "f1",
+		Url:    "https://user1.example.com/post1",
+		Title:  func() *string { s := "Bad keyword here"; return &s }(),
+	}
+	item2 := store.SaveFetchedItemParams{
+		FeedID: "f1",
+		Url:    "https://user2.example.com/post2",
+		Title:  func() *string { s := "Good post"; return &s }(),
+	}
+	_, _ = s.CreateFeed(ctx, store.CreateFeedParams{ID: "f1", Url: "u1"})
+	_ = s.SaveFetchedItem(ctx, item1)
+	_ = s.SaveFetchedItem(ctx, item2)
+
+	var id1, id2 string
+	_ = s.DB.QueryRow("SELECT id FROM items WHERE url = ?", item1.Url).Scan(&id1)
+	_ = s.DB.QueryRow("SELECT id FROM items WHERE url = ?", item2.Url).Scan(&id2)
+
+	// 2. Extracted Info Map
+	extractedInfo := map[string]store.ExtractedUserInfo{
+		item1.Url: {User: "user1", Domain: "example.com"},
+		item2.Url: {User: "user2", Domain: "example.com"},
+	}
+
+	t.Run("Keyword Rule", func(t *testing.T) {
+		rule := store.ItemBlockRule{
+			ID:        uuid.NewString(),
+			RuleType:  "keyword",
+			RuleValue: "keyword",
+		}
+		err := s.PopulateItemBlocksForRule(ctx, rule, extractedInfo)
+		assert.NilError(t, err)
+
+		var count int
+		_ = s.DB.QueryRow("SELECT count(*) FROM item_blocks WHERE rule_id = ?", rule.ID).Scan(&count)
+		assert.Equal(t, count, 1)
+	})
+
+	t.Run("User Rule", func(t *testing.T) {
+		rule := store.ItemBlockRule{
+			ID:        uuid.NewString(),
+			RuleType:  "user",
+			RuleValue: "user1",
+		}
+		err := s.PopulateItemBlocksForRule(ctx, rule, extractedInfo)
+		assert.NilError(t, err)
+
+		var count int
+		_ = s.DB.QueryRow("SELECT count(*) FROM item_blocks WHERE rule_id = ?", rule.ID).Scan(&count)
+		assert.Equal(t, count, 1)
+	})
+}

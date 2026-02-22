@@ -15,14 +15,8 @@ func NewURLParser(rules []store.UrlParsingRule) *URLParser {
 	return &URLParser{rules: rules}
 }
 
-// ExtractedUserInfo contains information parsed from a URL.
-type ExtractedUserInfo struct {
-	User   string
-	Domain string
-}
-
 // ExtractUserInfo attempts to extract user information from the given URL.
-func (p *URLParser) ExtractUserInfo(urlStr string) *ExtractedUserInfo {
+func (p *URLParser) ExtractUserInfo(urlStr string) *store.ExtractedUserInfo {
 	// Simple implementation: check each rule.
 	// For better performance with many rules, we could index by domain.
 	for _, rule := range p.rules {
@@ -34,7 +28,7 @@ func (p *URLParser) ExtractUserInfo(urlStr string) *ExtractedUserInfo {
 			if strings.HasSuffix(domainPart, "."+rule.Pattern) {
 				user := strings.TrimSuffix(domainPart, "."+rule.Pattern)
 				if user != "" && !strings.Contains(user, ".") {
-					return &ExtractedUserInfo{
+					return &store.ExtractedUserInfo{
 						User:   user,
 						Domain: rule.Pattern,
 					}
@@ -51,7 +45,7 @@ func (p *URLParser) ExtractUserInfo(urlStr string) *ExtractedUserInfo {
 					if user != "" {
 						// Extract domain from pattern
 						domain := strings.Split(rule.Pattern, "/")[0]
-						return &ExtractedUserInfo{
+						return &store.ExtractedUserInfo{
 							User:   user,
 							Domain: domain,
 						}
