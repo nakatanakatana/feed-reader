@@ -43,7 +43,7 @@ func (p *URLParser) ExtractUserInfo(urlStr string) *store.ExtractedUserInfo {
 		case "path":
 			// Expected pattern: <rule.Pattern>/<user>
 			// Example: rule.Pattern = "domain.com/users", url = "https://domain.com/users/user1/post"
-			fullPath := u.Host + u.Path
+			fullPath := u.Hostname() + u.EscapedPath()
 			if strings.HasPrefix(fullPath, rule.Pattern+"/") {
 				remaining := strings.TrimPrefix(fullPath, rule.Pattern+"/")
 				user := strings.Split(remaining, "/")[0]
