@@ -6,7 +6,7 @@ import {
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { Route as RootRoute } from "../routes/__root";
+import { routeTree } from "../routeTree.gen";
 import "../styles.css";
 
 // Unmock solid-router to test active link logic
@@ -23,7 +23,7 @@ describe("Block Management Navigation", () => {
 
   it("should have navigation links for URL Rules and Block Rules", async () => {
     const history = createMemoryHistory({ initialEntries: ["/"] });
-    const router = createRouter({ routeTree: RootRoute, history });
+    const router = createRouter({ routeTree, history });
 
     dispose = render(() => <RouterProvider router={router} />, document.body);
 
@@ -32,5 +32,17 @@ describe("Block Management Navigation", () => {
 
     await expect.element(urlRulesLink).toBeInTheDocument();
     await expect.element(blockRulesLink).toBeInTheDocument();
+
+    // Test navigation to URL Rules
+    await urlRulesLink.click();
+    await expect
+      .element(page.getByText("URL Rules Page (Placeholder)"))
+      .toBeInTheDocument();
+
+    // Test navigation to Block Rules
+    await blockRulesLink.click();
+    await expect
+      .element(page.getByText("Block Rules Page (Placeholder)"))
+      .toBeInTheDocument();
   });
 });
