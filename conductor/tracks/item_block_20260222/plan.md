@@ -23,6 +23,6 @@
 - [x] Task: Implement a utility to extract user info from item URLs based on configured patterns in `url_parsing_rules`. 068b532
 - [x] Task: Implement logic to scan and populate `item_blocks` when a new rule is added. e2f19bb
 - [x] Task: Implement logic to check new items against active block rules during the fetch/store process. e76136c
-- [ ] Task: Update item repository logic to allow filtering by `item_blocks` in SQL queries.
+- [x] Task: Update item repository logic to allow filtering by `item_blocks` in SQL queries. 9f18b54
 - [ ] Task: Update `ItemService.ListItems` to exclude items present in `item_blocks`.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Item Filtering (Block) Integration and Hooks' (Protocol in workflow.md)
