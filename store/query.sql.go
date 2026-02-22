@@ -57,6 +57,8 @@ JOIN
   feed_items fi ON i.id = fi.item_id
 LEFT JOIN
   item_reads ir ON i.id = ir.item_id
+LEFT JOIN
+  item_blocks ib ON i.id = ib.item_id
 WHERE
   (?1 IS NULL OR fi.feed_id = ?1) AND
   (?2 IS NULL OR COALESCE(ir.is_read, 0) = ?2) AND
@@ -64,7 +66,7 @@ WHERE
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = ?3
   )) AND
   (?4 IS NULL OR i.created_at >= ?4) AND
-  (?5 IS NULL OR (EXISTS (SELECT 1 FROM item_blocks ib WHERE ib.item_id = i.id) = ?5))
+  (?5 IS NULL OR (CASE WHEN ib.item_id IS NOT NULL THEN 1 ELSE 0 END = ?5))
 `
 
 type CountItemsParams struct {
@@ -1262,6 +1264,8 @@ JOIN
   feed_items fi ON i.id = fi.item_id
 LEFT JOIN
   item_reads ir ON i.id = ir.item_id
+LEFT JOIN
+  item_blocks ib ON i.id = ib.item_id
 WHERE
   (?1 IS NULL OR fi.feed_id = ?1) AND
   (?2 IS NULL OR COALESCE(ir.is_read, 0) = ?2) AND
@@ -1269,7 +1273,7 @@ WHERE
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = ?3
   )) AND
   (?4 IS NULL OR i.created_at >= ?4) AND
-  (?5 IS NULL OR (EXISTS (SELECT 1 FROM item_blocks ib WHERE ib.item_id = i.id) = ?5))
+  (?5 IS NULL OR (CASE WHEN ib.item_id IS NOT NULL THEN 1 ELSE 0 END = ?5))
 GROUP BY
   i.id
 ORDER BY

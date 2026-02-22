@@ -160,6 +160,10 @@ func (s *ItemServer) ListItemFeeds(ctx context.Context, req *connect.Request[ite
 }
 
 func (s *ItemServer) AddURLParsingRule(ctx context.Context, req *connect.Request[itemv1.AddURLParsingRuleRequest]) (*connect.Response[itemv1.AddURLParsingRuleResponse], error) {
+	if req.Msg.RuleType != "subdomain" && req.Msg.RuleType != "path" {
+		return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("invalid rule_type: %s. Must be 'subdomain' or 'path'", req.Msg.RuleType))
+	}
+
 	newUUID, err := s.uuidGenerator.NewRandom()
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to generate UUID: %w", err))
@@ -216,6 +220,13 @@ func (s *ItemServer) ListURLParsingRules(ctx context.Context, req *connect.Reque
 func (s *ItemServer) AddItemBlockRules(ctx context.Context, req *connect.Request[itemv1.AddItemBlockRulesRequest]) (*connect.Response[itemv1.AddItemBlockRulesResponse], error) {
 	params := make([]store.CreateItemBlockRuleParams, len(req.Msg.Rules))
 	for i, r := range req.Msg.Rules {
+		switch r.RuleType {
+		case "user", "domain", "user_domain", "keyword":
+			// valid
+		default:
+			return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("invalid rule_type at index %d: %s. Must be 'user', 'domain', 'user_domain', or 'keyword'", i, r.RuleType))
+		}
+
 		newUUID, err := s.uuidGenerator.NewRandom()
 		if err != nil {
 			return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to generate UUID: %w", err))
@@ -234,12 +245,14 @@ func (s *ItemServer) AddItemBlockRules(ctx context.Context, req *connect.Request
 
 	// Trigger scanning of existing items for these new rules
 	go func() {
-		// Create a background context for the scanning process
-		ctx := context.Background()
+		// Use a background context with timeout for the scanning process
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+		defer cancel()
 
 		// 1. Fetch all URL parsing rules
 		urlRules, err := s.store.ListURLParsingRules(ctx)
 		if err != nil {
+			fmt.Printf("Background block scan failed to list URL rules: %v\n", err)
 			return
 		}
 		parser := NewURLParser(urlRules)
@@ -247,6 +260,7 @@ func (s *ItemServer) AddItemBlockRules(ctx context.Context, req *connect.Request
 		// 2. Fetch all items
 		items, err := s.store.ListItemsForBlocking(ctx)
 		if err != nil {
+			fmt.Printf("Background block scan failed to list items: %v\n", err)
 			return
 		}
 
@@ -266,7 +280,9 @@ func (s *ItemServer) AddItemBlockRules(ctx context.Context, req *connect.Request
 				RuleValue: p.RuleValue,
 				Domain:    p.Domain,
 			}
-			_ = s.store.PopulateItemBlocksForRule(ctx, rule, extractedInfoMap)
+			if err := s.store.PopulateItemBlocksForRule(ctx, rule, extractedInfoMap); err != nil {
+				fmt.Printf("Background block scan failed for rule %s: %v\n", rule.ID, err)
+			}
 		}
 	}()
 

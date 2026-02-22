@@ -194,6 +194,8 @@ JOIN
   feed_items fi ON i.id = fi.item_id
 LEFT JOIN
   item_reads ir ON i.id = ir.item_id
+LEFT JOIN
+  item_blocks ib ON i.id = ib.item_id
 WHERE
   (sqlc.narg('feed_id') IS NULL OR fi.feed_id = sqlc.narg('feed_id')) AND
   (sqlc.narg('is_read') IS NULL OR COALESCE(ir.is_read, 0) = sqlc.narg('is_read')) AND
@@ -201,7 +203,7 @@ WHERE
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = sqlc.narg('tag_id')
   )) AND
   (sqlc.narg('since') IS NULL OR i.created_at >= sqlc.narg('since')) AND
-  (sqlc.narg('is_blocked') IS NULL OR (CASE WHEN EXISTS (SELECT 1 FROM item_blocks ib WHERE ib.item_id = i.id) THEN 1 ELSE 0 END = sqlc.narg('is_blocked')))
+  (sqlc.narg('is_blocked') IS NULL OR (CASE WHEN ib.item_id IS NOT NULL THEN 1 ELSE 0 END = sqlc.narg('is_blocked')))
 GROUP BY
   i.id
 ORDER BY
@@ -278,6 +280,8 @@ JOIN
   feed_items fi ON i.id = fi.item_id
 LEFT JOIN
   item_reads ir ON i.id = ir.item_id
+LEFT JOIN
+  item_blocks ib ON i.id = ib.item_id
 WHERE
   (sqlc.narg('feed_id') IS NULL OR fi.feed_id = sqlc.narg('feed_id')) AND
   (sqlc.narg('is_read') IS NULL OR COALESCE(ir.is_read, 0) = sqlc.narg('is_read')) AND
@@ -285,7 +289,7 @@ WHERE
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = sqlc.narg('tag_id')
   )) AND
   (sqlc.narg('since') IS NULL OR i.created_at >= sqlc.narg('since')) AND
-  (sqlc.narg('is_blocked') IS NULL OR (CASE WHEN EXISTS (SELECT 1 FROM item_blocks ib WHERE ib.item_id = i.id) THEN 1 ELSE 0 END = sqlc.narg('is_blocked')));
+  (sqlc.narg('is_blocked') IS NULL OR (CASE WHEN ib.item_id IS NOT NULL THEN 1 ELSE 0 END = sqlc.narg('is_blocked')));
 
 
 -- name: SetItemRead :one
