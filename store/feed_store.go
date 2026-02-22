@@ -264,10 +264,10 @@ func extractUserInfoLocally(urlStr string, rules []UrlParsingRule) (*string, *st
 		case "path":
 			// Expected pattern: <rule.Pattern>/<user>
 			// Example: rule.Pattern = "domain.com/users", urlPath = "/users/user1/post"
-			if strings.HasPrefix(u.Host, rule.Pattern) || strings.HasPrefix(u.Host+u.Path, rule.Pattern) {
+			if strings.HasPrefix(u.Hostname(), rule.Pattern) || strings.HasPrefix(u.Hostname()+u.Path, rule.Pattern) {
 				// Simplistic check for path-based. 
 				// Pattern might include host like "github.com/user"
-				fullPath := u.Host + u.Path
+				fullPath := u.Hostname() + u.Path
 				if strings.HasPrefix(fullPath, rule.Pattern+"/") {
 					remaining := strings.TrimPrefix(fullPath, rule.Pattern+"/")
 					user := strings.Split(remaining, "/")[0]
