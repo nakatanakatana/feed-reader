@@ -12,7 +12,7 @@
 - [x] Task: Implement the interactive parsing logic and preview table display in the modal. aa9ea2d
 - [x] Task: Conductor - User Manual Verification 'Phase 2: UI Foundation' (Protocol in workflow.md) ee04afb
 
-## Phase 3: Backend Integration & Polish
+## Phase 3: Backend Integration & Polish [checkpoint: 1a8228d]
 - [x] Task: Implement the submission logic using the existing `AddItemBlockRules` RPC. 9a64f87
 - [x] Task: Add feedback UI (success summary, skipped lines report) and automatic list refresh. 9a64f87
 - [x] Task: Final visual adjustments and mobile responsiveness check. 9a64f87
