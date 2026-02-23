@@ -1,4 +1,4 @@
-import { createSignal, For, Show } from "solid-js";
+import { createMemo, createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { type ParsedBlockRule, parseCSVBlockRules } from "../lib/csv-parser";
@@ -22,6 +22,9 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
   const [csvText, setCsvText] = createSignal("");
   const [parsedRules, setParsedRules] = createSignal<ParsedBlockRule[]>([]);
   const [error, setError] = createSignal<string | null>(null);
+
+  const validRules = createMemo(() => parsedRules().filter((r) => r.isValid));
+  const validRulesCount = () => validRules().length;
 
   const handleTextChange = (
     e: InputEvent & { currentTarget: HTMLTextAreaElement; target: Element },
@@ -54,24 +57,22 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
     }
   };
 
-  const validRulesCount = () => parsedRules().filter((r) => r.isValid).length;
-
   const handleRegister = async () => {
-    const validRules = parsedRules().filter((r) => r.isValid);
-    if (validRules.length === 0) return;
+    const rules = validRules();
+    if (rules.length === 0) return;
     const total = parsedRules().length;
     setError(null);
 
     try {
       await props.onRegister(
-        validRules.map((r) => ({
+        rules.map((r) => ({
           ruleType: r.ruleType,
           value: r.value,
           domain: r.domain,
         })),
       );
       setRegistrationResult({
-        success: validRules.length,
+        success: rules.length,
         total: total,
       });
       setCsvText("");

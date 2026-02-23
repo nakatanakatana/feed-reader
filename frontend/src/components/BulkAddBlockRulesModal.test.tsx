@@ -141,4 +141,52 @@ invalid,type`);
     await expect.element(page.getByText("Network error")).toBeInTheDocument();
     expect(onRegister).toHaveBeenCalled();
   });
+
+  it("handles file upload correctly", async () => {
+    dispose = render(
+      () => (
+        <BulkAddBlockRulesModal
+          isOpen={true}
+          onClose={onClose}
+          onRegister={onRegister}
+          isPending={false}
+        />
+      ),
+      document.body,
+    );
+
+    const input = document.querySelector(
+      'input[type="file"]',
+    ) as HTMLInputElement;
+    const file = new File(
+      ["user,file_user\nkeyword,file_keyword"],
+      "rules.csv",
+      {
+        type: "text/csv",
+      },
+    );
+
+    Object.defineProperty(input, "files", {
+      value: [file],
+    });
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+
+    // Verify preview updates
+    await expect
+      .element(page.getByRole("cell", { name: "file_user", exact: true }))
+      .toBeInTheDocument();
+    await expect
+      .element(page.getByRole("cell", { name: "file_keyword", exact: true }))
+      .toBeInTheDocument();
+
+    const registerButton = page.getByRole("button", {
+      name: "Register (2 rules)",
+    });
+    await registerButton.click();
+
+    expect(onRegister).toHaveBeenCalledWith([
+      { ruleType: "user", value: "file_user" },
+      { ruleType: "keyword", value: "file_keyword" },
+    ]);
+  });
 });
