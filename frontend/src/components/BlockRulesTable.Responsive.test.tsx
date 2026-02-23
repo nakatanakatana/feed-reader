@@ -57,8 +57,7 @@ describe("BlockRulesTable Responsive", () => {
     );
 
     const sortLabel = page.getByText("Sort by:");
-    // It should be in document but not visible
-    await expect.element(sortLabel).toBeInTheDocument();
-    await expect.element(sortLabel).not.toBeVisible();
+    // With conditional rendering, it should NOT be in the document at all on desktop
+    await expect.element(sortLabel).not.toBeInTheDocument();
   });
 });

@@ -77,7 +77,13 @@ function BlockRulesComponent() {
     return Array.from(domains).sort();
   });
 
-  const toggleSort = (field: BlockRulesSortField) => {
+  const toggleSort = (field: BlockRulesSortField | null) => {
+    if (field === null) {
+      setSortField(null);
+      setSortDirection("asc");
+      return;
+    }
+
     if (sortField() === field) {
       setSortDirection((dir) => (dir === "asc" ? "desc" : "asc"));
     } else {

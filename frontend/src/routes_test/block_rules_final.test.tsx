@@ -13,15 +13,11 @@ import "../styles.css";
 import { HttpResponse, http } from "msw";
 import {
   ItemBlockRuleSchema,
-  ItemService,
   ListItemBlockRulesResponseSchema,
 } from "../gen/item/v1/item_pb";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
-import { mockConnectWeb } from "../mocks/connect";
-
-const _mockItemService = mockConnectWeb(ItemService);
 
 describe("Block Rules Final Integration", () => {
   let dispose: () => void;
