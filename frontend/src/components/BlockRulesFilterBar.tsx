@@ -10,25 +10,29 @@ interface BlockRulesFilterBarProps {
 export function BlockRulesFilterBar(props: BlockRulesFilterBarProps) {
   return (
     <div
-      class={flex({
-        gap: "4",
-        alignItems: "flex-end",
-        flexWrap: "wrap",
-        width: "full",
-        bg: "white",
-        p: "4",
+      class={css({
+        display: "flex",
+        justifyContent: "flex-start",
+        alignItems: "stretch",
+        flexDirection: "column",
+        gap: "2",
+        backgroundColor: "gray.50",
+        padding: "2",
         rounded: "md",
-        shadow: "sm",
         border: "1px solid",
         borderColor: "gray.200",
+        md: {
+          alignItems: "center",
+          flexDirection: "row",
+        },
       })}
     >
-      <div class={stack({ gap: "1" })}>
+      <div class={flex({ gap: "2", alignItems: "center" })}>
         <label
           for="filter-type"
-          class={css({ fontSize: "sm", fontWeight: "medium" })}
+          class={css({ fontSize: "sm", color: "gray.600" })}
         >
-          Filter by Type:
+          Filter:
         </label>
         <select
           id="filter-type"
@@ -38,11 +42,14 @@ export function BlockRulesFilterBar(props: BlockRulesFilterBarProps) {
             blockRulesStore.setTypeFilter(val === "ALL_TYPES" ? null : val);
           }}
           class={css({
+            fontSize: "xs",
+            px: "2",
+            py: "1.5",
+            rounded: "md",
             border: "1px solid",
             borderColor: "gray.300",
-            padding: "2",
-            borderRadius: "md",
             bg: "white",
+            minW: "8rem",
           })}
         >
           <option value="ALL_TYPES">All Types</option>
@@ -53,12 +60,12 @@ export function BlockRulesFilterBar(props: BlockRulesFilterBarProps) {
         </select>
       </div>
 
-      <div class={stack({ gap: "1", flex: "1", minWidth: "200px" })}>
+      <div class={flex({ gap: "2", alignItems: "center" })}>
         <label
           for="filter-domain"
-          class={css({ fontSize: "sm", fontWeight: "medium" })}
+          class={css({ fontSize: "sm", color: "gray.600" })}
         >
-          Filter by Domain:
+          Domain:
         </label>
         <select
           id="filter-domain"
@@ -68,11 +75,14 @@ export function BlockRulesFilterBar(props: BlockRulesFilterBarProps) {
             blockRulesStore.setDomainFilter(val === "ALL_DOMAINS" ? null : val);
           }}
           class={css({
+            fontSize: "xs",
+            px: "2",
+            py: "1.5",
+            rounded: "md",
             border: "1px solid",
             borderColor: "gray.300",
-            padding: "2",
-            borderRadius: "md",
             bg: "white",
+            minW: "10rem",
           })}
         >
           <option value="ALL_DOMAINS">All Domains</option>

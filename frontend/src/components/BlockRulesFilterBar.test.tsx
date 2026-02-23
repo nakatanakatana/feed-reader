@@ -25,11 +25,11 @@ describe("BlockRulesFilterBar", () => {
       document.body,
     );
 
-    await expect.element(page.getByText("Filter by Type:")).toBeInTheDocument();
-    await expect.element(page.getByText("Filter by Domain:")).toBeInTheDocument();
+    await expect.element(page.getByText("Filter:")).toBeInTheDocument();
+    await expect.element(page.getByText("Domain:")).toBeInTheDocument();
 
-    const typeSelect = page.getByLabelText("Filter by Type:");
-    const domainSelect = page.getByLabelText("Filter by Domain:");
+    const typeSelect = page.getByLabelText("Filter:");
+    const domainSelect = page.getByLabelText("Domain:");
 
     await expect.element(typeSelect).toBeInTheDocument();
     await expect.element(domainSelect).toBeInTheDocument();
@@ -41,7 +41,7 @@ describe("BlockRulesFilterBar", () => {
       document.body,
     );
 
-    const typeSelect = page.getByLabelText("Filter by Type:");
+    const typeSelect = page.getByLabelText("Filter:");
     await typeSelect.selectOptions("user");
 
     expect(blockRulesStore.setTypeFilter).toHaveBeenCalledWith("user");
@@ -53,7 +53,7 @@ describe("BlockRulesFilterBar", () => {
       document.body,
     );
 
-    const domainSelect = page.getByLabelText("Filter by Domain:");
+    const domainSelect = page.getByLabelText("Domain:");
     await domainSelect.selectOptions("example.com");
 
     expect(blockRulesStore.setDomainFilter).toHaveBeenCalledWith("example.com");
@@ -65,11 +65,11 @@ describe("BlockRulesFilterBar", () => {
       document.body,
     );
 
-    const typeSelect = page.getByLabelText("Filter by Type:");
+    const typeSelect = page.getByLabelText("Filter:");
     await typeSelect.selectOptions("ALL_TYPES");
     expect(blockRulesStore.setTypeFilter).toHaveBeenCalledWith(null);
 
-    const domainSelect = page.getByLabelText("Filter by Domain:");
+    const domainSelect = page.getByLabelText("Domain:");
     await domainSelect.selectOptions("ALL_DOMAINS");
     expect(blockRulesStore.setDomainFilter).toHaveBeenCalledWith(null);
   });
