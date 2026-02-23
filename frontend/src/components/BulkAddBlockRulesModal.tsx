@@ -23,7 +23,18 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
   const [parsedRules, setParsedRules] = createSignal<ParsedBlockRule[]>([]);
   const [error, setError] = createSignal<string | null>(null);
 
-  const validRules = createMemo(() => parsedRules().filter((r) => r.isValid));
+  const validRules = createMemo(() => {
+    const valid = parsedRules().filter((r) => r.isValid);
+    // De-duplicate to match backend behavior and show accurate count
+    const uniqueMap = new Map<string, (typeof valid)[0]>();
+    for (const rule of valid) {
+      const key = `${rule.ruleType}|${rule.value}|${rule.domain || ""}`;
+      if (!uniqueMap.has(key)) {
+        uniqueMap.set(key, rule);
+      }
+    }
+    return Array.from(uniqueMap.values());
+  });
   const validRulesCount = () => validRules().length;
 
   const handleTextChange = (
@@ -131,7 +142,9 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
                 >
                   {props.isPending
                     ? "Registering..."
-                    : `Register (${validRulesCount()} rules)`}
+                    : `Register (${validRulesCount()} rule${
+                        validRulesCount() === 1 ? "" : "s"
+                      })`}
                 </ActionButton>
               </>
             }
@@ -174,13 +187,19 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
               })}
             >
               <p class={css({ fontWeight: "bold", marginBottom: "1" })}>
-                Successfully registered rules!
+                {res().success === 1
+                  ? "Successfully registered rule!"
+                  : "Successfully registered rules!"}
               </p>
               <p>
-                {res().success} rules were registered.
+                {res().success}{" "}
+                {res().success === 1 ? "rule was" : "rules were"} registered.
                 <Show when={res().total > res().success}>
                   {" "}
-                  ({res().total - res().success} invalid lines were skipped)
+                  {(() => {
+                    const invalidCount = res().total - res().success;
+                    return `(${invalidCount} ${invalidCount === 1 ? "invalid line was" : "invalid lines were"} skipped)`;
+                  })()}
                 </Show>
               </p>
             </div>

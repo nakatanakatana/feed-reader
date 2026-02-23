@@ -92,7 +92,7 @@ user_domain,jane_doe,example.com`);
 invalid,type`);
 
     const registerButton = page.getByRole("button", {
-      name: "Register (1 rules)",
+      name: "Register (1 rule)",
     });
     await registerButton.click();
 
@@ -102,10 +102,10 @@ invalid,type`);
 
     // Check success message
     await expect
-      .element(page.getByText("Successfully registered rules!"))
+      .element(page.getByText("Successfully registered rule!"))
       .toBeInTheDocument();
     await expect
-      .element(page.getByText("1 rules were registered."))
+      .element(page.getByText("1 rule was registered."))
       .toBeInTheDocument();
 
     // Check Done button
@@ -134,7 +134,7 @@ invalid,type`);
     await textarea.fill("user,john_doe");
 
     const registerButton = page.getByRole("button", {
-      name: "Register (1 rules)",
+      name: "Register (1 rule)",
     });
     await registerButton.click();
 
