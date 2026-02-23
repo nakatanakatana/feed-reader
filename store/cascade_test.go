@@ -17,7 +17,7 @@ func TestDeleteFeed_Cascade(t *testing.T) {
 	// Setup with foreign keys enabled
 	db, err := sql.Open("sqlite", ":memory:?_pragma=foreign_keys(1)")
 	assert.NilError(t, err)
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	_, err = db.ExecContext(context.Background(), schema.Schema)
 	assert.NilError(t, err)
