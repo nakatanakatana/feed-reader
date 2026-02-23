@@ -1,7 +1,6 @@
 import { render } from "solid-js/web";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { blockRulesStore } from "../lib/block-rules-store";
 import { BlockRulesTable } from "./BlockRulesTable";
 
 describe("BlockRulesTable", () => {
@@ -11,11 +10,6 @@ describe("BlockRulesTable", () => {
     { id: "1", ruleType: "user", value: "alice", domain: "github.com" },
     { id: "2", ruleType: "domain", value: "example.com", domain: "" },
   ];
-
-  beforeEach(() => {
-    blockRulesStore.reset();
-    vi.spyOn(blockRulesStore, "setSort");
-  });
 
   afterEach(() => {
     if (dispose) dispose();
@@ -30,6 +24,9 @@ describe("BlockRulesTable", () => {
           rules={mockRules}
           onDelete={vi.fn()}
           isPending={false}
+          sortField={null}
+          sortDirection="asc"
+          onSort={vi.fn()}
         />
       ),
       document.body,
@@ -42,13 +39,17 @@ describe("BlockRulesTable", () => {
       .toBeInTheDocument();
   });
 
-  it("calls setSort when clicking Type (Desktop)", async () => {
+  it("calls onSort when clicking Type (Desktop)", async () => {
+    const onSort = vi.fn();
     dispose = render(
       () => (
         <BlockRulesTable
           rules={mockRules}
           onDelete={vi.fn()}
           isPending={false}
+          sortField={null}
+          sortDirection="asc"
+          onSort={onSort}
         />
       ),
       document.body,
@@ -57,7 +58,7 @@ describe("BlockRulesTable", () => {
     // Assuming desktop view based on 1280px viewport
     const typeButton = page.getByRole("button", { name: /Type/ }).first();
     await typeButton.click();
-    expect(blockRulesStore.setSort).toHaveBeenCalledWith("ruleType");
+    expect(onSort).toHaveBeenCalledWith("ruleType");
   });
 
   it("calls onDelete when delete button is clicked", async () => {
@@ -68,6 +69,9 @@ describe("BlockRulesTable", () => {
           rules={mockRules}
           onDelete={onDelete}
           isPending={false}
+          sortField={null}
+          sortDirection="asc"
+          onSort={vi.fn()}
         />
       ),
       document.body,

@@ -1,4 +1,4 @@
-import { useLiveQuery } from "@tanstack/solid-db";
+import { eq, useLiveQuery } from "@tanstack/solid-db";
 import { createMutation } from "@tanstack/solid-query";
 import { createFileRoute } from "@tanstack/solid-router";
 import { createMemo, createSignal, Show } from "solid-js";
@@ -14,7 +14,8 @@ import {
   itemBlockRuleInsert,
   itemBlockRules,
 } from "../lib/block-db";
-import { blockRulesStore } from "../lib/block-rules-store";
+
+export type BlockRulesSortField = "ruleType" | "value" | "domain";
 
 export const Route = createFileRoute("/block-rules")({
   component: BlockRulesComponent,
@@ -26,12 +27,49 @@ function BlockRulesComponent() {
   const [domain, setDomain] = createSignal("");
   const [isBulkModalOpen, setIsBulkModalOpen] = createSignal(false);
 
-  const rulesQuery = useLiveQuery((q) =>
-    q.from({ rule: itemBlockRules }).select(({ rule }) => ({ ...rule })),
+  // Filter/Sort Signals
+  const [typeFilter, setTypeFilter] = createSignal<string | null>(null);
+  const [domainFilter, setDomainFilter] = createSignal<string | null>(null);
+  const [sortField, setSortField] = createSignal<BlockRulesSortField | null>(
+    null,
+  );
+  const [sortDirection, setSortDirection] = createSignal<"asc" | "desc">("asc");
+
+  const rulesQuery = useLiveQuery((q) => {
+    let query = q.from({ rule: itemBlockRules });
+
+    const currentTypeFilter = typeFilter();
+    if (currentTypeFilter) {
+      query = query.where(({ rule }) => eq(rule.ruleType, currentTypeFilter));
+    }
+
+    const currentDomainFilter = domainFilter();
+    if (currentDomainFilter) {
+      query = query.where(({ rule }) =>
+        eq(rule.domain || "", currentDomainFilter),
+      );
+    }
+
+    const currentSortField = sortField();
+    if (currentSortField) {
+      query = query.orderBy(
+        ({ rule }) => rule[currentSortField] || "",
+        sortDirection(),
+      );
+    }
+
+    return query.select(({ rule }) => ({ ...rule }));
+  });
+
+  // Separate query for unique domains to ensure the filter dropdown always shows all options
+  const allRulesForDomains = useLiveQuery((q) =>
+    q
+      .from({ rule: itemBlockRules })
+      .select(({ rule }) => ({ domain: rule.domain })),
   );
 
-  const uniqueDomains = createMemo(() => {
-    const rules = rulesQuery() || [];
+  const memoizedUniqueDomains = createMemo(() => {
+    const rules = allRulesForDomains() || [];
     const domains = new Set<string>();
     for (const rule of rules) {
       if (rule.domain) domains.add(rule.domain);
@@ -39,9 +77,14 @@ function BlockRulesComponent() {
     return Array.from(domains).sort();
   });
 
-  const visibleRules = createMemo(() => {
-    return blockRulesStore.deriveVisibleRules(rulesQuery() || []);
-  });
+  const toggleSort = (field: BlockRulesSortField) => {
+    if (sortField() === field) {
+      setSortDirection((dir) => (dir === "asc" ? "desc" : "asc"));
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
 
   const addMutation = createMutation(() => ({
     mutationFn: async (newRule: {
@@ -243,7 +286,13 @@ function BlockRulesComponent() {
             pb: "2",
           })}
         >
-          <BlockRulesFilterBar domains={uniqueDomains()} />
+          <BlockRulesFilterBar
+            domains={memoizedUniqueDomains()}
+            typeFilter={typeFilter()}
+            setTypeFilter={setTypeFilter}
+            domainFilter={domainFilter()}
+            setDomainFilter={setDomainFilter}
+          />
         </div>
 
         <BulkAddBlockRulesModal
@@ -272,9 +321,12 @@ function BlockRulesComponent() {
             <p>Loading rules...</p>
           </Show>
           <BlockRulesTable
-            rules={visibleRules()}
+            rules={rulesQuery() || []}
             onDelete={(id) => deleteMutation.mutate(id)}
             isPending={deleteMutation.isPending}
+            sortField={sortField()}
+            sortDirection={sortDirection()}
+            onSort={toggleSort}
           />
         </div>
       </div>

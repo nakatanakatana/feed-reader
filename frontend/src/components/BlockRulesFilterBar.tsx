@@ -1,10 +1,13 @@
 import { For } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
-import { blockRulesStore } from "../lib/block-rules-store";
 
 interface BlockRulesFilterBarProps {
   domains: string[];
+  typeFilter: string | null;
+  setTypeFilter: (type: string | null) => void;
+  domainFilter: string | null;
+  setDomainFilter: (domain: string | null) => void;
 }
 
 export function BlockRulesFilterBar(props: BlockRulesFilterBarProps) {
@@ -33,10 +36,10 @@ export function BlockRulesFilterBar(props: BlockRulesFilterBarProps) {
         </label>
         <select
           id="filter-type"
-          value={blockRulesStore.state.typeFilter || "ALL_TYPES"}
+          value={props.typeFilter || "ALL_TYPES"}
           onInput={(e) => {
             const val = e.currentTarget.value;
-            blockRulesStore.setTypeFilter(val === "ALL_TYPES" ? null : val);
+            props.setTypeFilter(val === "ALL_TYPES" ? null : val);
           }}
           class={css({
             fontSize: "xs",
@@ -66,10 +69,10 @@ export function BlockRulesFilterBar(props: BlockRulesFilterBarProps) {
         </label>
         <select
           id="filter-domain"
-          value={blockRulesStore.state.domainFilter || "ALL_DOMAINS"}
+          value={props.domainFilter || "ALL_DOMAINS"}
           onInput={(e) => {
             const val = e.currentTarget.value;
-            blockRulesStore.setDomainFilter(val === "ALL_DOMAINS" ? null : val);
+            props.setDomainFilter(val === "ALL_DOMAINS" ? null : val);
           }}
           class={css({
             fontSize: "xs",

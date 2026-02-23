@@ -1,7 +1,6 @@
 import { render } from "solid-js/web";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { blockRulesStore } from "../lib/block-rules-store";
 import { BlockRulesTable } from "./BlockRulesTable";
 
 describe("BlockRulesTable Responsive", () => {
@@ -10,10 +9,6 @@ describe("BlockRulesTable Responsive", () => {
   const mockRules = [
     { id: "1", ruleType: "user", value: "alice", domain: "github.com" },
   ];
-
-  beforeEach(async () => {
-    blockRulesStore.reset();
-  });
 
   afterEach(async () => {
     if (dispose) dispose();
@@ -31,6 +26,9 @@ describe("BlockRulesTable Responsive", () => {
           rules={mockRules}
           onDelete={vi.fn()}
           isPending={false}
+          sortField={null}
+          sortDirection="asc"
+          onSort={vi.fn()}
         />
       ),
       document.body,
@@ -50,6 +48,9 @@ describe("BlockRulesTable Responsive", () => {
           rules={mockRules}
           onDelete={vi.fn()}
           isPending={false}
+          sortField={null}
+          sortDirection="asc"
+          onSort={vi.fn()}
         />
       ),
       document.body,

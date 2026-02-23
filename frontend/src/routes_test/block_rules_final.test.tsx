@@ -16,7 +16,6 @@ import {
   ItemService,
   ListItemBlockRulesResponseSchema,
 } from "../gen/item/v1/item_pb";
-import { blockRulesStore } from "../lib/block-rules-store";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
@@ -28,7 +27,6 @@ describe("Block Rules Final Integration", () => {
   let dispose: () => void;
 
   beforeEach(() => {
-    blockRulesStore.reset();
     queryClient.clear();
   });
 

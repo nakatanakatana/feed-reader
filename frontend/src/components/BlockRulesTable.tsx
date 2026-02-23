@@ -1,10 +1,7 @@
 import { For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
-import {
-  type BlockRulesSortField,
-  blockRulesStore,
-} from "../lib/block-rules-store";
+import type { BlockRulesSortField } from "../routes/block-rules";
 import { ActionButton } from "./ui/ActionButton";
 
 interface Rule {
@@ -18,13 +15,16 @@ interface BlockRulesTableProps {
   rules: Rule[];
   onDelete: (id: string) => void;
   isPending: boolean;
+  sortField: BlockRulesSortField | null;
+  sortDirection: "asc" | "desc";
+  onSort: (field: BlockRulesSortField) => void;
 }
 
 export function BlockRulesTable(props: BlockRulesTableProps) {
   const SortIndicator = (params: { field: BlockRulesSortField }) => (
-    <Show when={blockRulesStore.state.sortField === params.field}>
+    <Show when={props.sortField === params.field}>
       <span class={css({ ml: "1" })}>
-        {blockRulesStore.state.sortDirection === "asc" ? "↑" : "↓"}
+        {props.sortDirection === "asc" ? "↑" : "↓"}
       </span>
     </Show>
   );
@@ -54,10 +54,10 @@ export function BlockRulesTable(props: BlockRulesTableProps) {
         </label>
         <select
           id="mobile-sort"
-          value={blockRulesStore.state.sortField || ""}
+          value={props.sortField || ""}
           onInput={(e) => {
             const val = e.currentTarget.value as BlockRulesSortField;
-            if (val) blockRulesStore.setSort(val);
+            if (val) props.onSort(val);
           }}
           class={css({
             fontSize: "xs",
@@ -75,12 +75,12 @@ export function BlockRulesTable(props: BlockRulesTableProps) {
           <option value="value">Value</option>
           <option value="domain">Domain</option>
         </select>
-        <Show when={blockRulesStore.state.sortField}>
+        <Show when={props.sortField}>
           <button
             type="button"
             onClick={() => {
-              if (blockRulesStore.state.sortField) {
-                blockRulesStore.setSort(blockRulesStore.state.sortField);
+              if (props.sortField) {
+                props.onSort(props.sortField);
               }
             }}
             class={css({
@@ -94,7 +94,7 @@ export function BlockRulesTable(props: BlockRulesTableProps) {
               cursor: "pointer",
             })}
           >
-            {blockRulesStore.state.sortDirection === "asc" ? "Asc ↑" : "Desc ↓"}
+            {props.sortDirection === "asc" ? "Asc ↑" : "Desc ↓"}
           </button>
         </Show>
       </div>
@@ -116,7 +116,7 @@ export function BlockRulesTable(props: BlockRulesTableProps) {
         <thead>
           <tr class={css({ bg: "gray.50" })}>
             <th
-              onClick={() => blockRulesStore.setSort("ruleType")}
+              onClick={() => props.onSort("ruleType")}
               class={css({
                 cursor: "pointer",
                 _hover: { bg: "gray.100" },
@@ -137,7 +137,7 @@ export function BlockRulesTable(props: BlockRulesTableProps) {
               </button>
             </th>
             <th
-              onClick={() => blockRulesStore.setSort("value")}
+              onClick={() => props.onSort("value")}
               class={css({
                 cursor: "pointer",
                 _hover: { bg: "gray.100" },
@@ -158,7 +158,7 @@ export function BlockRulesTable(props: BlockRulesTableProps) {
               </button>
             </th>
             <th
-              onClick={() => blockRulesStore.setSort("domain")}
+              onClick={() => props.onSort("domain")}
               class={css({
                 cursor: "pointer",
                 _hover: { bg: "gray.100" },

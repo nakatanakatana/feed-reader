@@ -1,17 +1,10 @@
 import { render } from "solid-js/web";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { blockRulesStore } from "../lib/block-rules-store";
 import { BlockRulesFilterBar } from "./BlockRulesFilterBar";
 
 describe("BlockRulesFilterBar", () => {
   let dispose: () => void;
-
-  beforeEach(() => {
-    blockRulesStore.reset();
-    vi.spyOn(blockRulesStore, "setTypeFilter");
-    vi.spyOn(blockRulesStore, "setDomainFilter");
-  });
 
   afterEach(() => {
     if (dispose) dispose();
@@ -21,7 +14,15 @@ describe("BlockRulesFilterBar", () => {
 
   it("renders type and domain filters", async () => {
     dispose = render(
-      () => <BlockRulesFilterBar domains={["example.com", "test.org"]} />,
+      () => (
+        <BlockRulesFilterBar
+          domains={["example.com", "test.org"]}
+          typeFilter={null}
+          setTypeFilter={vi.fn()}
+          domainFilter={null}
+          setDomainFilter={vi.fn()}
+        />
+      ),
       document.body,
     );
 
@@ -36,38 +37,69 @@ describe("BlockRulesFilterBar", () => {
   });
 
   it("updates type filter when changed", async () => {
-    dispose = render(() => <BlockRulesFilterBar domains={[]} />, document.body);
+    const setTypeFilter = vi.fn();
+    dispose = render(
+      () => (
+        <BlockRulesFilterBar
+          domains={[]}
+          typeFilter={null}
+          setTypeFilter={setTypeFilter}
+          domainFilter={null}
+          setDomainFilter={vi.fn()}
+        />
+      ),
+      document.body,
+    );
 
     const typeSelect = page.getByLabelText("Filter:");
     await typeSelect.selectOptions("user");
 
-    expect(blockRulesStore.setTypeFilter).toHaveBeenCalledWith("user");
+    expect(setTypeFilter).toHaveBeenCalledWith("user");
   });
 
   it("updates domain filter when changed", async () => {
+    const setDomainFilter = vi.fn();
     dispose = render(
-      () => <BlockRulesFilterBar domains={["example.com"]} />,
+      () => (
+        <BlockRulesFilterBar
+          domains={["example.com"]}
+          typeFilter={null}
+          setTypeFilter={vi.fn()}
+          domainFilter={null}
+          setDomainFilter={setDomainFilter}
+        />
+      ),
       document.body,
     );
 
     const domainSelect = page.getByLabelText("Domain:");
     await domainSelect.selectOptions("example.com");
 
-    expect(blockRulesStore.setDomainFilter).toHaveBeenCalledWith("example.com");
+    expect(setDomainFilter).toHaveBeenCalledWith("example.com");
   });
 
   it("resets filters when 'All' is selected", async () => {
+    const setTypeFilter = vi.fn();
+    const setDomainFilter = vi.fn();
     dispose = render(
-      () => <BlockRulesFilterBar domains={["example.com"]} />,
+      () => (
+        <BlockRulesFilterBar
+          domains={["example.com"]}
+          typeFilter="user"
+          setTypeFilter={setTypeFilter}
+          domainFilter="example.com"
+          setDomainFilter={setDomainFilter}
+        />
+      ),
       document.body,
     );
 
     const typeSelect = page.getByLabelText("Filter:");
     await typeSelect.selectOptions("ALL_TYPES");
-    expect(blockRulesStore.setTypeFilter).toHaveBeenCalledWith(null);
+    expect(setTypeFilter).toHaveBeenCalledWith(null);
 
     const domainSelect = page.getByLabelText("Domain:");
     await domainSelect.selectOptions("ALL_DOMAINS");
-    expect(blockRulesStore.setDomainFilter).toHaveBeenCalledWith(null);
+    expect(setDomainFilter).toHaveBeenCalledWith(null);
   });
 });
