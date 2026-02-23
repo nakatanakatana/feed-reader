@@ -1,9 +1,11 @@
-import { useLiveQuery } from "@tanstack/solid-db";
+import { eq, useLiveQuery } from "@tanstack/solid-db";
 import { createMutation } from "@tanstack/solid-query";
 import { createFileRoute } from "@tanstack/solid-router";
-import { createSignal, For, Show } from "solid-js";
+import { createMemo, createSignal, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
+import { BlockRulesFilterBar } from "../components/BlockRulesFilterBar";
+import { BlockRulesTable } from "../components/BlockRulesTable";
 import { BulkAddBlockRulesModal } from "../components/BulkAddBlockRulesModal";
 import { ActionButton } from "../components/ui/ActionButton";
 import { PageLayout } from "../components/ui/PageLayout";
@@ -12,6 +14,8 @@ import {
   itemBlockRuleInsert,
   itemBlockRules,
 } from "../lib/block-db";
+
+export type BlockRulesSortField = "ruleType" | "value" | "domain";
 
 export const Route = createFileRoute("/block-rules")({
   component: BlockRulesComponent,
@@ -23,9 +27,70 @@ function BlockRulesComponent() {
   const [domain, setDomain] = createSignal("");
   const [isBulkModalOpen, setIsBulkModalOpen] = createSignal(false);
 
-  const rulesQuery = useLiveQuery((q) =>
-    q.from({ rule: itemBlockRules }).select(({ rule }) => ({ ...rule })),
+  // Filter/Sort Signals
+  const [typeFilter, setTypeFilter] = createSignal<string | null>(null);
+  const [domainFilter, setDomainFilter] = createSignal<string | null>(null);
+  const [sortField, setSortField] = createSignal<BlockRulesSortField | null>(
+    null,
   );
+  const [sortDirection, setSortDirection] = createSignal<"asc" | "desc">("asc");
+
+  const rulesQuery = useLiveQuery((q) => {
+    let query = q.from({ rule: itemBlockRules });
+
+    const currentTypeFilter = typeFilter();
+    if (currentTypeFilter) {
+      query = query.where(({ rule }) => eq(rule.ruleType, currentTypeFilter));
+    }
+
+    const currentDomainFilter = domainFilter();
+    if (currentDomainFilter) {
+      query = query.where(({ rule }) =>
+        eq(rule.domain || "", currentDomainFilter),
+      );
+    }
+
+    const currentSortField = sortField();
+    if (currentSortField) {
+      query = query.orderBy(
+        ({ rule }) => rule[currentSortField] || "",
+        sortDirection(),
+      );
+    }
+
+    return query.select(({ rule }) => ({ ...rule }));
+  });
+
+  // Separate query for unique domains to ensure the filter dropdown always shows all options
+  const allRulesForDomains = useLiveQuery((q) =>
+    q
+      .from({ rule: itemBlockRules })
+      .select(({ rule }) => ({ domain: rule.domain })),
+  );
+
+  const memoizedUniqueDomains = createMemo(() => {
+    const rules = allRulesForDomains() || [];
+    const domains = new Set<string>();
+    for (const rule of rules) {
+      if (rule.domain) domains.add(rule.domain);
+    }
+    return Array.from(domains).sort();
+  });
+
+  const toggleSort = (field: BlockRulesSortField | null) => {
+    if (field === null) {
+      setSortField(null);
+      setSortDirection("asc");
+      return;
+    }
+
+    if (sortField() === field) {
+      setSortDirection((dir) => (dir === "asc" ? "desc" : "asc"));
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
 
   const addMutation = createMutation(() => ({
     mutationFn: async (newRule: {
@@ -218,6 +283,24 @@ function BlockRulesComponent() {
           </form>
         </div>
 
+        <div
+          class={css({
+            backgroundColor: "gray.50",
+            display: "flex",
+            flexDirection: "column",
+            gap: "2",
+            pb: "2",
+          })}
+        >
+          <BlockRulesFilterBar
+            domains={memoizedUniqueDomains()}
+            typeFilter={typeFilter()}
+            setTypeFilter={setTypeFilter}
+            domainFilter={domainFilter()}
+            setDomainFilter={setDomainFilter}
+          />
+        </div>
+
         <BulkAddBlockRulesModal
           isOpen={isBulkModalOpen()}
           onClose={() => setIsBulkModalOpen(false)}
@@ -243,62 +326,14 @@ function BlockRulesComponent() {
           <Show when={rulesQuery.isLoading}>
             <p>Loading rules...</p>
           </Show>
-          <ul class={stack({ gap: "3" })}>
-            <For each={rulesQuery()}>
-              {(rule) => (
-                <li
-                  class={flex({
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    p: "3",
-                    border: "1px solid",
-                    borderColor: "gray.100",
-                    rounded: "md",
-                  })}
-                >
-                  <div class={stack({ gap: "1" })}>
-                    <div class={flex({ gap: "2", alignItems: "center" })}>
-                      <span
-                        class={css({
-                          fontSize: "xs",
-                          bg: "gray.100",
-                          px: "2",
-                          py: "0.5",
-                          rounded: "full",
-                        })}
-                      >
-                        {rule.ruleType}
-                      </span>
-                      <span class={css({ fontWeight: "bold" })}>
-                        {rule.value}
-                      </span>
-                    </div>
-                    <Show when={rule.domain}>
-                      <code
-                        class={css({
-                          fontSize: "sm",
-                          color: "gray.600",
-                          bg: "gray.50",
-                          px: "1",
-                          rounded: "sm",
-                        })}
-                      >
-                        @{rule.domain}
-                      </code>
-                    </Show>
-                  </div>
-                  <ActionButton
-                    variant="danger"
-                    size="sm"
-                    onClick={() => deleteMutation.mutate(rule.id)}
-                    disabled={deleteMutation.isPending}
-                  >
-                    Delete
-                  </ActionButton>
-                </li>
-              )}
-            </For>
-          </ul>
+          <BlockRulesTable
+            rules={rulesQuery() || []}
+            onDelete={(id) => deleteMutation.mutate(id)}
+            isPending={deleteMutation.isPending}
+            sortField={sortField()}
+            sortDirection={sortDirection()}
+            onSort={toggleSort}
+          />
         </div>
       </div>
     </PageLayout>

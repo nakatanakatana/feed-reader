@@ -73,9 +73,11 @@ describe("Block Rules Page", () => {
     );
 
     await expect
-      .element(page.getByText("blocked-domain.com"))
+      .element(page.getByText("blocked-domain.com").first())
       .toBeInTheDocument();
-    await expect.element(page.getByText("spam-keyword")).toBeInTheDocument();
+    await expect
+      .element(page.getByText("spam-keyword").first())
+      .toBeInTheDocument();
   });
 
   it("should allow adding a new item block rule", async () => {
@@ -117,7 +119,7 @@ describe("Block Rules Page", () => {
       document.body,
     );
 
-    const typeSelect = page.getByLabelText("Type");
+    const typeSelect = page.getByLabelText("Type", { exact: true });
     const valueInput = page.getByLabelText("Value");
     const addButton = page.getByRole("button", { name: "Add", exact: true });
 
@@ -126,7 +128,7 @@ describe("Block Rules Page", () => {
     await addButton.click();
 
     await expect
-      .element(page.getByText("new-block-keyword"))
+      .element(page.getByText("new-block-keyword").first())
       .toBeInTheDocument();
   });
 
@@ -169,7 +171,7 @@ describe("Block Rules Page", () => {
       document.body,
     );
 
-    const typeSelect = page.getByLabelText("Type");
+    const typeSelect = page.getByLabelText("Type", { exact: true });
     const valueInput = page.getByLabelText("Value");
     const domainInput = page.getByLabelText("Domain (Optional)");
     const addButton = page.getByRole("button", { name: "Add", exact: true });
@@ -179,8 +181,12 @@ describe("Block Rules Page", () => {
     await domainInput.fill("example.com");
     await addButton.click();
 
-    await expect.element(page.getByText("blocked-user")).toBeInTheDocument();
-    await expect.element(page.getByText("@example.com")).toBeInTheDocument();
+    await expect
+      .element(page.getByText("blocked-user").first())
+      .toBeInTheDocument();
+    await expect
+      .element(page.getByText("@example.com").first())
+      .toBeInTheDocument();
   });
 
   it("should allow deleting an item block rule", async () => {
@@ -220,13 +226,15 @@ describe("Block Rules Page", () => {
       document.body,
     );
 
-    await expect.element(page.getByText("to-delete.com")).toBeInTheDocument();
+    await expect
+      .element(page.getByText("to-delete.com").first())
+      .toBeInTheDocument();
 
-    const deleteButton = page.getByRole("button", { name: "Delete" });
+    const deleteButton = page.getByRole("button", { name: "Delete" }).first();
     await deleteButton.click();
 
     await expect
-      .element(page.getByText("to-delete.com"))
+      .element(page.getByText("to-delete.com").first())
       .not.toBeInTheDocument();
   });
 });

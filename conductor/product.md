@@ -40,7 +40,7 @@ The primary target audience is individuals and organizations seeking control ove
   - **URL-Based Extraction:** Define rules to extract user information from complex URLs (e.g., subdomain or path-based) to block specific content creators across different domains.
   - **Multiple Criteria:** Block items by keyword, domain, or specific user/domain combinations.
   - **Pre-calculated Filtering:** Efficiently excludes blocked items from all retrieval APIs by pre-calculating block associations during rule creation and item ingestion.
-  - **Rule Management:** Robust APIs for managing URL parsing patterns and item block criteria.
+  - **Rule Management:** Robust interface for managing URL parsing patterns and item block criteria. Features a searchable and sortable list of active block rules, with frontend-only filtering by type and domain for instant feedback. Sorting is supported by type, value, and domain directly via table headers.
   - **Quick Block Actions:** Integrated directly into the article detail view, allowing users to rapidly block domains or specific users without leaving their reading context.
   - **Bulk Registration:** Efficiently add multiple block rules at once via a dedicated interface. Supports pasting CSV-formatted text or uploading .csv files. Features a live preview table with validation status for each rule, allowing users to verify their input and identify errors before submission.
 

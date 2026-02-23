@@ -79,7 +79,7 @@ describe("Block Management Navigation", () => {
     // Test navigation to Block Rules
     await blockRulesLink.click();
     await expect
-      .element(page.getByText("Value", { exact: true }))
+      .element(page.getByText("Value", { exact: true }).first())
       .toBeInTheDocument();
     await expect
       .element(page.getByText("Domain (Optional)", { exact: true }))
