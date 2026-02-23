@@ -7,7 +7,7 @@ The backend is responsible for feed management, article fetching, and providing 
 
 -   **Programming Language:** Go (Golang)
 -   **API Framework:** Connect RPC (Protobuf over HTTP/2)
--   **Database:** SQLite (Relational storage via `ncruces/go-sqlite3`)
+-   **Database:** SQLite (Relational storage via `modernc.org/sqlite`, with active foreign key enforcement and cascade deletion)
 -   **SQLite Resilience:** Application-level retry mechanism with exponential backoff for transient lock conflicts (`SQLITE_BUSY`).
 - **Write Consolidation:** Dedicated Write Queue Service to batch multiple write operations into single transactions. For large-scale operations like OPML import, the application utilizes manual bulk transaction scoping and parallel processing to significantly reduce I/O overhead and improve throughput.
 -   **Query Tooling:** `sqlc` (Type-safe SQL generation)

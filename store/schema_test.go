@@ -2,16 +2,16 @@ package store_test
 
 import (
 	"context"
-	"database/sql"
 	"testing"
 
-	"github.com/nakatanakatana/feed-reader/sql"
+	schema "github.com/nakatanakatana/feed-reader/sql"
+	"github.com/nakatanakatana/feed-reader/store"
 	"gotest.tools/v3/assert"
 	_ "modernc.org/sqlite"
 )
 
 func TestSchema(t *testing.T) {
-	db, err := sql.Open("sqlite", ":memory:")
+	db, err := store.OpenDB(":memory:")
 	assert.NilError(t, err)
 	defer func() {
 		_ = db.Close()

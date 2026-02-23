@@ -18,7 +18,7 @@ import (
 
 func TestGofeedFetcher_Fetch(t *testing.T) {
 	// Setup store for testing
-	db, err := sql.Open("sqlite", ":memory:")
+	db, err := store.OpenDB(":memory:")
 	assert.NilError(t, err)
 	defer func() { _ = db.Close() }()
 	_, err = db.Exec(schema.Schema)
@@ -104,7 +104,7 @@ func TestGofeedFetcher_Fetch(t *testing.T) {
 }
 
 func TestGofeedFetcher_ConditionalFetch(t *testing.T) {
-	db, err := sql.Open("sqlite", ":memory:")
+	db, err := store.OpenDB(":memory:")
 	assert.NilError(t, err)
 	defer func() { _ = db.Close() }()
 	_, err = db.Exec(schema.Schema)
@@ -188,7 +188,7 @@ func TestGofeedFetcher_ConditionalFetch(t *testing.T) {
 }
 
 func TestGofeedFetcher_UserAgent(t *testing.T) {
-	db, err := sql.Open("sqlite", ":memory:")
+	db, err := store.OpenDB(":memory:")
 	assert.NilError(t, err)
 	defer func() { _ = db.Close() }()
 	_, err = db.Exec(schema.Schema)

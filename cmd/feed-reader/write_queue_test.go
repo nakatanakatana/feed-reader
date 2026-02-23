@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"log/slog"
 	"testing"
 	"time"
@@ -22,7 +21,7 @@ func (j *MockJob) Execute(ctx context.Context, q *store.Queries) error {
 }
 
 func setupTestStore(t *testing.T) *store.Store {
-	db, err := sql.Open("sqlite", ":memory:")
+	db, err := store.OpenDB(":memory:")
 	if err != nil {
 		t.Fatalf("failed to open database: %v", err)
 	}

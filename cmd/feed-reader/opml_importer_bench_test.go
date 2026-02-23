@@ -16,13 +16,10 @@ import (
 
 func setupBenchmarkDB(b *testing.B) (*store.Queries, *sql.DB) {
 	b.Helper()
-	db, err := sql.Open("sqlite", ":memory:")
+	db, err := store.OpenDB(":memory:")
 	assert.NilError(b, err, "failed to open db")
 
 	db.SetMaxOpenConns(1)
-
-	_, err = db.Exec("PRAGMA foreign_keys = ON")
-	assert.NilError(b, err, "failed to enable foreign keys")
 
 	_, err = db.Exec(schema.Schema)
 	assert.NilError(b, err, "failed to apply schema")
