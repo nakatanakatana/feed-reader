@@ -191,6 +191,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     mutationFn: addItemBlockRules,
     onSuccess: () => {
       show("Block rule added successfully", "success");
+      queryClient.invalidateQueries({ queryKey: ["block-rules"] });
     },
     onError: () => {
       show("Failed to add block rule", "error");
