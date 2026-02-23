@@ -29,11 +29,11 @@
 ## Phase 3: UI Migration - URL Rules
 **Goal:** Update the URL Parsing Rules management page to use the new collection.
 
-- [ ] Task: Update URL Rules Route
+- [x] Task: Update URL Rules Route 58f370e
     - Modify `frontend/src/routes/url-rules.tsx`.
     - Replace `createQuery` for `url-rules` with usage of `urlParsingRules` collection.
     - Replace `createMutation` calls with helper functions from `block-db.ts`.
-- [ ] Task: Verify URL Rules Tests
+- [x] Task: Verify URL Rules Tests 58f370e
     - Run `frontend/src/routes_test/url_rules.test.tsx` and ensure all tests pass.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: UI Migration - URL Rules' (Protocol in workflow.md)
 
