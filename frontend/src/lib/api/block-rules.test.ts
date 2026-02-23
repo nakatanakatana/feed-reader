@@ -20,9 +20,10 @@ describe("block-rules api", () => {
   describe("listURLParsingRules", () => {
     it("should call itemClient.listURLParsingRules", async () => {
       const mockRules = [{ domain: "example.com", ruleType: "domain" }];
-      (itemClient.listURLParsingRules as any).mockResolvedValue({
+      vi.mocked(itemClient.listURLParsingRules).mockResolvedValue({
         rules: mockRules,
-      });
+        // biome-ignore lint/suspicious/noExplicitAny: mock response
+      } as any);
 
       const result = await listURLParsingRules();
 
@@ -36,7 +37,10 @@ describe("block-rules api", () => {
       const mockRequest = create(AddItemBlockRulesRequestSchema, {
         rules: [{ ruleType: "domain", value: "example.com" }],
       });
-      (itemClient.addItemBlockRules as any).mockResolvedValue({});
+      vi.mocked(itemClient.addItemBlockRules).mockResolvedValue(
+        // biome-ignore lint/suspicious/noExplicitAny: mock response
+        {} as any,
+      );
 
       await addItemBlockRules(mockRequest);
 

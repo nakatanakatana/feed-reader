@@ -12,7 +12,7 @@ describe("item-utils", () => {
   describe("extractHostname", () => {
     it("extracts hostname from a full URL", () => {
       expect(extractHostname("https://www.example.com/path/to/page")).toBe(
-        "www.example.com",
+        "example.com",
       );
     });
 

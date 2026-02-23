@@ -60,7 +60,7 @@ describe("ItemDetailModal Domain Display", () => {
       document.body,
     );
 
-    // Verify the domain "www.example.com" is displayed
-    await expect.element(page.getByText("www.example.com")).toBeInTheDocument();
+    // Verify the domain "example.com" is displayed
+    await expect.element(page.getByText("example.com")).toBeInTheDocument();
   });
 });

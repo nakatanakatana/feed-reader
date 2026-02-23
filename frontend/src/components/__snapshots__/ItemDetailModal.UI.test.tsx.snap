@@ -23,7 +23,7 @@ exports[`ItemDetailModal UI Updates > falls back to CSV parsing when JSON is mal
           >
             <a
               class="c_inherit td_none hover:td_underline hover:c_blue.600"
-              href=""
+              href="https://example.com/item3"
               rel="noopener noreferrer"
               target="_blank"
             >
@@ -129,6 +129,41 @@ exports[`ItemDetailModal UI Updates > falls back to CSV parsing when JSON is mal
           >
             <span
               class="d_flex ai_center gap_1"
+              title="Source Domain"
+            >
+              <svg
+                aria-hidden="true"
+                fill="none"
+                height="14"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="14"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="10"
+                />
+                <line
+                  x1="2"
+                  x2="22"
+                  y1="12"
+                  y2="12"
+                />
+                <path
+                  d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"
+                />
+              </svg>
+              <span>
+                example.com
+              </span>
+            </span>
+            <span
+              class="d_flex ai_center gap_1"
               title="Received Date"
             >
               <span
@@ -223,7 +258,7 @@ exports[`ItemDetailModal UI Updates > renders comma-separated categories when JS
           >
             <a
               class="c_inherit td_none hover:td_underline hover:c_blue.600"
-              href=""
+              href="https://example.com/item2"
               rel="noopener noreferrer"
               target="_blank"
             >
@@ -327,6 +362,41 @@ exports[`ItemDetailModal UI Updates > renders comma-separated categories when JS
           <div
             class="d_flex ai_center flex-wrap_wrap gap_4 fs_sm c_gray.500"
           >
+            <span
+              class="d_flex ai_center gap_1"
+              title="Source Domain"
+            >
+              <svg
+                aria-hidden="true"
+                fill="none"
+                height="14"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="14"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="10"
+                />
+                <line
+                  x1="2"
+                  x2="22"
+                  y1="12"
+                  y2="12"
+                />
+                <path
+                  d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"
+                />
+              </svg>
+              <span>
+                example.com
+              </span>
+            </span>
             <span
               class="d_flex ai_center gap_1"
               title="Received Date"

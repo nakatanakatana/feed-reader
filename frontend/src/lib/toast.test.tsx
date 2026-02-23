@@ -4,7 +4,7 @@ import { ToastProvider, useToast } from "./toast";
 
 describe("Toast Context", () => {
   it("provides show method", () => {
-    let capturedContext: any;
+    let capturedContext: { show: (message: string) => void } | undefined;
     const TestComponent = () => {
       capturedContext = useToast();
       return <div>Test</div>;
@@ -20,7 +20,9 @@ describe("Toast Context", () => {
     );
 
     expect(capturedContext).toBeDefined();
-    expect(typeof capturedContext.show).toBe("function");
+    if (capturedContext) {
+      expect(typeof capturedContext.show).toBe("function");
+    }
   });
 
   it("throws error if used outside provider", () => {
