@@ -1,8 +1,8 @@
 # Implementation Plan: Bulk Registration for Item Block Rules
 
 ## Phase 1: Core Logic & Parsing
-- [ ] Task: Write unit tests for CSV parsing logic (handling comma, rule types, invalid lines).
-- [ ] Task: Implement the CSV parsing utility in the frontend.
+- [x] Task: Write unit tests for CSV parsing logic (handling comma, rule types, invalid lines). 2441809
+- [x] Task: Implement the CSV parsing utility in the frontend. 2441809
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Core Logic' (Protocol in workflow.md)
 
 ## Phase 2: UI Foundation & Input
