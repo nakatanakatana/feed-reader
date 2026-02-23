@@ -9,13 +9,16 @@ import (
 )
 
 // OpenDB opens a connection to the SQLite database with recommended pragmas enabled.
-// It ensures foreign keys are enabled.
+// It ensures foreign keys are enabled. These settings are appended to the DSN, 
+// so they will override any conflicting pragmas already present in the input DSN.
 func OpenDB(dsn string) (*sql.DB, error) {
 	// Check if DSN is ":memory:"
 	inMemory := strings.HasPrefix(dsn, ":memory:") || strings.Contains(dsn, "mode=memory")
 
-	separator := "?"
-	if strings.Contains(dsn, "?") {
+	var separator string
+	if !strings.Contains(dsn, "?") {
+		separator = "?"
+	} else if !strings.HasSuffix(dsn, "?") && !strings.HasSuffix(dsn, "&") {
 		separator = "&"
 	}
 
@@ -31,9 +34,8 @@ func OpenDB(dsn string) (*sql.DB, error) {
 		pragmas = append(pragmas, "_pragma=journal_mode(WAL)")
 	}
 
-	// Add pragmas if they are not already present in DSN.
-	// We append them for now; duplicate pragmas in modernc.org/sqlite DSN
-	// typically use the last specified value.
+	// Append pragmas. We always append them to ensure OpenDB's recommended 
+	// settings take precedence over any initial DSN parameters.
 	finalDSN := dsn + separator + strings.Join(pragmas, "&")
 
 	db, err := sql.Open("sqlite", finalDSN)
