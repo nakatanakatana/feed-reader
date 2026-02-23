@@ -1,6 +1,6 @@
 # Implementation Plan: TanStack DB Migration for Block Rules
 
-## Phase 1: Foundation - block-db.ts
+## Phase 1: Foundation - block-db.ts [checkpoint: 769041b]
 **Goal:** Create the centralized state management for `URLParsingRule` and `ItemBlockRule` using `TanStack DB`.
 
 - [x] Task: Write Tests for block-db.ts c812b1d
