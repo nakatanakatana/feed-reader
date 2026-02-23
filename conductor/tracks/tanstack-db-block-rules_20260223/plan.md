@@ -50,8 +50,8 @@
 ## Phase 5: Final Cleanup
 **Goal:** Remove redundant code and ensure system stability.
 
-- [ ] Task: Clean up lib/api/block-rules.ts
+- [x] Task: Clean up lib/api/block-rules.ts 21b9afa
     - Check if `frontend/src/lib/api/block-rules.ts` is still needed. If not, remove it.
-- [ ] Task: Final Integration Check
+- [x] Task: Final Integration Check 21b9afa
     - Run all frontend tests: `CI=true npm test`.
 - [ ] Task: Conductor - User Manual Verification 'Phase 5: Final Cleanup' (Protocol in workflow.md)
