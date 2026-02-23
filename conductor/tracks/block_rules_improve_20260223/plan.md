@@ -13,9 +13,9 @@ Add the necessary reactive state to manage filtering and sorting criteria and de
 ## Phase 2: Filter UI Components (Frontend - Dropdowns)
 Implement the filter dropdowns and integrate them with the new reactive state.
 
-- [ ] Task: Create or update the `BlockRulesFilterBar` component with dropdown menus for Type and Domain filters.
-- [ ] Task: Implement the logic to update the Store when a filter option is selected.
-- [ ] Task: Write integration tests for the `BlockRulesFilterBar` to ensure selecting an option triggers the correct state change.
+- [x] Task: Create or update the `BlockRulesFilterBar` component with dropdown menus for Type and Domain filters. a986c35
+- [x] Task: Implement the logic to update the Store when a filter option is selected. a986c35
+- [x] Task: Write integration tests for the `BlockRulesFilterBar` to ensure selecting an option triggers the correct state change. a986c35
 - [ ] Task: Conductor - User Manual Verification 'Filter UI Components' (Protocol in workflow.md)
 
 ## Phase 3: Sortable Table Headers (Frontend - Interactive Table)
