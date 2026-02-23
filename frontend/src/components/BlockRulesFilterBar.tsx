@@ -13,18 +13,15 @@ export function BlockRulesFilterBar(props: BlockRulesFilterBarProps) {
       class={css({
         display: "flex",
         justifyContent: "flex-start",
-        alignItems: "stretch",
-        flexDirection: "column",
-        gap: "2",
+        alignItems: "center",
+        flexWrap: "wrap",
+        columnGap: "4",
+        rowGap: "2",
         backgroundColor: "gray.50",
         padding: "2",
         rounded: "md",
         border: "1px solid",
         borderColor: "gray.200",
-        md: {
-          alignItems: "center",
-          flexDirection: "row",
-        },
       })}
     >
       <div class={flex({ gap: "2", alignItems: "center" })}>
