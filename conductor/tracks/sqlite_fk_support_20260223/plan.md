@@ -13,7 +13,7 @@
 - [x] Task: Verify the `store/cascade_test.go` and all other backend tests pass. [534540d]
 - [x] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md) [4d2b420]
 
-## Phase 3: Documentation & Audit
-- [~] Task: Update `tech-stack.md` to reflect the actual SQLite driver being used (`modernc.org/sqlite`).
-- [ ] Task: Perform a final audit of all `sql.Open` calls to ensure none were missed.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)
+## Phase 3: Documentation & Audit [checkpoint: 021b67c]
+- [x] Task: Update `tech-stack.md` to reflect the actual SQLite driver being used (`modernc.org/sqlite`). [17474ec]
+- [x] Task: Perform a final audit of all `sql.Open` calls to ensure none were missed. [021b67c]
+- [x] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md) [021b67c]
