@@ -1,7 +1,7 @@
 # Implementation Plan: Block from Item Detail Modal
 
 ## Phase 1: Research and Logic Implementation (TDD)
-- [ ] Task: Research the existing `URLParser` in the backend and identify how to use `url_parsing_rules` in the frontend.
+- [x] Task: Research the existing `URLParser` in the backend and identify how to use `url_parsing_rules` in the frontend. (db374cd)
 - [ ] Task: Create `frontend/src/lib/url-parser.ts` to mirror the backend's extraction logic.
 - [ ] Task: Write failing unit tests for `url-parser.ts` in `frontend/src/lib/url-parser.test.ts`.
 - [ ] Task: Implement `URLParser` logic to pass the tests.
