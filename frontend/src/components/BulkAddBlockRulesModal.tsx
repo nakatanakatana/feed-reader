@@ -8,7 +8,9 @@ import { Modal } from "./ui/Modal";
 interface BulkAddBlockRulesModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onRegister: (rules: ParsedBlockRule[]) => Promise<void>;
+  onRegister: (
+    rules: { ruleType: string; value: string; domain?: string }[],
+  ) => Promise<void>;
   isPending: boolean;
 }
 
@@ -57,7 +59,13 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
     setError(null);
 
     try {
-      await props.onRegister(validRules);
+      await props.onRegister(
+        validRules.map((r) => ({
+          ruleType: r.ruleType,
+          value: r.value,
+          domain: r.domain,
+        })),
+      );
       setRegistrationResult({
         success: validRules.length,
         total: total,

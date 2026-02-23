@@ -91,4 +91,32 @@ user,john_doe`;
       isValid: true,
     });
   });
+
+  it("handles quoted fields and commas inside quotes", () => {
+    const csv = `"keyword", "quoted, value"
+"user", john_doe`;
+    const result = parseCSVBlockRules(csv);
+    expect(result).toHaveLength(2);
+    expect(result[0]).toEqual({
+      ruleType: "keyword",
+      value: "quoted, value",
+      isValid: true,
+    });
+    expect(result[1]).toEqual({
+      ruleType: "user",
+      value: "john_doe",
+      isValid: true,
+    });
+  });
+
+  it("handles escaped quotes inside quoted fields", () => {
+    const csv = `keyword, "value with ""quote"""`;
+    const result = parseCSVBlockRules(csv);
+    expect(result).toHaveLength(1);
+    expect(result[0]).toEqual({
+      ruleType: "keyword",
+      value: 'value with "quote"',
+      isValid: true,
+    });
+  });
 });

@@ -11,7 +11,7 @@ describe("BulkAddBlockRulesModal", () => {
   afterEach(() => {
     if (dispose) dispose();
     document.body.innerHTML = "";
-    vi.clearAllMocks();
+    vi.resetAllMocks();
   });
 
   it("renders correctly when open", async () => {
@@ -97,7 +97,7 @@ invalid,type`);
     await registerButton.click();
 
     expect(onRegister).toHaveBeenCalledWith([
-      { ruleType: "user", value: "john_doe", isValid: true },
+      { ruleType: "user", value: "john_doe" },
     ]);
 
     // Check success message

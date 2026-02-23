@@ -35,6 +35,13 @@ describe("BlockRules page bulk add button", () => {
   });
 
   it("should have Bulk Add button", async () => {
+    worker.use(
+      mockItemService({
+        method: "listItemBlockRules",
+        handler: () => create(ListItemBlockRulesResponseSchema, { rules: [] }),
+      }),
+    );
+
     const history = createMemoryHistory({ initialEntries: ["/block-rules"] });
     const router = createRouter({ routeTree, history });
 
@@ -55,6 +62,13 @@ describe("BlockRules page bulk add button", () => {
   });
 
   it("should open modal when Bulk Add button is clicked", async () => {
+    worker.use(
+      mockItemService({
+        method: "listItemBlockRules",
+        handler: () => create(ListItemBlockRulesResponseSchema, { rules: [] }),
+      }),
+    );
+
     const history = createMemoryHistory({ initialEntries: ["/block-rules"] });
     const router = createRouter({ routeTree, history });
 
