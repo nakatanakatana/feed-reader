@@ -1,8 +1,15 @@
 import { render } from "solid-js/web";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { ToastProvider, useToast } from "./toast";
 
 describe("Toast Context", () => {
+  let dispose: (() => void) | undefined;
+
+  afterEach(() => {
+    if (dispose) dispose();
+    document.body.innerHTML = "";
+  });
+
   it("provides show method", () => {
     let capturedContext: { show: (message: string) => void } | undefined;
     const TestComponent = () => {
@@ -10,7 +17,7 @@ describe("Toast Context", () => {
       return <div>Test</div>;
     };
 
-    render(
+    dispose = render(
       () => (
         <ToastProvider>
           <TestComponent />
@@ -32,7 +39,7 @@ describe("Toast Context", () => {
     };
 
     expect(() => {
-      render(() => <TestComponent />, document.body);
+      dispose = render(() => <TestComponent />, document.body);
     }).toThrow("useToast must be used within a ToastProvider");
   });
 });
