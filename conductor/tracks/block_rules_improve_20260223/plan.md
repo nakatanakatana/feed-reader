@@ -10,13 +10,13 @@ Add the necessary reactive state to manage filtering and sorting criteria and de
 - [x] Task: Write unit tests to verify that rules are correctly filtered by Type and Domain and sorted by Type, Value, and Domain in the store. 6c9b31e
 - [x] Task: Conductor - User Manual Verification 'State Management & Data Filtering' (Protocol in workflow.md) d658d36
 
-## Phase 2: Filter UI Components (Frontend - Dropdowns)
+## Phase 2: Filter UI Components (Frontend - Dropdowns) [checkpoint: a304d25]
 Implement the filter dropdowns and integrate them with the new reactive state.
 
 - [x] Task: Create or update the `BlockRulesFilterBar` component with dropdown menus for Type and Domain filters. a986c35
 - [x] Task: Implement the logic to update the Store when a filter option is selected. a986c35
 - [x] Task: Write integration tests for the `BlockRulesFilterBar` to ensure selecting an option triggers the correct state change. a986c35
-- [ ] Task: Conductor - User Manual Verification 'Filter UI Components' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Filter UI Components' (Protocol in workflow.md) a304d25
 
 ## Phase 3: Sortable Table Headers (Frontend - Interactive Table)
 Implement interactive table headers to toggle sorting on the rules list.
