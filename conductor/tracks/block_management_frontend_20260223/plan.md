@@ -24,7 +24,7 @@
     - [x] Connect with `ItemService.AddItemBlockRules`, `ListItemBlockRules`, and `DeleteItemBlockRule` using TanStack Query.
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Block Rules Management Page' (Protocol in workflow.md) 682d26e
 
-## Phase 4: Final Verification & Polish
+## Phase 4: Final Verification & Polish [checkpoint: 685458b]
 - [x] Task: Ensure responsive design and mobile-friendliness. 685458b
 - [x] Task: Verify that coverage meets the >80% requirement. 685458b
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Final Verification & Polish' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Final Verification & Polish' (Protocol in workflow.md) 685458b
