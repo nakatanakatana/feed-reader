@@ -1,4 +1,3 @@
-import { createClient } from "@connectrpc/connect";
 import { createMutation, createQuery } from "@tanstack/solid-query";
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal, For, Show } from "solid-js";
@@ -6,14 +5,12 @@ import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { ActionButton } from "../components/ui/ActionButton";
 import { PageLayout } from "../components/ui/PageLayout";
-import { ItemService } from "../gen/item/v1/item_pb";
-import { queryClient, transport } from "../lib/query";
+import { itemClient } from "../lib/api/client";
+import { queryClient } from "../lib/query";
 
 export const Route = createFileRoute("/url-rules")({
   component: URLRulesComponent,
 });
-
-const itemClient = createClient(ItemService, transport);
 
 function URLRulesComponent() {
   const [domain, setDomain] = createSignal("");
