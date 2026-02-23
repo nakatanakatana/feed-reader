@@ -26,13 +26,13 @@ Implement interactive table headers to toggle sorting on the rules list.
 - [x] Task: Write integration tests to ensure clicking a header correctly triggers the sort state change. 057fd95
 - [x] Task: Conductor - User Manual Verification 'Sortable Table Headers' (Protocol in workflow.md) f6858d8
 
-## Phase 4: Mobile & Responsive Enhancements
+## Phase 4: Mobile & Responsive Enhancements [checkpoint: f843efc]
 Refine the layout for mobile viewports, including a compact filter/sort bar and simplified rule list.
 
-- [ ] Task: Implement the mobile-specific list view layout with a sticky or collapsible filter/sort bar.
-- [ ] Task: Ensure the layout is responsive and usable on narrow viewports (< 480px).
-- [ ] Task: Write mobile-specific tests to verify responsive behavior.
-- [ ] Task: Conductor - User Manual Verification 'Mobile & Responsive Enhancements' (Protocol in workflow.md)
+- [x] Task: Implement the mobile-specific list view layout with a sticky or collapsible filter/sort bar. 1904eef
+- [x] Task: Ensure the layout is responsive and usable on narrow viewports (< 480px). 1904eef
+- [x] Task: Write mobile-specific tests to verify responsive behavior. 1904eef
+- [x] Task: Conductor - User Manual Verification 'Mobile & Responsive Enhancements' (Protocol in workflow.md) f843efc
 
 ## Phase 5: Final Integration & Regression Testing
 Perform final checks to ensure everything works seamlessly and no regressions were introduced.
