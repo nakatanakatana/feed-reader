@@ -1,8 +1,0 @@
-{
-  "track_id": "bulk-block-rules_20260223",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-02-23T12:00:00Z",
-  "updated_at": "2026-02-23T12:00:00Z",
-  "description": "一括でblock rulesを登録するUIを追加します block-ruleのページのAddのボタンの横に一括登録を行うためのモーダルを開くボタンを追加してください 一括登録はCSVのような形式で受け取って登録できるようにしてください"
-}
