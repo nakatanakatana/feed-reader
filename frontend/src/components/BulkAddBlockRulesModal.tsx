@@ -191,7 +191,7 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
             id="csv-input"
             value={csvText()}
             onInput={handleTextChange}
-            placeholder="user,john_doe&#10;domain,example.com&#10;user_domain,jane_doe,example.org"
+            placeholder={`user,john_doe\ndomain,example.com\nuser_domain,jane_doe,example.org`}
             class={css({
               width: "full",
               height: "32",

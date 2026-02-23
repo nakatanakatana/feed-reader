@@ -33,7 +33,7 @@ function parseCSVRows(csv: string): string[][] {
   };
 
   const pushRow = () => {
-    // Only push non-empty rows (at least one field or non-empty first field)
+    // Push rows that contain at least one field (fields may be empty; empty rows are filtered later)
     if (currentRow.length > 0) {
       rows.push(currentRow);
     }
@@ -80,7 +80,7 @@ export function parseCSVBlockRules(csv: string): ParsedBlockRule[] {
   const results: ParsedBlockRule[] = [];
 
   for (const rawRow of rows) {
-    // Trim each field to preserve existing behavior
+    // Trim each field to normalize user input and ignore incidental whitespace
     const parts = rawRow.map((p) => p.trim());
 
     // Skip rows that are effectively empty

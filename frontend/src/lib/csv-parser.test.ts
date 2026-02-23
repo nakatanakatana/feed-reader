@@ -76,13 +76,11 @@ keyword,spam`;
     expect(result[0].error).toBe("Missing domain for user_domain");
   });
 
-  it("handles CSV with header if we decide to support it (optional but good to test)", () => {
+  it("treats header row as invalid rule entry", () => {
     const csv = `rule_type,value,domain
 user,john_doe`;
     const result = parseCSVBlockRules(csv);
-    // If we treat header as data, it should be invalid.
-    // If we skip header, it should have 1 result.
-    // Let's assume we don't support headers for simplicity or they are treated as invalid lines.
+    // Header row is treated as data and should be marked invalid.
     expect(result).toHaveLength(2);
     expect(result[0].isValid).toBe(false); // "rule_type" is invalid type
     expect(result[1]).toEqual({
