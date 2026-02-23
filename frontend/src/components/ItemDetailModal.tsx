@@ -19,7 +19,10 @@ import {
   AddItemBlockRulesRequest_RuleSchema,
   AddItemBlockRulesRequestSchema,
 } from "../gen/item/v1/item_pb";
-import { addItemBlockRules, listURLParsingRules } from "../lib/api/block-rules";
+import {
+  itemBlockRuleInsert,
+  urlParsingRules,
+} from "../lib/block-db";
 import {
   getItem,
   type Item,
@@ -170,13 +173,11 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   const prioritizedItem = () => collectionItem() || item();
 
   // URL Parsing and Blocking Logic
-  const rulesQuery = useQuery(() => ({
-    queryKey: ["url-rules"],
-    queryFn: listURLParsingRules,
-    staleTime: ITEM_STALE_TIME,
-  }));
+  const rulesQuery = useLiveQuery((q) =>
+    q.from({ rule: urlParsingRules }).select(({ rule }) => ({ ...rule })),
+  );
 
-  const parser = createMemo(() => new URLParser(rulesQuery.data ?? []));
+  const parser = createMemo(() => new URLParser(rulesQuery() ?? []));
 
   const extractedInfo = createMemo(() => {
     const data = item();
@@ -188,10 +189,13 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   const { show } = useToast();
 
   const blockMutation = createMutation(() => ({
-    mutationFn: addItemBlockRules,
+    mutationFn: async (req: {
+      rules: { ruleType: string; value: string; domain?: string }[];
+    }) => {
+      await itemBlockRuleInsert(req.rules);
+    },
     onSuccess: () => {
       show("Block rule added successfully", "success");
-      queryClient.invalidateQueries({ queryKey: ["block-rules"] });
     },
     onError: () => {
       show("Failed to add block rule", "error");
