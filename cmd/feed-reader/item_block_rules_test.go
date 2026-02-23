@@ -88,4 +88,27 @@ func TestItemServer_ItemBlockRules(t *testing.T) {
 			assert.Assert(t, r.Id != id)
 		}
 	})
+
+	t.Run("AddDomainBlockRuleWithoutExplicitDomain", func(t *testing.T) {
+		req := &itemv1.AddItemBlockRulesRequest{
+			Rules: []*itemv1.AddItemBlockRulesRequest_Rule{
+				{RuleType: "domain", Value: "example.com"},
+			},
+		}
+		_, err := server.AddItemBlockRules(ctx, connect.NewRequest(req))
+		assert.NilError(t, err)
+
+		res, err := server.ListItemBlockRules(ctx, connect.NewRequest(&itemv1.ListItemBlockRulesRequest{}))
+		assert.NilError(t, err)
+
+		var found bool
+		for _, r := range res.Msg.Rules {
+			if r.RuleType == "domain" && r.Value == "example.com" {
+				found = true
+				assert.Assert(t, r.Domain != nil, "Domain should not be nil")
+				assert.Equal(t, *r.Domain, "example.com", "Domain should be same as value for domain type rule")
+			}
+		}
+		assert.Assert(t, found, "Domain rule should be found")
+	})
 }
