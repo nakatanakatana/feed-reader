@@ -35,7 +35,9 @@ function createBlockRulesStore() {
     }
   };
 
-  const deriveVisibleRules = <T extends { ruleType: string; value: string; domain?: string }>(
+  const deriveVisibleRules = <
+    T extends { ruleType: string; value: string; domain?: string },
+  >(
     rules: T[],
   ): T[] => {
     let result = [...rules];

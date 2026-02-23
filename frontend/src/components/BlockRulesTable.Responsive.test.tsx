@@ -24,9 +24,15 @@ describe("BlockRulesTable Responsive", () => {
 
   it("shows mobile sort bar on narrow viewport", async () => {
     await page.viewport?.(400, 800);
-    
+
     dispose = render(
-      () => <BlockRulesTable rules={mockRules} onDelete={vi.fn()} isPending={false} />,
+      () => (
+        <BlockRulesTable
+          rules={mockRules}
+          onDelete={vi.fn()}
+          isPending={false}
+        />
+      ),
       document.body,
     );
 
@@ -37,9 +43,15 @@ describe("BlockRulesTable Responsive", () => {
 
   it("hides mobile sort bar on desktop viewport", async () => {
     await page.viewport?.(1280, 720);
-    
+
     dispose = render(
-      () => <BlockRulesTable rules={mockRules} onDelete={vi.fn()} isPending={false} />,
+      () => (
+        <BlockRulesTable
+          rules={mockRules}
+          onDelete={vi.fn()}
+          isPending={false}
+        />
+      ),
       document.body,
     );
 

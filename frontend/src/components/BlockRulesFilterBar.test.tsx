@@ -36,10 +36,7 @@ describe("BlockRulesFilterBar", () => {
   });
 
   it("updates type filter when changed", async () => {
-    dispose = render(
-      () => <BlockRulesFilterBar domains={[]} />,
-      document.body,
-    );
+    dispose = render(() => <BlockRulesFilterBar domains={[]} />, document.body);
 
     const typeSelect = page.getByLabelText("Filter:");
     await typeSelect.selectOptions("user");

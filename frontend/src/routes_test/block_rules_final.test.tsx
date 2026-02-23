@@ -41,8 +41,16 @@ describe("Block Rules Final Integration", () => {
   it("does not trigger backend requests when filtering or sorting", async () => {
     let requestCount = 0;
     const rules = [
-      create(ItemBlockRuleSchema, { id: "1", ruleType: "user", value: "alice" }),
-      create(ItemBlockRuleSchema, { id: "2", ruleType: "domain", value: "example.com" }),
+      create(ItemBlockRuleSchema, {
+        id: "1",
+        ruleType: "user",
+        value: "alice",
+      }),
+      create(ItemBlockRuleSchema, {
+        id: "2",
+        ruleType: "domain",
+        value: "example.com",
+      }),
     ];
 
     worker.use(
@@ -54,7 +62,9 @@ describe("Block Rules Final Integration", () => {
       // Mock other required requests to avoid noise
       http.all("*/item.v1.ItemService/ListItems", () => HttpResponse.json({})),
       http.all("*/tag.v1.TagService/ListTags", () => HttpResponse.json({})),
-      http.all("*/feed.v1.FeedService/ListFeedTags", () => HttpResponse.json({})),
+      http.all("*/feed.v1.FeedService/ListFeedTags", () =>
+        HttpResponse.json({}),
+      ),
     );
 
     const history = createMemoryHistory({ initialEntries: ["/block-rules"] });
@@ -79,8 +89,10 @@ describe("Block Rules Final Integration", () => {
     // 1. Change filter
     const typeSelect = page.getByLabelText("Filter:");
     await typeSelect.selectOptions("domain");
-    await expect.element(page.getByText("alice").first()).not.toBeInTheDocument();
-    
+    await expect
+      .element(page.getByText("alice").first())
+      .not.toBeInTheDocument();
+
     // 2. Change sort
     const valueHeader = page.getByRole("button", { name: /Value/ }).first();
     await valueHeader.click();

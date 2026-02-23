@@ -25,18 +25,32 @@ describe("BlockRulesTable", () => {
 
   it("renders rules", async () => {
     dispose = render(
-      () => <BlockRulesTable rules={mockRules} onDelete={vi.fn()} isPending={false} />,
+      () => (
+        <BlockRulesTable
+          rules={mockRules}
+          onDelete={vi.fn()}
+          isPending={false}
+        />
+      ),
       document.body,
     );
 
     // Use first() because it might be in both desktop and mobile views
     await expect.element(page.getByText("alice").first()).toBeInTheDocument();
-    await expect.element(page.getByText("example.com").first()).toBeInTheDocument();
+    await expect
+      .element(page.getByText("example.com").first())
+      .toBeInTheDocument();
   });
 
   it("calls setSort when clicking Type (Desktop)", async () => {
     dispose = render(
-      () => <BlockRulesTable rules={mockRules} onDelete={vi.fn()} isPending={false} />,
+      () => (
+        <BlockRulesTable
+          rules={mockRules}
+          onDelete={vi.fn()}
+          isPending={false}
+        />
+      ),
       document.body,
     );
 
@@ -49,7 +63,13 @@ describe("BlockRulesTable", () => {
   it("calls onDelete when delete button is clicked", async () => {
     const onDelete = vi.fn();
     dispose = render(
-      () => <BlockRulesTable rules={mockRules} onDelete={onDelete} isPending={false} />,
+      () => (
+        <BlockRulesTable
+          rules={mockRules}
+          onDelete={onDelete}
+          isPending={false}
+        />
+      ),
       document.body,
     );
 
