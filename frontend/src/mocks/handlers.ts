@@ -25,6 +25,7 @@ import {
   ListItemBlockRulesResponseSchema,
   ListItemSchema,
   ListItemsResponseSchema,
+  ListURLParsingRulesResponseSchema,
   UpdateItemStatusResponseSchema,
   URLParsingRuleSchema,
 } from "../gen/item/v1/item_pb";
@@ -411,6 +412,13 @@ export const handlers = [
         return create(GetItemResponseSchema, { item });
       }
       throw new Error("Item not found");
+    },
+  }),
+
+  mockConnectWeb(ItemService)({
+    method: "listURLParsingRules",
+    handler: () => {
+      return create(ListURLParsingRulesResponseSchema, { rules: [] });
     },
   }),
 

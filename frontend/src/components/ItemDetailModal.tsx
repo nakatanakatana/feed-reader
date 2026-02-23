@@ -1,4 +1,3 @@
-import { create } from "@bufbuild/protobuf";
 import { eq, useLiveQuery } from "@tanstack/solid-db";
 import {
   createMutation,
@@ -15,10 +14,6 @@ import {
 } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
-import {
-  AddItemBlockRulesRequest_RuleSchema,
-  AddItemBlockRulesRequestSchema,
-} from "../gen/item/v1/item_pb";
 import { itemBlockRuleInsert, urlParsingRules } from "../lib/block-db";
 import {
   getItem,
@@ -210,17 +205,15 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
         actions.push({
           label: `Block Domain (${hostname})`,
           onClick: () => {
-            blockMutation.mutate(
-              create(AddItemBlockRulesRequestSchema, {
-                rules: [
-                  create(AddItemBlockRulesRequest_RuleSchema, {
-                    ruleType: "domain",
-                    value: hostname,
-                    domain: hostname,
-                  }),
-                ],
-              }),
-            );
+            blockMutation.mutate({
+              rules: [
+                {
+                  ruleType: "domain",
+                  value: hostname,
+                  domain: hostname,
+                },
+              ],
+            });
           },
         });
       }
@@ -230,34 +223,30 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
       actions.push({
         label: `Block User (@${info.domain})`,
         onClick: () => {
-          blockMutation.mutate(
-            create(AddItemBlockRulesRequestSchema, {
-              rules: [
-                create(AddItemBlockRulesRequest_RuleSchema, {
-                  ruleType: "user_domain",
-                  value: info.user,
-                  domain: info.domain,
-                }),
-              ],
-            }),
-          );
+          blockMutation.mutate({
+            rules: [
+              {
+                ruleType: "user_domain",
+                value: info.user,
+                domain: info.domain,
+              },
+            ],
+          });
         },
       });
 
       actions.push({
         label: `Block User (${info.user})`,
         onClick: () => {
-          blockMutation.mutate(
-            create(AddItemBlockRulesRequestSchema, {
-              rules: [
-                create(AddItemBlockRulesRequest_RuleSchema, {
-                  ruleType: "user",
-                  value: info.user,
-                  domain: info.domain,
-                }),
-              ],
-            }),
-          );
+          blockMutation.mutate({
+            rules: [
+              {
+                ruleType: "user",
+                value: info.user,
+                domain: info.domain,
+              },
+            ],
+          });
         },
       });
     }
