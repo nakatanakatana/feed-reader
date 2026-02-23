@@ -87,8 +87,7 @@ describe("ItemDetailModal KebabMenu", () => {
   );
 
   it("renders the kebab menu in the header", async () => {
-    // Use a URL that matches the mock rule to ensure the menu is visible
-    setupMockData("1", "https://user1.example.com/post");
+    setupMockData("1");
 
     dispose = render(
       () => (
@@ -127,7 +126,7 @@ describe("ItemDetailModal KebabMenu", () => {
 
     // Expect options to be present
     await expect
-      .element(page.getByText("Block Domain (example.com)"))
+      .element(page.getByText("Block Domain (user1.example.com)"))
       .toBeInTheDocument();
     await expect
       .element(page.getByText("Block User (@example.com)"))

@@ -193,25 +193,31 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   }));
 
   const menuActions = createMemo(() => {
+    const data = item();
     const info = extractedInfo();
     const actions = [];
 
-    if (info) {
-      actions.push({
-        label: `Block Domain (${info.domain})`,
-        onClick: () => {
-          blockMutation.mutate({
-            rules: [
-              {
-                ruleType: "domain",
-                value: info.domain,
-                domain: info.domain,
-              },
-            ],
-          });
-        },
-      });
+    if (data?.url) {
+      const hostname = extractHostname(data.url);
+      if (hostname) {
+        actions.push({
+          label: `Block Domain (${hostname})`,
+          onClick: () => {
+            blockMutation.mutate({
+              rules: [
+                {
+                  ruleType: "domain",
+                  value: hostname,
+                  domain: hostname,
+                },
+              ],
+            });
+          },
+        });
+      }
+    }
 
+    if (info) {
       actions.push({
         label: `Block User (@${info.domain})`,
         onClick: () => {

@@ -146,7 +146,11 @@ export const extractHostname = (url: string): string => {
   if (!url) return "";
   try {
     const urlObj = new URL(url);
-    return urlObj.hostname;
+    let hostname = urlObj.hostname;
+    if (hostname.startsWith("www.")) {
+      hostname = hostname.slice(4);
+    }
+    return hostname;
   } catch (_e) {
     return "";
   }
