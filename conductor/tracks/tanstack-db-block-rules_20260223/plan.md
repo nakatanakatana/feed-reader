@@ -3,11 +3,11 @@
 ## Phase 1: Foundation - block-db.ts
 **Goal:** Create the centralized state management for `URLParsingRule` and `ItemBlockRule` using `TanStack DB`.
 
-- [ ] Task: Write Tests for block-db.ts
+- [x] Task: Write Tests for block-db.ts c812b1d
     - Create `frontend/src/lib/block-db.test.ts`.
     - Mock `ItemService` and `transport`.
     - Define tests for `urlParsingRules` and `itemBlockRules` collections (fetch, insert, delete).
-- [ ] Task: Implement block-db.ts
+- [x] Task: Implement block-db.ts c812b1d
     - Create `frontend/src/lib/block-db.ts`.
     - Define interfaces for `URLParsingRule` and `ItemBlockRule`.
     - Implement `urlParsingRules` collection.
