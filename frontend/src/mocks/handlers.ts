@@ -15,14 +15,19 @@ import {
 } from "../gen/feed/v1/feed_pb";
 import {
   AddItemBlockRulesResponseSchema,
+  AddURLParsingRuleResponseSchema,
+  DeleteItemBlockRuleResponseSchema,
+  DeleteURLParsingRuleResponseSchema,
   GetItemResponseSchema,
   type Item,
   ItemSchema,
   ItemService,
+  ListItemBlockRulesResponseSchema,
   ListItemSchema,
   ListItemsResponseSchema,
   ListURLParsingRulesResponseSchema,
   UpdateItemStatusResponseSchema,
+  URLParsingRuleSchema,
 } from "../gen/item/v1/item_pb";
 import {
   CreateTagResponseSchema,
@@ -418,9 +423,58 @@ export const handlers = [
   }),
 
   mockConnectWeb(ItemService)({
-    method: "addItemBlockRules",
+    method: "addURLParsingRule",
+    handler: (req) => {
+      if (req.ruleType !== "subdomain" && req.ruleType !== "path") {
+        throw new Error(
+          `invalid rule_type: ${req.ruleType}. Must be 'subdomain' or 'path'`,
+        );
+      }
+      return create(AddURLParsingRuleResponseSchema, {
+        rule: create(URLParsingRuleSchema, {
+          id: Math.random().toString(36).substring(7),
+          domain: req.domain,
+          ruleType: req.ruleType,
+          pattern: req.pattern,
+        }),
+      });
+    },
+  }),
+
+  mockConnectWeb(ItemService)({
+    method: "deleteURLParsingRule",
     handler: () => {
+      return create(DeleteURLParsingRuleResponseSchema, {});
+    },
+  }),
+
+  mockConnectWeb(ItemService)({
+    method: "listItemBlockRules",
+    handler: () => {
+      return create(ListItemBlockRulesResponseSchema, { rules: [] });
+    },
+  }),
+
+  mockConnectWeb(ItemService)({
+    method: "addItemBlockRules",
+    handler: (req) => {
+      for (const [i, r] of req.rules.entries()) {
+        if (
+          !["user", "domain", "user_domain", "keyword"].includes(r.ruleType)
+        ) {
+          throw new Error(
+            `invalid rule_type at index ${i}: ${r.ruleType}. Must be 'user', 'domain', 'user_domain', or 'keyword'`,
+          );
+        }
+      }
       return create(AddItemBlockRulesResponseSchema, {});
+    },
+  }),
+
+  mockConnectWeb(ItemService)({
+    method: "deleteItemBlockRule",
+    handler: () => {
+      return create(DeleteItemBlockRuleResponseSchema, {});
     },
   }),
 ];

@@ -1,4 +1,3 @@
-import { create } from "@bufbuild/protobuf";
 import { eq, useLiveQuery } from "@tanstack/solid-db";
 import {
   createMutation,
@@ -15,11 +14,7 @@ import {
 } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
-import {
-  AddItemBlockRulesRequest_RuleSchema,
-  AddItemBlockRulesRequestSchema,
-} from "../gen/item/v1/item_pb";
-import { addItemBlockRules, listURLParsingRules } from "../lib/api/block-rules";
+import { itemBlockRuleInsert, urlParsingRules } from "../lib/block-db";
 import {
   getItem,
   type Item,
@@ -170,13 +165,11 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   const prioritizedItem = () => collectionItem() || item();
 
   // URL Parsing and Blocking Logic
-  const rulesQuery = useQuery(() => ({
-    queryKey: ["url-rules"],
-    queryFn: listURLParsingRules,
-    staleTime: ITEM_STALE_TIME,
-  }));
+  const rulesQuery = useLiveQuery((q) =>
+    q.from({ rule: urlParsingRules }).select(({ rule }) => ({ ...rule })),
+  );
 
-  const parser = createMemo(() => new URLParser(rulesQuery.data ?? []));
+  const parser = createMemo(() => new URLParser(rulesQuery() ?? []));
 
   const extractedInfo = createMemo(() => {
     const data = item();
@@ -188,10 +181,13 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   const { show } = useToast();
 
   const blockMutation = createMutation(() => ({
-    mutationFn: addItemBlockRules,
+    mutationFn: async (req: {
+      rules: { ruleType: string; value: string; domain?: string }[];
+    }) => {
+      await itemBlockRuleInsert(req.rules);
+    },
     onSuccess: () => {
       show("Block rule added successfully", "success");
-      queryClient.invalidateQueries({ queryKey: ["block-rules"] });
     },
     onError: () => {
       show("Failed to add block rule", "error");
@@ -209,17 +205,15 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
         actions.push({
           label: `Block Domain (${hostname})`,
           onClick: () => {
-            blockMutation.mutate(
-              create(AddItemBlockRulesRequestSchema, {
-                rules: [
-                  create(AddItemBlockRulesRequest_RuleSchema, {
-                    ruleType: "domain",
-                    value: hostname,
-                    domain: hostname,
-                  }),
-                ],
-              }),
-            );
+            blockMutation.mutate({
+              rules: [
+                {
+                  ruleType: "domain",
+                  value: hostname,
+                  domain: hostname,
+                },
+              ],
+            });
           },
         });
       }
@@ -229,34 +223,30 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
       actions.push({
         label: `Block User (@${info.domain})`,
         onClick: () => {
-          blockMutation.mutate(
-            create(AddItemBlockRulesRequestSchema, {
-              rules: [
-                create(AddItemBlockRulesRequest_RuleSchema, {
-                  ruleType: "user_domain",
-                  value: info.user,
-                  domain: info.domain,
-                }),
-              ],
-            }),
-          );
+          blockMutation.mutate({
+            rules: [
+              {
+                ruleType: "user_domain",
+                value: info.user,
+                domain: info.domain,
+              },
+            ],
+          });
         },
       });
 
       actions.push({
         label: `Block User (${info.user})`,
         onClick: () => {
-          blockMutation.mutate(
-            create(AddItemBlockRulesRequestSchema, {
-              rules: [
-                create(AddItemBlockRulesRequest_RuleSchema, {
-                  ruleType: "user",
-                  value: info.user,
-                  domain: info.domain,
-                }),
-              ],
-            }),
-          );
+          blockMutation.mutate({
+            rules: [
+              {
+                ruleType: "user",
+                value: info.user,
+                domain: info.domain,
+              },
+            ],
+          });
         },
       });
     }

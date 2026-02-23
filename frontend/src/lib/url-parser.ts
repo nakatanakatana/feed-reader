@@ -1,4 +1,7 @@
-import type { URLParsingRule } from "../gen/item/v1/item_pb";
+export interface URLParsingRuleMinimal {
+  ruleType: string;
+  pattern: string;
+}
 
 export interface ExtractedUserInfo {
   user: string;
@@ -6,7 +9,7 @@ export interface ExtractedUserInfo {
 }
 
 export class URLParser {
-  constructor(private rules: URLParsingRule[]) {}
+  constructor(private rules: URLParsingRuleMinimal[]) {}
 
   extractUserInfo(urlStr: string): ExtractedUserInfo | null {
     try {

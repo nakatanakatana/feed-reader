@@ -1,4 +1,5 @@
-import { createMutation, createQuery } from "@tanstack/solid-query";
+import { useLiveQuery } from "@tanstack/solid-db";
+import { createMutation } from "@tanstack/solid-query";
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
@@ -6,8 +7,11 @@ import { flex, stack } from "../../styled-system/patterns";
 import { BulkAddBlockRulesModal } from "../components/BulkAddBlockRulesModal";
 import { ActionButton } from "../components/ui/ActionButton";
 import { PageLayout } from "../components/ui/PageLayout";
-import { itemClient } from "../lib/api/client";
-import { queryClient } from "../lib/query";
+import {
+  itemBlockRuleDelete,
+  itemBlockRuleInsert,
+  itemBlockRules,
+} from "../lib/block-db";
 
 export const Route = createFileRoute("/block-rules")({
   component: BlockRulesComponent,
@@ -19,13 +23,9 @@ function BlockRulesComponent() {
   const [domain, setDomain] = createSignal("");
   const [isBulkModalOpen, setIsBulkModalOpen] = createSignal(false);
 
-  const rulesQuery = createQuery(() => ({
-    queryKey: ["block-rules"],
-    queryFn: async () => {
-      const resp = await itemClient.listItemBlockRules({});
-      return resp.rules;
-    },
-  }));
+  const rulesQuery = useLiveQuery((q) =>
+    q.from({ rule: itemBlockRules }).select(({ rule }) => ({ ...rule })),
+  );
 
   const addMutation = createMutation(() => ({
     mutationFn: async (newRule: {
@@ -33,12 +33,9 @@ function BlockRulesComponent() {
       value: string;
       domain?: string;
     }) => {
-      await itemClient.addItemBlockRules({
-        rules: [newRule],
-      });
+      await itemBlockRuleInsert([newRule]);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["block-rules"] });
       setValue("");
       setDomain("");
     },
@@ -48,25 +45,13 @@ function BlockRulesComponent() {
     mutationFn: async (
       rules: { ruleType: string; value: string; domain?: string }[],
     ) => {
-      await itemClient.addItemBlockRules({
-        rules: rules.map((r) => ({
-          ruleType: r.ruleType,
-          value: r.value,
-          domain: r.domain,
-        })),
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["block-rules"] });
+      await itemBlockRuleInsert(rules);
     },
   }));
 
   const deleteMutation = createMutation(() => ({
     mutationFn: async (id: string) => {
-      await itemClient.deleteItemBlockRule({ id });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["block-rules"] });
+      await itemBlockRuleDelete(id);
     },
   }));
 
@@ -259,7 +244,7 @@ function BlockRulesComponent() {
             <p>Loading rules...</p>
           </Show>
           <ul class={stack({ gap: "3" })}>
-            <For each={rulesQuery.data}>
+            <For each={rulesQuery()}>
               {(rule) => (
                 <li
                   class={flex({
