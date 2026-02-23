@@ -9,6 +9,7 @@ import { render } from "solid-js/web";
 import { afterEach, describe, expect, it } from "vitest";
 import { page } from "vitest/browser";
 import { queryClient } from "../lib/query";
+import { ToastProvider } from "../lib/toast";
 import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
 
@@ -33,8 +34,10 @@ describe("Item Routing", () => {
       () => (
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>
+        <ToastProvider>
             <RouterProvider router={router} />
-          </QueryClientProvider>
+          </ToastProvider>
+      </QueryClientProvider>
         </TransportProvider>
       ),
       document.body,

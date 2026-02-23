@@ -19,6 +19,7 @@ import {
 import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
 import { itemStore } from "../lib/item-store";
 import { queryClient, transport } from "../lib/query";
+import { ToastProvider } from "../lib/toast";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
 import { parseConnectMessage } from "../mocks/connect";
@@ -93,8 +94,10 @@ describe("ItemDetailRouteView Reactivity", () => {
       () => (
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>
+        <ToastProvider>
             <RouterProvider router={router} />
-          </QueryClientProvider>
+          </ToastProvider>
+      </QueryClientProvider>
         </TransportProvider>
       ),
       document.body,
