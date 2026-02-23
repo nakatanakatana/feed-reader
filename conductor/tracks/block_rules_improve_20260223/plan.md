@@ -6,8 +6,8 @@ This plan outlines the steps to add frontend-only filtering and sorting to the B
 Add the necessary reactive state to manage filtering and sorting criteria and derive the filtered/sorted list of rules.
 
 - [x] Task: Create a new SolidJS Store (or update existing one) to handle local filter and sort states for Block Rules. 550b662
-- [ ] Task: Implement the reactive derivation logic (`liveQuery` or a simple reactive filter/sort) to produce the visible rules list based on the active criteria.
-- [ ] Task: Write unit tests to verify that rules are correctly filtered by Type and Domain and sorted by Type, Value, and Domain in the store.
+- [x] Task: Implement the reactive derivation logic (`liveQuery` or a simple reactive filter/sort) to produce the visible rules list based on the active criteria. 6c9b31e
+- [x] Task: Write unit tests to verify that rules are correctly filtered by Type and Domain and sorted by Type, Value, and Domain in the store. 6c9b31e
 - [ ] Task: Conductor - User Manual Verification 'State Management & Data Filtering' (Protocol in workflow.md)
 
 ## Phase 2: Filter UI Components (Frontend - Dropdowns)
