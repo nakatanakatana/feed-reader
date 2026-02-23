@@ -7,6 +7,6 @@
 
 ---
 
-- [ ] **Track: SQLite foreign key support and delete cascade fix.**
+- [x] **Track: SQLite foreign key support and delete cascade fix.**
 *Link: [./tracks/sqlite_fk_support_20260223/](./tracks/sqlite_fk_support_20260223/)*
 
