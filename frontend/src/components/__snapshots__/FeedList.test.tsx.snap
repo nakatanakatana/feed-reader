@@ -3,7 +3,7 @@
 exports[`FeedList > displays a list of feeds 1`] = `
 <DocumentFragment>
   <header
-    class="px_4 py_2 d_flex ai_center bd-b-w_1px border-bottom-style_solid bd-b-c_gray.100 gap_6 fs_md bg-c_white pos_sticky top_0 z_10"
+    class="px_4 py_2 d_flex ai_center bd-b-w_1px border-bottom-style_solid bd-b-c_gray.100 gap_6 fs_md bg-c_white pos_sticky top_0 z_10 ov-x_auto white-space_nowrap scr-bar-w_none [&::-webkit-scrollbar]:d_none"
   >
     <a
       activeoptions="[object Object]"
@@ -29,6 +29,22 @@ exports[`FeedList > displays a list of feeds 1`] = `
       to="/tags"
     >
       Tags
+    </a>
+    <a
+      activeprops="[object Object]"
+      class="pos_relative px_3 py_1.5 bdr_md c_gray.500 trs_all_0.2s fw_medium fs_sm hover:bg-c_gray.50 hover:c_gray.900"
+      href="/url-rules"
+      to="/url-rules"
+    >
+      URL Rules
+    </a>
+    <a
+      activeprops="[object Object]"
+      class="pos_relative px_3 py_1.5 bdr_md c_gray.500 trs_all_0.2s fw_medium fs_sm hover:bg-c_gray.50 hover:c_gray.900"
+      href="/block-rules"
+      to="/block-rules"
+    >
+      Block Rules
     </a>
   </header>
   <div
