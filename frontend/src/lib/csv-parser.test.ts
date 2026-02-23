@@ -10,23 +10,23 @@ keyword,spam`;
     const result = parseCSVBlockRules(csv);
     expect(result).toHaveLength(4);
     expect(result[0]).toEqual({
-      rule_type: "user",
+      ruleType: "user",
       value: "john_doe",
       isValid: true,
     });
     expect(result[1]).toEqual({
-      rule_type: "domain",
+      ruleType: "domain",
       value: "example.com",
       isValid: true,
     });
     expect(result[2]).toEqual({
-      rule_type: "user_domain",
+      ruleType: "user_domain",
       value: "jane_doe",
       domain: "example.org",
       isValid: true,
     });
     expect(result[3]).toEqual({
-      rule_type: "keyword",
+      ruleType: "keyword",
       value: "spam",
       isValid: true,
     });
@@ -41,12 +41,12 @@ keyword,spam`;
     const result = parseCSVBlockRules(csv);
     expect(result).toHaveLength(2);
     expect(result[0]).toEqual({
-      rule_type: "user",
+      ruleType: "user",
       value: "john_doe",
       isValid: true,
     });
     expect(result[1]).toEqual({
-      rule_type: "keyword",
+      ruleType: "keyword",
       value: "spam",
       isValid: true,
     });
@@ -86,7 +86,7 @@ user,john_doe`;
     expect(result).toHaveLength(2);
     expect(result[0].isValid).toBe(false); // "rule_type" is invalid type
     expect(result[1]).toEqual({
-      rule_type: "user",
+      ruleType: "user",
       value: "john_doe",
       isValid: true,
     });

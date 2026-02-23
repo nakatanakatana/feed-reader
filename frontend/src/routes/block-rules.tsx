@@ -49,11 +49,11 @@ function BlockRulesComponent() {
 
   const bulkAddMutation = createMutation(() => ({
     mutationFn: async (
-      rules: { rule_type: string; value: string; domain?: string }[],
+      rules: { ruleType: string; value: string; domain?: string }[],
     ) => {
       await itemClient.addItemBlockRules({
         rules: rules.map((r) => ({
-          ruleType: r.rule_type,
+          ruleType: r.ruleType,
           value: r.value,
           domain: r.domain,
         })),
@@ -61,7 +61,6 @@ function BlockRulesComponent() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["block-rules"] });
-      setIsBulkModalOpen(false);
     },
   }));
 
@@ -104,8 +103,8 @@ function BlockRulesComponent() {
       stroke-width="2"
       stroke-linecap="round"
       stroke-linejoin="round"
+      aria-hidden="true"
     >
-      <title>Add</title>
       <line x1="12" y1="5" x2="12" y2="19" />
       <line x1="5" y1="12" x2="19" y2="12" />
     </svg>
@@ -122,8 +121,8 @@ function BlockRulesComponent() {
       stroke-width="2"
       stroke-linecap="round"
       stroke-linejoin="round"
+      aria-hidden="true"
     >
-      <title>Bulk Add</title>
       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
       <polyline points="17 8 12 3 7 8" />
       <line x1="12" y1="3" x2="12" y2="15" />

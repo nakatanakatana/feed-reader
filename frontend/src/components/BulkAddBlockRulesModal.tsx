@@ -19,12 +19,14 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
   } | null>(null);
   const [csvText, setCsvText] = createSignal("");
   const [parsedRules, setParsedRules] = createSignal<ParsedBlockRule[]>([]);
+  const [error, setError] = createSignal<string | null>(null);
 
   const handleTextChange = (e: Event) => {
     const text = (e.target as HTMLTextAreaElement).value;
     setCsvText(text);
     setParsedRules(parseCSVBlockRules(text));
     setRegistrationResult(null);
+    setError(null);
   };
 
   const handleFileChange = async (e: Event) => {
@@ -37,8 +39,10 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
       setCsvText(text);
       setParsedRules(parseCSVBlockRules(text));
       setRegistrationResult(null);
+      setError(null);
     } catch (err) {
       console.error("Failed to read file", err);
+      setError("Failed to read the file. Please try again.");
     } finally {
       input.value = "";
     }
@@ -50,17 +54,28 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
     const validRules = parsedRules().filter((r) => r.isValid);
     if (validRules.length === 0) return;
     const total = parsedRules().length;
-    await props.onRegister(validRules);
-    setRegistrationResult({
-      success: validRules.length,
-      total: total,
-    });
-    setCsvText("");
-    setParsedRules([]);
+    setError(null);
+
+    try {
+      await props.onRegister(validRules);
+      setRegistrationResult({
+        success: validRules.length,
+        total: total,
+      });
+      setCsvText("");
+      setParsedRules([]);
+    } catch (err) {
+      console.error("Bulk registration failed", err);
+      setError(
+        err instanceof Error ? err.message : "Bulk registration failed. Please try again.",
+      );
+    }
   };
 
   const handleClose = () => {
+    if (props.isPending) return;
     setRegistrationResult(null);
+    setError(null);
     props.onClose();
   };
 
@@ -71,6 +86,7 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
       size="standard"
       title="Bulk Add Block Rules"
       disableBackdropClose={props.isPending}
+      hideClose={props.isPending}
       footer={
         <div
           class={flex({
@@ -111,6 +127,22 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
       }
     >
       <div class={stack({ gap: "4" })}>
+        <Show when={error()}>
+          <div
+            class={css({
+              padding: "3",
+              backgroundColor: "red.50",
+              borderRadius: "md",
+              border: "1px solid",
+              borderColor: "red.100",
+              color: "red.800",
+              fontSize: "sm",
+            })}
+          >
+            {error()}
+          </div>
+        </Show>
+
         <Show when={registrationResult()}>
           {(res) => (
             <div
@@ -262,7 +294,7 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
                         })}
                       >
                         <td class={css({ p: "2", wordBreak: "break-all" })}>
-                          {rule.rule_type}
+                          {rule.ruleType}
                         </td>
                         <td class={css({ p: "2", wordBreak: "break-all" })}>
                           {rule.value}

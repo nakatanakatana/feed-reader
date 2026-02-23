@@ -50,7 +50,7 @@ describe("BlockRules page bulk add button", () => {
     );
 
     await expect
-      .element(page.getByRole("button", { name: "Bulk Add" }))
+      .element(page.getByRole("button", { name: "Bulk Add", exact: true }))
       .toBeInTheDocument();
   });
 
@@ -69,7 +69,10 @@ describe("BlockRules page bulk add button", () => {
       document.body,
     );
 
-    const bulkAddButton = page.getByRole("button", { name: "Bulk Add" });
+    const bulkAddButton = page.getByRole("button", {
+      name: "Bulk Add",
+      exact: true,
+    });
     await bulkAddButton.click();
 
     await expect
@@ -108,7 +111,7 @@ describe("BlockRules page bulk add button", () => {
     );
 
     // Open modal
-    await page.getByRole("button", { name: "Bulk Add" }).click();
+    await page.getByRole("button", { name: "Bulk Add", exact: true }).click();
 
     // Fill CSV
     const textarea = page.getByPlaceholder(/user,john_doe/);
@@ -133,6 +136,13 @@ domain,example.com`);
       ruleType: "domain",
       value: "example.com",
     });
+
+    // Verify success message and Done button
+    await expect
+      .element(page.getByText("Successfully registered rules!"))
+      .toBeInTheDocument();
+    const doneButton = page.getByRole("button", { name: "Done" });
+    await doneButton.click();
 
     // Verify modal is closed
     await expect

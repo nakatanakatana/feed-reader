@@ -1,12 +1,14 @@
 export type BlockRuleType = "user" | "domain" | "user_domain" | "keyword";
 
 export interface ParsedBlockRule {
-  rule_type: string;
+  ruleType: string;
   value: string;
   domain?: string;
   isValid: boolean;
   error?: string;
 }
+
+const VALID_TYPES: BlockRuleType[] = ["user", "domain", "user_domain", "keyword"];
 
 export function parseCSVBlockRules(csv: string): ParsedBlockRule[] {
   const lines = csv.split("\n");
@@ -17,10 +19,10 @@ export function parseCSVBlockRules(csv: string): ParsedBlockRule[] {
     if (!line) continue;
 
     const parts = line.split(",").map((p) => p.trim());
-    const [rule_type, value, domain] = parts;
+    const [ruleType, value, domain] = parts;
 
     const result: ParsedBlockRule = {
-      rule_type: rule_type || "",
+      ruleType: ruleType || "",
       value: value || "",
       isValid: true,
     };
@@ -30,19 +32,13 @@ export function parseCSVBlockRules(csv: string): ParsedBlockRule[] {
     }
 
     // Validation
-    const validTypes: BlockRuleType[] = [
-      "user",
-      "domain",
-      "user_domain",
-      "keyword",
-    ];
-    if (!validTypes.includes(rule_type as BlockRuleType)) {
+    if (!VALID_TYPES.includes(ruleType as BlockRuleType)) {
       result.isValid = false;
       result.error = "Invalid rule type";
     } else if (!value) {
       result.isValid = false;
       result.error = "Missing value";
-    } else if (rule_type === "user_domain" && !domain) {
+    } else if (ruleType === "user_domain" && !domain) {
       result.isValid = false;
       result.error = "Missing domain for user_domain";
     }

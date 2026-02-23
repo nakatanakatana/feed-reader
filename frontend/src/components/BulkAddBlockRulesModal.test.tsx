@@ -97,7 +97,7 @@ invalid,type`);
     await registerButton.click();
 
     expect(onRegister).toHaveBeenCalledWith([
-      { rule_type: "user", value: "john_doe", isValid: true },
+      { ruleType: "user", value: "john_doe", isValid: true },
     ]);
 
     // Check success message
@@ -113,5 +113,32 @@ invalid,type`);
     await expect.element(doneButton).toBeInTheDocument();
     await doneButton.click();
     expect(onClose).toHaveBeenCalled();
+  });
+
+  it("shows error message when onRegister fails", async () => {
+    onRegister.mockRejectedValue(new Error("Network error"));
+
+    dispose = render(
+      () => (
+        <BulkAddBlockRulesModal
+          isOpen={true}
+          onClose={onClose}
+          onRegister={onRegister}
+          isPending={false}
+        />
+      ),
+      document.body,
+    );
+
+    const textarea = page.getByPlaceholder(/user,john_doe/);
+    await textarea.fill("user,john_doe");
+
+    const registerButton = page.getByRole("button", {
+      name: "Register (1 rules)",
+    });
+    await registerButton.click();
+
+    await expect.element(page.getByText("Network error")).toBeInTheDocument();
+    expect(onRegister).toHaveBeenCalled();
   });
 });
