@@ -11,7 +11,7 @@
 ## Phase 2: UI Component and Mutation
 - [x] Task: Add a query/mutation to call `AddItemBlockRules` and `ListURLParsingRules` from the frontend (moving shared logic to a library file if necessary). (08c2583)
 - [x] Task: Integrate the `KebabMenu` component into the `ItemDetailModal` header. (74f08e1)
-- [ ] Task: Implement the "Block" actions within `ItemDetailModal`, utilizing the `URLParser` and the new mutation.
+- [x] Task: Implement the "Block" actions within `ItemDetailModal`, utilizing the `URLParser` and the new mutation. (6b890f2)
 - [ ] Task: Add a notification mechanism to provide success feedback after a rule is successfully added.
 - [ ] Task: Write integration tests for `ItemDetailModal` to verify the "Block" menu appears and triggers the mutation correctly.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: UI & Mutation' (Protocol in workflow.md)
