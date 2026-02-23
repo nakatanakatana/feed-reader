@@ -34,9 +34,9 @@ Refine the layout for mobile viewports, including a compact filter/sort bar and 
 - [x] Task: Write mobile-specific tests to verify responsive behavior. 1904eef
 - [x] Task: Conductor - User Manual Verification 'Mobile & Responsive Enhancements' (Protocol in workflow.md) f843efc
 
-## Phase 5: Final Integration & Regression Testing
+## Phase 5: Final Integration & Regression Testing [checkpoint: 94a15c7]
 Perform final checks to ensure everything works seamlessly and no regressions were introduced.
 
-- [ ] Task: Verify that no extra backend network requests are made during filtering or sorting operations.
-- [ ] Task: Conduct overall manual verification across desktop and mobile.
-- [ ] Task: Conductor - User Manual Verification 'Final Integration & Verification' (Protocol in workflow.md)
+- [x] Task: Verify that no extra backend network requests are made during filtering or sorting operations. 9b4f2d7
+- [x] Task: Conduct overall manual verification across desktop and mobile. 9b4f2d7
+- [x] Task: Conductor - User Manual Verification 'Final Integration & Verification' (Protocol in workflow.md) 94a15c7
