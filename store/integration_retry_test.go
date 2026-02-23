@@ -24,7 +24,7 @@ func TestStore_RetryIntegration(t *testing.T) {
 
 	// Helper to open connection
 	openDB := func() *sql.DB {
-		db, err := sql.Open("sqlite", dbPath+"?_pragma=busy_timeout(1)")
+		db, err := sql.Open("sqlite", dbPath+"?_pragma=busy_timeout(1)&_pragma=foreign_keys(1)")
 		assert.NilError(t, err)
 		return db
 	}

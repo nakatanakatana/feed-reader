@@ -195,7 +195,7 @@ func TestTags_UnreadCounts_PBT(t *testing.T) {
 }
 
 func setupQueriesForRapid(t *rapid.T) (*store.Queries, *sql.DB) {
-	db, err := sql.Open("sqlite", ":memory:")
+	db, err := store.OpenDB(":memory:")
 	assert.NilError(t, err, "failed to open sqlite db")
 
 	_, err = db.ExecContext(context.Background(), schema.Schema)

@@ -2,7 +2,6 @@ package store_test
 
 import (
 	"context"
-	"database/sql"
 	"testing"
 	"time"
 
@@ -13,7 +12,7 @@ import (
 )
 
 func TestItemStore_GetItems_Features(t *testing.T) {
-	db, err := sql.Open("sqlite", ":memory:")
+	db, err := store.OpenDB(":memory:")
 	assert.NilError(t, err)
 	defer func() { _ = db.Close() }()
 

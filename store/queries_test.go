@@ -2,7 +2,6 @@ package store_test
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	"testing"
 	"time"
@@ -15,7 +14,7 @@ import (
 )
 
 func setupDB(t *testing.T) (*store.Queries, *store.Store) {
-	db, err := sql.Open("sqlite", ":memory:")
+	db, err := store.OpenDB(":memory:")
 	assert.NilError(t, err)
 
 	_, err = db.ExecContext(context.Background(), schema.Schema)

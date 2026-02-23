@@ -2,7 +2,6 @@ package store_test
 
 import (
 	"context"
-	"database/sql"
 	"testing"
 	"time"
 
@@ -186,12 +185,12 @@ func TestStore_ItemOrdering_PBT(t *testing.T) {
 }
 
 func setupStoreForRapid(t *rapid.T) *store.Store {
-	db, err := sql.Open("sqlite", ":memory:")
+	db, err := store.OpenDB(":memory:")
 	if err != nil {
 		t.Fatalf("failed to open sqlite db: %v", err)
 	}
 
-	_, err = db.ExecContext(context.Background(), schema.Schema)
+	_, err = db.Exec(schema.Schema)
 	if err != nil {
 		_ = db.Close()
 		t.Fatalf("failed to apply schema: %v", err)

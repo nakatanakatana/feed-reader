@@ -57,14 +57,11 @@ func assertResponseGolden(t *testing.T, m proto.Message, goldenFile string) {
 
 func setupTestDB(t *testing.T) (*store.Queries, *sql.DB) {
 	t.Helper()
-	db, err := sql.Open("sqlite", ":memory:")
+	db, err := store.OpenDB(":memory:")
 	assert.NilError(t, err, "failed to open db")
 
 	// For in-memory SQLite, we must limit to a single connection to share the database across goroutines.
 	db.SetMaxOpenConns(1)
-
-	_, err = db.Exec("PRAGMA foreign_keys = ON")
-	assert.NilError(t, err, "failed to enable foreign keys")
 
 	_, err = db.Exec(schema.Schema)
 	assert.NilError(t, err, "failed to apply schema")
