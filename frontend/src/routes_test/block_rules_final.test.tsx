@@ -1,28 +1,28 @@
 import { create, toJson } from "@bufbuild/protobuf";
+import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
   createRouter,
   RouterProvider,
 } from "@tanstack/solid-router";
-import { QueryClientProvider } from "@tanstack/solid-query";
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi, beforeEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { routeTree } from "../routeTree.gen";
 import "../styles.css";
+import { HttpResponse, http } from "msw";
 import {
   ItemBlockRuleSchema,
   ItemService,
   ListItemBlockRulesResponseSchema,
 } from "../gen/item/v1/item_pb";
+import { blockRulesStore } from "../lib/block-rules-store";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
 import { mockConnectWeb } from "../mocks/connect";
-import { blockRulesStore } from "../lib/block-rules-store";
-import { HttpResponse, http } from "msw";
 
-const mockItemService = mockConnectWeb(ItemService);
+const _mockItemService = mockConnectWeb(ItemService);
 
 describe("Block Rules Final Integration", () => {
   let dispose: () => void;

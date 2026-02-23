@@ -1,6 +1,6 @@
 import { For } from "solid-js";
 import { css } from "../../styled-system/css";
-import { flex, stack } from "../../styled-system/patterns";
+import { flex } from "../../styled-system/patterns";
 import { blockRulesStore } from "../lib/block-rules-store";
 
 interface BlockRulesFilterBarProps {

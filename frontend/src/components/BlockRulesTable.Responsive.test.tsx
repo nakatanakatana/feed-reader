@@ -1,8 +1,8 @@
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi, beforeEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { BlockRulesTable } from "./BlockRulesTable";
 import { blockRulesStore } from "../lib/block-rules-store";
+import { BlockRulesTable } from "./BlockRulesTable";
 
 describe("BlockRulesTable Responsive", () => {
   let dispose: () => void;

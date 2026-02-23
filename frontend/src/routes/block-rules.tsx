@@ -1,7 +1,7 @@
 import { useLiveQuery } from "@tanstack/solid-db";
 import { createMutation } from "@tanstack/solid-query";
 import { createFileRoute } from "@tanstack/solid-router";
-import { createMemo, createSignal, For, Show } from "solid-js";
+import { createMemo, createSignal, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { BlockRulesFilterBar } from "../components/BlockRulesFilterBar";

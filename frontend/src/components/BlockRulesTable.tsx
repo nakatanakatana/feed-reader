@@ -2,8 +2,8 @@ import { For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import {
-  blockRulesStore,
   type BlockRulesSortField,
+  blockRulesStore,
 } from "../lib/block-rules-store";
 import { ActionButton } from "./ui/ActionButton";
 
