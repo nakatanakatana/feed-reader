@@ -1,8 +1,0 @@
-{
-  "track_id": "block-from-item-detail_20260223",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-02-23T12:00:00Z",
-  "updated_at": "2026-02-23T12:00:00Z",
-  "description": "ItemDetailModalで開いている記事のuser/domainをblock-rulesに追加できるUIを追加してください"
-}
