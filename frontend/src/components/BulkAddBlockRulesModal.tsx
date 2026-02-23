@@ -1,7 +1,7 @@
 import { createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
-import { parseCSVBlockRules, type ParsedBlockRule } from "../lib/csv-parser";
+import { type ParsedBlockRule, parseCSVBlockRules } from "../lib/csv-parser";
 import { ActionButton } from "./ui/ActionButton";
 import { Modal } from "./ui/Modal";
 
@@ -72,12 +72,23 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
       title="Bulk Add Block Rules"
       disableBackdropClose={props.isPending}
       footer={
-        <div class={flex({ justifyContent: "flex-end", gap: "2", width: "full", flexWrap: "wrap" })}>
+        <div
+          class={flex({
+            justifyContent: "flex-end",
+            gap: "2",
+            width: "full",
+            flexWrap: "wrap",
+          })}
+        >
           <Show
             when={registrationResult()}
             fallback={
               <>
-                <ActionButton variant="secondary" onClick={handleClose} disabled={props.isPending}>
+                <ActionButton
+                  variant="secondary"
+                  onClick={handleClose}
+                  disabled={props.isPending}
+                >
                   Cancel
                 </ActionButton>
                 <ActionButton
@@ -85,7 +96,9 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
                   onClick={handleRegister}
                   disabled={props.isPending || validRulesCount() === 0}
                 >
-                  {props.isPending ? "Registering..." : `Register (${validRulesCount()} rules)`}
+                  {props.isPending
+                    ? "Registering..."
+                    : `Register (${validRulesCount()} rules)`}
                 </ActionButton>
               </>
             }
@@ -117,7 +130,8 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
               <p>
                 {res().success} rules were registered.
                 <Show when={res().total > res().success}>
-                  {" "}({res().total - res().success} invalid lines were skipped)
+                  {" "}
+                  ({res().total - res().success} invalid lines were skipped)
                 </Show>
               </p>
             </div>
@@ -125,10 +139,14 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
         </Show>
 
         <div class={stack({ gap: "2" })}>
-          <label class={css({ fontSize: "sm", fontWeight: "medium" })}>
+          <label
+            for="csv-input"
+            class={css({ fontSize: "sm", fontWeight: "medium" })}
+          >
             CSV Input (rule_type, value, [domain])
           </label>
           <textarea
+            id="csv-input"
             value={csvText()}
             onInput={handleTextChange}
             placeholder="user,john_doe&#10;domain,example.com&#10;user_domain,jane_doe,example.org"
@@ -146,8 +164,14 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
         </div>
 
         <div class={stack({ gap: "2" })}>
-          <label class={css({ fontSize: "sm", fontWeight: "medium" })}>Or Upload CSV File</label>
+          <label
+            for="csv-file"
+            class={css({ fontSize: "sm", fontWeight: "medium" })}
+          >
+            Or Upload CSV File
+          </label>
           <input
+            id="csv-file"
             type="file"
             accept=".csv,.txt"
             onChange={handleFileChange}
@@ -178,7 +202,9 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
                   tableLayout: "fixed",
                 })}
               >
-                <thead class={css({ bg: "gray.50", position: "sticky", top: 0 })}>
+                <thead
+                  class={css({ bg: "gray.50", position: "sticky", top: 0 })}
+                >
                   <tr>
                     <th
                       class={css({
@@ -229,20 +255,38 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
                 <tbody>
                   <For each={parsedRules()}>
                     {(rule) => (
-                      <tr class={css({ borderBottom: "1px solid", borderColor: "gray.100" })}>
-                        <td class={css({ p: "2", wordBreak: "break-all" })}>{rule.rule_type}</td>
-                        <td class={css({ p: "2", wordBreak: "break-all" })}>{rule.value}</td>
-                        <td class={css({ p: "2", wordBreak: "break-all" })}>{rule.domain || "-"}</td>
+                      <tr
+                        class={css({
+                          borderBottom: "1px solid",
+                          borderColor: "gray.100",
+                        })}
+                      >
+                        <td class={css({ p: "2", wordBreak: "break-all" })}>
+                          {rule.rule_type}
+                        </td>
+                        <td class={css({ p: "2", wordBreak: "break-all" })}>
+                          {rule.value}
+                        </td>
+                        <td class={css({ p: "2", wordBreak: "break-all" })}>
+                          {rule.domain || "-"}
+                        </td>
                         <td class={css({ p: "2", wordBreak: "break-all" })}>
                           <Show
                             when={rule.isValid}
                             fallback={
-                              <span class={css({ color: "red.500", fontWeight: "bold" })}>
+                              <span
+                                class={css({
+                                  color: "red.500",
+                                  fontWeight: "bold",
+                                })}
+                              >
                                 ✕ {rule.error}
                               </span>
                             }
                           >
-                            <span class={css({ color: "green.500" })}>✓ Valid</span>
+                            <span class={css({ color: "green.500" })}>
+                              ✓ Valid
+                            </span>
                           </Show>
                         </td>
                       </tr>
