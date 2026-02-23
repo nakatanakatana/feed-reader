@@ -190,7 +190,7 @@ func setupStoreForRapid(t *rapid.T) *store.Store {
 		t.Fatalf("failed to open sqlite db: %v", err)
 	}
 
-	_, err = db.Exec(schema.Schema)
+	_, err = db.ExecContext(context.Background(), schema.Schema)
 	if err != nil {
 		_ = db.Close()
 		t.Fatalf("failed to apply schema: %v", err)

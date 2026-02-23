@@ -22,7 +22,9 @@ func TestStore_RetryIntegration(t *testing.T) {
 
 	dbPath := filepath.Join(tmpDir, "test.db")
 
-	// Helper to open connection
+	// Helper to open connection.
+	// Note: We use a very low busy_timeout(1) intentionally here to trigger
+	// and test the retry mechanism under contention.
 	openDB := func() *sql.DB {
 		db, err := sql.Open("sqlite", dbPath+"?_pragma=busy_timeout(1)&_pragma=foreign_keys(1)")
 		assert.NilError(t, err)
@@ -32,7 +34,7 @@ func TestStore_RetryIntegration(t *testing.T) {
 	// 1. Setup Schema
 	db1 := openDB()
 	defer func() { _ = db1.Close() }()
-	_, err = db1.Exec(schema.Schema)
+	_, err = db1.ExecContext(context.Background(), schema.Schema)
 	assert.NilError(t, err)
 
 	s := store.NewStore(db1)

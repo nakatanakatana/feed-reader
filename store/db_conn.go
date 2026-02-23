@@ -11,13 +11,8 @@ import (
 // OpenDB opens a connection to the SQLite database with recommended pragmas enabled.
 // It ensures foreign keys are enabled.
 func OpenDB(dsn string) (*sql.DB, error) {
-	// Ensure DSN has the necessary pragmas
-	// If the DSN is just a file path, we append the query parameters.
-	// If it already has query parameters, we append to them.
-	
 	// Check if DSN is ":memory:"
-	// For in-memory DB, we also want FKs.
-	// modernc.org/sqlite supports query params for :memory: too? Yes.
+	inMemory := strings.HasPrefix(dsn, ":memory:") || strings.Contains(dsn, "mode=memory")
 
 	separator := "?"
 	if strings.Contains(dsn, "?") {
@@ -26,18 +21,19 @@ func OpenDB(dsn string) (*sql.DB, error) {
 
 	// Add pragmas
 	// foreign_keys=on
-	// journal_mode=WAL (good for concurrency)
+	// journal_mode=WAL (good for concurrency, but avoid for in-memory DBs)
 	// busy_timeout=5000 (good for concurrency)
 	pragmas := []string{
 		"_pragma=foreign_keys(1)",
-		"_pragma=journal_mode(WAL)",
 		"_pragma=busy_timeout(5000)",
 	}
+	if !inMemory {
+		pragmas = append(pragmas, "_pragma=journal_mode(WAL)")
+	}
 
-	// Only add pragmas if they are not already present (simple check)
-	// But duplicate pragmas are usually fine or the user might override.
-	// Let's force them for now as per requirement.
-	
+	// Add pragmas if they are not already present in DSN.
+	// We append them for now; duplicate pragmas in modernc.org/sqlite DSN
+	// typically use the last specified value.
 	finalDSN := dsn + separator + strings.Join(pragmas, "&")
 
 	db, err := sql.Open("sqlite", finalDSN)
@@ -45,7 +41,8 @@ func OpenDB(dsn string) (*sql.DB, error) {
 		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
 
-	// Verify foreign keys are actually on
+	// Verify foreign keys are actually on.
+	// We rely on DSN settings for connection-pool consistency.
 	var enabled int
 	err = db.QueryRow("PRAGMA foreign_keys").Scan(&enabled)
 	if err != nil {
@@ -53,23 +50,8 @@ func OpenDB(dsn string) (*sql.DB, error) {
 		return nil, fmt.Errorf("failed to check foreign_keys pragma: %w", err)
 	}
 	if enabled != 1 {
-		// Try enabling explicitly if DSN didn't work (though it should)
-		_, err = db.Exec("PRAGMA foreign_keys = ON")
-		if err != nil {
-			_ = db.Close()
-			return nil, fmt.Errorf("failed to enable foreign_keys: %w", err)
-		}
-		
-		// Re-check
-		err = db.QueryRow("PRAGMA foreign_keys").Scan(&enabled)
-		if err != nil {
-			_ = db.Close()
-			return nil, fmt.Errorf("failed to re-check foreign_keys pragma: %w", err)
-		}
-		if enabled != 1 {
-			_ = db.Close()
-			return nil, fmt.Errorf("foreign_keys pragma could not be enabled")
-		}
+		_ = db.Close()
+		return nil, fmt.Errorf("foreign_keys pragma is not enabled via DSN")
 	}
 
 	return db, nil
