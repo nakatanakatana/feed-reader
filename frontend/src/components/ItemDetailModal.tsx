@@ -1,8 +1,9 @@
 import { eq, useLiveQuery } from "@tanstack/solid-db";
-import { useQuery, useQueryClient } from "@tanstack/solid-query";
-import { createEffect, For, type JSX, onCleanup, Show } from "solid-js";
+import { createMutation, useQuery, useQueryClient } from "@tanstack/solid-query";
+import { createEffect, createMemo, For, type JSX, onCleanup, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
+import { addItemBlockRules, listURLParsingRules } from "../lib/api/block-rules";
 import {
   getItem,
   type Item,
@@ -15,6 +16,7 @@ import {
   formatDate,
   normalizeCategories,
 } from "../lib/item-utils";
+import { URLParser } from "../lib/url-parser";
 import { useSwipe } from "../lib/use-swipe";
 import { MarkdownRenderer } from "./MarkdownRenderer";
 import { ActionButton } from "./ui/ActionButton";
@@ -150,6 +152,82 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
 
   const prioritizedItem = () => collectionItem() || item();
 
+  // URL Parsing and Blocking Logic
+  const rulesQuery = useQuery(() => ({
+    queryKey: ["url-rules"],
+    queryFn: listURLParsingRules,
+    staleTime: Infinity,
+  }));
+
+  const parser = createMemo(() => new URLParser(rulesQuery.data ?? []));
+
+  const extractedInfo = createMemo(() => {
+    const data = item();
+    if (!data?.url) return null;
+    return parser().extractUserInfo(data.url);
+  });
+
+  const blockMutation = createMutation(() => ({
+    mutationFn: addItemBlockRules,
+    onSuccess: () => {
+      // Success notification will be implemented in the next task
+    },
+  }));
+
+  const menuActions = createMemo(() => {
+    const info = extractedInfo();
+    const actions = [];
+
+    if (info) {
+      actions.push({
+        label: `Block Domain (${info.domain})`,
+        onClick: () => {
+          blockMutation.mutate({
+            rules: [
+              {
+                ruleType: "domain",
+                value: info.domain,
+                domain: info.domain,
+              },
+            ],
+          });
+        },
+      });
+
+      actions.push({
+        label: `Block User (@${info.domain})`,
+        onClick: () => {
+          blockMutation.mutate({
+            rules: [
+              {
+                ruleType: "user_domain",
+                value: info.user,
+                domain: info.domain,
+              },
+            ],
+          });
+        },
+      });
+
+      actions.push({
+        label: `Block User (${info.user})`,
+        onClick: () => {
+          blockMutation.mutate({
+            rules: [
+              {
+                ruleType: "user",
+                value: info.user,
+                domain: info.domain,
+              },
+            ],
+          });
+        },
+      });
+    }
+
+    return actions;
+  });
+
   const handleToggleRead = async () => {
     const currentItem = prioritizedItem();
     if (!currentItem || isEndOfList()) return;
@@ -284,7 +362,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             </Show>
           </h2>
           <div class={flex({ gap: "2", alignItems: "center" })}>
-            <KebabMenu actions={[]} />
+            <KebabMenu actions={menuActions()} />
             <ActionButton variant="ghost" onClick={props.onClose}>
               Close
             </ActionButton>
