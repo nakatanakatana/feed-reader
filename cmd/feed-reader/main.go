@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"sync"
 	"syscall"
 	"time"
@@ -54,7 +55,15 @@ func main() {
 		os.Exit(1)
 	}
 
-	db, err := sql.Open("sqlite", cfg.DBPath)
+	dsn := cfg.DBPath
+	if !strings.Contains(dsn, "?") {
+		dsn += "?"
+	} else {
+		dsn += "&"
+	}
+	dsn += "_pragma=foreign_keys(1)&_pragma=journal_mode(WAL)&_pragma=busy_timeout(5000)"
+
+	db, err := sql.Open("sqlite", dsn)
 	if err != nil {
 		logger.ErrorContext(ctx, "failed to open database", "error", err)
 		os.Exit(1)
