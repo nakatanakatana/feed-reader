@@ -13,7 +13,7 @@
 - [x] Task: Integrate the `KebabMenu` component into the `ItemDetailModal` header. (74f08e1)
 - [x] Task: Implement the "Block" actions within `ItemDetailModal`, utilizing the `URLParser` and the new mutation. (6b890f2)
 - [x] Task: Add a notification mechanism to provide success feedback after a rule is successfully added. (cc8aa9b)
-- [ ] Task: Write integration tests for `ItemDetailModal` to verify the "Block" menu appears and triggers the mutation correctly.
+- [x] Task: Write integration tests for `ItemDetailModal` to verify the "Block" menu appears and triggers the mutation correctly. (cc8aa9b)
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: UI & Mutation' (Protocol in workflow.md)
 
 ## Phase 3: Final Integration and Refinement
