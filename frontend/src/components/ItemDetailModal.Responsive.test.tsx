@@ -4,6 +4,7 @@ import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { queryClient, transport } from "../lib/query";
+import { ToastProvider } from "../lib/toast";
 import { TransportProvider } from "../lib/transport-context";
 import { ItemDetailModal } from "./ItemDetailModal";
 import "../styles.css";
@@ -44,7 +45,7 @@ describe("ItemDetailModal Responsive", () => {
   const Wrapper = (props: { children: JSX.Element }) => (
     <TransportProvider transport={transport}>
       <QueryClientProvider client={queryClient}>
-        {props.children}
+        <ToastProvider>{props.children}</ToastProvider>
       </QueryClientProvider>
     </TransportProvider>
   );

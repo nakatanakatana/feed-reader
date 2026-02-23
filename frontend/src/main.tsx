@@ -7,6 +7,7 @@ import { routeTree } from "./routeTree.gen";
 import "./styles.css";
 import { config } from "./config";
 import { queryClient, transport } from "./lib/query";
+import { ToastProvider } from "./lib/toast";
 import { TransportProvider } from "./lib/transport-context";
 import { initMocks } from "./mocks/init";
 
@@ -36,7 +37,9 @@ if (rootElement && !rootElement.innerHTML) {
       () => (
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
+            <ToastProvider>
+              <RouterProvider router={router} />
+            </ToastProvider>
           </QueryClientProvider>
         </TransportProvider>
       ),

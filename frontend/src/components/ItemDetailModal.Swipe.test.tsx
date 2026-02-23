@@ -7,6 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { GetItemResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
 import { queryClient, transport } from "../lib/query";
+import { ToastProvider } from "../lib/toast";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
 import { dispatchTouch, resetTouchIdentifier } from "../test-utils/touch";
@@ -48,7 +49,7 @@ describe("ItemDetailModal Swipe Integration", () => {
   const Wrapper = (props: { children: JSX.Element }) => (
     <TransportProvider transport={transport}>
       <QueryClientProvider client={queryClient}>
-        {props.children}
+        <ToastProvider>{props.children}</ToastProvider>
       </QueryClientProvider>
     </TransportProvider>
   );

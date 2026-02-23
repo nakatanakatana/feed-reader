@@ -9,6 +9,7 @@ import { GetItemResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
 import { worker } from "../mocks/browser";
 import { prefetchItems } from "./item-prefetch";
 import { queryClient, transport } from "./query";
+import { ToastProvider } from "./toast";
 import { TransportProvider } from "./transport-context";
 
 describe("Prefetch Verification", () => {
@@ -56,7 +57,9 @@ describe("Prefetch Verification", () => {
       () => (
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>
-            <ItemDetailModal itemId={itemId()} onClose={() => {}} />
+            <ToastProvider>
+              <ItemDetailModal itemId={itemId()} onClose={() => {}} />
+            </ToastProvider>
           </QueryClientProvider>
         </TransportProvider>
       ),

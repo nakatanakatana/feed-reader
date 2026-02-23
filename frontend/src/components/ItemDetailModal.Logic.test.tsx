@@ -6,6 +6,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { page, userEvent } from "vitest/browser";
 import { GetItemResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
 import { queryClient, transport } from "../lib/query";
+import { ToastProvider } from "../lib/toast";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
 import { ItemDetailModal } from "./ItemDetailModal";
@@ -49,14 +50,16 @@ describe("ItemDetailModal Navigation Logic", () => {
       () => (
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>
-            <ItemDetailModal
-              itemId="2"
-              onClose={() => {}}
-              prevItemId="1"
-              nextItemId="3"
-              onPrev={onPrev}
-              onNext={onNext}
-            />
+            <ToastProvider>
+              <ItemDetailModal
+                itemId="2"
+                onClose={() => {}}
+                prevItemId="1"
+                nextItemId="3"
+                onPrev={onPrev}
+                onNext={onNext}
+              />
+            </ToastProvider>
           </QueryClientProvider>
         </TransportProvider>
       ),
@@ -86,7 +89,9 @@ describe("ItemDetailModal Navigation Logic", () => {
       () => (
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>
-            <ItemDetailModal itemId="10" onClose={() => {}} />
+            <ToastProvider>
+              <ItemDetailModal itemId="10" onClose={() => {}} />
+            </ToastProvider>
           </QueryClientProvider>
         </TransportProvider>
       ),

@@ -7,6 +7,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { GetItemResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
 import { queryClient, transport } from "../lib/query";
+import { ToastProvider } from "../lib/toast";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
 import { ItemDetailModal } from "./ItemDetailModal";
@@ -38,7 +39,7 @@ describe("ItemDetailModal UI Updates", () => {
   const Wrapper = (props: { children: JSX.Element }) => (
     <TransportProvider transport={transport}>
       <QueryClientProvider client={queryClient}>
-        {props.children}
+        <ToastProvider>{props.children}</ToastProvider>
       </QueryClientProvider>
     </TransportProvider>
   );
@@ -90,6 +91,7 @@ describe("ItemDetailModal UI Updates", () => {
   it("renders comma-separated categories when JSON format is absent", async () => {
     setupMockData("2", {
       title: "Item 2",
+      url: "https://example.com/item2",
       categories: "Science, Space",
     });
 
@@ -111,6 +113,7 @@ describe("ItemDetailModal UI Updates", () => {
   it("falls back to CSV parsing when JSON is malformed", async () => {
     setupMockData("3", {
       title: "Item 3",
+      url: "https://example.com/item3",
       categories: "[Malformed, JSON",
     });
 

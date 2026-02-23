@@ -18,6 +18,7 @@ import {
 } from "../gen/item/v1/item_pb";
 import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
 import { queryClient, transport } from "../lib/query";
+import { ToastProvider } from "../lib/toast";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
 import { parseConnectMessage } from "../mocks/connect";
@@ -98,7 +99,9 @@ describe("ItemDetailRouteView Prefetching", () => {
       () => (
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
+            <ToastProvider>
+              <RouterProvider router={router} />
+            </ToastProvider>
           </QueryClientProvider>
         </TransportProvider>
       ),

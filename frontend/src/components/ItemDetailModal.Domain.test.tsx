@@ -7,6 +7,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { GetItemResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
 import { queryClient, transport } from "../lib/query";
+import { ToastProvider } from "../lib/toast";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
 import { ItemDetailModal } from "./ItemDetailModal";
@@ -38,7 +39,7 @@ describe("ItemDetailModal Domain Display", () => {
   const Wrapper = (props: { children: JSX.Element }) => (
     <TransportProvider transport={transport}>
       <QueryClientProvider client={queryClient}>
-        {props.children}
+        <ToastProvider>{props.children}</ToastProvider>
       </QueryClientProvider>
     </TransportProvider>
   );
@@ -59,7 +60,7 @@ describe("ItemDetailModal Domain Display", () => {
       document.body,
     );
 
-    // Verify the domain "www.example.com" is displayed
-    await expect.element(page.getByText("www.example.com")).toBeInTheDocument();
+    // Verify the domain "example.com" is displayed
+    await expect.element(page.getByText("example.com")).toBeInTheDocument();
   });
 });

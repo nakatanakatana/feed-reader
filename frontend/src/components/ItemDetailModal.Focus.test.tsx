@@ -8,6 +8,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { page, userEvent } from "vitest/browser";
 import { GetItemResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
 import { queryClient, transport } from "../lib/query";
+import { ToastProvider } from "../lib/toast";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
 import { parseConnectMessage } from "../mocks/connect";
@@ -45,7 +46,7 @@ describe("ItemDetailModal Focus", () => {
   const Wrapper = (props: { children: JSX.Element }) => (
     <TransportProvider transport={transport}>
       <QueryClientProvider client={queryClient}>
-        {props.children}
+        <ToastProvider>{props.children}</ToastProvider>
       </QueryClientProvider>
     </TransportProvider>
   );
@@ -123,6 +124,10 @@ describe("ItemDetailModal Focus", () => {
     await expect.element(titleLink).toHaveFocus();
 
     // Tab 2: Should go to Close Button
+    await userEvent.keyboard("{Tab}");
+    const kebabMenu = page.getByRole("button", { name: "More actions" });
+    await expect.element(kebabMenu).toHaveFocus();
+
     await userEvent.keyboard("{Tab}");
     const closeButton = page.getByRole("button", { name: "Close" });
     await expect.element(closeButton).toHaveFocus();

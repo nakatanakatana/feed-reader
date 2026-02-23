@@ -1,4 +1,3 @@
-import { createClient } from "@connectrpc/connect";
 import { createMutation, createQuery } from "@tanstack/solid-query";
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal, For, Show } from "solid-js";
@@ -7,14 +6,12 @@ import { flex, stack } from "../../styled-system/patterns";
 import { BulkAddBlockRulesModal } from "../components/BulkAddBlockRulesModal";
 import { ActionButton } from "../components/ui/ActionButton";
 import { PageLayout } from "../components/ui/PageLayout";
-import { ItemService } from "../gen/item/v1/item_pb";
-import { queryClient, transport } from "../lib/query";
+import { itemClient } from "../lib/api/client";
+import { queryClient } from "../lib/query";
 
 export const Route = createFileRoute("/block-rules")({
   component: BlockRulesComponent,
 });
-
-const itemClient = createClient(ItemService, transport);
 
 function BlockRulesComponent() {
   const [ruleType, setRuleType] = createSignal("user");

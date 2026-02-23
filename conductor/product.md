@@ -41,7 +41,8 @@ The primary target audience is individuals and organizations seeking control ove
   - **Multiple Criteria:** Block items by keyword, domain, or specific user/domain combinations.
   - **Pre-calculated Filtering:** Efficiently excludes blocked items from all retrieval APIs by pre-calculating block associations during rule creation and item ingestion.
   - **Rule Management:** Robust APIs for managing URL parsing patterns and item block criteria.
-    - **Bulk Registration:** Efficiently add multiple block rules at once via a dedicated interface. Supports pasting CSV-formatted text or uploading .csv files. Features a live preview table with validation status for each rule, allowing users to verify their input and identify errors before submission.
+  - **Quick Block Actions:** Integrated directly into the article detail view, allowing users to rapidly block domains or specific users without leaving their reading context.
+  - **Bulk Registration:** Efficiently add multiple block rules at once via a dedicated interface. Supports pasting CSV-formatted text or uploading .csv files. Features a live preview table with validation status for each rule, allowing users to verify their input and identify errors before submission.
 
 - **OPML Import:** High-performance bulk import of existing subscriptions using the standard OPML format. Features automatic deduplication and parallel metadata fetching. Optimized database operations ensure that even large imports (500+ feeds) complete efficiently. Synchronous processing provides immediate feedback on success and failure counts. Includes advanced tagging support and detailed error reporting for failed items.
 

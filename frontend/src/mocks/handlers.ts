@@ -14,12 +14,14 @@ import {
   UpdateFeedResponseSchema,
 } from "../gen/feed/v1/feed_pb";
 import {
+  AddItemBlockRulesResponseSchema,
   GetItemResponseSchema,
   type Item,
   ItemSchema,
   ItemService,
   ListItemSchema,
   ListItemsResponseSchema,
+  ListURLParsingRulesResponseSchema,
   UpdateItemStatusResponseSchema,
 } from "../gen/item/v1/item_pb";
 import {
@@ -405,6 +407,20 @@ export const handlers = [
         return create(GetItemResponseSchema, { item });
       }
       throw new Error("Item not found");
+    },
+  }),
+
+  mockConnectWeb(ItemService)({
+    method: "listURLParsingRules",
+    handler: () => {
+      return create(ListURLParsingRulesResponseSchema, { rules: [] });
+    },
+  }),
+
+  mockConnectWeb(ItemService)({
+    method: "addItemBlockRules",
+    handler: () => {
+      return create(AddItemBlockRulesResponseSchema, {});
     },
   }),
 ];
