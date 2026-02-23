@@ -19,6 +19,7 @@ import { useSwipe } from "../lib/use-swipe";
 import { MarkdownRenderer } from "./MarkdownRenderer";
 import { ActionButton } from "./ui/ActionButton";
 import { GlobeIcon, PublishedIcon, ReceivedIcon } from "./ui/Icons";
+import { KebabMenu } from "./ui/KebabMenu";
 import { Modal } from "./ui/Modal";
 
 interface ItemDetailModalProps {
@@ -282,9 +283,12 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
               </Show>
             </Show>
           </h2>
-          <ActionButton variant="ghost" onClick={props.onClose}>
-            Close
-          </ActionButton>
+          <div class={flex({ gap: "2", alignItems: "center" })}>
+            <KebabMenu actions={[]} />
+            <ActionButton variant="ghost" onClick={props.onClose}>
+              Close
+            </ActionButton>
+          </div>
         </div>
 
         <Show when={!isEndOfList() && item()}>
