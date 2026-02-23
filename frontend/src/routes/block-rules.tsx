@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
+import { BulkAddBlockRulesModal } from "../components/BulkAddBlockRulesModal";
 import { ActionButton } from "../components/ui/ActionButton";
 import { PageLayout } from "../components/ui/PageLayout";
 import { itemClient } from "../lib/api/client";
@@ -16,6 +17,7 @@ function BlockRulesComponent() {
   const [ruleType, setRuleType] = createSignal("user");
   const [value, setValue] = createSignal("");
   const [domain, setDomain] = createSignal("");
+  const [isBulkModalOpen, setIsBulkModalOpen] = createSignal(false);
 
   const rulesQuery = createQuery(() => ({
     queryKey: ["block-rules"],
@@ -39,6 +41,23 @@ function BlockRulesComponent() {
       queryClient.invalidateQueries({ queryKey: ["block-rules"] });
       setValue("");
       setDomain("");
+    },
+  }));
+
+  const bulkAddMutation = createMutation(() => ({
+    mutationFn: async (
+      rules: { ruleType: string; value: string; domain?: string }[],
+    ) => {
+      await itemClient.addItemBlockRules({
+        rules: rules.map((r) => ({
+          ruleType: r.ruleType,
+          value: r.value,
+          domain: r.domain,
+        })),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["block-rules"] });
     },
   }));
 
@@ -81,10 +100,29 @@ function BlockRulesComponent() {
       stroke-width="2"
       stroke-linecap="round"
       stroke-linejoin="round"
+      aria-hidden="true"
     >
-      <title>Add</title>
       <line x1="12" y1="5" x2="12" y2="19" />
       <line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
+  );
+
+  const UploadIcon = () => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <polyline points="17 8 12 3 7 8" />
+      <line x1="12" y1="3" x2="12" y2="15" />
     </svg>
   );
 
@@ -174,16 +212,35 @@ function BlockRulesComponent() {
                 })}
               />
             </div>
-            <ActionButton
-              type="submit"
-              variant="primary"
-              disabled={addMutation.isPending}
-              icon={<PlusIcon />}
-            >
-              {addMutation.isPending ? "Adding..." : "Add"}
-            </ActionButton>
+            <div class={flex({ gap: "2" })}>
+              <ActionButton
+                type="submit"
+                variant="primary"
+                disabled={addMutation.isPending}
+                icon={<PlusIcon />}
+              >
+                {addMutation.isPending ? "Adding..." : "Add"}
+              </ActionButton>
+              <ActionButton
+                type="button"
+                variant="secondary"
+                icon={<UploadIcon />}
+                onClick={() => setIsBulkModalOpen(true)}
+              >
+                Bulk Add
+              </ActionButton>
+            </div>
           </form>
         </div>
+
+        <BulkAddBlockRulesModal
+          isOpen={isBulkModalOpen()}
+          onClose={() => setIsBulkModalOpen(false)}
+          onRegister={async (rules) => {
+            await bulkAddMutation.mutateAsync(rules);
+          }}
+          isPending={bulkAddMutation.isPending}
+        />
 
         <div
           class={css({

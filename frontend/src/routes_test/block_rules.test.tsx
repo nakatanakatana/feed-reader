@@ -120,7 +120,7 @@ describe("Block Rules Page", () => {
 
     const typeSelect = page.getByLabelText("Type");
     const valueInput = page.getByLabelText("Value");
-    const addButton = page.getByRole("button", { name: "Add" });
+    const addButton = page.getByRole("button", { name: "Add", exact: true });
 
     await typeSelect.selectOptions("keyword");
     await valueInput.fill("new-block-keyword");
@@ -173,7 +173,7 @@ describe("Block Rules Page", () => {
     const typeSelect = page.getByLabelText("Type");
     const valueInput = page.getByLabelText("Value");
     const domainInput = page.getByLabelText("Domain (Optional)");
-    const addButton = page.getByRole("button", { name: "Add" });
+    const addButton = page.getByRole("button", { name: "Add", exact: true });
 
     await typeSelect.selectOptions("user_domain");
     await valueInput.fill("blocked-user");
