@@ -84,12 +84,16 @@ keyword,spam`;
     expect(result[0].error).toBe("Too many columns");
   });
 
-  it("identifies domain assigned to non-user_domain types", () => {
-    const csv = "domain,example.com,unexpected_domain";
+  it("handles domain assigned to non-user_domain types (optional but allowed by backend)", () => {
+    const csv = "domain,example.com,allowed_domain";
     const result = parseCSVBlockRules(csv);
     expect(result).toHaveLength(1);
-    expect(result[0].isValid).toBe(false);
-    expect(result[0].error).toBe("Domain not allowed for domain");
+    expect(result[0]).toEqual({
+      ruleType: "domain",
+      value: "example.com",
+      domain: "allowed_domain",
+      isValid: true,
+    });
   });
 
   it("treats header row as invalid rule entry", () => {

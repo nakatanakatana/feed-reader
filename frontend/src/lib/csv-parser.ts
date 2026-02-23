@@ -96,7 +96,7 @@ export function parseCSVBlockRules(csv: string): ParsedBlockRule[] {
       isValid: true,
     };
 
-    if (ruleType === "user_domain" && domain) {
+    if (domain) {
       result.domain = domain;
     }
 
@@ -113,9 +113,6 @@ export function parseCSVBlockRules(csv: string): ParsedBlockRule[] {
     } else if (ruleType === "user_domain" && !domain) {
       result.isValid = false;
       result.error = "Missing domain for user_domain";
-    } else if (ruleType !== "user_domain" && domain) {
-      result.isValid = false;
-      result.error = `Domain not allowed for ${ruleType}`;
     }
 
     results.push(result);
