@@ -168,7 +168,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   const rulesQuery = useQuery(() => ({
     queryKey: ["url-rules"],
     queryFn: listURLParsingRules,
-    staleTime: Infinity,
+    staleTime: ITEM_STALE_TIME,
   }));
 
   const parser = createMemo(() => new URLParser(rulesQuery.data ?? []));
@@ -176,7 +176,8 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   const extractedInfo = createMemo(() => {
     const data = item();
     if (!data?.url) return null;
-    return parser().extractUserInfo(data.url);
+    const p = parser();
+    return p ? p.extractUserInfo(data.url) : null;
   });
 
   const { show } = useToast();
@@ -379,7 +380,9 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             </Show>
           </h2>
           <div class={flex({ gap: "2", alignItems: "center" })}>
-            <KebabMenu actions={menuActions()} />
+            <Show when={menuActions().length > 0}>
+              <KebabMenu actions={menuActions()} />
+            </Show>
             <ActionButton variant="ghost" onClick={props.onClose}>
               Close
             </ActionButton>

@@ -164,7 +164,7 @@ export function KebabMenu(props: KebabMenuProps) {
             role="menu"
             class={css({
               position: "absolute",
-              zIndex: 1000,
+              zIndex: 2000,
               bg: "white",
               border: "1px solid",
               borderColor: "gray.200",

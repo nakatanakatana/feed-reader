@@ -87,7 +87,8 @@ describe("ItemDetailModal KebabMenu", () => {
   );
 
   it("renders the kebab menu in the header", async () => {
-    setupMockData("1");
+    // Use a URL that matches the mock rule to ensure the menu is visible
+    setupMockData("1", "https://user1.example.com/post");
 
     dispose = render(
       () => (
