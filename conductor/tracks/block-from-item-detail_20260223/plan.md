@@ -22,4 +22,4 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Final Verification' (Protocol in workflow.md)
 
 ## Phase: Review Fixes
-- [~] Task: Apply review suggestions (lint fixes, test wrappers, and snapshots)
+- [x] Task: Apply review suggestions (lint fixes, test wrappers, and snapshots) (34a80be)
