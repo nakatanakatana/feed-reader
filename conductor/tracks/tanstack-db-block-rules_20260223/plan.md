@@ -18,11 +18,11 @@
 ## Phase 2: UI Migration - Block Rules
 **Goal:** Update the Block Rules management page to use the new collection.
 
-- [ ] Task: Update Block Rules Route
+- [x] Task: Update Block Rules Route 32325d9
     - Modify `frontend/src/routes/block-rules.tsx`.
     - Replace `createQuery` for `block-rules` with usage of `itemBlockRules` collection.
     - Replace `createMutation` calls with helper functions from `block-db.ts`.
-- [ ] Task: Verify Block Rules Tests
+- [x] Task: Verify Block Rules Tests 32325d9
     - Run `frontend/src/routes_test/block_rules.test.tsx` and ensure all tests pass.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: UI Migration - Block Rules' (Protocol in workflow.md)
 
