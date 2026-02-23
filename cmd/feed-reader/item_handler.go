@@ -248,8 +248,10 @@ func (s *ItemServer) AddItemBlockRules(ctx context.Context, req *connect.Request
 		}
 
 		domain := ""
-		if r.Domain != nil {
+		if r.Domain != nil && *r.Domain != "" {
 			domain = *r.Domain
+		} else if r.RuleType == "domain" {
+			domain = r.Value
 		}
 
 		params[i] = store.CreateItemBlockRuleParams{

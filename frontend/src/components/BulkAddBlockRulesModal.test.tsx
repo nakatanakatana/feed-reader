@@ -115,6 +115,32 @@ invalid,type`);
     expect(onClose).toHaveBeenCalled();
   });
 
+  it("maps domain correctly for domain type rules", async () => {
+    dispose = render(
+      () => (
+        <BulkAddBlockRulesModal
+          isOpen={true}
+          onClose={onClose}
+          onRegister={onRegister}
+          isPending={false}
+        />
+      ),
+      document.body,
+    );
+
+    const textarea = page.getByPlaceholder(/user,john_doe/);
+    await textarea.fill("domain,example.com");
+
+    const registerButton = page.getByRole("button", {
+      name: "Register (1 rule)",
+    });
+    await registerButton.click();
+
+    expect(onRegister).toHaveBeenCalledWith([
+      { ruleType: "domain", value: "example.com", domain: "example.com" },
+    ]);
+  });
+
   it("shows error message when onRegister fails", async () => {
     onRegister.mockRejectedValue(new Error("Network error"));
 

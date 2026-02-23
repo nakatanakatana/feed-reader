@@ -98,6 +98,8 @@ export function parseCSVBlockRules(csv: string): ParsedBlockRule[] {
 
     if (domain) {
       result.domain = domain;
+    } else if (ruleType === "domain") {
+      result.domain = value;
     }
 
     // Validation
