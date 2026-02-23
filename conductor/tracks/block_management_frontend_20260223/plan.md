@@ -9,11 +9,11 @@
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Routing & Navigation' (Protocol in workflow.md)
 
 ## Phase 2: URL Rules Management Page
-- [ ] Task: Implement `AddURLParsingRule` form and rule list in `frontend/src/routes/url-rules.tsx`.
-    - [ ] Write failing tests for rule fetching and adding using MSW and Vitest.
-    - [ ] Implement UI for the input form (domain, rule_type, pattern).
-    - [ ] Implement UI for the rule list cards.
-    - [ ] Connect with `ItemService.AddURLParsingRule`, `ListURLParsingRules`, and `DeleteURLParsingRule` using TanStack Query.
+- [x] Task: Implement `AddURLParsingRule` form and rule list in `frontend/src/routes/url-rules.tsx`. f98aff5, d184603
+    - [x] Write failing tests for rule fetching and adding using MSW and Vitest.
+    - [x] Implement UI for the input form (domain, rule_type, pattern).
+    - [x] Implement UI for the rule list cards.
+    - [x] Connect with `ItemService.AddURLParsingRule`, `ListURLParsingRules`, and `DeleteURLParsingRule` using TanStack Query.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: URL Rules Management Page' (Protocol in workflow.md)
 
 ## Phase 3: Block Rules Management Page
