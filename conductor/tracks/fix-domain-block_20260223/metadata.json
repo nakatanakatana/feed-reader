@@ -1,8 +1,0 @@
-{
-  "track_id": "fix-domain-block_20260223",
-  "type": "bug",
-  "status": "new",
-  "created_at": "2026-02-23T12:00:00Z",
-  "updated_at": "2026-02-23T12:00:00Z",
-  "description": "Block rulesのtype=domainで一括登録したときにブロックが正常にうごいてなさそうなので調査をしてください 見たところ一括で登録したときはtype=domain,value=<domain>となっており、domainに値が入らないようなのでそこあたりがあやしそうです"
-}
