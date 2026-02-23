@@ -1,9 +1,9 @@
 import {
-  Accessor,
+  type Accessor,
   createContext,
   createSignal,
   For,
-  JSX,
+  type JSX,
   useContext,
 } from "solid-js";
 import { Portal } from "solid-js/web";

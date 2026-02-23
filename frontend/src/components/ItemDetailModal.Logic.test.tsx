@@ -50,17 +50,17 @@ describe("ItemDetailModal Navigation Logic", () => {
       () => (
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>
-        <ToastProvider>
-            <ItemDetailModal
-              itemId="2"
-              onClose={() => {}}
-              prevItemId="1"
-              nextItemId="3"
-              onPrev={onPrev}
-              onNext={onNext}
-            />
-          </ToastProvider>
-      </QueryClientProvider>
+            <ToastProvider>
+              <ItemDetailModal
+                itemId="2"
+                onClose={() => {}}
+                prevItemId="1"
+                nextItemId="3"
+                onPrev={onPrev}
+                onNext={onNext}
+              />
+            </ToastProvider>
+          </QueryClientProvider>
         </TransportProvider>
       ),
       document.body,
@@ -89,10 +89,10 @@ describe("ItemDetailModal Navigation Logic", () => {
       () => (
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>
-        <ToastProvider>
-            <ItemDetailModal itemId="10" onClose={() => {}} />
-          </ToastProvider>
-      </QueryClientProvider>
+            <ToastProvider>
+              <ItemDetailModal itemId="10" onClose={() => {}} />
+            </ToastProvider>
+          </QueryClientProvider>
         </TransportProvider>
       ),
       document.body,

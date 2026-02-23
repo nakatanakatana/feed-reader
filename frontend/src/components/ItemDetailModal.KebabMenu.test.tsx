@@ -27,7 +27,10 @@ describe("ItemDetailModal KebabMenu", () => {
     vi.clearAllMocks();
   });
 
-  const setupMockData = (itemId: string, url = "https://example.com/article") => {
+  const setupMockData = (
+    itemId: string,
+    url = "https://example.com/article",
+  ) => {
     worker.use(
       http.all("*/item.v1.ItemService/GetItem", () => {
         const msg = create(GetItemResponseSchema, {
@@ -50,7 +53,9 @@ describe("ItemDetailModal KebabMenu", () => {
             }),
           ],
         });
-        return HttpResponse.json(toJson(ListURLParsingRulesResponseSchema, msg));
+        return HttpResponse.json(
+          toJson(ListURLParsingRulesResponseSchema, msg),
+        );
       }),
     );
   };
@@ -58,12 +63,17 @@ describe("ItemDetailModal KebabMenu", () => {
   const setupMutationMock = () => {
     const addItemBlockRulesMock = vi.fn();
     worker.use(
-      http.all("*/item.v1.ItemService/AddItemBlockRules", async ({ request }) => {
-        const body = await request.json();
-        addItemBlockRulesMock(body);
-        const msg = create(AddItemBlockRulesResponseSchema, {});
-        return HttpResponse.json(toJson(AddItemBlockRulesResponseSchema, msg));
-      }),
+      http.all(
+        "*/item.v1.ItemService/AddItemBlockRules",
+        async ({ request }) => {
+          const body = await request.json();
+          addItemBlockRulesMock(body);
+          const msg = create(AddItemBlockRulesResponseSchema, {});
+          return HttpResponse.json(
+            toJson(AddItemBlockRulesResponseSchema, msg),
+          );
+        },
+      ),
     );
     return addItemBlockRulesMock;
   };
@@ -71,9 +81,7 @@ describe("ItemDetailModal KebabMenu", () => {
   const Wrapper = (props: { children: JSX.Element }) => (
     <TransportProvider transport={transport}>
       <QueryClientProvider client={queryClient}>
-        <ToastProvider>
-          {props.children}
-        </ToastProvider>
+        <ToastProvider>{props.children}</ToastProvider>
       </QueryClientProvider>
     </TransportProvider>
   );
@@ -117,9 +125,15 @@ describe("ItemDetailModal KebabMenu", () => {
     await kebabMenu.click();
 
     // Expect options to be present
-    await expect.element(page.getByText("Block Domain (example.com)")).toBeInTheDocument();
-    await expect.element(page.getByText("Block User (@example.com)")).toBeInTheDocument();
-    await expect.element(page.getByText("Block User (user1)")).toBeInTheDocument();
+    await expect
+      .element(page.getByText("Block Domain (example.com)"))
+      .toBeInTheDocument();
+    await expect
+      .element(page.getByText("Block User (@example.com)"))
+      .toBeInTheDocument();
+    await expect
+      .element(page.getByText("Block User (user1)"))
+      .toBeInTheDocument();
   });
 
   it("calls AddItemBlockRules when an option is selected", async () => {
@@ -159,6 +173,8 @@ describe("ItemDetailModal KebabMenu", () => {
     });
 
     // Verify success toast
-    await expect.element(page.getByText("Block rule added successfully")).toBeInTheDocument();
+    await expect
+      .element(page.getByText("Block rule added successfully"))
+      .toBeInTheDocument();
   });
 });

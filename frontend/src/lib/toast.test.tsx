@@ -1,7 +1,6 @@
 import { render } from "solid-js/web";
-import { describe, expect, it, vi } from "vitest";
-import { createSignal, useContext } from "solid-js";
-import { ToastProvider, useToast, ToastContext } from "./toast";
+import { describe, expect, it } from "vitest";
+import { ToastProvider, useToast } from "./toast";
 
 describe("Toast Context", () => {
   it("provides show method", () => {
@@ -11,11 +10,14 @@ describe("Toast Context", () => {
       return <div>Test</div>;
     };
 
-    render(() => (
-      <ToastProvider>
-        <TestComponent />
-      </ToastProvider>
-    ), document.body);
+    render(
+      () => (
+        <ToastProvider>
+          <TestComponent />
+        </ToastProvider>
+      ),
+      document.body,
+    );
 
     expect(capturedContext).toBeDefined();
     expect(typeof capturedContext.show).toBe("function");

@@ -33,10 +33,10 @@ describe("Item Detail Crash Reproduction", () => {
       () => (
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>
-        <ToastProvider>
-            <RouterProvider router={router} />
-          </ToastProvider>
-      </QueryClientProvider>
+            <ToastProvider>
+              <RouterProvider router={router} />
+            </ToastProvider>
+          </QueryClientProvider>
         </TransportProvider>
       ),
       document.body,

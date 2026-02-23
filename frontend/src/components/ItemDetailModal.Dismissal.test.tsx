@@ -42,10 +42,10 @@ describe("ItemDetailModal Dismissal", () => {
       () => (
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>
-        <ToastProvider>
-            <ItemDetailModal itemId="1" onClose={onClose} />
-          </ToastProvider>
-      </QueryClientProvider>
+            <ToastProvider>
+              <ItemDetailModal itemId="1" onClose={onClose} />
+            </ToastProvider>
+          </QueryClientProvider>
         </TransportProvider>
       ),
       document.body,
@@ -63,10 +63,10 @@ describe("ItemDetailModal Dismissal", () => {
       () => (
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>
-        <ToastProvider>
-            <ItemDetailModal itemId="1" onClose={onClose} />
-          </ToastProvider>
-      </QueryClientProvider>
+            <ToastProvider>
+              <ItemDetailModal itemId="1" onClose={onClose} />
+            </ToastProvider>
+          </QueryClientProvider>
         </TransportProvider>
       ),
       document.body,

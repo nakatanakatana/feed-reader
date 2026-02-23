@@ -99,10 +99,10 @@ describe("Item History Navigation", () => {
       () => (
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>
-        <ToastProvider>
-            <RouterProvider router={router} />
-          </ToastProvider>
-      </QueryClientProvider>
+            <ToastProvider>
+              <RouterProvider router={router} />
+            </ToastProvider>
+          </QueryClientProvider>
         </TransportProvider>
       ),
       document.body,
@@ -149,10 +149,10 @@ describe("Item History Navigation", () => {
       () => (
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>
-        <ToastProvider>
-            <RouterProvider router={router} />
-          </ToastProvider>
-      </QueryClientProvider>
+            <ToastProvider>
+              <RouterProvider router={router} />
+            </ToastProvider>
+          </QueryClientProvider>
         </TransportProvider>
       ),
       document.body,
@@ -207,10 +207,10 @@ describe("Item History Navigation", () => {
       () => (
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>
-        <ToastProvider>
-            <RouterProvider router={router} />
-          </ToastProvider>
-      </QueryClientProvider>
+            <ToastProvider>
+              <RouterProvider router={router} />
+            </ToastProvider>
+          </QueryClientProvider>
         </TransportProvider>
       ),
       document.body,

@@ -43,9 +43,7 @@ describe("ItemDetailModal Color Mode Support", () => {
   const Wrapper = (props: { children: JSX.Element }) => (
     <TransportProvider transport={transport}>
       <QueryClientProvider client={queryClient}>
-        <ToastProvider>
-        {props.children}
-      </ToastProvider>
+        <ToastProvider>{props.children}</ToastProvider>
       </QueryClientProvider>
     </TransportProvider>
   );

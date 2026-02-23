@@ -17,7 +17,7 @@ export class URLParser {
         if (rule.ruleType === "subdomain") {
           // Expected pattern: <user>.<rule.pattern>
           // Example: rule.pattern = "example.com", url = "https://user1.example.com/post"
-          if (domainPart.endsWith("." + rule.pattern)) {
+          if (domainPart.endsWith(`.${rule.pattern}`)) {
             const user = domainPart.slice(0, -(rule.pattern.length + 1));
             if (user !== "" && !user.includes(".")) {
               return {
@@ -30,7 +30,7 @@ export class URLParser {
           // Expected pattern: <rule.pattern>/<user>
           // Example: rule.pattern = "domain.com/users", url = "https://domain.com/users/user1/post"
           const fullPath = url.hostname + url.pathname;
-          if (fullPath.startsWith(rule.pattern + "/")) {
+          if (fullPath.startsWith(`${rule.pattern}/`)) {
             const remaining = fullPath.slice(rule.pattern.length + 1);
             const user = remaining.split("/")[0];
             if (user !== "") {
@@ -44,7 +44,7 @@ export class URLParser {
           }
         }
       }
-    } catch (e) {
+    } catch (_e) {
       return null;
     }
     return null;

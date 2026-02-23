@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { listURLParsingRules, addItemBlockRules } from "./block-rules";
-import { itemClient } from "./client";
-import { AddItemBlockRulesRequestSchema } from "../../gen/item/v1/item_pb";
 import { create } from "@bufbuild/protobuf";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { AddItemBlockRulesRequestSchema } from "../../gen/item/v1/item_pb";
+import { addItemBlockRules, listURLParsingRules } from "./block-rules";
+import { itemClient } from "./client";
 
 // Mock the client
 vi.mock("./client", () => ({
