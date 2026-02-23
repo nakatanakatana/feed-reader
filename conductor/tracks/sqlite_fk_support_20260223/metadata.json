@@ -1,0 +1,8 @@
+{
+  "track_id": "sqlite_fk_support_20260223",
+  "type": "bug",
+  "status": "new",
+  "created_at": "2026-02-23T00:00:00Z",
+  "updated_at": "2026-02-23T00:00:00Z",
+  "description": "SQLiteのforeginKeyが有効になっておらず、delete cascadeなどが動いておらず想定通りの状態になっていないようなので、設定方法を調査して対応してください"
+}
