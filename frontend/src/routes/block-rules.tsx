@@ -5,6 +5,7 @@ import { createMemo, createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { BlockRulesFilterBar } from "../components/BlockRulesFilterBar";
+import { BlockRulesTable } from "../components/BlockRulesTable";
 import { BulkAddBlockRulesModal } from "../components/BulkAddBlockRulesModal";
 import { ActionButton } from "../components/ui/ActionButton";
 import { PageLayout } from "../components/ui/PageLayout";
@@ -260,62 +261,11 @@ function BlockRulesComponent() {
           <Show when={rulesQuery.isLoading}>
             <p>Loading rules...</p>
           </Show>
-          <ul class={stack({ gap: "3" })}>
-            <For each={visibleRules()}>
-              {(rule) => (
-                <li
-                  class={flex({
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    p: "3",
-                    border: "1px solid",
-                    borderColor: "gray.100",
-                    rounded: "md",
-                  })}
-                >
-                  <div class={stack({ gap: "1" })}>
-                    <div class={flex({ gap: "2", alignItems: "center" })}>
-                      <span
-                        class={css({
-                          fontSize: "xs",
-                          bg: "gray.100",
-                          px: "2",
-                          py: "0.5",
-                          rounded: "full",
-                        })}
-                      >
-                        {rule.ruleType}
-                      </span>
-                      <span class={css({ fontWeight: "bold" })}>
-                        {rule.value}
-                      </span>
-                    </div>
-                    <Show when={rule.domain}>
-                      <code
-                        class={css({
-                          fontSize: "sm",
-                          color: "gray.600",
-                          bg: "gray.50",
-                          px: "1",
-                          rounded: "sm",
-                        })}
-                      >
-                        @{rule.domain}
-                      </code>
-                    </Show>
-                  </div>
-                  <ActionButton
-                    variant="danger"
-                    size="sm"
-                    onClick={() => deleteMutation.mutate(rule.id)}
-                    disabled={deleteMutation.isPending}
-                  >
-                    Delete
-                  </ActionButton>
-                </li>
-              )}
-            </For>
-          </ul>
+          <BlockRulesTable
+            rules={visibleRules()}
+            onDelete={(id) => deleteMutation.mutate(id)}
+            isPending={deleteMutation.isPending}
+          />
         </div>
       </div>
     </PageLayout>
