@@ -67,7 +67,9 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
     } catch (err) {
       console.error("Bulk registration failed", err);
       setError(
-        err instanceof Error ? err.message : "Bulk registration failed. Please try again.",
+        err instanceof Error
+          ? err.message
+          : "Bulk registration failed. Please try again.",
       );
     }
   };

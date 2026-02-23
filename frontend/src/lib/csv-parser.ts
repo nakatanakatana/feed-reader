@@ -8,7 +8,12 @@ export interface ParsedBlockRule {
   error?: string;
 }
 
-const VALID_TYPES: BlockRuleType[] = ["user", "domain", "user_domain", "keyword"];
+const VALID_TYPES: BlockRuleType[] = [
+  "user",
+  "domain",
+  "user_domain",
+  "keyword",
+];
 
 export function parseCSVBlockRules(csv: string): ParsedBlockRule[] {
   const lines = csv.split("\n");
