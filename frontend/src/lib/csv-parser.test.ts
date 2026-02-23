@@ -17,6 +17,7 @@ keyword,spam`;
     expect(result[1]).toEqual({
       ruleType: "domain",
       value: "example.com",
+      domain: "example.com",
       isValid: true,
     });
     expect(result[2]).toEqual({

@@ -8,11 +8,11 @@
 - [x] Task: Conductor - User Manual Verification 'Analysis & Reproduction' (Protocol in workflow.md) ed1ef71
 
 ## Phase 2: Implementation & Fix
-- [ ] Task: Fix the backend bulk registration handler to ensure the `domain` column is correctly populated for `domain` type rules.
-- [ ] Task: Fix the frontend bulk registration logic to correctly map the `domain` field when `type` is `domain`.
-- [ ] Task: Verify that both frontend and backend tests now pass (Green Phase).
-- [ ] Task: Ensure code coverage for the fix is >80%.
-- [ ] Task: Conductor - User Manual Verification 'Implementation & Fix' (Protocol in workflow.md)
+- [~] Task: Fix the backend bulk registration handler to ensure the `domain` column is correctly populated for `domain` type rules.
+- [~] Task: Fix the frontend bulk registration logic to correctly map the `domain` field when `type` is `domain`.
+- [~] Task: Verify that both frontend and backend tests now pass (Green Phase).
+- [~] Task: Ensure code coverage for the fix is >80%.
+- [~] Task: Conductor - User Manual Verification 'Implementation & Fix' (Protocol in workflow.md)
 
 ## Phase 3: Final Verification & Cleanup
 - [ ] Task: Perform manual verification by registering domain rules via the UI (CSV upload and manual text).
