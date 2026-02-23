@@ -26,7 +26,7 @@
     - Run `frontend/src/routes_test/block_rules.test.tsx` and ensure all tests pass.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: UI Migration - Block Rules' (Protocol in workflow.md)
 
-## Phase 3: UI Migration - URL Rules
+## Phase 3: UI Migration - URL Rules [checkpoint: 3e4f03d]
 **Goal:** Update the URL Parsing Rules management page to use the new collection.
 
 - [x] Task: Update URL Rules Route 58f370e
