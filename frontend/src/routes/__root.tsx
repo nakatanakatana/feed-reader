@@ -34,6 +34,12 @@ function RootComponent() {
     position: "sticky",
     top: 0,
     zIndex: 10,
+    overflowX: "auto",
+    whiteSpace: "nowrap",
+    scrollbarWidth: "none",
+    "&::-webkit-scrollbar": {
+      display: "none",
+    },
   });
 
   const linkStyle = css({

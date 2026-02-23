@@ -25,6 +25,6 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Block Rules Management Page' (Protocol in workflow.md) 682d26e
 
 ## Phase 4: Final Verification & Polish
-- [ ] Task: Ensure responsive design and mobile-friendliness.
-- [ ] Task: Verify that coverage meets the >80% requirement.
+- [~] Task: Ensure responsive design and mobile-friendliness.
+- [~] Task: Verify that coverage meets the >80% requirement.
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: Final Verification & Polish' (Protocol in workflow.md)
