@@ -17,11 +17,11 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: URL Rules Management Page' (Protocol in workflow.md) 1672321
 
 ## Phase 3: Block Rules Management Page
-- [ ] Task: Implement `ItemBlockRule` form and rule list in `frontend/src/routes/block-rules.tsx`.
-    - [ ] Write failing tests for rule fetching and adding using MSW and Vitest.
-    - [ ] Implement UI for the input form (rule_type, value, domain).
-    - [ ] Implement UI for the rule list cards.
-    - [ ] Connect with `ItemService.AddItemBlockRules`, `ListItemBlockRules`, and `DeleteItemBlockRule` using TanStack Query.
+- [x] Task: Implement `ItemBlockRule` form and rule list in `frontend/src/routes/block-rules.tsx`. 682d26e
+    - [x] Write failing tests for rule fetching and adding using MSW and Vitest.
+    - [x] Implement UI for the input form (rule_type, value, domain).
+    - [x] Implement UI for the rule list cards.
+    - [x] Connect with `ItemService.AddItemBlockRules`, `ListItemBlockRules`, and `DeleteItemBlockRule` using TanStack Query.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Block Rules Management Page' (Protocol in workflow.md)
 
 ## Phase 4: Final Verification & Polish
