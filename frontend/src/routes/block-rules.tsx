@@ -4,6 +4,7 @@ import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
+import { BulkAddBlockRulesModal } from "../components/BulkAddBlockRulesModal";
 import { ActionButton } from "../components/ui/ActionButton";
 import { PageLayout } from "../components/ui/PageLayout";
 import { ItemService } from "../gen/item/v1/item_pb";
@@ -19,6 +20,7 @@ function BlockRulesComponent() {
   const [ruleType, setRuleType] = createSignal("user");
   const [value, setValue] = createSignal("");
   const [domain, setDomain] = createSignal("");
+  const [isBulkModalOpen, setIsBulkModalOpen] = createSignal(false);
 
   const rulesQuery = createQuery(() => ({
     queryKey: ["block-rules"],
@@ -42,6 +44,24 @@ function BlockRulesComponent() {
       queryClient.invalidateQueries({ queryKey: ["block-rules"] });
       setValue("");
       setDomain("");
+    },
+  }));
+
+  const bulkAddMutation = createMutation(() => ({
+    mutationFn: async (
+      rules: { rule_type: string; value: string; domain?: string }[],
+    ) => {
+      await itemClient.addItemBlockRules({
+        rules: rules.map((r) => ({
+          ruleType: r.rule_type,
+          value: r.value,
+          domain: r.domain,
+        })),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["block-rules"] });
+      setIsBulkModalOpen(false);
     },
   }));
 
@@ -209,15 +229,22 @@ function BlockRulesComponent() {
                 type="button"
                 variant="secondary"
                 icon={<UploadIcon />}
-                onClick={() => {
-                  /* TODO: Open modal */
-                }}
+                onClick={() => setIsBulkModalOpen(true)}
               >
                 Bulk Add
               </ActionButton>
             </div>
           </form>
         </div>
+
+        <BulkAddBlockRulesModal
+          isOpen={isBulkModalOpen()}
+          onClose={() => setIsBulkModalOpen(false)}
+          onRegister={async (rules) => {
+            await bulkAddMutation.mutateAsync(rules);
+          }}
+          isPending={bulkAddMutation.isPending}
+        />
 
         <div
           class={css({

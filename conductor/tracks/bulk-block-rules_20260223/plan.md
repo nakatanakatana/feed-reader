@@ -10,10 +10,10 @@
 - [x] Task: Implement the Modal component with text area and file upload inputs. aa9ea2d
 - [x] Task: Write integration tests for the input and parsing workflow in the UI. aa9ea2d
 - [x] Task: Implement the interactive parsing logic and preview table display in the modal. aa9ea2d
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: UI Foundation' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Phase 2: UI Foundation' (Protocol in workflow.md)
 
 ## Phase 3: Backend Integration & Polish
-- [ ] Task: Implement the submission logic using the existing `AddItemBlockRules` RPC.
+- [~] Task: Implement the submission logic using the existing `AddItemBlockRules` RPC.
 - [ ] Task: Add feedback UI (success summary, skipped lines report) and automatic list refresh.
 - [ ] Task: Final visual adjustments and mobile responsiveness check.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Integration & Polish' (Protocol in workflow.md)
