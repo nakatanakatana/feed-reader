@@ -23,16 +23,20 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
   const [parsedRules, setParsedRules] = createSignal<ParsedBlockRule[]>([]);
   const [error, setError] = createSignal<string | null>(null);
 
-  const handleTextChange = (e: Event) => {
-    const text = (e.target as HTMLTextAreaElement).value;
+  const handleTextChange = (
+    e: InputEvent & { currentTarget: HTMLTextAreaElement; target: Element },
+  ) => {
+    const text = e.currentTarget.value;
     setCsvText(text);
     setParsedRules(parseCSVBlockRules(text));
     setRegistrationResult(null);
     setError(null);
   };
 
-  const handleFileChange = async (e: Event) => {
-    const input = e.target as HTMLInputElement;
+  const handleFileChange = async (
+    e: Event & { currentTarget: HTMLInputElement; target: Element },
+  ) => {
+    const input = e.currentTarget;
     const file = input.files?.[0];
     if (!file) return;
 
@@ -86,6 +90,8 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
     if (props.isPending) return;
     setRegistrationResult(null);
     setError(null);
+    setCsvText("");
+    setParsedRules([]);
     props.onClose();
   };
 

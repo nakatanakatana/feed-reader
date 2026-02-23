@@ -76,6 +76,14 @@ keyword,spam`;
     expect(result[0].error).toBe("Missing domain for user_domain");
   });
 
+  it("identifies rows with too many columns", () => {
+    const csv = "user,john_doe,domain,extra";
+    const result = parseCSVBlockRules(csv);
+    expect(result).toHaveLength(1);
+    expect(result[0].isValid).toBe(false);
+    expect(result[0].error).toBe("Too many columns");
+  });
+
   it("treats header row as invalid rule entry", () => {
     const csv = `rule_type,value,domain
 user,john_doe`;

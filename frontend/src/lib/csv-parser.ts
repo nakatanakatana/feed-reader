@@ -88,7 +88,7 @@ export function parseCSVBlockRules(csv: string): ParsedBlockRule[] {
       continue;
     }
 
-    const [ruleType, value, domain] = parts;
+    const [ruleType, value, domain, ...extra] = parts;
 
     const result: ParsedBlockRule = {
       ruleType: ruleType || "",
@@ -101,7 +101,10 @@ export function parseCSVBlockRules(csv: string): ParsedBlockRule[] {
     }
 
     // Validation
-    if (!VALID_TYPES.includes(ruleType as BlockRuleType)) {
+    if (extra.length > 0 && extra.some((p) => p !== "")) {
+      result.isValid = false;
+      result.error = "Too many columns";
+    } else if (!VALID_TYPES.includes(ruleType as BlockRuleType)) {
       result.isValid = false;
       result.error = "Invalid rule type";
     } else if (!value) {
