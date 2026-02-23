@@ -35,7 +35,6 @@ describe("URL Rules Page", () => {
     if (dispose) dispose();
     document.body.innerHTML = "";
     vi.clearAllMocks();
-    queryClient.clear();
   });
 
   it("should fetch and display URL parsing rules", async () => {

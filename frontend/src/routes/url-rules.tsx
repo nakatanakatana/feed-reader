@@ -1,12 +1,16 @@
-import { createMutation, createQuery } from "@tanstack/solid-query";
+import { useLiveQuery } from "@tanstack/solid-db";
+import { createMutation } from "@tanstack/solid-query";
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { ActionButton } from "../components/ui/ActionButton";
 import { PageLayout } from "../components/ui/PageLayout";
-import { itemClient } from "../lib/api/client";
-import { queryClient } from "../lib/query";
+import {
+  urlParsingRuleDelete,
+  urlParsingRuleInsert,
+  urlParsingRules,
+} from "../lib/block-db";
 
 export const Route = createFileRoute("/url-rules")({
   component: URLRulesComponent,
@@ -17,13 +21,9 @@ function URLRulesComponent() {
   const [ruleType, setRuleType] = createSignal("subdomain");
   const [pattern, setPattern] = createSignal("");
 
-  const rulesQuery = createQuery(() => ({
-    queryKey: ["url-rules"],
-    queryFn: async () => {
-      const resp = await itemClient.listURLParsingRules({});
-      return resp.rules;
-    },
-  }));
+  const rulesQuery = useLiveQuery((q) =>
+    q.from({ rule: urlParsingRules }).select(({ rule }) => ({ ...rule })),
+  );
 
   const addMutation = createMutation(() => ({
     mutationFn: async (newRule: {
@@ -31,11 +31,13 @@ function URLRulesComponent() {
       ruleType: string;
       pattern: string;
     }) => {
-      const resp = await itemClient.addURLParsingRule(newRule);
-      return resp.rule;
+      await urlParsingRuleInsert(
+        newRule.domain,
+        newRule.ruleType,
+        newRule.pattern,
+      );
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["url-rules"] });
       setDomain("");
       setPattern("");
     },
@@ -43,10 +45,7 @@ function URLRulesComponent() {
 
   const deleteMutation = createMutation(() => ({
     mutationFn: async (id: string) => {
-      await itemClient.deleteURLParsingRule({ id });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["url-rules"] });
+      await urlParsingRuleDelete(id);
     },
   }));
 
@@ -190,7 +189,7 @@ function URLRulesComponent() {
             <p>Loading rules...</p>
           </Show>
           <ul class={stack({ gap: "3" })}>
-            <For each={rulesQuery.data}>
+            <For each={rulesQuery()}>
               {(rule) => (
                 <li
                   class={flex({
