@@ -40,10 +40,10 @@
 ## Phase 4: UI Migration - Item Detail Modal
 **Goal:** Update the Item Detail Modal to use the new collections for blocking actions.
 
-- [ ] Task: Update Item Detail Modal
+- [x] Task: Update Item Detail Modal 78517a9
     - Modify `frontend/src/components/ItemDetailModal.tsx`.
     - Replace direct `TanStack Query` usage for block rules with helpers from `block-db.ts`.
-- [ ] Task: Verify Item Detail Modal Tests
+- [x] Task: Verify Item Detail Modal Tests 78517a9
     - Run related tests (e.g., `frontend/src/components/ItemDetailModal.KebabMenu.test.tsx`) and ensure they pass.
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: UI Migration - Item Detail Modal' (Protocol in workflow.md)
 
