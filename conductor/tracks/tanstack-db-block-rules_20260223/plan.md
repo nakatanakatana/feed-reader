@@ -47,7 +47,7 @@
     - Run related tests (e.g., `frontend/src/components/ItemDetailModal.KebabMenu.test.tsx`) and ensure they pass.
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: UI Migration - Item Detail Modal' (Protocol in workflow.md)
 
-## Phase 5: Final Cleanup
+## Phase 5: Final Cleanup [checkpoint: 77b4cdc]
 **Goal:** Remove redundant code and ensure system stability.
 
 - [x] Task: Clean up lib/api/block-rules.ts 21b9afa
