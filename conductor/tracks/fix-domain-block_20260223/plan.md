@@ -15,6 +15,6 @@
 - [x] Task: Conductor - User Manual Verification 'Implementation & Fix' (Protocol in workflow.md) 2573d33
 
 ## Phase 3: Final Verification & Cleanup
-- [ ] Task: Perform manual verification by registering domain rules via the UI (CSV upload and manual text).
-- [ ] Task: Verify that existing keyword and user block rules are unaffected.
-- [ ] Task: Conductor - User Manual Verification 'Final Verification & Cleanup' (Protocol in workflow.md)
+- [~] Task: Perform manual verification by registering domain rules via the UI (CSV upload and manual text).
+- [~] Task: Verify that existing keyword and user block rules are unaffected.
+- [~] Task: Conductor - User Manual Verification 'Final Verification & Cleanup' (Protocol in workflow.md)
