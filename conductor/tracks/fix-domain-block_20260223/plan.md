@@ -14,7 +14,7 @@
 - [x] Task: Ensure code coverage for the fix is >80%. 2573d33
 - [x] Task: Conductor - User Manual Verification 'Implementation & Fix' (Protocol in workflow.md) 2573d33
 
-## Phase 3: Final Verification & Cleanup
-- [~] Task: Perform manual verification by registering domain rules via the UI (CSV upload and manual text).
-- [~] Task: Verify that existing keyword and user block rules are unaffected.
-- [~] Task: Conductor - User Manual Verification 'Final Verification & Cleanup' (Protocol in workflow.md)
+## Phase 3: Final Verification & Cleanup [checkpoint: 22cfc9b]
+- [x] Task: Perform manual verification by registering domain rules via the UI (CSV upload and manual text). 22cfc9b
+- [x] Task: Verify that existing keyword and user block rules are unaffected. 22cfc9b
+- [x] Task: Conductor - User Manual Verification 'Final Verification & Cleanup' (Protocol in workflow.md) 22cfc9b
