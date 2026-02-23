@@ -16,10 +16,8 @@ func OpenDB(dsn string) (*sql.DB, error) {
 	// If it already has query parameters, we append to them.
 	
 	// Check if DSN is ":memory:"
-	if dsn == ":memory:" {
-		// For in-memory DB, we also want FKs.
-		// modernc.org/sqlite supports query params for :memory: too? Yes.
-	}
+	// For in-memory DB, we also want FKs.
+	// modernc.org/sqlite supports query params for :memory: too? Yes.
 
 	separator := "?"
 	if strings.Contains(dsn, "?") {
@@ -51,25 +49,25 @@ func OpenDB(dsn string) (*sql.DB, error) {
 	var enabled int
 	err = db.QueryRow("PRAGMA foreign_keys").Scan(&enabled)
 	if err != nil {
-		db.Close()
+		_ = db.Close()
 		return nil, fmt.Errorf("failed to check foreign_keys pragma: %w", err)
 	}
 	if enabled != 1 {
 		// Try enabling explicitly if DSN didn't work (though it should)
 		_, err = db.Exec("PRAGMA foreign_keys = ON")
 		if err != nil {
-			db.Close()
+			_ = db.Close()
 			return nil, fmt.Errorf("failed to enable foreign_keys: %w", err)
 		}
 		
 		// Re-check
 		err = db.QueryRow("PRAGMA foreign_keys").Scan(&enabled)
 		if err != nil {
-			db.Close()
+			_ = db.Close()
 			return nil, fmt.Errorf("failed to re-check foreign_keys pragma: %w", err)
 		}
 		if enabled != 1 {
-			db.Close()
+			_ = db.Close()
 			return nil, fmt.Errorf("foreign_keys pragma could not be enabled")
 		}
 	}

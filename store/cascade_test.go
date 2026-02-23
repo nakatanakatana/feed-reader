@@ -16,7 +16,7 @@ func TestDeleteFeed_CascadeFailure(t *testing.T) {
 	// Setup
 	db, err := store.OpenDB(":memory:")
 	assert.NilError(t, err)
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	_, err = db.ExecContext(context.Background(), schema.Schema)
 	assert.NilError(t, err)
