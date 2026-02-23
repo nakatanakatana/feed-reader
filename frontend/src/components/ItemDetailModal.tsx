@@ -16,6 +16,7 @@ import {
   formatDate,
   normalizeCategories,
 } from "../lib/item-utils";
+import { useToast } from "../lib/toast";
 import { URLParser } from "../lib/url-parser";
 import { useSwipe } from "../lib/use-swipe";
 import { MarkdownRenderer } from "./MarkdownRenderer";
@@ -167,10 +168,15 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     return parser().extractUserInfo(data.url);
   });
 
+  const { show } = useToast();
+
   const blockMutation = createMutation(() => ({
     mutationFn: addItemBlockRules,
     onSuccess: () => {
-      // Success notification will be implemented in the next task
+      show("Block rule added successfully", "success");
+    },
+    onError: () => {
+      show("Failed to add block rule", "error");
     },
   }));
 
