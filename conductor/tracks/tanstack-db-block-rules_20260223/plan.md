@@ -37,7 +37,7 @@
     - Run `frontend/src/routes_test/url_rules.test.tsx` and ensure all tests pass.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: UI Migration - URL Rules' (Protocol in workflow.md)
 
-## Phase 4: UI Migration - Item Detail Modal
+## Phase 4: UI Migration - Item Detail Modal [checkpoint: eeb874b]
 **Goal:** Update the Item Detail Modal to use the new collections for blocking actions.
 
 - [x] Task: Update Item Detail Modal 78517a9
