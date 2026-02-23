@@ -1,10 +1,4 @@
-import { create } from "@bufbuild/protobuf";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  AddURLParsingRuleResponseSchema,
-  ItemBlockRuleSchema,
-  URLParsingRuleSchema,
-} from "../gen/item/v1/item_pb";
 import {
   itemBlockRuleDelete,
   itemBlockRuleInsert,

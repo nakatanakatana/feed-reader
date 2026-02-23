@@ -19,10 +19,7 @@ import {
   AddItemBlockRulesRequest_RuleSchema,
   AddItemBlockRulesRequestSchema,
 } from "../gen/item/v1/item_pb";
-import {
-  itemBlockRuleInsert,
-  urlParsingRules,
-} from "../lib/block-db";
+import { itemBlockRuleInsert, urlParsingRules } from "../lib/block-db";
 import {
   getItem,
   type Item,

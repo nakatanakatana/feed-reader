@@ -22,10 +22,9 @@ import {
   type Item,
   ItemSchema,
   ItemService,
+  ListItemBlockRulesResponseSchema,
   ListItemSchema,
   ListItemsResponseSchema,
-  ListItemBlockRulesResponseSchema,
-  ListURLParsingRulesResponseSchema,
   UpdateItemStatusResponseSchema,
   URLParsingRuleSchema,
 } from "../gen/item/v1/item_pb";
@@ -419,7 +418,9 @@ export const handlers = [
     method: "addURLParsingRule",
     handler: (req) => {
       if (req.ruleType !== "subdomain" && req.ruleType !== "path") {
-        throw new Error(`invalid rule_type: ${req.ruleType}. Must be 'subdomain' or 'path'`);
+        throw new Error(
+          `invalid rule_type: ${req.ruleType}. Must be 'subdomain' or 'path'`,
+        );
       }
       return create(AddURLParsingRuleResponseSchema, {
         rule: create(URLParsingRuleSchema, {
@@ -450,8 +451,12 @@ export const handlers = [
     method: "addItemBlockRules",
     handler: (req) => {
       for (const [i, r] of req.rules.entries()) {
-        if (!["user", "domain", "user_domain", "keyword"].includes(r.ruleType)) {
-          throw new Error(`invalid rule_type at index ${i}: ${r.ruleType}. Must be 'user', 'domain', 'user_domain', or 'keyword'`);
+        if (
+          !["user", "domain", "user_domain", "keyword"].includes(r.ruleType)
+        ) {
+          throw new Error(
+            `invalid rule_type at index ${i}: ${r.ruleType}. Must be 'user', 'domain', 'user_domain', or 'keyword'`,
+          );
         }
       }
       return create(AddItemBlockRulesResponseSchema, {});

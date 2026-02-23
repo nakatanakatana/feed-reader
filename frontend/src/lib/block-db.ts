@@ -2,8 +2,8 @@ import { createClient } from "@connectrpc/connect";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { createCollection } from "@tanstack/solid-db";
 import {
-  type ItemBlockRule as ProtoItemBlockRule,
   ItemService,
+  type ItemBlockRule as ProtoItemBlockRule,
   type URLParsingRule as ProtoURLParsingRule,
 } from "../gen/item/v1/item_pb";
 import { queryClient, transport } from "./query";
