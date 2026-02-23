@@ -7,9 +7,9 @@
 
 ## Phase 2: UI Foundation & Input
 - [x] Task: Add "Bulk Add" button to the Block Rules page next to the existing "Add" button. 6f1fe49
-- [ ] Task: Implement the Modal component with text area and file upload inputs.
-- [ ] Task: Write integration tests for the input and parsing workflow in the UI.
-- [ ] Task: Implement the interactive parsing logic and preview table display in the modal.
+- [x] Task: Implement the Modal component with text area and file upload inputs. aa9ea2d
+- [x] Task: Write integration tests for the input and parsing workflow in the UI. aa9ea2d
+- [x] Task: Implement the interactive parsing logic and preview table display in the modal. aa9ea2d
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: UI Foundation' (Protocol in workflow.md)
 
 ## Phase 3: Backend Integration & Polish
