@@ -15,6 +15,7 @@ import {
   ItemSchema,
   ListItemSchema,
   ListItemsResponseSchema,
+  ListURLParsingRulesResponseSchema,
 } from "../gen/item/v1/item_pb";
 import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
 import { itemStore } from "../lib/item-store";
@@ -61,6 +62,14 @@ describe("ItemDetailRouteView Reactivity", () => {
           toJson(
             ListTagsResponseSchema,
             create(ListTagsResponseSchema, { tags: [] }),
+          ),
+        );
+      }),
+      http.all("*/item.v1.ItemService/ListURLParsingRules", () => {
+        return HttpResponse.json(
+          toJson(
+            ListURLParsingRulesResponseSchema,
+            create(ListURLParsingRulesResponseSchema, { rules: [] }),
           ),
         );
       }),
@@ -130,9 +139,9 @@ describe("ItemDetailRouteView Reactivity", () => {
     itemStore.setDateFilter("24h");
 
     // Wait for the re-fetch to complete and the component to update.
-    // Since Item 1 is already in the document, we wait a bit to ensure
-    // the internal items list has been updated and Item 2 is gone.
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    // We expect Item 2 to be removed from the list of neighboring items.
+    // In ItemDetailRouteView, this means nextItemId should become end-of-list eventually.
+    await expect.poll(() => history.location.pathname).toBe("/items/1");
 
     await expect
       .element(page.getByRole("heading", { name: "Item 1" }))

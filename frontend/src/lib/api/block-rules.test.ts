@@ -1,6 +1,11 @@
 import { create } from "@bufbuild/protobuf";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { AddItemBlockRulesRequestSchema } from "../../gen/item/v1/item_pb";
+import {
+  AddItemBlockRulesRequestSchema,
+  AddItemBlockRulesResponseSchema,
+  ListURLParsingRulesResponseSchema,
+  URLParsingRuleSchema,
+} from "../../gen/item/v1/item_pb";
 import { addItemBlockRules, listURLParsingRules } from "./block-rules";
 import { itemClient } from "./client";
 
@@ -19,16 +24,23 @@ describe("block-rules api", () => {
 
   describe("listURLParsingRules", () => {
     it("should call itemClient.listURLParsingRules", async () => {
-      const mockRules = [{ domain: "example.com", ruleType: "domain" }];
-      vi.mocked(itemClient.listURLParsingRules).mockResolvedValue({
-        rules: mockRules,
-        // biome-ignore lint/suspicious/noExplicitAny: mock response
-      } as any);
+      const mockRulesData = [{ domain: "example.com", ruleType: "domain" }];
+      const mockRules = mockRulesData.map((r) =>
+        create(URLParsingRuleSchema, r),
+      );
+      vi.mocked(itemClient.listURLParsingRules).mockResolvedValue(
+        create(ListURLParsingRulesResponseSchema, {
+          rules: mockRules,
+        }),
+      );
 
       const result = await listURLParsingRules();
 
       expect(itemClient.listURLParsingRules).toHaveBeenCalledWith({});
-      expect(result).toEqual(mockRules);
+      // Compare only the data fields we care about
+      expect(result.length).toBe(mockRules.length);
+      expect(result[0].domain).toBe(mockRules[0].domain);
+      expect(result[0].ruleType).toBe(mockRules[0].ruleType);
     });
   });
 
@@ -38,8 +50,7 @@ describe("block-rules api", () => {
         rules: [{ ruleType: "domain", value: "example.com" }],
       });
       vi.mocked(itemClient.addItemBlockRules).mockResolvedValue(
-        // biome-ignore lint/suspicious/noExplicitAny: mock response
-        {} as any,
+        create(AddItemBlockRulesResponseSchema, {}),
       );
 
       await addItemBlockRules(mockRequest);
