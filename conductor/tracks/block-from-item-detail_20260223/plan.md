@@ -6,7 +6,7 @@
 - [x] Task: Write failing unit tests for `url-parser.ts` in `frontend/src/lib/url-parser.test.ts`. (8230820)
 - [x] Task: Implement `URLParser` logic to pass the tests. (8230820)
 - [x] Task: Refactor the code and ensure all edge cases (e.g., malformed URLs) are handled. (8230820)
-- [~] Task: Conductor - User Manual Verification 'Phase 1: Logic' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Logic' (Protocol in workflow.md) (b26e96b)
 
 ## Phase 2: UI Component and Mutation
 - [x] Task: Add a query/mutation to call `AddItemBlockRules` and `ListURLParsingRules` from the frontend (moving shared logic to a library file if necessary). (08c2583)
@@ -14,7 +14,7 @@
 - [x] Task: Implement the "Block" actions within `ItemDetailModal`, utilizing the `URLParser` and the new mutation. (6b890f2)
 - [x] Task: Add a notification mechanism to provide success feedback after a rule is successfully added. (cc8aa9b)
 - [x] Task: Write integration tests for `ItemDetailModal` to verify the "Block" menu appears and triggers the mutation correctly. (cc8aa9b)
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: UI & Mutation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: UI & Mutation' (Protocol in workflow.md) [checkpoint: b26e96b]
 
 ## Phase 3: Final Integration and Refinement
 - [ ] Task: Verify the end-to-end flow on both desktop and mobile viewports.
