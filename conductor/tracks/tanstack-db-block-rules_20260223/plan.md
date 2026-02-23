@@ -15,7 +15,7 @@
     - Implement helper functions: `urlParsingRuleInsert`, `urlParsingRuleDelete`, `itemBlockRuleInsert`, `itemBlockRuleDelete`.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Foundation' (Protocol in workflow.md)
 
-## Phase 2: UI Migration - Block Rules
+## Phase 2: UI Migration - Block Rules [checkpoint: e721cb3]
 **Goal:** Update the Block Rules management page to use the new collection.
 
 - [x] Task: Update Block Rules Route 32325d9
