@@ -18,13 +18,13 @@ Implement the filter dropdowns and integrate them with the new reactive state.
 - [x] Task: Write integration tests for the `BlockRulesFilterBar` to ensure selecting an option triggers the correct state change. a986c35
 - [x] Task: Conductor - User Manual Verification 'Filter UI Components' (Protocol in workflow.md) a304d25
 
-## Phase 3: Sortable Table Headers (Frontend - Interactive Table)
+## Phase 3: Sortable Table Headers (Frontend - Interactive Table) [checkpoint: f6858d8]
 Implement interactive table headers to toggle sorting on the rules list.
 
-- [ ] Task: Update the `BlockRulesTable` component to make Type, Value, and Domain headers clickable.
-- [ ] Task: Implement the logic to toggle sort direction (Ascending/Descending) and update the Store.
-- [ ] Task: Write integration tests to ensure clicking a header correctly triggers the sort state change.
-- [ ] Task: Conductor - User Manual Verification 'Sortable Table Headers' (Protocol in workflow.md)
+- [x] Task: Update the `BlockRulesTable` component to make Type, Value, and Domain headers clickable. 057fd95
+- [x] Task: Implement the logic to toggle sort direction (Ascending/Descending) and update the Store. 057fd95
+- [x] Task: Write integration tests to ensure clicking a header correctly triggers the sort state change. 057fd95
+- [x] Task: Conductor - User Manual Verification 'Sortable Table Headers' (Protocol in workflow.md) f6858d8
 
 ## Phase 4: Mobile & Responsive Enhancements
 Refine the layout for mobile viewports, including a compact filter/sort bar and simplified rule list.
