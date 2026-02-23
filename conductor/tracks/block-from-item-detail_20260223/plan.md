@@ -2,10 +2,10 @@
 
 ## Phase 1: Research and Logic Implementation (TDD)
 - [x] Task: Research the existing `URLParser` in the backend and identify how to use `url_parsing_rules` in the frontend. (db374cd)
-- [ ] Task: Create `frontend/src/lib/url-parser.ts` to mirror the backend's extraction logic.
-- [ ] Task: Write failing unit tests for `url-parser.ts` in `frontend/src/lib/url-parser.test.ts`.
-- [ ] Task: Implement `URLParser` logic to pass the tests.
-- [ ] Task: Refactor the code and ensure all edge cases (e.g., malformed URLs) are handled.
+- [x] Task: Create `frontend/src/lib/url-parser.ts` to mirror the backend's extraction logic. (8230820)
+- [x] Task: Write failing unit tests for `url-parser.ts` in `frontend/src/lib/url-parser.test.ts`. (8230820)
+- [x] Task: Implement `URLParser` logic to pass the tests. (8230820)
+- [x] Task: Refactor the code and ensure all edge cases (e.g., malformed URLs) are handled. (8230820)
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Logic' (Protocol in workflow.md)
 
 ## Phase 2: UI Component and Mutation
