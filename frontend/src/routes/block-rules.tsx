@@ -236,9 +236,6 @@ function BlockRulesComponent() {
 
         <div
           class={css({
-            position: "sticky",
-            top: 0,
-            zIndex: 10,
             backgroundColor: "gray.50",
             display: "flex",
             flexDirection: "column",

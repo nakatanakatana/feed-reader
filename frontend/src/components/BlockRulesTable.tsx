@@ -1,7 +1,10 @@
 import { For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
-import { blockRulesStore, type BlockRulesSortField } from "../lib/block-rules-store";
+import {
+  blockRulesStore,
+  type BlockRulesSortField,
+} from "../lib/block-rules-store";
 import { ActionButton } from "./ui/ActionButton";
 
 interface Rule {
@@ -37,7 +40,7 @@ export function BlockRulesTable(props: BlockRulesTableProps) {
           mb: "3",
           px: "1",
           position: "sticky",
-          top: "4rem", // Adjust based on filter bar height
+          top: 0,
           zIndex: 9,
           backgroundColor: "gray.50",
           py: "2",
@@ -120,7 +123,16 @@ export function BlockRulesTable(props: BlockRulesTableProps) {
                 whiteSpace: "nowrap",
               })}
             >
-              <button type="button" class={css({ bg: "transparent", border: "none", cursor: "inherit", fontWeight: "inherit", p: 0 })}>
+              <button
+                type="button"
+                class={css({
+                  bg: "transparent",
+                  border: "none",
+                  cursor: "inherit",
+                  fontWeight: "inherit",
+                  p: 0,
+                })}
+              >
                 Type <SortIndicator field="ruleType" />
               </button>
             </th>
@@ -132,7 +144,16 @@ export function BlockRulesTable(props: BlockRulesTableProps) {
                 whiteSpace: "nowrap",
               })}
             >
-              <button type="button" class={css({ bg: "transparent", border: "none", cursor: "inherit", fontWeight: "inherit", p: 0 })}>
+              <button
+                type="button"
+                class={css({
+                  bg: "transparent",
+                  border: "none",
+                  cursor: "inherit",
+                  fontWeight: "inherit",
+                  p: 0,
+                })}
+              >
                 Value <SortIndicator field="value" />
               </button>
             </th>
@@ -144,7 +165,16 @@ export function BlockRulesTable(props: BlockRulesTableProps) {
                 whiteSpace: "nowrap",
               })}
             >
-              <button type="button" class={css({ bg: "transparent", border: "none", cursor: "inherit", fontWeight: "inherit", p: 0 })}>
+              <button
+                type="button"
+                class={css({
+                  bg: "transparent",
+                  border: "none",
+                  cursor: "inherit",
+                  fontWeight: "inherit",
+                  p: 0,
+                })}
+              >
                 Domain <SortIndicator field="domain" />
               </button>
             </th>
@@ -203,7 +233,7 @@ export function BlockRulesTable(props: BlockRulesTableProps) {
       </table>
 
       {/* Mobile List View */}
-      <div class={css({ display: "block", md: "none" })}>
+      <div class={css({ display: { base: "block", md: "none" } })}>
         <ul class={stack({ gap: "3" })}>
           <For each={props.rules}>
             {(rule) => (
@@ -230,7 +260,9 @@ export function BlockRulesTable(props: BlockRulesTableProps) {
                     >
                       {rule.ruleType}
                     </span>
-                    <span class={css({ fontWeight: "bold" })}>{rule.value}</span>
+                    <span class={css({ fontWeight: "bold" })}>
+                      {rule.value}
+                    </span>
                   </div>
                   <Show when={rule.domain}>
                     <code
