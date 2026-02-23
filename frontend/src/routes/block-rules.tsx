@@ -57,10 +57,13 @@ function BlockRulesComponent() {
   const handleSubmit = (e: Event) => {
     e.preventDefault();
     if (!value()) return;
-    
+
     // Domain is required for user_domain and domain rule types
-    if ((ruleType() === "user_domain" || ruleType() === "domain") && !domain()) {
-        return;
+    if (
+      (ruleType() === "user_domain" || ruleType() === "domain") &&
+      !domain()
+    ) {
+      return;
     }
 
     addMutation.mutate({
@@ -232,17 +235,17 @@ function BlockRulesComponent() {
                       </span>
                     </div>
                     <Show when={rule.domain}>
-                        <code
-                          class={css({
-                            fontSize: "sm",
-                            color: "gray.600",
-                            bg: "gray.50",
-                            px: "1",
-                            rounded: "sm",
-                          })}
-                        >
-                          @{rule.domain}
-                        </code>
+                      <code
+                        class={css({
+                          fontSize: "sm",
+                          color: "gray.600",
+                          bg: "gray.50",
+                          px: "1",
+                          rounded: "sm",
+                        })}
+                      >
+                        @{rule.domain}
+                      </code>
                     </Show>
                   </div>
                   <ActionButton

@@ -15,8 +15,8 @@ import {
   DeleteURLParsingRuleResponseSchema,
   ItemService,
   ListURLParsingRulesResponseSchema,
-  URLParsingRuleSchema,
   type URLParsingRule,
+  URLParsingRuleSchema,
 } from "../gen/item/v1/item_pb";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
@@ -127,7 +127,9 @@ describe("URL Rules Page", () => {
     await addButton.click();
 
     await expect.element(page.getByText("new-domain.com")).toBeInTheDocument();
-    await expect.element(page.getByRole("listitem").getByText("path")).toBeInTheDocument();
+    await expect
+      .element(page.getByRole("listitem").getByText("path"))
+      .toBeInTheDocument();
   });
 
   it("should allow deleting a URL parsing rule", async () => {

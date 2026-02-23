@@ -13,10 +13,10 @@ import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   AddItemBlockRulesResponseSchema,
   DeleteItemBlockRuleResponseSchema,
+  type ItemBlockRule,
+  ItemBlockRuleSchema,
   ItemService,
   ListItemBlockRulesResponseSchema,
-  ItemBlockRuleSchema,
-  type ItemBlockRule,
 } from "../gen/item/v1/item_pb";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
@@ -73,7 +73,9 @@ describe("Block Rules Page", () => {
       document.body,
     );
 
-    await expect.element(page.getByText("blocked-domain.com")).toBeInTheDocument();
+    await expect
+      .element(page.getByText("blocked-domain.com"))
+      .toBeInTheDocument();
     await expect.element(page.getByText("spam-keyword")).toBeInTheDocument();
   });
 
@@ -89,13 +91,13 @@ describe("Block Rules Page", () => {
         method: "addItemBlockRules",
         handler: (req) => {
           for (const r of req.rules) {
-             const newRule = create(ItemBlockRuleSchema, {
-                id: Math.random().toString(),
-                ruleType: r.ruleType,
-                value: r.value,
-                domain: r.domain,
-              });
-              rules.push(newRule);
+            const newRule = create(ItemBlockRuleSchema, {
+              id: Math.random().toString(),
+              ruleType: r.ruleType,
+              value: r.value,
+              domain: r.domain,
+            });
+            rules.push(newRule);
           }
           return create(AddItemBlockRulesResponseSchema, {});
         },
@@ -124,7 +126,9 @@ describe("Block Rules Page", () => {
     await valueInput.fill("new-block-keyword");
     await addButton.click();
 
-    await expect.element(page.getByText("new-block-keyword")).toBeInTheDocument();
+    await expect
+      .element(page.getByText("new-block-keyword"))
+      .toBeInTheDocument();
   });
 
   it("should allow adding a new item block rule with domain (user_domain)", async () => {
@@ -139,13 +143,13 @@ describe("Block Rules Page", () => {
         method: "addItemBlockRules",
         handler: (req) => {
           for (const r of req.rules) {
-             const newRule = create(ItemBlockRuleSchema, {
-                id: Math.random().toString(),
-                ruleType: r.ruleType,
-                value: r.value,
-                domain: r.domain,
-              });
-              rules.push(newRule);
+            const newRule = create(ItemBlockRuleSchema, {
+              id: Math.random().toString(),
+              ruleType: r.ruleType,
+              value: r.value,
+              domain: r.domain,
+            });
+            rules.push(newRule);
           }
           return create(AddItemBlockRulesResponseSchema, {});
         },
@@ -222,6 +226,8 @@ describe("Block Rules Page", () => {
     const deleteButton = page.getByRole("button", { name: "Delete" });
     await deleteButton.click();
 
-    await expect.element(page.getByText("to-delete.com")).not.toBeInTheDocument();
+    await expect
+      .element(page.getByText("to-delete.com"))
+      .not.toBeInTheDocument();
   });
 });
