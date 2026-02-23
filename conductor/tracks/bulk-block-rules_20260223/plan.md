@@ -5,12 +5,12 @@
 - [x] Task: Implement the CSV parsing utility in the frontend. 2441809
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Core Logic' (Protocol in workflow.md) f6a24a6
 
-## Phase 2: UI Foundation & Input
+## Phase 2: UI Foundation & Input [checkpoint: ee04afb]
 - [x] Task: Add "Bulk Add" button to the Block Rules page next to the existing "Add" button. 6f1fe49
 - [x] Task: Implement the Modal component with text area and file upload inputs. aa9ea2d
 - [x] Task: Write integration tests for the input and parsing workflow in the UI. aa9ea2d
 - [x] Task: Implement the interactive parsing logic and preview table display in the modal. aa9ea2d
-- [~] Task: Conductor - User Manual Verification 'Phase 2: UI Foundation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: UI Foundation' (Protocol in workflow.md) ee04afb
 
 ## Phase 3: Backend Integration & Polish
 - [~] Task: Implement the submission logic using the existing `AddItemBlockRules` RPC.
