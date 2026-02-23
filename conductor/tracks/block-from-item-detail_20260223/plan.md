@@ -17,6 +17,6 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: UI & Mutation' (Protocol in workflow.md) [checkpoint: b26e96b]
 
 ## Phase 3: Final Integration and Refinement
-- [ ] Task: Verify the end-to-end flow on both desktop and mobile viewports.
-- [ ] Task: Perform a final review to ensure the implementation follows the project's code style guides.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Final Verification' (Protocol in workflow.md)
+- [x] Task: Verify the end-to-end flow on both desktop and mobile viewports.
+- [x] Task: Perform a final review to ensure the implementation follows the project's code style guides.
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Final Verification' (Protocol in workflow.md)
