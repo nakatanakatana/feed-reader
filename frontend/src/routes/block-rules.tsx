@@ -1,9 +1,10 @@
 import { useLiveQuery } from "@tanstack/solid-db";
 import { createMutation } from "@tanstack/solid-query";
 import { createFileRoute } from "@tanstack/solid-router";
-import { createSignal, For, Show } from "solid-js";
+import { createMemo, createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
+import { BlockRulesFilterBar } from "../components/BlockRulesFilterBar";
 import { BulkAddBlockRulesModal } from "../components/BulkAddBlockRulesModal";
 import { ActionButton } from "../components/ui/ActionButton";
 import { PageLayout } from "../components/ui/PageLayout";
@@ -12,6 +13,7 @@ import {
   itemBlockRuleInsert,
   itemBlockRules,
 } from "../lib/block-db";
+import { blockRulesStore } from "../lib/block-rules-store";
 
 export const Route = createFileRoute("/block-rules")({
   component: BlockRulesComponent,
@@ -26,6 +28,19 @@ function BlockRulesComponent() {
   const rulesQuery = useLiveQuery((q) =>
     q.from({ rule: itemBlockRules }).select(({ rule }) => ({ ...rule })),
   );
+
+  const uniqueDomains = createMemo(() => {
+    const rules = rulesQuery() || [];
+    const domains = new Set<string>();
+    for (const rule of rules) {
+      if (rule.domain) domains.add(rule.domain);
+    }
+    return Array.from(domains).sort();
+  });
+
+  const visibleRules = createMemo(() => {
+    return blockRulesStore.deriveVisibleRules(rulesQuery() || []);
+  });
 
   const addMutation = createMutation(() => ({
     mutationFn: async (newRule: {
@@ -218,6 +233,8 @@ function BlockRulesComponent() {
           </form>
         </div>
 
+        <BlockRulesFilterBar domains={uniqueDomains()} />
+
         <BulkAddBlockRulesModal
           isOpen={isBulkModalOpen()}
           onClose={() => setIsBulkModalOpen(false)}
@@ -244,7 +261,7 @@ function BlockRulesComponent() {
             <p>Loading rules...</p>
           </Show>
           <ul class={stack({ gap: "3" })}>
-            <For each={rulesQuery()}>
+            <For each={visibleRules()}>
               {(rule) => (
                 <li
                   class={flex({
