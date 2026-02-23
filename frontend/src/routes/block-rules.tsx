@@ -234,7 +234,20 @@ function BlockRulesComponent() {
           </form>
         </div>
 
-        <BlockRulesFilterBar domains={uniqueDomains()} />
+        <div
+          class={css({
+            position: "sticky",
+            top: 0,
+            zIndex: 10,
+            backgroundColor: "gray.50",
+            display: "flex",
+            flexDirection: "column",
+            gap: "2",
+            pb: "2",
+          })}
+        >
+          <BlockRulesFilterBar domains={uniqueDomains()} />
+        </div>
 
         <BulkAddBlockRulesModal
           isOpen={isBulkModalOpen()}

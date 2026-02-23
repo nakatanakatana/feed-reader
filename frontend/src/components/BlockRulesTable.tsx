@@ -36,6 +36,11 @@ export function BlockRulesTable(props: BlockRulesTableProps) {
           alignItems: "center",
           mb: "3",
           px: "1",
+          position: "sticky",
+          top: "4rem", // Adjust based on filter bar height
+          zIndex: 9,
+          backgroundColor: "gray.50",
+          py: "2",
         })}
       >
         <label
