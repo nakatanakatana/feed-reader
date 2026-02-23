@@ -13,6 +13,10 @@ interface BulkAddBlockRulesModalProps {
 }
 
 export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
+  const [registrationResult, setRegistrationResult] = createSignal<{
+    success: number;
+    total: number;
+  } | null>(null);
   const [csvText, setCsvText] = createSignal("");
   const [parsedRules, setParsedRules] = createSignal<ParsedBlockRule[]>([]);
 
@@ -20,6 +24,7 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
     const text = (e.target as HTMLTextAreaElement).value;
     setCsvText(text);
     setParsedRules(parseCSVBlockRules(text));
+    setRegistrationResult(null);
   };
 
   const handleFileChange = async (e: Event) => {
@@ -31,6 +36,7 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
       const text = await file.text();
       setCsvText(text);
       setParsedRules(parseCSVBlockRules(text));
+      setRegistrationResult(null);
     } catch (err) {
       console.error("Failed to read file", err);
     } finally {
@@ -43,34 +49,81 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
   const handleRegister = async () => {
     const validRules = parsedRules().filter((r) => r.isValid);
     if (validRules.length === 0) return;
+    const total = parsedRules().length;
     await props.onRegister(validRules);
+    setRegistrationResult({
+      success: validRules.length,
+      total: total,
+    });
     setCsvText("");
     setParsedRules([]);
+  };
+
+  const handleClose = () => {
+    setRegistrationResult(null);
+    props.onClose();
   };
 
   return (
     <Modal
       isOpen={props.isOpen}
-      onClose={props.onClose}
+      onClose={handleClose}
       size="standard"
       title="Bulk Add Block Rules"
       disableBackdropClose={props.isPending}
       footer={
-        <div class={flex({ justifyContent: "flex-end", gap: "2", width: "full" })}>
-          <ActionButton variant="secondary" onClick={props.onClose} disabled={props.isPending}>
-            Cancel
-          </ActionButton>
-          <ActionButton
-            variant="primary"
-            onClick={handleRegister}
-            disabled={props.isPending || validRulesCount() === 0}
+        <div class={flex({ justifyContent: "flex-end", gap: "2", width: "full", flexWrap: "wrap" })}>
+          <Show
+            when={registrationResult()}
+            fallback={
+              <>
+                <ActionButton variant="secondary" onClick={handleClose} disabled={props.isPending}>
+                  Cancel
+                </ActionButton>
+                <ActionButton
+                  variant="primary"
+                  onClick={handleRegister}
+                  disabled={props.isPending || validRulesCount() === 0}
+                >
+                  {props.isPending ? "Registering..." : `Register (${validRulesCount()} rules)`}
+                </ActionButton>
+              </>
+            }
           >
-            {props.isPending ? "Registering..." : `Register (${validRulesCount()} rules)`}
-          </ActionButton>
+            <ActionButton variant="primary" onClick={handleClose}>
+              Done
+            </ActionButton>
+          </Show>
         </div>
       }
     >
       <div class={stack({ gap: "4" })}>
+        <Show when={registrationResult()}>
+          {(res) => (
+            <div
+              class={css({
+                padding: "3",
+                backgroundColor: "green.50",
+                borderRadius: "md",
+                border: "1px solid",
+                borderColor: "green.100",
+                color: "green.800",
+                fontSize: "sm",
+              })}
+            >
+              <p class={css({ fontWeight: "bold", marginBottom: "1" })}>
+                Successfully registered rules!
+              </p>
+              <p>
+                {res().success} rules were registered.
+                <Show when={res().total > res().success}>
+                  {" "}({res().total - res().success} invalid lines were skipped)
+                </Show>
+              </p>
+            </div>
+          )}
+        </Show>
+
         <div class={stack({ gap: "2" })}>
           <label class={css({ fontSize: "sm", fontWeight: "medium" })}>
             CSV Input (rule_type, value, [domain])
@@ -117,19 +170,58 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
                 rounded: "md",
               })}
             >
-              <table class={css({ width: "full", fontSize: "xs", borderCollapse: "collapse" })}>
+              <table
+                class={css({
+                  width: "full",
+                  fontSize: "xs",
+                  borderCollapse: "collapse",
+                  tableLayout: "fixed",
+                })}
+              >
                 <thead class={css({ bg: "gray.50", position: "sticky", top: 0 })}>
                   <tr>
-                    <th class={css({ p: "2", textAlign: "left", borderBottom: "1px solid", borderColor: "gray.200" })}>
+                    <th
+                      class={css({
+                        p: "2",
+                        textAlign: "left",
+                        borderBottom: "1px solid",
+                        borderColor: "gray.200",
+                        width: "25%",
+                      })}
+                    >
                       Type
                     </th>
-                    <th class={css({ p: "2", textAlign: "left", borderBottom: "1px solid", borderColor: "gray.200" })}>
+                    <th
+                      class={css({
+                        p: "2",
+                        textAlign: "left",
+                        borderBottom: "1px solid",
+                        borderColor: "gray.200",
+                        width: "30%",
+                      })}
+                    >
                       Value
                     </th>
-                    <th class={css({ p: "2", textAlign: "left", borderBottom: "1px solid", borderColor: "gray.200" })}>
+                    <th
+                      class={css({
+                        p: "2",
+                        textAlign: "left",
+                        borderBottom: "1px solid",
+                        borderColor: "gray.200",
+                        width: "20%",
+                      })}
+                    >
                       Domain
                     </th>
-                    <th class={css({ p: "2", textAlign: "left", borderBottom: "1px solid", borderColor: "gray.200" })}>
+                    <th
+                      class={css({
+                        p: "2",
+                        textAlign: "left",
+                        borderBottom: "1px solid",
+                        borderColor: "gray.200",
+                        width: "25%",
+                      })}
+                    >
                       Status
                     </th>
                   </tr>
@@ -138,10 +230,10 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
                   <For each={parsedRules()}>
                     {(rule) => (
                       <tr class={css({ borderBottom: "1px solid", borderColor: "gray.100" })}>
-                        <td class={css({ p: "2" })}>{rule.rule_type}</td>
-                        <td class={css({ p: "2" })}>{rule.value}</td>
-                        <td class={css({ p: "2" })}>{rule.domain || "-"}</td>
-                        <td class={css({ p: "2" })}>
+                        <td class={css({ p: "2", wordBreak: "break-all" })}>{rule.rule_type}</td>
+                        <td class={css({ p: "2", wordBreak: "break-all" })}>{rule.value}</td>
+                        <td class={css({ p: "2", wordBreak: "break-all" })}>{rule.domain || "-"}</td>
+                        <td class={css({ p: "2", wordBreak: "break-all" })}>
                           <Show
                             when={rule.isValid}
                             fallback={

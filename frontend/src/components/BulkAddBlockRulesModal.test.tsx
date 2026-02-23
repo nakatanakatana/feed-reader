@@ -83,5 +83,15 @@ invalid,type`);
     expect(onRegister).toHaveBeenCalledWith([
       { rule_type: "user", value: "john_doe", isValid: true },
     ]);
+
+    // Check success message
+    await expect.element(page.getByText("Successfully registered rules!")).toBeInTheDocument();
+    await expect.element(page.getByText("1 rules were registered.")).toBeInTheDocument();
+
+    // Check Done button
+    const doneButton = page.getByRole("button", { name: "Done" });
+    await expect.element(doneButton).toBeInTheDocument();
+    await doneButton.click();
+    expect(onClose).toHaveBeenCalled();
   });
 });
