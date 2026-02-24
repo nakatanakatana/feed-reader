@@ -1,19 +1,19 @@
 # Implementation Plan: Fix Item Block Rules during Fetch Ingestion
 
 ## Phase 1: Research and Analysis
-- [ ] Task: Review the existing `FetcherService` logic for item ingestion.
+- [x] Task: Review the existing `FetcherService` logic for item ingestion.
     - [ ] Locate the `FetcherService` code responsible for saving fetched items to the database (likely in `cmd/feed-reader/fetcher_service.go`).
     - [ ] Analyze the current database schema and SQL queries for item block rule associations (see `sql/schema.sql` and `store/item_block_rules.go`).
     - [ ] Identify how block rules are retrieved and applied (e.g., `ListItemBlockRules` and `CreateItemBlockAssociation`).
 
 ## Phase 2: Red Phase - Write Failing Tests
-- [ ] Task: Create a reproduction test case for the missing block rule association during ingestion.
+- [x] Task: Create a reproduction test case for the missing block rule association during ingestion. 375c86a
     - [ ] Update `cmd/feed-reader/fetcher_service_test.go` or create a new test file to simulate a feed fetch where one of the items matches an existing block rule.
     - [ ] Assert that the item is correctly associated with the block rule in the database after the fetch.
     - [ ] Run the tests and confirm failure (`Red`).
 
 ## Phase 3: Green Phase - Implement Blocking Logic in FetcherService
-- [ ] Task: Implement the block rule matching and association logic in `FetcherService`.
+- [x] Task: Implement the block rule matching and association logic in `FetcherService`. 375c86a
     - [ ] Update `FetcherService` to fetch active block rules from the store.
     - [ ] For each fetched item, iterate through the active rules and check for matches (keywords, domain, user/domain).
     - [ ] Ensure that when an item is saved to the database, the corresponding `ItemBlockAssociation` (or equivalent) is also created if a match is found.
