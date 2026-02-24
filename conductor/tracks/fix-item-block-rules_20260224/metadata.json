@@ -1,8 +1,0 @@
-{
-  "track_id": "fix-item-block-rules_20260224",
-  "type": "bug",
-  "status": "new",
-  "created_at": "2026-02-24T12:00:00Z",
-  "updated_at": "2026-02-24T12:00:00Z",
-  "description": "block-rulesを設定していても設定後にフェッチしたitemが条件に一致していてもブロックされない状態でした。 fetch後にDBにitemを保存するところでblock-rulesにマッチするものがあるかをチェックする機構が実装されていない用なので対応してください"
-}
