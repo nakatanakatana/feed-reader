@@ -123,6 +123,26 @@ type SaveItemsResult struct {
 
 // Execute performs the save operations.
 func (j *SaveItemsJob) Execute(ctx context.Context, q *store.Queries) error {
+	// Fetch block rules and URL parsing rules for this batch
+	blockRules, err := q.ListItemBlockRules(ctx)
+	if err != nil {
+		err = fmt.Errorf("failed to fetch block rules: %w", err)
+		if j.ResultChan != nil {
+			j.ResultChan <- SaveItemsResult{Error: err}
+		}
+		return err
+	}
+
+	urlRules, err := q.ListURLParsingRules(ctx)
+	if err != nil {
+		err = fmt.Errorf("failed to fetch url parsing rules: %w", err)
+		if j.ResultChan != nil {
+			j.ResultChan <- SaveItemsResult{Error: err}
+		}
+		return err
+	}
+	urlParser := NewURLParser(urlRules)
+
 	var newItems int32
 	for _, params := range j.Items {
 		// 1. Upsert Item
@@ -169,6 +189,43 @@ func (j *SaveItemsJob) Execute(ctx context.Context, q *store.Queries) error {
 			}
 			return err
 		}
+
+		// 4. Check Block Rules
+		fullItem := store.FullItem{
+			ID:          item.ID,
+			Url:         item.Url,
+			Title:       item.Title,
+			Description: item.Description,
+			PublishedAt: item.PublishedAt,
+			Author:      item.Author,
+			Guid:        item.Guid,
+			Content:     item.Content,
+			ImageUrl:    item.ImageUrl,
+			Categories:  item.Categories,
+		}
+		extracted := urlParser.ExtractUserInfo(item.Url)
+		var user, domain *string
+		if extracted != nil {
+			user = &extracted.User
+			domain = &extracted.Domain
+		}
+
+		for _, rule := range blockRules {
+			if store.ShouldBlockItem(fullItem, rule, user, domain) {
+				err = q.CreateItemBlock(ctx, store.CreateItemBlockParams{
+					ItemID: item.ID,
+					RuleID: rule.ID,
+				})
+				if err != nil {
+					err = fmt.Errorf("failed to create item block: %w", err)
+					if j.ResultChan != nil {
+						j.ResultChan <- SaveItemsResult{Error: err}
+					}
+					return err
+				}
+			}
+		}
+
 		newItems++
 	}
 
