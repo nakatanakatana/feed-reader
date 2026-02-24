@@ -19,12 +19,12 @@
     - [ ] Ensure that when an item is saved to the database, the corresponding `ItemBlockAssociation` (or equivalent) is also created if a match is found.
     - [ ] Run the tests and confirm they now pass (`Green`).
 
-## Phase 4: Refactor and Validation
-- [ ] Task: Refactor the implementation for efficiency and clarity.
+## Phase 4: Refactor and Validation [checkpoint: 43647b2]
+- [x] Task: Refactor the implementation for efficiency and clarity. d698990
     - [ ] Optimize the rule matching process (e.g., by caching rules or using a more efficient matching algorithm if many rules exist).
     - [ ] Ensure the implementation follows the project's code style and quality gates.
     - [ ] Verify that the item list API correctly excludes the newly ingested and blocked items.
     - [ ] Run all automated tests to ensure no regressions are introduced.
 
-## Phase 5: Final Review and Checkpoint
-- [ ] Task: Conductor - User Manual Verification 'Phase 5: Final Review' (Protocol in workflow.md)
+## Phase 5: Final Review and Checkpoint [checkpoint: 43647b2]
+- [x] Task: Conductor - User Manual Verification 'Phase 5: Final Review' (Protocol in workflow.md) 43647b2
