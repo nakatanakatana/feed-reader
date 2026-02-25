@@ -1,13 +1,13 @@
-import { registerInstrumentations } from "@opentelemetry/instrumentation";
-import { getWebAutoInstrumentations } from "@opentelemetry/auto-instrumentations-web";
-import { WebTracerProvider } from "@opentelemetry/sdk-trace-web";
-import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
-import { BatchSpanProcessor } from "@opentelemetry/sdk-trace-base";
-import { ZoneContextManager } from "@opentelemetry/context-zone";
-import { Resource } from "@opentelemetry/resources";
-import { SemanticResourceAttributes } from "@opentelemetry/semantic-conventions";
-import { onCLS, onLCP, onFCP, Metric } from "web-vitals";
 import { trace } from "@opentelemetry/api";
+import { getWebAutoInstrumentations } from "@opentelemetry/auto-instrumentations-web";
+import { ZoneContextManager } from "@opentelemetry/context-zone";
+import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
+import { registerInstrumentations } from "@opentelemetry/instrumentation";
+import { Resource } from "@opentelemetry/resources";
+import { BatchSpanProcessor } from "@opentelemetry/sdk-trace-base";
+import { WebTracerProvider } from "@opentelemetry/sdk-trace-web";
+import { SemanticResourceAttributes } from "@opentelemetry/semantic-conventions";
+import { type Metric, onCLS, onFCP, onLCP } from "web-vitals";
 
 export const initOTEL = () => {
   const provider = new WebTracerProvider({

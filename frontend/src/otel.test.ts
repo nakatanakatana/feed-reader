@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from "vitest";
-import { http, HttpResponse } from "msw";
+import { HttpResponse, http } from "msw";
+import { describe, expect, it, vi } from "vitest";
 import { worker } from "./mocks/browser";
 import { initOTEL } from "./otel";
 
@@ -9,7 +9,7 @@ vi.mock("web-vitals", () => ({
   onFCP: vi.fn(),
 }));
 
-import { onCLS, onLCP, onFCP } from "web-vitals";
+import { onCLS, onFCP, onLCP } from "web-vitals";
 
 describe("Frontend OTEL Instrumentation", () => {
   it("should add traceparent header to fetch requests", async () => {

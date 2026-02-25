@@ -13,7 +13,7 @@ import (
 
 func TestInitOTEL_Unset(t *testing.T) {
 	// Ensure env is unset
-	os.Unsetenv("OTEL_EXPORTER_OTLP_ENDPOINT")
+	_ = os.Unsetenv("OTEL_EXPORTER_OTLP_ENDPOINT")
 	
 	ctx := context.Background()
 	logger := slog.Default()
@@ -29,8 +29,8 @@ func TestInitOTEL_Unset(t *testing.T) {
 
 func TestInitOTEL_Set(t *testing.T) {
 	// Set env to some dummy endpoint
-	os.Setenv("OTEL_EXPORTER_OTLP_ENDPOINT", "localhost:4317")
-	defer os.Unsetenv("OTEL_EXPORTER_OTLP_ENDPOINT")
+	_ = os.Setenv("OTEL_EXPORTER_OTLP_ENDPOINT", "localhost:4317")
+	defer func() { _ = os.Unsetenv("OTEL_EXPORTER_OTLP_ENDPOINT") }()
 	
 	ctx := context.Background()
 	logger := slog.Default()
@@ -48,7 +48,7 @@ func TestNoOpBehavior(t *testing.T) {
 	otel.SetTracerProvider(noop.NewTracerProvider())
 
 	// Ensure env is unset
-	os.Unsetenv("OTEL_EXPORTER_OTLP_ENDPOINT")
+	_ = os.Unsetenv("OTEL_EXPORTER_OTLP_ENDPOINT")
 	
 	ctx := context.Background()
 	logger := slog.Default()

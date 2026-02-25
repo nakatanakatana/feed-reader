@@ -81,7 +81,7 @@ func TestDatabaseTracing(t *testing.T) {
 
 	db, err := sql.Open(driverName, ":memory:")
 	assert.NilError(t, err)
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	// Perform query
 	ctx := context.Background()
