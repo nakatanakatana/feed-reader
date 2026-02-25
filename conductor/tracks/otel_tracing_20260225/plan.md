@@ -6,14 +6,14 @@
 - [x] Task: Implement: Create `otel` package to manage tracer provider and OTLP exporter setup. 6ea6a14
 - [x] Task: Conductor - User Manual Verification 'Backend Infrastructure & Configuration' (Protocol in workflow.md) 014e396
 
-## Phase 2: Backend Instrumentation
+## Phase 2: Backend Instrumentation [checkpoint: 6e8ebd5]
 - [x] Task: Write Tests: Verify Connect RPC interceptor adds tracing spans.
 - [x] Task: Implement: Add Connect RPC tracing interceptor to the server. 2c83da0
 - [x] Task: Write Tests: Verify `otelsql` records spans for database queries.
 - [x] Task: Implement: Integrate `github.com/XSAM/otelsql` into the database connection logic. 402b979
 - [x] Task: Write Tests: Verify background workers create spans.
 - [x] Task: Implement: Add tracing to the fetcher service and worker pool. e78b447
-- [ ] Task: Conductor - User Manual Verification 'Backend Instrumentation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Backend Instrumentation' (Protocol in workflow.md) 6e8ebd5
 
 ## Phase 3: Frontend Instrumentation
 - [ ] Task: Research OTEL libraries for SolidJS (e.g., `@opentelemetry/sdk-trace-web`).
