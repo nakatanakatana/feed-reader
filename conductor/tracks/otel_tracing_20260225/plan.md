@@ -1,10 +1,10 @@
 # Implementation Plan: OTEL Tracing Integration
 
-## Phase 1: Backend Infrastructure & Configuration
+## Phase 1: Backend Infrastructure & Configuration [checkpoint: 014e396]
 - [x] Task: Research and define OTEL SDK initialization logic in Go.
 - [x] Task: Write Tests: Verify OTEL provider initialization based on environment variables. 6ea6a14
 - [x] Task: Implement: Create `otel` package to manage tracer provider and OTLP exporter setup. 6ea6a14
-- [ ] Task: Conductor - User Manual Verification 'Backend Infrastructure & Configuration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Backend Infrastructure & Configuration' (Protocol in workflow.md) 014e396
 
 ## Phase 2: Backend Instrumentation
 - [ ] Task: Write Tests: Verify Connect RPC interceptor adds tracing spans.
