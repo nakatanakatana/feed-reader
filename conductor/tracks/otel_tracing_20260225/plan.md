@@ -7,8 +7,8 @@
 - [x] Task: Conductor - User Manual Verification 'Backend Infrastructure & Configuration' (Protocol in workflow.md) 014e396
 
 ## Phase 2: Backend Instrumentation
-- [ ] Task: Write Tests: Verify Connect RPC interceptor adds tracing spans.
-- [ ] Task: Implement: Add Connect RPC tracing interceptor to the server.
+- [x] Task: Write Tests: Verify Connect RPC interceptor adds tracing spans.
+- [x] Task: Implement: Add Connect RPC tracing interceptor to the server. 2c83da0
 - [ ] Task: Write Tests: Verify `otelsql` records spans for database queries.
 - [ ] Task: Implement: Integrate `github.com/XSAM/otelsql` into the database connection logic.
 - [ ] Task: Write Tests: Verify background workers create spans.
