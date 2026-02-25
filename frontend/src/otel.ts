@@ -10,9 +10,14 @@ import { SemanticResourceAttributes } from "@opentelemetry/semantic-conventions"
 import { type Metric, onCLS, onFCP, onLCP } from "web-vitals";
 
 let initialized = false;
+let provider: WebTracerProvider | null = null;
 
-export const resetInitialized = () => {
+export const resetInitialized = async () => {
   initialized = false;
+  if (provider) {
+    await provider.shutdown();
+    provider = null;
+  }
 };
 
 export const initOTEL = () => {
@@ -25,7 +30,7 @@ export const initOTEL = () => {
     return;
   }
 
-  const provider = new WebTracerProvider({
+  provider = new WebTracerProvider({
     resource: new Resource({
       [SemanticResourceAttributes.SERVICE_NAME]: "feed-reader-frontend",
     }),
@@ -60,14 +65,19 @@ export const initOTEL = () => {
   // Simple Web Vitals instrumentation
   const tracer = trace.getTracer("web-vitals");
   const reportVitals = (metric: Metric) => {
-    const span = tracer.startSpan(`web-vitals.${metric.name}`, {
-      attributes: {
-        "web_vitals.name": metric.name,
-        "web_vitals.value": metric.value,
-        "web_vitals.id": metric.id,
+    tracer.startActiveSpan(
+      `web-vitals.${metric.name}`,
+      {
+        attributes: {
+          "web_vitals.name": metric.name,
+          "web_vitals.value": metric.value,
+          "web_vitals.id": metric.id,
+        },
       },
-    });
-    span.end();
+      (span) => {
+        span.end();
+      },
+    );
   };
 
   onCLS(reportVitals);

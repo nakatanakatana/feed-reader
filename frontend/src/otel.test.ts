@@ -3,6 +3,18 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { worker } from "./mocks/browser";
 import { initOTEL, resetInitialized } from "./otel";
 
+vi.mock("@opentelemetry/exporter-trace-otlp-http", () => {
+  class MockExporter {
+    export = vi.fn((_spans: any, resultCallback: any) =>
+      resultCallback({ code: 0 }),
+    );
+    shutdown = vi.fn().mockResolvedValue(undefined);
+  }
+  return {
+    OTLPTraceExporter: MockExporter,
+  };
+});
+
 vi.mock("web-vitals", () => ({
   onCLS: vi.fn(),
   onLCP: vi.fn(),
@@ -12,9 +24,9 @@ vi.mock("web-vitals", () => ({
 import { onCLS, onFCP, onLCP } from "web-vitals";
 
 describe("Frontend OTEL Instrumentation", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.stubEnv("VITE_OTEL_EXPORTER_URL", "http://localhost:4318/v1/traces");
-    resetInitialized();
+    await resetInitialized();
   });
 
   afterEach(() => {
@@ -38,8 +50,11 @@ describe("Frontend OTEL Instrumentation", () => {
     expect(traceparent).not.toBeNull();
   });
 
-  it("should initialize web vitals reporters", () => {
+  it("should initialize web vitals reporters", async () => {
     initOTEL();
+    // Allow for any microtasks to run
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
     expect(onCLS).toHaveBeenCalled();
     expect(onLCP).toHaveBeenCalled();
     expect(onFCP).toHaveBeenCalled();
