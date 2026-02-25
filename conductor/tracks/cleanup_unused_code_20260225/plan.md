@@ -1,0 +1,32 @@
+# Implementation Plan: Cleanup Unused Code
+
+## Phase 1: Research & Identification
+This phase focuses on identifying candidates for deletion across the backend and frontend.
+
+- [ ] Task: Backend: Run `golangci-lint` with `unused` and `deadcode` to identify unused Go symbols.
+- [ ] Task: Frontend: Run `vite-bundle-analyzer` and Biome linting to find unused components and modules.
+- [ ] Task: Manual Audit: Review `routeTree.gen.ts` and API handlers for unreachable endpoints.
+- [ ] Task: Coverage Analysis: Check Go and Vitest coverage reports for 0% coverage areas.
+- [ ] Task: Conductor - User Manual Verification 'Research & Identification' (Protocol in workflow.md)
+
+## Phase 2: Backend Cleanup
+Surgical removal of confirmed unused code in the Go backend.
+
+- [ ] Task: Remove unused functions, variables, and types identified in Phase 1.
+- [ ] Task: Run `go test ./...` to ensure no regressions in existing logic.
+- [ ] Task: Conductor - User Manual Verification 'Backend Cleanup' (Protocol in workflow.md)
+
+## Phase 3: Frontend Cleanup
+Surgical removal of confirmed unused code in the SolidJS frontend.
+
+- [ ] Task: Remove unused components, styles (Panda CSS), and hooks.
+- [ ] Task: Run `npm test` to ensure no regressions in existing UI components.
+- [ ] Task: Conductor - User Manual Verification 'Frontend Cleanup' (Protocol in workflow.md)
+
+## Phase 4: Dependency & Final Polish
+Cleaning up project configuration and verifying the final state.
+
+- [ ] Task: Run `go mod tidy` to remove unused Go dependencies.
+- [ ] Task: Run `npm prune` and verify `package.json` for unused packages.
+- [ ] Task: Perform a full system build and manual smoke test.
+- [ ] Task: Conductor - User Manual Verification 'Dependency & Final Polish' (Protocol in workflow.md)
