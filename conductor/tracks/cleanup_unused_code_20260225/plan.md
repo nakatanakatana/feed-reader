@@ -19,9 +19,9 @@ Surgical removal of confirmed unused code in the Go backend.
 ## Phase 3: Frontend Cleanup
 Surgical removal of confirmed unused code in the SolidJS frontend.
 
-- [ ] Task: Remove unused components, styles (Panda CSS), and hooks.
-- [ ] Task: Run `npm test` to ensure no regressions in existing UI components.
-- [ ] Task: Conductor - User Manual Verification 'Frontend Cleanup' (Protocol in workflow.md)
+- [x] Task: Remove unused components, styles (Panda CSS), and hooks.
+- [x] Task: Run `npm test` to ensure no regressions in existing UI components.
+- [x] Task: Conductor - User Manual Verification 'Frontend Cleanup' (Protocol in workflow.md)
 
 ## Phase 4: Dependency & Final Polish
 Cleaning up project configuration and verifying the final state.
