@@ -13,7 +13,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
 COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
-RUN CGO_ENABLED=0 GOOS=linux go build -v -o feed-reader ./cmd/feed-reader
+RUN CGO_ENABLED=0 GOOS=linux go build -trimpath -ldflags "-w -s" -v -o feed-reader ./cmd/feed-reader
 RUN mkdir /data && chown 65532:65532 /data
 
 # Stage 3: Final Image
