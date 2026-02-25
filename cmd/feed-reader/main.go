@@ -11,6 +11,8 @@ import (
 	"time"
 
 	"github.com/caarlos0/env/v11"
+	"connectrpc.com/connect"
+	"connectrpc.com/otelconnect"
 	"github.com/nakatanakatana/feed-reader/frontend"
 	"github.com/nakatanakatana/feed-reader/gen/go/feed/v1/feedv1connect"
 	"github.com/nakatanakatana/feed-reader/gen/go/item/v1/itemv1connect"
@@ -106,14 +108,20 @@ func main() {
 	go scheduler.Start(ctx)
 
 	// 5. Initialize API Server
+	otelInterceptor, err := otelconnect.NewInterceptor()
+	if err != nil {
+		logger.ErrorContext(ctx, "failed to create OTEL interceptor", "error", err)
+		os.Exit(1)
+	}
+
 	feedServer := NewFeedServer(s, nil, fetcher, fetchService, opmlImporter)
-	feedPath, feedHandler := feedv1connect.NewFeedServiceHandler(feedServer)
+	feedPath, feedHandler := feedv1connect.NewFeedServiceHandler(feedServer, connect.WithInterceptors(otelInterceptor))
 
 	itemServer := NewItemServer(s, nil)
-	itemPath, itemHandler := itemv1connect.NewItemServiceHandler(itemServer)
+	itemPath, itemHandler := itemv1connect.NewItemServiceHandler(itemServer, connect.WithInterceptors(otelInterceptor))
 
 	tagServer := NewTagServer(s, nil)
-	tagPath, tagHandler := tagv1connect.NewTagServiceHandler(tagServer)
+	tagPath, tagHandler := tagv1connect.NewTagServiceHandler(tagServer, connect.WithInterceptors(otelInterceptor))
 
 	mux := http.NewServeMux()
 	mux.Handle("/api"+feedPath, http.StripPrefix("/api", feedHandler))

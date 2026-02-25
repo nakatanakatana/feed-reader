@@ -19,6 +19,7 @@ require (
 )
 
 require (
+	connectrpc.com/otelconnect v0.9.0 // indirect
 	github.com/JohannesKaufmann/dom v0.2.0 // indirect
 	github.com/PuerkitoBio/goquery v1.9.2 // indirect
 	github.com/andybalholm/cascadia v1.3.3 // indirect
