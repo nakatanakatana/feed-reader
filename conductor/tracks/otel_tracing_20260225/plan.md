@@ -16,11 +16,11 @@
 - [x] Task: Conductor - User Manual Verification 'Backend Instrumentation' (Protocol in workflow.md) 6e8ebd5
 
 ## Phase 3: Frontend Instrumentation
-- [ ] Task: Research OTEL libraries for SolidJS (e.g., `@opentelemetry/sdk-trace-web`).
-- [ ] Task: Write Tests: Verify frontend traces include context propagation headers.
-- [ ] Task: Implement: Setup OTEL Web SDK in the frontend and configure context propagation.
-- [ ] Task: Write Tests: Verify Web Vitals are captured.
-- [ ] Task: Implement: Integrate `@opentelemetry/instrumentation-web-vitals`.
+- [x] Task: Research OTEL libraries for SolidJS (e.g., `@opentelemetry/sdk-trace-web`).
+- [x] Task: Write Tests: Verify frontend traces include context propagation headers.
+- [x] Task: Implement: Setup OTEL Web SDK in the frontend and configure context propagation. 199faa2
+- [x] Task: Write Tests: Verify Web Vitals are captured. 199faa2
+- [x] Task: Implement: Integrate `web-vitals` library to capture LCP, FCP, CLS. 199faa2
 - [ ] Task: Conductor - User Manual Verification 'Frontend Instrumentation' (Protocol in workflow.md)
 
 ## Phase 4: Integration & E2E Validation
