@@ -26,7 +26,7 @@ Surgical removal of confirmed unused code in the SolidJS frontend.
 ## Phase 4: Dependency & Final Polish
 Cleaning up project configuration and verifying the final state.
 
-- [ ] Task: Run `go mod tidy` to remove unused Go dependencies.
-- [ ] Task: Run `npm prune` and verify `package.json` for unused packages.
-- [ ] Task: Perform a full system build and manual smoke test.
-- [ ] Task: Conductor - User Manual Verification 'Dependency & Final Polish' (Protocol in workflow.md)
+- [x] Task: Run `go mod tidy` to remove unused Go dependencies.
+- [x] Task: Run `npm prune` and verify `package.json` for unused packages.
+- [x] Task: Perform a full system build and manual smoke test.
+- [x] Task: Conductor - User Manual Verification 'Dependency & Final Polish' (Protocol in workflow.md)
