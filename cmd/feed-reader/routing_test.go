@@ -17,7 +17,7 @@ func TestRouting(t *testing.T) {
 	itemFetcher := &mockItemFetcher{}
 
 	// Create the server
-	server, _ := setupServer(t, db, nil, fetcher, itemFetcher)
+	server := setupServer(t, db, nil, fetcher, itemFetcher)
 
 	// Create the handler
 	path, handler := feedv1connect.NewFeedServiceHandler(server)
