@@ -108,7 +108,7 @@ func main() {
 	go scheduler.Start(ctx)
 
 	// 5. Initialize API Server
-	otelInterceptor, err := otelconnect.NewInterceptor()
+	otelInterceptor, err := otelconnect.NewInterceptor(otelconnect.WithTrustRemote())
 	if err != nil {
 		logger.ErrorContext(ctx, "failed to create OTEL interceptor", "error", err)
 		os.Exit(1)

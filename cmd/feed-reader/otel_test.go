@@ -6,6 +6,7 @@ import (
 	"os"
 	"testing"
 
+	"go.opentelemetry.io/otel"
 	"gotest.tools/v3/assert"
 )
 
@@ -34,8 +35,26 @@ func TestInitOTEL_Set(t *testing.T) {
 	logger := slog.Default()
 	
 	shutdown, err := InitOTEL(ctx, logger)
-	// This might fail because we don't have OTEL dependencies yet in go.mod
-	// But it should at least compile if we add them.
 	assert.NilError(t, err)
 	assert.Assert(t, shutdown != nil)
+}
+
+func TestNoOpBehavior(t *testing.T) {
+	// Ensure env is unset
+	os.Unsetenv("OTEL_EXPORTER_OTLP_ENDPOINT")
+	
+	ctx := context.Background()
+	logger := slog.Default()
+	
+	shutdown, err := InitOTEL(ctx, logger)
+	assert.NilError(t, err)
+	defer func() { _ = shutdown(ctx) }()
+
+	// Get tracer
+	tracer := otel.GetTracerProvider().Tracer("test")
+	_, span := tracer.Start(ctx, "test-span")
+	
+	// No-op spans have an invalid span context
+	assert.Assert(t, !span.SpanContext().IsValid(), "span should be no-op when OTEL is disabled")
+	span.End()
 }

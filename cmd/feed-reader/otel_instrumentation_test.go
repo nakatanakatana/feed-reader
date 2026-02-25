@@ -16,6 +16,7 @@ import (
 	"github.com/nakatanakatana/feed-reader/gen/go/feed/v1/feedv1connect"
 	"github.com/nakatanakatana/feed-reader/store"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/propagation"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
@@ -167,4 +168,57 @@ func TestFetcherServiceTracing(t *testing.T) {
 		}
 	}
 	assert.Assert(t, foundFetchSpan, "should have found a fetcher service span")
+}
+
+func TestE2ETracing(t *testing.T) {
+	// 1. Setup Backend with Recorder
+	sr := tracetest.NewSpanRecorder()
+	tp := sdktrace.NewTracerProvider(sdktrace.WithSpanProcessor(sr))
+	otel.SetTracerProvider(tp)
+	otel.SetTextMapPropagator(propagation.TraceContext{})
+
+	interceptor, _ := otelconnect.NewInterceptor(
+		otelconnect.WithPropagator(propagation.TraceContext{}),
+		otelconnect.WithTrustRemote(),
+	)
+	_, db := setupTestDB(t)
+	s := store.NewStore(db)
+	feedServer := NewFeedServer(s, mockUUIDGenerator{}, &mockFetcher{}, &mockItemFetcher{}, nil)
+	_, handler := feedv1connect.NewFeedServiceHandler(feedServer, connect.WithInterceptors(interceptor))
+	
+	server := httptest.NewServer(handler)
+	defer server.Close()
+
+	// 2. Simulate Frontend Request with TraceContext
+	client := feedv1connect.NewFeedServiceClient(server.Client(), server.URL, connect.WithInterceptors(interceptor))
+	
+	// Inject a specific trace ID manually
+	traceIDStr := "4bf92f3577b34da6a3ce929d0e0e4736"
+	spanIDStr := "00f067aa0ba902b7"
+	
+	tid, _ := trace.TraceIDFromHex(traceIDStr)
+	sid, _ := trace.SpanIDFromHex(spanIDStr)
+	sc := trace.NewSpanContext(trace.SpanContextConfig{
+		TraceID:    tid,
+		SpanID:     sid,
+		TraceFlags: trace.FlagsSampled,
+		Remote:     true,
+	})
+	ctx := trace.ContextWithSpanContext(context.Background(), sc)
+
+	_, err := client.ListFeeds(ctx, connect.NewRequest(&feedv1.ListFeedsRequest{}))
+	assert.NilError(t, err)
+
+	// 3. Verify Backend spans share the same Trace ID
+	spans := sr.Ended()
+	assert.Assert(t, len(spans) > 0, "should have recorded spans")
+	
+	foundAtLeastOneWithCorrectTraceID := false
+	for _, span := range spans {
+		t.Logf("Span: %s, Kind: %s, TraceID: %s", span.Name(), span.SpanKind(), span.SpanContext().TraceID().String())
+		if span.SpanContext().TraceID().String() == traceIDStr {
+			foundAtLeastOneWithCorrectTraceID = true
+		}
+	}
+	assert.Assert(t, foundAtLeastOneWithCorrectTraceID, "expected at least one span with trace ID %s", traceIDStr)
 }
