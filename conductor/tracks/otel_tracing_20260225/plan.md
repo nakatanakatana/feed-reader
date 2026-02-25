@@ -9,8 +9,8 @@
 ## Phase 2: Backend Instrumentation
 - [x] Task: Write Tests: Verify Connect RPC interceptor adds tracing spans.
 - [x] Task: Implement: Add Connect RPC tracing interceptor to the server. 2c83da0
-- [ ] Task: Write Tests: Verify `otelsql` records spans for database queries.
-- [ ] Task: Implement: Integrate `github.com/XSAM/otelsql` into the database connection logic.
+- [x] Task: Write Tests: Verify `otelsql` records spans for database queries.
+- [x] Task: Implement: Integrate `github.com/XSAM/otelsql` into the database connection logic. 402b979
 - [ ] Task: Write Tests: Verify background workers create spans.
 - [ ] Task: Implement: Add tracing to the fetcher service and worker pool.
 - [ ] Task: Conductor - User Manual Verification 'Backend Instrumentation' (Protocol in workflow.md)
