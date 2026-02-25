@@ -13,7 +13,9 @@ import { TransportProvider } from "./lib/transport-context";
 import { initMocks } from "./mocks/init";
 
 // Set up OTEL
-initOTEL();
+if (import.meta.env.VITE_OTEL_EXPORTER_URL) {
+  initOTEL();
+}
 
 // Set up Service Worker
 initPWA();

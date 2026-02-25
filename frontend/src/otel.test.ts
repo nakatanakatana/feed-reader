@@ -1,7 +1,7 @@
 import { HttpResponse, http } from "msw";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { worker } from "./mocks/browser";
-import { initOTEL } from "./otel";
+import { initOTEL, resetInitialized } from "./otel";
 
 vi.mock("web-vitals", () => ({
   onCLS: vi.fn(),
@@ -12,6 +12,15 @@ vi.mock("web-vitals", () => ({
 import { onCLS, onFCP, onLCP } from "web-vitals";
 
 describe("Frontend OTEL Instrumentation", () => {
+  beforeEach(() => {
+    vi.stubEnv("VITE_OTEL_EXPORTER_URL", "http://localhost:4318/v1/traces");
+    resetInitialized();
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
   it("should add traceparent header to fetch requests", async () => {
     initOTEL();
 

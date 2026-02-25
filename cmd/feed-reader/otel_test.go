@@ -29,8 +29,9 @@ func TestInitOTEL_Unset(t *testing.T) {
 
 func TestInitOTEL_Set(t *testing.T) {
 	// Set env to some dummy endpoint
-	_ = os.Setenv("OTEL_EXPORTER_OTLP_ENDPOINT", "localhost:4317")
-	defer func() { _ = os.Unsetenv("OTEL_EXPORTER_OTLP_ENDPOINT") }()
+	err := os.Setenv("OTEL_EXPORTER_OTLP_ENDPOINT", "localhost:4317")
+	assert.NilError(t, err)
+	t.Cleanup(func() { _ = os.Unsetenv("OTEL_EXPORTER_OTLP_ENDPOINT") })
 	
 	ctx := context.Background()
 	logger := slog.Default()
@@ -38,13 +39,14 @@ func TestInitOTEL_Set(t *testing.T) {
 	shutdown, err := InitOTEL(ctx, logger)
 	assert.NilError(t, err)
 	assert.Assert(t, shutdown != nil)
-	_ = shutdown(ctx)
+	err = shutdown(ctx)
+	assert.NilError(t, err)
 }
 
 func TestNoOpBehavior(t *testing.T) {
 	// Reset global tracer provider to noop for this test to avoid interference
 	old := otel.GetTracerProvider()
-	defer otel.SetTracerProvider(old)
+	t.Cleanup(func() { otel.SetTracerProvider(old) })
 	otel.SetTracerProvider(noop.NewTracerProvider())
 
 	// Ensure env is unset
@@ -55,7 +57,7 @@ func TestNoOpBehavior(t *testing.T) {
 	
 	shutdown, err := InitOTEL(ctx, logger)
 	assert.NilError(t, err)
-	defer func() { _ = shutdown(ctx) }()
+	t.Cleanup(func() { _ = shutdown(ctx) })
 
 	// Get tracer
 	tracer := otel.GetTracerProvider().Tracer("test")

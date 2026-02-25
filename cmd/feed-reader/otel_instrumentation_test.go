@@ -24,11 +24,21 @@ import (
 	"gotest.tools/v3/assert"
 )
 
-func TestConnectRPCTracing(t *testing.T) {
-	// Setup trace recorder
+func setupTestOTEL(t *testing.T) *tracetest.SpanRecorder {
 	sr := tracetest.NewSpanRecorder()
 	tp := sdktrace.NewTracerProvider(sdktrace.WithSpanProcessor(sr))
+	oldTP := otel.GetTracerProvider()
 	otel.SetTracerProvider(tp)
+	t.Cleanup(func() {
+		_ = tp.Shutdown(context.Background())
+		otel.SetTracerProvider(oldTP)
+	})
+	return sr
+}
+
+func TestConnectRPCTracing(t *testing.T) {
+	// Setup trace recorder
+	sr := setupTestOTEL(t)
 
 	// Create otelconnect interceptor
 	interceptor, err := otelconnect.NewInterceptor()
@@ -44,7 +54,7 @@ func TestConnectRPCTracing(t *testing.T) {
 	mux.Handle(feedPath, handler)
 	
 	server := httptest.NewServer(handler)
-	defer server.Close()
+	t.Cleanup(server.Close)
 
 	// Setup client with interceptor
 	client := feedv1connect.NewFeedServiceClient(server.Client(), server.URL, connect.WithInterceptors(interceptor))
@@ -71,9 +81,7 @@ func TestConnectRPCTracing(t *testing.T) {
 
 func TestDatabaseTracing(t *testing.T) {
 	// Setup trace recorder
-	sr := tracetest.NewSpanRecorder()
-	tp := sdktrace.NewTracerProvider(sdktrace.WithSpanProcessor(sr))
-	otel.SetTracerProvider(tp)
+	sr := setupTestOTEL(t)
 
 	// Open DB with otelsql
 	driverName, err := otelsql.Register("sqlite", otelsql.WithAttributes(semconv.DBSystemSqlite))
@@ -81,7 +89,7 @@ func TestDatabaseTracing(t *testing.T) {
 
 	db, err := sql.Open(driverName, ":memory:")
 	assert.NilError(t, err)
-	defer func() { _ = db.Close() }()
+	t.Cleanup(func() { _ = db.Close() })
 
 	// Perform query
 	ctx := context.Background()
@@ -106,9 +114,7 @@ func TestDatabaseTracing(t *testing.T) {
 
 func TestWorkerPoolTracing(t *testing.T) {
 	// Setup trace recorder
-	sr := tracetest.NewSpanRecorder()
-	tp := sdktrace.NewTracerProvider(sdktrace.WithSpanProcessor(sr))
-	otel.SetTracerProvider(tp)
+	sr := setupTestOTEL(t)
 
 	pool := NewWorkerPool(1)
 	ctx, cancel := context.WithCancel(context.Background())
@@ -139,16 +145,14 @@ func TestWorkerPoolTracing(t *testing.T) {
 
 func TestFetcherServiceTracing(t *testing.T) {
 	// Setup trace recorder
-	sr := tracetest.NewSpanRecorder()
-	tp := sdktrace.NewTracerProvider(sdktrace.WithSpanProcessor(sr))
-	otel.SetTracerProvider(tp)
+	sr := setupTestOTEL(t)
 
 	_, db := setupTestDB(t)
 	s := store.NewStore(db)
 	fetcher := &mockFetcher{}
 	pool := NewWorkerPool(1)
 	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	t.Cleanup(cancel)
 	pool.Start(ctx)
 	wq := NewWriteQueueService(s, WriteQueueConfig{MaxBatchSize: 1, FlushInterval: time.Millisecond}, slog.Default())
 	go wq.Start(ctx)
@@ -172,22 +176,24 @@ func TestFetcherServiceTracing(t *testing.T) {
 
 func TestE2ETracing(t *testing.T) {
 	// 1. Setup Backend with Recorder
-	sr := tracetest.NewSpanRecorder()
-	tp := sdktrace.NewTracerProvider(sdktrace.WithSpanProcessor(sr))
-	otel.SetTracerProvider(tp)
+	sr := setupTestOTEL(t)
+	oldProp := otel.GetTextMapPropagator()
 	otel.SetTextMapPropagator(propagation.TraceContext{})
+	t.Cleanup(func() { otel.SetTextMapPropagator(oldProp) })
 
-	interceptor, _ := otelconnect.NewInterceptor(
+	interceptor, err := otelconnect.NewInterceptor(
 		otelconnect.WithPropagator(propagation.TraceContext{}),
 		otelconnect.WithTrustRemote(),
 	)
+	assert.NilError(t, err)
+
 	_, db := setupTestDB(t)
 	s := store.NewStore(db)
 	feedServer := NewFeedServer(s, mockUUIDGenerator{}, &mockFetcher{}, &mockItemFetcher{}, nil)
 	_, handler := feedv1connect.NewFeedServiceHandler(feedServer, connect.WithInterceptors(interceptor))
 	
 	server := httptest.NewServer(handler)
-	defer server.Close()
+	t.Cleanup(server.Close)
 
 	// 2. Simulate Frontend Request with TraceContext
 	client := feedv1connect.NewFeedServiceClient(server.Client(), server.URL, connect.WithInterceptors(interceptor))
@@ -196,8 +202,10 @@ func TestE2ETracing(t *testing.T) {
 	traceIDStr := "4bf92f3577b34da6a3ce929d0e0e4736"
 	spanIDStr := "00f067aa0ba902b7"
 	
-	tid, _ := trace.TraceIDFromHex(traceIDStr)
-	sid, _ := trace.SpanIDFromHex(spanIDStr)
+	tid, err := trace.TraceIDFromHex(traceIDStr)
+	assert.NilError(t, err)
+	sid, err := trace.SpanIDFromHex(spanIDStr)
+	assert.NilError(t, err)
 	sc := trace.NewSpanContext(trace.SpanContextConfig{
 		TraceID:    tid,
 		SpanID:     sid,
@@ -206,7 +214,7 @@ func TestE2ETracing(t *testing.T) {
 	})
 	ctx := trace.ContextWithSpanContext(context.Background(), sc)
 
-	_, err := client.ListFeeds(ctx, connect.NewRequest(&feedv1.ListFeedsRequest{}))
+	_, err = client.ListFeeds(ctx, connect.NewRequest(&feedv1.ListFeedsRequest{}))
 	assert.NilError(t, err)
 
 	// 3. Verify Backend spans share the same Trace ID
@@ -215,7 +223,6 @@ func TestE2ETracing(t *testing.T) {
 	
 	foundAtLeastOneWithCorrectTraceID := false
 	for _, span := range spans {
-		t.Logf("Span: %s, Kind: %s, TraceID: %s", span.Name(), span.SpanKind(), span.SpanContext().TraceID().String())
 		if span.SpanContext().TraceID().String() == traceIDStr {
 			foundAtLeastOneWithCorrectTraceID = true
 		}

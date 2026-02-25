@@ -9,16 +9,31 @@ import { WebTracerProvider } from "@opentelemetry/sdk-trace-web";
 import { SemanticResourceAttributes } from "@opentelemetry/semantic-conventions";
 import { type Metric, onCLS, onFCP, onLCP } from "web-vitals";
 
+let initialized = false;
+
+export const resetInitialized = () => {
+  initialized = false;
+};
+
 export const initOTEL = () => {
+  if (initialized) {
+    return;
+  }
+
+  const exporterUrl = import.meta.env.VITE_OTEL_EXPORTER_URL;
+  if (!exporterUrl) {
+    return;
+  }
+
   const provider = new WebTracerProvider({
     resource: new Resource({
       [SemanticResourceAttributes.SERVICE_NAME]: "feed-reader-frontend",
     }),
   });
 
-  // Export to collector via proxy
+  // Export to collector via proxy or direct URL
   const exporter = new OTLPTraceExporter({
-    url: "/api/otlp/v1/traces",
+    url: exporterUrl,
   });
 
   provider.addSpanProcessor(new BatchSpanProcessor(exporter));
@@ -58,4 +73,6 @@ export const initOTEL = () => {
   onCLS(reportVitals);
   onLCP(reportVitals);
   onFCP(reportVitals);
+
+  initialized = true;
 };

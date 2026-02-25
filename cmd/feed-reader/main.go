@@ -108,6 +108,10 @@ func main() {
 	go scheduler.Start(ctx)
 
 	// 5. Initialize API Server
+	// Note: WithTrustRemote() is enabled to support distributed tracing from the frontend.
+	// This means the server trusts incoming traceparent headers. In a production environment
+	// exposed directly to the internet, this should be gated behind a trusted proxy check
+	// to avoid trace injection from unauthorized clients.
 	otelInterceptor, err := otelconnect.NewInterceptor(otelconnect.WithTrustRemote())
 	if err != nil {
 		logger.ErrorContext(ctx, "failed to create OTEL interceptor", "error", err)
