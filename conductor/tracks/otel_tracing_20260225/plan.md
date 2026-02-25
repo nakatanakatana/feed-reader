@@ -23,7 +23,7 @@
 - [x] Task: Implement: Integrate `web-vitals` library to capture LCP, FCP, CLS. 199faa2
 - [x] Task: Conductor - User Manual Verification 'Frontend Instrumentation' (Protocol in workflow.md) 7e8dab2
 
-## Phase 4: Integration & E2E Validation
+## Phase 4: Integration & E2E Validation [checkpoint: 872921c]
 - [x] Task: Verify end-to-end trace flow from frontend to backend DB queries using a local OTLP collector. 199faa2
 - [x] Task: Verify no-op behavior when `OTEL_EXPORTER_OTLP_ENDPOINT` is unset. a848fa8
-- [ ] Task: Conductor - User Manual Verification 'Integration & E2E Validation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Integration & E2E Validation' (Protocol in workflow.md) 872921c
