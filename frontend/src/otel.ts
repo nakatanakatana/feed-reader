@@ -50,7 +50,7 @@ export const initOTEL = () => {
           propagateTraceHeaderCorsUrls: [
             /localhost:8080/,
             /localhost:3000/,
-            new RegExp(window.location.origin),
+            window.location.origin,
           ],
         },
       }),

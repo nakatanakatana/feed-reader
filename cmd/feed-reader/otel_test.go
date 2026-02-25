@@ -32,6 +32,13 @@ func TestInitOTEL_Set(t *testing.T) {
 	err := os.Setenv("OTEL_EXPORTER_OTLP_ENDPOINT", "localhost:4317")
 	assert.NilError(t, err)
 	t.Cleanup(func() { _ = os.Unsetenv("OTEL_EXPORTER_OTLP_ENDPOINT") })
+
+	oldTP := otel.GetTracerProvider()
+	oldProp := otel.GetTextMapPropagator()
+	t.Cleanup(func() {
+		otel.SetTracerProvider(oldTP)
+		otel.SetTextMapPropagator(oldProp)
+	})
 	
 	ctx := context.Background()
 	logger := slog.Default()

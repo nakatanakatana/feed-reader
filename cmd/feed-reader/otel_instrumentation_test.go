@@ -53,7 +53,7 @@ func TestConnectRPCTracing(t *testing.T) {
 	mux := http.NewServeMux()
 	mux.Handle(feedPath, handler)
 	
-	server := httptest.NewServer(handler)
+	server := httptest.NewServer(mux)
 	t.Cleanup(server.Close)
 
 	// Setup client with interceptor

@@ -12,20 +12,20 @@ import (
 )
 
 var (
-	otelDriverName string
-	otelOnce       sync.Once
+	otelDriverName  string
+	otelOnce        sync.Once
+	otelRegisterErr error
 )
 
 // OpenDB opens a connection to the SQLite database with recommended pragmas enabled.
 // It ensures foreign keys are enabled. These settings are appended to the DSN, 
 // so they will override any conflicting pragmas already present in the input DSN.
 func OpenDB(dsn string) (*sql.DB, error) {
-	var registerErr error
 	otelOnce.Do(func() {
-		otelDriverName, registerErr = otelsql.Register("sqlite", otelsql.WithAttributes(semconv.DBSystemSqlite))
+		otelDriverName, otelRegisterErr = otelsql.Register("sqlite", otelsql.WithAttributes(semconv.DBSystemSqlite))
 	})
-	if registerErr != nil {
-		return nil, fmt.Errorf("failed to register otelsql driver: %w", registerErr)
+	if otelRegisterErr != nil {
+		return nil, fmt.Errorf("failed to register otelsql driver: %w", otelRegisterErr)
 	}
 
 	// Check if DSN is ":memory:"
