@@ -74,6 +74,12 @@ The primary target audience is individuals and organizations seeking control ove
 - **Background Deferral:** To ensure high responsiveness, newly added feeds (via manual entry or OPML import) initially register metadata only. Article content is deferred to the background scheduler for the first crawl.
   - **Maximized Viewport:** Redundant page titles (e.g., "All Items") are omitted in favor of active navigation states, allowing more content to be visible immediately on both desktop and mobile.
 
+- **Observability & Tracing:** Integrated OpenTelemetry (OTEL) support for end-to-end performance monitoring.
+  - **Distributed Tracing:** Captures request-level traces spanning from frontend user actions to backend API calls and down to individual database queries.
+  - **Background Visibility:** Monitors execution time and performance of background worker tasks, including feed fetching and ingestion.
+  - **Core Web Vitals:** Automatically captures and reports frontend performance metrics (LCP, FCP, CLS) to provide insights into user-perceived responsiveness.
+  - **Opt-in Activation:** High-performance "No-op" default ensures zero overhead when tracing is disabled. Activating full observability is as simple as providing an OTLP collector endpoint via environment variables.
+
 ### Success Metrics
 - **User Engagement:** Regular usage of the application for daily reading.
 - **Deployment Ease:** Simple setup process for self-hosting (e.g., Docker Compose).
