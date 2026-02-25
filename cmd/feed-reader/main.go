@@ -41,6 +41,18 @@ func main() {
 
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
+	// Initialize OTEL
+	otelShutdown, err := InitOTEL(ctx, logger)
+	if err != nil {
+		logger.ErrorContext(ctx, "failed to initialize OTEL", "error", err)
+		os.Exit(1)
+	}
+	defer func() {
+		if err := otelShutdown(context.Background()); err != nil {
+			logger.ErrorContext(ctx, "failed to shutdown OTEL", "error", err)
+		}
+	}()
+
 	var cfg config
 	if err := env.Parse(&cfg); err != nil {
 		logger.ErrorContext(ctx, "failed to parse env", "error", err)
