@@ -149,11 +149,11 @@ describe("ItemList Clear Read Items", () => {
     const refreshButton = page.getByRole("button", { name: /refresh/i });
     await refreshButton.click();
 
-    // Read Item should reappear because queryFn clears the transient IDs
+    // Read Item should NOT reappear because queryFn NO LONGER clears the transient IDs
     await vi.waitFor(async () => {
       await expect
         .element(page.getByText("Read Item", { exact: true }))
-        .toBeInTheDocument();
+        .not.toBeInTheDocument();
     });
   });
 });

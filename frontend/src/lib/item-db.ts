@@ -54,9 +54,6 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
       refetchInterval: 1 * 60 * 1000,
       queryKey: ["items", { since, showRead }],
       queryFn: async ({ queryKey }) => {
-        // Clear transient removed items on any fresh fetch/refetch
-        itemStore.clearTransientRemovedIds();
-
         const existingData =
           (queryClient.getQueryData(queryKey) as ListItem[]) || [];
         const lastFetchedValue = lastFetched();
