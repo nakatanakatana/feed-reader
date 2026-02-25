@@ -22,6 +22,7 @@ require (
 	connectrpc.com/otelconnect v0.9.0 // indirect
 	github.com/JohannesKaufmann/dom v0.2.0 // indirect
 	github.com/PuerkitoBio/goquery v1.9.2 // indirect
+	github.com/XSAM/otelsql v0.41.0 // indirect
 	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect

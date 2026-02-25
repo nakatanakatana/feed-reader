@@ -2,18 +2,21 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"connectrpc.com/connect"
 	"connectrpc.com/otelconnect"
+	"github.com/XSAM/otelsql"
 	feedv1 "github.com/nakatanakatana/feed-reader/gen/go/feed/v1"
 	"github.com/nakatanakatana/feed-reader/gen/go/feed/v1/feedv1connect"
 	"github.com/nakatanakatana/feed-reader/store"
 	"go.opentelemetry.io/otel"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
+	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 	"go.opentelemetry.io/otel/trace"
 	"gotest.tools/v3/assert"
 )
@@ -61,4 +64,39 @@ func TestConnectRPCTracing(t *testing.T) {
 		}
 	}
 	assert.Assert(t, foundServerSpan, "should have found a server span")
+}
+
+func TestDatabaseTracing(t *testing.T) {
+	// Setup trace recorder
+	sr := tracetest.NewSpanRecorder()
+	tp := sdktrace.NewTracerProvider(sdktrace.WithSpanProcessor(sr))
+	otel.SetTracerProvider(tp)
+
+	// Open DB with otelsql
+	driverName, err := otelsql.Register("sqlite", otelsql.WithAttributes(semconv.DBSystemSqlite))
+	assert.NilError(t, err)
+
+	db, err := sql.Open(driverName, ":memory:")
+	assert.NilError(t, err)
+	defer db.Close()
+
+	// Perform query
+	ctx := context.Background()
+	_, err = db.ExecContext(ctx, "CREATE TABLE test (id INT)")
+	assert.NilError(t, err)
+
+	// Verify spans
+	spans := sr.Ended()
+	assert.Assert(t, len(spans) > 0, "should have at least one span for DB query")
+	
+	foundDBSpan := false
+	for _, span := range spans {
+		for _, attr := range span.Attributes() {
+			if attr.Key == semconv.DBSystemKey && attr.Value.AsString() == "sqlite" {
+				foundDBSpan = true
+				break
+			}
+		}
+	}
+	assert.Assert(t, foundDBSpan, "should have found a DB span")
 }
