@@ -3,6 +3,7 @@ import "solid-devtools";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import { createRouter, RouterProvider } from "@tanstack/solid-router";
 import { initPWA } from "./pwa";
+import { initOTEL } from "./otel";
 import { routeTree } from "./routeTree.gen";
 import "./styles.css";
 import { config } from "./config";
@@ -10,6 +11,9 @@ import { queryClient, transport } from "./lib/query";
 import { ToastProvider } from "./lib/toast";
 import { TransportProvider } from "./lib/transport-context";
 import { initMocks } from "./mocks/init";
+
+// Set up OTEL
+initOTEL();
 
 // Set up Service Worker
 initPWA();
