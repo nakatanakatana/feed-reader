@@ -3,11 +3,11 @@
 ## Phase 1: Research & Identification
 This phase focuses on identifying candidates for deletion across the backend and frontend.
 
-- [ ] Task: Backend: Run `golangci-lint` with `unused` and `deadcode` to identify unused Go symbols.
-- [ ] Task: Frontend: Run `vite-bundle-analyzer` and Biome linting to find unused components and modules.
-- [ ] Task: Manual Audit: Review `routeTree.gen.ts` and API handlers for unreachable endpoints.
-- [ ] Task: Coverage Analysis: Check Go and Vitest coverage reports for 0% coverage areas.
-- [ ] Task: Conductor - User Manual Verification 'Research & Identification' (Protocol in workflow.md)
+- [x] Task: Backend: Run `golangci-lint` with `unused` and `deadcode` to identify unused Go symbols.
+- [x] Task: Frontend: Run `vite-bundle-analyzer` and Biome linting to find unused components and modules.
+- [x] Task: Manual Audit: Review `routeTree.gen.ts` and API handlers for unreachable endpoints.
+- [x] Task: Coverage Analysis: Check Go and Vitest coverage reports for 0% coverage areas.
+- [x] Task: Conductor - User Manual Verification 'Research & Identification' (Protocol in workflow.md)
 
 ## Phase 2: Backend Cleanup
 Surgical removal of confirmed unused code in the Go backend.
