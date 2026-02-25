@@ -9,7 +9,7 @@ This phase focuses on identifying candidates for deletion across the backend and
 - [x] Task: Coverage Analysis: Check Go and Vitest coverage reports for 0% coverage areas.
 - [x] Task: Conductor - User Manual Verification 'Research & Identification' (Protocol in workflow.md)
 
-## Phase 2: Backend Cleanup
+## Phase 2: Backend Cleanup [checkpoint: 6b0b857]
 Surgical removal of confirmed unused code in the Go backend.
 
 - [x] Task: Remove unused functions, variables, and types identified in Phase 1.
