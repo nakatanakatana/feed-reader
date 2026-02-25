@@ -15,13 +15,13 @@
 - [x] Task: Implement: Add tracing to the fetcher service and worker pool. e78b447
 - [x] Task: Conductor - User Manual Verification 'Backend Instrumentation' (Protocol in workflow.md) 6e8ebd5
 
-## Phase 3: Frontend Instrumentation
+## Phase 3: Frontend Instrumentation [checkpoint: 7e8dab2]
 - [x] Task: Research OTEL libraries for SolidJS (e.g., `@opentelemetry/sdk-trace-web`).
 - [x] Task: Write Tests: Verify frontend traces include context propagation headers.
 - [x] Task: Implement: Setup OTEL Web SDK in the frontend and configure context propagation. 199faa2
 - [x] Task: Write Tests: Verify Web Vitals are captured. 199faa2
 - [x] Task: Implement: Integrate `web-vitals` library to capture LCP, FCP, CLS. 199faa2
-- [ ] Task: Conductor - User Manual Verification 'Frontend Instrumentation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Frontend Instrumentation' (Protocol in workflow.md) 7e8dab2
 
 ## Phase 4: Integration & E2E Validation
 - [ ] Task: Verify end-to-end trace flow from frontend to backend DB queries using a local OTLP collector.
