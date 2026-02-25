@@ -1,6 +1,6 @@
 # Implementation Plan: Cleanup Unused Code
 
-## Phase 1: Research & Identification
+## Phase 1: Research & Identification [checkpoint: cb3ad75]
 This phase focuses on identifying candidates for deletion across the backend and frontend.
 
 - [x] Task: Backend: Run `golangci-lint` with `unused` and `deadcode` to identify unused Go symbols.
