@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/trace/noop"
 	"gotest.tools/v3/assert"
 )
 
@@ -37,9 +38,15 @@ func TestInitOTEL_Set(t *testing.T) {
 	shutdown, err := InitOTEL(ctx, logger)
 	assert.NilError(t, err)
 	assert.Assert(t, shutdown != nil)
+	_ = shutdown(ctx)
 }
 
 func TestNoOpBehavior(t *testing.T) {
+	// Reset global tracer provider to noop for this test to avoid interference
+	old := otel.GetTracerProvider()
+	defer otel.SetTracerProvider(old)
+	otel.SetTracerProvider(noop.NewTracerProvider())
+
 	// Ensure env is unset
 	os.Unsetenv("OTEL_EXPORTER_OTLP_ENDPOINT")
 	
