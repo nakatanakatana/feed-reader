@@ -3,9 +3,11 @@ package main
 import (
 	"context"
 	"database/sql"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"connectrpc.com/connect"
 	"connectrpc.com/otelconnect"
@@ -99,4 +101,70 @@ func TestDatabaseTracing(t *testing.T) {
 		}
 	}
 	assert.Assert(t, foundDBSpan, "should have found a DB span")
+}
+
+func TestWorkerPoolTracing(t *testing.T) {
+	// Setup trace recorder
+	sr := tracetest.NewSpanRecorder()
+	tp := sdktrace.NewTracerProvider(sdktrace.WithSpanProcessor(sr))
+	otel.SetTracerProvider(tp)
+
+	pool := NewWorkerPool(1)
+	ctx, cancel := context.WithCancel(context.Background())
+	pool.Start(ctx)
+
+	done := make(chan struct{})
+	pool.AddTask(func(ctx context.Context) error {
+		defer close(done)
+		return nil
+	})
+
+	<-done
+	cancel()
+	pool.Wait()
+
+	spans := sr.Ended()
+	assert.Assert(t, len(spans) > 0, "should have at least one span for worker task")
+	
+	foundWorkerSpan := false
+	for _, span := range spans {
+		if span.Name() == "worker_pool.task" {
+			foundWorkerSpan = true
+			break
+		}
+	}
+	assert.Assert(t, foundWorkerSpan, "should have found a worker task span")
+}
+
+func TestFetcherServiceTracing(t *testing.T) {
+	// Setup trace recorder
+	sr := tracetest.NewSpanRecorder()
+	tp := sdktrace.NewTracerProvider(sdktrace.WithSpanProcessor(sr))
+	otel.SetTracerProvider(tp)
+
+	_, db := setupTestDB(t)
+	s := store.NewStore(db)
+	fetcher := &mockFetcher{}
+	pool := NewWorkerPool(1)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	pool.Start(ctx)
+	wq := NewWriteQueueService(s, WriteQueueConfig{MaxBatchSize: 1, FlushInterval: time.Millisecond}, slog.Default())
+	go wq.Start(ctx)
+
+	svc := NewFetcherService(s, fetcher, pool, wq, slog.Default(), time.Hour)
+	
+	f := store.FullFeed{ID: "f1", Url: "u1"}
+	err := svc.FetchAndSave(ctx, f)
+	assert.NilError(t, err)
+
+	spans := sr.Ended()
+	foundFetchSpan := false
+	for _, span := range spans {
+		if span.Name() == "FetcherService.FetchAndSave" {
+			foundFetchSpan = true
+			break
+		}
+	}
+	assert.Assert(t, foundFetchSpan, "should have found a fetcher service span")
 }
