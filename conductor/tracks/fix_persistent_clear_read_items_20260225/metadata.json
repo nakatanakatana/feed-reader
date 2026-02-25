@@ -1,0 +1,8 @@
+{
+  "track_id": "fix_persistent_clear_read_items_20260225",
+  "type": "bug",
+  "status": "new",
+  "created_at": "2026-02-25T00:00:00Z",
+  "updated_at": "2026-02-25T00:00:00Z",
+  "description": "ItemListで既読になったitemを`Clear Read Items`のボタンから消したあとに再度itemのfetchが実行される(定期実行/`Refresh`のボタンどちらでも)と削除した既読のitemが再度表示される状態でした。ローカルのステートから削除して何かアクションがされたときにも再度表示されない状態にしてください"
+}
