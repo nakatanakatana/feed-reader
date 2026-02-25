@@ -16,7 +16,7 @@ Surgical removal of confirmed unused code in the Go backend.
 - [x] Task: Run `go test ./...` to ensure no regressions in existing logic.
 - [x] Task: Conductor - User Manual Verification 'Backend Cleanup' (Protocol in workflow.md)
 
-## Phase 3: Frontend Cleanup
+## Phase 3: Frontend Cleanup [checkpoint: be7d25f]
 Surgical removal of confirmed unused code in the SolidJS frontend.
 
 - [x] Task: Remove unused components, styles (Panda CSS), and hooks.
