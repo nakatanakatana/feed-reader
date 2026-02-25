@@ -12,9 +12,9 @@ This phase focuses on identifying candidates for deletion across the backend and
 ## Phase 2: Backend Cleanup
 Surgical removal of confirmed unused code in the Go backend.
 
-- [ ] Task: Remove unused functions, variables, and types identified in Phase 1.
-- [ ] Task: Run `go test ./...` to ensure no regressions in existing logic.
-- [ ] Task: Conductor - User Manual Verification 'Backend Cleanup' (Protocol in workflow.md)
+- [x] Task: Remove unused functions, variables, and types identified in Phase 1.
+- [x] Task: Run `go test ./...` to ensure no regressions in existing logic.
+- [x] Task: Conductor - User Manual Verification 'Backend Cleanup' (Protocol in workflow.md)
 
 ## Phase 3: Frontend Cleanup
 Surgical removal of confirmed unused code in the SolidJS frontend.

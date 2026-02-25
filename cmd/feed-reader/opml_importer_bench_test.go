@@ -14,7 +14,7 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-func setupBenchmarkDB(b *testing.B) (*store.Queries, *sql.DB) {
+func setupBenchmarkDB(b *testing.B) *sql.DB {
 	b.Helper()
 	db, err := store.OpenDB(":memory:")
 	assert.NilError(b, err, "failed to open db")
@@ -24,7 +24,7 @@ func setupBenchmarkDB(b *testing.B) (*store.Queries, *sql.DB) {
 	_, err = db.Exec(schema.Schema)
 	assert.NilError(b, err, "failed to apply schema")
 
-	return store.New(db), db
+	return db
 }
 
 func generateLargeOPML(count int) []byte {
@@ -40,7 +40,7 @@ func BenchmarkOPMLImporter_ImportSync(b *testing.B) {
 	ctx := context.Background()
 	opmlContent := generateLargeOPML(500)
 
-	_, _ = setupBenchmarkDB(b)
+	_ = setupBenchmarkDB(b)
 
 	fetcher := &mockFetcher{
 		feed: &gofeed.Feed{Title: "Fetched Title"},
@@ -50,7 +50,7 @@ func BenchmarkOPMLImporter_ImportSync(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
-		_, dbIteration := setupBenchmarkDB(b)
+		dbIteration := setupBenchmarkDB(b)
 		sIteration := store.NewStore(dbIteration)
 		importer := NewOPMLImporter(sIteration, fetcher, logger, nil)
 		b.StartTimer()

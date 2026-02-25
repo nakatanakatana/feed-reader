@@ -136,7 +136,7 @@ func (m *mockItemFetcher) FetchFeedsByIDsSync(ctx context.Context, ids []string)
 	return results, nil
 }
 
-func setupServer(t *testing.T, db *sql.DB, uuidErr error, fetcher FeedFetcher, itemFetcher ItemFetcher) (feedv1connect.FeedServiceHandler, *OPMLImporter) {
+func setupServer(t *testing.T, db *sql.DB, uuidErr error, fetcher FeedFetcher, itemFetcher ItemFetcher) feedv1connect.FeedServiceHandler {
 	s := store.NewStore(db)
 	pool := NewWorkerPool(1)
 	pool.Start(context.Background())
@@ -144,7 +144,7 @@ func setupServer(t *testing.T, db *sql.DB, uuidErr error, fetcher FeedFetcher, i
 	wq := NewWriteQueueService(s, WriteQueueConfig{MaxBatchSize: 1, FlushInterval: time.Millisecond}, slog.Default())
 	go wq.Start(context.Background())
 	importer := NewOPMLImporter(s, fetcher, slog.Default(), mockUUIDGenerator{err: uuidErr})
-	return NewFeedServer(s, mockUUIDGenerator{err: uuidErr}, fetcher, itemFetcher, importer), importer
+	return NewFeedServer(s, mockUUIDGenerator{err: uuidErr}, fetcher, itemFetcher, importer)
 }
 
 func TestFeedServer_CreateFeed(t *testing.T) {
@@ -208,7 +208,7 @@ func TestFeedServer_CreateFeed(t *testing.T) {
 			_, db := setupTestDB(t)
 			fetcher := &mockFetcher{feed: tt.mockFeed, err: tt.fetchErr}
 			itemFetcher := &mockItemFetcher{}
-			server, _ := setupServer(t, db, tt.uuidErr, fetcher, itemFetcher)
+			server := setupServer(t, db, tt.uuidErr, fetcher, itemFetcher)
 
 			res, err := server.CreateFeed(ctx, connect.NewRequest(tt.args.req))
 			if tt.wantErr {
@@ -264,7 +264,7 @@ func TestFeedServer_GetFeed(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			_, db := setupTestDB(t)
-			server, _ := setupServer(t, db, nil, &mockFetcher{}, &mockItemFetcher{})
+			server := setupServer(t, db, nil, &mockFetcher{}, &mockItemFetcher{})
 			id := tt.setup(t, server)
 
 			_, err := server.GetFeed(ctx, connect.NewRequest(&feedv1.GetFeedRequest{Id: id}))
@@ -309,7 +309,7 @@ func TestFeedServer_ListFeeds(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			_, db := setupTestDB(t)
-			server, _ := setupServer(t, db, nil, &mockFetcher{}, &mockItemFetcher{})
+			server := setupServer(t, db, nil, &mockFetcher{}, &mockItemFetcher{})
 			tt.setup(t, server)
 
 			res, err := server.ListFeeds(ctx, connect.NewRequest(&feedv1.ListFeedsRequest{}))
@@ -323,7 +323,7 @@ func TestFeedServer_ListFeeds_UnreadCounts(t *testing.T) {
 	ctx := context.Background()
 	_, db := setupTestDB(t)
 	s := store.NewStore(db)
-	server, _ := setupServer(t, db, nil, &mockFetcher{}, &mockItemFetcher{})
+	server := setupServer(t, db, nil, &mockFetcher{}, &mockItemFetcher{})
 
 	// Feed 1
 	f1, err := s.CreateFeed(ctx, store.CreateFeedParams{ID: "f1", Url: "u1", Title: new("Feed 1")})
@@ -398,7 +398,7 @@ func TestFeedServer_UpdateFeed(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			_, db := setupTestDB(t)
-			server, _ := setupServer(t, db, nil, &mockFetcher{}, &mockItemFetcher{})
+			server := setupServer(t, db, nil, &mockFetcher{}, &mockItemFetcher{})
 			req := tt.setup(t, server)
 
 			_, err := server.UpdateFeed(ctx, connect.NewRequest(req))
@@ -437,7 +437,7 @@ func TestFeedServer_DeleteFeed(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			_, db := setupTestDB(t)
-			server, _ := setupServer(t, db, nil, &mockFetcher{}, &mockItemFetcher{})
+			server := setupServer(t, db, nil, &mockFetcher{}, &mockItemFetcher{})
 			id := tt.setup(t, server)
 
 			_, err := server.DeleteFeed(ctx, connect.NewRequest(&feedv1.DeleteFeedRequest{Id: id}))
@@ -487,7 +487,7 @@ func TestFeedServer_RefreshFeeds(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			_, db := setupTestDB(t)
 			itemFetcher := &mockItemFetcher{err: tt.fetchErr}
-			server, _ := setupServer(t, db, nil, &mockFetcher{}, itemFetcher)
+			server := setupServer(t, db, nil, &mockFetcher{}, itemFetcher)
 
 			_, err := server.RefreshFeeds(ctx, connect.NewRequest(&feedv1.RefreshFeedsRequest{Ids: tt.ids}))
 			if tt.wantErr {
@@ -532,7 +532,7 @@ func TestFeedServer_ImportOpml_Sync(t *testing.T) {
 		},
 	}
 
-	server, _ := setupServer(t, db, nil, fetcher, &mockItemFetcher{})
+	server := setupServer(t, db, nil, fetcher, &mockItemFetcher{})
 
 	req := &feedv1.ImportOpmlRequest{
 		OpmlContent: []byte(opmlContent),
@@ -555,7 +555,7 @@ func TestFeedServer_ImportOpml_Sync(t *testing.T) {
 func TestFeedServer_ManageFeedTags(t *testing.T) {
 	ctx := context.Background()
 	_, db := setupTestDB(t)
-	server, _ := setupServer(t, db, nil, &mockFetcher{}, &mockItemFetcher{})
+	server := setupServer(t, db, nil, &mockFetcher{}, &mockItemFetcher{})
 
 	// Setup: 2 feeds and 2 tags
 	f1Res, _ := server.CreateFeed(ctx, connect.NewRequest(&feedv1.CreateFeedRequest{Url: "u1", Title: new("f1")}))
@@ -595,7 +595,7 @@ func TestFeedServer_ManageFeedTags(t *testing.T) {
 func TestFeedServer_SuspendFeeds(t *testing.T) {
 	ctx := context.Background()
 	_, db := setupTestDB(t)
-	server, _ := setupServer(t, db, nil, &mockFetcher{}, &mockItemFetcher{})
+	server := setupServer(t, db, nil, &mockFetcher{}, &mockItemFetcher{})
 
 	// Setup: create a feed
 	res, _ := server.CreateFeed(ctx, connect.NewRequest(&feedv1.CreateFeedRequest{Url: "u1", Title: new("f1")}))
