@@ -87,10 +87,9 @@ exports[`ItemDetailModal > renders item content when itemId is provided 1`] = `
         <div
           class="pos_absolute bottom_6 md:bottom_8 right_6 md:right_8 z_10"
         >
-          <div
+          <output
             aria-live="polite"
             class="pos_absolute w_1px h_1px p_0 m_-1px ov_hidden clip_rect(0,_0,_0,_0) white-space_nowrap bd-w_0"
-            role="status"
           />
           <button
             aria-label="Mark as Read"

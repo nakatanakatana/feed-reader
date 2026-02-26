@@ -5,7 +5,11 @@ import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page, userEvent } from "vitest/browser";
-import { GetItemResponseSchema, ItemSchema, UpdateItemStatusResponseSchema } from "../gen/item/v1/item_pb";
+import {
+  GetItemResponseSchema,
+  ItemSchema,
+  UpdateItemStatusResponseSchema,
+} from "../gen/item/v1/item_pb";
 import { queryClient, transport } from "../lib/query";
 import { ToastProvider } from "../lib/toast";
 import { TransportProvider } from "../lib/transport-context";
@@ -38,7 +42,7 @@ describe("ItemDetailModal Shortcuts", () => {
           }),
         });
         return HttpResponse.json(toJson(GetItemResponseSchema, msg));
-      })
+      }),
     );
   };
 
@@ -55,11 +59,11 @@ describe("ItemDetailModal Shortcuts", () => {
 
     const updateSpy = vi.fn();
     worker.use(
-        http.all("*/item.v1.ItemService/UpdateItemStatus", async ({ request }) => {
-            updateSpy();
-            const msg = create(UpdateItemStatusResponseSchema, {});
-            return HttpResponse.json(toJson(UpdateItemStatusResponseSchema, msg));
-        })
+      http.all("*/item.v1.ItemService/UpdateItemStatus", async () => {
+        updateSpy();
+        const msg = create(UpdateItemStatusResponseSchema, {});
+        return HttpResponse.json(toJson(UpdateItemStatusResponseSchema, msg));
+      }),
     );
 
     dispose = render(
@@ -72,7 +76,7 @@ describe("ItemDetailModal Shortcuts", () => {
     );
 
     await expect.element(page.getByText("Test Item")).toBeInTheDocument();
-    
+
     // Focus the modal to ensure keyboard events are captured
     const dialog = page.getByRole("dialog");
     await expect.element(dialog).toBeInTheDocument();
@@ -86,9 +90,11 @@ describe("ItemDetailModal Shortcuts", () => {
 
     // Verify toggle was called
     await expect.poll(() => updateSpy).toHaveBeenCalled();
-    
+
     // Verify UI updated
-    await expect.element(page.getByRole("button", { name: "Mark as Unread" })).toBeInTheDocument();
+    await expect
+      .element(page.getByRole("button", { name: "Mark as Unread" }))
+      .toBeInTheDocument();
   });
 
   it("toggles read status when 'M' is pressed", async () => {
@@ -96,11 +102,11 @@ describe("ItemDetailModal Shortcuts", () => {
 
     const updateSpy = vi.fn();
     worker.use(
-        http.all("*/item.v1.ItemService/UpdateItemStatus", async ({ request }) => {
-            updateSpy();
-            const msg = create(UpdateItemStatusResponseSchema, {});
-            return HttpResponse.json(toJson(UpdateItemStatusResponseSchema, msg));
-        })
+      http.all("*/item.v1.ItemService/UpdateItemStatus", async () => {
+        updateSpy();
+        const msg = create(UpdateItemStatusResponseSchema, {});
+        return HttpResponse.json(toJson(UpdateItemStatusResponseSchema, msg));
+      }),
     );
 
     dispose = render(
@@ -113,7 +119,7 @@ describe("ItemDetailModal Shortcuts", () => {
     );
 
     await expect.element(page.getByText("Test Item")).toBeInTheDocument();
-    
+
     // Focus the modal to ensure keyboard events are captured
     const dialog = page.getByRole("dialog");
     await expect.element(dialog).toBeInTheDocument();
@@ -127,8 +133,10 @@ describe("ItemDetailModal Shortcuts", () => {
 
     // Verify toggle was called
     await expect.poll(() => updateSpy).toHaveBeenCalled();
-    
+
     // Verify UI updated
-    await expect.element(page.getByRole("button", { name: "Mark as Unread" })).toBeInTheDocument();
+    await expect
+      .element(page.getByRole("button", { name: "Mark as Unread" }))
+      .toBeInTheDocument();
   });
 });

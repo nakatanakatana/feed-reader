@@ -422,8 +422,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             })}
           >
             {/* ARIA Live Region for read/unread toggle announcements */}
-            <div
-              role="status"
+            <output
               aria-live="polite"
               class={css({
                 position: "absolute",
@@ -438,7 +437,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
               })}
             >
               {announcement()}
-            </div>
+            </output>
             <button
               type="button"
               onClick={handleToggleRead}
