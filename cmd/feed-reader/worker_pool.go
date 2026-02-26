@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"sync"
+
+	"go.opentelemetry.io/otel"
 )
 
 // Task represents a unit of work to be executed by the worker pool.
@@ -28,7 +30,13 @@ func (wp *WorkerPool) Start(ctx context.Context) {
 	for i := 0; i < wp.maxWorkers; i++ {
 		wp.wg.Go(func() {
 			for task := range wp.tasks {
-				_ = task(ctx) // Errors are handled within the task or ignored here
+				// Each task execution gets its own span
+				func() {
+					tracer := otel.GetTracerProvider().Tracer("worker_pool")
+					taskCtx, span := tracer.Start(ctx, "worker_pool.task")
+					defer span.End()
+					_ = task(taskCtx) // Errors are handled within the task or ignored here
+				}()
 			}
 		})
 	}

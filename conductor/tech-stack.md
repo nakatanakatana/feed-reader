@@ -7,6 +7,7 @@ The backend is responsible for feed management, article fetching, and providing 
 
 -   **Programming Language:** Go (Golang)
 -   **API Framework:** Connect RPC (Protobuf over HTTP/2)
+-   **Observability:** OpenTelemetry (OTEL) for distributed tracing, using `connectrpc.com/otelconnect` for API instrumentation and `github.com/XSAM/otelsql` for database query tracing.
 -   **Database:** SQLite (Relational storage via `modernc.org/sqlite`, with active foreign key enforcement and cascade deletion)
 -   **SQLite Resilience:** Application-level retry mechanism with exponential backoff for transient lock conflicts (`SQLITE_BUSY`).
 - **Write Consolidation:** Dedicated Write Queue Service to batch multiple write operations into single transactions. For large-scale operations like OPML import, the application utilizes manual bulk transaction scoping and parallel processing to significantly reduce I/O overhead and improve throughput.
@@ -34,6 +35,7 @@ The frontend is a modern Single Page Application (SPA) designed for speed and re
 -   **Testing:** Vitest (Test runner with Browser Mode enabled), Playwright (Browser provider), solid-js/web (for rendering in tests). **Strategy:** Integration tests prioritize actual library logic (e.g., TanStack DB) over internal mocks to ensure high reliability.
 -   **Snapshot Testing:** Vitest `toMatchSnapshot()` (To ensure UI stability and verify complex data transformations)
 -   **API Mocking:** MSW (Mock Service Worker). Serves as the primary mocking layer for both standalone development and integration testing, intercepting network requests at the browser level.
+-   **Observability:** OpenTelemetry (OTEL) JS SDK for browser-side tracing and performance monitoring, integrated with `web-vitals` for Core Web Vitals reporting.
 -   **Property-Based Testing:** `fast-check` (For robust logic validation)
 -   **Bundle Analysis:** `vite-bundle-analyzer` (outputs static HTML and JSON reports)
 -   **Linting & Formatting:** BiomeJS (Fast all-in-one toolchain)

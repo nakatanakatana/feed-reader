@@ -2,6 +2,7 @@ import { render } from "solid-js/web";
 import "solid-devtools";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import { createRouter, RouterProvider } from "@tanstack/solid-router";
+import { initOTEL } from "./otel";
 import { initPWA } from "./pwa";
 import { routeTree } from "./routeTree.gen";
 import "./styles.css";
@@ -10,6 +11,11 @@ import { queryClient, transport } from "./lib/query";
 import { ToastProvider } from "./lib/toast";
 import { TransportProvider } from "./lib/transport-context";
 import { initMocks } from "./mocks/init";
+
+// Set up OTEL
+if (import.meta.env.VITE_OTEL_EXPORTER_URL) {
+  initOTEL();
+}
 
 // Set up Service Worker
 initPWA();

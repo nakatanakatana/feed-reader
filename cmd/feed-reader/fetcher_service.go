@@ -8,6 +8,9 @@ import (
 	"sync"
 	"time"
 
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 	"github.com/mmcdole/gofeed"
 	"github.com/nakatanakatana/feed-reader/store"
 )
@@ -21,6 +24,7 @@ type FetcherService struct {
 	logger        *slog.Logger
 	fetchInterval time.Duration
 	fetching      sync.Map // feedID -> struct{}{}
+	tracer        trace.Tracer
 }
 
 // NewFetcherService creates a new FetcherService.
@@ -32,6 +36,7 @@ func NewFetcherService(s *store.Store, f FeedFetcher, p *WorkerPool, wq *WriteQu
 		writeQueue:    wq,
 		logger:        l,
 		fetchInterval: fetchInterval,
+		tracer:        otel.Tracer("fetcher_service"),
 	}
 }
 
@@ -44,6 +49,11 @@ type FeedFetchResult struct {
 
 // FetchFeedsByIDsSync initiates the fetching process for specified feeds and waits for completion.
 func (s *FetcherService) FetchFeedsByIDsSync(ctx context.Context, ids []string) ([]FeedFetchResult, error) {
+	ctx, span := s.tracer.Start(ctx, "FetcherService.FetchFeedsByIDsSync",
+		trace.WithAttributes(attribute.Int("feed.count", len(ids))),
+	)
+	defer span.End()
+
 	s.logger.InfoContext(ctx, "starting synchronous fetch for feeds", "count", len(ids))
 
 	feeds, err := s.store.ListFeedsByIDs(ctx, ids)
@@ -151,6 +161,9 @@ func (s *FetcherService) fetchAndSaveSync(ctx context.Context, f store.FullFeed)
 
 // FetchAllFeeds initiates the fetching process for feeds that are due to be fetched.
 func (s *FetcherService) FetchAllFeeds(ctx context.Context) error {
+	ctx, span := s.tracer.Start(ctx, "FetcherService.FetchAllFeeds")
+	defer span.End()
+
 	s.logger.InfoContext(ctx, "starting background fetch for due feeds")
 
 	feeds, err := s.store.ListFeedsToFetch(ctx)
@@ -187,6 +200,11 @@ func (s *FetcherService) FetchAllFeeds(ctx context.Context) error {
 
 // FetchFeedsByIDs initiates the fetching process for specified feeds, bypassing the interval check.
 func (s *FetcherService) FetchFeedsByIDs(ctx context.Context, ids []string) error {
+	ctx, span := s.tracer.Start(ctx, "FetcherService.FetchFeedsByIDs",
+		trace.WithAttributes(attribute.Int("feed.count", len(ids))),
+	)
+	defer span.End()
+
 	s.logger.InfoContext(ctx, "starting forced fetch for feeds", "count", len(ids))
 
 	feeds, err := s.store.ListFeedsByIDs(ctx, ids)
@@ -207,6 +225,14 @@ func (s *FetcherService) FetchFeedsByIDs(ctx context.Context, ids []string) erro
 }
 
 func (s *FetcherService) FetchAndSave(ctx context.Context, f store.FullFeed) error {
+	ctx, span := s.tracer.Start(ctx, "FetcherService.FetchAndSave",
+		trace.WithAttributes(
+			attribute.String("feed.id", f.ID),
+			attribute.String("feed.url", f.Url),
+		),
+	)
+	defer span.End()
+
 	s.logger.InfoContext(ctx, "fetching feed", "url", f.Url, "id", f.ID)
 
 	if _, loaded := s.fetching.LoadOrStore(f.ID, struct{}{}); loaded {

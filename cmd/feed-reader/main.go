@@ -11,6 +11,8 @@ import (
 	"time"
 
 	"github.com/caarlos0/env/v11"
+	"connectrpc.com/connect"
+	"connectrpc.com/otelconnect"
 	"github.com/nakatanakatana/feed-reader/frontend"
 	"github.com/nakatanakatana/feed-reader/gen/go/feed/v1/feedv1connect"
 	"github.com/nakatanakatana/feed-reader/gen/go/item/v1/itemv1connect"
@@ -40,6 +42,18 @@ func main() {
 	defer stop()
 
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+
+	// Initialize OTEL
+	otelShutdown, err := InitOTEL(ctx, logger)
+	if err != nil {
+		logger.ErrorContext(ctx, "failed to initialize OTEL", "error", err)
+		os.Exit(1)
+	}
+	defer func() {
+		if err := otelShutdown(context.Background()); err != nil {
+			logger.ErrorContext(ctx, "failed to shutdown OTEL", "error", err)
+		}
+	}()
 
 	var cfg config
 	if err := env.Parse(&cfg); err != nil {
@@ -94,14 +108,24 @@ func main() {
 	go scheduler.Start(ctx)
 
 	// 5. Initialize API Server
+	// Note: WithTrustRemote() is enabled to support distributed tracing from the frontend.
+	// This means the server trusts incoming traceparent headers. In a production environment
+	// exposed directly to the internet, this should be gated behind a trusted proxy check
+	// to avoid trace injection from unauthorized clients.
+	otelInterceptor, err := otelconnect.NewInterceptor(otelconnect.WithTrustRemote())
+	if err != nil {
+		logger.ErrorContext(ctx, "failed to create OTEL interceptor", "error", err)
+		os.Exit(1)
+	}
+
 	feedServer := NewFeedServer(s, nil, fetcher, fetchService, opmlImporter)
-	feedPath, feedHandler := feedv1connect.NewFeedServiceHandler(feedServer)
+	feedPath, feedHandler := feedv1connect.NewFeedServiceHandler(feedServer, connect.WithInterceptors(otelInterceptor))
 
 	itemServer := NewItemServer(s, nil)
-	itemPath, itemHandler := itemv1connect.NewItemServiceHandler(itemServer)
+	itemPath, itemHandler := itemv1connect.NewItemServiceHandler(itemServer, connect.WithInterceptors(otelInterceptor))
 
 	tagServer := NewTagServer(s, nil)
-	tagPath, tagHandler := tagv1connect.NewTagServiceHandler(tagServer)
+	tagPath, tagHandler := tagv1connect.NewTagServiceHandler(tagServer, connect.WithInterceptors(otelInterceptor))
 
 	mux := http.NewServeMux()
 	mux.Handle("/api"+feedPath, http.StripPrefix("/api", feedHandler))

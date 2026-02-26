@@ -4,14 +4,30 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+	"sync"
 
+	"github.com/XSAM/otelsql"
+	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 	_ "modernc.org/sqlite"
+)
+
+var (
+	otelDriverName  string
+	otelOnce        sync.Once
+	otelRegisterErr error
 )
 
 // OpenDB opens a connection to the SQLite database with recommended pragmas enabled.
 // It ensures foreign keys are enabled. These settings are appended to the DSN, 
 // so they will override any conflicting pragmas already present in the input DSN.
 func OpenDB(dsn string) (*sql.DB, error) {
+	otelOnce.Do(func() {
+		otelDriverName, otelRegisterErr = otelsql.Register("sqlite", otelsql.WithAttributes(semconv.DBSystemSqlite))
+	})
+	if otelRegisterErr != nil {
+		return nil, fmt.Errorf("failed to register otelsql driver: %w", otelRegisterErr)
+	}
+
 	// Check if DSN is ":memory:"
 	inMemory := strings.HasPrefix(dsn, ":memory:") || strings.Contains(dsn, "mode=memory")
 
@@ -38,7 +54,7 @@ func OpenDB(dsn string) (*sql.DB, error) {
 	// settings take precedence over any initial DSN parameters.
 	finalDSN := dsn + separator + strings.Join(pragmas, "&")
 
-	db, err := sql.Open("sqlite", finalDSN)
+	db, err := sql.Open(otelDriverName, finalDSN)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
