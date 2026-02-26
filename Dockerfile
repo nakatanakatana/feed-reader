@@ -1,5 +1,5 @@
 # Stage 1: Frontend Builder
-FROM node:24-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03 AS frontend-builder
+FROM node:24-alpine@sha256:7fddd9ddeae8196abf4a3ef2de34e11f7b1a722119f91f28ddf1e99dcafdf114 AS frontend-builder
 WORKDIR /app
 COPY package.json package-lock.json panda.config.ts postcss.config.cjs ./
 RUN npm ci
@@ -13,7 +13,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
 COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
-RUN CGO_ENABLED=0 GOOS=linux go build -v -o feed-reader ./cmd/feed-reader
+RUN CGO_ENABLED=0 GOOS=linux go build -trimpath -ldflags "-w -s" -v -o feed-reader ./cmd/feed-reader
 RUN mkdir /data && chown 65532:65532 /data
 
 # Stage 3: Final Image
