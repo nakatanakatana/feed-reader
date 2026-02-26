@@ -51,6 +51,11 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   let modalRef: HTMLDivElement | undefined;
   const queryClient = useQueryClient();
   const [announcement, setAnnouncement] = createSignal("");
+  let announcementTimeout: ReturnType<typeof setTimeout> | undefined;
+
+  onCleanup(() => {
+    if (announcementTimeout) clearTimeout(announcementTimeout);
+  });
 
   const { x, isSwiping, handlers } = useSwipe({
     onSwipeLeft: () => {
@@ -285,7 +290,11 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
       }
       setAnnouncement(newIsRead ? "Marked as read" : "Marked as unread");
       // Clear announcement after a short delay so it can be re-announced if toggled again
-      setTimeout(() => setAnnouncement(""), 1000);
+      if (announcementTimeout) clearTimeout(announcementTimeout);
+      announcementTimeout = setTimeout(() => {
+        setAnnouncement("");
+        announcementTimeout = undefined;
+      }, 1000);
     } catch (e) {
       console.error("Failed to update item status", e);
       // Rollback cache on error

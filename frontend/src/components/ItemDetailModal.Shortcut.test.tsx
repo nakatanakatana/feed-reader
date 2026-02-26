@@ -139,4 +139,49 @@ describe("ItemDetailModal Shortcuts", () => {
       .element(page.getByRole("button", { name: "Mark as Unread" }))
       .toBeInTheDocument();
   });
+
+  it("does NOT toggle read status when focused on an input", async () => {
+    setupMockData("test-id", false);
+
+    const updateSpy = vi.fn();
+    worker.use(
+      http.all("*/item.v1.ItemService/UpdateItemStatus", async () => {
+        updateSpy();
+        const msg = create(UpdateItemStatusResponseSchema, {});
+        return HttpResponse.json(toJson(UpdateItemStatusResponseSchema, msg));
+      }),
+    );
+
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal
+            itemId="test-id"
+            onClose={() => {}}
+            footerExtras={<input type="text" placeholder="Search..." />}
+          />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    await expect.element(page.getByText("Test Item")).toBeInTheDocument();
+
+    const input = page.getByPlaceholder("Search...");
+    await expect.element(input).toBeInTheDocument();
+    input.element().focus();
+
+    // Press 'm' while focused on input
+    await userEvent.keyboard("m");
+
+    // Verify toggle was NOT called
+    // Wait a bit to ensure it doesn't get called asynchronously
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    expect(updateSpy).not.toHaveBeenCalled();
+
+    // Verify FAB is still "Mark as Read"
+    await expect
+      .element(page.getByRole("button", { name: "Mark as Read" }))
+      .toBeInTheDocument();
+  });
 });
