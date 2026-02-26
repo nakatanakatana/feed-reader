@@ -97,9 +97,9 @@ export function Modal(props: ModalProps) {
   return (
     <Show when={props.isOpen}>
       {/* biome-ignore lint/a11y/noStaticElementInteractions: Backdrop click handling */}
+      {/* biome-ignore lint/a11y/useKeyWithClickEvents: Key events handled by modal container */}
       <div
         onClick={handleBackdropClick}
-        onKeyDown={handleKeyDown}
         class={center({
           position: "fixed",
           top: 0,
