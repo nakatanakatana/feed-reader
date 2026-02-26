@@ -15,5 +15,5 @@ packages:
 - name: golang/go@go1.26.0
 - name: golangci/golangci-lint@v2.10.1
 - name: goreleaser/goreleaser@v2.14.0
-- name: k1LoW/octocov@v0.74.5
+- name: k1LoW/octocov@v0.74.6
 - name: sqlc-dev/sqlc@v1.30.0
