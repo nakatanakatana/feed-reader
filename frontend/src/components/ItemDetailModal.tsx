@@ -7,6 +7,7 @@ import {
 import {
   createEffect,
   createMemo,
+  createSignal,
   For,
   type JSX,
   onCleanup,
@@ -49,6 +50,7 @@ interface ItemDetailModalProps {
 export function ItemDetailModal(props: ItemDetailModalProps) {
   let modalRef: HTMLDivElement | undefined;
   const queryClient = useQueryClient();
+  const [announcement, setAnnouncement] = createSignal("");
 
   const { x, isSwiping, handlers } = useSwipe({
     onSwipeLeft: () => {
@@ -281,6 +283,9 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
         // Call the API directly only if NOT in collection (items().update handles it otherwise)
         await updateItemReadStatus([currentItem.id], newIsRead);
       }
+      setAnnouncement(newIsRead ? "Marked as read" : "Marked as unread");
+      // Clear announcement after a short delay so it can be re-announced if toggled again
+      setTimeout(() => setAnnouncement(""), 1000);
     } catch (e) {
       console.error("Failed to update item status", e);
       // Rollback cache on error
@@ -295,6 +300,14 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
+    const target = e.target as HTMLElement;
+    if (
+      target.tagName === "INPUT" ||
+      target.tagName === "TEXTAREA" ||
+      target.isContentEditable
+    ) {
+      return;
+    }
     if (e.key === "Escape") {
       props.onClose();
     } else if (
@@ -315,6 +328,8 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     ) {
       const nextId = props.nextItemId;
       if (!isEndOfList() && props.onNext && nextId) props.onNext();
+    } else if (e.key === "m" || e.key === "M") {
+      handleToggleRead();
     }
   };
 
@@ -406,6 +421,24 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
               zIndex: 10,
             })}
           >
+            {/* ARIA Live Region for read/unread toggle announcements */}
+            <div
+              role="status"
+              aria-live="polite"
+              class={css({
+                position: "absolute",
+                width: "1px",
+                height: "1px",
+                padding: "0",
+                margin: "-1px",
+                overflow: "hidden",
+                clip: "rect(0, 0, 0, 0)",
+                whiteSpace: "nowrap",
+                borderWidth: "0",
+              })}
+            >
+              {announcement()}
+            </div>
             <button
               type="button"
               onClick={handleToggleRead}

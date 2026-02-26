@@ -99,7 +99,6 @@ export function Modal(props: ModalProps) {
       {/* biome-ignore lint/a11y/noStaticElementInteractions: Backdrop click handling */}
       <div
         onClick={handleBackdropClick}
-        onKeyDown={handleKeyDown}
         class={center({
           position: "fixed",
           top: 0,
