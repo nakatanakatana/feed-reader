@@ -10,9 +10,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/caarlos0/env/v11"
 	"connectrpc.com/connect"
 	"connectrpc.com/otelconnect"
+	"github.com/caarlos0/env/v11"
 	"github.com/nakatanakatana/feed-reader/frontend"
 	"github.com/nakatanakatana/feed-reader/gen/go/feed/v1/feedv1connect"
 	"github.com/nakatanakatana/feed-reader/gen/go/item/v1/itemv1connect"
@@ -34,6 +34,30 @@ type config struct {
 	// Write Queue settings
 	WriteQueueMaxBatchSize  int           `env:"WRITE_QUEUE_MAX_BATCH_SIZE" envDefault:"50"`
 	WriteQueueFlushInterval time.Duration `env:"WRITE_QUEUE_FLUSH_INTERVAL" envDefault:"100ms"`
+
+	// CORS settings
+	CORSAllowedOrigins []string `env:"CORS_ALLOWED_ORIGINS" envSeparator:","`
+}
+
+func NewMux(s *store.Store, fetcher FeedFetcher, fetchService ItemFetcher, opmlImporter *OPMLImporter, otelInterceptor *otelconnect.Interceptor, allowedOrigins []string) http.Handler {
+	feedServer := NewFeedServer(s, nil, fetcher, fetchService, opmlImporter)
+	feedPath, feedHandler := feedv1connect.NewFeedServiceHandler(feedServer, connect.WithInterceptors(otelInterceptor))
+
+	itemServer := NewItemServer(s, nil)
+	itemPath, itemHandler := itemv1connect.NewItemServiceHandler(itemServer, connect.WithInterceptors(otelInterceptor))
+
+	tagServer := NewTagServer(s, nil)
+	tagPath, tagHandler := tagv1connect.NewTagServiceHandler(tagServer, connect.WithInterceptors(otelInterceptor))
+
+	mux := http.NewServeMux()
+	mux.Handle("/api"+feedPath, http.StripPrefix("/api", feedHandler))
+	mux.Handle("/api"+itemPath, http.StripPrefix("/api", itemHandler))
+	mux.Handle("/api"+tagPath, http.StripPrefix("/api", tagHandler))
+
+	// Mount static assets at root
+	mux.Handle("/", NewAssetsHandler(frontend.Assets))
+
+	return NewCORSMiddleware(allowedOrigins)(mux)
 }
 
 func main() {
@@ -118,22 +142,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	feedServer := NewFeedServer(s, nil, fetcher, fetchService, opmlImporter)
-	feedPath, feedHandler := feedv1connect.NewFeedServiceHandler(feedServer, connect.WithInterceptors(otelInterceptor))
-
-	itemServer := NewItemServer(s, nil)
-	itemPath, itemHandler := itemv1connect.NewItemServiceHandler(itemServer, connect.WithInterceptors(otelInterceptor))
-
-	tagServer := NewTagServer(s, nil)
-	tagPath, tagHandler := tagv1connect.NewTagServiceHandler(tagServer, connect.WithInterceptors(otelInterceptor))
-
-	mux := http.NewServeMux()
-	mux.Handle("/api"+feedPath, http.StripPrefix("/api", feedHandler))
-	mux.Handle("/api"+itemPath, http.StripPrefix("/api", itemHandler))
-	mux.Handle("/api"+tagPath, http.StripPrefix("/api", tagHandler))
-
-	// Mount static assets at root
-	mux.Handle("/", NewAssetsHandler(frontend.Assets))
+	mux := NewMux(s, fetcher, fetchService, opmlImporter, otelInterceptor, cfg.CORSAllowedOrigins)
 
 	server := &http.Server{
 		Addr:    ":" + cfg.Port,
