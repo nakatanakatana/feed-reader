@@ -9,7 +9,7 @@ Update the application configuration to support CORS origins.
 ## Phase 2: CORS Middleware
 Implement the CORS middleware to inject headers and handle preflight requests.
 
-- [ ] Task: Create `cmd/feed-reader/cors_test.go` and write failing tests for CORS header injection and preflight handling.
-- [ ] Task: Create `cmd/feed-reader/cors.go` and implement `NewCORSMiddleware` to pass the tests.
+- [x] Task: Create `cmd/feed-reader/cors_test.go` and write failing tests for CORS header injection and preflight handling. 4fdd768
+- [x] Task: Create `cmd/feed-reader/cors.go` and implement `NewCORSMiddleware` to pass the tests. 4fdd768
 - [ ] Task: Integrate `NewCORSMiddleware` into the HTTP server handler in `cmd/feed-reader/main.go`.
 - [ ] Task: Conductor - User Manual Verification 'CORS Middleware' (Protocol in workflow.md)
