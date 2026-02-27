@@ -34,6 +34,9 @@ type config struct {
 	// Write Queue settings
 	WriteQueueMaxBatchSize  int           `env:"WRITE_QUEUE_MAX_BATCH_SIZE" envDefault:"50"`
 	WriteQueueFlushInterval time.Duration `env:"WRITE_QUEUE_FLUSH_INTERVAL" envDefault:"100ms"`
+
+	// CORS settings
+	CORSAllowedOrigins []string `env:"CORS_ALLOWED_ORIGINS" envSeparator:","`
 }
 
 func main() {
