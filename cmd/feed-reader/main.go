@@ -39,6 +39,27 @@ type config struct {
 	CORSAllowedOrigins []string `env:"CORS_ALLOWED_ORIGINS" envSeparator:","`
 }
 
+func NewMux(s *store.Store, fetcher FeedFetcher, fetchService ItemFetcher, opmlImporter *OPMLImporter, otelInterceptor *otelconnect.Interceptor, allowedOrigins []string) http.Handler {
+	feedServer := NewFeedServer(s, nil, fetcher, fetchService, opmlImporter)
+	feedPath, feedHandler := feedv1connect.NewFeedServiceHandler(feedServer, connect.WithInterceptors(otelInterceptor))
+
+	itemServer := NewItemServer(s, nil)
+	itemPath, itemHandler := itemv1connect.NewItemServiceHandler(itemServer, connect.WithInterceptors(otelInterceptor))
+
+	tagServer := NewTagServer(s, nil)
+	tagPath, tagHandler := tagv1connect.NewTagServiceHandler(tagServer, connect.WithInterceptors(otelInterceptor))
+
+	mux := http.NewServeMux()
+	mux.Handle("/api"+feedPath, http.StripPrefix("/api", feedHandler))
+	mux.Handle("/api"+itemPath, http.StripPrefix("/api", itemHandler))
+	mux.Handle("/api"+tagPath, http.StripPrefix("/api", tagHandler))
+
+	// Mount static assets at root
+	mux.Handle("/", NewAssetsHandler(frontend.Assets))
+
+	return NewCORSMiddleware(allowedOrigins)(mux)
+}
+
 func main() {
 	// Root context for the whole application
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
@@ -121,22 +142,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	feedServer := NewFeedServer(s, nil, fetcher, fetchService, opmlImporter)
-	feedPath, feedHandler := feedv1connect.NewFeedServiceHandler(feedServer, connect.WithInterceptors(otelInterceptor))
-
-	itemServer := NewItemServer(s, nil)
-	itemPath, itemHandler := itemv1connect.NewItemServiceHandler(itemServer, connect.WithInterceptors(otelInterceptor))
-
-	tagServer := NewTagServer(s, nil)
-	tagPath, tagHandler := tagv1connect.NewTagServiceHandler(tagServer, connect.WithInterceptors(otelInterceptor))
-
-	mux := http.NewServeMux()
-	mux.Handle("/api"+feedPath, http.StripPrefix("/api", feedHandler))
-	mux.Handle("/api"+itemPath, http.StripPrefix("/api", itemHandler))
-	mux.Handle("/api"+tagPath, http.StripPrefix("/api", tagHandler))
-
-	// Mount static assets at root
-	mux.Handle("/", NewAssetsHandler(frontend.Assets))
+	mux := NewMux(s, fetcher, fetchService, opmlImporter, otelInterceptor, cfg.CORSAllowedOrigins)
 
 	server := &http.Server{
 		Addr:    ":" + cfg.Port,
