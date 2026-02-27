@@ -6,8 +6,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/nakatanakatana/feed-reader/store"
 	"connectrpc.com/otelconnect"
+	"github.com/nakatanakatana/feed-reader/store"
 	"gotest.tools/v3/assert"
 )
 
@@ -17,16 +17,18 @@ func TestCORS_Integration(t *testing.T) {
 	fetcher := &mockFetcher{}
 	itemFetcher := &mockItemFetcher{}
 	importer := NewOPMLImporter(s, fetcher, slog.Default(), nil)
-	otelInterceptor, _ := otelconnect.NewInterceptor()
+	otelInterceptor, err := otelconnect.NewInterceptor()
+	assert.NilError(t, err)
 
 	allowedOrigins := []string{"http://localhost:3000"}
 	handler := NewMux(s, fetcher, itemFetcher, importer, otelInterceptor, allowedOrigins)
-	
+
 	ts := httptest.NewServer(handler)
 	defer ts.Close()
 
 	t.Run("Preflight OPTIONS request", func(t *testing.T) {
-		req, _ := http.NewRequest(http.MethodOptions, ts.URL+"/api/feed.v1.FeedService/ListFeeds", nil)
+		req, err := http.NewRequest(http.MethodOptions, ts.URL+"/api/feed.v1.FeedService/ListFeeds", nil)
+		assert.NilError(t, err)
 		req.Header.Set("Origin", "http://localhost:3000")
 		req.Header.Set("Access-Control-Request-Method", "POST")
 

@@ -63,6 +63,15 @@ func TestCORSMiddleware(t *testing.T) {
 			wantOrigin:     "",
 			wantHeaders:    false,
 		},
+		{
+			name:           "Origins with whitespace, GET request",
+			allowedOrigins: []string{" http://localhost:3000 ", ""},
+			origin:         "http://localhost:3000",
+			method:         http.MethodGet,
+			wantStatus:     http.StatusOK,
+			wantOrigin:     "http://localhost:3000",
+			wantHeaders:    true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -88,8 +97,10 @@ func TestCORSMiddleware(t *testing.T) {
 			if tt.wantHeaders {
 				assert.Assert(t, w.Header().Get("Access-Control-Allow-Headers") != "")
 				assert.Equal(t, w.Header().Get("Access-Control-Allow-Methods"), "GET, POST, OPTIONS, PUT, DELETE")
+				assert.Equal(t, w.Header().Get("Vary"), "Origin")
 			} else {
 				assert.Equal(t, w.Header().Get("Access-Control-Allow-Headers"), "")
+				assert.Equal(t, w.Header().Get("Vary"), "")
 			}
 		})
 	}

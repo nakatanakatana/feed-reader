@@ -24,10 +24,10 @@ func TestConfig_Parse(t *testing.T) {
 	})
 
 	tests := []struct {
-		name     string
-		envs     map[string]string
-		want     config
-		wantErr  bool
+		name    string
+		envs    map[string]string
+		want    config
+		wantErr bool
 	}{
 		{
 			name: "Default values",
@@ -40,19 +40,19 @@ func TestConfig_Parse(t *testing.T) {
 				SkipDBMigration:         false,
 				WriteQueueMaxBatchSize:  50,
 				WriteQueueFlushInterval: 100 * time.Millisecond,
-				CORSAllowedOrigins:     nil,
+				CORSAllowedOrigins:      nil,
 			},
 		},
 		{
 			name: "Custom values",
 			envs: map[string]string{
-				"PORT":                        "9090",
-				"DB_PATH":                     "test.db",
-				"FETCH_INTERVAL":              "1h",
-				"MAX_WORKERS":                 "20",
-				"SKIP_DB_MIGRATION":           "true",
-				"WRITE_QUEUE_MAX_BATCH_SIZE":  "100",
-				"WRITE_QUEUE_FLUSH_INTERVAL":  "200ms",
+				"PORT":                       "9090",
+				"DB_PATH":                    "test.db",
+				"FETCH_INTERVAL":             "1h",
+				"MAX_WORKERS":                "20",
+				"SKIP_DB_MIGRATION":          "true",
+				"WRITE_QUEUE_MAX_BATCH_SIZE": "100",
+				"WRITE_QUEUE_FLUSH_INTERVAL": "200ms",
 				"CORS_ALLOWED_ORIGINS":       "http://localhost:3000,https://example.com",
 			},
 			want: config{
@@ -63,15 +63,23 @@ func TestConfig_Parse(t *testing.T) {
 				SkipDBMigration:         true,
 				WriteQueueMaxBatchSize:  100,
 				WriteQueueFlushInterval: 200 * time.Millisecond,
-				CORSAllowedOrigins:     []string{"http://localhost:3000", "https://example.com"},
+				CORSAllowedOrigins:      []string{"http://localhost:3000", "https://example.com"},
 			},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Clear env
-			os.Clearenv()
+			// Clear relevant env vars
+			_ = os.Unsetenv("PORT")
+			_ = os.Unsetenv("DB_PATH")
+			_ = os.Unsetenv("FETCH_INTERVAL")
+			_ = os.Unsetenv("MAX_WORKERS")
+			_ = os.Unsetenv("SKIP_DB_MIGRATION")
+			_ = os.Unsetenv("WRITE_QUEUE_MAX_BATCH_SIZE")
+			_ = os.Unsetenv("WRITE_QUEUE_FLUSH_INTERVAL")
+			_ = os.Unsetenv("CORS_ALLOWED_ORIGINS")
+
 			for k, v := range tt.envs {
 				err := os.Setenv(k, v)
 				assert.NilError(t, err)
