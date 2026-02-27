@@ -8,6 +8,7 @@ The backend is responsible for feed management, article fetching, and providing 
 -   **Programming Language:** Go (Golang)
 -   **API Framework:** Connect RPC (Protobuf over HTTP/2)
 -   **Observability:** OpenTelemetry (OTEL) for distributed tracing, using `connectrpc.com/otelconnect` for API instrumentation and `github.com/XSAM/otelsql` for database query tracing.
+-   **CORS Support:** Manual middleware implementation for Cross-Origin Resource Sharing (CORS) header injection and preflight handling.
 -   **Database:** SQLite (Relational storage via `modernc.org/sqlite`, with active foreign key enforcement and cascade deletion)
 -   **SQLite Resilience:** Application-level retry mechanism with exponential backoff for transient lock conflicts (`SQLITE_BUSY`).
 - **Write Consolidation:** Dedicated Write Queue Service to batch multiple write operations into single transactions. For large-scale operations like OPML import, the application utilizes manual bulk transaction scoping and parallel processing to significantly reduce I/O overhead and improve throughput.
