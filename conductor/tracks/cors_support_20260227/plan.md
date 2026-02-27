@@ -3,7 +3,7 @@
 ## Phase 1: Configuration
 Update the application configuration to support CORS origins.
 
-- [ ] Task: Update `config` struct in `cmd/feed-reader/main.go` to include `CORSAllowedOrigins []string` with `env:"CORS_ALLOWED_ORIGINS"`.
+- [x] Task: Update `config` struct in `cmd/feed-reader/main.go` to include `CORSAllowedOrigins []string` with `env:"CORS_ALLOWED_ORIGINS"`. e870217
 - [ ] Task: Conductor - User Manual Verification 'Configuration' (Protocol in workflow.md)
 
 ## Phase 2: CORS Middleware
