@@ -33,7 +33,7 @@ func TestCORS_Integration(t *testing.T) {
 		client := &http.Client{}
 		resp, err := client.Do(req)
 		assert.NilError(t, err)
-		defer resp.Body.Close()
+		defer func() { _ = resp.Body.Close() }()
 
 		// If NewMux doesn't wrap with CORS, this will fail (StatusNotFound or StatusOK without CORS headers)
 		assert.Equal(t, resp.StatusCode, http.StatusNoContent)

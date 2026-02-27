@@ -13,14 +13,14 @@ import (
 func TestConfig_Parse(t *testing.T) {
 	// Clear environment variables after the test
 	t.Cleanup(func() {
-		os.Unsetenv("PORT")
-		os.Unsetenv("DB_PATH")
-		os.Unsetenv("FETCH_INTERVAL")
-		os.Unsetenv("MAX_WORKERS")
-		os.Unsetenv("SKIP_DB_MIGRATION")
-		os.Unsetenv("WRITE_QUEUE_MAX_BATCH_SIZE")
-		os.Unsetenv("WRITE_QUEUE_FLUSH_INTERVAL")
-		os.Unsetenv("CORS_ALLOWED_ORIGINS")
+		_ = os.Unsetenv("PORT")
+		_ = os.Unsetenv("DB_PATH")
+		_ = os.Unsetenv("FETCH_INTERVAL")
+		_ = os.Unsetenv("MAX_WORKERS")
+		_ = os.Unsetenv("SKIP_DB_MIGRATION")
+		_ = os.Unsetenv("WRITE_QUEUE_MAX_BATCH_SIZE")
+		_ = os.Unsetenv("WRITE_QUEUE_FLUSH_INTERVAL")
+		_ = os.Unsetenv("CORS_ALLOWED_ORIGINS")
 	})
 
 	tests := []struct {
@@ -73,7 +73,8 @@ func TestConfig_Parse(t *testing.T) {
 			// Clear env
 			os.Clearenv()
 			for k, v := range tt.envs {
-				os.Setenv(k, v)
+				err := os.Setenv(k, v)
+				assert.NilError(t, err)
 			}
 
 			var cfg config
