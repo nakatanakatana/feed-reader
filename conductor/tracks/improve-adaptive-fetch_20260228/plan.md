@@ -1,12 +1,12 @@
 # Implementation Plan: Improve Adaptive Fetch Logic
 
 ## Phase 1: Research and Core Logic Design
-- [ ] Task: Analyze current adaptive fetch implementation
-    - [ ] Review `cmd/feed-reader/scheduler.go` and `store/feed_store.go` for existing interval calculation logic.
-    - [ ] Analyze how `PublishedAt` and `CreatedAt` are currently handled in the item ingestion pipeline.
-- [ ] Task: Design the Peak Analysis Query
-    - [ ] Formulate an SQL query to aggregate items into 168-hour buckets (Hour of Day + Day of Week) for the last 14 days.
-    - [ ] Verify performance of the query on the `item` table.
+- [x] Task: Analyze current adaptive fetch implementation c6f2e96
+    - [x] Review `cmd/feed-reader/scheduler.go` and `store/feed_store.go` for existing interval calculation logic.
+    - [x] Analyze how `PublishedAt` and `CreatedAt` are currently handled in the item ingestion pipeline.
+- [x] Task: Design the Peak Analysis Query c6f2e96
+    - [x] Formulate an SQL query to aggregate items into 168-hour buckets (Hour of Day + Day of Week) for the last 14 days.
+    - [x] Verify performance of the query on the `item` table.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Research and Core Logic Design' (Protocol in workflow.md)
 
 ## Phase 2: Database and Calculation Logic Implementation
