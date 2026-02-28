@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/nakatanakatana/feed-reader/store"
 	"gotest.tools/v3/assert"
 	"pgregory.net/rapid"
 )
@@ -159,3 +160,60 @@ func TestCalculateAdaptiveInterval(t *testing.T) {
 		assert.Equal(t, interval, 45*time.Minute)
 	})
 }
+
+func TestAdjustIntervalForPeak(t *testing.T) {
+	baseInterval := 1 * time.Hour
+	minInterval := 15 * time.Minute
+
+	distribution := []store.UpdateDistributionRow{
+		{DayOfWeek: 1, HourOfDay: 10, Count: 10}, // Peak on Monday 10:00
+		{DayOfWeek: 1, HourOfDay: 11, Count: 2},  // Low on Monday 11:00
+		{DayOfWeek: 2, HourOfDay: 10, Count: 5},  // Moderate on Tuesday 10:00
+	}
+
+	t.Run("empty distribution", func(t *testing.T) {
+		nextFetch := time.Date(2025, 2, 24, 10, 0, 0, 0, time.UTC) // Monday
+		interval := AdjustIntervalForPeak(nil, baseInterval, minInterval, nextFetch)
+		assert.Equal(t, interval, baseInterval)
+	})
+
+	t.Run("on peak (Monday 10:00)", func(t *testing.T) {
+		nextFetch := time.Date(2025, 2, 24, 10, 0, 0, 0, time.UTC) // Monday
+		interval := AdjustIntervalForPeak(distribution, baseInterval, minInterval, nextFetch)
+		// Max count is 10, current is 10. 10 >= 10*0.5 is true.
+		assert.Equal(t, interval, baseInterval/2)
+	})
+
+	t.Run("not on peak (Monday 11:00)", func(t *testing.T) {
+		nextFetch := time.Date(2025, 2, 24, 11, 0, 0, 0, time.UTC) // Monday
+		interval := AdjustIntervalForPeak(distribution, baseInterval, minInterval, nextFetch)
+		// Max count is 10, current is 2. 2 >= 10*0.5 is false.
+		assert.Equal(t, interval, baseInterval)
+	})
+
+	t.Run("moderate but peak (Tuesday 10:00)", func(t *testing.T) {
+		nextFetch := time.Date(2025, 2, 25, 10, 0, 0, 0, time.UTC) // Tuesday
+		interval := AdjustIntervalForPeak(distribution, baseInterval, minInterval, nextFetch)
+		// Max count is 10, current is 5. 5 >= 10*0.5 is true.
+		assert.Equal(t, interval, baseInterval/2)
+	})
+
+	t.Run("capped at minInterval", func(t *testing.T) {
+		smallBase := 20 * time.Minute
+		nextFetch := time.Date(2025, 2, 24, 10, 0, 0, 0, time.UTC) // Monday
+		interval := AdjustIntervalForPeak(distribution, smallBase, minInterval, nextFetch)
+		// 20/2 = 10, capped at 15.
+		assert.Equal(t, interval, minInterval)
+	})
+
+	t.Run("low volume bucket (count < 2)", func(t *testing.T) {
+		dist := []store.UpdateDistributionRow{
+			{DayOfWeek: 1, HourOfDay: 10, Count: 1},
+		}
+		nextFetch := time.Date(2025, 2, 24, 10, 0, 0, 0, time.UTC) // Monday
+		interval := AdjustIntervalForPeak(dist, baseInterval, minInterval, nextFetch)
+		// Even if it's 100% of max (1), count < 2 means it's not a peak.
+		assert.Equal(t, interval, baseInterval)
+	})
+}
+

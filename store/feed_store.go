@@ -133,6 +133,52 @@ func (s *Store) ListRecentItemPublishedDates(ctx context.Context, feedID string,
 	return dates[:n], nil
 }
 
+func (s *Store) ListRecentItemHybridDates(ctx context.Context, feedID string, limit int32) ([]time.Time, error) {
+	rows, err := s.Queries.ListRecentItemHybridDates(ctx, ListRecentItemHybridDatesParams{
+		FeedID: feedID,
+		Limit:  int64(limit),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	dates := make([]time.Time, len(rows))
+	n := 0
+	for _, r := range rows {
+		var s string
+		switch v := r.(type) {
+		case string:
+			s = v
+		case []byte:
+			s = string(v)
+		default:
+			continue
+		}
+		t, err := time.Parse(time.RFC3339, s)
+		if err == nil {
+			dates[n] = t
+			n++
+		}
+	}
+	return dates[:n], nil
+}
+
+func (s *Store) GetFeedUpdateDistribution(ctx context.Context, feedID string) ([]UpdateDistributionRow, error) {
+	rows, err := s.Queries.GetFeedUpdateDistribution(ctx, feedID)
+	if err != nil {
+		return nil, err
+	}
+	res := make([]UpdateDistributionRow, len(rows))
+	for i, r := range rows {
+		res[i] = UpdateDistributionRow{
+			DayOfWeek: int(r.DayOfWeek),
+			HourOfDay: int(r.HourOfDay),
+			Count:     int(r.Count),
+		}
+	}
+	return res, nil
+}
+
 // WithTransaction executes the given function within a transaction, retrying on SQLite busy errors.
 func (s *Store) WithTransaction(ctx context.Context, fn func(q *Queries) error) error {
 	return WithRetry(ctx, func() error {

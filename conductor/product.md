@@ -66,7 +66,7 @@ The primary target audience is individuals and organizations seeking control ove
 
 - **Dynamic Favicon:** The browser tab's favicon dynamically updates its color based on the total unread count (Blue for 0-199, Orange for 200-999, Red for 1000+), providing a passive, at-a-glance status update even when the application is in the background.
 
-- **Adaptive Background Fetching:** Periodically fetches and updates feeds in the background. The system automatically calculates the optimal fetch interval for each feed based on its actual update frequency (averaging the last 10 items), ranging from 15 minutes for high-frequency sources to 24 hours for rare updates. This ensures timely delivery while optimizing resource usage.
+- **Adaptive Background Fetching:** Periodically fetches and updates feeds in the background. The system automatically calculates the optimal fetch interval for each feed based on its actual update frequency (averaging the last 10 items) and historical update patterns. By analyzing the 168-hour weekly distribution of past updates, the system automatically increases fetch frequency during identified peak periods. Fetch intervals range from 15 minutes for high-frequency sources to 24 hours for rare updates, ensuring timely delivery while optimizing resource usage.
 
 - **Deduplication & Storage:** Efficiently stores and retrieves articles with URL-based deduplication and normalized data structures, ensuring unique presentation even when items are associated with multiple feeds. Tracks per-feed metadata, including original publication and discovery timestamps for each association.
 

@@ -229,3 +229,80 @@ func TestStore_ListFeeds_Sorting(t *testing.T) {
 	assert.Equal(t, feeds[0].ID, feed1ID)
 	assert.Equal(t, feeds[1].ID, feed2ID)
 }
+
+func TestStore_GetFeedUpdateDistribution(t *testing.T) {
+	s := setupStore(t)
+	ctx := context.Background()
+
+	feedID := uuid.NewString()
+	_, err := s.CreateFeed(ctx, store.CreateFeedParams{
+		ID:    feedID,
+		Url:   "http://example.com/feed.xml",
+		Title: func() *string { s := "Feed 1"; return &s }(),
+	})
+	assert.NilError(t, err)
+
+	now := time.Now().UTC()
+
+	// t1 is yesterday same time (PublishedAt)
+	t1 := now.Add(-24 * time.Hour)
+	// t2 is 2 days ago same time (Fallback to CreatedAt)
+	t2 := now.Add(-48 * time.Hour)
+
+	// Item 1: PublishedAt provided
+	pub1 := t1.Format(time.RFC3339)
+	err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
+		FeedID:      feedID,
+		Url:         "url1",
+		PublishedAt: &pub1,
+	})
+	assert.NilError(t, err)
+	// Update published_at in feed_items just in case SaveFetchedItem behavior changes
+	_, err = s.DB.ExecContext(ctx, "UPDATE feed_items SET published_at = ? WHERE feed_id = ? AND item_id = (SELECT id FROM items WHERE url = ?)",
+		pub1, feedID, "url1")
+	assert.NilError(t, err)
+
+	// Item 2: Fallback to CreatedAt
+	err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
+		FeedID:      feedID,
+		Url:         "url2",
+		PublishedAt: nil,
+	})
+	assert.NilError(t, err)
+	// Manually update created_at for fallback
+	_, err = s.DB.ExecContext(ctx, "UPDATE feed_items SET created_at = ?, published_at = NULL WHERE feed_id = ? AND item_id = (SELECT id FROM items WHERE url = ?)",
+		t2.Format(time.RFC3339), feedID, "url2")
+	assert.NilError(t, err)
+
+	dist, err := s.GetFeedUpdateDistribution(ctx, feedID)
+	assert.NilError(t, err)
+
+	// We should have 2 buckets (or 1 if they fall into the same dow/hour)
+	// t1 is -24h, so it's dow=(now.dow-1), same hour
+	// t2 is -48h, so it's dow=(now.dow-2), same hour
+
+	totalCount := 0
+	for _, d := range dist {
+		totalCount += d.Count
+	}
+	assert.Equal(t, totalCount, 2)
+
+	// Check specific buckets
+	expectedHour := now.Hour()
+	expectedDOW1 := int(t1.Weekday())
+	expectedDOW2 := int(t2.Weekday())
+
+	found1 := false
+	found2 := false
+	for _, d := range dist {
+		if d.DayOfWeek == expectedDOW1 && d.HourOfDay == expectedHour {
+			found1 = true
+		}
+		if d.DayOfWeek == expectedDOW2 && d.HourOfDay == expectedHour {
+			found2 = true
+		}
+	}
+	assert.Assert(t, found1, "t1 bucket should exist")
+	assert.Assert(t, found2, "t2 bucket should exist")
+}
+

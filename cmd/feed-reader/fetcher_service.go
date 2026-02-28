@@ -327,9 +327,9 @@ func (s *FetcherService) normalizeItem(feedID string, item *gofeed.Item) store.S
 }
 
 func (s *FetcherService) getNextFetchInterval(ctx context.Context, feedID string, newItems []*gofeed.Item) time.Duration {
-	pubDates, err := s.store.ListRecentItemPublishedDates(ctx, feedID, 10)
+	pubDates, err := s.store.ListRecentItemHybridDates(ctx, feedID, 10)
 	if err != nil {
-		s.logger.WarnContext(ctx, "failed to list recent published dates, using default interval", "feed_id", feedID, "error", err)
+		s.logger.WarnContext(ctx, "failed to list recent items for interval calculation, using default interval", "feed_id", feedID, "error", err)
 		return s.fetchInterval
 	}
 
@@ -337,9 +337,25 @@ func (s *FetcherService) getNextFetchInterval(ctx context.Context, feedID string
 	for _, item := range newItems {
 		if item.PublishedParsed != nil {
 			pubDates = append(pubDates, *item.PublishedParsed)
+		} else {
+			// Fallback to current time for discovery of items without publication date
+			pubDates = append(pubDates, time.Now().UTC())
 		}
 	}
 
-	return CalculateAdaptiveInterval(pubDates, s.fetchInterval, 15*time.Minute, 24*time.Hour)
+	minInterval := 15 * time.Minute
+	maxInterval := 24 * time.Hour
+
+	baseInterval := CalculateAdaptiveInterval(pubDates, s.fetchInterval, minInterval, maxInterval)
+
+	// Peak adjustment
+	distribution, err := s.store.GetFeedUpdateDistribution(ctx, feedID)
+	if err != nil {
+		s.logger.WarnContext(ctx, "failed to get update distribution, skipping peak adjustment", "feed_id", feedID, "error", err)
+		return baseInterval
+	}
+
+	nextFetchTime := time.Now().UTC().Add(baseInterval)
+	return AdjustIntervalForPeak(distribution, baseInterval, minInterval, nextFetchTime)
 }
 
