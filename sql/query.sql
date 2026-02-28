@@ -221,6 +221,17 @@ ORDER BY
   published_at DESC
 LIMIT ?;
 
+-- name: ListRecentItemHybridDates :many
+SELECT
+  COALESCE(published_at, created_at) as timestamp
+FROM
+  feed_items
+WHERE
+  feed_id = ?
+ORDER BY
+  timestamp DESC
+LIMIT ?;
+
 -- name: CountUnreadItemsPerFeed :many
 SELECT
   fi.feed_id,
@@ -563,3 +574,21 @@ FROM
   items i
 LEFT JOIN
   item_reads ir ON i.id = ir.item_id;
+
+-- name: GetFeedUpdateDistribution :many
+SELECT
+  CAST(strftime('%w', CASE WHEN published_at IS NOT NULL THEN published_at ELSE created_at END) AS INTEGER) as day_of_week,
+  CAST(strftime('%H', CASE WHEN published_at IS NOT NULL THEN published_at ELSE created_at END) AS INTEGER) as hour_of_day,
+  COUNT(*) as count
+FROM
+  feed_items
+WHERE
+  feed_id = ? AND
+  (
+    (published_at IS NOT NULL AND published_at >= (strftime('%Y-%m-%dT%H:%M:%SZ', 'now', '-14 days')))
+    OR
+    (published_at IS NULL AND created_at >= (strftime('%Y-%m-%dT%H:%M:%SZ', 'now', '-14 days')))
+  )
+GROUP BY
+  day_of_week, hour_of_day;
+

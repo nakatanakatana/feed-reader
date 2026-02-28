@@ -5,6 +5,8 @@ import (
 	"math/rand"
 	"slices"
 	"time"
+
+	"github.com/nakatanakatana/feed-reader/store"
 )
 
 // Scheduler runs a task periodically with optional jitter.
@@ -84,4 +86,43 @@ func CalculateAdaptiveInterval(pubDates []time.Time, defaultInterval, minInterva
 	}
 
 	return avgInterval
+}
+
+// AdjustIntervalForPeak reduces the interval if the next fetch time falls into a peak period.
+func AdjustIntervalForPeak(distribution []store.UpdateDistributionRow, baseInterval, minInterval time.Duration, nextFetchTime time.Time) time.Duration {
+	if len(distribution) == 0 {
+		return baseInterval
+	}
+
+	dow := int(nextFetchTime.Weekday())
+	hour := nextFetchTime.Hour()
+
+	var currentCount int
+	var maxCount int
+	for _, row := range distribution {
+		if row.DayOfWeek == dow && row.HourOfDay == hour {
+			currentCount = row.Count
+		}
+		if row.Count > maxCount {
+			maxCount = row.Count
+		}
+	}
+
+	if currentCount == 0 {
+		return baseInterval
+	}
+
+	// Peak definition:
+	// 1. Has at least 2 items.
+	// 2. Has at least 50% of the maximum items seen in any single bucket.
+	if currentCount >= 2 && float64(currentCount) >= float64(maxCount)*0.5 {
+		// Reduce interval to increase frequency.
+		adjusted := baseInterval / 2
+		if adjusted < minInterval {
+			return minInterval
+		}
+		return adjusted
+	}
+
+	return baseInterval
 }

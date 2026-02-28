@@ -742,6 +742,53 @@ func (q *Queries) GetFeedFetcher(ctx context.Context, feedID string) (FeedFetche
 	return i, err
 }
 
+const getFeedUpdateDistribution = `-- name: GetFeedUpdateDistribution :many
+SELECT
+  CAST(strftime('%w', CASE WHEN published_at IS NOT NULL THEN published_at ELSE created_at END) AS INTEGER) as day_of_week,
+  CAST(strftime('%H', CASE WHEN published_at IS NOT NULL THEN published_at ELSE created_at END) AS INTEGER) as hour_of_day,
+  COUNT(*) as count
+FROM
+  feed_items
+WHERE
+  feed_id = ? AND
+  (
+    (published_at IS NOT NULL AND published_at >= (strftime('%Y-%m-%dT%H:%M:%SZ', 'now', '-14 days')))
+    OR
+    (published_at IS NULL AND created_at >= (strftime('%Y-%m-%dT%H:%M:%SZ', 'now', '-14 days')))
+  )
+GROUP BY
+  day_of_week, hour_of_day
+`
+
+type GetFeedUpdateDistributionRow struct {
+	DayOfWeek int64 `json:"day_of_week"`
+	HourOfDay int64 `json:"hour_of_day"`
+	Count     int64 `json:"count"`
+}
+
+func (q *Queries) GetFeedUpdateDistribution(ctx context.Context, feedID string) ([]GetFeedUpdateDistributionRow, error) {
+	rows, err := q.db.QueryContext(ctx, getFeedUpdateDistribution, feedID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetFeedUpdateDistributionRow
+	for rows.Next() {
+		var i GetFeedUpdateDistributionRow
+		if err := rows.Scan(&i.DayOfWeek, &i.HourOfDay, &i.Count); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getItem = `-- name: GetItem :one
 SELECT
   i.id,
@@ -1459,6 +1506,46 @@ func (q *Queries) ListItemsForBlocking(ctx context.Context) ([]ListItemsForBlock
 			return nil, err
 		}
 		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listRecentItemHybridDates = `-- name: ListRecentItemHybridDates :many
+SELECT
+  COALESCE(published_at, created_at) as timestamp
+FROM
+  feed_items
+WHERE
+  feed_id = ?
+ORDER BY
+  timestamp DESC
+LIMIT ?
+`
+
+type ListRecentItemHybridDatesParams struct {
+	FeedID string `json:"feed_id"`
+	Limit  int64  `json:"limit"`
+}
+
+func (q *Queries) ListRecentItemHybridDates(ctx context.Context, arg ListRecentItemHybridDatesParams) ([]string, error) {
+	rows, err := q.db.QueryContext(ctx, listRecentItemHybridDates, arg.FeedID, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []string
+	for rows.Next() {
+		var timestamp string
+		if err := rows.Scan(&timestamp); err != nil {
+			return nil, err
+		}
+		items = append(items, timestamp)
 	}
 	if err := rows.Close(); err != nil {
 		return nil, err

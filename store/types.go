@@ -55,3 +55,10 @@ type ExtractedUserInfo struct {
 	User   string
 	Domain string
 }
+
+// UpdateDistributionRow represents a bucket in the item update history distribution.
+type UpdateDistributionRow struct {
+	DayOfWeek int
+	HourOfDay int
+	Count     int
+}
