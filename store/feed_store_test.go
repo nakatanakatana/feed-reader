@@ -281,16 +281,16 @@ func TestStore_GetFeedUpdateDistribution(t *testing.T) {
 	// t1 is -24h, so it's dow=(now.dow-1), same hour
 	// t2 is -48h, so it's dow=(now.dow-2), same hour
 
-	totalCount := int64(0)
+	totalCount := 0
 	for _, d := range dist {
 		totalCount += d.Count
 	}
-	assert.Equal(t, totalCount, int64(2))
+	assert.Equal(t, totalCount, 2)
 
 	// Check specific buckets
-	expectedHour := int64(now.Hour())
-	expectedDOW1 := int64(t1.Weekday())
-	expectedDOW2 := int64(t2.Weekday())
+	expectedHour := now.Hour()
+	expectedDOW1 := int(t1.Weekday())
+	expectedDOW2 := int(t2.Weekday())
 
 	found1 := false
 	found2 := false
