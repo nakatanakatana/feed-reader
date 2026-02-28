@@ -7,18 +7,18 @@
 - [x] Task: Design the Peak Analysis Query c6f2e96
     - [x] Formulate an SQL query to aggregate items into 168-hour buckets (Hour of Day + Day of Week) for the last 14 days.
     - [x] Verify performance of the query on the `item` table.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Research and Core Logic Design' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Research and Core Logic Design' (Protocol in workflow.md) 206eff9
 
-## Phase 2: Database and Calculation Logic Implementation
-- [ ] Task: Implement Database Queries for Peak Analysis
-    - [ ] Add a new query in `store/query.sql` to retrieve update distribution for a feed.
-    - [ ] Run `sqlc generate` to update Go code.
-    - [ ] Write unit tests for the new query in `store/feed_store_test.go`.
-- [ ] Task: Implement Peak-Aware Interval Calculation Logic
-    - [ ] Define a new function or update existing logic in `cmd/feed-reader/scheduler.go` to calculate the "peak-adjusted" interval.
-    - [ ] Implement the Hybrid timestamp logic (Published At priority, then Created At).
-    - [ ] Write comprehensive unit tests for the interval calculation, covering various update patterns (e.g., highly periodic vs. random).
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Database and Calculation Logic Implementation' (Protocol in workflow.md)
+## Phase 2: Database and Calculation Logic Implementation [checkpoint: 3c81760]
+- [x] Task: Implement Database Queries for Peak Analysis f3196ac
+    - [x] Add a new query in `store/query.sql` to retrieve update distribution for a feed.
+    - [x] Run `sqlc generate` to update Go code.
+    - [x] Write unit tests for the new query in `store/feed_store_test.go`.
+- [x] Task: Implement Peak-Aware Interval Calculation Logic f3196ac
+    - [x] Define a new function or update existing logic in `cmd/feed-reader/scheduler.go` to calculate the "peak-adjusted" interval.
+    - [x] Implement the Hybrid timestamp logic (Published At priority, then Created At).
+    - [x] Write comprehensive unit tests for the interval calculation, covering various update patterns (e.g., highly periodic vs. random).
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Database and Calculation Logic Implementation' (Protocol in workflow.md) 3c81760
 
 ## Phase 3: Integration and Scheduler Update
 - [ ] Task: Integrate New Logic into the Background Scheduler
