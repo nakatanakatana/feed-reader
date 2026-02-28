@@ -1,6 +1,6 @@
 # Implementation Plan: Improve Adaptive Fetch Logic
 
-## Phase 1: Research and Core Logic Design
+## Phase 1: Research and Core Logic Design [checkpoint: 5fc82e5]
 - [x] Task: Analyze current adaptive fetch implementation c6f2e96
     - [x] Review `cmd/feed-reader/scheduler.go` and `store/feed_store.go` for existing interval calculation logic.
     - [x] Analyze how `PublishedAt` and `CreatedAt` are currently handled in the item ingestion pipeline.
