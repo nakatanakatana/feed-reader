@@ -337,3 +337,65 @@ func TestFetcherService_AdaptiveInterval(t *testing.T) {
 		assert.Assert(t, diff >= 59*time.Minute && diff <= 61*time.Minute, "Expected ~1h interval, got %v", diff)
 	})
 }
+
+func TestFetcherService_PeakAwareInterval(t *testing.T) {
+	ctx := context.Background()
+	queries, db := setupTestDB(t)
+	s := store.NewStore(db)
+
+	logger := slog.New(slog.NewJSONHandler(&bytes.Buffer{}, nil))
+	defaultInterval := 1 * time.Hour
+	wq := NewWriteQueueService(s, WriteQueueConfig{MaxBatchSize: 1, FlushInterval: 10 * time.Millisecond}, logger)
+	go wq.Start(ctx)
+	fetcher := &mockFetcher{feed: &gofeed.Feed{}}
+	service := NewFetcherService(s, fetcher, nil, wq, logger, defaultInterval)
+
+	t.Run("peak adjustment", func(t *testing.T) {
+		feed, _ := queries.CreateFeed(ctx, store.CreateFeedParams{ID: "peaky", Url: "http://peaky"})
+
+		// Current time
+		now := time.Now().UTC()
+		// We want nextFetchTime (now + baseInterval) to fall into a peak bucket.
+		// baseInterval will be 24h because we have items 7 days apart.
+		peakTime := now.Add(24 * time.Hour)
+
+		// Create a peak distribution for peakTime (DOW and Hour)
+		// Item 1: 7 days ago, same DOW and Hour as peakTime
+		pub1 := peakTime.Add(-7 * 24 * time.Hour).Format(time.RFC3339)
+		err := s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
+			FeedID:      feed.ID,
+			Url:         "http://peaky/1",
+			PublishedAt: &pub1,
+		})
+		assert.NilError(t, err)
+
+		// Item 2: 14 days ago, same DOW and Hour as peakTime
+		pub2 := peakTime.Add(-14 * 24 * time.Hour).Format(time.RFC3339)
+		err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
+			FeedID:      feed.ID,
+			Url:         "http://peaky/2",
+			PublishedAt: &pub2,
+		})
+		assert.NilError(t, err)
+
+		// Wait for WriteQueue
+		time.Sleep(100 * time.Millisecond)
+
+		// Trigger FetchAndSave
+		err = service.FetchAndSave(ctx, store.FullFeed{ID: feed.ID, Url: feed.Url})
+		assert.NilError(t, err)
+		time.Sleep(100 * time.Millisecond)
+
+		updated, _ := queries.GetFeed(ctx, feed.ID)
+		nextFetch, _ := time.Parse(time.RFC3339, *updated.NextFetch)
+		lastFetched, _ := time.Parse(time.RFC3339, *updated.LastFetchedAt)
+		diff := nextFetch.Sub(lastFetched)
+
+		// baseInterval = 24h (capped).
+		// peakTime = now + 24h falls into the bucket with 2 items.
+		// Peak adjustment should halve it to 12h.
+
+		assert.Assert(t, diff >= 11*time.Hour && diff <= 13*time.Hour, "Expected ~12h interval (peak adjusted), got %v", diff)
+	})
+}
+
