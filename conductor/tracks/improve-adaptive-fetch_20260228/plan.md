@@ -20,15 +20,15 @@
     - [x] Write comprehensive unit tests for the interval calculation, covering various update patterns (e.g., highly periodic vs. random).
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Database and Calculation Logic Implementation' (Protocol in workflow.md) 3c81760
 
-## Phase 3: Integration and Scheduler Update
-- [ ] Task: Integrate New Logic into the Background Scheduler
-    - [ ] Update the background fetch loop to use the peak-aware calculation when scheduling the next fetch.
-    - [ ] Ensure that manual suspends and existing limits (15m - 24h) are respected.
-    - [ ] Write integration tests in `cmd/feed-reader/scheduler_test.go` to verify scheduling behavior with simulated peak data.
-- [ ] Task: Refine and Optimize
-    - [ ] Adjust weights and thresholds for peak detection to ensure stable scheduling.
-    - [ ] Verify that no performance regressions are introduced in the scheduler loop.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Integration and Scheduler Update' (Protocol in workflow.md)
+## Phase 3: Integration and Scheduler Update [checkpoint: 00f2794]
+- [x] Task: Integrate New Logic into the Background Scheduler c6e9a93
+    - [x] Update the background fetch loop to use the peak-aware calculation when scheduling the next fetch.
+    - [x] Ensure that manual suspends and existing limits (15m - 24h) are respected.
+    - [x] Write integration tests in `cmd/feed-reader/scheduler_test.go` to verify scheduling behavior with simulated peak data.
+- [x] Task: Refine and Optimize c6e9a93
+    - [x] Adjust weights and thresholds for peak detection to ensure stable scheduling.
+    - [x] Verify that no performance regressions are introduced in the scheduler loop.
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Integration and Scheduler Update' (Protocol in workflow.md) 00f2794
 
 ## Phase 4: Final Validation and Documentation
 - [ ] Task: Final End-to-End Verification
