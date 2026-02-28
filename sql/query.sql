@@ -223,13 +223,13 @@ LIMIT ?;
 
 -- name: ListRecentItemHybridDates :many
 SELECT
-  COALESCE(published_at, created_at) as timestamp
+  strftime('%FT%TZ', datetime(COALESCE(published_at, created_at))) AS timestamp
 FROM
   feed_items
 WHERE
   feed_id = ?
 ORDER BY
-  timestamp DESC
+  datetime(COALESCE(published_at, created_at)) DESC
 LIMIT ?;
 
 -- name: CountUnreadItemsPerFeed :many
@@ -584,11 +584,7 @@ FROM
   feed_items
 WHERE
   feed_id = ? AND
-  (
-    (published_at IS NOT NULL AND published_at >= (strftime('%Y-%m-%dT%H:%M:%SZ', 'now', '-14 days')))
-    OR
-    (published_at IS NULL AND created_at >= (strftime('%Y-%m-%dT%H:%M:%SZ', 'now', '-14 days')))
-  )
+  datetime(CASE WHEN published_at IS NOT NULL THEN published_at ELSE created_at END) >= datetime('now', '-14 days')
 GROUP BY
   day_of_week, hour_of_day;
 

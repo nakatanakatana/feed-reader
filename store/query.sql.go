@@ -751,11 +751,7 @@ FROM
   feed_items
 WHERE
   feed_id = ? AND
-  (
-    (published_at IS NOT NULL AND published_at >= (strftime('%Y-%m-%dT%H:%M:%SZ', 'now', '-14 days')))
-    OR
-    (published_at IS NULL AND created_at >= (strftime('%Y-%m-%dT%H:%M:%SZ', 'now', '-14 days')))
-  )
+  datetime(CASE WHEN published_at IS NOT NULL THEN published_at ELSE created_at END) >= datetime('now', '-14 days')
 GROUP BY
   day_of_week, hour_of_day
 `
@@ -1518,13 +1514,13 @@ func (q *Queries) ListItemsForBlocking(ctx context.Context) ([]ListItemsForBlock
 
 const listRecentItemHybridDates = `-- name: ListRecentItemHybridDates :many
 SELECT
-  COALESCE(published_at, created_at) as timestamp
+  strftime('%FT%TZ', datetime(COALESCE(published_at, created_at))) AS timestamp
 FROM
   feed_items
 WHERE
   feed_id = ?
 ORDER BY
-  timestamp DESC
+  datetime(COALESCE(published_at, created_at)) DESC
 LIMIT ?
 `
 
@@ -1533,15 +1529,15 @@ type ListRecentItemHybridDatesParams struct {
 	Limit  int64  `json:"limit"`
 }
 
-func (q *Queries) ListRecentItemHybridDates(ctx context.Context, arg ListRecentItemHybridDatesParams) ([]string, error) {
+func (q *Queries) ListRecentItemHybridDates(ctx context.Context, arg ListRecentItemHybridDatesParams) ([]interface{}, error) {
 	rows, err := q.db.QueryContext(ctx, listRecentItemHybridDates, arg.FeedID, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []string
+	var items []interface{}
 	for rows.Next() {
-		var timestamp string
+		var timestamp interface{}
 		if err := rows.Scan(&timestamp); err != nil {
 			return nil, err
 		}

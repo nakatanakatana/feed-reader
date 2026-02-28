@@ -145,7 +145,11 @@ func (s *Store) ListRecentItemHybridDates(ctx context.Context, feedID string, li
 	dates := make([]time.Time, len(rows))
 	n := 0
 	for _, r := range rows {
-		t, err := time.Parse(time.RFC3339, r)
+		s, ok := r.(string)
+		if !ok {
+			continue
+		}
+		t, err := time.Parse(time.RFC3339, s)
 		if err == nil {
 			dates[n] = t
 			n++
