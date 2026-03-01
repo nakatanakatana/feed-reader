@@ -229,8 +229,9 @@ describe("FeedList", () => {
     await expect.element(page.getByText("Future Feed")).toBeInTheDocument();
 
     // The past feed should display "Soon"
-    await expect
-      .element(page.getByText("Next fetch: Soon"))
-      .toBeInTheDocument();
+    const soonText = page.getByText("Next fetch: Soon");
+    await expect.element(soonText).toBeInTheDocument();
+    // And only the past feed should display "Soon" (future feed should show a relative time)
+    await expect.poll(async () => (await soonText.all()).length).toBe(1);
   });
 });
