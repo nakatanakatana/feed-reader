@@ -78,6 +78,14 @@ describe("Block Rules Page", () => {
     await expect
       .element(page.getByText("spam-keyword").first())
       .toBeInTheDocument();
+
+    // Snapshot testing with document.body.innerHTML as per project convention
+    // Mask random IDs generated during render
+    const html = document.body.innerHTML.replace(
+      /id="[0-9.]+"/g,
+      'id="MASKED_ID"',
+    );
+    expect(html).toMatchSnapshot();
   });
 
   it("should allow adding a new item block rule", async () => {
