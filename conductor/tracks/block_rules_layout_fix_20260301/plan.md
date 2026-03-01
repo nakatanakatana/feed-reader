@@ -10,7 +10,7 @@
     - [x] Verify with `npm run lint`
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Lint and Style Correction' (Protocol in workflow.md)
 
-## Phase 2: Test Fixes and Snapshot Updates
+## Phase 2: Test Fixes and Snapshot Updates [checkpoint: 52e9ce6]
 ### Goal: Update the test suite to align with the new layout and ensure stability.
 
 - [x] Task: Fix failing frontend tests and update snapshots 0ae4efe
@@ -19,4 +19,4 @@
     - [x] Update Vitest snapshots: `CI=true npm test frontend/src/routes_test/block_rules.test.tsx -u`
     - [x] Run related tests to ensure no regressions: `CI=true npm test frontend/src/routes_test/block_rules_bulk.test.tsx frontend/src/routes_test/block_rules_final.test.tsx`
     - [x] Confirm all tests in the project pass: `npm test`
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Test Fixes and Snapshot Updates' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Test Fixes and Snapshot Updates' (Protocol in workflow.md)
