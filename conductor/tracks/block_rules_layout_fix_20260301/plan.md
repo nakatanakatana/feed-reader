@@ -13,10 +13,10 @@
 ## Phase 2: Test Fixes and Snapshot Updates
 ### Goal: Update the test suite to align with the new layout and ensure stability.
 
-- [~] Task: Fix failing frontend tests and update snapshots
-    - [ ] Identify failing tests in `frontend/src/routes_test/block_rules.test.tsx` and related files
-    - [ ] Update test expectations to match the new layout structure
-    - [ ] Update Vitest snapshots: `CI=true npm test frontend/src/routes_test/block_rules.test.tsx -u`
-    - [ ] Run related tests to ensure no regressions: `CI=true npm test frontend/src/routes_test/block_rules_bulk.test.tsx frontend/src/routes_test/block_rules_final.test.tsx`
-    - [ ] Confirm all tests in the project pass: `npm test`
+- [x] Task: Fix failing frontend tests and update snapshots 0ae4efe
+    - [x] Identify failing tests in `frontend/src/routes_test/block_rules.test.tsx` and related files
+    - [x] Update test expectations to match the new layout structure
+    - [x] Update Vitest snapshots: `CI=true npm test frontend/src/routes_test/block_rules.test.tsx -u`
+    - [x] Run related tests to ensure no regressions: `CI=true npm test frontend/src/routes_test/block_rules_bulk.test.tsx frontend/src/routes_test/block_rules_final.test.tsx`
+    - [x] Confirm all tests in the project pass: `npm test`
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Test Fixes and Snapshot Updates' (Protocol in workflow.md)
