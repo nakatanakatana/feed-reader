@@ -14,7 +14,7 @@
     "serve": "vite preview",
     "start": "vite",
     "analyze": "ANALYZE=true vite build",
-    "test": "vitest run --silent && vitest run --silent -c frontend/vitest.node.config.js frontend/src/pwa-infrastructure.test.ts",
+    "test": "vitest run --silent",
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {

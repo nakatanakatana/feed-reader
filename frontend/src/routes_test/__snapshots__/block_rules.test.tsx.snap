@@ -1,0 +1,375 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Block Rules Page > should fetch and display item block rules 1`] = `
+<DocumentFragment>
+  <header
+    class="px_4 py_2 d_flex ai_center bd-b-w_1px border-bottom-style_solid bd-b-c_gray.100 gap_6 fs_md bg-c_white pos_sticky top_0 z_10 ov-x_auto white-space_nowrap scr-bar-w_none [&::-webkit-scrollbar]:d_none"
+  >
+    <a
+      class="pos_relative px_3 py_1.5 bdr_md c_gray.500 trs_all_0.2s fw_medium fs_sm hover:bg-c_gray.50 hover:c_gray.900"
+      href="/"
+    >
+      Home
+    </a>
+    <a
+      class="pos_relative px_3 py_1.5 bdr_md c_gray.500 trs_all_0.2s fw_medium fs_sm hover:bg-c_gray.50 hover:c_gray.900"
+      href="/feeds"
+    >
+      Feeds
+    </a>
+    <a
+      class="pos_relative px_3 py_1.5 bdr_md c_gray.500 trs_all_0.2s fw_medium fs_sm hover:bg-c_gray.50 hover:c_gray.900"
+      href="/tags"
+    >
+      Tags
+    </a>
+    <a
+      class="pos_relative px_3 py_1.5 bdr_md c_gray.500 trs_all_0.2s fw_medium fs_sm hover:bg-c_gray.50 hover:c_gray.900"
+      href="/url-rules"
+    >
+      URL Rules
+    </a>
+    <a
+      aria-current="page"
+      class="pos_relative px_3 py_1.5 bdr_md c_gray.500 trs_all_0.2s fw_medium fs_sm hover:bg-c_gray.50 hover:c_gray.900 fw_semibold c_blue.700! bg-c_blue.50! bd-b-w_2px border-bottom-style_solid bd-b-c_blue.600 bdr-b_0"
+      data-status="active"
+      href="/block-rules"
+    >
+      Block Rules
+    </a>
+  </header>
+  <div
+    class="d_flex flex-d_column gap_2 md:gap_6 p_2 md:p_4 h_calc(100vh_-_56px) min-h_0 ov_hidden bg-c_gray.50"
+  >
+    <div
+      class="d_flex flex-d_column gap_4 flex_1 min-h_0"
+    >
+      <div
+        class="d_flex flex-d_column gap_2 w_full"
+      >
+        <form
+          class="d_flex ai_flex-end flex-wrap_wrap gap_4 w_full bg_white p_4 bdr_md bx-sh_sm bd_1px_solid bd-c_gray.200"
+        >
+          <div
+            class="d_flex flex-d_column gap_1"
+          >
+            <label
+              class="fs_sm fw_medium"
+              for="rule-type"
+            >
+              Type
+            </label>
+            <select
+              class="bd_1px_solid bd-c_gray.300 p_2 bdr_md bg_white"
+              id="rule-type"
+            >
+              <option
+                value="user"
+              >
+                User
+              </option>
+              <option
+                value="domain"
+              >
+                Domain
+              </option>
+              <option
+                value="user_domain"
+              >
+                User @ Domain
+              </option>
+              <option
+                value="keyword"
+              >
+                Keyword
+              </option>
+            </select>
+          </div>
+          <div
+            class="d_flex flex-d_column gap_1 flex_1 min-w_200px"
+          >
+            <label
+              class="fs_sm fw_medium"
+              for="value"
+            >
+              Value
+            </label>
+            <input
+              class="bd_1px_solid bd-c_gray.300 p_2 bdr_md"
+              id="value"
+              placeholder="Value to block"
+              type="text"
+            />
+          </div>
+          <div
+            class="d_flex flex-d_column gap_1 flex_1 min-w_200px"
+          >
+            <label
+              class="fs_sm fw_medium"
+              for="domain"
+            >
+              Domain (Optional)
+            </label>
+            <input
+              class="bd_1px_solid bd-c_gray.300 p_2 bdr_md"
+              id="domain"
+              placeholder="example.com"
+              type="text"
+            />
+          </div>
+          <div
+            class="d_flex gap_2"
+          >
+            <button
+              class="bdr_md fw_medium cursor_pointer bd_1px_solid bd-c_blue.600 trs_all_0.2s d_inline-flex ai_center jc_center gap_2 disabled:op_0.5 disabled:cursor_not-allowed fs_sm py_2 px_4 bg_blue.600 c_white hover:bg_blue.700"
+              icon="[object SVGSVGElement]"
+              type="submit"
+              variant="primary"
+            >
+              <svg
+                aria-hidden="true"
+                fill="none"
+                height="16"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="16"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <line
+                  x1="12"
+                  x2="12"
+                  y1="5"
+                  y2="19"
+                />
+                <line
+                  x1="5"
+                  x2="19"
+                  y1="12"
+                  y2="12"
+                />
+              </svg>
+              Add
+            </button>
+            <button
+              class="bdr_md fw_medium cursor_pointer bd_1px_solid bd-c_gray.300 trs_all_0.2s d_inline-flex ai_center jc_center gap_2 disabled:op_0.5 disabled:cursor_not-allowed fs_sm py_2 px_4 bg_transparent c_gray.600 hover:bg_gray.50 hover:c_gray.700"
+              icon="[object SVGSVGElement]"
+              type="button"
+              variant="secondary"
+            >
+              <svg
+                aria-hidden="true"
+                fill="none"
+                height="16"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="16"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
+                />
+                <polyline
+                  points="17 8 12 3 7 8"
+                />
+                <line
+                  x1="12"
+                  x2="12"
+                  y1="3"
+                  y2="15"
+                />
+              </svg>
+              Bulk Add
+            </button>
+          </div>
+        </form>
+      </div>
+      <div
+        class="flex_1 min-h_0 ov-y_auto bg-c_white bdr_md bx-sh_sm bd_1px_solid bd-c_gray.200"
+      >
+        <div
+          class="d_flex jc_flex-start ai_center flex-wrap_wrap cg_4 rg_2 bg-c_gray.50 p_2 bdr_md bd_1px_solid bd-c_gray.200"
+        >
+          <div
+            class="d_flex ai_center gap_2"
+          >
+            <label
+              class="fs_sm c_gray.600"
+              for="filter-type"
+            >
+              Filter:
+            </label>
+            <select
+              class="fs_xs px_2 py_1.5 bdr_md bd_1px_solid bd-c_gray.300 bg_white min-w_8rem"
+              id="filter-type"
+            >
+              <option
+                value="ALL_TYPES"
+              >
+                All Types
+              </option>
+              <option
+                value="user"
+              >
+                User
+              </option>
+              <option
+                value="domain"
+              >
+                Domain
+              </option>
+              <option
+                value="user_domain"
+              >
+                User @ Domain
+              </option>
+              <option
+                value="keyword"
+              >
+                Keyword
+              </option>
+            </select>
+          </div>
+          <div
+            class="d_flex ai_center gap_2"
+          >
+            <label
+              class="fs_sm c_gray.600"
+              for="filter-domain"
+            >
+              Domain:
+            </label>
+            <select
+              class="fs_xs px_2 py_1.5 bdr_md bd_1px_solid bd-c_gray.300 bg_white min-w_10rem"
+              id="filter-domain"
+            >
+              <option
+                value="ALL_DOMAINS"
+              >
+                All Domains
+              </option>
+            </select>
+          </div>
+        </div>
+        <div
+          class="w_full ov-x_auto"
+        >
+          <table
+            class="w_full bd-cl_collapse [&_th,_&_td]:ta_left [&_th,_&_td]:p_3 [&_th,_&_td]:bd-b_1px_solid [&_th,_&_td]:bd-c_gray.100"
+          >
+            <thead>
+              <tr
+                class="bg_gray.50"
+              >
+                <th
+                  aria-sort="none"
+                  class="cursor_pointer hover:bg_gray.100 white-space_nowrap"
+                >
+                  <button
+                    class="bg_transparent bd_none cursor_inherit fw_inherit p_0"
+                    type="button"
+                  >
+                    Type 
+                  </button>
+                </th>
+                <th
+                  aria-sort="none"
+                  class="cursor_pointer hover:bg_gray.100 white-space_nowrap"
+                >
+                  <button
+                    class="bg_transparent bd_none cursor_inherit fw_inherit p_0"
+                    type="button"
+                  >
+                    Value 
+                  </button>
+                </th>
+                <th
+                  aria-sort="none"
+                  class="cursor_pointer hover:bg_gray.100 white-space_nowrap"
+                >
+                  <button
+                    class="bg_transparent bd_none cursor_inherit fw_inherit p_0"
+                    type="button"
+                  >
+                    Domain 
+                  </button>
+                </th>
+                <th
+                  class="ta_right! white-space_nowrap"
+                >
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                class="hover:bg_gray.50"
+              >
+                <td>
+                  <span
+                    class="fs_xs bg_gray.100 px_2 py_0.5 bdr_full"
+                  >
+                    domain
+                  </span>
+                </td>
+                <td
+                  class="fw_bold"
+                >
+                  blocked-domain.com
+                </td>
+                <td />
+                <td
+                  class="ta_right!"
+                >
+                  <button
+                    class="bdr_md fw_medium cursor_pointer bd_1px_solid bd-c_red.200 trs_all_0.2s d_inline-flex ai_center jc_center gap_2 disabled:op_0.5 disabled:cursor_not-allowed fs_xs py_1.5 px_3 bg_red.50 c_red.600 hover:bg_red.100"
+                    size="sm"
+                    type="button"
+                    variant="danger"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+              <tr
+                class="hover:bg_gray.50"
+              >
+                <td>
+                  <span
+                    class="fs_xs bg_gray.100 px_2 py_0.5 bdr_full"
+                  >
+                    keyword
+                  </span>
+                </td>
+                <td
+                  class="fw_bold"
+                >
+                  spam-keyword
+                </td>
+                <td />
+                <td
+                  class="ta_right!"
+                >
+                  <button
+                    class="bdr_md fw_medium cursor_pointer bd_1px_solid bd-c_red.200 trs_all_0.2s d_inline-flex ai_center jc_center gap_2 disabled:op_0.5 disabled:cursor_not-allowed fs_xs py_1.5 px_3 bg_red.50 c_red.600 hover:bg_red.100"
+                    size="sm"
+                    type="button"
+                    variant="danger"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;

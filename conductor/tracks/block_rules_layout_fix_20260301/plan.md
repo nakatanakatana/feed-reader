@@ -13,7 +13,7 @@
 ## Phase 2: Test Fixes and Snapshot Updates
 ### Goal: Update the test suite to align with the new layout and ensure stability.
 
-- [ ] Task: Fix failing frontend tests and update snapshots
+- [~] Task: Fix failing frontend tests and update snapshots
     - [ ] Identify failing tests in `frontend/src/routes_test/block_rules.test.tsx` and related files
     - [ ] Update test expectations to match the new layout structure
     - [ ] Update Vitest snapshots: `CI=true npm test frontend/src/routes_test/block_rules.test.tsx -u`

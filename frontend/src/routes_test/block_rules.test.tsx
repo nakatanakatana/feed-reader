@@ -78,6 +78,8 @@ describe("Block Rules Page", () => {
     await expect
       .element(page.getByText("spam-keyword").first())
       .toBeInTheDocument();
+
+    expect(document.body.innerHTML).toMatchSnapshot();
   });
 
   it("should allow adding a new item block rule", async () => {
