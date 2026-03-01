@@ -1,8 +1,0 @@
-{
-  "track_id": "feed-next-fetch-soon_20260301",
-  "type": "bug",
-  "status": "new",
-  "created_at": "2026-03-01T00:00:00Z",
-  "updated_at": "2026-03-01T00:00:00Z",
-  "description": "FeedsのページでNext fetchの値が過去の時に表示されないようになっていたので修正します 過去の日時になっている時は次回動いたタイミングでフェッチされる想定なので'Soon'といった表示になるようにしてください"
-}
