@@ -1,3 +1,4 @@
+import { create } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
@@ -8,6 +9,9 @@ import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page, userEvent } from "vitest/browser";
+import { FeedService, ListFeedSchema, ListFeedsResponseSchema } from "../gen/feed/v1/feed_pb";
+import { worker } from "../mocks/browser";
+import { mockConnectWeb } from "../mocks/connect";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
@@ -170,5 +174,58 @@ describe("FeedList", () => {
     await expect
       .element(page.getByText("Manage Tags for 1 feeds"))
       .toBeInTheDocument();
+  });
+
+  it("displays 'Soon' when nextFetch is in the past", async () => {
+    // Override MSW handler to return a feed with a past nextFetch
+    const pastDate = new Date();
+    pastDate.setMinutes(pastDate.getMinutes() - 5);
+    const futureDate = new Date();
+    futureDate.setMinutes(futureDate.getMinutes() + 5);
+
+    worker.use(
+      mockConnectWeb(FeedService)({
+        method: "listFeeds",
+        handler: () => {
+          return create(ListFeedsResponseSchema, {
+            feeds: [
+              create(ListFeedSchema, {
+                id: "past-feed",
+                url: "https://example.com/past.xml",
+                title: "Past Feed",
+                nextFetch: pastDate.toISOString(),
+              }),
+              create(ListFeedSchema, {
+                id: "future-feed",
+                url: "https://example.com/future.xml",
+                title: "Future Feed",
+                nextFetch: futureDate.toISOString(),
+              }),
+            ],
+          });
+        },
+      }),
+    );
+
+    await page.viewport?.(1280, 720);
+    const history = createMemoryHistory({ initialEntries: ["/feeds"] });
+    const router = createRouter({ routeTree, history });
+
+    dispose = render(
+      () => (
+        <TestWrapper>
+          <RouterProvider router={router} />
+        </TestWrapper>
+      ),
+      document.body,
+    );
+
+    // Wait for feeds to render
+    await expect.element(page.getByText("Past Feed")).toBeInTheDocument();
+    await expect.element(page.getByText("Future Feed")).toBeInTheDocument();
+
+    // The past feed should display "Soon"
+    const pastFeedCard = page.getByText("Past Feed").locator(".."); // Move up to some container, but we can just look for the text globally for simplicity or within a locator
+    await expect.element(page.getByText("Next fetch: Soon")).toBeInTheDocument();
   });
 });
