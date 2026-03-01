@@ -3,11 +3,11 @@
 ## Phase 1: Lint and Style Correction
 ### Goal: Ensure the modified file adheres to the project's coding standards.
 
-- [ ] Task: Resolve Biome lint and formatting errors
-    - [ ] Run Biome check on the modified file: `npx @biomejs/biome check frontend/src/routes/block-rules.tsx`
-    - [ ] Apply automatic fixes: `npx @biomejs/biome check --write frontend/src/routes/block-rules.tsx`
-    - [ ] Manually resolve any remaining linting issues
-    - [ ] Verify with `npm run lint`
+- [x] Task: Resolve Biome lint and formatting errors
+    - [x] Run Biome check on the modified file: `npx @biomejs/biome check frontend/src/routes/block-rules.tsx`
+    - [x] Apply automatic fixes: `npx @biomejs/biome check --write frontend/src/routes/block-rules.tsx`
+    - [x] Manually resolve any remaining linting issues
+    - [x] Verify with `npm run lint`
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Lint and Style Correction' (Protocol in workflow.md)
 
 ## Phase 2: Test Fixes and Snapshot Updates

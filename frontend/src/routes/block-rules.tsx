@@ -283,24 +283,6 @@ function BlockRulesComponent() {
           </form>
         </div>
 
-        <div
-          class={css({
-            backgroundColor: "gray.50",
-            display: "flex",
-            flexDirection: "column",
-            gap: "2",
-            pb: "2",
-          })}
-        >
-          <BlockRulesFilterBar
-            domains={memoizedUniqueDomains()}
-            typeFilter={typeFilter()}
-            setTypeFilter={setTypeFilter}
-            domainFilter={domainFilter()}
-            setDomainFilter={setDomainFilter}
-          />
-        </div>
-
         <BulkAddBlockRulesModal
           isOpen={isBulkModalOpen()}
           onClose={() => setIsBulkModalOpen(false)}
@@ -320,12 +302,19 @@ function BlockRulesComponent() {
             shadow: "sm",
             border: "1px solid",
             borderColor: "gray.200",
-            p: "4",
           })}
         >
           <Show when={rulesQuery.isLoading}>
             <p>Loading rules...</p>
           </Show>
+          <BlockRulesFilterBar
+            domains={memoizedUniqueDomains()}
+            typeFilter={typeFilter()}
+            setTypeFilter={setTypeFilter}
+            domainFilter={domainFilter()}
+            setDomainFilter={setDomainFilter}
+          />
+
           <BlockRulesTable
             rules={rulesQuery() || []}
             onDelete={(id) => deleteMutation.mutate(id)}
