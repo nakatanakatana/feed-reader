@@ -9,11 +9,15 @@ import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page, userEvent } from "vitest/browser";
-import { FeedService, ListFeedSchema, ListFeedsResponseSchema } from "../gen/feed/v1/feed_pb";
-import { worker } from "../mocks/browser";
-import { mockConnectWeb } from "../mocks/connect";
+import {
+  FeedService,
+  ListFeedSchema,
+  ListFeedsResponseSchema,
+} from "../gen/feed/v1/feed_pb";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
+import { worker } from "../mocks/browser";
+import { mockConnectWeb } from "../mocks/connect";
 import { routeTree } from "../routeTree.gen";
 
 // Mock Link from solid-router to avoid Context issues
@@ -225,7 +229,8 @@ describe("FeedList", () => {
     await expect.element(page.getByText("Future Feed")).toBeInTheDocument();
 
     // The past feed should display "Soon"
-    const pastFeedCard = page.getByText("Past Feed").locator(".."); // Move up to some container, but we can just look for the text globally for simplicity or within a locator
-    await expect.element(page.getByText("Next fetch: Soon")).toBeInTheDocument();
+    await expect
+      .element(page.getByText("Next fetch: Soon"))
+      .toBeInTheDocument();
   });
 });

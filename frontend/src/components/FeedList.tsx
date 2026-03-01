@@ -514,18 +514,20 @@ export function FeedList() {
                             : "Not fetched yet"}
                         </span>
                         <Show when={feed.nextFetch}>
-                          <span
-                            class={css({
-                              fontSize: "xs",
-                              color: "orange.600",
-                              fontWeight: "medium",
-                            })}
-                          >
-                            Next fetch:{" "}
-                            {new Date(feed.nextFetch!) > new Date()
-                              ? formatRelativeDate(feed.nextFetch ?? "")
-                              : "Soon"}
-                          </span>
+                          {(nextFetch) => (
+                            <span
+                              class={css({
+                                fontSize: "xs",
+                                color: "orange.600",
+                                fontWeight: "medium",
+                              })}
+                            >
+                              Next fetch:{" "}
+                              {new Date(nextFetch()) > new Date()
+                                ? formatRelativeDate(nextFetch())
+                                : "Soon"}
+                            </span>
+                          )}
                         </Show>
                       </div>
                     </div>
