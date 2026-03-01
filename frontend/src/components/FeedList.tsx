@@ -513,12 +513,7 @@ export function FeedList() {
                             ? formatDate(feed.lastFetchedAt)
                             : "Not fetched yet"}
                         </span>
-                        <Show
-                          when={
-                            feed.nextFetch &&
-                            new Date(feed.nextFetch) > new Date()
-                          }
-                        >
+                        <Show when={feed.nextFetch}>
                           <span
                             class={css({
                               fontSize: "xs",
@@ -527,7 +522,9 @@ export function FeedList() {
                             })}
                           >
                             Next fetch:{" "}
-                            {formatRelativeDate(feed.nextFetch ?? "")}
+                            {new Date(feed.nextFetch!) > new Date()
+                              ? formatRelativeDate(feed.nextFetch ?? "")
+                              : "Soon"}
                           </span>
                         </Show>
                       </div>
