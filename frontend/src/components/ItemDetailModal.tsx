@@ -80,9 +80,15 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
       }
     },
     isAtBottomBoundary: () => {
-      const container = modalRef?.querySelector('[data-testid="swipe-container"]');
+      const container = modalRef?.querySelector(
+        '[data-testid="swipe-container"]',
+      );
       if (!container) return true;
-      return Math.abs(container.scrollHeight - container.scrollTop - container.clientHeight) < 5;
+      return (
+        Math.abs(
+          container.scrollHeight - container.scrollTop - container.clientHeight,
+        ) < 5
+      );
     },
     threshold: 100, // Use a higher threshold than the hook default (50px) to reduce accidental swipes
     disabled: props.itemId === "end-of-list",
@@ -111,14 +117,18 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     return rawY;
   };
 
-  const handleSkip = () => {
+  const handleSkip = (animate = true) => {
     if (props.onSkipNext) {
-      setIsSkipping(true);
-      // Wait for animation to finish before calling onSkipNext
-      setTimeout(() => {
+      if (animate) {
+        setIsSkipping(true);
+        // Wait for animation to finish before calling onSkipNext
+        setTimeout(() => {
+          props.onSkipNext?.();
+          setIsSkipping(false);
+        }, 200);
+      } else {
         props.onSkipNext?.();
-        setIsSkipping(false);
-      }, 200);
+      }
     }
   };
 
@@ -377,7 +387,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     } else if (e.key === "m" || e.key === "M") {
       handleToggleRead();
     } else if (e.key === "n" || e.key === "N") {
-      handleSkip();
+      handleSkip(false);
     }
   };
 

@@ -42,7 +42,8 @@ export function useSwipe(options: UseSwipeOptions = {}) {
 
     if (!direction) {
       if (Math.abs(diffX) > 2 || Math.abs(diffY) > 2) {
-        direction = Math.abs(diffX) > Math.abs(diffY) ? "horizontal" : "vertical";
+        direction =
+          Math.abs(diffX) > Math.abs(diffY) ? "horizontal" : "vertical";
       } else {
         return;
       }
@@ -56,10 +57,10 @@ export function useSwipe(options: UseSwipeOptions = {}) {
         setX(0);
         return;
       }
-      
+
       const isAtLeft = options.isAtLeftBoundary?.() ?? true;
       const isAtRight = options.isAtRightBoundary?.() ?? true;
-      
+
       // Only prevent default and track if moving away from boundary or boundary is reached
       if ((diffX > 0 && isAtLeft) || (diffX < 0 && isAtRight)) {
         e.preventDefault();
@@ -76,14 +77,17 @@ export function useSwipe(options: UseSwipeOptions = {}) {
         setY(0);
         return;
       }
-      
+
       const isAtTop = options.isAtTopBoundary?.() ?? true;
       const isAtBottom = options.isAtBottomBoundary?.() ?? true;
-      
+
       // Only prevent default and track if moving away from boundary or boundary is reached
       if ((diffY > 0 && isAtTop) || (diffY < 0 && isAtBottom)) {
         // For vertical, we only prevent default if we have a handler
-        if ((diffY > 0 && options.onSwipeDown) || (diffY < 0 && options.onSwipeUp)) {
+        if (
+          (diffY > 0 && options.onSwipeDown) ||
+          (diffY < 0 && options.onSwipeUp)
+        ) {
           e.preventDefault();
         }
         setY(diffY);
