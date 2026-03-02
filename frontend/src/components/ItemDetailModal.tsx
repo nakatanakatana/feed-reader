@@ -56,11 +56,14 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   let announcementTimeout: ReturnType<typeof setTimeout> | undefined;
   const [isSkipping, setIsSkipping] = createSignal(false);
   let skipTimeoutId: ReturnType<typeof setTimeout> | undefined;
+  let skipRecoveryTimeoutId: ReturnType<typeof setTimeout> | undefined;
   let touchStartY = 0;
 
   onCleanup(() => {
     if (announcementTimeout !== undefined) clearTimeout(announcementTimeout);
     if (skipTimeoutId !== undefined) clearTimeout(skipTimeoutId);
+    if (skipRecoveryTimeoutId !== undefined)
+      clearTimeout(skipRecoveryTimeoutId);
   });
 
   const { x, y, isSwiping, handlers } = useSwipe({
@@ -148,10 +151,19 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     if (animate) {
       setIsSkipping(true);
       if (skipTimeoutId !== undefined) clearTimeout(skipTimeoutId);
+      if (skipRecoveryTimeoutId !== undefined)
+        clearTimeout(skipRecoveryTimeoutId);
+
       // Wait for animation to finish before calling onSkipNext
       skipTimeoutId = setTimeout(() => {
         props.onSkipNext?.();
         skipTimeoutId = undefined;
+
+        // Set a safety recovery timer in case navigation is blocked or no-ops
+        skipRecoveryTimeoutId = setTimeout(() => {
+          setIsSkipping(false);
+          skipRecoveryTimeoutId = undefined;
+        }, 1000);
       }, 200);
     } else {
       props.onSkipNext?.();

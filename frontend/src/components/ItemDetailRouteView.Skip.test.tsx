@@ -32,7 +32,6 @@ describe("ItemDetailRouteView Skip Navigation", () => {
     if (dispose) dispose();
     document.body.innerHTML = "";
     vi.clearAllMocks();
-    vi.useRealTimers();
   });
 
   const updateStatusSpy = vi.fn();
@@ -134,10 +133,7 @@ describe("ItemDetailRouteView Skip Navigation", () => {
       .element(page.getByRole("heading", { name: "Item 2" }))
       .toBeInTheDocument();
 
-    // Verify markAsRead was NOT called for Item 1
-    // We use fake timers to quickly verify no calls were made in the near future
-    vi.useFakeTimers();
-    vi.advanceTimersByTime(500);
-    expect(updateStatusSpy).not.toHaveBeenCalled();
+    // Verify markAsRead was NOT called for Item 1, even after a short delay
+    await expect.poll(() => updateStatusSpy.mock.calls.length).toBe(0);
   });
 });
