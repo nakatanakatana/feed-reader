@@ -148,13 +148,18 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
       // Wait for animation to finish before calling onSkipNext
       skipTimeoutId = setTimeout(() => {
         props.onSkipNext?.();
-        setIsSkipping(false);
         skipTimeoutId = undefined;
       }, 200);
     } else {
       props.onSkipNext?.();
     }
   };
+
+  createEffect(() => {
+    // Reset skipping state when itemId changes
+    props.itemId;
+    setIsSkipping(false);
+  });
 
   createEffect(() => {
     // Track itemId and item data to trigger re-focus when content changes
@@ -595,7 +600,6 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
           </div>
         </Show>
 
-        {/* Accessibility instruction for screen readers */}
         <div
           id="swipe-instruction"
           class={css({
@@ -611,10 +615,11 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
           })}
         >
           <Show
-            when={canSwipeLeft() || canSwipeRight()}
+            when={canSwipeLeft() || canSwipeRight() || canSwipeUp()}
             fallback="Swipe navigation not available."
           >
-            Swipe left for next item, right for previous.
+            Swipe left for next item, right for previous
+            <Show when={canSwipeUp()}>, up to skip</Show>.
           </Show>
         </div>
 
