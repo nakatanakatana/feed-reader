@@ -113,3 +113,5 @@ CREATE TABLE item_blocks (
 );
 
 CREATE INDEX idx_item_blocks_rule_id ON item_blocks(rule_id);
+CREATE INDEX idx_item_reads_updated_at ON item_reads(updated_at);
+
