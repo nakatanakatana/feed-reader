@@ -59,8 +59,8 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   let touchStartY = 0;
 
   onCleanup(() => {
-    if (announcementTimeout) clearTimeout(announcementTimeout);
-    if (skipTimeoutId) clearTimeout(skipTimeoutId);
+    if (announcementTimeout !== undefined) clearTimeout(announcementTimeout);
+    if (skipTimeoutId !== undefined) clearTimeout(skipTimeoutId);
   });
 
   const { x, y, isSwiping, handlers } = useSwipe({
@@ -112,7 +112,10 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   // Intercept touchstart to record start position for the 30% check
   const originalOnTouchStart = handlers.ontouchstart;
   handlers.ontouchstart = (e: TouchEvent) => {
-    touchStartY = e.touches[0].clientY;
+    const isSwipeDisabled = props.itemId === "end-of-list";
+    if (!isSwipeDisabled && e.touches && e.touches.length === 1) {
+      touchStartY = e.touches[0].clientY;
+    }
     originalOnTouchStart(e);
   };
 
@@ -144,7 +147,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
 
     if (animate) {
       setIsSkipping(true);
-      if (skipTimeoutId) clearTimeout(skipTimeoutId);
+      if (skipTimeoutId !== undefined) clearTimeout(skipTimeoutId);
       // Wait for animation to finish before calling onSkipNext
       skipTimeoutId = setTimeout(() => {
         props.onSkipNext?.();
