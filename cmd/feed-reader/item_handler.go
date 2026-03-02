@@ -12,6 +12,7 @@ import (
 	"github.com/nakatanakatana/feed-reader/gen/go/item/v1"
 	"github.com/nakatanakatana/feed-reader/gen/go/item/v1/itemv1connect"
 	"github.com/nakatanakatana/feed-reader/store"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type ItemServer struct {
@@ -337,6 +338,46 @@ func (s *ItemServer) ListItemBlockRules(ctx context.Context, req *connect.Reques
 
 	return connect.NewResponse(&itemv1.ListItemBlockRulesResponse{
 		Rules: protoRules,
+	}), nil
+}
+
+func (s *ItemServer) ListItemReads(ctx context.Context, req *connect.Request[itemv1.ListItemReadsRequest]) (*connect.Response[itemv1.ListItemReadsResponse], error) {
+	limit := int64(req.Msg.Limit)
+	if limit <= 0 {
+		limit = 1000
+	}
+	offset := int64(req.Msg.Offset)
+
+	var since any
+	if req.Msg.Since != nil {
+		since = req.Msg.Since.AsTime().UTC().Format(time.RFC3339)
+	}
+
+	rows, err := s.store.ListItemReads(ctx, store.ListItemReadsParams{
+		Since:  since,
+		Limit:  limit,
+		Offset: offset,
+	})
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	protoReads := make([]*itemv1.ItemRead, len(rows))
+	for i, row := range rows {
+		updatedAt, err := time.Parse(time.RFC3339, row.UpdatedAt)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to parse updated_at: %w", err))
+		}
+
+		protoReads[i] = &itemv1.ItemRead{
+			ItemId:    row.ItemID,
+			IsRead:    row.IsRead == 1,
+			UpdatedAt: timestamppb.New(updatedAt),
+		}
+	}
+
+	return connect.NewResponse(&itemv1.ListItemReadsResponse{
+		ItemReads: protoReads,
 	}), nil
 }
 
