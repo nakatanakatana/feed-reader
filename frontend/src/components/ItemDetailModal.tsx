@@ -58,8 +58,10 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   let skipTimeoutId: ReturnType<typeof setTimeout> | undefined;
   let skipRecoveryTimeoutId: ReturnType<typeof setTimeout> | undefined;
   let touchStartY = 0;
+  let disposed = false;
 
   onCleanup(() => {
+    disposed = true;
     if (announcementTimeout !== undefined) clearTimeout(announcementTimeout);
     if (skipTimeoutId !== undefined) clearTimeout(skipTimeoutId);
     if (skipRecoveryTimeoutId !== undefined)
@@ -156,14 +158,21 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
 
       // Wait for animation to finish before calling onSkipNext
       skipTimeoutId = setTimeout(() => {
-        props.onSkipNext?.();
-        skipTimeoutId = undefined;
+        if (disposed) return;
 
-        // Set a safety recovery timer in case navigation is blocked or no-ops
+        // Set a safety recovery timer in case navigation is blocked or no-ops.
+        // Schedule it BEFORE calling onSkipNext so it can be cleared if onSkipNext causes an unmount/route change.
+        if (skipRecoveryTimeoutId !== undefined)
+          clearTimeout(skipRecoveryTimeoutId);
         skipRecoveryTimeoutId = setTimeout(() => {
-          setIsSkipping(false);
+          if (!disposed) {
+            setIsSkipping(false);
+          }
           skipRecoveryTimeoutId = undefined;
         }, 1000);
+
+        props.onSkipNext?.();
+        skipTimeoutId = undefined;
       }, 200);
     } else {
       props.onSkipNext?.();
