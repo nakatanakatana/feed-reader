@@ -61,6 +61,9 @@ const (
 	// ItemServiceListItemBlockRulesProcedure is the fully-qualified name of the ItemService's
 	// ListItemBlockRules RPC.
 	ItemServiceListItemBlockRulesProcedure = "/item.v1.ItemService/ListItemBlockRules"
+	// ItemServiceListItemReadsProcedure is the fully-qualified name of the ItemService's ListItemReads
+	// RPC.
+	ItemServiceListItemReadsProcedure = "/item.v1.ItemService/ListItemReads"
 )
 
 // ItemServiceClient is a client for the item.v1.ItemService service.
@@ -75,6 +78,7 @@ type ItemServiceClient interface {
 	AddItemBlockRules(context.Context, *connect.Request[v1.AddItemBlockRulesRequest]) (*connect.Response[v1.AddItemBlockRulesResponse], error)
 	DeleteItemBlockRule(context.Context, *connect.Request[v1.DeleteItemBlockRuleRequest]) (*connect.Response[v1.DeleteItemBlockRuleResponse], error)
 	ListItemBlockRules(context.Context, *connect.Request[v1.ListItemBlockRulesRequest]) (*connect.Response[v1.ListItemBlockRulesResponse], error)
+	ListItemReads(context.Context, *connect.Request[v1.ListItemReadsRequest]) (*connect.Response[v1.ListItemReadsResponse], error)
 }
 
 // NewItemServiceClient constructs a client for the item.v1.ItemService service. By default, it uses
@@ -153,6 +157,13 @@ func NewItemServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 			connect.WithClientOptions(opts...),
 		),
+		listItemReads: connect.NewClient[v1.ListItemReadsRequest, v1.ListItemReadsResponse](
+			httpClient,
+			baseURL+ItemServiceListItemReadsProcedure,
+			connect.WithSchema(itemServiceMethods.ByName("ListItemReads")),
+			connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -168,6 +179,7 @@ type itemServiceClient struct {
 	addItemBlockRules    *connect.Client[v1.AddItemBlockRulesRequest, v1.AddItemBlockRulesResponse]
 	deleteItemBlockRule  *connect.Client[v1.DeleteItemBlockRuleRequest, v1.DeleteItemBlockRuleResponse]
 	listItemBlockRules   *connect.Client[v1.ListItemBlockRulesRequest, v1.ListItemBlockRulesResponse]
+	listItemReads        *connect.Client[v1.ListItemReadsRequest, v1.ListItemReadsResponse]
 }
 
 // GetItem calls item.v1.ItemService.GetItem.
@@ -220,6 +232,11 @@ func (c *itemServiceClient) ListItemBlockRules(ctx context.Context, req *connect
 	return c.listItemBlockRules.CallUnary(ctx, req)
 }
 
+// ListItemReads calls item.v1.ItemService.ListItemReads.
+func (c *itemServiceClient) ListItemReads(ctx context.Context, req *connect.Request[v1.ListItemReadsRequest]) (*connect.Response[v1.ListItemReadsResponse], error) {
+	return c.listItemReads.CallUnary(ctx, req)
+}
+
 // ItemServiceHandler is an implementation of the item.v1.ItemService service.
 type ItemServiceHandler interface {
 	GetItem(context.Context, *connect.Request[v1.GetItemRequest]) (*connect.Response[v1.GetItemResponse], error)
@@ -232,6 +249,7 @@ type ItemServiceHandler interface {
 	AddItemBlockRules(context.Context, *connect.Request[v1.AddItemBlockRulesRequest]) (*connect.Response[v1.AddItemBlockRulesResponse], error)
 	DeleteItemBlockRule(context.Context, *connect.Request[v1.DeleteItemBlockRuleRequest]) (*connect.Response[v1.DeleteItemBlockRuleResponse], error)
 	ListItemBlockRules(context.Context, *connect.Request[v1.ListItemBlockRulesRequest]) (*connect.Response[v1.ListItemBlockRulesResponse], error)
+	ListItemReads(context.Context, *connect.Request[v1.ListItemReadsRequest]) (*connect.Response[v1.ListItemReadsResponse], error)
 }
 
 // NewItemServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -306,6 +324,13 @@ func NewItemServiceHandler(svc ItemServiceHandler, opts ...connect.HandlerOption
 		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
 		connect.WithHandlerOptions(opts...),
 	)
+	itemServiceListItemReadsHandler := connect.NewUnaryHandler(
+		ItemServiceListItemReadsProcedure,
+		svc.ListItemReads,
+		connect.WithSchema(itemServiceMethods.ByName("ListItemReads")),
+		connect.WithIdempotency(connect.IdempotencyNoSideEffects),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/item.v1.ItemService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case ItemServiceGetItemProcedure:
@@ -328,6 +353,8 @@ func NewItemServiceHandler(svc ItemServiceHandler, opts ...connect.HandlerOption
 			itemServiceDeleteItemBlockRuleHandler.ServeHTTP(w, r)
 		case ItemServiceListItemBlockRulesProcedure:
 			itemServiceListItemBlockRulesHandler.ServeHTTP(w, r)
+		case ItemServiceListItemReadsProcedure:
+			itemServiceListItemReadsHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -375,4 +402,8 @@ func (UnimplementedItemServiceHandler) DeleteItemBlockRule(context.Context, *con
 
 func (UnimplementedItemServiceHandler) ListItemBlockRules(context.Context, *connect.Request[v1.ListItemBlockRulesRequest]) (*connect.Response[v1.ListItemBlockRulesResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("item.v1.ItemService.ListItemBlockRules is not implemented"))
+}
+
+func (UnimplementedItemServiceHandler) ListItemReads(context.Context, *connect.Request[v1.ListItemReadsRequest]) (*connect.Response[v1.ListItemReadsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("item.v1.ItemService.ListItemReads is not implemented"))
 }
