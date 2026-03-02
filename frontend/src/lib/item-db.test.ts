@@ -61,6 +61,7 @@ describe("items collection", () => {
         { id: "item2", title: "Item 2", isRead: false },
       ];
       queryClient.setQueryData(currentQueryKey, initialData);
+      setLastSyncedReads(new Date("2023-11-14T22:13:00Z"));
 
       worker.use(
         http.all("*/item.v1.ItemService/ListItemReads", () => {
@@ -85,7 +86,7 @@ describe("items collection", () => {
 
       const lastSynced = lastSyncedReads();
       expect(lastSynced).toBeDefined();
-      expect(lastSynced?.getTime()).toBe(1700000000000);
+      expect(lastSynced?.getTime()).toBe(1700000000000 + 1);
     });
   });
 });

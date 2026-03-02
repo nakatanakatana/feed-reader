@@ -43,8 +43,11 @@ export const [lastSyncedReads, setLastSyncedReads] = createSignal<Date | null>(n
 
 export const syncItemReads = async () => {
   const lastSyncedValue = lastSyncedReads();
-  const searchSince =
-    lastSyncedValue === null ? undefined : dateToTimestamp(lastSyncedValue);
+  if (lastSyncedValue === null) {
+    // Wait until the initial items are fetched to have a base timestamp
+    return;
+  }
+  const searchSince = dateToTimestamp(lastSyncedValue);
 
   try {
     const response = await itemClient.listItemReads({
@@ -94,11 +97,13 @@ export const syncItemReads = async () => {
       }
 
       if (maxTimestamp > 0) {
-        setLastSyncedReads(new Date(maxTimestamp));
+        // Use maxTimestamp + 1ms to avoid fetching the same items in the next poll
+        setLastSyncedReads(new Date(maxTimestamp + 1));
       } else {
         setLastSyncedReads(new Date());
       }
     } else {
+      // No new items, but move the cursor forward to current time
       setLastSyncedReads(new Date());
     }
   } catch (error) {
@@ -137,7 +142,13 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
           offset: 0,
           ...isRead,
         });
-        setLastFetched(new Date());
+        const now = new Date();
+        setLastFetched(now);
+
+        // Initialize lastSyncedReads if it's the first fetch
+        if (lastSyncedReads() === null) {
+          setLastSyncedReads(now);
+        }
 
         const respList = response.items.map((item: ProtoListItem) => ({
           id: item.id,
