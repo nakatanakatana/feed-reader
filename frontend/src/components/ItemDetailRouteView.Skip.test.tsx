@@ -32,6 +32,7 @@ describe("ItemDetailRouteView Skip Navigation", () => {
     if (dispose) dispose();
     document.body.innerHTML = "";
     vi.clearAllMocks();
+    queryClient.clear();
   });
 
   const updateStatusSpy = vi.fn();
