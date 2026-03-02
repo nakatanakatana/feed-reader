@@ -9,6 +9,7 @@ import { createMemo, createRoot, createSignal } from "solid-js";
 import {
   ItemService,
   type ListItem as ProtoListItem,
+  type ListItemReadsResponse,
 } from "../gen/item/v1/item_pb";
 import { itemStore } from "./item-store";
 import {
@@ -41,104 +42,89 @@ const itemClient = createClient(ItemService, transport);
 export const [lastFetched, setLastFetched] = createSignal<Date | null>(null);
 export const [lastSyncedReads, setLastSyncedReads] = createSignal<Date | null>(null);
 
-export const syncItemReads = async () => {
+// Global promise to deduplicate concurrent read status synchronizations
+let pendingReadsSync: Promise<ListItemReadsResponse> | null = null;
+
+/**
+ * Synchronizes read/unread status of items across clients.
+ * Uses a deduplication pattern to ensure only one request is pending at a time.
+ * Cursor is advanced to the acquisition start time on success.
+ */
+export const syncItemReads = async (): Promise<ListItemReadsResponse | { itemReads: [] }> => {
   const lastSyncedValue = lastSyncedReads();
   if (lastSyncedValue === null) {
-    // Wait until the initial items are fetched to have a base timestamp
-    return;
+    return { itemReads: [] };
   }
   const searchSince = dateToTimestamp(lastSyncedValue);
-  const now = new Date();
+  const fetchStartTime = new Date();
 
-  try {
-    const response = await itemClient.listItemReads({
-      since: searchSince,
-      limit: 10000,
-      offset: 0,
-    });
+  if (pendingReadsSync) return pendingReadsSync;
 
-    if (response.itemReads && response.itemReads.length > 0) {
-      const updatesMap = new Map(
-        response.itemReads.map((read) => [read.itemId, read.isRead]),
-      );
+  pendingReadsSync = (async () => {
+    try {
+      const response = await itemClient.listItemReads({
+        since: searchSince,
+        limit: 10000,
+        offset: 0,
+      });
 
-      // Update all items queries in the cache
-      queryClient.setQueriesData<ListItem[]>(
-        { queryKey: ["items"] },
-        (existingData) => {
-          if (!existingData) return existingData;
+      if (response.itemReads && response.itemReads.length > 0) {
+        const updatesMap = new Map(
+          response.itemReads.map((read) => [read.itemId, read.isRead]),
+        );
 
-          let hasChanges = false;
-          const newData = existingData.map((item) => {
-            if (updatesMap.has(item.id)) {
-              const newIsRead = updatesMap.get(item.id)!;
-              if (item.isRead !== newIsRead) {
-                hasChanges = true;
-                return { ...item, isRead: newIsRead };
+        // 1. Update all items queries in the TanStack Query cache
+        queryClient.setQueriesData<ListItem[]>(
+          { queryKey: ["items"] },
+          (existingData) => {
+            if (!existingData) return existingData;
+
+            let hasChanges = false;
+            const newData = existingData.map((item) => {
+              if (updatesMap.has(item.id)) {
+                const newIsRead = updatesMap.get(item.id)!;
+                if (item.isRead !== newIsRead) {
+                  hasChanges = true;
+                  return { ...item, isRead: newIsRead };
+                }
               }
-            }
-            return item;
-          });
+              return item;
+            });
 
-          return hasChanges ? newData : existingData;
-        },
-      );
+            return hasChanges ? newData : existingData;
+          },
+        );
 
-      // Update the active solid-db collection directly to prevent "revert" behavior
-      try {
-        const currentCollection = items();
-        for (const read of response.itemReads) {
-          currentCollection.utils.writeUpdate({
-            id: read.itemId,
-            isRead: read.isRead,
-          });
-        }
-      } catch (error) {
-        // Items collection might not be initialized in some contexts (e.g. background sync before first mount)
-        // In that case, the setQueriesData update above is sufficient as it will be picked up
-        // when the collection eventually initializes.
-      }
-
-      let maxTimestamp = 0;
-      for (const read of response.itemReads) {
-        if (read.updatedAt) {
-          let ts = 0;
-          if (typeof read.updatedAt === "string") {
-            ts = new Date(read.updatedAt).getTime();
-          } else if ("seconds" in read.updatedAt) {
-            ts =
-              Number(read.updatedAt.seconds) * 1000 +
-              (read.updatedAt.nanos || 0) / 1000000;
+        // 2. Update active solid-db collection directly to prevent "revert" flickering
+        try {
+          const currentCollection = items();
+          for (const read of response.itemReads) {
+            currentCollection.utils.writeUpdate({
+              id: read.itemId,
+              isRead: read.isRead,
+            });
           }
-
-          if (ts > maxTimestamp) {
-            maxTimestamp = ts;
-          }
+        } catch (error) {
+          // Items collection might not be initialized
         }
       }
 
-      if (maxTimestamp > 0) {
-        // Use maxTimestamp + 1ms to avoid fetching the same items in the next poll
-        setLastSyncedReads(new Date(maxTimestamp + 1));
-      } else {
-        setLastSyncedReads(now);
-      }
-    } else {
-      // No new items, move the cursor forward to current time
-      setLastSyncedReads(now);
+      // Always advance the cursor to the timing of this acquisition on success
+      setLastSyncedReads(fetchStartTime);
+      return response;
+    } catch (error) {
+      console.error("Failed to sync item reads", error);
+      throw error;
+    } finally {
+      pendingReadsSync = null;
     }
-  } catch (error) {
-    console.error("Failed to sync item reads", error);
-  }
+  })();
+
+  return pendingReadsSync;
 };
 
-setInterval(() => {
-  syncItemReads();
-}, 60 * 1000);
-
 const createItems = (showRead: boolean, since: DateFilterValue) => {
-  setLastFetched(null);
-  const isRead = showRead ? {} : { isRead: false };
+  const isReadFilter = showRead ? {} : { isRead: false };
   const sinceTimestamp = since !== "all" ? getPublishedSince(since) : undefined;
 
   return createCollection(
@@ -151,24 +137,34 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
       queryKey: ["items", { since, showRead }],
       queryFn: async ({ queryKey }) => {
         const lastFetchedValue = lastFetched();
-        const searchSince =
-          lastFetchedValue === null
-            ? sinceTimestamp
-            : dateToTimestamp(lastFetchedValue);
+        const existingDataCache = queryClient.getQueryData(queryKey);
+        const isFirstLoadForThisQuery = !existingDataCache;
         
-        const response = await itemClient.listItems({
-          since: searchSince,
-          limit: 10000,
-          offset: 0,
-          ...isRead,
-        });
-        
-        const now = new Date();
-        setLastFetched(now);
+        // Use global lastFetched cursor for incremental, or filters-based timestamp for first load
+        const searchSince = isFirstLoadForThisQuery
+          ? sinceTimestamp
+          : (lastFetchedValue ? dateToTimestamp(lastFetchedValue) : sinceTimestamp);
 
-        // Initialize lastSyncedReads if it's the first fetch
-        if (lastSyncedReads() === null) {
-          setLastSyncedReads(now);
+        const fetchStartTime = new Date();
+
+        // Coordinated fetch for both new items and read status updates
+        const [response] = await Promise.all([
+          itemClient.listItems({
+            since: searchSince,
+            limit: 10000,
+            offset: 0,
+            ...isReadFilter,
+          }),
+          // Only sync reads if it's an incremental update
+          !isFirstLoadForThisQuery && lastFetchedValue !== null
+            ? syncItemReads()
+            : Promise.resolve({ itemReads: [] }),
+        ]);
+
+        // Advance global cursors
+        setLastFetched(fetchStartTime);
+        if (isFirstLoadForThisQuery || lastSyncedReads() === null) {
+          setLastSyncedReads(fetchStartTime);
         }
 
         const respList = response.items.map((item: ProtoListItem) => ({
@@ -182,15 +178,17 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
           url: item.url,
         }));
 
-        // Get the latest data from cache AFTER the await to avoid overwriting sync updates
-        const existingData =
+        // Get latest data from cache AFTER the await to avoid overwriting updates from parallel sync
+        const currentData =
           (queryClient.getQueryData(queryKey) as ListItem[]) || [];
 
         const itemMap = new Map<string, ListItem>();
-        for (const item of existingData) {
+        // Add items from the ListItems response first
+        for (const item of respList) {
           itemMap.set(item.id, item);
         }
-        for (const item of respList) {
+        // Overwrite/Add existing data from cache (which now includes sync updates from Step 1)
+        for (const item of currentData) {
           itemMap.set(item.id, item);
         }
 
