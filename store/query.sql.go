@@ -1340,6 +1340,55 @@ func (q *Queries) ListItemFeeds(ctx context.Context, itemID string) ([]ListItemF
 	return items, nil
 }
 
+const listItemReads = `-- name: ListItemReads :many
+SELECT
+  item_id,
+  is_read,
+  updated_at
+FROM
+  item_reads
+WHERE
+  (?1 IS NULL OR updated_at >= ?1)
+ORDER BY
+  updated_at ASC
+LIMIT ?3 OFFSET ?2
+`
+
+type ListItemReadsParams struct {
+	Since  interface{} `json:"since"`
+	Offset int64       `json:"offset"`
+	Limit  int64       `json:"limit"`
+}
+
+type ListItemReadsRow struct {
+	ItemID    string `json:"item_id"`
+	IsRead    int64  `json:"is_read"`
+	UpdatedAt string `json:"updated_at"`
+}
+
+func (q *Queries) ListItemReads(ctx context.Context, arg ListItemReadsParams) ([]ListItemReadsRow, error) {
+	rows, err := q.db.QueryContext(ctx, listItemReads, arg.Since, arg.Offset, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListItemReadsRow
+	for rows.Next() {
+		var i ListItemReadsRow
+		if err := rows.Scan(&i.ItemID, &i.IsRead, &i.UpdatedAt); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listItems = `-- name: ListItems :many
 SELECT
   i.id,
