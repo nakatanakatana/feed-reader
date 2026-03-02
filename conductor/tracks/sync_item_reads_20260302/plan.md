@@ -8,8 +8,8 @@ Establish the `ListItemReads` RPC and the underlying database logic to fetch inc
 - [x] Task: Add an index on `item_reads.updated_at` in `sql/schema.sql` and `sql/query.sql` (if needed) to ensure performance. [de1171b]
 - [x] Task: Add `ListItemReads` query to `sql/query.sql` to fetch read statuses filtered by `updated_at`. [0748510]
 - [x] Task: Generate Go code for queries using `sqlc`. [18fdf3d]
-- [~] Task: Implement `ListItemReads` in `cmd/feed-reader/item_handler.go`.
-- [ ] Task: Write unit tests for `ListItemReads` in `cmd/feed-reader/item_handler_test.go` and `store/item_store_test.go`.
+- [x] Task: Implement `ListItemReads` in `cmd/feed-reader/item_handler.go`. [3b9421c]
+- [~] Task: Write unit tests for `ListItemReads` in `cmd/feed-reader/item_handler_test.go` and `store/item_store_test.go`.
 - [ ] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md)
 
 ## Phase 2: Frontend Implementation (Polling & State Sync)
