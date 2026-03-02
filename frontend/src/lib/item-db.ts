@@ -150,19 +150,19 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
       refetchInterval: 1 * 60 * 1000,
       queryKey: ["items", { since, showRead }],
       queryFn: async ({ queryKey }) => {
-        const existingData =
-          (queryClient.getQueryData(queryKey) as ListItem[]) || [];
         const lastFetchedValue = lastFetched();
         const searchSince =
           lastFetchedValue === null
             ? sinceTimestamp
             : dateToTimestamp(lastFetchedValue);
+        
         const response = await itemClient.listItems({
           since: searchSince,
           limit: 10000,
           offset: 0,
           ...isRead,
         });
+        
         const now = new Date();
         setLastFetched(now);
 
@@ -181,6 +181,10 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
           feedId: item.feedId,
           url: item.url,
         }));
+
+        // Get the latest data from cache AFTER the await to avoid overwriting sync updates
+        const existingData =
+          (queryClient.getQueryData(queryKey) as ListItem[]) || [];
 
         const itemMap = new Map<string, ListItem>();
         for (const item of existingData) {
