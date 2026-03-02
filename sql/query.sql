@@ -588,3 +588,17 @@ WHERE
 GROUP BY
   day_of_week, hour_of_day;
 
+-- name: ListItemReads :many
+SELECT
+  item_id,
+  is_read,
+  updated_at
+FROM
+  item_reads
+WHERE
+  (sqlc.narg('since') IS NULL OR updated_at >= sqlc.narg('since'))
+ORDER BY
+  updated_at ASC
+LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
+
+
