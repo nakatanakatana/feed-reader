@@ -61,7 +61,7 @@ export function useSwipe(options: UseSwipeOptions = {}) {
       const isAtLeft = options.isAtLeftBoundary?.() ?? true;
       const isAtRight = options.isAtRightBoundary?.() ?? true;
 
-      // Only prevent default and track if moving away from boundary or boundary is reached
+      // Only track horizontal motion when pulling past the left/right boundary; otherwise allow normal scroll
       if ((diffX > 0 && isAtLeft) || (diffX < 0 && isAtRight)) {
         e.preventDefault();
         setX(diffX);
@@ -81,7 +81,7 @@ export function useSwipe(options: UseSwipeOptions = {}) {
       const isAtTop = options.isAtTopBoundary?.() ?? true;
       const isAtBottom = options.isAtBottomBoundary?.() ?? true;
 
-      // Only prevent default and track if moving away from boundary or boundary is reached
+      // Only track vertical motion when pulling past the top/bottom boundary; otherwise allow normal scroll
       if ((diffY > 0 && isAtTop) || (diffY < 0 && isAtBottom)) {
         // For vertical, we only prevent default if we have a handler
         if (
