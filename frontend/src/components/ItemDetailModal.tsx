@@ -50,13 +50,17 @@ interface ItemDetailModalProps {
 
 export function ItemDetailModal(props: ItemDetailModalProps) {
   let modalRef: HTMLDivElement | undefined;
+  let swipeContainerRef: HTMLDivElement | undefined;
   const queryClient = useQueryClient();
   const [announcement, setAnnouncement] = createSignal("");
   let announcementTimeout: ReturnType<typeof setTimeout> | undefined;
   const [isSkipping, setIsSkipping] = createSignal(false);
+  let skipTimeoutId: ReturnType<typeof setTimeout> | undefined;
+  let touchStartY = 0;
 
   onCleanup(() => {
     if (announcementTimeout) clearTimeout(announcementTimeout);
+    if (skipTimeoutId) clearTimeout(skipTimeoutId);
   });
 
   const { x, y, isSwiping, handlers } = useSwipe({
@@ -76,13 +80,19 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
         props.nextItemId &&
         props.itemId !== "end-of-list"
       ) {
+        // Only allow swipe-up if it started in the bottom 30% of the container
+        if (swipeContainerRef) {
+          const rect = swipeContainerRef.getBoundingClientRect();
+          const thresholdY = rect.top + rect.height * 0.7;
+          if (touchStartY < thresholdY) {
+            return;
+          }
+        }
         handleSkip();
       }
     },
     isAtBottomBoundary: () => {
-      const container = modalRef?.querySelector(
-        '[data-testid="swipe-container"]',
-      );
+      const container = swipeContainerRef;
       if (!container) return true;
       return (
         Math.abs(
@@ -91,15 +101,20 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
       );
     },
     isAtTopBoundary: () => {
-      const container = modalRef?.querySelector(
-        '[data-testid="swipe-container"]',
-      );
+      const container = swipeContainerRef;
       if (!container) return true;
       return container.scrollTop < 5;
     },
     threshold: 100, // Use a higher threshold than the hook default (50px) to reduce accidental swipes
     disabled: props.itemId === "end-of-list",
   });
+
+  // Intercept touchstart to record start position for the 30% check
+  const originalOnTouchStart = handlers.ontouchstart;
+  handlers.ontouchstart = (e: TouchEvent) => {
+    touchStartY = e.touches[0].clientY;
+    originalOnTouchStart(e);
+  };
 
   // Determine if we can navigate
   const canSwipeLeft = () =>
@@ -125,17 +140,19 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   };
 
   const handleSkip = (animate = true) => {
-    if (props.onSkipNext) {
-      if (animate) {
-        setIsSkipping(true);
-        // Wait for animation to finish before calling onSkipNext
-        setTimeout(() => {
-          props.onSkipNext?.();
-          setIsSkipping(false);
-        }, 200);
-      } else {
+    if (!props.onSkipNext || isSkipping()) return;
+
+    if (animate) {
+      setIsSkipping(true);
+      if (skipTimeoutId) clearTimeout(skipTimeoutId);
+      // Wait for animation to finish before calling onSkipNext
+      skipTimeoutId = setTimeout(() => {
         props.onSkipNext?.();
-      }
+        setIsSkipping(false);
+        skipTimeoutId = undefined;
+      }, 200);
+    } else {
+      props.onSkipNext?.();
     }
   };
 
@@ -394,7 +411,9 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     } else if (e.key === "m" || e.key === "M") {
       handleToggleRead();
     } else if (e.key === "n" || e.key === "N") {
-      handleSkip(false);
+      if (canSwipeUp()) {
+        handleSkip(false);
+      }
     }
   };
 
@@ -600,6 +619,9 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
         </div>
 
         <div
+          ref={(el) => {
+            swipeContainerRef = el;
+          }}
           data-testid="swipe-container"
           aria-describedby="swipe-instruction"
           class={flex({

@@ -161,6 +161,180 @@ describe("useSwipe", () => {
     });
   });
 
+  it("calculates y displacement correctly during touchmove", () => {
+    createRoot((dispose) => {
+      const { y, handlers } = useSwipe();
+      const target = document.createElement("div");
+
+      // Start touch at 100, 100
+      handlers.ontouchstart(
+        createTouchEvent("touchstart", target, [
+          createTouch(target, { x: 100, y: 100 }),
+        ]),
+      );
+
+      expect(y()).toBe(0);
+
+      // Move to 100, 150
+      handlers.ontouchmove(
+        createTouchEvent("touchmove", target, [
+          createTouch(target, { x: 100, y: 150 }),
+        ]),
+      );
+
+      expect(y()).toBe(50);
+
+      // Move to 100, 30
+      handlers.ontouchmove(
+        createTouchEvent("touchmove", target, [
+          createTouch(target, { x: 100, y: 30 }),
+        ]),
+      );
+
+      expect(y()).toBe(-70);
+
+      dispose();
+    });
+  });
+
+  it("calls onSwipeUp when threshold is exceeded upwards", () => {
+    const onSwipeUp = vi.fn();
+    createRoot((dispose) => {
+      const { handlers } = useSwipe({
+        onSwipeUp,
+        threshold: 50,
+      });
+      const target = document.createElement("div");
+
+      handlers.ontouchstart(
+        createTouchEvent("touchstart", target, [
+          createTouch(target, { x: 100, y: 100 }),
+        ]),
+      );
+
+      handlers.ontouchmove(
+        createTouchEvent("touchmove", target, [
+          createTouch(target, { x: 100, y: 40 }),
+        ]),
+      );
+
+      handlers.ontouchend(createTouchEvent("touchend", target, []));
+
+      expect(onSwipeUp).toHaveBeenCalled();
+      dispose();
+    });
+  });
+
+  it("calls onSwipeDown when threshold is exceeded downwards", () => {
+    const onSwipeDown = vi.fn();
+    createRoot((dispose) => {
+      const { handlers } = useSwipe({
+        onSwipeDown,
+        threshold: 50,
+      });
+      const target = document.createElement("div");
+
+      handlers.ontouchstart(
+        createTouchEvent("touchstart", target, [
+          createTouch(target, { x: 100, y: 100 }),
+        ]),
+      );
+
+      handlers.ontouchmove(
+        createTouchEvent("touchmove", target, [
+          createTouch(target, { x: 100, y: 160 }),
+        ]),
+      );
+
+      handlers.ontouchend(createTouchEvent("touchend", target, []));
+
+      expect(onSwipeDown).toHaveBeenCalled();
+      dispose();
+    });
+  });
+
+  it("cancels vertical swipe if horizontal movement exceeds 50px", () => {
+    createRoot((dispose) => {
+      const { y, handlers } = useSwipe();
+      const target = document.createElement("div");
+
+      handlers.ontouchstart(
+        createTouchEvent("touchstart", target, [
+          createTouch(target, { x: 100, y: 100 }),
+        ]),
+      );
+
+      // Start vertical move
+      handlers.ontouchmove(
+        createTouchEvent("touchmove", target, [
+          createTouch(target, { x: 100, y: 110 }),
+        ]),
+      );
+
+      // Drift horizontally 51px
+      handlers.ontouchmove(
+        createTouchEvent("touchmove", target, [
+          createTouch(target, { x: 151, y: 120 }),
+        ]),
+      );
+
+      expect(y()).toBe(0);
+      dispose();
+    });
+  });
+
+  it("respects isAtBottomBoundary for upward swipe", () => {
+    const onSwipeUp = vi.fn();
+    createRoot((dispose) => {
+      const { y, handlers } = useSwipe({
+        onSwipeUp,
+        isAtBottomBoundary: () => false,
+      });
+      const target = document.createElement("div");
+
+      handlers.ontouchstart(
+        createTouchEvent("touchstart", target, [
+          createTouch(target, { x: 100, y: 100 }),
+        ]),
+      );
+
+      handlers.ontouchmove(
+        createTouchEvent("touchmove", target, [
+          createTouch(target, { x: 100, y: 40 }),
+        ]),
+      );
+
+      expect(y()).toBe(0); // Should not track y because we're not at boundary
+      dispose();
+    });
+  });
+
+  it("respects isAtTopBoundary for downward swipe", () => {
+    const onSwipeDown = vi.fn();
+    createRoot((dispose) => {
+      const { y, handlers } = useSwipe({
+        onSwipeDown,
+        isAtTopBoundary: () => false,
+      });
+      const target = document.createElement("div");
+
+      handlers.ontouchstart(
+        createTouchEvent("touchstart", target, [
+          createTouch(target, { x: 100, y: 100 }),
+        ]),
+      );
+
+      handlers.ontouchmove(
+        createTouchEvent("touchmove", target, [
+          createTouch(target, { x: 100, y: 160 }),
+        ]),
+      );
+
+      expect(y()).toBe(0); // Should not track y because we're not at boundary
+      dispose();
+    });
+  });
+
   it("ignores multi-touch", () => {
     createRoot((dispose) => {
       const { x, handlers } = useSwipe();
