@@ -59,6 +59,10 @@ The primary target audience is individuals and organizations seeking control ove
   - **Swipe Navigation:** Intuitive horizontal swipe gestures on touch devices allow users to navigate between articles seamlessly, with smooth visual feedback as the content follows the drag. Features a non-linear resistance bounce effect when swiping past the first or last items to provide tactile feedback, and includes ARIA-compliant instructions for screen reader users.
   - **Adaptive Metadata Display:** Consistent with the list view, "Published" and "Received" text labels in the article detail view are replaced by intuitive icons with tooltips on narrow viewports (< 480px) to maintain a compact layout without sacrificing information.
 
+- **Multi-Device Synchronization:** Seamlessly synchronizes article read/unread status across multiple browser instances and devices.
+  - **Background Polling:** Automatically fetches read status updates in the background using an intelligent polling mechanism (1-minute interval).
+  - **Coordinated Delta-Sync:** Utilizes an "Acquisition Timing" cursor management pattern to fetch only the changes since the last successful update, ensuring efficient and low-latency synchronization without redundant data transfer.
+
 - **Markdown Rendering:** Automatically converts article content and descriptions from HTML to Markdown during ingestion. Renders this Markdown back to safe HTML in the frontend, ensuring a consistent and secure reading experience while preserving links, images, and basic formatting.
 
 - **Tagging System:** Create and manage custom tags to categorize feeds. Features a robust bulk tagging UI to efficiently organize multiple subscriptions at once. Filter both the feed list and article stream by selected tags for organized content discovery, with unread counts displayed per tag to prioritize reading.

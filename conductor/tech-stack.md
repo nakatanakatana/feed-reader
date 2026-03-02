@@ -20,6 +20,7 @@ The backend is responsible for feed management, article fetching, and providing 
 -   **CLI Manager:** `aqua` (Declarative tool management)
 -   **Asset Bundling:** Go `embed` (For packaging frontend artifacts into the binary)
 -   **Property-Based Testing:** `rapid` (For automated edge-case discovery)
+-   **Multi-Format Date Parsing:** Custom helper logic to handle varied SQLite date formats (RFC3339 and space-separated) for robust database interoperability.
 -   **Testing Framework:** `gotest.tools/v3` (Standard assertion and golden testing library for clear, readable, and consistent backend tests). The project emphasizes the use of **hand-written mocks** over heavy mocking frameworks like `testify/mock` to maintain simplicity and clarity.
 -   **Task Runner:** `GNU Make` (Unified command interface)
 
@@ -28,7 +29,7 @@ The frontend is a modern Single Page Application (SPA) designed for speed and re
 
 -   **Framework:** SolidJS (Fine-grained reactivity)
 -   **Routing:** TanStack Router (Type-safe routing)
--   **State & Data Management:** TanStack Query (Efficient server-state management), TanStack DB (Local data synchronization with centralized sorting via reactive hooks), **SolidJS Store** (Centralized reactive application state)
+-   **State & Data Management:** TanStack Query (Efficient server-state management), TanStack DB (Local data synchronization with centralized sorting via reactive hooks), **SolidJS Store** (Centralized reactive application state). Utilizes **Coordinated Synchronization** to fetch delta updates for both items and read statuses in a single atomic cycle.
 -   **Language:** TypeScript (Type safety). Utilizes modern Web APIs like the **Badging API** (`navigator.setAppBadge`) for enhanced PWA integration.
 -   **Markdown Rendering:** `markdown-it` (Safe client-side rendering)
 -   **Styling:** Panda CSS (CSS-in-JS with build-time generation)
