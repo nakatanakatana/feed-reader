@@ -16,8 +16,8 @@
 - [x] Task: Verify responsive behavior and touch target consistency. 643332c
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Mobile Swipe Gesture' (Protocol in workflow.md) 0fbc183
 
-## Phase 3: Final Polish and Documentation
-- [ ] Task: Ensure the shortcut is mentioned in any keyboard help UI.
+## Phase 3: Final Polish and Documentation [checkpoint: 577b3bb]
+- [x] Task: Ensure the shortcut is mentioned in any keyboard help UI.
 - [x] Task: Verify code coverage for new navigation logic (Target >80%). 643332c
 - [x] Task: Run full suite of frontend tests to ensure no regressions in standard navigation. 643332c
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Final Polish and Documentation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Final Polish and Documentation' (Protocol in workflow.md) 577b3bb
