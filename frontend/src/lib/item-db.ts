@@ -48,6 +48,7 @@ export const syncItemReads = async () => {
     return;
   }
   const searchSince = dateToTimestamp(lastSyncedValue);
+  const now = new Date();
 
   try {
     const response = await itemClient.listItemReads({
@@ -57,39 +58,59 @@ export const syncItemReads = async () => {
     });
 
     if (response.itemReads && response.itemReads.length > 0) {
-      const currentQueryKey = [
-        "items",
-        { since: itemStore.state.since, showRead: itemStore.state.showRead },
-      ];
-      const existingData =
-        (queryClient.getQueryData(currentQueryKey) as ListItem[]) || [];
-
       const updatesMap = new Map(
         response.itemReads.map((read) => [read.itemId, read.isRead]),
       );
 
-      let hasChanges = false;
-      const newData = existingData.map((item) => {
-        if (updatesMap.has(item.id)) {
-          const newIsRead = updatesMap.get(item.id)!;
-          if (item.isRead !== newIsRead) {
-            hasChanges = true;
-            return { ...item, isRead: newIsRead };
-          }
-        }
-        return item;
-      });
+      // Update all items queries in the cache
+      queryClient.setQueriesData<ListItem[]>(
+        { queryKey: ["items"] },
+        (existingData) => {
+          if (!existingData) return existingData;
 
-      if (hasChanges) {
-        queryClient.setQueryData(currentQueryKey, newData);
+          let hasChanges = false;
+          const newData = existingData.map((item) => {
+            if (updatesMap.has(item.id)) {
+              const newIsRead = updatesMap.get(item.id)!;
+              if (item.isRead !== newIsRead) {
+                hasChanges = true;
+                return { ...item, isRead: newIsRead };
+              }
+            }
+            return item;
+          });
+
+          return hasChanges ? newData : existingData;
+        },
+      );
+
+      // Update the active solid-db collection directly to prevent "revert" behavior
+      try {
+        const currentCollection = items();
+        for (const read of response.itemReads) {
+          currentCollection.utils.writeUpdate({
+            id: read.itemId,
+            isRead: read.isRead,
+          });
+        }
+      } catch (error) {
+        // Items collection might not be initialized in some contexts (e.g. background sync before first mount)
+        // In that case, the setQueriesData update above is sufficient as it will be picked up
+        // when the collection eventually initializes.
       }
 
       let maxTimestamp = 0;
       for (const read of response.itemReads) {
-        if (read.updatedAt && read.updatedAt.seconds) {
-          const ts =
-            Number(read.updatedAt.seconds) * 1000 +
-            (read.updatedAt.nanos || 0) / 1000000;
+        if (read.updatedAt) {
+          let ts = 0;
+          if (typeof read.updatedAt === "string") {
+            ts = new Date(read.updatedAt).getTime();
+          } else if ("seconds" in read.updatedAt) {
+            ts =
+              Number(read.updatedAt.seconds) * 1000 +
+              (read.updatedAt.nanos || 0) / 1000000;
+          }
+
           if (ts > maxTimestamp) {
             maxTimestamp = ts;
           }
@@ -100,11 +121,11 @@ export const syncItemReads = async () => {
         // Use maxTimestamp + 1ms to avoid fetching the same items in the next poll
         setLastSyncedReads(new Date(maxTimestamp + 1));
       } else {
-        setLastSyncedReads(new Date());
+        setLastSyncedReads(now);
       }
     } else {
-      // No new items, but move the cursor forward to current time
-      setLastSyncedReads(new Date());
+      // No new items, move the cursor forward to current time
+      setLastSyncedReads(now);
     }
   } catch (error) {
     console.error("Failed to sync item reads", error);

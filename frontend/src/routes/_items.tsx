@@ -5,7 +5,7 @@ import { flex } from "../../styled-system/patterns";
 import { ItemList } from "../components/ItemList";
 import { ActionButton } from "../components/ui/ActionButton";
 import { PageLayout } from "../components/ui/PageLayout";
-import { items, lastFetched, syncItemReads } from "../lib/item-db";
+import { items, lastFetched, syncItemReads, lastSyncedReads } from "../lib/item-db";
 import type { DateFilterValue } from "../lib/item-utils";
 
 interface ItemsSearch {
@@ -70,7 +70,10 @@ function ItemsLayout() {
           headerActions={
             <div class={flex({ gap: "2", alignItems: "center" })}>
               {lastFetched() && (
-                <span class={css({ fontSize: "sm", color: "gray.500" })}>
+                <span
+                  class={css({ fontSize: "sm", color: "gray.500" })}
+                  title={`Last fetched: ${lastFetched()?.toLocaleString()}\nLast sync reads: ${lastSyncedReads()?.toLocaleString()}`}
+                >
                   {lastFetched()?.toLocaleTimeString()}
                 </span>
               )}

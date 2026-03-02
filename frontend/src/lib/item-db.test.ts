@@ -55,13 +55,21 @@ describe("items collection", () => {
 
   describe("syncItemReads", () => {
     it("should update queryClient data when sync returns items", async () => {
+      // Initialize collection in a root
+      const dispose = createRoot((dispose) => {
+        items();
+        return dispose;
+      });
+
       const currentQueryKey = ["items", { since: "30d", showRead: false }];
       const initialData = [
         { id: "item1", title: "Item 1", isRead: false },
         { id: "item2", title: "Item 2", isRead: false },
       ];
       queryClient.setQueryData(currentQueryKey, initialData);
-      setLastSyncedReads(new Date("2023-11-14T22:13:00Z"));
+      
+      const baseDate = new Date("2023-11-14T22:13:00Z");
+      setLastSyncedReads(baseDate);
 
       worker.use(
         http.all("*/item.v1.ItemService/ListItemReads", () => {
@@ -86,7 +94,10 @@ describe("items collection", () => {
 
       const lastSynced = lastSyncedReads();
       expect(lastSynced).toBeDefined();
-      expect(lastSynced?.getTime()).toBe(1700000000000 + 1);
+      // Should be 22:13:20 + 1ms
+      expect(lastSynced?.getTime()).toBe(new Date("2023-11-14T22:13:20Z").getTime() + 1);
+      
+      dispose();
     });
   });
 });
