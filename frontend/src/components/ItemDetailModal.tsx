@@ -90,6 +90,13 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
         ) < 5
       );
     },
+    isAtTopBoundary: () => {
+      const container = modalRef?.querySelector(
+        '[data-testid="swipe-container"]',
+      );
+      if (!container) return true;
+      return container.scrollTop < 5;
+    },
     threshold: 100, // Use a higher threshold than the hook default (50px) to reduce accidental swipes
     disabled: props.itemId === "end-of-list",
   });
