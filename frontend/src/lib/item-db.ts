@@ -39,6 +39,76 @@ export interface Item extends ListItem {
 const itemClient = createClient(ItemService, transport);
 
 export const [lastFetched, setLastFetched] = createSignal<Date | null>(null);
+export const [lastSyncedReads, setLastSyncedReads] = createSignal<Date | null>(null);
+
+export const syncItemReads = async () => {
+  const lastSyncedValue = lastSyncedReads();
+  const searchSince =
+    lastSyncedValue === null ? undefined : dateToTimestamp(lastSyncedValue);
+
+  try {
+    const response = await itemClient.listItemReads({
+      since: searchSince,
+      limit: 10000,
+      offset: 0,
+    });
+
+    if (response.itemReads && response.itemReads.length > 0) {
+      const currentQueryKey = [
+        "items",
+        { since: itemStore.state.since, showRead: itemStore.state.showRead },
+      ];
+      const existingData =
+        (queryClient.getQueryData(currentQueryKey) as ListItem[]) || [];
+
+      const updatesMap = new Map(
+        response.itemReads.map((read) => [read.itemId, read.isRead]),
+      );
+
+      let hasChanges = false;
+      const newData = existingData.map((item) => {
+        if (updatesMap.has(item.id)) {
+          const newIsRead = updatesMap.get(item.id)!;
+          if (item.isRead !== newIsRead) {
+            hasChanges = true;
+            return { ...item, isRead: newIsRead };
+          }
+        }
+        return item;
+      });
+
+      if (hasChanges) {
+        queryClient.setQueryData(currentQueryKey, newData);
+      }
+
+      let maxTimestamp = 0;
+      for (const read of response.itemReads) {
+        if (read.updatedAt && read.updatedAt.seconds) {
+          const ts =
+            Number(read.updatedAt.seconds) * 1000 +
+            (read.updatedAt.nanos || 0) / 1000000;
+          if (ts > maxTimestamp) {
+            maxTimestamp = ts;
+          }
+        }
+      }
+
+      if (maxTimestamp > 0) {
+        setLastSyncedReads(new Date(maxTimestamp));
+      } else {
+        setLastSyncedReads(new Date());
+      }
+    } else {
+      setLastSyncedReads(new Date());
+    }
+  } catch (error) {
+    console.error("Failed to sync item reads", error);
+  }
+};
+
+setInterval(() => {
+  syncItemReads();
+}, 60 * 1000);
 
 const createItems = (showRead: boolean, since: DateFilterValue) => {
   setLastFetched(null);

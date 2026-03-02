@@ -1,7 +1,10 @@
 import { createRoot } from "solid-js";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { items } from "./item-db";
+import { items, syncItemReads, lastSyncedReads, setLastSyncedReads } from "./item-db";
 import { itemStore } from "./item-store";
+import { worker } from "../mocks/browser";
+import { http, HttpResponse } from "msw";
+import { queryClient } from "./query";
 
 describe("items collection", () => {
   beforeEach(() => {
@@ -12,6 +15,8 @@ describe("items collection", () => {
   afterEach(() => {
     itemStore.setShowRead(false);
     itemStore.setDateFilter("30d");
+    queryClient.clear();
+    setLastSyncedReads(null);
   });
 
   describe("reactivity", () => {
@@ -45,6 +50,42 @@ describe("items collection", () => {
         return dispose;
       });
       dispose();
+    });
+  });
+
+  describe("syncItemReads", () => {
+    it("should update queryClient data when sync returns items", async () => {
+      const currentQueryKey = ["items", { since: "30d", showRead: false }];
+      const initialData = [
+        { id: "item1", title: "Item 1", isRead: false },
+        { id: "item2", title: "Item 2", isRead: false },
+      ];
+      queryClient.setQueryData(currentQueryKey, initialData);
+
+      worker.use(
+        http.all("*/item.v1.ItemService/ListItemReads", () => {
+          return HttpResponse.json({
+            itemReads: [
+              {
+                itemId: "item1",
+                isRead: true,
+                updatedAt: "2023-11-14T22:13:20Z",
+              },
+            ],
+          });
+        }),
+      );
+
+      await syncItemReads();
+
+      const updatedData = queryClient.getQueryData<any[]>(currentQueryKey);
+      expect(updatedData).toBeDefined();
+      expect(updatedData!.find((i) => i.id === "item1")!.isRead).toBe(true);
+      expect(updatedData!.find((i) => i.id === "item2")!.isRead).toBe(false);
+
+      const lastSynced = lastSyncedReads();
+      expect(lastSynced).toBeDefined();
+      expect(lastSynced?.getTime()).toBe(1700000000000);
     });
   });
 });
