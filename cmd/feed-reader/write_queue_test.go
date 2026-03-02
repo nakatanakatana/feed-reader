@@ -115,4 +115,3 @@ func TestWriteQueueServiceIntegration(t *testing.T) {
 		t.Errorf("expected 2 items, got %d", len(items))
 	}
 }
-

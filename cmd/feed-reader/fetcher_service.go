@@ -8,11 +8,11 @@ import (
 	"sync"
 	"time"
 
+	"github.com/mmcdole/gofeed"
+	"github.com/nakatanakatana/feed-reader/store"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
-	"github.com/mmcdole/gofeed"
-	"github.com/nakatanakatana/feed-reader/store"
 )
 
 // FetcherService coordinates the background fetching process.
@@ -157,7 +157,6 @@ func (s *FetcherService) fetchAndSaveSync(ctx context.Context, f store.FullFeed)
 
 	return result, nil
 }
-
 
 // FetchAllFeeds initiates the fetching process for feeds that are due to be fetched.
 func (s *FetcherService) FetchAllFeeds(ctx context.Context) error {
@@ -358,4 +357,3 @@ func (s *FetcherService) getNextFetchInterval(ctx context.Context, feedID string
 	nextFetchTime := time.Now().UTC().Add(baseInterval)
 	return AdjustIntervalForPeak(distribution, baseInterval, minInterval, nextFetchTime)
 }
-

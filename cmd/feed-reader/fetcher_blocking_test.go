@@ -74,7 +74,7 @@ func TestFetcherService_BlockingDuringIngestion(t *testing.T) {
 		IsBlocked: false,
 	})
 	assert.NilError(t, err)
-	
+
 	// Verify that only the non-blocked item is returned when filtering for non-blocked items
 	assert.Equal(t, len(items), 1, "Expected only 1 non-blocked item, but got %d", len(items))
 	assert.Equal(t, *items[0].Title, "Normal Item")

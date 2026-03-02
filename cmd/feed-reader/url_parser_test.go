@@ -28,13 +28,13 @@ func TestURLParser_ExtractUserInfo(t *testing.T) {
 			},
 		},
 		{
-			name: "Subdomain no match (no user)",
-			url:  "https://example.com/post/123",
+			name:     "Subdomain no match (no user)",
+			url:      "https://example.com/post/123",
 			expected: nil,
 		},
 		{
-			name: "Subdomain no match (nested subdomain)",
-			url:  "https://sub.user1.example.com/post/123",
+			name:     "Subdomain no match (nested subdomain)",
+			url:      "https://sub.user1.example.com/post/123",
 			expected: nil,
 		},
 		{
@@ -46,13 +46,13 @@ func TestURLParser_ExtractUserInfo(t *testing.T) {
 			},
 		},
 		{
-			name: "Path no match (different domain)",
-			url:  "https://other.com/users/user2",
+			name:     "Path no match (different domain)",
+			url:      "https://other.com/users/user2",
 			expected: nil,
 		},
 		{
-			name: "Path no match (no user part)",
-			url:  "https://domain.com/users/",
+			name:     "Path no match (no user part)",
+			url:      "https://domain.com/users/",
 			expected: nil,
 		},
 	}

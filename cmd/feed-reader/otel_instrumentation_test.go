@@ -49,10 +49,10 @@ func TestConnectRPCTracing(t *testing.T) {
 	s := store.NewStore(db)
 	feedServer := NewFeedServer(s, mockUUIDGenerator{}, &mockFetcher{}, &mockItemFetcher{}, nil)
 	feedPath, handler := feedv1connect.NewFeedServiceHandler(feedServer, connect.WithInterceptors(interceptor))
-	
+
 	mux := http.NewServeMux()
 	mux.Handle(feedPath, handler)
-	
+
 	server := httptest.NewServer(mux)
 	t.Cleanup(server.Close)
 
@@ -68,7 +68,7 @@ func TestConnectRPCTracing(t *testing.T) {
 	spans := sr.Ended()
 	// Should have at least client and server spans
 	assert.Assert(t, len(spans) >= 2, "expected at least 2 spans (client and server), got %d", len(spans))
-	
+
 	foundServerSpan := false
 	for _, span := range spans {
 		if span.SpanKind() == trace.SpanKindServer {
@@ -99,7 +99,7 @@ func TestDatabaseTracing(t *testing.T) {
 	// Verify spans
 	spans := sr.Ended()
 	assert.Assert(t, len(spans) > 0, "should have at least one span for DB query")
-	
+
 	foundDBSpan := false
 	for _, span := range spans {
 		for _, attr := range span.Attributes() {
@@ -132,7 +132,7 @@ func TestWorkerPoolTracing(t *testing.T) {
 
 	spans := sr.Ended()
 	assert.Assert(t, len(spans) > 0, "should have at least one span for worker task")
-	
+
 	foundWorkerSpan := false
 	for _, span := range spans {
 		if span.Name() == "worker_pool.task" {
@@ -158,7 +158,7 @@ func TestFetcherServiceTracing(t *testing.T) {
 	go wq.Start(ctx)
 
 	svc := NewFetcherService(s, fetcher, pool, wq, slog.Default(), time.Hour)
-	
+
 	f := store.FullFeed{ID: "f1", Url: "u1"}
 	err := svc.FetchAndSave(ctx, f)
 	assert.NilError(t, err)
@@ -191,17 +191,17 @@ func TestE2ETracing(t *testing.T) {
 	s := store.NewStore(db)
 	feedServer := NewFeedServer(s, mockUUIDGenerator{}, &mockFetcher{}, &mockItemFetcher{}, nil)
 	_, handler := feedv1connect.NewFeedServiceHandler(feedServer, connect.WithInterceptors(interceptor))
-	
+
 	server := httptest.NewServer(handler)
 	t.Cleanup(server.Close)
 
 	// 2. Simulate Frontend Request with TraceContext
 	client := feedv1connect.NewFeedServiceClient(server.Client(), server.URL, connect.WithInterceptors(interceptor))
-	
+
 	// Inject a specific trace ID manually
 	traceIDStr := "4bf92f3577b34da6a3ce929d0e0e4736"
 	spanIDStr := "00f067aa0ba902b7"
-	
+
 	tid, err := trace.TraceIDFromHex(traceIDStr)
 	assert.NilError(t, err)
 	sid, err := trace.SpanIDFromHex(spanIDStr)
@@ -220,7 +220,7 @@ func TestE2ETracing(t *testing.T) {
 	// 3. Verify Backend spans share the same Trace ID
 	spans := sr.Ended()
 	assert.Assert(t, len(spans) > 0, "should have recorded spans")
-	
+
 	foundAtLeastOneWithCorrectTraceID := false
 	for _, span := range spans {
 		if span.SpanContext().TraceID().String() == traceIDStr {

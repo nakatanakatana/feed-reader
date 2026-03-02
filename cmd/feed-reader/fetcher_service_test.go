@@ -398,4 +398,3 @@ func TestFetcherService_PeakAwareInterval(t *testing.T) {
 		assert.Assert(t, diff >= 11*time.Hour && diff <= 13*time.Hour, "Expected ~12h interval (peak adjusted), got %v", diff)
 	})
 }
-

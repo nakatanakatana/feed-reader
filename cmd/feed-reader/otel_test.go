@@ -14,14 +14,14 @@ import (
 func TestInitOTEL_Unset(t *testing.T) {
 	// Ensure env is unset
 	_ = os.Unsetenv("OTEL_EXPORTER_OTLP_ENDPOINT")
-	
+
 	ctx := context.Background()
 	logger := slog.Default()
-	
+
 	shutdown, err := InitOTEL(ctx, logger)
 	assert.NilError(t, err)
 	assert.Assert(t, shutdown != nil, "shutdown function should not be nil even when OTEL is disabled (should be no-op)")
-	
+
 	// Verify it can be called without error
 	err = shutdown(ctx)
 	assert.NilError(t, err)
@@ -39,10 +39,10 @@ func TestInitOTEL_Set(t *testing.T) {
 		otel.SetTracerProvider(oldTP)
 		otel.SetTextMapPropagator(oldProp)
 	})
-	
+
 	ctx := context.Background()
 	logger := slog.Default()
-	
+
 	shutdown, err := InitOTEL(ctx, logger)
 	assert.NilError(t, err)
 	assert.Assert(t, shutdown != nil)
@@ -58,10 +58,10 @@ func TestNoOpBehavior(t *testing.T) {
 
 	// Ensure env is unset
 	_ = os.Unsetenv("OTEL_EXPORTER_OTLP_ENDPOINT")
-	
+
 	ctx := context.Background()
 	logger := slog.Default()
-	
+
 	shutdown, err := InitOTEL(ctx, logger)
 	assert.NilError(t, err)
 	t.Cleanup(func() { _ = shutdown(ctx) })
@@ -69,7 +69,7 @@ func TestNoOpBehavior(t *testing.T) {
 	// Get tracer
 	tracer := otel.GetTracerProvider().Tracer("test")
 	_, span := tracer.Start(ctx, "test-span")
-	
+
 	// No-op spans have an invalid span context
 	assert.Assert(t, !span.SpanContext().IsValid(), "span should be no-op when OTEL is disabled")
 	span.End()

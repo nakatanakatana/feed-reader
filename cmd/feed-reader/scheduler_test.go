@@ -216,4 +216,3 @@ func TestAdjustIntervalForPeak(t *testing.T) {
 		assert.Equal(t, interval, baseInterval)
 	})
 }
-
