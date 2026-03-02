@@ -1,6 +1,6 @@
 # Implementation Plan: sync_item_reads_20260302
 
-## Phase 1: Backend Implementation (API & Store)
+## Phase 1: Backend Implementation (API & Store) [checkpoint: e15f991]
 Establish the `ListItemReads` RPC and the underlying database logic to fetch incremental updates of read statuses.
 
 - [x] Task: Update `proto/item/v1/item.proto` to include `ListItemReads` RPC and associated message types. [0a33ded]
@@ -10,12 +10,12 @@ Establish the `ListItemReads` RPC and the underlying database logic to fetch inc
 - [x] Task: Generate Go code for queries using `sqlc`. [18fdf3d]
 - [x] Task: Implement `ListItemReads` in `cmd/feed-reader/item_handler.go`. [3b9421c]
 - [x] Task: Write unit tests for `ListItemReads` in `cmd/feed-reader/item_handler_test.go` and `store/item_store_test.go`. [4e9d59d]
-- [~] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Backend Implementation' (Protocol in workflow.md) [e15f991]
 
 ## Phase 2: Frontend Implementation (Polling & State Sync)
 Implement the background polling logic and integrate the received read status updates into the local TanStack DB.
 
-- [ ] Task: Implement `syncItemReads` function in `frontend/src/lib/item-db.ts` to call the new API and update the local collection in TanStack DB.
+- [~] Task: Implement `syncItemReads` function in `frontend/src/lib/item-db.ts` to call the new API and update the local collection in TanStack DB.
 - [ ] Task: Set up a periodic background timer (1 minute) to trigger `syncItemReads`.
 - [ ] Task: Manage the sync cursor (timestamp) correctly, initializing it from the initial item fetch and updating it after each successful sync.
 - [ ] Task: Update the "Refetch" button logic to also trigger an immediate read status sync.
