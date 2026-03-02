@@ -89,10 +89,10 @@ exports[`ItemList > displays a list of items 1`] = `
               >
                 <span
                   class="fs_sm c_gray.500"
-                  title="Last fetched: 3/2/2026, 3:18:11 PM
-Last sync reads: 3/2/2026, 3:18:11 PM"
+                  title="Last fetched: 3/2/2026, 3:46:35 PM
+Last sync reads: 3/2/2026, 3:46:35 PM"
                 >
-                  12:18:11 AM
+                  12:46:35 AM
                 </span>
                 <button
                   class="bdr_md fw_medium cursor_pointer bd_1px_solid bd-c_gray.300 trs_all_0.2s d_inline-flex ai_center jc_center gap_2 disabled:op_0.5 disabled:cursor_not-allowed fs_xs py_1.5 px_3 bg_transparent c_gray.600 hover:bg_gray.50 hover:c_gray.700"

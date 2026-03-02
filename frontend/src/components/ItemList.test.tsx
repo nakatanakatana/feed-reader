@@ -24,6 +24,7 @@ import { routeTree } from "../routeTree.gen";
 describe("ItemList", () => {
   let dispose: () => void;
   let localeTimeSpy: ReturnType<typeof vi.spyOn> | null = null;
+  let localeStringSpy: ReturnType<typeof vi.spyOn> | null = null;
 
   afterEach(() => {
     if (dispose) dispose();
@@ -32,6 +33,8 @@ describe("ItemList", () => {
     vi.useRealTimers();
     localeTimeSpy?.mockRestore();
     localeTimeSpy = null;
+    localeStringSpy?.mockRestore();
+    localeStringSpy = null;
     setLastFetched(null);
   });
 
@@ -41,6 +44,9 @@ describe("ItemList", () => {
     localeTimeSpy = vi
       .spyOn(Date.prototype, "toLocaleTimeString")
       .mockReturnValue("4:00:00 AM");
+    localeStringSpy = vi
+      .spyOn(Date.prototype, "toLocaleString")
+      .mockReturnValue("1/20/2026, 7:00:00 PM");
   });
 
   const setupMockData = (items: Record<string, unknown>[] = []) => {
