@@ -44,6 +44,7 @@ interface ItemDetailModalProps {
   nextItemId?: string;
   onPrev?: () => void;
   onNext?: () => void;
+  onSkipNext?: () => void;
   footerExtras?: JSX.Element;
 }
 
@@ -52,12 +53,13 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   const queryClient = useQueryClient();
   const [announcement, setAnnouncement] = createSignal("");
   let announcementTimeout: ReturnType<typeof setTimeout> | undefined;
+  const [isSkipping, setIsSkipping] = createSignal(false);
 
   onCleanup(() => {
     if (announcementTimeout) clearTimeout(announcementTimeout);
   });
 
-  const { x, isSwiping, handlers } = useSwipe({
+  const { x, y, isSwiping, handlers } = useSwipe({
     onSwipeLeft: () => {
       if (props.onNext && props.nextItemId && props.itemId !== "end-of-list") {
         props.onNext();
@@ -68,6 +70,20 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
         props.onPrev();
       }
     },
+    onSwipeUp: () => {
+      if (
+        props.onSkipNext &&
+        props.nextItemId &&
+        props.itemId !== "end-of-list"
+      ) {
+        handleSkip();
+      }
+    },
+    isAtBottomBoundary: () => {
+      const container = modalRef?.querySelector('[data-testid="swipe-container"]');
+      if (!container) return true;
+      return Math.abs(container.scrollHeight - container.scrollTop - container.clientHeight) < 5;
+    },
     threshold: 100, // Use a higher threshold than the hook default (50px) to reduce accidental swipes
     disabled: props.itemId === "end-of-list",
   });
@@ -76,6 +92,8 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   const canSwipeLeft = () =>
     !!(props.onNext && props.nextItemId && props.itemId !== "end-of-list");
   const canSwipeRight = () => !!(props.onPrev && props.prevItemId);
+  const canSwipeUp = () =>
+    !!(props.onSkipNext && props.nextItemId && props.itemId !== "end-of-list");
 
   // Apply a "bounce" effect at boundaries (resist dragging)
   const displayX = () => {
@@ -83,6 +101,25 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     if (rawX > 0 && !canSwipeRight()) return rawX ** 0.7;
     if (rawX < 0 && !canSwipeLeft()) return -(Math.abs(rawX) ** 0.7);
     return rawX;
+  };
+
+  const displayY = () => {
+    const rawY = y();
+    if (rawY < 0 && !canSwipeUp()) return -(Math.abs(rawY) ** 0.7);
+    // We don't have swipe down action, so apply resistance for all positive Y
+    if (rawY > 0) return rawY ** 0.7;
+    return rawY;
+  };
+
+  const handleSkip = () => {
+    if (props.onSkipNext) {
+      setIsSkipping(true);
+      // Wait for animation to finish before calling onSkipNext
+      setTimeout(() => {
+        props.onSkipNext?.();
+        setIsSkipping(false);
+      }, 200);
+    }
   };
 
   createEffect(() => {
@@ -339,6 +376,8 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
       if (!isEndOfList() && props.onNext && nextId) props.onNext();
     } else if (e.key === "m" || e.key === "M") {
       handleToggleRead();
+    } else if (e.key === "n" || e.key === "N") {
+      handleSkip();
     }
   };
 
@@ -556,10 +595,21 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             height: "full",
           })}
           style={{
-            transform: `translateX(${displayX()}px)`,
-            transition: isSwiping() ? "none" : "transform 0.2s ease-out",
+            transform: isSkipping()
+              ? "translateY(-100%)"
+              : `translate(${displayX()}px, ${displayY()}px)`,
+            transition: isSkipping()
+              ? "transform 0.2s ease-in, opacity 0.2s ease-in"
+              : isSwiping()
+                ? "none"
+                : "transform 0.2s ease-out",
             "will-change":
-              canSwipeLeft() || canSwipeRight() ? "transform" : undefined,
+              canSwipeLeft() || canSwipeRight() || canSwipeUp()
+                ? "transform"
+                : undefined,
+            ...(isSkipping() && {
+              opacity: 0,
+            }),
           }}
           {...handlers}
         >

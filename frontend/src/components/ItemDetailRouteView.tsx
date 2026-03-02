@@ -124,6 +124,40 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
     }
   };
 
+  const handleSkipNext = () => {
+    if (isEndOfList()) return;
+
+    const next = nextItem();
+    if (next) {
+      const linkProps = getLinkProps(next.id);
+      if (linkProps) {
+        navigate({
+          to: linkProps.to,
+          // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
+          params: linkProps.params as any,
+          search: linkProps.search,
+          replace: true,
+        });
+      }
+    } else {
+      const items = filteredItems();
+      const index = currentIndexMemo();
+      if (items && items.length > 0 && index === items.length - 1) {
+        // Transition to virtual end-of-list state
+        const linkProps = getLinkProps("end-of-list");
+        if (linkProps) {
+          navigate({
+            to: linkProps.to,
+            // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
+            params: linkProps.params as any,
+            search: linkProps.search,
+            replace: true,
+          });
+        }
+      }
+    }
+  };
+
   const handlePrev = () => {
     markCurrentAsRead();
     if (isEndOfList()) {
@@ -207,6 +241,7 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
       nextItemId={nextItemIdMemo()}
       onPrev={handlePrev}
       onNext={handleNext}
+      onSkipNext={handleSkipNext}
     />
   );
 }

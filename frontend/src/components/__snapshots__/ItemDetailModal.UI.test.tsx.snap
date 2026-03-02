@@ -126,7 +126,7 @@ exports[`ItemDetailModal UI Updates > falls back to CSV parsing when JSON is mal
           aria-describedby="swipe-instruction"
           class="d_flex flex-d_column gap_4 p_6 pt_0 pb_24 ov-y_auto h_full"
           data-testid="swipe-container"
-          style="transform: translateX(0px); transition: transform 0.2s ease-out;"
+          style="transform: translate(0px, 0px); transition: transform 0.2s ease-out;"
         >
           <div
             class="d_flex ai_center flex-wrap_wrap gap_4 fs_sm c_gray.500"
@@ -365,7 +365,7 @@ exports[`ItemDetailModal UI Updates > renders comma-separated categories when JS
           aria-describedby="swipe-instruction"
           class="d_flex flex-d_column gap_4 p_6 pt_0 pb_24 ov-y_auto h_full"
           data-testid="swipe-container"
-          style="transform: translateX(0px); transition: transform 0.2s ease-out;"
+          style="transform: translate(0px, 0px); transition: transform 0.2s ease-out;"
         >
           <div
             class="d_flex ai_center flex-wrap_wrap gap_4 fs_sm c_gray.500"
@@ -604,7 +604,7 @@ exports[`ItemDetailModal UI Updates > renders title as a link and displays conte
           aria-describedby="swipe-instruction"
           class="d_flex flex-d_column gap_4 p_6 pt_0 pb_24 ov-y_auto h_full"
           data-testid="swipe-container"
-          style="transform: translateX(0px); transition: transform 0.2s ease-out;"
+          style="transform: translate(0px, 0px); transition: transform 0.2s ease-out;"
         >
           <div
             class="d_flex ai_center flex-wrap_wrap gap_4 fs_sm c_gray.500"
