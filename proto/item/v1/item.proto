@@ -27,6 +27,25 @@ service ItemService {
   rpc ListItemBlockRules(ListItemBlockRulesRequest) returns (ListItemBlockRulesResponse) {
     option idempotency_level = NO_SIDE_EFFECTS;
   }
+  rpc ListItemReads(ListItemReadsRequest) returns (ListItemReadsResponse) {
+    option idempotency_level = NO_SIDE_EFFECTS;
+  }
+}
+
+message ListItemReadsRequest {
+  optional google.protobuf.Timestamp since = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+}
+
+message ItemRead {
+  string item_id = 1;
+  bool is_read = 2;
+  google.protobuf.Timestamp updated_at = 3;
+}
+
+message ListItemReadsResponse {
+  repeated ItemRead item_reads = 1;
 }
 
 message Item {
