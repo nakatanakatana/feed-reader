@@ -20,7 +20,7 @@ Implement the background polling logic and integrate the received read status up
 - [x] Task: Manage the sync cursor (timestamp) correctly, initializing it from the initial item fetch and updating it after each successful sync. [f8110bb]
 - [x] Task: Update the "Refetch" button logic to also trigger an immediate read status sync. [f8110bb]
 - [x] Task: Write unit tests for the synchronization logic in `frontend/src/lib/item-db.test.ts`. [f8110bb]
-- [~] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md) [539dbff]
 
 ## Phase 3: Final Integration & E2E Verification
 Verify that changes are correctly reflected across multiple browser instances.
