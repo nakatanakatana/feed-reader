@@ -22,9 +22,9 @@ Implement the background polling logic and integrate the received read status up
 - [x] Task: Write unit tests for the synchronization logic in `frontend/src/lib/item-db.test.ts`. [f8110bb]
 - [x] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md) [539dbff]
 
-## Phase 3: Final Integration & E2E Verification
+## Phase 3: Final Integration & E2E Verification [checkpoint: e044bdf]
 Verify that changes are correctly reflected across multiple browser instances.
 
-- [ ] Task: Verify end-to-end synchronization between two browser windows.
-- [ ] Task: Ensure "unread" status synchronization also works as expected.
-- [ ] Task: Conductor - User Manual Verification 'Final Integration' (Protocol in workflow.md)
+- [x] Task: Verify end-to-end synchronization between two browser windows. [e044bdf]
+- [x] Task: Ensure "unread" status synchronization also works as expected. [e044bdf]
+- [~] Task: Conductor - User Manual Verification 'Final Integration' (Protocol in workflow.md)
