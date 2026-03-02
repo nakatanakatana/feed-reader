@@ -1,12 +1,12 @@
 # Implementation Plan: Skip to Next Item (Keep Unread)
 
-## Phase 1: Foundation and Keyboard Shortcut
+## Phase 1: Foundation and Keyboard Shortcut [checkpoint: a761450]
 - [x] Task: Research existing item navigation and "mark as read" logic in `frontend/src/`. 736768e
 - [x] Task: Write failing tests for 'n' key shortcut in `frontend/src/components/` or `frontend/src/routes/`. 643332c
 - [x] Task: Implement 'n' key listener to trigger "skip to next" navigation. 643332c
 - [x] Task: Implement navigation logic that moves focus to the next item *without* triggering the `markAsRead` action. 643332c
 - [x] Task: Add basic slide-up animation CSS/logic for the skip transition. 643332c
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Foundation and Keyboard Shortcut' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Foundation and Keyboard Shortcut' (Protocol in workflow.md) a761450
 
 ## Phase 2: Mobile Swipe Gesture
 - [x] Task: Write failing tests for swipe-up gesture detection on narrow-width containers. 643332c
