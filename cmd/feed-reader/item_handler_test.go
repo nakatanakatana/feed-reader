@@ -185,5 +185,31 @@ func TestItemServer(t *testing.T) {
 		}
 		assert.Assert(t, found)
 	})
+
+	t.Run("ListItemReads_AlternateDateFormat", func(t *testing.T) {
+		// Manually insert an item first to satisfy foreign key constraint
+		itemID := uuid.NewString()
+		_, err := db.ExecContext(ctx, "INSERT INTO items (id, url) VALUES (?, ?)", itemID, "http://alt-date")
+		assert.NilError(t, err)
+
+		// Manually insert a record with a non-RFC3339 date format
+		altTime := "2026-02-02 15:02:21"
+		_, err = db.ExecContext(ctx, "INSERT INTO item_reads (item_id, is_read, updated_at) VALUES (?, ?, ?)", itemID, 1, altTime)
+		assert.NilError(t, err)
+
+		res, err := server.ListItemReads(ctx, connect.NewRequest(&itemv1.ListItemReadsRequest{
+			Limit: 10,
+		}))
+		assert.NilError(t, err)
+
+		var found bool
+		for _, read := range res.Msg.ItemReads {
+			if read.ItemId == itemID {
+				found = true
+				assert.Equal(t, read.UpdatedAt.AsTime().Format("2006-01-02 15:04:05"), altTime)
+			}
+		}
+		assert.Assert(t, found)
+	})
 }
 

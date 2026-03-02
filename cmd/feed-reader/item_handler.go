@@ -364,7 +364,7 @@ func (s *ItemServer) ListItemReads(ctx context.Context, req *connect.Request[ite
 
 	protoReads := make([]*itemv1.ItemRead, len(rows))
 	for i, row := range rows {
-		updatedAt, err := time.Parse(time.RFC3339, row.UpdatedAt)
+		updatedAt, err := parseDBTime(row.UpdatedAt)
 		if err != nil {
 			return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to parse updated_at: %w", err))
 		}
@@ -379,6 +379,22 @@ func (s *ItemServer) ListItemReads(ctx context.Context, req *connect.Request[ite
 	return connect.NewResponse(&itemv1.ListItemReadsResponse{
 		ItemReads: protoReads,
 	}), nil
+}
+
+func parseDBTime(s string) (time.Time, error) {
+	formats := []string{
+		time.RFC3339,
+		"2006-01-02 15:04:05",
+		"2006-01-02T15:04:05Z",
+		"2006-01-02 15:04:05.999999999-07:00",
+		"2006-01-02 15:04:05.999999999",
+	}
+	for _, f := range formats {
+		if t, err := time.Parse(f, s); err == nil {
+			return t, nil
+		}
+	}
+	return time.Time{}, fmt.Errorf("failed to parse time: %s", s)
 }
 
 func GetItemRowFromListItemsRow(row store.ListItemsRow) store.GetItemRow {
