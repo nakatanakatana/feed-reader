@@ -633,8 +633,22 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             when={canSwipeLeft() || canSwipeRight() || canSwipeUp()}
             fallback="Swipe navigation not available."
           >
-            Swipe left for next item, right for previous
-            <Show when={canSwipeUp()}>, up to skip</Show>.
+            {(() => {
+              const parts: string[] = [];
+              if (canSwipeLeft()) {
+                parts.push("left for next item");
+              }
+              if (canSwipeRight()) {
+                parts.push("right for previous");
+              }
+              if (canSwipeUp()) {
+                parts.push("up to skip");
+              }
+              if (parts.length === 0) {
+                return null;
+              }
+              return `Swipe ${parts.join(", ")}.`;
+            })()}
           </Show>
         </div>
 
