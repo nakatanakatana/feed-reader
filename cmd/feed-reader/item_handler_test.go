@@ -165,4 +165,25 @@ func TestItemServer(t *testing.T) {
 		// Should include item2 and rich item, but not item1 (2h ago)
 		assert.Assert(t, cmp.Len(res.Msg.Items, 3))
 	})
+
+	t.Run("ListItemReads", func(t *testing.T) {
+		since := now.Add(-30 * time.Minute)
+		res, err := server.ListItemReads(ctx, connect.NewRequest(&itemv1.ListItemReadsRequest{
+			Since: timestamppb.New(since),
+			Limit: 10,
+		}))
+		assert.NilError(t, err)
+		// UpdateItemStatus earlier modified item1ID
+		assert.Assert(t, len(res.Msg.ItemReads) >= 1)
+		
+		var found bool
+		for _, read := range res.Msg.ItemReads {
+			if read.ItemId == item1ID {
+				found = true
+				assert.Assert(t, read.IsRead)
+			}
+		}
+		assert.Assert(t, found)
+	})
 }
+

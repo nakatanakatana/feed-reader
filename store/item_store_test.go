@@ -32,7 +32,7 @@ func TestStore_ItemOperations(t *testing.T) {
 	// Item 2: Unread, Saved, Middle
 	// Item 3: Unread, Unsaved, Newest
 
-	now := time.Now()
+	now := time.Now().UTC()
 	t1 := now.Add(-2 * time.Hour).Format(time.RFC3339)
 	t2 := now.Add(-1 * time.Hour).Format(time.RFC3339)
 	t3 := now.Format(time.RFC3339)
@@ -107,6 +107,27 @@ func TestStore_ItemOperations(t *testing.T) {
 		})
 		assert.NilError(t, err)
 		assert.Equal(t, count, int64(3))
+	})
+
+	// Test ListItemReads
+	t.Run("ListItemReads", func(t *testing.T) {
+		since := now.Add(-30 * time.Minute).Format(time.RFC3339)
+		reads, err := s.ListItemReads(ctx, store.ListItemReadsParams{
+			Since:  since,
+			Limit:  10,
+			Offset: 0,
+		})
+		assert.NilError(t, err)
+		assert.Assert(t, len(reads) >= 1)
+		
+		var found bool
+		for _, read := range reads {
+			if read.ItemID == item1ID {
+				found = true
+				assert.Equal(t, read.IsRead, int64(1))
+			}
+		}
+		assert.Assert(t, found)
 	})
 }
 
