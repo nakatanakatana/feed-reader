@@ -350,8 +350,10 @@ type listItemReadPageToken struct {
 
 func (s *ItemServer) ListItemRead(ctx context.Context, req *connect.Request[itemv1.ListItemReadRequest]) (*connect.Response[itemv1.ListItemReadResponse], error) {
 	limit := int64(req.Msg.PageSize)
-	if limit <= 0 || limit > 1000 {
+	if limit <= 0 {
 		limit = 100
+	} else if limit > 1000 {
+		limit = 1000
 	}
 
 	// Validate that both page_token and updated_after are not provided at the same time.
@@ -413,8 +415,12 @@ func (s *ItemServer) ListItemRead(ctx context.Context, req *connect.Request[item
 			UpdatedAt: lastRow.UpdatedAt,
 			ItemID:    lastRow.ItemID,
 		}
-		b, _ := json.Marshal(token)
-		nextPageToken = base64.StdEncoding.EncodeToString(b)
+		b, err := json.Marshal(token)
+		if err != nil {
+			slog.Error("failed to marshal listItemReadPageToken", "error", err)
+		} else {
+			nextPageToken = base64.StdEncoding.EncodeToString(b)
+		}
 	}
 
 	return connect.NewResponse(&itemv1.ListItemReadResponse{

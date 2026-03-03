@@ -1348,11 +1348,23 @@ SELECT
 FROM
   item_reads
 WHERE
-  CASE
-    WHEN ?1 IS NOT NULL AND ?2 IS NOT NULL THEN (updated_at, item_id) > (?1, ?2)
-    WHEN ?3 IS NOT NULL THEN updated_at > ?3
-    ELSE 1
-  END
+  (
+    -- Cursor-based pagination: both cursor params set
+    ?1 IS NOT NULL
+    AND ?2 IS NOT NULL
+    AND (updated_at, item_id) > (?1, ?2)
+  )
+  OR (
+    -- Fallback to updated_after when cursor is not fully set
+    (?1 IS NULL OR ?2 IS NULL)
+    AND ?3 IS NOT NULL
+    AND updated_at > ?3
+  )
+  OR (
+    -- No cursor and no updated_after: no filtering (match all)
+    (?1 IS NULL OR ?2 IS NULL)
+    AND ?3 IS NULL
+  )
 ORDER BY
   updated_at ASC,
   item_id ASC

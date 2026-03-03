@@ -311,11 +311,23 @@ SELECT
 FROM
   item_reads
 WHERE
-  CASE
-    WHEN sqlc.narg('updated_at_cursor') IS NOT NULL AND sqlc.narg('item_id_cursor') IS NOT NULL THEN (updated_at, item_id) > (sqlc.narg('updated_at_cursor'), sqlc.narg('item_id_cursor'))
-    WHEN sqlc.narg('updated_after') IS NOT NULL THEN updated_at > sqlc.narg('updated_after')
-    ELSE 1
-  END
+  (
+    -- Cursor-based pagination: both cursor params set
+    sqlc.narg('updated_at_cursor') IS NOT NULL
+    AND sqlc.narg('item_id_cursor') IS NOT NULL
+    AND (updated_at, item_id) > (sqlc.narg('updated_at_cursor'), sqlc.narg('item_id_cursor'))
+  )
+  OR (
+    -- Fallback to updated_after when cursor is not fully set
+    (sqlc.narg('updated_at_cursor') IS NULL OR sqlc.narg('item_id_cursor') IS NULL)
+    AND sqlc.narg('updated_after') IS NOT NULL
+    AND updated_at > sqlc.narg('updated_after')
+  )
+  OR (
+    -- No cursor and no updated_after: no filtering (match all)
+    (sqlc.narg('updated_at_cursor') IS NULL OR sqlc.narg('item_id_cursor') IS NULL)
+    AND sqlc.narg('updated_after') IS NULL
+  )
 ORDER BY
   updated_at ASC,
   item_id ASC
