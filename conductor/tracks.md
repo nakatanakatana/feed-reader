@@ -2,4 +2,7 @@
 
 ---
 
+- [ ] **Track: 既読状態を同期するためにitem_readsの取得wookonauListItemReadのAPIを追加してください 差分取得を行い適宜反映するため、updated_atの日時を指定してそれ以降の対象をすべて取得できるようにします**
+*Link: [./tracks/list_item_read_api_20260303/](./tracks/list_item_read_api_20260303/)*
+
 
