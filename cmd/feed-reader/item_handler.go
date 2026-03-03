@@ -354,6 +354,11 @@ func (s *ItemServer) ListItemRead(ctx context.Context, req *connect.Request[item
 		limit = 100
 	}
 
+	// Validate that both page_token and updated_after are not provided at the same time.
+	if req.Msg.PageToken != "" && req.Msg.UpdatedAfter != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("only one of page_token or updated_after may be specified"))
+	}
+
 	params := store.ListItemReadParams{
 		Limit: limit,
 	}
@@ -371,10 +376,12 @@ func (s *ItemServer) ListItemRead(ctx context.Context, req *connect.Request[item
 		if token.UpdatedAt == "" || token.ItemID == "" {
 			return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("invalid page_token: missing required fields"))
 		}
-		if _, err := time.Parse(time.RFC3339, token.UpdatedAt); err != nil {
+		parsedUpdatedAt, err := time.Parse(time.RFC3339, token.UpdatedAt)
+		if err != nil {
 			return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("invalid page_token: invalid updated_at: %w", err))
 		}
-		params.UpdatedAtCursor = token.UpdatedAt
+		// Normalize to UTC RFC3339 string for deterministic DB comparison
+		params.UpdatedAtCursor = parsedUpdatedAt.UTC().Format(time.RFC3339)
 		params.ItemIDCursor = &token.ItemID
 	} else if req.Msg.UpdatedAfter != nil {
 		params.UpdatedAfter = req.Msg.UpdatedAfter.AsTime().UTC().Format(time.RFC3339)

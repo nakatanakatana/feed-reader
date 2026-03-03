@@ -93,18 +93,23 @@ func TestStore_ListItemRead(t *testing.T) {
 	})
 
 	t.Run("Update read status and check updated_at", func(t *testing.T) {
-		newNow := time.Now().UTC().Add(1 * time.Hour).Format(time.RFC3339)
+		// Set a specific ReadAt time (does not control updated_at in the DB)
+		readAtTime := time.Now().UTC().Add(1 * time.Hour).Format(time.RFC3339)
 		_, err = s.SetItemRead(ctx, store.SetItemReadParams{
 			ItemID: item1ID,
 			IsRead: 1,
-			ReadAt: &newNow,
+			ReadAt: &readAtTime,
 		})
 		assert.NilError(t, err)
+
+		// Manually set updated_at so item1 is deterministically the newest
+		newestUpdatedAt := now.Add(-15 * time.Minute).Format(time.RFC3339)
+		updateUpdatedAt(item1ID, newestUpdatedAt)
 
 		// item1 should now be the newest in terms of updated_at
 		rows, err := s.ListItemRead(ctx, store.ListItemReadParams{UpdatedAfter: t3, Limit: 10})
 		assert.NilError(t, err)
-		assert.Equal(t, len(rows), 3) // item2, item3 (sharedTime), item1 (newNow)
+		assert.Equal(t, len(rows), 3) // item2, item3 (sharedTime), item1 (newestUpdatedAt)
 		assert.Equal(t, rows[2].ItemID, item1ID)
 		assert.Equal(t, rows[2].IsRead, int64(1))
 	})
