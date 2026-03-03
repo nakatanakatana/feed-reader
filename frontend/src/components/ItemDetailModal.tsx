@@ -58,6 +58,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   let skipTimeoutId: ReturnType<typeof setTimeout> | undefined;
   let skipRecoveryTimeoutId: ReturnType<typeof setTimeout> | undefined;
   let touchStartY = 0;
+  let touchThresholdY = 0;
   let disposed = false;
 
   onCleanup(() => {
@@ -107,10 +108,8 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
 
       if (isAtBottom) return true;
 
-      // Also allow skip mid-article if touch started in the bottom 30%
-      const rect = container.getBoundingClientRect();
-      const thresholdY = rect.top + rect.height * 0.7;
-      if (touchStartY >= thresholdY) {
+      // Also allow skip mid-article if touch started in the bottom 10%
+      if (touchStartY >= touchThresholdY) {
         return true;
       }
 
@@ -125,12 +124,16 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     disabled: props.itemId === "end-of-list",
   });
 
-  // Intercept touchstart to record start position for the 30% check
+  // Intercept touchstart to record start position for the 10% check
   const originalOnTouchStart = handlers.ontouchstart;
   handlers.ontouchstart = (e: TouchEvent) => {
     const isSwipeDisabled = props.itemId === "end-of-list";
     if (!isSwipeDisabled && e.touches && e.touches.length === 1) {
       touchStartY = e.touches[0].clientY;
+      if (swipeContainerRef) {
+        const rect = swipeContainerRef.getBoundingClientRect();
+        touchThresholdY = rect.top + rect.height * 0.9; // 10% from bottom
+      }
     }
     originalOnTouchStart(e);
   };

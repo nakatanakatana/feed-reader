@@ -105,6 +105,7 @@ export function useSwipe(options: UseSwipeOptions = {}) {
       setY(0);
       isSwiping = false;
       setIsSwipingSignal(false);
+      direction = null;
       return;
     }
 
