@@ -2,7 +2,7 @@
 
 ## Phase 1: API Definition & Code Generation
 - [x] Task: Update `proto/item/v1/item.proto` to include `ListItemRead` RPC and messages. 901f257
-- [ ] Task: Run `buf generate` to generate Go and TypeScript code.
+- [~] Task: Run `buf generate` to generate Go and TypeScript code.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: API Definition & Code Generation' (Protocol in workflow.md)
 
 ## Phase 2: Database Layer Implementation
