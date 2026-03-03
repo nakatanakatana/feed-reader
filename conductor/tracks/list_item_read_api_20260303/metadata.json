@@ -1,8 +1,0 @@
-{
-  "track_id": "list_item_read_api_20260303",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-03-03T00:00:00Z",
-  "updated_at": "2026-03-03T00:00:00Z",
-  "description": "既読状態を同期するためにitem_readsの取得wookonauListItemReadのAPIを追加してください 差分取得を行い適宜反映するため、updated_atの日時を指定してそれ以降の対象をすべて取得できるようにします"
-}
