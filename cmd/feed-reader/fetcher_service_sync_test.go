@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"log/slog"
+	"sync"
 	"testing"
 	"time"
 
@@ -74,7 +75,21 @@ func TestFetcherService_FetchFeedsByIDsSync_Errors(t *testing.T) {
 			ctx := t.Context()
 			// Use a per-subtest WriteQueue that we Stop/flush before asserting
 			wq := NewWriteQueueService(s, WriteQueueConfig{MaxBatchSize: 1, FlushInterval: 10 * time.Millisecond}, logger)
-			go wq.Start(ctx)
+			done := make(chan struct{})
+			go func() {
+				wq.Start(ctx)
+				close(done)
+			}()
+
+			var once sync.Once
+			stopAndWait := func() {
+				once.Do(func() {
+					wq.Stop()
+					<-done
+				})
+			}
+			// Ensure it always stops even on assertion failures
+			t.Cleanup(stopAndWait)
 
 			fetcher := &mockFetcher{err: fetchErr}
 			service := NewFetcherService(s, fetcher, nil, wq, logger, 30*time.Minute)
@@ -91,8 +106,8 @@ func TestFetcherService_FetchFeedsByIDsSync_Errors(t *testing.T) {
 			assert.Equal(t, len(results), 1)
 			assert.Assert(t, !results[0].Success)
 
-			// Flush all queued jobs (if any) by stopping the queue
-			wq.Stop()
+			// Explicitly stop and wait for flush to complete before reading DB
+			stopAndWait()
 
 			updatedFeed, err := queries.GetFeed(ctx, feed.ID)
 			assert.NilError(t, err)
