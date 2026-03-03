@@ -303,6 +303,19 @@ WHERE
   (sqlc.narg('is_blocked') IS NULL OR (CASE WHEN ib.item_id IS NOT NULL THEN 1 ELSE 0 END = sqlc.narg('is_blocked')));
 
 
+-- name: ListItemRead :many
+SELECT
+  item_id,
+  is_read,
+  updated_at
+FROM
+  item_reads
+WHERE
+  (sqlc.narg('updated_after') IS NULL OR updated_at > sqlc.narg('updated_after'))
+ORDER BY
+  updated_at ASC;
+
+
 -- name: SetItemRead :one
 INSERT INTO item_reads (
   item_id,
