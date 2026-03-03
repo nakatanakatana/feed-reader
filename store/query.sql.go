@@ -1349,7 +1349,7 @@ FROM
   item_reads
 WHERE
   CASE
-    WHEN ?1 IS NOT NULL THEN (updated_at, item_id) > (?1, ?2)
+    WHEN ?1 IS NOT NULL AND ?2 IS NOT NULL THEN (updated_at, item_id) > (?1, ?2)
     WHEN ?3 IS NOT NULL THEN updated_at > ?3
     ELSE 1
   END
@@ -1361,7 +1361,7 @@ LIMIT ?4
 
 type ListItemReadParams struct {
 	UpdatedAtCursor interface{} `json:"updated_at_cursor"`
-	ItemIDCursor    *string     `json:"item_id_cursor"`
+	ItemIDCursor    interface{} `json:"item_id_cursor"`
 	UpdatedAfter    interface{} `json:"updated_after"`
 	Limit           int64       `json:"limit"`
 }

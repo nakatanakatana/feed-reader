@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"errors"
 )
 
 type StoreListItemsParams struct {
@@ -44,5 +45,8 @@ func (s *Store) GetItem(ctx context.Context, id string) (GetItemRow, error) {
 }
 
 func (s *Store) ListItemRead(ctx context.Context, params ListItemReadParams) ([]ListItemReadRow, error) {
+	if (params.UpdatedAtCursor != nil && params.ItemIDCursor == nil) || (params.UpdatedAtCursor == nil && params.ItemIDCursor != nil) {
+		return nil, errors.New("both UpdatedAtCursor and ItemIDCursor must be provided together for pagination")
+	}
 	return s.Queries.ListItemRead(ctx, params)
 }

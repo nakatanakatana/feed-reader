@@ -28,9 +28,20 @@ func TestStore_ListItemRead(t *testing.T) {
 	t2 := now.Add(-2 * time.Hour).Format(time.RFC3339)
 	t3 := now.Add(-1 * time.Hour).Format(time.RFC3339)
 
-	item1ID := createTestItem(t, s, ctx, feedID, "http://example.com/1", "Item 1", t1)
-	item2ID := createTestItem(t, s, ctx, feedID, "http://example.com/2", "Item 2", t2)
-	item3ID := createTestItem(t, s, ctx, feedID, "http://example.com/3", "Item 3", t3)
+	item1ID := "item1"
+	item2ID := "item2"
+	item3ID := "item3"
+
+	createTestItemWithID := func(id, url, title, timestamp string) {
+		_, err := s.DB.ExecContext(ctx, "INSERT INTO items (id, url, title, created_at) VALUES (?, ?, ?, ?)", id, url, title, timestamp)
+		assert.NilError(t, err)
+		_, err = s.DB.ExecContext(ctx, "INSERT INTO item_reads (item_id, updated_at) VALUES (?, ?)", id, timestamp)
+		assert.NilError(t, err)
+	}
+
+	createTestItemWithID(item1ID, "http://example.com/1", "Item 1", t1)
+	createTestItemWithID(item2ID, "http://example.com/2", "Item 2", t2)
+	createTestItemWithID(item3ID, "http://example.com/3", "Item 3", t3)
 
 	// Update updated_at manually to control order and filtering
 	updateUpdatedAt := func(itemID string, timestamp string) {

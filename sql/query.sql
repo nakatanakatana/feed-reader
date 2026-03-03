@@ -312,7 +312,7 @@ FROM
   item_reads
 WHERE
   CASE
-    WHEN sqlc.narg('updated_at_cursor') IS NOT NULL THEN (updated_at, item_id) > (sqlc.narg('updated_at_cursor'), sqlc.narg('item_id_cursor'))
+    WHEN sqlc.narg('updated_at_cursor') IS NOT NULL AND sqlc.narg('item_id_cursor') IS NOT NULL THEN (updated_at, item_id) > (sqlc.narg('updated_at_cursor'), sqlc.narg('item_id_cursor'))
     WHEN sqlc.narg('updated_after') IS NOT NULL THEN updated_at > sqlc.narg('updated_after')
     ELSE 1
   END
