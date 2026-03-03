@@ -9,7 +9,7 @@
 - [x] Task: Add `ListItemRead` query to `store/query.sql` to fetch `item_reads` filtered by `updated_at`. cece988
 - [x] Task: Run `sqlc generate` to update generated database logic. 0380e30
 - [x] Task: Add `ListItemRead` wrapper to `store/item_store.go`. bd5b7b2
-- [ ] Task: Write unit tests for `ListItemRead` in `store/item_store_test.go`.
+- [x] Task: Write unit tests for `ListItemRead` in `store/item_store_test.go`. 9a07fe6
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Database Layer Implementation' (Protocol in workflow.md)
 
 ## Phase 3: Service Layer Implementation
