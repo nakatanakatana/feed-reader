@@ -106,6 +106,18 @@ func (s *FetcherService) fetchAndSaveSync(ctx context.Context, f store.FullFeed)
 	if err != nil {
 		if errors.Is(err, ErrNotModified) {
 			s.logger.InfoContext(ctx, "feed not modified, skipping sync", "url", f.Url, "id", f.ID)
+			// Still update last_fetched_at and next_fetch to avoid immediate re-fetch
+			now := time.Now().UTC()
+			lastFetched := now.Format(time.RFC3339)
+			interval := s.getNextFetchInterval(ctx, f.ID, nil)
+			nextFetch := now.Add(interval).Format(time.RFC3339)
+			s.writeQueue.Submit(&MarkFetchedJob{
+				Params: store.MarkFeedFetchedParams{
+					LastFetchedAt: &lastFetched,
+					NextFetch:     &nextFetch,
+					FeedID:        f.ID,
+				},
+			})
 			return &FeedFetchResult{
 				FeedID:  f.ID,
 				Success: true,
