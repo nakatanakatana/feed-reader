@@ -166,3 +166,54 @@ func TestItemServer(t *testing.T) {
 		assert.Assert(t, cmp.Len(res.Msg.Items, 3))
 	})
 }
+
+func TestItemServer_ListItemRead(t *testing.T) {
+	ctx := context.Background()
+	_, db := setupTestDB(t)
+	s := store.NewStore(db)
+	server := &ItemServer{store: s}
+
+	// Setup Feed
+	feedID := uuid.NewString()
+	_, err := db.ExecContext(ctx, "INSERT INTO feeds (id, url) VALUES (?, ?)", feedID, "http://example.com/feed")
+	assert.NilError(t, err)
+
+	// Create test items
+	now := time.Now().UTC()
+	t1 := now.Add(-3 * time.Hour).Format(time.RFC3339)
+	t2 := now.Add(-2 * time.Hour).Format(time.RFC3339)
+	t3 := now.Add(-1 * time.Hour).Format(time.RFC3339)
+
+	createItemWithUpdatedAt := func(url, timestamp string) string {
+		id := uuid.NewString()
+		_, err := db.ExecContext(ctx, "INSERT INTO items (id, url, created_at) VALUES (?, ?, ?)", id, url, timestamp)
+		assert.NilError(t, err)
+		_, err = db.ExecContext(ctx, "INSERT INTO item_reads (item_id, updated_at) VALUES (?, ?)", id, timestamp)
+		assert.NilError(t, err)
+		return id
+	}
+
+	item1ID := createItemWithUpdatedAt("http://example.com/1", t1)
+	item2ID := createItemWithUpdatedAt("http://example.com/2", t2)
+	item3ID := createItemWithUpdatedAt("http://example.com/3", t3)
+
+	t.Run("List all item reads", func(t *testing.T) {
+		res, err := server.ListItemRead(ctx, connect.NewRequest(&itemv1.ListItemReadRequest{}))
+		assert.NilError(t, err)
+		assert.Equal(t, len(res.Msg.ItemReads), 3)
+		assert.Equal(t, res.Msg.ItemReads[0].ItemId, item1ID)
+		assert.Equal(t, res.Msg.ItemReads[1].ItemId, item2ID)
+		assert.Equal(t, res.Msg.ItemReads[2].ItemId, item3ID)
+	})
+
+	t.Run("Filter by updated_after", func(t *testing.T) {
+		after, _ := time.Parse(time.RFC3339, t1)
+		res, err := server.ListItemRead(ctx, connect.NewRequest(&itemv1.ListItemReadRequest{
+			UpdatedAfter: timestamppb.New(after),
+		}))
+		assert.NilError(t, err)
+		assert.Equal(t, len(res.Msg.ItemReads), 2)
+		assert.Equal(t, res.Msg.ItemReads[0].ItemId, item2ID)
+		assert.Equal(t, res.Msg.ItemReads[1].ItemId, item3ID)
+	})
+}

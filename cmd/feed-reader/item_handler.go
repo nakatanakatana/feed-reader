@@ -12,6 +12,7 @@ import (
 	"github.com/nakatanakatana/feed-reader/gen/go/item/v1"
 	"github.com/nakatanakatana/feed-reader/gen/go/item/v1/itemv1connect"
 	"github.com/nakatanakatana/feed-reader/store"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type ItemServer struct {
@@ -341,7 +342,33 @@ func (s *ItemServer) ListItemBlockRules(ctx context.Context, req *connect.Reques
 }
 
 func (s *ItemServer) ListItemRead(ctx context.Context, req *connect.Request[itemv1.ListItemReadRequest]) (*connect.Response[itemv1.ListItemReadResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("not implemented"))
+	var updatedAfter interface{}
+	if req.Msg.UpdatedAfter != nil {
+		updatedAfter = req.Msg.UpdatedAfter.AsTime().UTC().Format(time.RFC3339)
+	}
+
+	rows, err := s.store.ListItemRead(ctx, updatedAfter)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	itemReads := make([]*itemv1.ItemRead, len(rows))
+	for i, row := range rows {
+		updatedAt, err := time.Parse(time.RFC3339, row.UpdatedAt)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to parse updated_at: %w", err))
+		}
+
+		itemReads[i] = &itemv1.ItemRead{
+			ItemId:    row.ItemID,
+			IsRead:    row.IsRead == 1,
+			UpdatedAt: timestamppb.New(updatedAt),
+		}
+	}
+
+	return connect.NewResponse(&itemv1.ListItemReadResponse{
+		ItemReads: itemReads,
+	}), nil
 }
 
 func GetItemRowFromListItemsRow(row store.ListItemsRow) store.GetItemRow {
