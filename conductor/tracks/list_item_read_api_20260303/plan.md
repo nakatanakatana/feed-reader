@@ -13,8 +13,8 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Database Layer Implementation' (Protocol in workflow.md) 425075d
 
 ## Phase 3: Service Layer Implementation
-- [ ] Task: Implement `ListItemRead` RPC handler in `cmd/feed-reader/item_handler.go`.
-- [ ] Task: Write unit tests for `ListItemRead` RPC in `cmd/feed-reader/item_handler_test.go`.
+- [x] Task: Implement `ListItemRead` RPC handler in `cmd/feed-reader/item_handler.go`. 605d2a1
+- [x] Task: Write unit tests for `ListItemRead` RPC in `cmd/feed-reader/item_handler_test.go`. 605d2a1
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Service Layer Implementation' (Protocol in workflow.md)
 
 ## Phase 4: Final Integration & Verification
