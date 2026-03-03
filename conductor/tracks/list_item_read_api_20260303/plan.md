@@ -6,7 +6,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: API Definition & Code Generation' (Protocol in workflow.md) e3875a1
 
 ## Phase 2: Database Layer Implementation
-- [ ] Task: Add `ListItemRead` query to `store/query.sql` to fetch `item_reads` filtered by `updated_at`.
+- [x] Task: Add `ListItemRead` query to `store/query.sql` to fetch `item_reads` filtered by `updated_at`. cece988
 - [ ] Task: Run `sqlc generate` to update generated database logic.
 - [ ] Task: Add `ListItemRead` wrapper to `store/item_store.go`.
 - [ ] Task: Write unit tests for `ListItemRead` in `store/item_store_test.go`.
