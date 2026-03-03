@@ -340,6 +340,10 @@ func (s *ItemServer) ListItemBlockRules(ctx context.Context, req *connect.Reques
 	}), nil
 }
 
+func (s *ItemServer) ListItemRead(ctx context.Context, req *connect.Request[itemv1.ListItemReadRequest]) (*connect.Response[itemv1.ListItemReadResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("not implemented"))
+}
+
 func GetItemRowFromListItemsRow(row store.ListItemsRow) store.GetItemRow {
 	return store.GetItemRow{
 		ID:          row.ID,
