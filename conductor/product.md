@@ -30,7 +30,7 @@ The primary target audience is individuals and organizations seeking control ove
   - **Bulk Selection:** Features a "Select All" capability in the feed list that respects active filters and sorting, allowing for rapid management of visible feeds.
   - **Floating Bulk Actions:** Consistent with the article management experience, selecting multiple feeds triggers a floating action bar at the bottom of the screen for unified bulk operations.
 
-- **Manual Feed Refresh:** Trigger immediate updates for one or more feeds directly from the UI, bypassing the background scheduler. Includes real-time feedback with loading indicators and error reporting at the individual feed level.
+- **Manual Feed Refresh:** Trigger immediate updates for one or more feeds directly from the UI, bypassing the background scheduler. Any successful connection, including those confirming no new content (304 Not Modified), updates the fetch status and recalculates the next scheduled fetch to optimize background operations. Includes real-time feedback with loading indicators and error reporting at the individual feed level.
 
 - **Fetch Scheduling & Suspend:** Take control of feed updates with an intelligent, database-backed scheduling system.
   - **Adaptive Intervals:** Automatically adjusts fetch frequency based on item update history, prioritizing active feeds while reducing load from static ones.
