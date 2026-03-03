@@ -40,10 +40,13 @@ message ItemRead {
 
 message ListItemReadRequest {
   optional google.protobuf.Timestamp updated_after = 1;
+  int32 page_size = 2;
+  string page_token = 3;
 }
 
 message ListItemReadResponse {
   repeated ItemRead item_reads = 1;
+  string next_page_token = 2;
 }
 
 message Item {

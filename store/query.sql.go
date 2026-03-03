@@ -1348,10 +1348,23 @@ SELECT
 FROM
   item_reads
 WHERE
-  (?1 IS NULL OR updated_at > ?1)
+  CASE
+    WHEN ?1 IS NOT NULL THEN (updated_at, item_id) > (?1, ?2)
+    WHEN ?3 IS NOT NULL THEN updated_at > ?3
+    ELSE 1
+  END
 ORDER BY
-  updated_at ASC
+  updated_at ASC,
+  item_id ASC
+LIMIT ?4
 `
+
+type ListItemReadParams struct {
+	UpdatedAtCursor interface{} `json:"updated_at_cursor"`
+	ItemIDCursor    *string     `json:"item_id_cursor"`
+	UpdatedAfter    interface{} `json:"updated_after"`
+	Limit           int64       `json:"limit"`
+}
 
 type ListItemReadRow struct {
 	ItemID    string `json:"item_id"`
@@ -1359,8 +1372,13 @@ type ListItemReadRow struct {
 	UpdatedAt string `json:"updated_at"`
 }
 
-func (q *Queries) ListItemRead(ctx context.Context, updatedAfter interface{}) ([]ListItemReadRow, error) {
-	rows, err := q.db.QueryContext(ctx, listItemRead, updatedAfter)
+func (q *Queries) ListItemRead(ctx context.Context, arg ListItemReadParams) ([]ListItemReadRow, error) {
+	rows, err := q.db.QueryContext(ctx, listItemRead,
+		arg.UpdatedAtCursor,
+		arg.ItemIDCursor,
+		arg.UpdatedAfter,
+		arg.Limit,
+	)
 	if err != nil {
 		return nil, err
 	}

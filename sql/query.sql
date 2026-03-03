@@ -311,9 +311,15 @@ SELECT
 FROM
   item_reads
 WHERE
-  (sqlc.narg('updated_after') IS NULL OR updated_at > sqlc.narg('updated_after'))
+  CASE
+    WHEN sqlc.narg('updated_at_cursor') IS NOT NULL THEN (updated_at, item_id) > (sqlc.narg('updated_at_cursor'), sqlc.narg('item_id_cursor'))
+    WHEN sqlc.narg('updated_after') IS NOT NULL THEN updated_at > sqlc.narg('updated_after')
+    ELSE 1
+  END
 ORDER BY
-  updated_at ASC;
+  updated_at ASC,
+  item_id ASC
+LIMIT sqlc.arg('limit');
 
 
 -- name: SetItemRead :one

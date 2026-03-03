@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"database/sql"
+	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -341,13 +343,37 @@ func (s *ItemServer) ListItemBlockRules(ctx context.Context, req *connect.Reques
 	}), nil
 }
 
+type listItemReadPageToken struct {
+	UpdatedAt string `json:"updated_at"`
+	ItemID    string `json:"item_id"`
+}
+
 func (s *ItemServer) ListItemRead(ctx context.Context, req *connect.Request[itemv1.ListItemReadRequest]) (*connect.Response[itemv1.ListItemReadResponse], error) {
-	var updatedAfter interface{}
-	if req.Msg.UpdatedAfter != nil {
-		updatedAfter = req.Msg.UpdatedAfter.AsTime().UTC().Format(time.RFC3339)
+	limit := int64(req.Msg.PageSize)
+	if limit <= 0 || limit > 1000 {
+		limit = 100
 	}
 
-	rows, err := s.store.ListItemRead(ctx, updatedAfter)
+	params := store.ListItemReadParams{
+		Limit: limit,
+	}
+
+	if req.Msg.PageToken != "" {
+		b, err := base64.StdEncoding.DecodeString(req.Msg.PageToken)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("invalid page_token: %w", err))
+		}
+		var token listItemReadPageToken
+		if err := json.Unmarshal(b, &token); err != nil {
+			return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("invalid page_token: %w", err))
+		}
+		params.UpdatedAtCursor = token.UpdatedAt
+		params.ItemIDCursor = &token.ItemID
+	} else if req.Msg.UpdatedAfter != nil {
+		params.UpdatedAfter = req.Msg.UpdatedAfter.AsTime().UTC().Format(time.RFC3339)
+	}
+
+	rows, err := s.store.ListItemRead(ctx, params)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
@@ -366,8 +392,20 @@ func (s *ItemServer) ListItemRead(ctx context.Context, req *connect.Request[item
 		}
 	}
 
+	var nextPageToken string
+	if int64(len(rows)) == limit {
+		lastRow := rows[len(rows)-1]
+		token := listItemReadPageToken{
+			UpdatedAt: lastRow.UpdatedAt,
+			ItemID:    lastRow.ItemID,
+		}
+		b, _ := json.Marshal(token)
+		nextPageToken = base64.StdEncoding.EncodeToString(b)
+	}
+
 	return connect.NewResponse(&itemv1.ListItemReadResponse{
-		ItemReads: itemReads,
+		ItemReads:     itemReads,
+		NextPageToken: nextPageToken,
 	}), nil
 }
 

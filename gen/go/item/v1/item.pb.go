@@ -85,6 +85,8 @@ func (x *ItemRead) GetUpdatedAt() *timestamppb.Timestamp {
 type ListItemReadRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	UpdatedAfter  *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=updated_after,json=updatedAfter,proto3,oneof" json:"updated_after,omitempty"`
+	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	PageToken     string                 `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -126,9 +128,24 @@ func (x *ListItemReadRequest) GetUpdatedAfter() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *ListItemReadRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *ListItemReadRequest) GetPageToken() string {
+	if x != nil {
+		return x.PageToken
+	}
+	return ""
+}
+
 type ListItemReadResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ItemReads     []*ItemRead            `protobuf:"bytes,1,rep,name=item_reads,json=itemReads,proto3" json:"item_reads,omitempty"`
+	NextPageToken string                 `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -168,6 +185,13 @@ func (x *ListItemReadResponse) GetItemReads() []*ItemRead {
 		return x.ItemReads
 	}
 	return nil
+}
+
+func (x *ListItemReadResponse) GetNextPageToken() string {
+	if x != nil {
+		return x.NextPageToken
+	}
+	return ""
 }
 
 type Item struct {
@@ -1579,13 +1603,17 @@ const file_item_v1_item_proto_rawDesc = "" +
 	"\aitem_id\x18\x01 \x01(\tR\x06itemId\x12\x17\n" +
 	"\ais_read\x18\x02 \x01(\bR\x06isRead\x129\n" +
 	"\n" +
-	"updated_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"m\n" +
+	"updated_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\xa9\x01\n" +
 	"\x13ListItemReadRequest\x12D\n" +
-	"\rupdated_after\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\fupdatedAfter\x88\x01\x01B\x10\n" +
-	"\x0e_updated_after\"H\n" +
+	"\rupdated_after\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\fupdatedAfter\x88\x01\x01\x12\x1b\n" +
+	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"\n" +
+	"page_token\x18\x03 \x01(\tR\tpageTokenB\x10\n" +
+	"\x0e_updated_after\"p\n" +
 	"\x14ListItemReadResponse\x120\n" +
 	"\n" +
-	"item_reads\x18\x01 \x03(\v2\x11.item.v1.ItemReadR\titemReads\"\xc3\x02\n" +
+	"item_reads\x18\x01 \x03(\v2\x11.item.v1.ItemReadR\titemReads\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc3\x02\n" +
 	"\x04Item\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x10\n" +
 	"\x03url\x18\x02 \x01(\tR\x03url\x12\x14\n" +

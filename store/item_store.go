@@ -43,6 +43,6 @@ func (s *Store) GetItem(ctx context.Context, id string) (GetItemRow, error) {
 	return s.Queries.GetItem(ctx, id)
 }
 
-func (s *Store) ListItemRead(ctx context.Context, updatedAfter interface{}) ([]ListItemReadRow, error) {
-	return s.Queries.ListItemRead(ctx, updatedAfter)
+func (s *Store) ListItemRead(ctx context.Context, params ListItemReadParams) ([]ListItemReadRow, error) {
+	return s.Queries.ListItemRead(ctx, params)
 }

@@ -91,6 +91,7 @@ func TestItemServer(t *testing.T) {
 		var id string
 		err = db.QueryRowContext(ctx, "SELECT id FROM items WHERE url = ?", "http://rich").Scan(&id)
 		assert.NilError(t, err)
+		assert.Assert(t, id != "") // Ensure id is not empty
 		_, err = db.ExecContext(ctx, "UPDATE items SET created_at = ? WHERE id = ?", tRich, id)
 		assert.NilError(t, err)
 
@@ -215,5 +216,27 @@ func TestItemServer_ListItemRead(t *testing.T) {
 		assert.Equal(t, len(res.Msg.ItemReads), 2)
 		assert.Equal(t, res.Msg.ItemReads[0].ItemId, item2ID)
 		assert.Equal(t, res.Msg.ItemReads[1].ItemId, item3ID)
+	})
+
+	t.Run("Pagination", func(t *testing.T) {
+		// Page 1
+		res1, err := server.ListItemRead(ctx, connect.NewRequest(&itemv1.ListItemReadRequest{
+			PageSize: 2,
+		}))
+		assert.NilError(t, err)
+		assert.Equal(t, len(res1.Msg.ItemReads), 2)
+		assert.Equal(t, res1.Msg.ItemReads[0].ItemId, item1ID)
+		assert.Equal(t, res1.Msg.ItemReads[1].ItemId, item2ID)
+		assert.Assert(t, res1.Msg.NextPageToken != "")
+
+		// Page 2
+		res2, err := server.ListItemRead(ctx, connect.NewRequest(&itemv1.ListItemReadRequest{
+			PageSize:  2,
+			PageToken: res1.Msg.NextPageToken,
+		}))
+		assert.NilError(t, err)
+		assert.Equal(t, len(res2.Msg.ItemReads), 1)
+		assert.Equal(t, res2.Msg.ItemReads[0].ItemId, item3ID)
+		assert.Equal(t, res2.Msg.NextPageToken, "")
 	})
 }
