@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"context"
 	"errors"
 	"log/slog"
 	"testing"
@@ -12,14 +11,15 @@ import (
 	"gotest.tools/v3/assert"
 )
 
-func TestFetcherService_FetchFeedsByIDsSync_NotModified_Red(t *testing.T) {
-	ctx := context.Background()
+func TestFetcherService_FetchFeedsByIDsSync_NotModified(t *testing.T) {
+	ctx := t.Context()
 	queries, db := setupTestDB(t)
 	s := store.NewStore(db)
 
 	logger := slog.New(slog.NewJSONHandler(&bytes.Buffer{}, nil))
 	wq := NewWriteQueueService(s, WriteQueueConfig{MaxBatchSize: 1, FlushInterval: 10 * time.Millisecond}, logger)
 	go wq.Start(ctx)
+	t.Cleanup(wq.Stop)
 
 	// mockFetcher that returns ErrNotModified
 	fetcher := &mockFetcher{err: ErrNotModified}
@@ -38,21 +38,22 @@ func TestFetcherService_FetchFeedsByIDsSync_NotModified_Red(t *testing.T) {
 	assert.Equal(t, results[0].FeedID, feed.ID)
 	assert.Assert(t, results[0].Success)
 
-	// Wait for WriteQueue to process if any (though currently it probably won't be called)
+	// Wait for WriteQueue to process the status update
 	time.Sleep(200 * time.Millisecond)
 
 	updatedFeed, _ := queries.GetFeed(ctx, feed.ID)
 	assert.Assert(t, updatedFeed.LastFetchedAt != initialLastFetched, "last_fetched_at should have been updated even on 304 Not Modified")
 }
 
-func TestFetcherService_FetchFeedsByIDsSync_Errors_Red(t *testing.T) {
-	ctx := context.Background()
+func TestFetcherService_FetchFeedsByIDsSync_Errors(t *testing.T) {
+	ctx := t.Context()
 	queries, db := setupTestDB(t)
 	s := store.NewStore(db)
 
 	logger := slog.New(slog.NewJSONHandler(&bytes.Buffer{}, nil))
 	wq := NewWriteQueueService(s, WriteQueueConfig{MaxBatchSize: 1, FlushInterval: 10 * time.Millisecond}, logger)
 	go wq.Start(ctx)
+	t.Cleanup(wq.Stop)
 
 	t.Run("404 Error", func(t *testing.T) {
 		fetcher := &mockFetcher{err: errors.New("404 Not Found")}

@@ -145,7 +145,7 @@ func (s *FetcherService) fetchAndSaveSync(ctx context.Context, f store.FullFeed)
 	}
 
 	// Update last_fetched_at and next_fetch
-	s.markFetched(ctx, f.ID, parsedFeed.Items)
+	s.markFetched(ctx, f.ID, nil)
 
 	return result, nil
 }
