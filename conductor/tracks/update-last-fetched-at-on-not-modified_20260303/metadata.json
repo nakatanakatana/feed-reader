@@ -1,8 +1,0 @@
-{
-  "track_id": "update-last-fetched-at-on-not-modified_20260303",
-  "type": "chore",
-  "status": "new",
-  "created_at": "2026-03-03T00:00:00Z",
-  "updated_at": "2026-03-03T00:00:00Z",
-  "description": "キャッシュを利用してFeedの取得をしたときにNot Modifiedなどがかえって来たときもlast fetchedの日時を取得したタイミングに更新するようにしてください 更新されないのは取得に失敗(40x/50x)のときのみになる想定です"
-}
