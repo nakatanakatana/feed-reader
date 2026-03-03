@@ -208,7 +208,8 @@ func TestItemServer_ListItemRead(t *testing.T) {
 	})
 
 	t.Run("Filter by updated_after", func(t *testing.T) {
-		after, _ := time.Parse(time.RFC3339, t1)
+		after, err := time.Parse(time.RFC3339, t1)
+		assert.NilError(t, err)
 		res, err := server.ListItemRead(ctx, connect.NewRequest(&itemv1.ListItemReadRequest{
 			UpdatedAfter: timestamppb.New(after),
 		}))
@@ -237,6 +238,7 @@ func TestItemServer_ListItemRead(t *testing.T) {
 		assert.NilError(t, err)
 		assert.Equal(t, len(res2.Msg.ItemReads), 1)
 		assert.Equal(t, res2.Msg.ItemReads[0].ItemId, item3ID)
-		assert.Equal(t, res2.Msg.NextPageToken, "")
+		// Now we always return a token for the last row even on final page
+		assert.Assert(t, res2.Msg.NextPageToken != "")
 	})
 }

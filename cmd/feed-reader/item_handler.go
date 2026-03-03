@@ -367,6 +367,13 @@ func (s *ItemServer) ListItemRead(ctx context.Context, req *connect.Request[item
 		if err := json.Unmarshal(b, &token); err != nil {
 			return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("invalid page_token: %w", err))
 		}
+		// Validate decoded page_token fields before using them.
+		if token.UpdatedAt == "" || token.ItemID == "" {
+			return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("invalid page_token: missing required fields"))
+		}
+		if _, err := time.Parse(time.RFC3339, token.UpdatedAt); err != nil {
+			return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("invalid page_token: invalid updated_at: %w", err))
+		}
 		params.UpdatedAtCursor = token.UpdatedAt
 		params.ItemIDCursor = &token.ItemID
 	} else if req.Msg.UpdatedAfter != nil {
@@ -393,7 +400,7 @@ func (s *ItemServer) ListItemRead(ctx context.Context, req *connect.Request[item
 	}
 
 	var nextPageToken string
-	if int64(len(rows)) == limit {
+	if len(rows) > 0 {
 		lastRow := rows[len(rows)-1]
 		token := listItemReadPageToken{
 			UpdatedAt: lastRow.UpdatedAt,
