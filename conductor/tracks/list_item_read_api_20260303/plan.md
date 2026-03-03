@@ -17,6 +17,6 @@
 - [x] Task: Write unit tests for `ListItemRead` RPC in `cmd/feed-reader/item_handler_test.go`. 605d2a1
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Service Layer Implementation' (Protocol in workflow.md) 506ff03
 
-## Phase 4: Final Integration & Verification
-- [ ] Task: Perform end-to-end verification of `ListItemRead` functionality with and without `updated_after` filter.
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Final Integration & Verification' (Protocol in workflow.md)
+## Phase 4: Final Integration & Verification [checkpoint: 150ecef]
+- [x] Task: Perform end-to-end verification of `ListItemRead` functionality with and without `updated_after` filter. 33d2e41
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Final Integration & Verification' (Protocol in workflow.md) 150ecef
