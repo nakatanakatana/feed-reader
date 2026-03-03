@@ -1,9 +1,9 @@
 # Implementation Plan: Update last_fetched_at on Not Modified
 
 ## Phase 1: Red Phase - Write Failing Tests
-- [ ] Task: Create a new test in `cmd/feed-reader/fetcher_service_test.go` to verify that `FetchFeedsByIDsSync` updates `last_fetched_at` when the fetcher returns `ErrNotModified`.
-- [ ] Task: Add a test case to ensure 404/500 errors do NOT update `last_fetched_at`.
-- [ ] Task: Run tests and confirm they fail as expected.
+- [x] Task: Create a new test in `cmd/feed-reader/fetcher_service_test.go` to verify that `FetchFeedsByIDsSync` updates `last_fetched_at` when the fetcher returns `ErrNotModified`. (9f3c1e5)
+- [x] Task: Add a test case to ensure 404/500 errors do NOT update `last_fetched_at`. (9f3c1e5)
+- [x] Task: Run tests and confirm they fail as expected. (9f3c1e5)
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Red Phase' (Protocol in workflow.md)
 
 ## Phase 2: Green Phase - Implement Logic
