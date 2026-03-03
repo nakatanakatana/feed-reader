@@ -99,11 +99,22 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     isAtBottomBoundary: () => {
       const container = swipeContainerRef;
       if (!container) return true;
-      return (
+
+      const isAtBottom =
         Math.abs(
           container.scrollHeight - container.scrollTop - container.clientHeight,
-        ) < 5
-      );
+        ) < 5;
+
+      if (isAtBottom) return true;
+
+      // Also allow skip mid-article if touch started in the bottom 30%
+      const rect = container.getBoundingClientRect();
+      const thresholdY = rect.top + rect.height * 0.7;
+      if (touchStartY >= thresholdY) {
+        return true;
+      }
+
+      return false;
     },
     isAtTopBoundary: () => {
       const container = swipeContainerRef;
@@ -180,9 +191,13 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   };
 
   createEffect(() => {
-    // Reset skipping state when itemId changes
+    // Reset skipping state and clear any pending skip recovery timer when itemId changes
     props.itemId;
     setIsSkipping(false);
+    if (skipRecoveryTimeoutId !== undefined) {
+      clearTimeout(skipRecoveryTimeoutId);
+      skipRecoveryTimeoutId = undefined;
+    }
   });
 
   createEffect(() => {

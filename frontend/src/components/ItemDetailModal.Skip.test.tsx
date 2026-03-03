@@ -109,7 +109,7 @@ describe("ItemDetailModal Skip Navigation", () => {
     // Swipe up
     const rect = container.getBoundingClientRect();
     const startY = rect.bottom - 10;
-    const endY = startY - 300; // Swipe up 300px (more than 20-30% of screen height)
+    const endY = startY - 300; // Swipe up 300px (greater than the 100px swipe threshold)
     const x = rect.left + rect.width / 2;
 
     dispatchTouch(container, "touchstart", x, startY);
