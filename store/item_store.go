@@ -42,3 +42,7 @@ func (s *Store) CountItems(ctx context.Context, params StoreCountItemsParams) (i
 func (s *Store) GetItem(ctx context.Context, id string) (GetItemRow, error) {
 	return s.Queries.GetItem(ctx, id)
 }
+
+func (s *Store) ListItemRead(ctx context.Context, updatedAfter interface{}) ([]ListItemReadRow, error) {
+	return s.Queries.ListItemRead(ctx, updatedAfter)
+}
