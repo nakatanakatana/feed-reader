@@ -38,11 +38,27 @@ func TestFetcherService_FetchFeedsByIDsSync_NotModified(t *testing.T) {
 	assert.Equal(t, results[0].FeedID, feed.ID)
 	assert.Assert(t, results[0].Success)
 
-	// Wait for WriteQueue to process the status update
-	time.Sleep(200 * time.Millisecond)
+	// Wait for WriteQueue to process the status update by polling until last_fetched_at changes
+	deadline := time.Now().Add(2 * time.Second)
+	var updatedFeed store.GetFeedRow
+	for {
+		updatedFeed, _ = queries.GetFeed(ctx, feed.ID)
+		if updatedFeed.LastFetchedAt != nil {
+			if initialLastFetched == nil || *updatedFeed.LastFetchedAt != *initialLastFetched {
+				break
+			}
+		}
+		if time.Now().After(deadline) {
+			t.Fatal("timed out waiting for last_fetched_at update")
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
 
-	updatedFeed, _ := queries.GetFeed(ctx, feed.ID)
-	assert.Assert(t, updatedFeed.LastFetchedAt != initialLastFetched, "last_fetched_at should have been updated even on 304 Not Modified")
+	// Compare values, not pointer identities, to ensure the timestamp actually changed.
+	assert.Assert(t, updatedFeed.LastFetchedAt != nil, "last_fetched_at should not be nil after fetch")
+	if initialLastFetched != nil {
+		assert.Assert(t, *updatedFeed.LastFetchedAt != *initialLastFetched, "last_fetched_at should have been updated even on 304 Not Modified")
+	}
 }
 
 func TestFetcherService_FetchFeedsByIDsSync_Errors(t *testing.T) {
@@ -68,10 +84,15 @@ func TestFetcherService_FetchFeedsByIDsSync_Errors(t *testing.T) {
 		assert.Equal(t, len(results), 1)
 		assert.Assert(t, !results[0].Success)
 
+		// Wait briefly to ensure no update happens
 		time.Sleep(200 * time.Millisecond)
 
 		updatedFeed, _ := queries.GetFeed(ctx, feed.ID)
-		assert.Equal(t, updatedFeed.LastFetchedAt, initialLastFetched, "last_fetched_at should NOT have been updated on error")
+		if initialLastFetched == nil {
+			assert.Assert(t, updatedFeed.LastFetchedAt == nil, "last_fetched_at should remain nil on error")
+		} else {
+			assert.Assert(t, *updatedFeed.LastFetchedAt == *initialLastFetched, "last_fetched_at should NOT have been updated on error")
+		}
 	})
 
 	t.Run("500 Error", func(t *testing.T) {
@@ -87,9 +108,14 @@ func TestFetcherService_FetchFeedsByIDsSync_Errors(t *testing.T) {
 		assert.Equal(t, len(results), 1)
 		assert.Assert(t, !results[0].Success)
 
+		// Wait briefly to ensure no update happens
 		time.Sleep(200 * time.Millisecond)
 
 		updatedFeed, _ := queries.GetFeed(ctx, feed.ID)
-		assert.Equal(t, updatedFeed.LastFetchedAt, initialLastFetched, "last_fetched_at should NOT have been updated on error")
+		if initialLastFetched == nil {
+			assert.Assert(t, updatedFeed.LastFetchedAt == nil, "last_fetched_at should remain nil on error")
+		} else {
+			assert.Assert(t, *updatedFeed.LastFetchedAt == *initialLastFetched, "last_fetched_at should NOT have been updated on error")
+		}
 	})
 }
