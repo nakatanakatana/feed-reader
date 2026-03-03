@@ -7,7 +7,7 @@
 
 ## Phase 2: Database Layer Implementation
 - [x] Task: Add `ListItemRead` query to `store/query.sql` to fetch `item_reads` filtered by `updated_at`. cece988
-- [ ] Task: Run `sqlc generate` to update generated database logic.
+- [x] Task: Run `sqlc generate` to update generated database logic. 0380e30
 - [ ] Task: Add `ListItemRead` wrapper to `store/item_store.go`.
 - [ ] Task: Write unit tests for `ListItemRead` in `store/item_store_test.go`.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Database Layer Implementation' (Protocol in workflow.md)
