@@ -1340,6 +1340,48 @@ func (q *Queries) ListItemFeeds(ctx context.Context, itemID string) ([]ListItemF
 	return items, nil
 }
 
+const listItemRead = `-- name: ListItemRead :many
+SELECT
+  item_id,
+  is_read,
+  updated_at
+FROM
+  item_reads
+WHERE
+  (?1 IS NULL OR updated_at > ?1)
+ORDER BY
+  updated_at ASC
+`
+
+type ListItemReadRow struct {
+	ItemID    string `json:"item_id"`
+	IsRead    int64  `json:"is_read"`
+	UpdatedAt string `json:"updated_at"`
+}
+
+func (q *Queries) ListItemRead(ctx context.Context, updatedAfter interface{}) ([]ListItemReadRow, error) {
+	rows, err := q.db.QueryContext(ctx, listItemRead, updatedAfter)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListItemReadRow
+	for rows.Next() {
+		var i ListItemReadRow
+		if err := rows.Scan(&i.ItemID, &i.IsRead, &i.UpdatedAt); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listItems = `-- name: ListItems :many
 SELECT
   i.id,
