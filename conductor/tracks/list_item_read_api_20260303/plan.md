@@ -1,9 +1,9 @@
 # Implementation Plan: `list_item_read_api_20260303`
 
-## Phase 1: API Definition & Code Generation
+## Phase 1: API Definition & Code Generation [checkpoint: e3875a1]
 - [x] Task: Update `proto/item/v1/item.proto` to include `ListItemRead` RPC and messages. 901f257
 - [x] Task: Run `buf generate` to generate Go and TypeScript code. ba9abec
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: API Definition & Code Generation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: API Definition & Code Generation' (Protocol in workflow.md) e3875a1
 
 ## Phase 2: Database Layer Implementation
 - [ ] Task: Add `ListItemRead` query to `store/query.sql` to fetch `item_reads` filtered by `updated_at`.
