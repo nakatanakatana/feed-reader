@@ -89,40 +89,41 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
       : undefined;
   };
 
-  const handleNext = () => {
-    markCurrentAsRead();
+  const navigateTo = (targetId: string | undefined) => {
+    const linkProps = getLinkProps(targetId);
+    if (linkProps) {
+      navigate({
+        to: linkProps.to,
+        // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
+        params: linkProps.params as any,
+        search: linkProps.search,
+        replace: true,
+      });
+    }
+  };
+
+  const handleNavigateNext = (markAsRead: boolean) => {
+    if (markAsRead) {
+      markCurrentAsRead();
+    }
     if (isEndOfList()) return;
 
     const next = nextItem();
     if (next) {
-      const linkProps = getLinkProps(next.id);
-      if (linkProps) {
-        navigate({
-          to: linkProps.to,
-          // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
-          params: linkProps.params as any,
-          search: linkProps.search,
-          replace: true,
-        });
-      }
+      navigateTo(next.id);
     } else {
       const items = filteredItems();
       const index = currentIndexMemo();
       if (items && items.length > 0 && index === items.length - 1) {
         // Transition to virtual end-of-list state
-        const linkProps = getLinkProps("end-of-list");
-        if (linkProps) {
-          navigate({
-            to: linkProps.to,
-            // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
-            params: linkProps.params as any,
-            search: linkProps.search,
-            replace: true,
-          });
-        }
+        navigateTo("end-of-list");
       }
     }
   };
+
+  const handleNext = () => handleNavigateNext(true);
+
+  const handleSkipNext = () => handleNavigateNext(false);
 
   const handlePrev = () => {
     markCurrentAsRead();
@@ -131,32 +132,14 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
       const lastItem =
         items && items.length > 0 ? items[items.length - 1] : undefined;
       if (lastItem) {
-        const linkProps = getLinkProps(lastItem.id);
-        if (linkProps) {
-          navigate({
-            to: linkProps.to,
-            // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
-            params: linkProps.params as any,
-            search: linkProps.search,
-            replace: true,
-          });
-        }
+        navigateTo(lastItem.id);
       }
       return;
     }
 
     const prev = prevItem();
     if (prev) {
-      const linkProps = getLinkProps(prev.id);
-      if (linkProps) {
-        navigate({
-          to: linkProps.to,
-          // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
-          params: linkProps.params as any,
-          search: linkProps.search,
-          replace: true,
-        });
-      }
+      navigateTo(prev.id);
     }
   };
 
@@ -207,6 +190,7 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
       nextItemId={nextItemIdMemo()}
       onPrev={handlePrev}
       onNext={handleNext}
+      onSkipNext={handleSkipNext}
     />
   );
 }

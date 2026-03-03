@@ -54,7 +54,7 @@ describe("ItemDetailModal Swipe Integration", () => {
     </TransportProvider>
   );
 
-  it("applies transform: translateX when swiping on the content", async () => {
+  it("applies transform: translate when swiping on the content", async () => {
     setupMockData("test-id");
     dispose = render(
       () => (
@@ -74,21 +74,19 @@ describe("ItemDetailModal Swipe Integration", () => {
 
     await expect.element(page.getByText("Test Item")).toBeInTheDocument();
 
-    // The content container should have data-testid="swipe-container" (we'll add this)
     const container = document.querySelector(
       '[data-testid="swipe-container"]',
     ) as HTMLElement;
 
-    // If it doesn't exist yet, the test will fail here, which is fine for Red phase
     expect(container).not.toBeNull();
 
     dispatchTouch(container, "touchstart", 100, 100);
     dispatchTouch(container, "touchmove", 150, 100);
 
-    expect(container?.style.transform).toContain("translateX(50px)");
+    expect(container?.style.transform).toContain("translate(50px, 0px)");
 
     dispatchTouch(container, "touchend", 150, 100);
-    expect(container?.style.transform).toContain("translateX(0px)");
+    expect(container?.style.transform).toContain("translate(0px, 0px)");
     expect(container?.style.transition).toContain("transform 0.2s ease-out");
   });
 
@@ -212,7 +210,7 @@ describe("ItemDetailModal Swipe Integration", () => {
 
     // 50^0.7 is approx 15.46. Let's check it's much less than 50
     const transform = container?.style.transform || "";
-    const match = transform.match(/translateX\(([\d.]+)px\)/);
+    const match = transform.match(/translate\(([\d.]+)px, ([\d.]+)px\)/);
     const value = match ? parseFloat(match[1]) : 0;
 
     expect(value).toBeGreaterThan(0);
