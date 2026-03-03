@@ -25,10 +25,12 @@ func TestFetcherService_FetchFeedsByIDsSync_NotModified(t *testing.T) {
 	fetcher := &mockFetcher{err: ErrNotModified}
 	service := NewFetcherService(s, fetcher, nil, wq, logger, 30*time.Minute)
 
-	feed, _ := queries.CreateFeed(ctx, store.CreateFeedParams{ID: "not-modified-feed", Url: "http://not-modified"})
+	feed, err := queries.CreateFeed(ctx, store.CreateFeedParams{ID: "not-modified-feed", Url: "http://not-modified"})
+	assert.NilError(t, err)
 
 	// Record initial last_fetched_at
-	initialFeed, _ := queries.GetFeed(ctx, feed.ID)
+	initialFeed, err := queries.GetFeed(ctx, feed.ID)
+	assert.NilError(t, err)
 	initialLastFetched := initialFeed.LastFetchedAt
 
 	// Manual sync fetch
@@ -42,7 +44,8 @@ func TestFetcherService_FetchFeedsByIDsSync_NotModified(t *testing.T) {
 	deadline := time.Now().Add(2 * time.Second)
 	var updatedFeed store.GetFeedRow
 	for {
-		updatedFeed, _ = queries.GetFeed(ctx, feed.ID)
+		updatedFeed, err = queries.GetFeed(ctx, feed.ID)
+		assert.NilError(t, err)
 		if updatedFeed.LastFetchedAt != nil {
 			if initialLastFetched == nil || *updatedFeed.LastFetchedAt != *initialLastFetched {
 				break
@@ -62,60 +65,45 @@ func TestFetcherService_FetchFeedsByIDsSync_NotModified(t *testing.T) {
 }
 
 func TestFetcherService_FetchFeedsByIDsSync_Errors(t *testing.T) {
-	ctx := t.Context()
 	queries, db := setupTestDB(t)
 	s := store.NewStore(db)
-
 	logger := slog.New(slog.NewJSONHandler(&bytes.Buffer{}, nil))
-	wq := NewWriteQueueService(s, WriteQueueConfig{MaxBatchSize: 1, FlushInterval: 10 * time.Millisecond}, logger)
-	go wq.Start(ctx)
-	t.Cleanup(wq.Stop)
 
-	t.Run("404 Error", func(t *testing.T) {
-		fetcher := &mockFetcher{err: errors.New("404 Not Found")}
-		service := NewFetcherService(s, fetcher, nil, wq, logger, 30*time.Minute)
+	runErrorTest := func(t *testing.T, name string, fetchErr error) {
+		t.Run(name, func(t *testing.T) {
+			ctx := t.Context()
+			// Use a per-subtest WriteQueue that we Stop/flush before asserting
+			wq := NewWriteQueueService(s, WriteQueueConfig{MaxBatchSize: 1, FlushInterval: 10 * time.Millisecond}, logger)
+			go wq.Start(ctx)
 
-		feed, _ := queries.CreateFeed(ctx, store.CreateFeedParams{ID: "404-feed", Url: "http://404"})
+			fetcher := &mockFetcher{err: fetchErr}
+			service := NewFetcherService(s, fetcher, nil, wq, logger, 30*time.Minute)
 
-		initialFeed, _ := queries.GetFeed(ctx, feed.ID)
-		initialLastFetched := initialFeed.LastFetchedAt
+			feed, err := queries.CreateFeed(ctx, store.CreateFeedParams{ID: name, Url: "http://" + name})
+			assert.NilError(t, err)
 
-		results, _ := service.FetchFeedsByIDsSync(ctx, []string{feed.ID})
-		assert.Equal(t, len(results), 1)
-		assert.Assert(t, !results[0].Success)
+			initialFeed, err := queries.GetFeed(ctx, feed.ID)
+			assert.NilError(t, err)
+			initialLastFetched := initialFeed.LastFetchedAt
 
-		// Wait briefly to ensure no update happens
-		time.Sleep(200 * time.Millisecond)
+			results, err := service.FetchFeedsByIDsSync(ctx, []string{feed.ID})
+			assert.NilError(t, err)
+			assert.Equal(t, len(results), 1)
+			assert.Assert(t, !results[0].Success)
 
-		updatedFeed, _ := queries.GetFeed(ctx, feed.ID)
-		if initialLastFetched == nil {
-			assert.Assert(t, updatedFeed.LastFetchedAt == nil, "last_fetched_at should remain nil on error")
-		} else {
-			assert.Assert(t, *updatedFeed.LastFetchedAt == *initialLastFetched, "last_fetched_at should NOT have been updated on error")
-		}
-	})
+			// Flush all queued jobs (if any) by stopping the queue
+			wq.Stop()
 
-	t.Run("500 Error", func(t *testing.T) {
-		fetcher := &mockFetcher{err: errors.New("500 Internal Server Error")}
-		service := NewFetcherService(s, fetcher, nil, wq, logger, 30*time.Minute)
+			updatedFeed, err := queries.GetFeed(ctx, feed.ID)
+			assert.NilError(t, err)
+			if initialLastFetched == nil {
+				assert.Assert(t, updatedFeed.LastFetchedAt == nil, "last_fetched_at should remain nil on error")
+			} else {
+				assert.Assert(t, *updatedFeed.LastFetchedAt == *initialLastFetched, "last_fetched_at should NOT have been updated on error")
+			}
+		})
+	}
 
-		feed, _ := queries.CreateFeed(ctx, store.CreateFeedParams{ID: "500-feed", Url: "http://500"})
-
-		initialFeed, _ := queries.GetFeed(ctx, feed.ID)
-		initialLastFetched := initialFeed.LastFetchedAt
-
-		results, _ := service.FetchFeedsByIDsSync(ctx, []string{feed.ID})
-		assert.Equal(t, len(results), 1)
-		assert.Assert(t, !results[0].Success)
-
-		// Wait briefly to ensure no update happens
-		time.Sleep(200 * time.Millisecond)
-
-		updatedFeed, _ := queries.GetFeed(ctx, feed.ID)
-		if initialLastFetched == nil {
-			assert.Assert(t, updatedFeed.LastFetchedAt == nil, "last_fetched_at should remain nil on error")
-		} else {
-			assert.Assert(t, *updatedFeed.LastFetchedAt == *initialLastFetched, "last_fetched_at should NOT have been updated on error")
-		}
-	})
+	runErrorTest(t, "404 Error", errors.New("404 Not Found"))
+	runErrorTest(t, "500 Error", errors.New("500 Internal Server Error"))
 }
