@@ -106,6 +106,8 @@ func (s *FetcherService) fetchAndSaveSync(ctx context.Context, f store.FullFeed)
 	if err != nil {
 		if errors.Is(err, ErrNotModified) {
 			s.logger.InfoContext(ctx, "feed not modified, skipping sync", "url", f.Url, "id", f.ID)
+			// Still update last_fetched_at and next_fetch to avoid immediate re-fetch
+			s.markFetched(ctx, f.ID, nil)
 			return &FeedFetchResult{
 				FeedID:  f.ID,
 				Success: true,
@@ -143,17 +145,7 @@ func (s *FetcherService) fetchAndSaveSync(ctx context.Context, f store.FullFeed)
 	}
 
 	// Update last_fetched_at and next_fetch
-	now := time.Now().UTC()
-	lastFetched := now.Format(time.RFC3339)
-	interval := s.getNextFetchInterval(ctx, f.ID, parsedFeed.Items)
-	nextFetch := now.Add(interval).Format(time.RFC3339)
-	s.writeQueue.Submit(&MarkFetchedJob{
-		Params: store.MarkFeedFetchedParams{
-			LastFetchedAt: &lastFetched,
-			NextFetch:     &nextFetch,
-			FeedID:        f.ID,
-		},
-	})
+	s.markFetched(ctx, f.ID, nil)
 
 	return result, nil
 }
@@ -246,17 +238,7 @@ func (s *FetcherService) FetchAndSave(ctx context.Context, f store.FullFeed) err
 		if errors.Is(err, ErrNotModified) {
 			s.logger.InfoContext(ctx, "feed not modified, skipping", "url", f.Url, "id", f.ID)
 			// Still update last_fetched_at and next_fetch to avoid immediate re-fetch
-			now := time.Now().UTC()
-			lastFetched := now.Format(time.RFC3339)
-			interval := s.getNextFetchInterval(ctx, f.ID, nil)
-			nextFetch := now.Add(interval).Format(time.RFC3339)
-			s.writeQueue.Submit(&MarkFetchedJob{
-				Params: store.MarkFeedFetchedParams{
-					LastFetchedAt: &lastFetched,
-					NextFetch:     &nextFetch,
-					FeedID:        f.ID,
-				},
-			})
+			s.markFetched(ctx, f.ID, nil)
 			return nil
 		}
 		s.logger.ErrorContext(ctx, "failed to fetch feed", "url", f.Url, "error", err)
@@ -274,17 +256,7 @@ func (s *FetcherService) FetchAndSave(ctx context.Context, f store.FullFeed) err
 	}
 
 	// Update last_fetched_at and next_fetch asynchronously
-	now := time.Now().UTC()
-	lastFetched := now.Format(time.RFC3339)
-	interval := s.getNextFetchInterval(ctx, f.ID, parsedFeed.Items)
-	nextFetch := now.Add(interval).Format(time.RFC3339)
-	s.writeQueue.Submit(&MarkFetchedJob{
-		Params: store.MarkFeedFetchedParams{
-			LastFetchedAt: &lastFetched,
-			NextFetch:     &nextFetch,
-			FeedID:        f.ID,
-		},
-	})
+	s.markFetched(ctx, f.ID, parsedFeed.Items)
 
 	s.logger.DebugContext(ctx, "enqueued updates for feed", "url", f.Url, "items", len(parsedFeed.Items))
 	return nil
@@ -357,5 +329,19 @@ func (s *FetcherService) getNextFetchInterval(ctx context.Context, feedID string
 
 	nextFetchTime := time.Now().UTC().Add(baseInterval)
 	return AdjustIntervalForPeak(distribution, baseInterval, minInterval, nextFetchTime)
+}
+
+func (s *FetcherService) markFetched(ctx context.Context, feedID string, items []*gofeed.Item) {
+	now := time.Now().UTC()
+	lastFetched := now.Format(time.RFC3339)
+	interval := s.getNextFetchInterval(ctx, feedID, items)
+	nextFetch := now.Add(interval).Format(time.RFC3339)
+	s.writeQueue.Submit(&MarkFetchedJob{
+		Params: store.MarkFeedFetchedParams{
+			LastFetchedAt: &lastFetched,
+			NextFetch:     &nextFetch,
+			FeedID:        feedID,
+		},
+	})
 }
 
