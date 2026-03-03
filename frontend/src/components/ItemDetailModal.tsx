@@ -44,20 +44,32 @@ interface ItemDetailModalProps {
   nextItemId?: string;
   onPrev?: () => void;
   onNext?: () => void;
+  onSkipNext?: () => void;
   footerExtras?: JSX.Element;
 }
 
 export function ItemDetailModal(props: ItemDetailModalProps) {
   let modalRef: HTMLDivElement | undefined;
+  let swipeContainerRef: HTMLDivElement | undefined;
   const queryClient = useQueryClient();
   const [announcement, setAnnouncement] = createSignal("");
   let announcementTimeout: ReturnType<typeof setTimeout> | undefined;
+  const [isSkipping, setIsSkipping] = createSignal(false);
+  let skipTimeoutId: ReturnType<typeof setTimeout> | undefined;
+  let skipRecoveryTimeoutId: ReturnType<typeof setTimeout> | undefined;
+  let touchStartY = 0;
+  let touchThresholdY = 0;
+  let disposed = false;
 
   onCleanup(() => {
-    if (announcementTimeout) clearTimeout(announcementTimeout);
+    disposed = true;
+    if (announcementTimeout !== undefined) clearTimeout(announcementTimeout);
+    if (skipTimeoutId !== undefined) clearTimeout(skipTimeoutId);
+    if (skipRecoveryTimeoutId !== undefined)
+      clearTimeout(skipRecoveryTimeoutId);
   });
 
-  const { x, isSwiping, handlers } = useSwipe({
+  const { x, y, isSwiping, handlers } = useSwipe({
     onSwipeLeft: () => {
       if (props.onNext && props.nextItemId && props.itemId !== "end-of-list") {
         props.onNext();
@@ -68,14 +80,70 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
         props.onPrev();
       }
     },
+    onSwipeUp: () => {
+      if (
+        props.onSkipNext &&
+        props.nextItemId &&
+        props.itemId !== "end-of-list"
+      ) {
+        // Only allow swipe-up if it started in the bottom 30% of the container
+        if (swipeContainerRef) {
+          const rect = swipeContainerRef.getBoundingClientRect();
+          const thresholdY = rect.top + rect.height * 0.7;
+          if (touchStartY < thresholdY) {
+            return;
+          }
+        }
+        handleSkip();
+      }
+    },
+    isAtBottomBoundary: () => {
+      const container = swipeContainerRef;
+      if (!container) return true;
+
+      const isAtBottom =
+        Math.abs(
+          container.scrollHeight - container.scrollTop - container.clientHeight,
+        ) < 5;
+
+      if (isAtBottom) return true;
+
+      // Also allow skip mid-article if touch started in the bottom 10%
+      if (touchStartY >= touchThresholdY) {
+        return true;
+      }
+
+      return false;
+    },
+    isAtTopBoundary: () => {
+      const container = swipeContainerRef;
+      if (!container) return true;
+      return container.scrollTop < 5;
+    },
     threshold: 100, // Use a higher threshold than the hook default (50px) to reduce accidental swipes
     disabled: props.itemId === "end-of-list",
   });
+
+  // Intercept touchstart to record start position for the 10% check
+  const originalOnTouchStart = handlers.ontouchstart;
+  handlers.ontouchstart = (e: TouchEvent) => {
+    const isSwipeDisabled = props.itemId === "end-of-list";
+    if (!isSwipeDisabled && e.touches && e.touches.length === 1) {
+      touchStartY = e.touches[0].clientY;
+      if (swipeContainerRef) {
+        const rect = swipeContainerRef.getBoundingClientRect();
+        touchThresholdY = rect.top + rect.height * 0.9; // 10% from bottom
+      }
+    }
+    originalOnTouchStart(e);
+  };
 
   // Determine if we can navigate
   const canSwipeLeft = () =>
     !!(props.onNext && props.nextItemId && props.itemId !== "end-of-list");
   const canSwipeRight = () => !!(props.onPrev && props.prevItemId);
+  const canSwipeUp = () =>
+    !!(props.onSkipNext && props.nextItemId && props.itemId !== "end-of-list");
 
   // Apply a "bounce" effect at boundaries (resist dragging)
   const displayX = () => {
@@ -84,6 +152,56 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     if (rawX < 0 && !canSwipeLeft()) return -(Math.abs(rawX) ** 0.7);
     return rawX;
   };
+
+  const displayY = () => {
+    const rawY = y();
+    if (rawY < 0 && !canSwipeUp()) return -(Math.abs(rawY) ** 0.7);
+    // We don't have swipe down action, so apply resistance for all positive Y
+    if (rawY > 0) return rawY ** 0.7;
+    return rawY;
+  };
+
+  const handleSkip = (animate = true) => {
+    if (!props.onSkipNext || isSkipping()) return;
+
+    if (animate) {
+      setIsSkipping(true);
+      if (skipTimeoutId !== undefined) clearTimeout(skipTimeoutId);
+      if (skipRecoveryTimeoutId !== undefined)
+        clearTimeout(skipRecoveryTimeoutId);
+
+      // Wait for animation to finish before calling onSkipNext
+      skipTimeoutId = setTimeout(() => {
+        if (disposed) return;
+
+        // Set a safety recovery timer in case navigation is blocked or no-ops.
+        // Schedule it BEFORE calling onSkipNext so it can be cleared if onSkipNext causes an unmount/route change.
+        if (skipRecoveryTimeoutId !== undefined)
+          clearTimeout(skipRecoveryTimeoutId);
+        skipRecoveryTimeoutId = setTimeout(() => {
+          if (!disposed) {
+            setIsSkipping(false);
+          }
+          skipRecoveryTimeoutId = undefined;
+        }, 1000);
+
+        props.onSkipNext?.();
+        skipTimeoutId = undefined;
+      }, 200);
+    } else {
+      props.onSkipNext?.();
+    }
+  };
+
+  createEffect(() => {
+    // Reset skipping state and clear any pending skip recovery timer when itemId changes
+    props.itemId;
+    setIsSkipping(false);
+    if (skipRecoveryTimeoutId !== undefined) {
+      clearTimeout(skipRecoveryTimeoutId);
+      skipRecoveryTimeoutId = undefined;
+    }
+  });
 
   createEffect(() => {
     // Track itemId and item data to trigger re-focus when content changes
@@ -339,6 +457,10 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
       if (!isEndOfList() && props.onNext && nextId) props.onNext();
     } else if (e.key === "m" || e.key === "M") {
       handleToggleRead();
+    } else if (e.key === "n" || e.key === "N") {
+      if (canSwipeUp()) {
+        handleSkip(false);
+      }
     }
   };
 
@@ -520,7 +642,6 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
           </div>
         </Show>
 
-        {/* Accessibility instruction for screen readers */}
         <div
           id="swipe-instruction"
           class={css({
@@ -536,14 +657,32 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
           })}
         >
           <Show
-            when={canSwipeLeft() || canSwipeRight()}
+            when={canSwipeLeft() || canSwipeRight() || canSwipeUp()}
             fallback="Swipe navigation not available."
           >
-            Swipe left for next item, right for previous.
+            {(() => {
+              const parts: string[] = [];
+              if (canSwipeLeft()) {
+                parts.push("left for next item");
+              }
+              if (canSwipeRight()) {
+                parts.push("right for previous");
+              }
+              if (canSwipeUp()) {
+                parts.push("up to skip");
+              }
+              if (parts.length === 0) {
+                return null;
+              }
+              return `Swipe ${parts.join(", ")}.`;
+            })()}
           </Show>
         </div>
 
         <div
+          ref={(el) => {
+            swipeContainerRef = el;
+          }}
           data-testid="swipe-container"
           aria-describedby="swipe-instruction"
           class={flex({
@@ -556,10 +695,21 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             height: "full",
           })}
           style={{
-            transform: `translateX(${displayX()}px)`,
-            transition: isSwiping() ? "none" : "transform 0.2s ease-out",
+            transform: isSkipping()
+              ? "translateY(-100%)"
+              : `translate(${displayX()}px, ${displayY()}px)`,
+            transition: isSkipping()
+              ? "transform 0.2s ease-in, opacity 0.2s ease-in"
+              : isSwiping()
+                ? "none"
+                : "transform 0.2s ease-out",
             "will-change":
-              canSwipeLeft() || canSwipeRight() ? "transform" : undefined,
+              canSwipeLeft() || canSwipeRight() || canSwipeUp()
+                ? "transform"
+                : undefined,
+            ...(isSkipping() && {
+              opacity: 0,
+            }),
           }}
           {...handlers}
         >
