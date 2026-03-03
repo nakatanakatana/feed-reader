@@ -335,6 +335,46 @@ describe("useSwipe", () => {
     });
   });
 
+  it("does NOT jump when hitting boundary mid-gesture", () => {
+    createRoot((dispose) => {
+      let atBottom = false;
+      const { y, handlers } = useSwipe({
+        onSwipeUp: () => {},
+        isAtBottomBoundary: () => atBottom,
+      });
+      const target = document.createElement("div");
+
+      // Start touch at 100, 500
+      handlers.ontouchstart(
+        createTouchEvent("touchstart", target, [
+          createTouch(target, { x: 100, y: 500 }),
+        ]),
+      );
+
+      // Move to 100, 400 (diffY = -100). Not at boundary.
+      handlers.ontouchmove(
+        createTouchEvent("touchmove", target, [
+          createTouch(target, { x: 100, y: 400 }),
+        ]),
+      );
+      expect(y()).toBe(0);
+
+      // Hit boundary mid-gesture
+      atBottom = true;
+
+      // Move slightly more to 100, 390.
+      // Since it was rebased at (100, 400), diffY should now be -10, not -110.
+      handlers.ontouchmove(
+        createTouchEvent("touchmove", target, [
+          createTouch(target, { x: 100, y: 390 }),
+        ]),
+      );
+
+      expect(y()).toBe(-10);
+      dispose();
+    });
+  });
+
   it("ignores multi-touch", () => {
     createRoot((dispose) => {
       const { x, handlers } = useSwipe();

@@ -67,6 +67,7 @@ export function useSwipe(options: UseSwipeOptions = {}) {
         setX(diffX);
       } else {
         setX(0);
+        startX = currentX;
       }
     } else {
       // vertical
@@ -93,6 +94,7 @@ export function useSwipe(options: UseSwipeOptions = {}) {
         setY(diffY);
       } else {
         setY(0);
+        startY = currentY;
       }
     }
   };
