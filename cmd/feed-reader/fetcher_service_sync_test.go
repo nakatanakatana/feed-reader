@@ -19,8 +19,20 @@ func TestFetcherService_FetchFeedsByIDsSync_NotModified(t *testing.T) {
 
 	logger := slog.New(slog.NewJSONHandler(&bytes.Buffer{}, nil))
 	wq := NewWriteQueueService(s, WriteQueueConfig{MaxBatchSize: 1, FlushInterval: 10 * time.Millisecond}, logger)
-	go wq.Start(ctx)
-	t.Cleanup(wq.Stop)
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		wq.Start(ctx)
+	}()
+
+	var once sync.Once
+	stopAndWait := func() {
+		once.Do(func() {
+			wq.Stop()
+			<-done
+		})
+	}
+	t.Cleanup(stopAndWait)
 
 	// mockFetcher that returns ErrNotModified
 	fetcher := &mockFetcher{err: ErrNotModified}
@@ -29,10 +41,11 @@ func TestFetcherService_FetchFeedsByIDsSync_NotModified(t *testing.T) {
 	feed, err := queries.CreateFeed(ctx, store.CreateFeedParams{ID: "not-modified-feed", Url: "http://not-modified"})
 	assert.NilError(t, err)
 
-	// Record initial last_fetched_at
+	// Record initial status
 	initialFeed, err := queries.GetFeed(ctx, feed.ID)
 	assert.NilError(t, err)
 	initialLastFetched := initialFeed.LastFetchedAt
+	initialNextFetch := initialFeed.NextFetch
 
 	// Manual sync fetch
 	results, err := service.FetchFeedsByIDsSync(ctx, []string{feed.ID})
@@ -63,6 +76,12 @@ func TestFetcherService_FetchFeedsByIDsSync_NotModified(t *testing.T) {
 	if initialLastFetched != nil {
 		assert.Assert(t, *updatedFeed.LastFetchedAt != *initialLastFetched, "last_fetched_at should have been updated even on 304 Not Modified")
 	}
+
+	// Also verify next_fetch was updated/recalculated
+	assert.Assert(t, updatedFeed.NextFetch != nil, "next_fetch should not be nil after fetch")
+	if initialNextFetch != nil {
+		assert.Assert(t, *updatedFeed.NextFetch != *initialNextFetch, "next_fetch should have been updated even on 304 Not Modified")
+	}
 }
 
 func TestFetcherService_FetchFeedsByIDsSync_Errors(t *testing.T) {
@@ -77,8 +96,8 @@ func TestFetcherService_FetchFeedsByIDsSync_Errors(t *testing.T) {
 			wq := NewWriteQueueService(s, WriteQueueConfig{MaxBatchSize: 1, FlushInterval: 10 * time.Millisecond}, logger)
 			done := make(chan struct{})
 			go func() {
+				defer close(done)
 				wq.Start(ctx)
-				close(done)
 			}()
 
 			var once sync.Once
@@ -100,6 +119,7 @@ func TestFetcherService_FetchFeedsByIDsSync_Errors(t *testing.T) {
 			initialFeed, err := queries.GetFeed(ctx, feed.ID)
 			assert.NilError(t, err)
 			initialLastFetched := initialFeed.LastFetchedAt
+			initialNextFetch := initialFeed.NextFetch
 
 			results, err := service.FetchFeedsByIDsSync(ctx, []string{feed.ID})
 			assert.NilError(t, err)
@@ -111,10 +131,19 @@ func TestFetcherService_FetchFeedsByIDsSync_Errors(t *testing.T) {
 
 			updatedFeed, err := queries.GetFeed(ctx, feed.ID)
 			assert.NilError(t, err)
+
+			// Verify last_fetched_at is unchanged
 			if initialLastFetched == nil {
 				assert.Assert(t, updatedFeed.LastFetchedAt == nil, "last_fetched_at should remain nil on error")
 			} else {
 				assert.Assert(t, *updatedFeed.LastFetchedAt == *initialLastFetched, "last_fetched_at should NOT have been updated on error")
+			}
+
+			// Verify next_fetch is unchanged
+			if initialNextFetch == nil {
+				assert.Assert(t, updatedFeed.NextFetch == nil, "next_fetch should remain nil on error")
+			} else {
+				assert.Assert(t, *updatedFeed.NextFetch == *initialNextFetch, "next_fetch should NOT have been updated on error")
 			}
 		})
 	}
