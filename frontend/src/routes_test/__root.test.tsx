@@ -57,8 +57,6 @@ describe("RootComponent Navigation", () => {
     const headerContainer = page.getByRole("banner");
     await expect.element(headerContainer).toHaveStyle({
       paddingTop: "8px",
-    });
-    await expect.element(headerContainer).toHaveStyle({
       borderBottomColor: "rgb(243, 244, 246)",
     });
 

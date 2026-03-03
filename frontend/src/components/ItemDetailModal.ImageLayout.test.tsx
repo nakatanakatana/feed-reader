@@ -64,17 +64,19 @@ describe("ItemDetailModal Image Layout", () => {
       document.body,
     );
 
-    // Wait for content to render
+    // Wait for content to render and initial effect to run (including requestAnimationFrame)
     await expect.element(page.getByAltText("img1")).toBeInTheDocument();
     await expect.element(page.getByAltText("img2")).toBeInTheDocument();
 
     // Find the paragraph containing the images
     const p = page.getByRole("paragraph");
 
-    await expect.element(p).toHaveStyle({ display: "flex" });
-    await expect.element(p).toHaveStyle({ flexWrap: "wrap" });
-    // Check that the expected 8px gap is applied
-    await expect.element(p).toHaveStyle({ gap: "8px" });
+    // Wait for styles to be applied
+    await expect.element(p).toHaveStyle({
+      display: "flex",
+      flexWrap: "wrap",
+      gap: "8px",
+    });
   });
 
   it("applies flex layout to paragraphs with multiple linked images", async () => {
@@ -92,16 +94,19 @@ describe("ItemDetailModal Image Layout", () => {
       document.body,
     );
 
-    // Wait for content to render
+    // Wait for content to render and initial effect to run (including requestAnimationFrame)
     await expect.element(page.getByAltText("img1")).toBeInTheDocument();
     await expect.element(page.getByAltText("img2")).toBeInTheDocument();
 
     // Find the paragraph containing the images
     const p = page.getByRole("paragraph");
 
-    await expect.element(p).toHaveStyle({ display: "flex" });
-    await expect.element(p).toHaveStyle({ flexWrap: "wrap" });
-    await expect.element(p).toHaveStyle({ gap: "8px" });
+    // Wait for styles to be applied
+    await expect.element(p).toHaveStyle({
+      display: "flex",
+      flexWrap: "wrap",
+      gap: "8px",
+    });
   });
 
   it("applies flex layout to paragraphs with mixed images and linked images", async () => {
@@ -119,16 +124,19 @@ describe("ItemDetailModal Image Layout", () => {
       document.body,
     );
 
-    // Wait for content to render
+    // Wait for content to render and initial effect to run (including requestAnimationFrame)
     await expect.element(page.getByAltText("img1")).toBeInTheDocument();
     await expect.element(page.getByAltText("img2")).toBeInTheDocument();
 
     // Find the paragraph containing the images
     const p = page.getByRole("paragraph");
 
-    await expect.element(p).toHaveStyle({ display: "flex" });
-    await expect.element(p).toHaveStyle({ flexWrap: "wrap" });
-    await expect.element(p).toHaveStyle({ gap: "8px" });
+    // Wait for styles to be applied
+    await expect.element(p).toHaveStyle({
+      display: "flex",
+      flexWrap: "wrap",
+      gap: "8px",
+    });
   });
 
   it("initially hides images and shows them only after layout is determined", async () => {
@@ -149,8 +157,13 @@ describe("ItemDetailModal Image Layout", () => {
     await expect.element(img).toBeInTheDocument();
 
     // Initially should be transparent and have default maxHeight
-    await expect.element(img).toHaveStyle({ opacity: "0" });
-    await expect.element(img).toHaveStyle({ maxHeight: "10vh" });
+    await expect.element(img).toHaveStyle({
+      opacity: "0",
+      maxHeight: "10vh",
+    });
+
+    // Ensure the initial createEffect's requestAnimationFrame has fired
+    await new Promise((r) => requestAnimationFrame(r));
 
     // Mock naturalWidth/Height and trigger load
     const imgEl = document.querySelector(
@@ -169,8 +182,11 @@ describe("ItemDetailModal Image Layout", () => {
     }
 
     // Now should be visible and have hero maxHeight
-    await expect.element(img).toHaveStyle({ opacity: "1" });
-    await expect.element(img).toHaveStyle({ maxHeight: "30vh" });
+    await expect.element(img).toHaveAttribute("data-layout", "hero");
+    await expect.element(img).toHaveStyle({
+      opacity: "1",
+      maxHeight: "30vh",
+    });
   });
 
   describe("Image height limits", () => {
@@ -190,6 +206,9 @@ describe("ItemDetailModal Image Layout", () => {
 
       await expect.element(page.getByAltText("hero")).toBeInTheDocument();
 
+      // Ensure the initial createEffect's requestAnimationFrame has fired
+      await new Promise((r) => requestAnimationFrame(r));
+
       // Trigger layout detection
       const img = document.querySelector('img[alt="hero"]') as HTMLImageElement;
       if (img) {
@@ -203,6 +222,11 @@ describe("ItemDetailModal Image Layout", () => {
         });
         img.dispatchEvent(new Event("load"));
       }
+
+      // Check for attribute first (as layout detection logic is async)
+      await expect
+        .element(page.getByAltText("hero"))
+        .toHaveAttribute("data-layout", "hero");
 
       await expect
         .element(page.getByAltText("hero"))
@@ -225,6 +249,9 @@ describe("ItemDetailModal Image Layout", () => {
 
       await expect.element(page.getByAltText("icon")).toBeInTheDocument();
 
+      // Ensure the initial createEffect's requestAnimationFrame has fired
+      await new Promise((r) => requestAnimationFrame(r));
+
       const img = document.querySelector('img[alt="icon"]') as HTMLImageElement;
       if (img) {
         Object.defineProperty(img, "naturalWidth", {
@@ -237,6 +264,10 @@ describe("ItemDetailModal Image Layout", () => {
         });
         img.dispatchEvent(new Event("load"));
       }
+
+      await expect
+        .element(page.getByAltText("icon"))
+        .toHaveAttribute("data-layout", "icon");
 
       await expect
         .element(page.getByAltText("icon"))
@@ -259,6 +290,9 @@ describe("ItemDetailModal Image Layout", () => {
 
       await expect.element(page.getByAltText("other")).toBeInTheDocument();
 
+      // Ensure the initial createEffect's requestAnimationFrame has fired
+      await new Promise((r) => requestAnimationFrame(r));
+
       const img = document.querySelector(
         'img[alt="other"]',
       ) as HTMLImageElement;
@@ -273,6 +307,10 @@ describe("ItemDetailModal Image Layout", () => {
         });
         img.dispatchEvent(new Event("load"));
       }
+
+      await expect
+        .element(page.getByAltText("other"))
+        .toHaveAttribute("data-layout", "other");
 
       await expect
         .element(page.getByAltText("other"))
