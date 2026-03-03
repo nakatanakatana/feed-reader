@@ -1,0 +1,8 @@
+{
+  "track_id": "fix-flaky-frontend-tests_20260304",
+  "type": "bug",
+  "status": "new",
+  "created_at": "2026-03-04T00:00:00Z",
+  "updated_at": "2026-03-04T00:00:00Z",
+  "description": "frontendのテストがflakyになってそうなので確認して対応してください 参考で以下のテストがCIで失敗することがある感じでした https://github.com/nakatanakatana/feed-reader/actions/runs/22628669068/job/65573278539?pr=302"
+}
