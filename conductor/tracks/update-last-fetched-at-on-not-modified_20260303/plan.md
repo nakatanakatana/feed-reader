@@ -7,8 +7,8 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Red Phase' (Protocol in workflow.md) (d741ed0)
 
 ## Phase 2: Green Phase - Implement Logic
-- [ ] Task: Refactor `fetchAndSaveSync` in `cmd/feed-reader/fetcher_service.go` to update `last_fetched_at` and `next_fetch` even when `ErrNotModified` is encountered.
-- [ ] Task: Run tests and confirm they pass.
+- [x] Task: Refactor `fetchAndSaveSync` in `cmd/feed-reader/fetcher_service.go` to update `last_fetched_at` and `next_fetch` even when `ErrNotModified` is encountered. (8e93bbf)
+- [x] Task: Run tests and confirm they pass. (8e93bbf)
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Green Phase' (Protocol in workflow.md)
 
 ## Phase 3: Refactor and Consolidate
