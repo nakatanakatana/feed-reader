@@ -12,7 +12,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Green Phase' (Protocol in workflow.md) (11f1114)
 
 ## Phase 3: Refactor and Consolidate
-- [ ] Task: Extract the duplicated logic for updating `last_fetched_at` and `next_fetch` into a reusable private method `markFetched(ctx, feedID, items)` in `fetcher_service.go`.
-- [ ] Task: Update both `FetchAndSave` and `fetchAndSaveSync` to use this new method.
-- [ ] Task: Verify all tests still pass and coverage is maintained.
+- [x] Task: Extract the duplicated logic for updating `last_fetched_at` and `next_fetch` into a reusable private method `markFetched(ctx, feedID, items)` in `fetcher_service.go`. (32488cd)
+- [x] Task: Update both `FetchAndSave` and `fetchAndSaveSync` to use this new method. (32488cd)
+- [x] Task: Verify all tests still pass and coverage is maintained. (32488cd)
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Refactor' (Protocol in workflow.md)
