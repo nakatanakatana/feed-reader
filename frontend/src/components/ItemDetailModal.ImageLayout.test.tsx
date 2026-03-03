@@ -164,16 +164,7 @@ describe("ItemDetailModal Image Layout", () => {
     const img = page.getByAltText("loading");
     await expect.element(img).toBeInTheDocument();
 
-    // Initially should be transparent and have default maxHeight
-    await expect.element(img).toHaveStyle({
-      opacity: "0",
-      maxHeight: "10vh",
-    });
-
-    // Ensure the initial createEffect's requestAnimationFrame has fired
-    await nextFrame();
-
-    // Mock naturalWidth/Height and trigger load
+    // Mock naturalWidth/Height IMMEDIATELY after element is in DOM
     const imgEl = document.querySelector(
       'img[alt="loading"]',
     ) as HTMLImageElement;
@@ -186,6 +177,19 @@ describe("ItemDetailModal Image Layout", () => {
         value: 600,
         configurable: true,
       });
+    }
+
+    // Initially should be transparent and have default maxHeight
+    await expect.element(img).toHaveStyle({
+      opacity: "0",
+      maxHeight: "10vh",
+    });
+
+    // Ensure the initial createEffect's requestAnimationFrame has fired
+    await nextFrame();
+
+    // Trigger load event if it was not already complete
+    if (imgEl) {
       imgEl.dispatchEvent(new Event("load"));
     }
 
@@ -214,10 +218,7 @@ describe("ItemDetailModal Image Layout", () => {
 
       await expect.element(page.getByAltText("hero")).toBeInTheDocument();
 
-      // Ensure the initial createEffect's requestAnimationFrame has fired
-      await nextFrame();
-
-      // Trigger layout detection
+      // Stub dimensions before nextFrame
       const img = document.querySelector('img[alt="hero"]') as HTMLImageElement;
       if (img) {
         Object.defineProperty(img, "naturalWidth", {
@@ -228,6 +229,13 @@ describe("ItemDetailModal Image Layout", () => {
           value: 600,
           configurable: true,
         });
+      }
+
+      // Ensure the initial createEffect's requestAnimationFrame has fired
+      await nextFrame();
+
+      // Trigger layout detection
+      if (img) {
         img.dispatchEvent(new Event("load"));
       }
 
@@ -257,9 +265,6 @@ describe("ItemDetailModal Image Layout", () => {
 
       await expect.element(page.getByAltText("icon")).toBeInTheDocument();
 
-      // Ensure the initial createEffect's requestAnimationFrame has fired
-      await nextFrame();
-
       const img = document.querySelector('img[alt="icon"]') as HTMLImageElement;
       if (img) {
         Object.defineProperty(img, "naturalWidth", {
@@ -270,6 +275,12 @@ describe("ItemDetailModal Image Layout", () => {
           value: 32,
           configurable: true,
         });
+      }
+
+      // Ensure the initial createEffect's requestAnimationFrame has fired
+      await nextFrame();
+
+      if (img) {
         img.dispatchEvent(new Event("load"));
       }
 
@@ -298,9 +309,6 @@ describe("ItemDetailModal Image Layout", () => {
 
       await expect.element(page.getByAltText("other")).toBeInTheDocument();
 
-      // Ensure the initial createEffect's requestAnimationFrame has fired
-      await nextFrame();
-
       const img = document.querySelector(
         'img[alt="other"]',
       ) as HTMLImageElement;
@@ -313,6 +321,12 @@ describe("ItemDetailModal Image Layout", () => {
           value: 1200,
           configurable: true,
         });
+      }
+
+      // Ensure the initial createEffect's requestAnimationFrame has fired
+      await nextFrame();
+
+      if (img) {
         img.dispatchEvent(new Event("load"));
       }
 
