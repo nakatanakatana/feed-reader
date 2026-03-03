@@ -15,6 +15,11 @@ import { ItemDetailModal } from "./ItemDetailModal";
 describe("ItemDetailModal Image Layout", () => {
   let dispose: () => void;
 
+  /**
+   * Waits for the next animation frame to ensure effects and layout are settled.
+   */
+  const nextFrame = () => new Promise((r) => requestAnimationFrame(r));
+
   afterEach(() => {
     if (dispose) dispose();
     document.body.innerHTML = "";
@@ -67,6 +72,7 @@ describe("ItemDetailModal Image Layout", () => {
     // Wait for content to render and initial effect to run (including requestAnimationFrame)
     await expect.element(page.getByAltText("img1")).toBeInTheDocument();
     await expect.element(page.getByAltText("img2")).toBeInTheDocument();
+    await nextFrame();
 
     // Find the paragraph containing the images
     const p = page.getByRole("paragraph");
@@ -97,6 +103,7 @@ describe("ItemDetailModal Image Layout", () => {
     // Wait for content to render and initial effect to run (including requestAnimationFrame)
     await expect.element(page.getByAltText("img1")).toBeInTheDocument();
     await expect.element(page.getByAltText("img2")).toBeInTheDocument();
+    await nextFrame();
 
     // Find the paragraph containing the images
     const p = page.getByRole("paragraph");
@@ -127,6 +134,7 @@ describe("ItemDetailModal Image Layout", () => {
     // Wait for content to render and initial effect to run (including requestAnimationFrame)
     await expect.element(page.getByAltText("img1")).toBeInTheDocument();
     await expect.element(page.getByAltText("img2")).toBeInTheDocument();
+    await nextFrame();
 
     // Find the paragraph containing the images
     const p = page.getByRole("paragraph");
@@ -163,7 +171,7 @@ describe("ItemDetailModal Image Layout", () => {
     });
 
     // Ensure the initial createEffect's requestAnimationFrame has fired
-    await new Promise((r) => requestAnimationFrame(r));
+    await nextFrame();
 
     // Mock naturalWidth/Height and trigger load
     const imgEl = document.querySelector(
@@ -207,7 +215,7 @@ describe("ItemDetailModal Image Layout", () => {
       await expect.element(page.getByAltText("hero")).toBeInTheDocument();
 
       // Ensure the initial createEffect's requestAnimationFrame has fired
-      await new Promise((r) => requestAnimationFrame(r));
+      await nextFrame();
 
       // Trigger layout detection
       const img = document.querySelector('img[alt="hero"]') as HTMLImageElement;
@@ -250,7 +258,7 @@ describe("ItemDetailModal Image Layout", () => {
       await expect.element(page.getByAltText("icon")).toBeInTheDocument();
 
       // Ensure the initial createEffect's requestAnimationFrame has fired
-      await new Promise((r) => requestAnimationFrame(r));
+      await nextFrame();
 
       const img = document.querySelector('img[alt="icon"]') as HTMLImageElement;
       if (img) {
@@ -291,7 +299,7 @@ describe("ItemDetailModal Image Layout", () => {
       await expect.element(page.getByAltText("other")).toBeInTheDocument();
 
       // Ensure the initial createEffect's requestAnimationFrame has fired
-      await new Promise((r) => requestAnimationFrame(r));
+      await nextFrame();
 
       const img = document.querySelector(
         'img[alt="other"]',
