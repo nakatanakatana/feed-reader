@@ -25,7 +25,7 @@ AI agents MUST follow these rules:
     - **Green**: Implement the minimum code to pass the test.
     - **Refactor**: Improve code quality while maintaining passing tests.
 2. **Plan-Driven Execution**:
-    - All work must be based on plans in `conductor/tracks/`.
+    - All work must be based on the plan defined in `conductor/plan.md`.
     - Do not make changes outside the approved plan without confirmation.
 3. **Language Rules**:
     - **Conversations**: Japanese.
