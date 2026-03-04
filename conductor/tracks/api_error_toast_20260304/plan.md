@@ -12,6 +12,6 @@
 - [x] Task: Conductor - User Manual Verification 'Global API Error Interception' (Protocol in workflow.md) d7579cc
 
 ## Phase 3: Testing and Refinement
-- [ ] Task: Add new test cases to `frontend/src/lib/toast.test.tsx` to verify that triggering a global error (simulated) correctly shows the Toast notification.
-- [ ] Task: Final automated test run across the entire frontend suite to ensure no regressions in existing toast behavior.
-- [ ] Task: Conductor - User Manual Verification 'Testing and Refinement' (Protocol in workflow.md)
+- [x] Task: Add new test cases to `frontend/src/lib/toast.test.tsx` to verify that triggering a global error (simulated) correctly shows the Toast notification. d09a935
+- [x] Task: Final automated test run across the entire frontend suite to ensure no regressions in existing toast behavior. d09a935
+- [~] Task: Conductor - User Manual Verification 'Testing and Refinement' (Protocol in workflow.md)
