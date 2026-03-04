@@ -15,6 +15,7 @@ export interface Toast {
   id: string;
   message: string;
   type: "success" | "error" | "info";
+  expiresAt: number;
 }
 
 const [globalToasts, setGlobalToasts] = createSignal<Toast[]>([]);
@@ -30,7 +31,8 @@ function generateToastId(): string {
 export const toast = {
   show: (message: string, type: Toast["type"] = "info") => {
     const id = generateToastId();
-    setGlobalToasts((prev) => [...prev, { id, message, type }]);
+    const expiresAt = Date.now() + 5000;
+    setGlobalToasts((prev) => [...prev, { id, message, type, expiresAt }]);
     return id;
   },
   dismiss: (id: string) => {
@@ -51,9 +53,10 @@ function ToastItem(props: { toast: Toast; onDismiss: (id: string) => void }) {
   let timer: number | undefined;
 
   onMount(() => {
+    const remaining = Math.max(0, props.toast.expiresAt - Date.now());
     timer = window.setTimeout(() => {
       props.onDismiss(props.toast.id);
-    }, 5000);
+    }, remaining);
   });
 
   onCleanup(() => {
