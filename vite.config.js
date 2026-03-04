@@ -11,8 +11,19 @@ const require = createRequire(import.meta.url);
 let playwright;
 try {
   playwright = require("@vitest/browser-playwright").playwright;
-} catch (_e) {
-  // Ignore error if package is not available or fails to load in this environment
+} catch (error) {
+  if (
+    error &&
+    (error.code === "MODULE_NOT_FOUND" || error.code === "ERR_MODULE_NOT_FOUND")
+  ) {
+    // Ignore error if the @vitest/browser-playwright package is not installed.
+  } else {
+    console.warn(
+      'Failed to load "@vitest/browser-playwright". Browser tests will be skipped. ' +
+        "Please ensure the package is installed and configured correctly.",
+      error,
+    );
+  }
 }
 
 // https://vitejs.dev/config/
