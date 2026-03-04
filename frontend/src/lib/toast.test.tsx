@@ -6,11 +6,7 @@ describe("Toast Context", () => {
   let dispose: (() => void) | undefined;
 
   beforeEach(() => {
-    // Clear global toasts before each test
-    const currentToasts = toast.toasts();
-    for (const t of currentToasts) {
-      toast.dismiss(t.id);
-    }
+    toast.clear();
     vi.useFakeTimers();
   });
 

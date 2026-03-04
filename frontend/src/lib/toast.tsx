@@ -38,6 +38,9 @@ export const toast = {
   dismiss: (id: string) => {
     setGlobalToasts((prev) => prev.filter((t) => t.id !== id));
   },
+  clear: () => {
+    setGlobalToasts([]);
+  },
   toasts: globalToasts,
 };
 
@@ -45,6 +48,7 @@ interface ToastContextValue {
   show: (message: string, type?: Toast["type"]) => string;
   toasts: Accessor<Toast[]>;
   dismiss: (id: string) => void;
+  clear: () => void;
 }
 
 const ToastContext = createContext<ToastContextValue>();
@@ -118,7 +122,12 @@ function ToastItem(props: { toast: Toast; onDismiss: (id: string) => void }) {
 export function ToastProvider(props: { children: JSX.Element }) {
   return (
     <ToastContext.Provider
-      value={{ show: toast.show, toasts: toast.toasts, dismiss: toast.dismiss }}
+      value={{
+        show: toast.show,
+        toasts: toast.toasts,
+        dismiss: toast.dismiss,
+        clear: toast.clear,
+      }}
     >
       {props.children}
       <Portal>

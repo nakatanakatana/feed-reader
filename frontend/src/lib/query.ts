@@ -30,8 +30,7 @@ export const errorInterceptor: Interceptor = (next) => async (req) => {
     const connectErr = ConnectError.from(err);
     if (
       connectErr.code === Code.Unavailable ||
-      connectErr.code === Code.Unknown ||
-      connectErr.code === Code.Internal
+      connectErr.code === Code.Unknown
     ) {
       markAsToastEligible(err);
     }

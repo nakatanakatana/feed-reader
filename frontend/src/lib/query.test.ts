@@ -7,11 +7,7 @@ import { toast } from "./toast";
 describe("Query Setup", () => {
   beforeEach(() => {
     vi.spyOn(toast, "show").mockImplementation(() => "");
-    // Clear global toasts before each test
-    const currentToasts = toast.toasts();
-    for (const t of currentToasts) {
-      toast.dismiss(t.id);
-    }
+    toast.clear();
   });
 
   afterEach(() => {
