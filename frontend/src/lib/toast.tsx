@@ -17,6 +17,19 @@ export interface Toast {
   type: "success" | "error" | "info";
 }
 
+const [globalToasts, setGlobalToasts] = createSignal<Toast[]>([]);
+
+export const toast = {
+  show: (message: string, type: Toast["type"] = "info") => {
+    const id = Math.random().toString(36).substring(2, 9);
+    setGlobalToasts((prev) => [...prev, { id, message, type }]);
+  },
+  dismiss: (id: string) => {
+    setGlobalToasts((prev) => prev.filter((t) => t.id !== id));
+  },
+  toasts: globalToasts,
+};
+
 interface ToastContextValue {
   show: (message: string, type?: Toast["type"]) => void;
   toasts: Accessor<Toast[]>;
@@ -31,7 +44,7 @@ function ToastItem(props: { toast: Toast; onDismiss: (id: string) => void }) {
   onMount(() => {
     timer = window.setTimeout(() => {
       props.onDismiss(props.toast.id);
-    }, 3000);
+    }, 5000);
   });
 
   onCleanup(() => {
@@ -91,19 +104,10 @@ function ToastItem(props: { toast: Toast; onDismiss: (id: string) => void }) {
 }
 
 export function ToastProvider(props: { children: JSX.Element }) {
-  const [toasts, setToasts] = createSignal<Toast[]>([]);
-
-  const show = (message: string, type: Toast["type"] = "info") => {
-    const id = Math.random().toString(36).substring(2, 9);
-    setToasts((prev) => [...prev, { id, message, type }]);
-  };
-
-  const dismiss = (id: string) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
-  };
-
   return (
-    <ToastContext.Provider value={{ show, toasts, dismiss }}>
+    <ToastContext.Provider
+      value={{ show: toast.show, toasts: toast.toasts, dismiss: toast.dismiss }}
+    >
       {props.children}
       <Portal>
         <div
@@ -117,8 +121,8 @@ export function ToastProvider(props: { children: JSX.Element }) {
             gap: "2",
           })}
         >
-          <For each={toasts()}>
-            {(toast) => <ToastItem toast={toast} onDismiss={dismiss} />}
+          <For each={toast.toasts()}>
+            {(t) => <ToastItem toast={t} onDismiss={toast.dismiss} />}
           </For>
         </div>
       </Portal>
