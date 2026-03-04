@@ -2,10 +2,10 @@
 import { createRequire } from "node:module";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import devtools from "solid-devtools/vite";
+import { defineConfig } from "vitest/config";
 import { analyzer } from "vite-bundle-analyzer";
 import { VitePWA } from "vite-plugin-pwa";
 import solid from "vite-plugin-solid";
-import { defineConfig } from "vitest/config";
 
 const require = createRequire(import.meta.url);
 let playwright;
@@ -81,35 +81,40 @@ export default defineConfig({
       reporter: ["lcov"],
     },
     projects: [
-      {
-        extends: true,
-        test: {
-          name: "browser",
-          browser: {
-            enabled: true,
-            provider: playwright ? playwright() : undefined,
-            screenshotFailures: false,
-            instances: [
-              {
-                browser: "chromium",
+      // Only include browser project if playwright is available
+      ...(playwright
+        ? [
+            {
+              extends: true,
+              test: {
+                name: "browser",
+                browser: {
+                  enabled: true,
+                  provider: playwright(),
+                  screenshotFailures: false,
+                  instances: [
+                    {
+                      browser: "chromium",
+                    },
+                  ],
+                  viewport: { width: 1280, height: 720 },
+                  headless: true,
+                },
+                exclude: [
+                  "src/pwa-infrastructure.test.ts",
+                  "**/node_modules/**",
+                  "**/dist/**",
+                  "**/cypress/**",
+                  "**/.{idea,git,cache,output,temp}/**",
+                  "**/{karma,rollup,webpack,vite,vitest}.config.*",
+                ],
+                include: ["src/**/*.test.{ts,tsx}"],
+                setupFiles: ["./src/vitest-setup.ts"],
+                globals: true,
               },
-            ],
-            viewport: { width: 1280, height: 720 },
-            headless: true,
-          },
-          exclude: [
-            "src/pwa-infrastructure.test.ts",
-            "**/node_modules/**",
-            "**/dist/**",
-            "**/cypress/**",
-            "**/.{idea,git,cache,output,temp}/**",
-            "**/{karma,rollup,webpack,vite,vitest}.config.*",
-          ],
-          include: ["src/**/*.test.{ts,tsx}"],
-          setupFiles: ["./src/vitest-setup.ts"],
-          globals: true,
-        },
-      },
+            },
+          ]
+        : []),
       {
         test: {
           name: "node",

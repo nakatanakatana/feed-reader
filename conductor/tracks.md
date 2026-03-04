@@ -1,5 +1,3 @@
 # Tracks Registry
 
 ---
-
----
