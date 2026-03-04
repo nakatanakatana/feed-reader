@@ -15,3 +15,6 @@
 - [x] Task: Add new test cases to `frontend/src/lib/toast.test.tsx` to verify that triggering a global error (simulated) correctly shows the Toast notification. d09a935
 - [x] Task: Final automated test run across the entire frontend suite to ensure no regressions in existing toast behavior. d09a935
 - [x] Task: Conductor - User Manual Verification 'Testing and Refinement' (Protocol in workflow.md) 74a5ed3
+
+## Phase: Review Fixes
+- [x] Task: Apply review suggestions 7f2d500
