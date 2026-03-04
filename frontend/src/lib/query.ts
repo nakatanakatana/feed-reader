@@ -3,7 +3,7 @@ import { createConnectTransport } from "@connectrpc/connect-web";
 import { MutationCache, QueryCache, QueryClient } from "@tanstack/solid-query";
 import { toast } from "./toast";
 
-const TOAST_SHOWN = Symbol.for("TOAST_SHOWN");
+export const TOAST_SHOWN = Symbol.for("TOAST_SHOWN");
 const DEFAULT_ERROR_MESSAGE = "An error occurred. Please try again.";
 
 const markAsToastShown = (err: unknown) => {
@@ -17,7 +17,7 @@ const isToastShown = (err: unknown) => {
   return typeof err === "object" && err !== null && (err as any)[TOAST_SHOWN];
 };
 
-const errorInterceptor: Interceptor = (next) => async (req) => {
+export const errorInterceptor: Interceptor = (next) => async (req) => {
   try {
     return await next(req);
   } catch (err) {
