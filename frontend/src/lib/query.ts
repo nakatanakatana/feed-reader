@@ -1,29 +1,40 @@
-import type { Interceptor } from "@connectrpc/connect";
+import { Code, ConnectError, type Interceptor } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { MutationCache, QueryCache, QueryClient } from "@tanstack/solid-query";
 import { toast } from "./toast";
 
-export const TOAST_SHOWN = Symbol.for("TOAST_SHOWN");
+export const ERROR_TOAST_ELIGIBLE = Symbol.for("ERROR_TOAST_ELIGIBLE");
 const DEFAULT_ERROR_MESSAGE = "An error occurred. Please try again.";
 
-const markAsToastShown = (err: unknown) => {
+const markAsToastEligible = (err: unknown) => {
   if (typeof err === "object" && err !== null) {
     // biome-ignore lint/suspicious/noExplicitAny: using Symbol to mark handled errors
-    (err as any)[TOAST_SHOWN] = true;
+    (err as any)[ERROR_TOAST_ELIGIBLE] = true;
   }
 };
 
-const isToastShown = (err: unknown) => {
-  return typeof err === "object" && err !== null && (err as any)[TOAST_SHOWN];
+const isToastEligible = (err: unknown) => {
+  return (
+    typeof err === "object" &&
+    err !== null &&
+    (err as any)[ERROR_TOAST_ELIGIBLE]
+  );
 };
 
 export const errorInterceptor: Interceptor = (next) => async (req) => {
   try {
     return await next(req);
   } catch (err) {
-    // If the request fails, we mark it but DON'T show a toast yet.
-    // TanStack Query will catch it and show a single toast for the whole query/mutation (including retries).
-    markAsToastShown(err);
+    // Only mark genuine transport/network failures or server unavailability for the global toast.
+    // Application-level errors (like permission or validation) should be handled locally.
+    const connectErr = ConnectError.from(err);
+    if (
+      connectErr.code === Code.Unavailable ||
+      connectErr.code === Code.Unknown ||
+      connectErr.code === Code.Internal
+    ) {
+      markAsToastEligible(err);
+    }
     throw err;
   }
 };
@@ -38,7 +49,7 @@ export const queryClient = new QueryClient({
   queryCache: new QueryCache({
     onError: (err, query) => {
       // Only show toast for errors marked by the interceptor (transport errors).
-      if (!isToastShown(err)) return;
+      if (!isToastEligible(err)) return;
 
       // TanStack Query v5 QueryCache.onError fires for every failed attempt.
       // We only want to show the toast on the final failure.
@@ -51,7 +62,7 @@ export const queryClient = new QueryClient({
     onError: (err) => {
       // Mutations usually don't retry by default or behave differently,
       // but we still check the marker to ensure it's a transport error.
-      if (!isToastShown(err)) return;
+      if (!isToastEligible(err)) return;
       toast.show(DEFAULT_ERROR_MESSAGE, "error");
     },
   }),

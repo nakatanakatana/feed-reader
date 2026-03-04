@@ -1,6 +1,7 @@
+import { Code, ConnectError } from "@connectrpc/connect";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import * as queryLib from "./query";
-import { errorInterceptor, TOAST_SHOWN } from "./query";
+import { ERROR_TOAST_ELIGIBLE, errorInterceptor } from "./query";
 import { toast } from "./toast";
 
 describe("Query Setup", () => {
@@ -26,8 +27,8 @@ describe("Query Setup", () => {
   });
 
   describe("errorInterceptor", () => {
-    it("should mark errors with TOAST_SHOWN and not call toast.show directly", async () => {
-      const error = new Error("transport error");
+    it("should mark transport errors with ERROR_TOAST_ELIGIBLE and not call toast.show directly", async () => {
+      const error = new ConnectError("unavailable", Code.Unavailable);
       const next = vi.fn().mockRejectedValue(error);
       const req = {
         url: "/test",
@@ -38,12 +39,31 @@ describe("Query Setup", () => {
 
       // biome-ignore lint/suspicious/noExplicitAny: testing internal interceptor interface
       await expect(errorInterceptor(next)(req as any)).rejects.toThrow(
-        "transport error",
+        "unavailable",
       );
 
       // biome-ignore lint/suspicious/noExplicitAny: using Symbol to mark handled errors
-      expect((error as any)[TOAST_SHOWN]).toBe(true);
+      expect((error as any)[ERROR_TOAST_ELIGIBLE]).toBe(true);
       expect(toast.show).not.toHaveBeenCalled();
+    });
+
+    it("should NOT mark application errors (e.g. PermissionDenied)", async () => {
+      const error = new ConnectError("denied", Code.PermissionDenied);
+      const next = vi.fn().mockRejectedValue(error);
+      const req = {
+        url: "/test",
+        method: "POST",
+        header: new Headers(),
+        body: {},
+      };
+
+      // biome-ignore lint/suspicious/noExplicitAny: testing internal interceptor interface
+      await expect(errorInterceptor(next)(req as any)).rejects.toThrow(
+        "denied",
+      );
+
+      // biome-ignore lint/suspicious/noExplicitAny: using Symbol to mark handled errors
+      expect((error as any)[ERROR_TOAST_ELIGIBLE]).toBeUndefined();
     });
 
     it("should pass through successful requests", async () => {
@@ -67,7 +87,7 @@ describe("Query Setup", () => {
     const queryCache = queryLib.queryClient.getQueryCache();
     const error = new Error("test error");
     // biome-ignore lint/suspicious/noExplicitAny: using Symbol to mark handled errors
-    (error as any)[TOAST_SHOWN] = true;
+    (error as any)[ERROR_TOAST_ELIGIBLE] = true;
 
     queryCache.config.onError?.(
       error,
@@ -84,7 +104,7 @@ describe("Query Setup", () => {
     const mutationCache = queryLib.queryClient.getMutationCache();
     const error = new Error("test error");
     // biome-ignore lint/suspicious/noExplicitAny: using Symbol to mark handled errors
-    (error as any)[TOAST_SHOWN] = true;
+    (error as any)[ERROR_TOAST_ELIGIBLE] = true;
 
     mutationCache.config.onError?.(
       error,
@@ -107,7 +127,7 @@ describe("Query Setup", () => {
     const queryCache = queryLib.queryClient.getQueryCache();
     const error = new Error("retry error");
     // biome-ignore lint/suspicious/noExplicitAny: using Symbol to mark handled errors
-    (error as any)[TOAST_SHOWN] = true;
+    (error as any)[ERROR_TOAST_ELIGIBLE] = true;
 
     // Simulate first failure (retrying)
     queryCache.config.onError?.(

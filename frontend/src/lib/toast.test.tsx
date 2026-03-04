@@ -93,13 +93,13 @@ describe("Toast Context", () => {
   it("shows a toast when a global query error occurs", async () => {
     // Import queryClient dynamically to avoid initialization side effects
     // before mocks are set up if necessary, but static import is fine here.
-    const { queryClient, TOAST_SHOWN } = await import("./query");
+    const { queryClient, ERROR_TOAST_ELIGIBLE } = await import("./query");
 
     expect(toast.toasts()).toHaveLength(0);
 
     const error = new Error("Network Error");
     // biome-ignore lint/suspicious/noExplicitAny: using Symbol to mark handled errors
-    (error as any)[TOAST_SHOWN] = true;
+    (error as any)[ERROR_TOAST_ELIGIBLE] = true;
 
     const queryCache = queryClient.getQueryCache();
     queryCache.config.onError?.(
