@@ -9,20 +9,32 @@ import { defineConfig } from "vitest/config";
 
 const require = createRequire(import.meta.url);
 let playwright;
-try {
-  playwright = require("@vitest/browser-playwright").playwright;
-} catch (error) {
-  if (
-    error &&
-    (error.code === "MODULE_NOT_FOUND" || error.code === "ERR_MODULE_NOT_FOUND")
-  ) {
-    // Ignore error if the @vitest/browser-playwright package is not installed.
-  } else {
-    console.warn(
+
+// Only attempt to load playwright if we are in a Vitest context to avoid
+// overhead and warnings during normal vite dev/build.
+if (process.env.VITEST) {
+  try {
+    playwright = require("@vitest/browser-playwright").playwright;
+  } catch (error) {
+    const message =
       'Failed to load "@vitest/browser-playwright". Browser tests will be skipped. ' +
-        "Please ensure the package is installed and configured correctly.",
-      error,
-    );
+      "Please ensure the package is installed and configured correctly.";
+
+    if (
+      error &&
+      (error.code === "MODULE_NOT_FOUND" ||
+        error.code === "ERR_MODULE_NOT_FOUND")
+    ) {
+      // In CI, missing @vitest/browser-playwright should be a hard failure.
+      if (process.env.CI) {
+        throw new Error(message);
+      }
+      // In local development, just warn.
+      console.warn(message, error);
+    } else {
+      // For other types of errors (ESM/CJS interop, etc.), always warn.
+      console.warn(message, error);
+    }
   }
 }
 
