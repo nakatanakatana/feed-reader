@@ -3,7 +3,7 @@ import { createConnectTransport } from "@connectrpc/connect-web";
 import { MutationCache, QueryCache, QueryClient } from "@tanstack/solid-query";
 import { toast } from "./toast";
 
-const TOAST_SHOWN = Symbol("TOAST_SHOWN");
+const TOAST_SHOWN = Symbol.for("TOAST_SHOWN");
 const DEFAULT_ERROR_MESSAGE = "An error occurred. Please try again.";
 
 const markAsToastShown = (err: unknown) => {
@@ -13,13 +13,16 @@ const markAsToastShown = (err: unknown) => {
   }
 };
 
+const isToastShown = (err: unknown) => {
+  return typeof err === "object" && err !== null && (err as any)[TOAST_SHOWN];
+};
+
 const errorInterceptor: Interceptor = (next) => async (req) => {
   try {
     return await next(req);
   } catch (err) {
     // If the request fails, we mark it but DON'T show a toast yet.
     // TanStack Query will catch it and show a single toast for the whole query/mutation (including retries).
-    // Direct callers who don't use TanStack Query can still check for errors.
     markAsToastShown(err);
     throw err;
   }
@@ -33,19 +36,22 @@ export const transport = createConnectTransport({
 
 export const queryClient = new QueryClient({
   queryCache: new QueryCache({
-    onError: () => {
-      // We show toast for errors marked by the interceptor,
-      // but ensure we only show one for the final failure after any retries.
-      // queryCache.onError fires for each retry, but we only want one.
-      // However, TanStack Query v5's QueryCache.onError fires for every failed attempt.
-      // To ensure user only sees ONE toast, we can rely on toast.show deduplication
-      // or check if it's already shown. But QueryCache doesn't provide a way to know if it's the "last" retry here.
-      // Actually, standard practice is to show it once.
+    onError: (err, query) => {
+      // Only show toast for errors marked by the interceptor (transport errors).
+      if (!isToastShown(err)) return;
+
+      // TanStack Query v5 QueryCache.onError fires for every failed attempt.
+      // We only want to show the toast on the final failure.
+      if (query.state.fetchStatus === "fetching") return;
+
       toast.show(DEFAULT_ERROR_MESSAGE, "error");
     },
   }),
   mutationCache: new MutationCache({
-    onError: () => {
+    onError: (err) => {
+      // Mutations usually don't retry by default or behave differently,
+      // but we still check the marker to ensure it's a transport error.
+      if (!isToastShown(err)) return;
       toast.show(DEFAULT_ERROR_MESSAGE, "error");
     },
   }),

@@ -16,6 +16,7 @@ describe("Toast Context", () => {
 
   afterEach(() => {
     if (dispose) dispose();
+    dispose = undefined;
     document.body.innerHTML = "";
     vi.clearAllTimers();
     vi.useRealTimers();
@@ -96,11 +97,15 @@ describe("Toast Context", () => {
 
     expect(toast.toasts()).toHaveLength(0);
 
+    const error = new Error("Network Error");
+    // biome-ignore lint/suspicious/noExplicitAny: using Symbol to mark handled errors
+    (error as any)[Symbol.for("TOAST_SHOWN")] = true;
+
     const queryCache = queryClient.getQueryCache();
     queryCache.config.onError?.(
-      new Error("Network Error"),
+      error,
       // biome-ignore lint/suspicious/noExplicitAny: testing internal interface
-      {} as any,
+      { state: { fetchStatus: "idle" } } as any,
     );
 
     expect(toast.toasts()).toHaveLength(1);
