@@ -21,7 +21,11 @@ describe("Query Setup", () => {
 
   it("should trigger toast on QueryCache error", () => {
     const queryCache = queryLib.queryClient.getQueryCache();
-    queryCache.config.onError?.(new Error("test error"), {} as unknown);
+    queryCache.config.onError?.(
+      new Error("test error"),
+      // biome-ignore lint/suspicious/noExplicitAny: testing internal interface
+      {} as any,
+    );
     expect(toast.show).toHaveBeenCalledWith(
       "An error occurred. Please try again.",
       "error",
@@ -32,9 +36,14 @@ describe("Query Setup", () => {
     const mutationCache = queryLib.queryClient.getMutationCache();
     mutationCache.config.onError?.(
       new Error("test error"),
-      {} as unknown,
-      {},
-      null,
+      // biome-ignore lint/suspicious/noExplicitAny: testing internal interface
+      {} as any,
+      // biome-ignore lint/suspicious/noExplicitAny: testing internal interface
+      {} as any,
+      // biome-ignore lint/suspicious/noExplicitAny: testing internal interface
+      {} as any,
+      // biome-ignore lint/suspicious/noExplicitAny: testing internal interface
+      {} as any,
     );
     expect(toast.show).toHaveBeenCalledWith(
       "An error occurred. Please try again.",

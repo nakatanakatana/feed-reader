@@ -97,7 +97,11 @@ describe("Toast Context", () => {
     expect(toast.toasts()).toHaveLength(0);
 
     const queryCache = queryClient.getQueryCache();
-    queryCache.config.onError?.(new Error("Network Error"), {} as unknown);
+    queryCache.config.onError?.(
+      new Error("Network Error"),
+      // biome-ignore lint/suspicious/noExplicitAny: testing internal interface
+      {} as any,
+    );
 
     expect(toast.toasts()).toHaveLength(1);
     expect(toast.toasts()[0].message).toBe(
