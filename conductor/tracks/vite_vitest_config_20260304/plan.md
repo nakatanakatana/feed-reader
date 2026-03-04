@@ -1,0 +1,23 @@
+# Implementation Plan: Consolidate Vite/Vitest Configurations
+
+## Overview
+Consolidate fragmented Vite and Vitest configurations into a single `vite.config.js` at the root using the Vitest `projects` feature. This will enable running all tests (Browser and Node.js) with a single command and simplify configuration management.
+
+## Phase 1: Consolidation
+- [ ] Task: Update `vite.config.js` to include Vitest `projects`.
+    - Move configuration from `vitest.workspace.ts` and `frontend/vitest.node.config.js` into the `test.projects` array in `vite.config.js`.
+    - Define a `browser` project and a `node` project.
+    - Ensure global settings (coverage, reporters) are defined at the root level of `test`.
+- [ ] Task: Update `package.json` scripts.
+    - Simplify the `test` script to a single `vitest run` command.
+- [ ] Task: Conductor - User Manual Verification 'Phase 1: Consolidation' (Protocol in workflow.md)
+
+## Phase 2: Cleanup & Verification
+- [ ] Task: Remove redundant configuration files.
+    - Delete `vitest.workspace.ts`.
+    - Delete `frontend/vitest.node.config.js`.
+- [ ] Task: Verify test execution.
+    - Run `npm test` and ensure both `browser` and `node` projects are executed and pass.
+- [ ] Task: Verify Vite build and dev.
+    - Run `npm run build` and `npm run dev` to ensure no regression in build/dev functionality.
+- [ ] Task: Conductor - User Manual Verification 'Phase 2: Cleanup & Verification' (Protocol in workflow.md)

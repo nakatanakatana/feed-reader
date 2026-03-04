@@ -1,0 +1,8 @@
+{
+  "track_id": "vite_vitest_config_20260304",
+  "type": "chore",
+  "status": "new",
+  "created_at": "2026-03-04T11:54:58Z",
+  "updated_at": "2026-03-04T11:54:58Z",
+  "description": "Vite/Vitestのコンフィグを1つにまとめて管理できるようにしてください テストが複数の環境での実行が必要なため、[Projects](https://vitest.dev/guide/projects)の機能でまとめるなどが必要な想定です"
+}
