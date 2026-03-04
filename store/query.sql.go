@@ -1340,6 +1340,78 @@ func (q *Queries) ListItemFeeds(ctx context.Context, itemID string) ([]ListItemF
 	return items, nil
 }
 
+const listItemRead = `-- name: ListItemRead :many
+SELECT
+  item_id,
+  is_read,
+  updated_at
+FROM
+  item_reads
+WHERE
+  (
+    -- Cursor-based pagination: both cursor params set
+    ?1 IS NOT NULL
+    AND ?2 IS NOT NULL
+    AND (updated_at, item_id) > (?1, ?2)
+  )
+  OR (
+    -- Fallback to updated_after when cursor is not fully set
+    (?1 IS NULL OR ?2 IS NULL)
+    AND ?3 IS NOT NULL
+    AND (updated_at, item_id) > (?3, '')
+  )
+  OR (
+    -- No cursor and no updated_after: no filtering (match all)
+    (?1 IS NULL OR ?2 IS NULL)
+    AND ?3 IS NULL
+  )
+ORDER BY
+  updated_at ASC,
+  item_id ASC
+LIMIT ?4
+`
+
+type ListItemReadParams struct {
+	UpdatedAtCursor interface{} `json:"updated_at_cursor"`
+	ItemIDCursor    interface{} `json:"item_id_cursor"`
+	UpdatedAfter    interface{} `json:"updated_after"`
+	Limit           int64       `json:"limit"`
+}
+
+type ListItemReadRow struct {
+	ItemID    string `json:"item_id"`
+	IsRead    int64  `json:"is_read"`
+	UpdatedAt string `json:"updated_at"`
+}
+
+func (q *Queries) ListItemRead(ctx context.Context, arg ListItemReadParams) ([]ListItemReadRow, error) {
+	rows, err := q.db.QueryContext(ctx, listItemRead,
+		arg.UpdatedAtCursor,
+		arg.ItemIDCursor,
+		arg.UpdatedAfter,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListItemReadRow
+	for rows.Next() {
+		var i ListItemReadRow
+		if err := rows.Scan(&i.ItemID, &i.IsRead, &i.UpdatedAt); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listItems = `-- name: ListItems :many
 SELECT
   i.id,

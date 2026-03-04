@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"database/sql"
+	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -12,6 +14,7 @@ import (
 	"github.com/nakatanakatana/feed-reader/gen/go/item/v1"
 	"github.com/nakatanakatana/feed-reader/gen/go/item/v1/itemv1connect"
 	"github.com/nakatanakatana/feed-reader/store"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type ItemServer struct {
@@ -337,6 +340,92 @@ func (s *ItemServer) ListItemBlockRules(ctx context.Context, req *connect.Reques
 
 	return connect.NewResponse(&itemv1.ListItemBlockRulesResponse{
 		Rules: protoRules,
+	}), nil
+}
+
+type listItemReadPageToken struct {
+	UpdatedAt string `json:"updated_at"`
+	ItemID    string `json:"item_id"`
+}
+
+func (s *ItemServer) ListItemRead(ctx context.Context, req *connect.Request[itemv1.ListItemReadRequest]) (*connect.Response[itemv1.ListItemReadResponse], error) {
+	limit := int64(req.Msg.PageSize)
+	if limit <= 0 {
+		limit = 100
+	} else if limit > 1000 {
+		limit = 1000
+	}
+
+	// Validate that both page_token and updated_since are not provided at the same time.
+	if req.Msg.PageToken != "" && req.Msg.UpdatedSince != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("only one of page_token or updated_since may be specified"))
+	}
+
+	params := store.ListItemReadParams{
+		Limit: limit,
+	}
+
+	if req.Msg.PageToken != "" {
+		b, err := base64.StdEncoding.DecodeString(req.Msg.PageToken)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("invalid page_token: %w", err))
+		}
+		var token listItemReadPageToken
+		if err := json.Unmarshal(b, &token); err != nil {
+			return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("invalid page_token: %w", err))
+		}
+		// Validate decoded page_token fields before using them.
+		if token.UpdatedAt == "" || token.ItemID == "" {
+			return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("invalid page_token: missing required fields"))
+		}
+		parsedUpdatedAt, err := time.Parse(time.RFC3339, token.UpdatedAt)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("invalid page_token: invalid updated_at: %w", err))
+		}
+		// Normalize to UTC RFC3339 string for deterministic DB comparison
+		params.UpdatedAtCursor = parsedUpdatedAt.UTC().Format(time.RFC3339)
+		params.ItemIDCursor = &token.ItemID
+	} else if req.Msg.UpdatedSince != nil {
+		params.UpdatedAfter = req.Msg.UpdatedSince.AsTime().UTC().Format(time.RFC3339)
+	}
+
+	rows, err := s.store.ListItemRead(ctx, params)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	itemReads := make([]*itemv1.ItemRead, len(rows))
+	for i, row := range rows {
+		updatedAt, err := time.Parse(time.RFC3339, row.UpdatedAt)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to parse updated_at: %w", err))
+		}
+
+		itemReads[i] = &itemv1.ItemRead{
+			ItemId:    row.ItemID,
+			IsRead:    row.IsRead == 1,
+			UpdatedAt: timestamppb.New(updatedAt),
+		}
+	}
+
+	var nextPageToken string
+	if len(rows) > 0 {
+		lastRow := rows[len(rows)-1]
+		token := listItemReadPageToken{
+			UpdatedAt: lastRow.UpdatedAt,
+			ItemID:    lastRow.ItemID,
+		}
+		b, err := json.Marshal(token)
+		if err != nil {
+			slog.Error("failed to marshal listItemReadPageToken", "error", err)
+		} else {
+			nextPageToken = base64.StdEncoding.EncodeToString(b)
+		}
+	}
+
+	return connect.NewResponse(&itemv1.ListItemReadResponse{
+		ItemReads:     itemReads,
+		NextPageToken: nextPageToken,
 	}), nil
 }
 

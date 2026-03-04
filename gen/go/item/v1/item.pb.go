@@ -22,6 +22,178 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type ItemRead struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ItemId        string                 `protobuf:"bytes,1,opt,name=item_id,json=itemId,proto3" json:"item_id,omitempty"`
+	IsRead        bool                   `protobuf:"varint,2,opt,name=is_read,json=isRead,proto3" json:"is_read,omitempty"`
+	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ItemRead) Reset() {
+	*x = ItemRead{}
+	mi := &file_item_v1_item_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ItemRead) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ItemRead) ProtoMessage() {}
+
+func (x *ItemRead) ProtoReflect() protoreflect.Message {
+	mi := &file_item_v1_item_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ItemRead.ProtoReflect.Descriptor instead.
+func (*ItemRead) Descriptor() ([]byte, []int) {
+	return file_item_v1_item_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *ItemRead) GetItemId() string {
+	if x != nil {
+		return x.ItemId
+	}
+	return ""
+}
+
+func (x *ItemRead) GetIsRead() bool {
+	if x != nil {
+		return x.IsRead
+	}
+	return false
+}
+
+func (x *ItemRead) GetUpdatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return nil
+}
+
+type ListItemReadRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UpdatedSince  *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=updated_since,json=updatedSince,proto3,oneof" json:"updated_since,omitempty"`
+	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	PageToken     string                 `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListItemReadRequest) Reset() {
+	*x = ListItemReadRequest{}
+	mi := &file_item_v1_item_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListItemReadRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListItemReadRequest) ProtoMessage() {}
+
+func (x *ListItemReadRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_item_v1_item_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListItemReadRequest.ProtoReflect.Descriptor instead.
+func (*ListItemReadRequest) Descriptor() ([]byte, []int) {
+	return file_item_v1_item_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *ListItemReadRequest) GetUpdatedSince() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdatedSince
+	}
+	return nil
+}
+
+func (x *ListItemReadRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *ListItemReadRequest) GetPageToken() string {
+	if x != nil {
+		return x.PageToken
+	}
+	return ""
+}
+
+type ListItemReadResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ItemReads     []*ItemRead            `protobuf:"bytes,1,rep,name=item_reads,json=itemReads,proto3" json:"item_reads,omitempty"`
+	NextPageToken string                 `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListItemReadResponse) Reset() {
+	*x = ListItemReadResponse{}
+	mi := &file_item_v1_item_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListItemReadResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListItemReadResponse) ProtoMessage() {}
+
+func (x *ListItemReadResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_item_v1_item_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListItemReadResponse.ProtoReflect.Descriptor instead.
+func (*ListItemReadResponse) Descriptor() ([]byte, []int) {
+	return file_item_v1_item_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *ListItemReadResponse) GetItemReads() []*ItemRead {
+	if x != nil {
+		return x.ItemReads
+	}
+	return nil
+}
+
+func (x *ListItemReadResponse) GetNextPageToken() string {
+	if x != nil {
+		return x.NextPageToken
+	}
+	return ""
+}
+
 type Item struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -42,7 +214,7 @@ type Item struct {
 
 func (x *Item) Reset() {
 	*x = Item{}
-	mi := &file_item_v1_item_proto_msgTypes[0]
+	mi := &file_item_v1_item_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -54,7 +226,7 @@ func (x *Item) String() string {
 func (*Item) ProtoMessage() {}
 
 func (x *Item) ProtoReflect() protoreflect.Message {
-	mi := &file_item_v1_item_proto_msgTypes[0]
+	mi := &file_item_v1_item_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -67,7 +239,7 @@ func (x *Item) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Item.ProtoReflect.Descriptor instead.
 func (*Item) Descriptor() ([]byte, []int) {
-	return file_item_v1_item_proto_rawDescGZIP(), []int{0}
+	return file_item_v1_item_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *Item) GetId() string {
@@ -170,7 +342,7 @@ type ListItem struct {
 
 func (x *ListItem) Reset() {
 	*x = ListItem{}
-	mi := &file_item_v1_item_proto_msgTypes[1]
+	mi := &file_item_v1_item_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -182,7 +354,7 @@ func (x *ListItem) String() string {
 func (*ListItem) ProtoMessage() {}
 
 func (x *ListItem) ProtoReflect() protoreflect.Message {
-	mi := &file_item_v1_item_proto_msgTypes[1]
+	mi := &file_item_v1_item_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -195,7 +367,7 @@ func (x *ListItem) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListItem.ProtoReflect.Descriptor instead.
 func (*ListItem) Descriptor() ([]byte, []int) {
-	return file_item_v1_item_proto_rawDescGZIP(), []int{1}
+	return file_item_v1_item_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *ListItem) GetId() string {
@@ -263,7 +435,7 @@ type GetItemRequest struct {
 
 func (x *GetItemRequest) Reset() {
 	*x = GetItemRequest{}
-	mi := &file_item_v1_item_proto_msgTypes[2]
+	mi := &file_item_v1_item_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -275,7 +447,7 @@ func (x *GetItemRequest) String() string {
 func (*GetItemRequest) ProtoMessage() {}
 
 func (x *GetItemRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_item_v1_item_proto_msgTypes[2]
+	mi := &file_item_v1_item_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -288,7 +460,7 @@ func (x *GetItemRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetItemRequest.ProtoReflect.Descriptor instead.
 func (*GetItemRequest) Descriptor() ([]byte, []int) {
-	return file_item_v1_item_proto_rawDescGZIP(), []int{2}
+	return file_item_v1_item_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *GetItemRequest) GetId() string {
@@ -307,7 +479,7 @@ type GetItemResponse struct {
 
 func (x *GetItemResponse) Reset() {
 	*x = GetItemResponse{}
-	mi := &file_item_v1_item_proto_msgTypes[3]
+	mi := &file_item_v1_item_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -319,7 +491,7 @@ func (x *GetItemResponse) String() string {
 func (*GetItemResponse) ProtoMessage() {}
 
 func (x *GetItemResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_item_v1_item_proto_msgTypes[3]
+	mi := &file_item_v1_item_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -332,7 +504,7 @@ func (x *GetItemResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetItemResponse.ProtoReflect.Descriptor instead.
 func (*GetItemResponse) Descriptor() ([]byte, []int) {
-	return file_item_v1_item_proto_rawDescGZIP(), []int{3}
+	return file_item_v1_item_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *GetItemResponse) GetItem() *Item {
@@ -356,7 +528,7 @@ type ListItemsRequest struct {
 
 func (x *ListItemsRequest) Reset() {
 	*x = ListItemsRequest{}
-	mi := &file_item_v1_item_proto_msgTypes[4]
+	mi := &file_item_v1_item_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -368,7 +540,7 @@ func (x *ListItemsRequest) String() string {
 func (*ListItemsRequest) ProtoMessage() {}
 
 func (x *ListItemsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_item_v1_item_proto_msgTypes[4]
+	mi := &file_item_v1_item_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -381,7 +553,7 @@ func (x *ListItemsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListItemsRequest.ProtoReflect.Descriptor instead.
 func (*ListItemsRequest) Descriptor() ([]byte, []int) {
-	return file_item_v1_item_proto_rawDescGZIP(), []int{4}
+	return file_item_v1_item_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *ListItemsRequest) GetFeedId() string {
@@ -436,7 +608,7 @@ type ListItemsResponse struct {
 
 func (x *ListItemsResponse) Reset() {
 	*x = ListItemsResponse{}
-	mi := &file_item_v1_item_proto_msgTypes[5]
+	mi := &file_item_v1_item_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -448,7 +620,7 @@ func (x *ListItemsResponse) String() string {
 func (*ListItemsResponse) ProtoMessage() {}
 
 func (x *ListItemsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_item_v1_item_proto_msgTypes[5]
+	mi := &file_item_v1_item_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -461,7 +633,7 @@ func (x *ListItemsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListItemsResponse.ProtoReflect.Descriptor instead.
 func (*ListItemsResponse) Descriptor() ([]byte, []int) {
-	return file_item_v1_item_proto_rawDescGZIP(), []int{5}
+	return file_item_v1_item_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *ListItemsResponse) GetItems() []*ListItem {
@@ -488,7 +660,7 @@ type UpdateItemStatusRequest struct {
 
 func (x *UpdateItemStatusRequest) Reset() {
 	*x = UpdateItemStatusRequest{}
-	mi := &file_item_v1_item_proto_msgTypes[6]
+	mi := &file_item_v1_item_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -500,7 +672,7 @@ func (x *UpdateItemStatusRequest) String() string {
 func (*UpdateItemStatusRequest) ProtoMessage() {}
 
 func (x *UpdateItemStatusRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_item_v1_item_proto_msgTypes[6]
+	mi := &file_item_v1_item_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -513,7 +685,7 @@ func (x *UpdateItemStatusRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateItemStatusRequest.ProtoReflect.Descriptor instead.
 func (*UpdateItemStatusRequest) Descriptor() ([]byte, []int) {
-	return file_item_v1_item_proto_rawDescGZIP(), []int{6}
+	return file_item_v1_item_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *UpdateItemStatusRequest) GetIds() []string {
@@ -538,7 +710,7 @@ type UpdateItemStatusResponse struct {
 
 func (x *UpdateItemStatusResponse) Reset() {
 	*x = UpdateItemStatusResponse{}
-	mi := &file_item_v1_item_proto_msgTypes[7]
+	mi := &file_item_v1_item_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -550,7 +722,7 @@ func (x *UpdateItemStatusResponse) String() string {
 func (*UpdateItemStatusResponse) ProtoMessage() {}
 
 func (x *UpdateItemStatusResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_item_v1_item_proto_msgTypes[7]
+	mi := &file_item_v1_item_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -563,7 +735,7 @@ func (x *UpdateItemStatusResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateItemStatusResponse.ProtoReflect.Descriptor instead.
 func (*UpdateItemStatusResponse) Descriptor() ([]byte, []int) {
-	return file_item_v1_item_proto_rawDescGZIP(), []int{7}
+	return file_item_v1_item_proto_rawDescGZIP(), []int{10}
 }
 
 type ListItemFeedsRequest struct {
@@ -575,7 +747,7 @@ type ListItemFeedsRequest struct {
 
 func (x *ListItemFeedsRequest) Reset() {
 	*x = ListItemFeedsRequest{}
-	mi := &file_item_v1_item_proto_msgTypes[8]
+	mi := &file_item_v1_item_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -587,7 +759,7 @@ func (x *ListItemFeedsRequest) String() string {
 func (*ListItemFeedsRequest) ProtoMessage() {}
 
 func (x *ListItemFeedsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_item_v1_item_proto_msgTypes[8]
+	mi := &file_item_v1_item_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -600,7 +772,7 @@ func (x *ListItemFeedsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListItemFeedsRequest.ProtoReflect.Descriptor instead.
 func (*ListItemFeedsRequest) Descriptor() ([]byte, []int) {
-	return file_item_v1_item_proto_rawDescGZIP(), []int{8}
+	return file_item_v1_item_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *ListItemFeedsRequest) GetItemId() string {
@@ -622,7 +794,7 @@ type ItemFeed struct {
 
 func (x *ItemFeed) Reset() {
 	*x = ItemFeed{}
-	mi := &file_item_v1_item_proto_msgTypes[9]
+	mi := &file_item_v1_item_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -634,7 +806,7 @@ func (x *ItemFeed) String() string {
 func (*ItemFeed) ProtoMessage() {}
 
 func (x *ItemFeed) ProtoReflect() protoreflect.Message {
-	mi := &file_item_v1_item_proto_msgTypes[9]
+	mi := &file_item_v1_item_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -647,7 +819,7 @@ func (x *ItemFeed) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ItemFeed.ProtoReflect.Descriptor instead.
 func (*ItemFeed) Descriptor() ([]byte, []int) {
-	return file_item_v1_item_proto_rawDescGZIP(), []int{9}
+	return file_item_v1_item_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *ItemFeed) GetFeedId() string {
@@ -687,7 +859,7 @@ type ListItemFeedsResponse struct {
 
 func (x *ListItemFeedsResponse) Reset() {
 	*x = ListItemFeedsResponse{}
-	mi := &file_item_v1_item_proto_msgTypes[10]
+	mi := &file_item_v1_item_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -699,7 +871,7 @@ func (x *ListItemFeedsResponse) String() string {
 func (*ListItemFeedsResponse) ProtoMessage() {}
 
 func (x *ListItemFeedsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_item_v1_item_proto_msgTypes[10]
+	mi := &file_item_v1_item_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -712,7 +884,7 @@ func (x *ListItemFeedsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListItemFeedsResponse.ProtoReflect.Descriptor instead.
 func (*ListItemFeedsResponse) Descriptor() ([]byte, []int) {
-	return file_item_v1_item_proto_rawDescGZIP(), []int{10}
+	return file_item_v1_item_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *ListItemFeedsResponse) GetFeeds() []*ItemFeed {
@@ -734,7 +906,7 @@ type URLParsingRule struct {
 
 func (x *URLParsingRule) Reset() {
 	*x = URLParsingRule{}
-	mi := &file_item_v1_item_proto_msgTypes[11]
+	mi := &file_item_v1_item_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -746,7 +918,7 @@ func (x *URLParsingRule) String() string {
 func (*URLParsingRule) ProtoMessage() {}
 
 func (x *URLParsingRule) ProtoReflect() protoreflect.Message {
-	mi := &file_item_v1_item_proto_msgTypes[11]
+	mi := &file_item_v1_item_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -759,7 +931,7 @@ func (x *URLParsingRule) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use URLParsingRule.ProtoReflect.Descriptor instead.
 func (*URLParsingRule) Descriptor() ([]byte, []int) {
-	return file_item_v1_item_proto_rawDescGZIP(), []int{11}
+	return file_item_v1_item_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *URLParsingRule) GetId() string {
@@ -801,7 +973,7 @@ type AddURLParsingRuleRequest struct {
 
 func (x *AddURLParsingRuleRequest) Reset() {
 	*x = AddURLParsingRuleRequest{}
-	mi := &file_item_v1_item_proto_msgTypes[12]
+	mi := &file_item_v1_item_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -813,7 +985,7 @@ func (x *AddURLParsingRuleRequest) String() string {
 func (*AddURLParsingRuleRequest) ProtoMessage() {}
 
 func (x *AddURLParsingRuleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_item_v1_item_proto_msgTypes[12]
+	mi := &file_item_v1_item_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -826,7 +998,7 @@ func (x *AddURLParsingRuleRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddURLParsingRuleRequest.ProtoReflect.Descriptor instead.
 func (*AddURLParsingRuleRequest) Descriptor() ([]byte, []int) {
-	return file_item_v1_item_proto_rawDescGZIP(), []int{12}
+	return file_item_v1_item_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *AddURLParsingRuleRequest) GetDomain() string {
@@ -859,7 +1031,7 @@ type AddURLParsingRuleResponse struct {
 
 func (x *AddURLParsingRuleResponse) Reset() {
 	*x = AddURLParsingRuleResponse{}
-	mi := &file_item_v1_item_proto_msgTypes[13]
+	mi := &file_item_v1_item_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -871,7 +1043,7 @@ func (x *AddURLParsingRuleResponse) String() string {
 func (*AddURLParsingRuleResponse) ProtoMessage() {}
 
 func (x *AddURLParsingRuleResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_item_v1_item_proto_msgTypes[13]
+	mi := &file_item_v1_item_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -884,7 +1056,7 @@ func (x *AddURLParsingRuleResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddURLParsingRuleResponse.ProtoReflect.Descriptor instead.
 func (*AddURLParsingRuleResponse) Descriptor() ([]byte, []int) {
-	return file_item_v1_item_proto_rawDescGZIP(), []int{13}
+	return file_item_v1_item_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *AddURLParsingRuleResponse) GetRule() *URLParsingRule {
@@ -903,7 +1075,7 @@ type DeleteURLParsingRuleRequest struct {
 
 func (x *DeleteURLParsingRuleRequest) Reset() {
 	*x = DeleteURLParsingRuleRequest{}
-	mi := &file_item_v1_item_proto_msgTypes[14]
+	mi := &file_item_v1_item_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -915,7 +1087,7 @@ func (x *DeleteURLParsingRuleRequest) String() string {
 func (*DeleteURLParsingRuleRequest) ProtoMessage() {}
 
 func (x *DeleteURLParsingRuleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_item_v1_item_proto_msgTypes[14]
+	mi := &file_item_v1_item_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -928,7 +1100,7 @@ func (x *DeleteURLParsingRuleRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteURLParsingRuleRequest.ProtoReflect.Descriptor instead.
 func (*DeleteURLParsingRuleRequest) Descriptor() ([]byte, []int) {
-	return file_item_v1_item_proto_rawDescGZIP(), []int{14}
+	return file_item_v1_item_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *DeleteURLParsingRuleRequest) GetId() string {
@@ -946,7 +1118,7 @@ type DeleteURLParsingRuleResponse struct {
 
 func (x *DeleteURLParsingRuleResponse) Reset() {
 	*x = DeleteURLParsingRuleResponse{}
-	mi := &file_item_v1_item_proto_msgTypes[15]
+	mi := &file_item_v1_item_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -958,7 +1130,7 @@ func (x *DeleteURLParsingRuleResponse) String() string {
 func (*DeleteURLParsingRuleResponse) ProtoMessage() {}
 
 func (x *DeleteURLParsingRuleResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_item_v1_item_proto_msgTypes[15]
+	mi := &file_item_v1_item_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -971,7 +1143,7 @@ func (x *DeleteURLParsingRuleResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteURLParsingRuleResponse.ProtoReflect.Descriptor instead.
 func (*DeleteURLParsingRuleResponse) Descriptor() ([]byte, []int) {
-	return file_item_v1_item_proto_rawDescGZIP(), []int{15}
+	return file_item_v1_item_proto_rawDescGZIP(), []int{18}
 }
 
 type ListURLParsingRulesRequest struct {
@@ -982,7 +1154,7 @@ type ListURLParsingRulesRequest struct {
 
 func (x *ListURLParsingRulesRequest) Reset() {
 	*x = ListURLParsingRulesRequest{}
-	mi := &file_item_v1_item_proto_msgTypes[16]
+	mi := &file_item_v1_item_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -994,7 +1166,7 @@ func (x *ListURLParsingRulesRequest) String() string {
 func (*ListURLParsingRulesRequest) ProtoMessage() {}
 
 func (x *ListURLParsingRulesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_item_v1_item_proto_msgTypes[16]
+	mi := &file_item_v1_item_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1007,7 +1179,7 @@ func (x *ListURLParsingRulesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListURLParsingRulesRequest.ProtoReflect.Descriptor instead.
 func (*ListURLParsingRulesRequest) Descriptor() ([]byte, []int) {
-	return file_item_v1_item_proto_rawDescGZIP(), []int{16}
+	return file_item_v1_item_proto_rawDescGZIP(), []int{19}
 }
 
 type ListURLParsingRulesResponse struct {
@@ -1019,7 +1191,7 @@ type ListURLParsingRulesResponse struct {
 
 func (x *ListURLParsingRulesResponse) Reset() {
 	*x = ListURLParsingRulesResponse{}
-	mi := &file_item_v1_item_proto_msgTypes[17]
+	mi := &file_item_v1_item_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1031,7 +1203,7 @@ func (x *ListURLParsingRulesResponse) String() string {
 func (*ListURLParsingRulesResponse) ProtoMessage() {}
 
 func (x *ListURLParsingRulesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_item_v1_item_proto_msgTypes[17]
+	mi := &file_item_v1_item_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1044,7 +1216,7 @@ func (x *ListURLParsingRulesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListURLParsingRulesResponse.ProtoReflect.Descriptor instead.
 func (*ListURLParsingRulesResponse) Descriptor() ([]byte, []int) {
-	return file_item_v1_item_proto_rawDescGZIP(), []int{17}
+	return file_item_v1_item_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *ListURLParsingRulesResponse) GetRules() []*URLParsingRule {
@@ -1066,7 +1238,7 @@ type ItemBlockRule struct {
 
 func (x *ItemBlockRule) Reset() {
 	*x = ItemBlockRule{}
-	mi := &file_item_v1_item_proto_msgTypes[18]
+	mi := &file_item_v1_item_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1078,7 +1250,7 @@ func (x *ItemBlockRule) String() string {
 func (*ItemBlockRule) ProtoMessage() {}
 
 func (x *ItemBlockRule) ProtoReflect() protoreflect.Message {
-	mi := &file_item_v1_item_proto_msgTypes[18]
+	mi := &file_item_v1_item_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1091,7 +1263,7 @@ func (x *ItemBlockRule) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ItemBlockRule.ProtoReflect.Descriptor instead.
 func (*ItemBlockRule) Descriptor() ([]byte, []int) {
-	return file_item_v1_item_proto_rawDescGZIP(), []int{18}
+	return file_item_v1_item_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *ItemBlockRule) GetId() string {
@@ -1131,7 +1303,7 @@ type AddItemBlockRulesRequest struct {
 
 func (x *AddItemBlockRulesRequest) Reset() {
 	*x = AddItemBlockRulesRequest{}
-	mi := &file_item_v1_item_proto_msgTypes[19]
+	mi := &file_item_v1_item_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1143,7 +1315,7 @@ func (x *AddItemBlockRulesRequest) String() string {
 func (*AddItemBlockRulesRequest) ProtoMessage() {}
 
 func (x *AddItemBlockRulesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_item_v1_item_proto_msgTypes[19]
+	mi := &file_item_v1_item_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1156,7 +1328,7 @@ func (x *AddItemBlockRulesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddItemBlockRulesRequest.ProtoReflect.Descriptor instead.
 func (*AddItemBlockRulesRequest) Descriptor() ([]byte, []int) {
-	return file_item_v1_item_proto_rawDescGZIP(), []int{19}
+	return file_item_v1_item_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *AddItemBlockRulesRequest) GetRules() []*AddItemBlockRulesRequest_Rule {
@@ -1174,7 +1346,7 @@ type AddItemBlockRulesResponse struct {
 
 func (x *AddItemBlockRulesResponse) Reset() {
 	*x = AddItemBlockRulesResponse{}
-	mi := &file_item_v1_item_proto_msgTypes[20]
+	mi := &file_item_v1_item_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1186,7 +1358,7 @@ func (x *AddItemBlockRulesResponse) String() string {
 func (*AddItemBlockRulesResponse) ProtoMessage() {}
 
 func (x *AddItemBlockRulesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_item_v1_item_proto_msgTypes[20]
+	mi := &file_item_v1_item_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1199,7 +1371,7 @@ func (x *AddItemBlockRulesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddItemBlockRulesResponse.ProtoReflect.Descriptor instead.
 func (*AddItemBlockRulesResponse) Descriptor() ([]byte, []int) {
-	return file_item_v1_item_proto_rawDescGZIP(), []int{20}
+	return file_item_v1_item_proto_rawDescGZIP(), []int{23}
 }
 
 type DeleteItemBlockRuleRequest struct {
@@ -1211,7 +1383,7 @@ type DeleteItemBlockRuleRequest struct {
 
 func (x *DeleteItemBlockRuleRequest) Reset() {
 	*x = DeleteItemBlockRuleRequest{}
-	mi := &file_item_v1_item_proto_msgTypes[21]
+	mi := &file_item_v1_item_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1223,7 +1395,7 @@ func (x *DeleteItemBlockRuleRequest) String() string {
 func (*DeleteItemBlockRuleRequest) ProtoMessage() {}
 
 func (x *DeleteItemBlockRuleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_item_v1_item_proto_msgTypes[21]
+	mi := &file_item_v1_item_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1236,7 +1408,7 @@ func (x *DeleteItemBlockRuleRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteItemBlockRuleRequest.ProtoReflect.Descriptor instead.
 func (*DeleteItemBlockRuleRequest) Descriptor() ([]byte, []int) {
-	return file_item_v1_item_proto_rawDescGZIP(), []int{21}
+	return file_item_v1_item_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *DeleteItemBlockRuleRequest) GetId() string {
@@ -1254,7 +1426,7 @@ type DeleteItemBlockRuleResponse struct {
 
 func (x *DeleteItemBlockRuleResponse) Reset() {
 	*x = DeleteItemBlockRuleResponse{}
-	mi := &file_item_v1_item_proto_msgTypes[22]
+	mi := &file_item_v1_item_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1266,7 +1438,7 @@ func (x *DeleteItemBlockRuleResponse) String() string {
 func (*DeleteItemBlockRuleResponse) ProtoMessage() {}
 
 func (x *DeleteItemBlockRuleResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_item_v1_item_proto_msgTypes[22]
+	mi := &file_item_v1_item_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1279,7 +1451,7 @@ func (x *DeleteItemBlockRuleResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteItemBlockRuleResponse.ProtoReflect.Descriptor instead.
 func (*DeleteItemBlockRuleResponse) Descriptor() ([]byte, []int) {
-	return file_item_v1_item_proto_rawDescGZIP(), []int{22}
+	return file_item_v1_item_proto_rawDescGZIP(), []int{25}
 }
 
 type ListItemBlockRulesRequest struct {
@@ -1290,7 +1462,7 @@ type ListItemBlockRulesRequest struct {
 
 func (x *ListItemBlockRulesRequest) Reset() {
 	*x = ListItemBlockRulesRequest{}
-	mi := &file_item_v1_item_proto_msgTypes[23]
+	mi := &file_item_v1_item_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1302,7 +1474,7 @@ func (x *ListItemBlockRulesRequest) String() string {
 func (*ListItemBlockRulesRequest) ProtoMessage() {}
 
 func (x *ListItemBlockRulesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_item_v1_item_proto_msgTypes[23]
+	mi := &file_item_v1_item_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1315,7 +1487,7 @@ func (x *ListItemBlockRulesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListItemBlockRulesRequest.ProtoReflect.Descriptor instead.
 func (*ListItemBlockRulesRequest) Descriptor() ([]byte, []int) {
-	return file_item_v1_item_proto_rawDescGZIP(), []int{23}
+	return file_item_v1_item_proto_rawDescGZIP(), []int{26}
 }
 
 type ListItemBlockRulesResponse struct {
@@ -1327,7 +1499,7 @@ type ListItemBlockRulesResponse struct {
 
 func (x *ListItemBlockRulesResponse) Reset() {
 	*x = ListItemBlockRulesResponse{}
-	mi := &file_item_v1_item_proto_msgTypes[24]
+	mi := &file_item_v1_item_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1339,7 +1511,7 @@ func (x *ListItemBlockRulesResponse) String() string {
 func (*ListItemBlockRulesResponse) ProtoMessage() {}
 
 func (x *ListItemBlockRulesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_item_v1_item_proto_msgTypes[24]
+	mi := &file_item_v1_item_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1352,7 +1524,7 @@ func (x *ListItemBlockRulesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListItemBlockRulesResponse.ProtoReflect.Descriptor instead.
 func (*ListItemBlockRulesResponse) Descriptor() ([]byte, []int) {
-	return file_item_v1_item_proto_rawDescGZIP(), []int{24}
+	return file_item_v1_item_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *ListItemBlockRulesResponse) GetRules() []*ItemBlockRule {
@@ -1373,7 +1545,7 @@ type AddItemBlockRulesRequest_Rule struct {
 
 func (x *AddItemBlockRulesRequest_Rule) Reset() {
 	*x = AddItemBlockRulesRequest_Rule{}
-	mi := &file_item_v1_item_proto_msgTypes[25]
+	mi := &file_item_v1_item_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1385,7 +1557,7 @@ func (x *AddItemBlockRulesRequest_Rule) String() string {
 func (*AddItemBlockRulesRequest_Rule) ProtoMessage() {}
 
 func (x *AddItemBlockRulesRequest_Rule) ProtoReflect() protoreflect.Message {
-	mi := &file_item_v1_item_proto_msgTypes[25]
+	mi := &file_item_v1_item_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1398,7 +1570,7 @@ func (x *AddItemBlockRulesRequest_Rule) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddItemBlockRulesRequest_Rule.ProtoReflect.Descriptor instead.
 func (*AddItemBlockRulesRequest_Rule) Descriptor() ([]byte, []int) {
-	return file_item_v1_item_proto_rawDescGZIP(), []int{19, 0}
+	return file_item_v1_item_proto_rawDescGZIP(), []int{22, 0}
 }
 
 func (x *AddItemBlockRulesRequest_Rule) GetRuleType() string {
@@ -1426,7 +1598,22 @@ var File_item_v1_item_proto protoreflect.FileDescriptor
 
 const file_item_v1_item_proto_rawDesc = "" +
 	"\n" +
-	"\x12item/v1/item.proto\x12\aitem.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc3\x02\n" +
+	"\x12item/v1/item.proto\x12\aitem.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"w\n" +
+	"\bItemRead\x12\x17\n" +
+	"\aitem_id\x18\x01 \x01(\tR\x06itemId\x12\x17\n" +
+	"\ais_read\x18\x02 \x01(\bR\x06isRead\x129\n" +
+	"\n" +
+	"updated_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\xa9\x01\n" +
+	"\x13ListItemReadRequest\x12D\n" +
+	"\rupdated_since\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\fupdatedSince\x88\x01\x01\x12\x1b\n" +
+	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"\n" +
+	"page_token\x18\x03 \x01(\tR\tpageTokenB\x10\n" +
+	"\x0e_updated_since\"p\n" +
+	"\x14ListItemReadResponse\x120\n" +
+	"\n" +
+	"item_reads\x18\x01 \x03(\v2\x11.item.v1.ItemReadR\titemReads\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc3\x02\n" +
 	"\x04Item\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x10\n" +
 	"\x03url\x18\x02 \x01(\tR\x03url\x12\x14\n" +
@@ -1530,7 +1717,7 @@ const file_item_v1_item_proto_rawDesc = "" +
 	"\x1bDeleteItemBlockRuleResponse\"\x1b\n" +
 	"\x19ListItemBlockRulesRequest\"J\n" +
 	"\x1aListItemBlockRulesResponse\x12,\n" +
-	"\x05rules\x18\x01 \x03(\v2\x16.item.v1.ItemBlockRuleR\x05rules2\x91\a\n" +
+	"\x05rules\x18\x01 \x03(\v2\x16.item.v1.ItemBlockRuleR\x05rules2\xe3\a\n" +
 	"\vItemService\x12A\n" +
 	"\aGetItem\x12\x17.item.v1.GetItemRequest\x1a\x18.item.v1.GetItemResponse\"\x03\x90\x02\x01\x12G\n" +
 	"\tListItems\x12\x19.item.v1.ListItemsRequest\x1a\x1a.item.v1.ListItemsResponse\"\x03\x90\x02\x01\x12W\n" +
@@ -1541,7 +1728,8 @@ const file_item_v1_item_proto_rawDesc = "" +
 	"\x13ListURLParsingRules\x12#.item.v1.ListURLParsingRulesRequest\x1a$.item.v1.ListURLParsingRulesResponse\"\x03\x90\x02\x01\x12Z\n" +
 	"\x11AddItemBlockRules\x12!.item.v1.AddItemBlockRulesRequest\x1a\".item.v1.AddItemBlockRulesResponse\x12`\n" +
 	"\x13DeleteItemBlockRule\x12#.item.v1.DeleteItemBlockRuleRequest\x1a$.item.v1.DeleteItemBlockRuleResponse\x12b\n" +
-	"\x12ListItemBlockRules\x12\".item.v1.ListItemBlockRulesRequest\x1a#.item.v1.ListItemBlockRulesResponse\"\x03\x90\x02\x01B=Z;github.com/nakatanakatana/feed-reader/gen/go/item/v1;itemv1b\x06proto3"
+	"\x12ListItemBlockRules\x12\".item.v1.ListItemBlockRulesRequest\x1a#.item.v1.ListItemBlockRulesResponse\"\x03\x90\x02\x01\x12P\n" +
+	"\fListItemRead\x12\x1c.item.v1.ListItemReadRequest\x1a\x1d.item.v1.ListItemReadResponse\"\x03\x90\x02\x01B=Z;github.com/nakatanakatana/feed-reader/gen/go/item/v1;itemv1b\x06proto3"
 
 var (
 	file_item_v1_item_proto_rawDescOnce sync.Once
@@ -1555,70 +1743,78 @@ func file_item_v1_item_proto_rawDescGZIP() []byte {
 	return file_item_v1_item_proto_rawDescData
 }
 
-var file_item_v1_item_proto_msgTypes = make([]protoimpl.MessageInfo, 26)
+var file_item_v1_item_proto_msgTypes = make([]protoimpl.MessageInfo, 29)
 var file_item_v1_item_proto_goTypes = []any{
-	(*Item)(nil),                          // 0: item.v1.Item
-	(*ListItem)(nil),                      // 1: item.v1.ListItem
-	(*GetItemRequest)(nil),                // 2: item.v1.GetItemRequest
-	(*GetItemResponse)(nil),               // 3: item.v1.GetItemResponse
-	(*ListItemsRequest)(nil),              // 4: item.v1.ListItemsRequest
-	(*ListItemsResponse)(nil),             // 5: item.v1.ListItemsResponse
-	(*UpdateItemStatusRequest)(nil),       // 6: item.v1.UpdateItemStatusRequest
-	(*UpdateItemStatusResponse)(nil),      // 7: item.v1.UpdateItemStatusResponse
-	(*ListItemFeedsRequest)(nil),          // 8: item.v1.ListItemFeedsRequest
-	(*ItemFeed)(nil),                      // 9: item.v1.ItemFeed
-	(*ListItemFeedsResponse)(nil),         // 10: item.v1.ListItemFeedsResponse
-	(*URLParsingRule)(nil),                // 11: item.v1.URLParsingRule
-	(*AddURLParsingRuleRequest)(nil),      // 12: item.v1.AddURLParsingRuleRequest
-	(*AddURLParsingRuleResponse)(nil),     // 13: item.v1.AddURLParsingRuleResponse
-	(*DeleteURLParsingRuleRequest)(nil),   // 14: item.v1.DeleteURLParsingRuleRequest
-	(*DeleteURLParsingRuleResponse)(nil),  // 15: item.v1.DeleteURLParsingRuleResponse
-	(*ListURLParsingRulesRequest)(nil),    // 16: item.v1.ListURLParsingRulesRequest
-	(*ListURLParsingRulesResponse)(nil),   // 17: item.v1.ListURLParsingRulesResponse
-	(*ItemBlockRule)(nil),                 // 18: item.v1.ItemBlockRule
-	(*AddItemBlockRulesRequest)(nil),      // 19: item.v1.AddItemBlockRulesRequest
-	(*AddItemBlockRulesResponse)(nil),     // 20: item.v1.AddItemBlockRulesResponse
-	(*DeleteItemBlockRuleRequest)(nil),    // 21: item.v1.DeleteItemBlockRuleRequest
-	(*DeleteItemBlockRuleResponse)(nil),   // 22: item.v1.DeleteItemBlockRuleResponse
-	(*ListItemBlockRulesRequest)(nil),     // 23: item.v1.ListItemBlockRulesRequest
-	(*ListItemBlockRulesResponse)(nil),    // 24: item.v1.ListItemBlockRulesResponse
-	(*AddItemBlockRulesRequest_Rule)(nil), // 25: item.v1.AddItemBlockRulesRequest.Rule
-	(*timestamppb.Timestamp)(nil),         // 26: google.protobuf.Timestamp
+	(*ItemRead)(nil),                      // 0: item.v1.ItemRead
+	(*ListItemReadRequest)(nil),           // 1: item.v1.ListItemReadRequest
+	(*ListItemReadResponse)(nil),          // 2: item.v1.ListItemReadResponse
+	(*Item)(nil),                          // 3: item.v1.Item
+	(*ListItem)(nil),                      // 4: item.v1.ListItem
+	(*GetItemRequest)(nil),                // 5: item.v1.GetItemRequest
+	(*GetItemResponse)(nil),               // 6: item.v1.GetItemResponse
+	(*ListItemsRequest)(nil),              // 7: item.v1.ListItemsRequest
+	(*ListItemsResponse)(nil),             // 8: item.v1.ListItemsResponse
+	(*UpdateItemStatusRequest)(nil),       // 9: item.v1.UpdateItemStatusRequest
+	(*UpdateItemStatusResponse)(nil),      // 10: item.v1.UpdateItemStatusResponse
+	(*ListItemFeedsRequest)(nil),          // 11: item.v1.ListItemFeedsRequest
+	(*ItemFeed)(nil),                      // 12: item.v1.ItemFeed
+	(*ListItemFeedsResponse)(nil),         // 13: item.v1.ListItemFeedsResponse
+	(*URLParsingRule)(nil),                // 14: item.v1.URLParsingRule
+	(*AddURLParsingRuleRequest)(nil),      // 15: item.v1.AddURLParsingRuleRequest
+	(*AddURLParsingRuleResponse)(nil),     // 16: item.v1.AddURLParsingRuleResponse
+	(*DeleteURLParsingRuleRequest)(nil),   // 17: item.v1.DeleteURLParsingRuleRequest
+	(*DeleteURLParsingRuleResponse)(nil),  // 18: item.v1.DeleteURLParsingRuleResponse
+	(*ListURLParsingRulesRequest)(nil),    // 19: item.v1.ListURLParsingRulesRequest
+	(*ListURLParsingRulesResponse)(nil),   // 20: item.v1.ListURLParsingRulesResponse
+	(*ItemBlockRule)(nil),                 // 21: item.v1.ItemBlockRule
+	(*AddItemBlockRulesRequest)(nil),      // 22: item.v1.AddItemBlockRulesRequest
+	(*AddItemBlockRulesResponse)(nil),     // 23: item.v1.AddItemBlockRulesResponse
+	(*DeleteItemBlockRuleRequest)(nil),    // 24: item.v1.DeleteItemBlockRuleRequest
+	(*DeleteItemBlockRuleResponse)(nil),   // 25: item.v1.DeleteItemBlockRuleResponse
+	(*ListItemBlockRulesRequest)(nil),     // 26: item.v1.ListItemBlockRulesRequest
+	(*ListItemBlockRulesResponse)(nil),    // 27: item.v1.ListItemBlockRulesResponse
+	(*AddItemBlockRulesRequest_Rule)(nil), // 28: item.v1.AddItemBlockRulesRequest.Rule
+	(*timestamppb.Timestamp)(nil),         // 29: google.protobuf.Timestamp
 }
 var file_item_v1_item_proto_depIdxs = []int32{
-	0,  // 0: item.v1.GetItemResponse.item:type_name -> item.v1.Item
-	26, // 1: item.v1.ListItemsRequest.since:type_name -> google.protobuf.Timestamp
-	1,  // 2: item.v1.ListItemsResponse.items:type_name -> item.v1.ListItem
-	9,  // 3: item.v1.ListItemFeedsResponse.feeds:type_name -> item.v1.ItemFeed
-	11, // 4: item.v1.AddURLParsingRuleResponse.rule:type_name -> item.v1.URLParsingRule
-	11, // 5: item.v1.ListURLParsingRulesResponse.rules:type_name -> item.v1.URLParsingRule
-	25, // 6: item.v1.AddItemBlockRulesRequest.rules:type_name -> item.v1.AddItemBlockRulesRequest.Rule
-	18, // 7: item.v1.ListItemBlockRulesResponse.rules:type_name -> item.v1.ItemBlockRule
-	2,  // 8: item.v1.ItemService.GetItem:input_type -> item.v1.GetItemRequest
-	4,  // 9: item.v1.ItemService.ListItems:input_type -> item.v1.ListItemsRequest
-	6,  // 10: item.v1.ItemService.UpdateItemStatus:input_type -> item.v1.UpdateItemStatusRequest
-	8,  // 11: item.v1.ItemService.ListItemFeeds:input_type -> item.v1.ListItemFeedsRequest
-	12, // 12: item.v1.ItemService.AddURLParsingRule:input_type -> item.v1.AddURLParsingRuleRequest
-	14, // 13: item.v1.ItemService.DeleteURLParsingRule:input_type -> item.v1.DeleteURLParsingRuleRequest
-	16, // 14: item.v1.ItemService.ListURLParsingRules:input_type -> item.v1.ListURLParsingRulesRequest
-	19, // 15: item.v1.ItemService.AddItemBlockRules:input_type -> item.v1.AddItemBlockRulesRequest
-	21, // 16: item.v1.ItemService.DeleteItemBlockRule:input_type -> item.v1.DeleteItemBlockRuleRequest
-	23, // 17: item.v1.ItemService.ListItemBlockRules:input_type -> item.v1.ListItemBlockRulesRequest
-	3,  // 18: item.v1.ItemService.GetItem:output_type -> item.v1.GetItemResponse
-	5,  // 19: item.v1.ItemService.ListItems:output_type -> item.v1.ListItemsResponse
-	7,  // 20: item.v1.ItemService.UpdateItemStatus:output_type -> item.v1.UpdateItemStatusResponse
-	10, // 21: item.v1.ItemService.ListItemFeeds:output_type -> item.v1.ListItemFeedsResponse
-	13, // 22: item.v1.ItemService.AddURLParsingRule:output_type -> item.v1.AddURLParsingRuleResponse
-	15, // 23: item.v1.ItemService.DeleteURLParsingRule:output_type -> item.v1.DeleteURLParsingRuleResponse
-	17, // 24: item.v1.ItemService.ListURLParsingRules:output_type -> item.v1.ListURLParsingRulesResponse
-	20, // 25: item.v1.ItemService.AddItemBlockRules:output_type -> item.v1.AddItemBlockRulesResponse
-	22, // 26: item.v1.ItemService.DeleteItemBlockRule:output_type -> item.v1.DeleteItemBlockRuleResponse
-	24, // 27: item.v1.ItemService.ListItemBlockRules:output_type -> item.v1.ListItemBlockRulesResponse
-	18, // [18:28] is the sub-list for method output_type
-	8,  // [8:18] is the sub-list for method input_type
-	8,  // [8:8] is the sub-list for extension type_name
-	8,  // [8:8] is the sub-list for extension extendee
-	0,  // [0:8] is the sub-list for field type_name
+	29, // 0: item.v1.ItemRead.updated_at:type_name -> google.protobuf.Timestamp
+	29, // 1: item.v1.ListItemReadRequest.updated_since:type_name -> google.protobuf.Timestamp
+	0,  // 2: item.v1.ListItemReadResponse.item_reads:type_name -> item.v1.ItemRead
+	3,  // 3: item.v1.GetItemResponse.item:type_name -> item.v1.Item
+	29, // 4: item.v1.ListItemsRequest.since:type_name -> google.protobuf.Timestamp
+	4,  // 5: item.v1.ListItemsResponse.items:type_name -> item.v1.ListItem
+	12, // 6: item.v1.ListItemFeedsResponse.feeds:type_name -> item.v1.ItemFeed
+	14, // 7: item.v1.AddURLParsingRuleResponse.rule:type_name -> item.v1.URLParsingRule
+	14, // 8: item.v1.ListURLParsingRulesResponse.rules:type_name -> item.v1.URLParsingRule
+	28, // 9: item.v1.AddItemBlockRulesRequest.rules:type_name -> item.v1.AddItemBlockRulesRequest.Rule
+	21, // 10: item.v1.ListItemBlockRulesResponse.rules:type_name -> item.v1.ItemBlockRule
+	5,  // 11: item.v1.ItemService.GetItem:input_type -> item.v1.GetItemRequest
+	7,  // 12: item.v1.ItemService.ListItems:input_type -> item.v1.ListItemsRequest
+	9,  // 13: item.v1.ItemService.UpdateItemStatus:input_type -> item.v1.UpdateItemStatusRequest
+	11, // 14: item.v1.ItemService.ListItemFeeds:input_type -> item.v1.ListItemFeedsRequest
+	15, // 15: item.v1.ItemService.AddURLParsingRule:input_type -> item.v1.AddURLParsingRuleRequest
+	17, // 16: item.v1.ItemService.DeleteURLParsingRule:input_type -> item.v1.DeleteURLParsingRuleRequest
+	19, // 17: item.v1.ItemService.ListURLParsingRules:input_type -> item.v1.ListURLParsingRulesRequest
+	22, // 18: item.v1.ItemService.AddItemBlockRules:input_type -> item.v1.AddItemBlockRulesRequest
+	24, // 19: item.v1.ItemService.DeleteItemBlockRule:input_type -> item.v1.DeleteItemBlockRuleRequest
+	26, // 20: item.v1.ItemService.ListItemBlockRules:input_type -> item.v1.ListItemBlockRulesRequest
+	1,  // 21: item.v1.ItemService.ListItemRead:input_type -> item.v1.ListItemReadRequest
+	6,  // 22: item.v1.ItemService.GetItem:output_type -> item.v1.GetItemResponse
+	8,  // 23: item.v1.ItemService.ListItems:output_type -> item.v1.ListItemsResponse
+	10, // 24: item.v1.ItemService.UpdateItemStatus:output_type -> item.v1.UpdateItemStatusResponse
+	13, // 25: item.v1.ItemService.ListItemFeeds:output_type -> item.v1.ListItemFeedsResponse
+	16, // 26: item.v1.ItemService.AddURLParsingRule:output_type -> item.v1.AddURLParsingRuleResponse
+	18, // 27: item.v1.ItemService.DeleteURLParsingRule:output_type -> item.v1.DeleteURLParsingRuleResponse
+	20, // 28: item.v1.ItemService.ListURLParsingRules:output_type -> item.v1.ListURLParsingRulesResponse
+	23, // 29: item.v1.ItemService.AddItemBlockRules:output_type -> item.v1.AddItemBlockRulesResponse
+	25, // 30: item.v1.ItemService.DeleteItemBlockRule:output_type -> item.v1.DeleteItemBlockRuleResponse
+	27, // 31: item.v1.ItemService.ListItemBlockRules:output_type -> item.v1.ListItemBlockRulesResponse
+	2,  // 32: item.v1.ItemService.ListItemRead:output_type -> item.v1.ListItemReadResponse
+	22, // [22:33] is the sub-list for method output_type
+	11, // [11:22] is the sub-list for method input_type
+	11, // [11:11] is the sub-list for extension type_name
+	11, // [11:11] is the sub-list for extension extendee
+	0,  // [0:11] is the sub-list for field type_name
 }
 
 func init() { file_item_v1_item_proto_init() }
@@ -1626,18 +1822,19 @@ func file_item_v1_item_proto_init() {
 	if File_item_v1_item_proto != nil {
 		return
 	}
-	file_item_v1_item_proto_msgTypes[4].OneofWrappers = []any{}
-	file_item_v1_item_proto_msgTypes[6].OneofWrappers = []any{}
+	file_item_v1_item_proto_msgTypes[1].OneofWrappers = []any{}
+	file_item_v1_item_proto_msgTypes[7].OneofWrappers = []any{}
 	file_item_v1_item_proto_msgTypes[9].OneofWrappers = []any{}
-	file_item_v1_item_proto_msgTypes[18].OneofWrappers = []any{}
-	file_item_v1_item_proto_msgTypes[25].OneofWrappers = []any{}
+	file_item_v1_item_proto_msgTypes[12].OneofWrappers = []any{}
+	file_item_v1_item_proto_msgTypes[21].OneofWrappers = []any{}
+	file_item_v1_item_proto_msgTypes[28].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_item_v1_item_proto_rawDesc), len(file_item_v1_item_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   26,
+			NumMessages:   29,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

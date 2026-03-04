@@ -303,6 +303,37 @@ WHERE
   (sqlc.narg('is_blocked') IS NULL OR (CASE WHEN ib.item_id IS NOT NULL THEN 1 ELSE 0 END = sqlc.narg('is_blocked')));
 
 
+-- name: ListItemRead :many
+SELECT
+  item_id,
+  is_read,
+  updated_at
+FROM
+  item_reads
+WHERE
+  (
+    -- Cursor-based pagination: both cursor params set
+    sqlc.narg('updated_at_cursor') IS NOT NULL
+    AND sqlc.narg('item_id_cursor') IS NOT NULL
+    AND (updated_at, item_id) > (sqlc.narg('updated_at_cursor'), sqlc.narg('item_id_cursor'))
+  )
+  OR (
+    -- Fallback to updated_after when cursor is not fully set
+    (sqlc.narg('updated_at_cursor') IS NULL OR sqlc.narg('item_id_cursor') IS NULL)
+    AND sqlc.narg('updated_after') IS NOT NULL
+    AND (updated_at, item_id) > (sqlc.narg('updated_after'), '')
+  )
+  OR (
+    -- No cursor and no updated_after: no filtering (match all)
+    (sqlc.narg('updated_at_cursor') IS NULL OR sqlc.narg('item_id_cursor') IS NULL)
+    AND sqlc.narg('updated_after') IS NULL
+  )
+ORDER BY
+  updated_at ASC,
+  item_id ASC
+LIMIT sqlc.arg('limit');
+
+
 -- name: SetItemRead :one
 INSERT INTO item_reads (
   item_id,
