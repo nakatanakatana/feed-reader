@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/base64"
 	"testing"
 	"time"
 
@@ -209,11 +210,11 @@ func TestItemServer_ListItemRead(t *testing.T) {
 		assert.Equal(t, res.Msg.ItemReads[2].ItemId, item3ID)
 	})
 
-	t.Run("Filter by updated_after", func(t *testing.T) {
+	t.Run("Filter by updated_since", func(t *testing.T) {
 		after, err := time.Parse(time.RFC3339, t1)
 		assert.NilError(t, err)
 		res, err := server.ListItemRead(ctx, connect.NewRequest(&itemv1.ListItemReadRequest{
-			UpdatedAfter: timestamppb.New(after),
+			UpdatedSince: timestamppb.New(after),
 		}))
 		assert.NilError(t, err)
 		assert.Equal(t, len(res.Msg.ItemReads), 3)
@@ -243,5 +244,46 @@ func TestItemServer_ListItemRead(t *testing.T) {
 		assert.Equal(t, res2.Msg.ItemReads[0].ItemId, item3ID)
 		// Now we always return a token for the last row even on final page
 		assert.Assert(t, res2.Msg.NextPageToken != "")
+	})
+
+	t.Run("ListItemRead_ValidationErrors", func(t *testing.T) {
+		// 1. Both PageToken and UpdatedSince
+		_, err := server.ListItemRead(ctx, connect.NewRequest(&itemv1.ListItemReadRequest{
+			PageToken:    "some-token",
+			UpdatedSince: timestamppb.Now(),
+		}))
+		assert.Assert(t, err != nil)
+		assert.Equal(t, connect.CodeOf(err), connect.CodeInvalidArgument)
+
+		// 2. Invalid Base64 PageToken
+		_, err = server.ListItemRead(ctx, connect.NewRequest(&itemv1.ListItemReadRequest{
+			PageToken: "not-base64-!",
+		}))
+		assert.Assert(t, err != nil)
+		assert.Equal(t, connect.CodeOf(err), connect.CodeInvalidArgument)
+
+		// 3. Invalid JSON PageToken
+		badJSONToken := base64.StdEncoding.EncodeToString([]byte("{invalid-json}"))
+		_, err = server.ListItemRead(ctx, connect.NewRequest(&itemv1.ListItemReadRequest{
+			PageToken: badJSONToken,
+		}))
+		assert.Assert(t, err != nil)
+		assert.Equal(t, connect.CodeOf(err), connect.CodeInvalidArgument)
+
+		// 4. Missing required fields in token
+		missingFieldsToken := base64.StdEncoding.EncodeToString([]byte(`{"updated_at": "2023-01-01T00:00:00Z"}`))
+		_, err = server.ListItemRead(ctx, connect.NewRequest(&itemv1.ListItemReadRequest{
+			PageToken: missingFieldsToken,
+		}))
+		assert.Assert(t, err != nil)
+		assert.Equal(t, connect.CodeOf(err), connect.CodeInvalidArgument)
+
+		// 5. Invalid time format in token
+		badTimeToken := base64.StdEncoding.EncodeToString([]byte(`{"updated_at": "invalid-time", "item_id": "item1"}`))
+		_, err = server.ListItemRead(ctx, connect.NewRequest(&itemv1.ListItemReadRequest{
+			PageToken: badTimeToken,
+		}))
+		assert.Assert(t, err != nil)
+		assert.Equal(t, connect.CodeOf(err), connect.CodeInvalidArgument)
 	})
 }

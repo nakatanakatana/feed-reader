@@ -84,7 +84,7 @@ func (x *ItemRead) GetUpdatedAt() *timestamppb.Timestamp {
 
 type ListItemReadRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	UpdatedAfter  *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=updated_after,json=updatedAfter,proto3,oneof" json:"updated_after,omitempty"`
+	UpdatedSince  *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=updated_since,json=updatedSince,proto3,oneof" json:"updated_since,omitempty"`
 	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	PageToken     string                 `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -121,9 +121,9 @@ func (*ListItemReadRequest) Descriptor() ([]byte, []int) {
 	return file_item_v1_item_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *ListItemReadRequest) GetUpdatedAfter() *timestamppb.Timestamp {
+func (x *ListItemReadRequest) GetUpdatedSince() *timestamppb.Timestamp {
 	if x != nil {
-		return x.UpdatedAfter
+		return x.UpdatedSince
 	}
 	return nil
 }
@@ -1605,11 +1605,11 @@ const file_item_v1_item_proto_rawDesc = "" +
 	"\n" +
 	"updated_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\xa9\x01\n" +
 	"\x13ListItemReadRequest\x12D\n" +
-	"\rupdated_after\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\fupdatedAfter\x88\x01\x01\x12\x1b\n" +
+	"\rupdated_since\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\fupdatedSince\x88\x01\x01\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageTokenB\x10\n" +
-	"\x0e_updated_after\"p\n" +
+	"\x0e_updated_since\"p\n" +
 	"\x14ListItemReadResponse\x120\n" +
 	"\n" +
 	"item_reads\x18\x01 \x03(\v2\x11.item.v1.ItemReadR\titemReads\x12&\n" +
@@ -1778,7 +1778,7 @@ var file_item_v1_item_proto_goTypes = []any{
 }
 var file_item_v1_item_proto_depIdxs = []int32{
 	29, // 0: item.v1.ItemRead.updated_at:type_name -> google.protobuf.Timestamp
-	29, // 1: item.v1.ListItemReadRequest.updated_after:type_name -> google.protobuf.Timestamp
+	29, // 1: item.v1.ListItemReadRequest.updated_since:type_name -> google.protobuf.Timestamp
 	0,  // 2: item.v1.ListItemReadResponse.item_reads:type_name -> item.v1.ItemRead
 	3,  // 3: item.v1.GetItemResponse.item:type_name -> item.v1.Item
 	29, // 4: item.v1.ListItemsRequest.since:type_name -> google.protobuf.Timestamp

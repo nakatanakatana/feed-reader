@@ -356,9 +356,9 @@ func (s *ItemServer) ListItemRead(ctx context.Context, req *connect.Request[item
 		limit = 1000
 	}
 
-	// Validate that both page_token and updated_after are not provided at the same time.
-	if req.Msg.PageToken != "" && req.Msg.UpdatedAfter != nil {
-		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("only one of page_token or updated_after may be specified"))
+	// Validate that both page_token and updated_since are not provided at the same time.
+	if req.Msg.PageToken != "" && req.Msg.UpdatedSince != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("only one of page_token or updated_since may be specified"))
 	}
 
 	params := store.ListItemReadParams{
@@ -385,8 +385,8 @@ func (s *ItemServer) ListItemRead(ctx context.Context, req *connect.Request[item
 		// Normalize to UTC RFC3339 string for deterministic DB comparison
 		params.UpdatedAtCursor = parsedUpdatedAt.UTC().Format(time.RFC3339)
 		params.ItemIDCursor = &token.ItemID
-	} else if req.Msg.UpdatedAfter != nil {
-		params.UpdatedAfter = req.Msg.UpdatedAfter.AsTime().UTC().Format(time.RFC3339)
+	} else if req.Msg.UpdatedSince != nil {
+		params.UpdatedAfter = req.Msg.UpdatedSince.AsTime().UTC().Format(time.RFC3339)
 	}
 
 	rows, err := s.store.ListItemRead(ctx, params)
