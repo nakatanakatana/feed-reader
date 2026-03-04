@@ -4,14 +4,24 @@ import { MutationCache, QueryCache, QueryClient } from "@tanstack/solid-query";
 import { toast } from "./toast";
 
 const TOAST_SHOWN = Symbol("TOAST_SHOWN");
+const DEFAULT_ERROR_MESSAGE = "An error occurred. Please try again.";
+
+const markAsToastShown = (err: unknown) => {
+  if (typeof err === "object" && err !== null) {
+    (err as any)[TOAST_SHOWN] = true;
+  }
+};
+
+const isToastShown = (err: unknown) => {
+  return typeof err === "object" && err !== null && (err as any)[TOAST_SHOWN];
+};
 
 const errorInterceptor: Interceptor = (next) => async (req) => {
   try {
     return await next(req);
   } catch (err) {
-    // biome-ignore lint/suspicious/noExplicitAny: using Symbol to mark handled errors
-    (err as any)[TOAST_SHOWN] = true;
-    toast.show("An error occurred. Please try again.", "error");
+    markAsToastShown(err);
+    toast.show(DEFAULT_ERROR_MESSAGE, "error");
     throw err;
   }
 };
@@ -25,16 +35,14 @@ export const transport = createConnectTransport({
 export const queryClient = new QueryClient({
   queryCache: new QueryCache({
     onError: (err) => {
-      // biome-ignore lint/suspicious/noExplicitAny: using Symbol to mark handled errors
-      if ((err as any)[TOAST_SHOWN]) return;
-      toast.show("An error occurred. Please try again.", "error");
+      if (isToastShown(err)) return;
+      toast.show(DEFAULT_ERROR_MESSAGE, "error");
     },
   }),
   mutationCache: new MutationCache({
     onError: (err) => {
-      // biome-ignore lint/suspicious/noExplicitAny: using Symbol to mark handled errors
-      if ((err as any)[TOAST_SHOWN]) return;
-      toast.show("An error occurred. Please try again.", "error");
+      if (isToastShown(err)) return;
+      toast.show(DEFAULT_ERROR_MESSAGE, "error");
     },
   }),
 });

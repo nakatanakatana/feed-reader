@@ -19,10 +19,19 @@ export interface Toast {
 
 const [globalToasts, setGlobalToasts] = createSignal<Toast[]>([]);
 
+let toastIdCounter = 0;
+function generateToastId(): string {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID();
+  }
+  return `toast-${Date.now()}-${toastIdCounter++}`;
+}
+
 export const toast = {
   show: (message: string, type: Toast["type"] = "info") => {
-    const id = Math.random().toString(36).substring(2, 9);
+    const id = generateToastId();
     setGlobalToasts((prev) => [...prev, { id, message, type }]);
+    return id;
   },
   dismiss: (id: string) => {
     setGlobalToasts((prev) => prev.filter((t) => t.id !== id));
