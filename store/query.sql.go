@@ -1358,7 +1358,7 @@ WHERE
     -- Fallback to updated_after when cursor is not fully set
     (?1 IS NULL OR ?2 IS NULL)
     AND ?3 IS NOT NULL
-    AND updated_at > ?3
+    AND (updated_at, item_id) > (?3, '')
   )
   OR (
     -- No cursor and no updated_after: no filtering (match all)

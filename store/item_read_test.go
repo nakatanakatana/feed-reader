@@ -66,18 +66,21 @@ func TestStore_ListItemRead(t *testing.T) {
 	t.Run("Filter by updated_after", func(t *testing.T) {
 		rows, err := s.ListItemRead(ctx, store.ListItemReadParams{UpdatedAfter: t1, Limit: 10})
 		assert.NilError(t, err)
+		assert.Equal(t, len(rows), 3)
+		assert.Equal(t, rows[0].ItemID, item1ID)
+		assert.Equal(t, rows[1].ItemID, item2ID)
+		assert.Equal(t, rows[2].ItemID, item3ID)
+
+		rows, err = s.ListItemRead(ctx, store.ListItemReadParams{UpdatedAfter: t2, Limit: 10})
+		assert.NilError(t, err)
 		assert.Equal(t, len(rows), 2)
 		assert.Equal(t, rows[0].ItemID, item2ID)
 		assert.Equal(t, rows[1].ItemID, item3ID)
 
-		rows, err = s.ListItemRead(ctx, store.ListItemReadParams{UpdatedAfter: t2, Limit: 10})
+		rows, err = s.ListItemRead(ctx, store.ListItemReadParams{UpdatedAfter: t3, Limit: 10})
 		assert.NilError(t, err)
 		assert.Equal(t, len(rows), 1)
 		assert.Equal(t, rows[0].ItemID, item3ID)
-
-		rows, err = s.ListItemRead(ctx, store.ListItemReadParams{UpdatedAfter: t3, Limit: 10})
-		assert.NilError(t, err)
-		assert.Equal(t, len(rows), 0)
 	})
 
 	t.Run("Handle multiple rows with same updated_at", func(t *testing.T) {
@@ -86,10 +89,10 @@ func TestStore_ListItemRead(t *testing.T) {
 		updateUpdatedAt(item2ID, sharedTime)
 		updateUpdatedAt(item3ID, sharedTime)
 
-		// Both should be returned when filtering after t1
+		// item1 (t1), item2 (sharedTime), item3 (sharedTime) should all be returned when filtering after t1
 		rows, err := s.ListItemRead(ctx, store.ListItemReadParams{UpdatedAfter: t1, Limit: 10})
 		assert.NilError(t, err)
-		assert.Equal(t, len(rows), 2)
+		assert.Equal(t, len(rows), 3)
 
 		// Verify stable cursor using (updated_at, item_id)
 		// Requesting after item2 with sharedTime

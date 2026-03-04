@@ -321,7 +321,7 @@ WHERE
     -- Fallback to updated_after when cursor is not fully set
     (sqlc.narg('updated_at_cursor') IS NULL OR sqlc.narg('item_id_cursor') IS NULL)
     AND sqlc.narg('updated_after') IS NOT NULL
-    AND updated_at > sqlc.narg('updated_after')
+    AND (updated_at, item_id) > (sqlc.narg('updated_after'), '')
   )
   OR (
     -- No cursor and no updated_after: no filtering (match all)

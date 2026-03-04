@@ -216,9 +216,10 @@ func TestItemServer_ListItemRead(t *testing.T) {
 			UpdatedAfter: timestamppb.New(after),
 		}))
 		assert.NilError(t, err)
-		assert.Equal(t, len(res.Msg.ItemReads), 2)
-		assert.Equal(t, res.Msg.ItemReads[0].ItemId, item2ID)
-		assert.Equal(t, res.Msg.ItemReads[1].ItemId, item3ID)
+		assert.Equal(t, len(res.Msg.ItemReads), 3)
+		assert.Equal(t, res.Msg.ItemReads[0].ItemId, item1ID)
+		assert.Equal(t, res.Msg.ItemReads[1].ItemId, item2ID)
+		assert.Equal(t, res.Msg.ItemReads[2].ItemId, item3ID)
 	})
 
 	t.Run("Pagination", func(t *testing.T) {
