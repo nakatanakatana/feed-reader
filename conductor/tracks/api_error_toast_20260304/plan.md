@@ -6,10 +6,10 @@
 - [x] Task: Conductor - User Manual Verification 'State and UI Integration' (Protocol in workflow.md) 738eb7c
 
 ## Phase 2: Global API Error Interception
-- [ ] Task: Modify `frontend/src/lib/query.ts` to add global `onError` handlers to the `QueryClient`'s `QueryCache` and `MutationCache`.
-- [ ] Task: These global handlers will call `toast.show("An error occurred. Please try again.", "error")` on failure.
-- [ ] Task: Update `frontend/src/lib/query.ts` to add a Connect RPC Interceptor to the transport that catches non-OK response codes and triggers the same error toast.
-- [ ] Task: Conductor - User Manual Verification 'Global API Error Interception' (Protocol in workflow.md)
+- [x] Task: Modify `frontend/src/lib/query.ts` to add global `onError` handlers to the `QueryClient`'s `QueryCache` and `MutationCache`. e92e6b6
+- [x] Task: These global handlers will call `toast.show("An error occurred. Please try again.", "error")` on failure. e92e6b6
+- [x] Task: Update `frontend/src/lib/query.ts` to add a Connect RPC Interceptor to the transport that catches non-OK response codes and triggers the same error toast. e92e6b6
+- [~] Task: Conductor - User Manual Verification 'Global API Error Interception' (Protocol in workflow.md)
 
 ## Phase 3: Testing and Refinement
 - [ ] Task: Add new test cases to `frontend/src/lib/toast.test.tsx` to verify that triggering a global error (simulated) correctly shows the Toast notification.
