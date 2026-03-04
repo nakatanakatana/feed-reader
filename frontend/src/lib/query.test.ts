@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import * as queryLib from "./query";
-import { errorInterceptor, TOAST_SHOWN, transport } from "./query";
+import { errorInterceptor, TOAST_SHOWN } from "./query";
 import { toast } from "./toast";
 
 describe("Query Setup", () => {

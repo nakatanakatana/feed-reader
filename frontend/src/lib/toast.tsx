@@ -42,7 +42,7 @@ export const toast = {
 };
 
 interface ToastContextValue {
-  show: (message: string, type?: Toast["type"]) => void;
+  show: (message: string, type?: Toast["type"]) => string;
   toasts: Accessor<Toast[]>;
   dismiss: (id: string) => void;
 }
