@@ -2,10 +2,10 @@
 import { createRequire } from "node:module";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import devtools from "solid-devtools/vite";
-import { defineConfig } from "vitest/config";
 import { analyzer } from "vite-bundle-analyzer";
 import { VitePWA } from "vite-plugin-pwa";
 import solid from "vite-plugin-solid";
+import { defineConfig } from "vitest/config";
 
 const require = createRequire(import.meta.url);
 let playwright;
