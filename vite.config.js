@@ -1,11 +1,19 @@
 /// <reference types="vitest" />
+import { createRequire } from "node:module";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
-import { playwright } from "@vitest/browser-playwright";
 import devtools from "solid-devtools/vite";
-import { defineConfig } from "vite";
 import { analyzer } from "vite-bundle-analyzer";
 import { VitePWA } from "vite-plugin-pwa";
 import solid from "vite-plugin-solid";
+import { defineConfig } from "vitest/config";
+
+const require = createRequire(import.meta.url);
+let playwright;
+try {
+  playwright = require("@vitest/browser-playwright").playwright;
+} catch (_e) {
+  // Ignore error if package is not available or fails to load in this environment
+}
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -68,31 +76,49 @@ export default defineConfig({
   },
   test: {
     environment: "node",
-    browser: {
-      enabled: true,
-      provider: playwright(),
-      screenshotFailures: false,
-      instances: [
-        {
-          browser: "chromium",
-        },
-      ],
-      viewport: { width: 1280, height: 720 },
-      headless: true,
-    },
-    exclude: [
-      "**/pwa-infrastructure.test.ts",
-      "**/node_modules/**",
-      "**/dist/**",
-      "**/cypress/**",
-      "**/.{idea,git,cache,output,temp}/**",
-      "**/{karma,rollup,webpack,vite,vitest}.config.*",
-    ],
-    setupFiles: ["./src/vitest-setup.ts"],
-    globals: true,
     coverage: {
       provider: "v8",
       reporter: ["lcov"],
     },
+    projects: [
+      {
+        extends: true,
+        test: {
+          name: "browser",
+          browser: {
+            enabled: true,
+            provider: playwright ? playwright() : undefined,
+            screenshotFailures: false,
+            instances: [
+              {
+                browser: "chromium",
+              },
+            ],
+            viewport: { width: 1280, height: 720 },
+            headless: true,
+          },
+          exclude: [
+            "src/pwa-infrastructure.test.ts",
+            "**/node_modules/**",
+            "**/dist/**",
+            "**/cypress/**",
+            "**/.{idea,git,cache,output,temp}/**",
+            "**/{karma,rollup,webpack,vite,vitest}.config.*",
+          ],
+          include: ["src/**/*.test.{ts,tsx}"],
+          setupFiles: ["./src/vitest-setup.ts"],
+          globals: true,
+        },
+      },
+      {
+        test: {
+          name: "node",
+          root: "frontend",
+          environment: "node",
+          globals: true,
+          include: ["src/pwa-infrastructure.test.ts"],
+        },
+      },
+    ],
   },
 });
