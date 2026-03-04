@@ -54,12 +54,11 @@ describe("Toast Context", () => {
   it("exposes a global toast object that can show and dismiss toasts", () => {
     expect(toast.toasts()).toHaveLength(0);
 
-    toast.show("Global error", "error");
+    const id = toast.show("Global error", "error");
     expect(toast.toasts()).toHaveLength(1);
     expect(toast.toasts()[0].message).toBe("Global error");
     expect(toast.toasts()[0].type).toBe("error");
 
-    const id = toast.toasts()[0].id;
     toast.dismiss(id);
     expect(toast.toasts()).toHaveLength(0);
   });

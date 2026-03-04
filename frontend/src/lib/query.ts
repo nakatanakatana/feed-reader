@@ -28,9 +28,13 @@ export const errorInterceptor: Interceptor = (next) => async (req) => {
     // Only mark genuine transport/network failures or server unavailability for the global toast.
     // Application-level errors (like permission or validation) should be handled locally.
     const connectErr = ConnectError.from(err);
+    const isNetworkError =
+      err instanceof TypeError ||
+      (typeof DOMException !== "undefined" && err instanceof DOMException);
+
     if (
       connectErr.code === Code.Unavailable ||
-      connectErr.code === Code.Unknown
+      (connectErr.code === Code.Unknown && isNetworkError)
     ) {
       markAsToastEligible(err);
     }
