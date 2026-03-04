@@ -88,4 +88,21 @@ describe("Toast Context", () => {
     vi.advanceTimersByTime(100);
     expect(toast.toasts()).toHaveLength(0);
   });
+
+  it("shows a toast when a global query error occurs", async () => {
+    // Import queryClient dynamically to avoid initialization side effects
+    // before mocks are set up if necessary, but static import is fine here.
+    const { queryClient } = await import("./query");
+
+    expect(toast.toasts()).toHaveLength(0);
+
+    const queryCache = queryClient.getQueryCache();
+    queryCache.config.onError?.(new Error("Network Error"), {} as unknown);
+
+    expect(toast.toasts()).toHaveLength(1);
+    expect(toast.toasts()[0].message).toBe(
+      "An error occurred. Please try again.",
+    );
+    expect(toast.toasts()[0].type).toBe("error");
+  });
 });
