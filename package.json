@@ -42,7 +42,7 @@
     "web-vitals": "^5.1.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.4.4",
+    "@biomejs/biome": "2.4.5",
     "@bufbuild/protoc-gen-es": "^2.2.2",
     "@pandacss/dev": "^1.7.2",
     "@types/markdown-it": "^14.1.2",
