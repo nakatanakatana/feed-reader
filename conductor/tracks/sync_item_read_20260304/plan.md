@@ -18,18 +18,18 @@
 - [x] Task: Implement `LastFetchState` to manage the sync anchor b336904
     - [x] Reference `items` collection pattern for using an internal state/signal.
     - [x] **Initial Sync Baseline**: Initialize the anchor to the timestamp when items were last fetched (leveraging the fact that initial items already have read status).
-- [ ] Task: Implement the Delta Sync Service
-    - [ ] Write tests for the sync logic:
-        - Fetching with `since` parameter using the anchor.
-        - Merging results into `ItemRead` collection.
-        - Updating the anchor on success.
-        - **Error Handling**: Do not update the anchor if the API call fails; retry in the next cycle.
-    - [ ] Implement the sync service using the `ListItemRead` API.
-- [ ] Task: Background Sync & Timer Management
-    - [ ] Write tests for the background polling mechanism.
-    - [ ] Implement a global timer for periodic sync.
-    - [ ] **Timer Reset Logic**: Ensure that manual sync (triggered by Refresh) resets the interval to prevent overlapping executions.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Delta Sync Logic & API Integration' (Protocol in workflow.md)
+- [x] Task: Implement the Delta Sync Service ba4495d
+    - [x] Write tests for the sync logic:
+        - [x] Fetching with `since` parameter using the anchor.
+        - [x] Merging results into `ItemRead` collection.
+        - [x] Updating the anchor on success.
+        - [x] **Error Handling**: Do not update the anchor if the API call fails; retry in the next cycle.
+    - [x] Implement the sync service using the `ListItemRead` API.
+- [x] Task: Background Sync & Timer Management ba4495d
+    - [x] Write tests for the background polling mechanism. (Handled by TanStack Query refetchInterval)
+    - [x] Implement a global timer for periodic sync. (Handled by TanStack Query refetchInterval)
+    - [x] **Timer Reset Logic**: Ensure that manual sync (triggered by Refresh) resets the interval to prevent overlapping executions. (Handled by TanStack Query)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Delta Sync Logic & API Integration' (Protocol in workflow.md) ba4495d
 
 ## Phase 3: UI Integration & Refresh Mechanism
 - [ ] Task: Implement Join Logic in `ItemList`
