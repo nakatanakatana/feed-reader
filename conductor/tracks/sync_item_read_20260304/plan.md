@@ -12,7 +12,7 @@
 - [x] Task: Implement `ItemRead` repository/service for basic CRUD operations b336904
     - [x] Write tests for adding, updating, and retrieving read states from `tanstack/db`.
     - [x] Implement the repository methods using `tanstack/db` transactions for bulk operations.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Foundation & TanStack DB Setup' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Foundation & TanStack DB Setup' (Protocol in workflow.md) a622962
 
 ## Phase 2: Delta Sync Logic & API Integration
 - [ ] Task: Implement `LastFetchState` to manage the sync anchor
