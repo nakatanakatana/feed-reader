@@ -13,6 +13,7 @@ import {
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { feedTag, type Item, items, itemsUnreadQuery, tags } from "../lib/db";
+import { updateItemReadStatus } from "../lib/item-db";
 import { itemStore } from "../lib/item-store";
 import { type DateFilterValue, formatUnreadCount } from "../lib/item-utils";
 import { BulkActionBar } from "./BulkActionBar";
@@ -178,27 +179,20 @@ export function ItemList(props: ItemListProps) {
     if (ids.length === 0) return;
 
     setIsBulkMarking(true);
-    setSelectedItemIds(new Set<string>());
-
-    // Yield to the event loop immediately to ensure UI updates (like clearing selection)
-    // are processed before we start the heavy lifting.
-    await new Promise((resolve) => setTimeout(resolve, 0));
 
     try {
-      // Chunk the updates to avoid blocking the main thread for too long.
-      const CHUNK_SIZE = 100;
-      for (let i = 0; i < ids.length; i += CHUNK_SIZE) {
-        const chunk = ids.slice(i, i + CHUNK_SIZE);
-        items().update(chunk, (drafts) => {
-          for (const draft of drafts) {
-            draft.isRead = true;
-          }
-        });
-        
-        // Yield to the event loop to allow UI updates (like the "Processing..." indicator)
-        // and prevent the browser from freezing.
-        await new Promise((resolve) => setTimeout(resolve, 0));
-      }
+      // Perform a single bulk update so that any onUpdate side effects
+      // (such as server synchronization) are invoked only once.
+      // We update the local store synchronously, then await the network request.
+      items().update(ids, (drafts) => {
+        for (const draft of drafts) {
+          draft.isRead = true;
+        }
+      });
+      await updateItemReadStatus(ids, true);
+
+      // Clear the selection only after the operation finishes
+      setSelectedItemIds(new Set<string>());
     } finally {
       setIsBulkMarking(false);
     }
@@ -496,7 +490,6 @@ export function ItemList(props: ItemListProps) {
       </div>
 
       <BulkActionBar
-        data-testid="bulk-action-bar"
         selectedCount={selectedItemIds().size}
         onClear={() => setSelectedItemIds(new Set())}
       >
