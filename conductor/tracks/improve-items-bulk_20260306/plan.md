@@ -1,22 +1,22 @@
 # Track: Improve Bulk Mark as Read Performance
 
-## Phase 1: Research & Analysis
-- [x] Task: Identify the bottleneck using browser DevTools Performance tab.
+## Phase 1: Research & Analysis [checkpoint: 6f5d33c]
+- [x] Task: Identify the bottleneck using browser DevTools Performance tab. 6f5d33c
     - [x] Mark 1,000+ items as read and capture a performance profile.
     - [x] Locate the long-running script task(s) on the main thread.
     - [x] Document the specific functions and lines of code causing the hang.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Research & Analysis' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Research & Analysis' (Protocol in workflow.md) 6f5d33c
 
-## Phase 2: Reproduction & Baseline Measurement
-- [x] Task: Create a performance-focused integration test case.
+## Phase 2: Reproduction & Baseline Measurement [checkpoint: 6f5d33c]
+- [x] Task: Create a performance-focused integration test case. 6f5d33c
     - [x] Set up a Vitest test that populates the store with 1,000+ items.
     - [x] Implement a test that triggers the "Mark as read" bulk action.
     - [x] Measure the execution time of the processing logic (before the actual network request).
     - [x] Verify the test fails the 100ms responsiveness threshold.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Reproduction & Baseline Measurement' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Reproduction & Baseline Measurement' (Protocol in workflow.md) 6f5d33c
 
 ## Phase 3: Implementation & Optimization (TDD)
-- [ ] Task: Refactor the bulk marking logic to prevent UI freeze.
+- [~] Task: Refactor the bulk marking logic to prevent UI freeze.
     - [ ] [ ] Write Tests: Update the performance test to assert non-blocking behavior (e.g., using `setTimeout(0)` or `requestAnimationFrame` to yield to the event loop).
     - [ ] [ ] Implement: Apply optimization techniques.
         - [ ] Chunk the bulk update into smaller batches if TanStack DB/Solid Store updates are the bottleneck.
