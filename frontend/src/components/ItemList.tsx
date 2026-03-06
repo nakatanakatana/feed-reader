@@ -178,17 +178,36 @@ export function ItemList(props: ItemListProps) {
     if (ids.length === 0) return;
 
     setIsBulkMarking(true);
+    setSelectedItemIds(new Set<string>());
+
+    // Yield to the event loop immediately to ensure UI updates (like clearing selection)
+    // are processed before we start the heavy lifting.
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
     try {
-      items().update(ids, (drafts) => {
-        for (const draft of drafts) {
-          draft.isRead = true;
-        }
-      });
+      // Chunk the updates to avoid blocking the main thread for too long.
+      // We use a very small first chunk to ensure immediate responsiveness.
+      const FIRST_CHUNK_SIZE = 10;
+      const REGULAR_CHUNK_SIZE = 100;
+      
+      let i = 0;
+      while (i < ids.length) {
+        const size = i === 0 ? FIRST_CHUNK_SIZE : REGULAR_CHUNK_SIZE;
+        const chunk = ids.slice(i, i + size);
+        items().update(chunk, (drafts) => {
+          for (const draft of drafts) {
+            draft.isRead = true;
+          }
+        });
+        i += size;
+        
+        // Yield to the event loop to allow UI updates (like the "Processing..." indicator)
+        // and prevent the browser from freezing.
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      }
     } finally {
       setIsBulkMarking(false);
     }
-
-    setSelectedItemIds(new Set<string>());
   };
 
   const controls = (
@@ -483,6 +502,7 @@ export function ItemList(props: ItemListProps) {
       </div>
 
       <BulkActionBar
+        data-testid="bulk-action-bar"
         selectedCount={selectedItemIds().size}
         onClear={() => setSelectedItemIds(new Set())}
       >

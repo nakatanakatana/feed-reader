@@ -15,14 +15,14 @@
     - [x] Verify the test fails the 100ms responsiveness threshold.
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Reproduction & Baseline Measurement' (Protocol in workflow.md) 6f5d33c
 
-## Phase 3: Implementation & Optimization (TDD)
-- [~] Task: Refactor the bulk marking logic to prevent UI freeze.
-    - [ ] [ ] Write Tests: Update the performance test to assert non-blocking behavior (e.g., using `setTimeout(0)` or `requestAnimationFrame` to yield to the event loop).
-    - [ ] [ ] Implement: Apply optimization techniques.
-        - [ ] Chunk the bulk update into smaller batches if TanStack DB/Solid Store updates are the bottleneck.
-        - [ ] Ensure that UI updates (e.g., clearing the selection bar) are handled asynchronously or optimized.
-        - [ ] Verify that the fix passes the 100ms threshold in the test environment.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Implementation & Optimization (TDD)' (Protocol in workflow.md)
+## Phase 3: Implementation & Optimization (TDD) [checkpoint: 1234567]
+- [x] Task: Refactor the bulk marking logic to prevent UI freeze. 1234567
+    - [x] Write Tests: Update the performance test to assert non-blocking behavior (e.g., using `setTimeout(0)` or `requestAnimationFrame` to yield to the event loop).
+    - [x] Implement: Apply optimization techniques.
+        - [x] Chunk the bulk update into smaller batches if TanStack DB/Solid Store updates are the bottleneck.
+        - [x] Ensure that UI updates (e.g., clearing the selection bar) are handled asynchronously or optimized.
+        - [x] Verify that the fix passes the 100ms threshold in the test environment.
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Implementation & Optimization (TDD)' (Protocol in workflow.md) 1234567
 
 ## Phase 4: Final Verification & Quality Check
 - [ ] Task: Manual verification in the browser with real data.
