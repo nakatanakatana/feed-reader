@@ -9,9 +9,9 @@
         - [x] Use `transaction.mutations` to update local state immediately.
         - [x] Batch multiple changes into a single API request where possible.
     - [x] Manage internal state (e.g., `lastFetched` signal/anchor) for tracking sync progress.
-- [ ] Task: Implement `ItemRead` repository/service for basic CRUD operations
-    - [ ] Write tests for adding, updating, and retrieving read states from `tanstack/db`.
-    - [ ] Implement the repository methods using `tanstack/db` transactions for bulk operations.
+- [x] Task: Implement `ItemRead` repository/service for basic CRUD operations b336904
+    - [x] Write tests for adding, updating, and retrieving read states from `tanstack/db`.
+    - [x] Implement the repository methods using `tanstack/db` transactions for bulk operations.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Foundation & TanStack DB Setup' (Protocol in workflow.md)
 
 ## Phase 2: Delta Sync Logic & API Integration
