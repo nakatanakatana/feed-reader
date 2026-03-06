@@ -207,12 +207,14 @@ describe("ItemList Bulk Actions", () => {
     // The handler yields immediately (requestAnimationFrame or setTimeout) before doing heavy work,
     // and Solid needs a turn to render the updated isBulkMarking state.
     // We should wait for the element to appear.
-    await expect.element(page.getByText("Processing...")).toBeInTheDocument({ timeout: 2000 });
+    await expect
+      .poll(() => page.getByText("Processing...").query())
+      .not.toBeNull();
 
     // Wait for the simulated network request to complete and UI to update
-    await expect.element(page.getByText("Processing...")).not.toBeInTheDocument({
-      timeout: 5000,
-    });
+    await expect
+      .poll(() => page.getByText("Processing...").query(), { timeout: 5000 })
+      .toBeNull();
 
     // Selection should be cleared
     await expect.element(selectAll).not.toBeChecked();
