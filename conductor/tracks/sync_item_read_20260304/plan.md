@@ -1,14 +1,14 @@
 # Implementation Plan: Sync Item Read State via Delta Fetching
 
 ## Phase 1: Foundation & TanStack DB Setup
-- [ ] Task: Define `ItemRead` collection in `tanstack/db` schema
-    - [ ] Reference the `items` collection structure in `frontend/src/lib/item-db.ts`.
-    - [ ] Implement incremental fetching (differential acquisition) by merging new server data with existing local data in `queryFn` using `Map`.
-    - [ ] Include `id` (Item ID), `isRead`, and `updatedAt` (to track sync/local changes) fields.
-    - [ ] Implement **Optimistic Updates** in `onUpdate`:
-        - Use `transaction.mutations` to update local state immediately.
-        - Batch multiple changes into a single API request where possible.
-    - [ ] Manage internal state (e.g., `lastFetched` signal/anchor) for tracking sync progress.
+- [x] Task: Define `ItemRead` collection in `tanstack/db` schema 827bebf
+    - [x] Reference the `items` collection structure in `frontend/src/lib/item-db.ts`.
+    - [x] Implement incremental fetching (differential acquisition) by merging new server data with existing local data in `queryFn` using `Map`.
+    - [x] Include `id` (Item ID), `isRead`, and `updatedAt` (to track sync/local changes) fields.
+    - [x] Implement **Optimistic Updates** in `onUpdate`:
+        - [x] Use `transaction.mutations` to update local state immediately.
+        - [x] Batch multiple changes into a single API request where possible.
+    - [x] Manage internal state (e.g., `lastFetched` signal/anchor) for tracking sync progress.
 - [ ] Task: Implement `ItemRead` repository/service for basic CRUD operations
     - [ ] Write tests for adding, updating, and retrieving read states from `tanstack/db`.
     - [ ] Implement the repository methods using `tanstack/db` transactions for bulk operations.
