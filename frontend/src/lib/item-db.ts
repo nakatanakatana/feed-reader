@@ -108,6 +108,11 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
           },
         );
 
+        await itemClient.updateItemStatus({
+          ids: ids,
+          isRead: isRead,
+        });
+
         return { refetch: false };
       },
     }),

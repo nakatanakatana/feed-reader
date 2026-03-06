@@ -13,7 +13,6 @@ import {
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { feedTag, type Item, items, itemsUnreadQuery, tags } from "../lib/db";
-import { updateItemReadStatus } from "../lib/item-db";
 import { itemStore } from "../lib/item-store";
 import { type DateFilterValue, formatUnreadCount } from "../lib/item-utils";
 import { BulkActionBar } from "./BulkActionBar";
@@ -180,16 +179,19 @@ export function ItemList(props: ItemListProps) {
 
     setIsBulkMarking(true);
 
+    // Yield to the event loop immediately to ensure UI updates (like showing "Processing...")
+    // are rendered before we start the heavy lifting.
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+
     try {
       // Perform a single bulk update so that any onUpdate side effects
       // (such as server synchronization) are invoked only once.
-      // We update the local store synchronously, then await the network request.
-      items().update(ids, (drafts) => {
+      // We update the local store and await the completion of the side effect.
+      await items().update(ids, (drafts) => {
         for (const draft of drafts) {
           draft.isRead = true;
         }
       });
-      await updateItemReadStatus(ids, true);
 
       // Clear the selection only after the operation finishes
       setSelectedItemIds(new Set<string>());
