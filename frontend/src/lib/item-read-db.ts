@@ -19,6 +19,7 @@ export const itemReadCollectionOptions = {
   id: "item-reads",
   gcTime: 24 * 60 * 60 * 1000, // Keep for 24 hours
   queryClient,
+  refetchInterval: 1 * 60 * 1000, // Sync every minute
   queryKey: ["item-reads"],
   // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB context
   queryFn: async ({ queryKey }: any) => {

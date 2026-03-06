@@ -1,6 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { itemClient } from "./api/client";
-import { type ItemRead, itemReadCollectionOptions } from "./item-read-db";
+import {
+  type ItemRead,
+  itemReadCollectionOptions,
+  setLastReadFetched,
+} from "./item-read-db";
 import { queryClient } from "./query";
 
 vi.mock("./api/client", () => ({
@@ -14,6 +18,7 @@ describe("ItemRead collection options", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     queryClient.clear();
+    setLastReadFetched(null);
   });
 
   describe("queryFn", () => {
@@ -77,6 +82,30 @@ describe("ItemRead collection options", () => {
       expect(data).toHaveLength(2);
       expect(data.find((d: ItemRead) => d.id === "1")?.isRead).toBe(false);
       expect(data.find((d: ItemRead) => d.id === "2")?.isRead).toBe(true);
+    });
+
+    it("should use the anchor (lastReadFetched) in the API call", async () => {
+      const anchorDate = new Date(2026, 0, 1);
+      setLastReadFetched(anchorDate);
+
+      // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
+      (itemClient.listItemRead as any).mockResolvedValue({
+        itemReads: [],
+      });
+
+      await // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB context
+      (itemReadCollectionOptions as any).queryFn({
+        queryKey: ["item-reads"],
+      });
+
+      expect(itemClient.listItemRead).toHaveBeenCalledWith(
+        expect.objectContaining({
+          updatedSince: {
+            seconds: BigInt(Math.floor(anchorDate.getTime() / 1000)),
+            nanos: 0,
+          },
+        }),
+      );
     });
   });
 
