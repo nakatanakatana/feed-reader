@@ -17,7 +17,7 @@ const isToastEligible = (err: unknown) => {
   return (
     typeof err === "object" &&
     err !== null &&
-    (err as any)[ERROR_TOAST_ELIGIBLE]
+    (err as Record<symbol, unknown>)[ERROR_TOAST_ELIGIBLE]
   );
 };
 
