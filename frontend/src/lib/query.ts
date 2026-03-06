@@ -17,6 +17,7 @@ const isToastEligible = (err: unknown) => {
   return (
     typeof err === "object" &&
     err !== null &&
+    // biome-ignore lint/suspicious/noExplicitAny: using Symbol to mark handled errors
     (err as any)[ERROR_TOAST_ELIGIBLE]
   );
 };
