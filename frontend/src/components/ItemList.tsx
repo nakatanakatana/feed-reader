@@ -186,20 +186,14 @@ export function ItemList(props: ItemListProps) {
 
     try {
       // Chunk the updates to avoid blocking the main thread for too long.
-      // We use a very small first chunk to ensure immediate responsiveness.
-      const FIRST_CHUNK_SIZE = 10;
-      const REGULAR_CHUNK_SIZE = 100;
-      
-      let i = 0;
-      while (i < ids.length) {
-        const size = i === 0 ? FIRST_CHUNK_SIZE : REGULAR_CHUNK_SIZE;
-        const chunk = ids.slice(i, i + size);
+      const CHUNK_SIZE = 100;
+      for (let i = 0; i < ids.length; i += CHUNK_SIZE) {
+        const chunk = ids.slice(i, i + CHUNK_SIZE);
         items().update(chunk, (drafts) => {
           for (const draft of drafts) {
             draft.isRead = true;
           }
         });
-        i += size;
         
         // Yield to the event loop to allow UI updates (like the "Processing..." indicator)
         // and prevent the browser from freezing.
