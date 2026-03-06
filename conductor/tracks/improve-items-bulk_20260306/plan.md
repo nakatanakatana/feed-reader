@@ -1,18 +1,18 @@
 # Track: Improve Bulk Mark as Read Performance
 
 ## Phase 1: Research & Analysis
-- [ ] Task: Identify the bottleneck using browser DevTools Performance tab.
-    - [ ] Mark 1,000+ items as read and capture a performance profile.
-    - [ ] Locate the long-running script task(s) on the main thread.
-    - [ ] Document the specific functions and lines of code causing the hang.
+- [x] Task: Identify the bottleneck using browser DevTools Performance tab.
+    - [x] Mark 1,000+ items as read and capture a performance profile.
+    - [x] Locate the long-running script task(s) on the main thread.
+    - [x] Document the specific functions and lines of code causing the hang.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Research & Analysis' (Protocol in workflow.md)
 
 ## Phase 2: Reproduction & Baseline Measurement
-- [ ] Task: Create a performance-focused integration test case.
-    - [ ] Set up a Vitest test that populates the store with 1,000+ items.
-    - [ ] Implement a test that triggers the "Mark as read" bulk action.
-    - [ ] Measure the execution time of the processing logic (before the actual network request).
-    - [ ] Verify the test fails the 100ms responsiveness threshold.
+- [x] Task: Create a performance-focused integration test case.
+    - [x] Set up a Vitest test that populates the store with 1,000+ items.
+    - [x] Implement a test that triggers the "Mark as read" bulk action.
+    - [x] Measure the execution time of the processing logic (before the actual network request).
+    - [x] Verify the test fails the 100ms responsiveness threshold.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Reproduction & Baseline Measurement' (Protocol in workflow.md)
 
 ## Phase 3: Implementation & Optimization (TDD)
