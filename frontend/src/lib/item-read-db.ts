@@ -60,6 +60,23 @@ export const itemReadCollectionOptions = {
   },
   getKey: (read: ItemRead) => read.id,
   // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB transaction
+  onInsert: async ({ transaction }: any) => {
+    // biome-ignore lint/suspicious/noExplicitAny: using any for mutation
+    const ids = transaction.mutations.map((m: any) => {
+      return m.modified.id;
+    });
+
+    const firstMutation = transaction.mutations[0];
+    const isRead = firstMutation.modified.isRead;
+
+    await itemClient.updateItemStatus({
+      ids: ids,
+      isRead: isRead,
+    });
+
+    return { refetch: false };
+  },
+  // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB transaction
   onUpdate: async ({ transaction }: any) => {
     // biome-ignore lint/suspicious/noExplicitAny: using any for mutation
     const ids = transaction.mutations.map((m: any) => {
@@ -91,3 +108,15 @@ const collection = createRoot(() => {
 });
 
 export const itemReadCollection = () => collection;
+
+export const updateItemReadStatus = async (ids: string[], isRead: boolean) => {
+  itemReadCollection().utils.writeUpsert(
+    ids.map((id) => ({
+      id,
+      isRead,
+      updatedAt: new Date().toISOString(),
+    })),
+  );
+};
+
+export const markItemsRead = updateItemReadStatus;

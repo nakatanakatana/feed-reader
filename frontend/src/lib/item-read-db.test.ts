@@ -105,4 +105,27 @@ describe("ItemRead collection options", () => {
       expect(result).toEqual({ refetch: false });
     });
   });
+
+  describe("onInsert", () => {
+    it("should call updateItemStatus and return refetch: false", async () => {
+      // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
+      (itemClient.updateItemStatus as any).mockResolvedValue({});
+
+      const mockTransaction = {
+        mutations: [{ modified: { id: "3", isRead: true } }],
+      };
+
+      const result =
+        await // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB transaction
+        (itemReadCollectionOptions as any).onInsert({
+          transaction: mockTransaction,
+        });
+
+      expect(itemClient.updateItemStatus).toHaveBeenCalledWith({
+        ids: ["3"],
+        isRead: true,
+      });
+      expect(result).toEqual({ refetch: false });
+    });
+  });
 });
