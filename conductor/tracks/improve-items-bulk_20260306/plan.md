@@ -24,9 +24,9 @@
         - [x] Verify that the fix passes the 100ms threshold in the test environment.
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Implementation & Optimization (TDD)' (Protocol in workflow.md) 4981861
 
-## Phase 4: Final Verification & Quality Check
-- [ ] Task: Manual verification in the browser with real data.
-    - [ ] Load a large dataset and verify the UI remains responsive during bulk "Mark as read".
-    - [ ] Confirm no regressions in unread counts or general UI behavior.
-- [ ] Task: Run full test suite and check code coverage.
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Final Verification & Quality Check' (Protocol in workflow.md)
+## Phase 4: Final Verification & Quality Check [checkpoint: f023e33]
+- [x] Task: Manual verification in the browser with real data. f023e33
+    - [x] Load a large dataset and verify the UI remains responsive during bulk "Mark as read".
+    - [x] Confirm no regressions in unread counts or general UI behavior.
+- [x] Task: Run full test suite and check code coverage. f023e33
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Final Verification & Quality Check' (Protocol in workflow.md) f023e33
