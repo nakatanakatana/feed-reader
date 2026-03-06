@@ -1,4 +1,4 @@
-import { count, eq, useLiveQuery } from "@tanstack/solid-db";
+import { coalesce, count, eq, useLiveQuery } from "@tanstack/solid-db";
 import { useLocation, useNavigate } from "@tanstack/solid-router";
 import {
   createEffect,
@@ -12,7 +12,14 @@ import {
 } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
-import { feedTag, type Item, items, itemsUnreadQuery, tags } from "../lib/db";
+import {
+  feedTag,
+  type Item,
+  itemReadCollection,
+  items,
+  itemsUnreadQuery,
+  tags,
+} from "../lib/db";
 import { itemStore } from "../lib/item-store";
 import { type DateFilterValue, formatUnreadCount } from "../lib/item-utils";
 import { BulkActionBar } from "./BulkActionBar";
@@ -60,6 +67,10 @@ export function ItemList(props: ItemListProps) {
   const itemQuery = useLiveQuery((q) => {
     let query = q
       .from({ item: items() })
+      // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
+      .leftJoin({ read: itemReadCollection() }, ({ item, read }: any) =>
+        eq(item.id, read.id),
+      )
       .orderBy(({ item }) => item.publishedAt, {
         direction: "asc",
         nulls: "last",
@@ -76,7 +87,10 @@ export function ItemList(props: ItemListProps) {
         .where(({ ft }: any) => eq(ft.tagId, props.tagId));
     }
     // biome-ignore lint/suspicious/noExplicitAny: TanStack DB select types
-    return query.select(({ item }: any) => ({ ...item }));
+    return query.select(({ item, read }: any) => ({
+      ...item,
+      isRead: coalesce(read.isRead, item.isRead),
+    }));
   });
 
   const filteredItems = createMemo(() => {

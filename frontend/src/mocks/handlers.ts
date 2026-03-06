@@ -23,6 +23,7 @@ import {
   ItemSchema,
   ItemService,
   ListItemBlockRulesResponseSchema,
+  ListItemReadResponseSchema,
   ListItemSchema,
   ListItemsResponseSchema,
   ListURLParsingRulesResponseSchema,
@@ -122,7 +123,6 @@ export const handlers = [
     method: "listFeeds",
     handler: (req) => {
       let filteredFeeds = feeds;
-      // ... (rest of handlers remain same but with logging added to key ones)
 
       if (req.tagId) {
         filteredFeeds = feeds.filter((f) =>
@@ -412,6 +412,13 @@ export const handlers = [
         return create(GetItemResponseSchema, { item });
       }
       throw new Error("Item not found");
+    },
+  }),
+
+  mockConnectWeb(ItemService)({
+    method: "listItemRead",
+    handler: () => {
+      return create(ListItemReadResponseSchema, { itemReads: [] });
     },
   }),
 

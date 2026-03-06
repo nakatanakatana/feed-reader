@@ -11,6 +11,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
 import {
+  ListItemReadResponseSchema,
   ListItemSchema,
   ListItemsResponseSchema,
 } from "../gen/item/v1/item_pb";
@@ -43,7 +44,10 @@ describe("ItemList", () => {
       .mockReturnValue("4:00:00 AM");
   });
 
-  const setupMockData = (items: Record<string, unknown>[] = []) => {
+  const setupMockData = (
+    items: Record<string, unknown>[] = [],
+    itemReads: Record<string, unknown>[] = [],
+  ) => {
     worker.use(
       http.all("*/item.v1.ItemService/ListItems", () => {
         const msg = create(ListItemsResponseSchema, {
@@ -51,6 +55,16 @@ describe("ItemList", () => {
           totalCount: items.length,
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
+      }),
+      http.all("*/item.v1.ItemService/ListItemRead", () => {
+        const msg = create(ListItemReadResponseSchema, {
+          itemReads: itemReads.map((ir) => ({
+            itemId: ir.itemId as string,
+            isRead: ir.isRead as boolean,
+            updatedAt: { seconds: BigInt(Date.now() / 1000), nanos: 0 },
+          })),
+        });
+        return HttpResponse.json(toJson(ListItemReadResponseSchema, msg));
       }),
       http.all("*/tag.v1.TagService/ListTags", () => {
         return HttpResponse.json(
@@ -132,6 +146,67 @@ describe("ItemList", () => {
     await expect.element(page.getByText("Item 2")).toBeInTheDocument();
 
     expect(document.body.innerHTML).toMatchSnapshot();
+  });
+
+  it("updates item read status via delta sync", async () => {
+    const fixedDate = "2026-01-20T19:00:00Z";
+    setLastFetched(new Date(fixedDate));
+
+    // Initially Item 1 is unread
+    setupMockData([
+      {
+        id: "1",
+        title: "Item 1",
+        publishedAt: fixedDate,
+        createdAt: fixedDate,
+        isRead: false,
+      },
+    ]);
+
+    const history = createMemoryHistory({ initialEntries: ["/"] });
+    const router = createRouter({ routeTree, history });
+
+    dispose = render(
+      () => (
+        <TransportProvider transport={transport}>
+          <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} />
+          </QueryClientProvider>
+        </TransportProvider>
+      ),
+      document.body,
+    );
+
+    const item1 = page.getByText("Item 1");
+    await expect.element(item1).toBeInTheDocument();
+
+    // Verify it's unread (has blue color class)
+    await expect.element(item1).toHaveClass(/c_blue\.600/);
+
+    // Mock delta sync: Item 1 becomes read
+    setupMockData(
+      [
+        {
+          id: "1",
+          title: "Item 1",
+          publishedAt: fixedDate,
+          createdAt: fixedDate,
+          isRead: false, // Server still thinks it's unread in main list
+        },
+      ],
+      [
+        {
+          itemId: "1",
+          isRead: true,
+        },
+      ],
+    );
+
+    // Trigger refetch for item-reads
+    await queryClient.refetchQueries({ queryKey: ["item-reads"] });
+
+    // Item 1 should now be read (has gray color class)
+    await expect.element(item1).toHaveClass(/c_gray\.500/);
   });
 
   it("renders tag filters in a horizontal scroll list", async () => {

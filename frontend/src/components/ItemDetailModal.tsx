@@ -16,13 +16,9 @@ import {
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
 import { itemBlockRuleInsert, urlParsingRules } from "../lib/block-db";
-import {
-  getItem,
-  type Item,
-  items,
-  updateItemReadStatus,
-} from "../lib/item-db";
+import { getItem, type Item, items } from "../lib/item-db";
 import { ITEM_STALE_TIME } from "../lib/item-query-constants";
+import { updateItemReadStatus } from "../lib/item-read-db";
 import {
   extractHostname,
   formatDate,

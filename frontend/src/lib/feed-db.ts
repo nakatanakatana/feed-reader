@@ -53,6 +53,7 @@ export const refreshFeeds = async (feedIds: string[]) => {
     queryClient.invalidateQueries({ queryKey: ["feeds"] });
     queryClient.invalidateQueries({ queryKey: ["items"] });
     queryClient.invalidateQueries({ queryKey: ["tags"] });
+    queryClient.invalidateQueries({ queryKey: ["item-reads"] });
     return res;
   } catch (err) {
     fetchingState.finishFetching(

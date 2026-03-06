@@ -1,6 +1,7 @@
 import { createClient } from "@connectrpc/connect";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import {
+  coalesce,
   createCollection,
   createLiveQueryCollection,
   eq,
@@ -10,6 +11,7 @@ import {
   ItemService,
   type ListItem as ProtoListItem,
 } from "../gen/item/v1/item_pb";
+import { itemReadCollection } from "./item-read-db";
 import { itemStore } from "./item-store";
 import {
   type DateFilterValue,
@@ -123,8 +125,20 @@ export const itemsUnreadQuery = createRoot(() => {
   const collection = createLiveQueryCollection((q) =>
     q
       .from({ item: items() })
-      .where(({ item }) => eq(item.isRead, false))
-      .select(({ item }) => ({ ...item })),
+      // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
+      .leftJoin({ read: itemReadCollection() }, ({ item, read }: any) =>
+        eq(item.id, read.id),
+      )
+      // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
+      .where(({ item, read }: any) => {
+        // Prioritize delta-synced read status
+        return eq(coalesce(read.isRead, item.isRead), false);
+      })
+      // biome-ignore lint/suspicious/noExplicitAny: TanStack DB select types
+      .select(({ item, read }: any) => ({
+        ...item,
+        isRead: coalesce(read.isRead, item.isRead),
+      })),
   );
   return () => collection;
 });
@@ -146,11 +160,4 @@ export const getItem = async (id: string): Promise<Item | null> => {
     imageUrl: response.item.imageUrl,
     content: response.item.content,
   };
-};
-
-export const updateItemReadStatus = async (ids: string[], isRead: boolean) => {
-  await itemClient.updateItemStatus({
-    ids: ids,
-    isRead: isRead,
-  });
 };
