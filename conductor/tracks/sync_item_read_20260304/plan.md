@@ -32,16 +32,16 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Delta Sync Logic & API Integration' (Protocol in workflow.md) ba4495d
 
 ## Phase 3: UI Integration & Refresh Mechanism
-- [ ] Task: Implement Join Logic in `ItemList`
-    - [ ] Write tests for fetching items joined with their read status from the `ItemRead` collection.
-    - [ ] Update the `ItemList` data fetching logic to use the join.
-- [ ] Task: Visual Representation in `ItemList`
-    - [ ] Write tests/component tests for visual states (dimming, read badge).
-    - [ ] Update the `Item` component to reflect the `isRead` status from the joined `ItemRead` data.
-- [ ] Task: Manual Refresh Integration
-    - [ ] Hook into the `Refresh` button in the `ListItem` page.
-    - [ ] **Action**: Trigger `ItemRead` delta sync immediately upon Refresh and reset the background sync timer.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: UI Integration & Join Logic' (Protocol in workflow.md)
+- [x] Task: Implement Join Logic in `ItemList` e81e9bd
+    - [x] Write tests for fetching items joined with their read status from the `ItemRead` collection.
+    - [x] Update the `ItemList` data fetching logic to use the join.
+- [x] Task: Visual Representation in `ItemList` e81e9bd
+    - [x] Write tests/component tests for visual states (dimming, read badge).
+    - [x] Update the `Item` component to reflect the `isRead` status from the joined `ItemRead` data.
+- [x] Task: Manual Refresh Integration e81e9bd
+    - [x] Hook into the Refresh button in the ListItem page.
+    - [x] **Action**: Trigger `ItemRead` delta sync immediately upon Refresh and reset the background sync timer.
+- [x] Task: Conductor - User Manual Verification 'Phase 3: UI Integration & Refresh Mechanism' (Protocol in workflow.md) e81e9bd
 
 ## Phase 4: Final Polishing & Edge Cases
 - [ ] Task: Conflict Resolution ("Server Wins")
