@@ -1,4 +1,4 @@
-import { eq, useLiveQuery } from "@tanstack/solid-db";
+import { coalesce, eq, useLiveQuery } from "@tanstack/solid-db";
 import {
   createMutation,
   useQuery,
@@ -18,7 +18,7 @@ import { flex } from "../../styled-system/patterns";
 import { itemBlockRuleInsert, urlParsingRules } from "../lib/block-db";
 import { getItem, type Item, items } from "../lib/item-db";
 import { ITEM_STALE_TIME } from "../lib/item-query-constants";
-import { updateItemReadStatus } from "../lib/item-read-db";
+import { itemReadCollection, updateItemReadStatus } from "../lib/item-read-db";
 import {
   extractHostname,
   formatDate,
@@ -275,10 +275,21 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
         .where(({ item }) => eq(item.id, "__none__"))
         .select(({ item }) => ({ ...item }));
     }
-    return q
-      .from({ item: items() })
-      .where(({ item }) => eq(item.id, id))
-      .select(({ item }) => ({ ...item }));
+    return (
+      q
+        .from({ item: items() })
+        // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
+        .leftJoin({ read: itemReadCollection() }, ({ item, read }: any) =>
+          eq(item.id, read.id),
+        )
+        // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
+        .where(({ item }: any) => eq(item.id, id))
+        // biome-ignore lint/suspicious/noExplicitAny: TanStack DB select types
+        .select(({ item, read }: any) => ({
+          ...item,
+          isRead: coalesce(read?.isRead, item.isRead),
+        }))
+    );
   });
 
   const collectionItem = () => collectionItems()[0];

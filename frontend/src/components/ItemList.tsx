@@ -204,11 +204,6 @@ export function ItemList(props: ItemListProps) {
       // (such as server synchronization) are invoked only once.
       // We update the local store and await the completion of the side effect.
       await updateItemReadStatus(ids, true);
-      await items().update(ids, (drafts) => {
-        for (const draft of drafts) {
-          draft.isRead = true;
-        }
-      });
 
       // Clear the selection after the update to match the PR description's claim of visual feedback,
       // while keeping the BulkActionBar mounted during the operation.

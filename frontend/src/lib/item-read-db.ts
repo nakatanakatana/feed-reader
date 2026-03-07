@@ -141,15 +141,14 @@ export const updateItemReadStatus = async (ids: string[], isRead: boolean) => {
       })),
     );
   } catch (e) {
-    console.warn(
-      "ItemRead collection operation failed, calling API directly",
-      e,
-    );
-    await itemClient.updateItemStatus({
-      ids: ids,
-      isRead: isRead,
-    });
+    console.warn("ItemRead collection cache update failed", e);
   }
+
+  // Always send the authoritative update to the server
+  await itemClient.updateItemStatus({
+    ids: ids,
+    isRead: isRead,
+  });
 };
 
 export const markItemsRead = updateItemReadStatus;

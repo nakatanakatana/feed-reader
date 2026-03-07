@@ -17,10 +17,6 @@ export function ItemRow(props: ItemRowProps) {
   const setReadStatus = async (newIsRead: boolean) => {
     try {
       await updateItemReadStatus([props.item.id], newIsRead);
-      items().update(props.item.id, (draft) => {
-        draft.id = props.item.id;
-        draft.isRead = newIsRead;
-      });
     } catch (e) {
       console.error("Failed to update item status", e);
     }
