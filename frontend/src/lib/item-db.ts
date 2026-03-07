@@ -13,7 +13,11 @@ import {
 } from "../gen/item/v1/item_pb";
 import { itemReadCollection } from "./item-read-db";
 import { itemStore } from "./item-store";
-import { lastFetched, setLastFetched } from "./item-sync-state";
+import {
+  lastFetched,
+  setLastFetched,
+  setLastItemsSyncedAt,
+} from "./item-sync-state";
 import {
   type DateFilterValue,
   dateToTimestamp,
@@ -69,6 +73,7 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
           offset: 0,
           ...isRead,
         });
+        setLastItemsSyncedAt(new Date());
 
         if (response.items && response.items.length > 0) {
           const validDates = response.items
@@ -149,13 +154,13 @@ export const itemsUnreadQuery = createRoot(() => {
       )
       // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
       .where(({ item, read }: any) => {
-        // Prioritize delta-synced read status for unread calculations
-        return eq(coalesce(read?.isRead, item.isRead), false);
+        // Prioritize local item state for optimistic updates, fall back to delta-synced read status
+        return eq(coalesce(item.isRead, read?.isRead), false);
       })
       // biome-ignore lint/suspicious/noExplicitAny: TanStack DB select types
       .select(({ item, read }: any) => ({
         ...item,
-        isRead: coalesce(read?.isRead, item.isRead),
+        isRead: coalesce(item.isRead, read?.isRead),
       })),
   );
   return () => collection;
