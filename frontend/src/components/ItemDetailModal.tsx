@@ -270,10 +270,21 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     const id = props.itemId;
     if (!id || id === "end-of-list") {
       // Return a non-matching query to initialize the signal correctly
-      return q
-        .from({ item: items() })
-        .where(({ item }) => eq(item.id, "__none__"))
-        .select(({ item }) => ({ ...item }));
+      return (
+        q
+          .from({ item: items() })
+          // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
+          .leftJoin({ read: itemReadCollection() }, ({ item, read }: any) =>
+            eq(item.id, read.id),
+          )
+          // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
+          .where(({ item }: any) => eq(item.id, "__none__"))
+          // biome-ignore lint/suspicious/noExplicitAny: TanStack DB select types
+          .select(({ item, read }: any) => ({
+            ...item,
+            isRead: coalesce(read?.isRead, item.isRead),
+          }))
+      );
     }
     return (
       q

@@ -3,12 +3,11 @@ import { createCollection } from "@tanstack/solid-db";
 import { createRoot } from "solid-js";
 import { itemClient } from "./api/client";
 import {
-  lastFetched,
   lastItemsSyncedAt,
   lastReadFetched,
   setLastReadFetched,
 } from "./item-sync-state";
-import { type DateFilterValue, dateToTimestamp } from "./item-utils";
+import { dateToTimestamp } from "./item-utils";
 import { queryClient } from "./query";
 
 export interface ItemRead {
