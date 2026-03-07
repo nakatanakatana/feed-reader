@@ -7,12 +7,12 @@
 - [x] Task: Run `buf generate` to generate Go and TypeScript code. 8eadfaf
 - [x] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md) b65602f
 
-## Phase 2: Backend Implementation (Go)
+## Phase 2: Backend Implementation (Go) [checkpoint: 0dea25f]
 - [x] Task: Update `sql/query.sql` to support cursor-based pagination for items and regenerate sqlc. d3f377e
 - [x] Task: Update `cmd/feed-reader/handler.go` to match the new feed and tag proto definitions. 6f01f4a
 - [x] Task: Update `cmd/feed-reader/item_handler.go` to match the new item proto definitions and implement cursor pagination. 6f01f4a
 - [x] Task: Run backend tests and fix any breakages. 6f01f4a
-- [ ] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md) 0dea25f
 
 ## Phase 3: Frontend Implementation (TypeScript)
 - [ ] Task: Update `frontend/src/lib/` API clients and data models to use the new generated types and Date objects.
