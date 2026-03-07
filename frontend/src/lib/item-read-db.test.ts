@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { itemClient } from "./api/client";
 import { type ItemRead, itemReadCollectionOptions } from "./item-read-db";
 import {
-  lastFetched,
   lastReadFetched,
   setLastReadFetched,
 } from "./item-sync-state";

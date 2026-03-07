@@ -61,7 +61,10 @@ describe("ItemList", () => {
           itemReads: itemReads.map((ir) => ({
             itemId: ir.itemId as string,
             isRead: ir.isRead as boolean,
-            updatedAt: { seconds: BigInt(Date.now() / 1000), nanos: 0 },
+            updatedAt: {
+              seconds: BigInt(Math.floor(Date.now() / 1000)),
+              nanos: 0,
+            },
           })),
         });
         return HttpResponse.json(toJson(ListItemReadResponseSchema, msg));
@@ -191,7 +194,7 @@ describe("ItemList", () => {
           title: "Item 1",
           publishedAt: fixedDate,
           createdAt: fixedDate,
-          isRead: true, // Now prioritize item state for optimistic updates
+          isRead: true, // Item state mirrors delta-synced read; UI prioritizes item.isRead for optimistic updates
         },
       ],
       [

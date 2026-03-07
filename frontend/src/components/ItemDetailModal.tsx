@@ -396,13 +396,6 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
       // Use the authoritative updateItemReadStatus for delta sync and mixed state handling
       await updateItemReadStatus([currentItem.id], newIsRead);
 
-      // Also update items().update if the item is in the collection to keep the list in sync
-      if (inCollection) {
-        items().update(currentItem.id, (draft) => {
-          draft.isRead = newIsRead;
-        });
-      }
-
       setAnnouncement(newIsRead ? "Marked as read" : "Marked as unread");
       // Clear announcement after a short delay so it can be re-announced if toggled again
       if (announcementTimeout) clearTimeout(announcementTimeout);
