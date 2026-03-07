@@ -5,11 +5,7 @@ import { flex } from "../../styled-system/patterns";
 import { ItemList } from "../components/ItemList";
 import { ActionButton } from "../components/ui/ActionButton";
 import { PageLayout } from "../components/ui/PageLayout";
-import {
-  itemReadCollection,
-  items,
-  lastItemsSyncedAt,
-} from "../lib/db";
+import { itemReadCollection, items, lastItemsSyncedAt } from "../lib/db";
 import type { DateFilterValue } from "../lib/item-utils";
 
 interface ItemsSearch {
