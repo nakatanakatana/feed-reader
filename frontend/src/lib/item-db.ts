@@ -6,7 +6,7 @@ import {
   createLiveQueryCollection,
   eq,
 } from "@tanstack/solid-db";
-import { createMemo, createRoot } from "solid-js";
+import { createRoot } from "solid-js";
 import {
   ItemService,
   type ListItem as ProtoListItem,
@@ -20,11 +20,7 @@ import {
   setLastItemsSyncedAt,
   setLastReadFetched,
 } from "./item-sync-state";
-import {
-  type DateFilterValue,
-  dateToTimestamp,
-  getPublishedSince,
-} from "./item-utils";
+import { dateToTimestamp, getPublishedSince } from "./item-utils";
 import { queryClient, transport } from "./query";
 
 export interface ListItem {
@@ -47,21 +43,22 @@ export interface Item extends ListItem {
 
 const itemClient = createClient(ItemService, transport);
 
-const createItems = (showRead: boolean, since: DateFilterValue) => {
-  setLastFetched(null);
-  const isRead = showRead ? {} : { isRead: false };
-  const sinceTimestamp = since !== "all" ? getPublishedSince(since) : undefined;
-  const queryKey = ["items", { since, showRead }] as const;
-
-  return createCollection(
+export const itemsCollection = createRoot(() =>
+  createCollection(
     queryCollectionOptions<ListItem>({
       id: "items",
       gcTime: 5 * 1000,
       queryClient,
 
       refetchInterval: 1 * 60 * 1000,
-      queryKey,
+      queryKey: ["items"],
       queryFn: async ({ queryKey }) => {
+        const showRead = itemStore.state.showRead;
+        const since = itemStore.state.since;
+        const isRead = showRead ? {} : { isRead: false };
+        const sinceTimestamp =
+          since !== "all" ? getPublishedSince(since) : undefined;
+
         const existingData =
           (queryClient.getQueryData(queryKey) as ListItem[]) || [];
         const lastFetchedValue = lastFetched();
@@ -150,7 +147,7 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
         }
 
         // Update the query cache for each group
-        queryClient.setQueryData(queryKey, (old: ListItem[] | undefined) => {
+        queryClient.setQueryData(["items"], (old: ListItem[] | undefined) => {
           if (!old) return old;
           const updated = [...old];
           for (const [isRead, ids] of idsByIsRead.entries()) {
@@ -174,36 +171,27 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
         return { refetch: false };
       },
     }),
-  );
-};
+  ),
+);
 
-export const items = createRoot(() => {
-  return createMemo(() =>
-    createItems(itemStore.state.showRead, itemStore.state.since),
-  );
-});
-
-export const itemsUnreadQuery = createRoot(() => {
-  const collection = createLiveQueryCollection((q) =>
-    q
-      .from({ item: items() })
-      // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
-      .leftJoin({ read: itemReadCollection() }, ({ item, read }: any) =>
-        eq(item.id, read.id),
-      )
-      // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
-      .where(({ item, read }: any) => {
-        // Prioritize delta-synced read status for unread calculations
-        return eq(coalesce(read?.isRead, item.isRead), false);
-      })
-      // biome-ignore lint/suspicious/noExplicitAny: TanStack DB select types
-      .select(({ item, read }: any) => ({
-        ...item,
-        isRead: coalesce(read?.isRead, item.isRead),
-      })),
-  );
-  return () => collection;
-});
+export const itemsUnreadQuery = createLiveQueryCollection((q) =>
+  q
+    .from({ item: itemsCollection })
+    // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
+    .leftJoin({ read: itemReadCollection }, ({ item, read }: any) =>
+      eq(item.id, read.id),
+    )
+    // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
+    .where(({ item, read }: any) => {
+      // Prioritize delta-synced read status for unread calculations
+      return eq(coalesce(read?.isRead, item.isRead), false);
+    })
+    // biome-ignore lint/suspicious/noExplicitAny: TanStack DB select types
+    .select(({ item, read }: any) => ({
+      ...item,
+      isRead: coalesce(read?.isRead, item.isRead),
+    })),
+);
 
 export const getItem = async (id: string): Promise<Item | null> => {
   const response = await itemClient.getItem({ id });

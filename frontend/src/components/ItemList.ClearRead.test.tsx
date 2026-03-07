@@ -121,9 +121,9 @@ describe("ItemList Clear Read Items", () => {
       .element(page.getByText("Read Item", { exact: true }))
       .not.toBeInTheDocument();
 
-    // Verify no new ListItems request was made after clicking Clear (only the initial one)
-    // Initial fetch happens during render
-    expect(listItemsCount).toBe(1);
+    // Verify ListItems request was made after clicking Clear (due to invalidation)
+    // Initial fetch happens during render, and another one after clicking Clear
+    expect(listItemsCount).toBe(2);
 
     // Verify transience: clearing the store restores the items
     itemStore.clearTransientRemovedIds();

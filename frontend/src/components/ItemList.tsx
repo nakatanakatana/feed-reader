@@ -16,7 +16,7 @@ import {
   feedTag,
   type Item,
   itemReadCollection,
-  items,
+  itemsCollection,
   itemsUnreadQuery,
   tags,
   updateItemReadStatus,
@@ -67,9 +67,9 @@ export function ItemList(props: ItemListProps) {
 
   const itemQuery = useLiveQuery((q) => {
     let query = q
-      .from({ item: items() })
+      .from({ item: itemsCollection })
       // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
-      .leftJoin({ read: itemReadCollection() }, ({ item, read }: any) =>
+      .leftJoin({ read: itemReadCollection }, ({ item, read }: any) =>
         eq(item.id, read.id),
       )
       .orderBy(({ item }) => item.publishedAt, {
@@ -115,16 +115,14 @@ export function ItemList(props: ItemListProps) {
   };
 
   const totalUnread = useLiveQuery((q) =>
-    q
-      .from({ i: itemsUnreadQuery() })
-      .select(({ i }) => ({ total: count(i.id) })),
+    q.from({ i: itemsUnreadQuery }).select(({ i }) => ({ total: count(i.id) })),
   );
 
   const tagsQuery = useLiveQuery((q) => {
     return q
       .from({ tag: tags })
       .leftJoin({ tf: feedTag }, ({ tag, tf }) => eq(tag.id, tf.tagId))
-      .leftJoin({ i: itemsUnreadQuery() }, ({ tf, i }) =>
+      .leftJoin({ i: itemsUnreadQuery }, ({ tf, i }) =>
         eq(tf?.feedId, i.feedId),
       )
       .groupBy(({ tag }) => [tag.id, tag.name])

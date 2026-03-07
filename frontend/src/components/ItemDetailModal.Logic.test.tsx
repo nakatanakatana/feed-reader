@@ -80,7 +80,7 @@ describe("ItemDetailModal Navigation Logic", () => {
     setupMockData("10");
 
     const _mockUpdate = vi.fn();
-    // Spy on items() and mock the update method
+    // Spy on itemsCollection and mock the update method
     // NOTE: In Vitest Browser mode with ESM, we can't easily spy on exported functions.
     // We'll rely on the fact that handleToggleRead was already manually verified,
     // and just verify UI properties here to avoid the ESM mocking headache.

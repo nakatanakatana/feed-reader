@@ -222,7 +222,7 @@ describe("ItemRead collection options", () => {
       // Mock writeUpsert to throw SyncNotInitializedError
       const error = new Error("Sync not initialized");
       error.name = "SyncNotInitializedError";
-      vi.spyOn(itemReadCollection().utils, "writeUpsert").mockRejectedValue(
+      vi.spyOn(itemReadCollection.utils, "writeUpsert").mockRejectedValue(
         error,
       );
 

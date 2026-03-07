@@ -6,6 +6,7 @@ import {
   createLiveQueryCollection,
   eq,
 } from "@tanstack/solid-db";
+import { createRoot } from "solid-js";
 import type { ListTag } from "../gen/tag/v1/tag_pb";
 import { TagService } from "../gen/tag/v1/tag_pb";
 import { feedTag } from "./feed-db";
@@ -20,36 +21,38 @@ export interface Tag {
 
 const tagClient = createClient(TagService, transport);
 
-export const tags = createCollection(
-  queryCollectionOptions({
-    id: "tags",
-    queryClient,
-    queryKey: ["tags"],
-    queryFn: async () => {
-      const response = await tagClient.listTags({});
-      return response.tags.map((tag: ListTag) => ({
-        id: tag.id,
-        name: tag.name,
-        unreadCount: tag.unreadCount,
-        feedCount: tag.feedCount,
-      }));
-    },
-    onInsert: async ({ transaction }) => {
-      await Promise.all(
-        transaction.mutations.map(async (m) => {
-          await tagClient.createTag({ name: m.modified.name });
-        }),
-      );
-    },
-    onDelete: async ({ transaction }) => {
-      await Promise.all(
-        transaction.mutations.map(async (m) => {
-          await tagClient.deleteTag({ id: m.modified.id });
-        }),
-      );
-    },
-    getKey: (tag: Tag) => tag.id,
-  }),
+export const tags = createRoot(() =>
+  createCollection(
+    queryCollectionOptions({
+      id: "tags",
+      queryClient,
+      queryKey: ["tags"],
+      queryFn: async () => {
+        const response = await tagClient.listTags({});
+        return response.tags.map((tag: ListTag) => ({
+          id: tag.id,
+          name: tag.name,
+          unreadCount: tag.unreadCount,
+          feedCount: tag.feedCount,
+        }));
+      },
+      onInsert: async ({ transaction }) => {
+        await Promise.all(
+          transaction.mutations.map(async (m) => {
+            await tagClient.createTag({ name: m.modified.name });
+          }),
+        );
+      },
+      onDelete: async ({ transaction }) => {
+        await Promise.all(
+          transaction.mutations.map(async (m) => {
+            await tagClient.deleteTag({ id: m.modified.id });
+          }),
+        );
+      },
+      getKey: (tag: Tag) => tag.id,
+    }),
+  ),
 );
 
 export const tagsBaseQuery = createLiveQueryCollection((q) => {

@@ -97,14 +97,12 @@ export const itemReadCollectionOptions = {
   getKey: (read: ItemRead) => read.id,
 };
 
-const collection = createRoot(() => {
-  return createCollection(
+export const itemReadCollection = createRoot(() =>
+  createCollection(
     // biome-ignore lint/suspicious/noExplicitAny: using any for options
     queryCollectionOptions(itemReadCollectionOptions as any),
-  );
-});
-
-export const itemReadCollection = () => collection;
+  ),
+);
 
 export const updateItemReadStatus = async (ids: string[], isRead: boolean) => {
   // Save previous states for rollback if needed
@@ -116,7 +114,7 @@ export const updateItemReadStatus = async (ids: string[], isRead: boolean) => {
 
   // Update local cache first (optimistic update)
   try {
-    await itemReadCollection().utils.writeUpsert(
+    await itemReadCollection.utils.writeUpsert(
       ids.map((id) => ({
         id,
         isRead,
@@ -144,7 +142,7 @@ export const updateItemReadStatus = async (ids: string[], isRead: boolean) => {
     try {
       if (previousStates.length > 0) {
         // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB writeUpsert
-        await itemReadCollection().utils.writeUpsert(previousStates as any);
+        await itemReadCollection.utils.writeUpsert(previousStates as any);
       }
 
       // Explicitly remove optimistic rows for ids that had no prior state

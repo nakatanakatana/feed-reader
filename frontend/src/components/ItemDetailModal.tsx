@@ -15,8 +15,8 @@ import {
 } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
-import { itemBlockRuleInsert, urlParsingRules } from "../lib/block-db";
-import { getItem, type Item, items } from "../lib/item-db";
+import { itemBlockRules, urlParsingRules } from "../lib/block-db";
+import { getItem, type Item, itemsCollection } from "../lib/item-db";
 import { ITEM_STALE_TIME } from "../lib/item-query-constants";
 import { itemReadCollection, updateItemReadStatus } from "../lib/item-read-db";
 import {
@@ -272,9 +272,9 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
       // Return a non-matching query to initialize the signal correctly
       return (
         q
-          .from({ item: items() })
+          .from({ item: itemsCollection })
           // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
-          .leftJoin({ read: itemReadCollection() }, ({ item, read }: any) =>
+          .leftJoin({ read: itemReadCollection }, ({ item, read }: any) =>
             eq(item.id, read.id),
           )
           // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
@@ -288,9 +288,9 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     }
     return (
       q
-        .from({ item: items() })
+        .from({ item: itemsCollection })
         // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
-        .leftJoin({ read: itemReadCollection() }, ({ item, read }: any) =>
+        .leftJoin({ read: itemReadCollection }, ({ item, read }: any) =>
           eq(item.id, read.id),
         )
         // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
@@ -327,7 +327,8 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     mutationFn: async (req: {
       rules: { ruleType: string; value: string; domain?: string }[];
     }) => {
-      await itemBlockRuleInsert(req.rules);
+      // biome-ignore lint/suspicious/noExplicitAny: using any for bulk insert
+      await itemBlockRules.insert(req.rules as any);
     },
     onSuccess: () => {
       show("Block rule added successfully", "success");

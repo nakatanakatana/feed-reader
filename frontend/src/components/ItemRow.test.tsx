@@ -11,7 +11,7 @@ import {
   ListItemsResponseSchema,
   UpdateItemStatusResponseSchema,
 } from "../gen/item/v1/item_pb";
-import { items } from "../lib/db";
+import { itemsCollection } from "../lib/db";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
@@ -170,7 +170,7 @@ describe("ItemRow", () => {
     );
 
     const TestObserved = () => {
-      const data = useLiveQuery((q) => q.from({ item: items() }));
+      const data = useLiveQuery((q) => q.from({ item: itemsCollection }));
       return (
         <Show when={data().length > 0}>
           <ItemRow item={mockItemWithUrl} onClick={onClick} />

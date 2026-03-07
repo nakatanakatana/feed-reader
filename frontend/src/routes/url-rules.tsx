@@ -6,11 +6,7 @@ import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { ActionButton } from "../components/ui/ActionButton";
 import { PageLayout } from "../components/ui/PageLayout";
-import {
-  urlParsingRuleDelete,
-  urlParsingRuleInsert,
-  urlParsingRules,
-} from "../lib/block-db";
+import { urlParsingRules } from "../lib/block-db";
 
 export const Route = createFileRoute("/url-rules")({
   component: URLRulesComponent,
@@ -31,11 +27,11 @@ function URLRulesComponent() {
       ruleType: string;
       pattern: string;
     }) => {
-      await urlParsingRuleInsert(
-        newRule.domain,
-        newRule.ruleType,
-        newRule.pattern,
-      );
+      await urlParsingRules.insert({
+        id: `temp-${Date.now()}`,
+        ...newRule,
+        // biome-ignore lint/suspicious/noExplicitAny: using any for partial rule insert
+      } as any);
     },
     onSuccess: () => {
       setDomain("");
@@ -45,7 +41,7 @@ function URLRulesComponent() {
 
   const deleteMutation = createMutation(() => ({
     mutationFn: async (id: string) => {
-      await urlParsingRuleDelete(id);
+      await urlParsingRules.delete(id);
     },
   }));
 

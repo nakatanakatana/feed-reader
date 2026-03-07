@@ -1,6 +1,7 @@
 import { createClient } from "@connectrpc/connect";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { createCollection } from "@tanstack/solid-db";
+import { createRoot } from "solid-js";
 import type { ListFeed } from "../gen/feed/v1/feed_pb";
 import { FeedService } from "../gen/feed/v1/feed_pb";
 import type { Tag } from "../gen/tag/v1/tag_pb";
@@ -93,62 +94,67 @@ export const exportFeeds = async (feedIds: string[]) => {
   setTimeout(() => URL.revokeObjectURL(url), 100);
 };
 
-export const feeds = createCollection(
-  queryCollectionOptions({
-    id: "feeds",
-    queryClient,
-    queryKey: ["feeds"],
-    gcTime: 5 * 1000,
-    queryFn: async () => {
-      const response = await feedClient.listFeeds({});
-      return response.feeds.map((feed: ListFeed) => ({
-        id: feed.id,
-        url: feed.url,
-        link: feed.link,
-        title: feed.title,
-        unreadCount: feed.unreadCount,
-        lastFetchedAt: feed.lastFetchedAt,
-        nextFetch: feed.nextFetch,
-        tags: feed.tags,
-      }));
-    },
-    getKey: (feed: Feed) => feed.id,
-    onDelete: async ({ transaction }) => {
-      for (const mutation of transaction.mutations) {
-        if (mutation.type === "delete") {
-          await feedClient.deleteFeed({ id: mutation.key as string });
+export const feeds = createRoot(() =>
+  createCollection(
+    queryCollectionOptions({
+      id: "feeds",
+      queryClient,
+      queryKey: ["feeds"],
+      gcTime: 5 * 1000,
+      queryFn: async () => {
+        const response = await feedClient.listFeeds({});
+        return response.feeds.map((feed: ListFeed) => ({
+          id: feed.id,
+          url: feed.url,
+          link: feed.link,
+          title: feed.title,
+          unreadCount: feed.unreadCount,
+          lastFetchedAt: feed.lastFetchedAt,
+          nextFetch: feed.nextFetch,
+          tags: feed.tags,
+        }));
+      },
+      getKey: (feed: Feed) => feed.id,
+      onInsert: async ({ transaction }) => {
+        for (const m of transaction.mutations) {
+          if (m.type === "insert") {
+            const tagIds = m.modified.tags?.map((t) => t.id) || [];
+            await feedClient.createFeed({ url: m.modified.url, tagIds });
+          }
         }
-      }
-    },
-  }),
+        await queryClient.invalidateQueries({ queryKey: ["feeds"] });
+        await queryClient.invalidateQueries({ queryKey: ["tags"] });
+        await queryClient.invalidateQueries({ queryKey: ["feed-tags"] });
+      },
+      onDelete: async ({ transaction }) => {
+        for (const mutation of transaction.mutations) {
+          if (mutation.type === "delete") {
+            await feedClient.deleteFeed({ id: mutation.key as string });
+          }
+        }
+        await queryClient.invalidateQueries({ queryKey: ["feeds"] });
+        await queryClient.invalidateQueries({ queryKey: ["tags"] });
+        await queryClient.invalidateQueries({ queryKey: ["feed-tags"] });
+      },
+    }),
+  ),
 );
 
-export const feedInsert = async (url: string, tags: Tag[]) => {
-  const tagIds = tags.map((t) => t.id);
-  await feedClient.createFeed({ url, tagIds });
-  await queryClient.invalidateQueries({ queryKey: ["feeds"] });
-};
-
-export const feedDelete = async (id: string) => {
-  await feedClient.deleteFeed({ id });
-  await queryClient.invalidateQueries({ queryKey: ["feeds"] });
-  await queryClient.invalidateQueries({ queryKey: ["tags"] });
-  await queryClient.invalidateQueries({ queryKey: ["feed-tags"] });
-};
-
-export const feedTag = createCollection(
-  queryCollectionOptions({
-    id: "feed-tags",
-    queryClient,
-    queryKey: ["feed-tags"],
-    queryFn: async () => {
-      const response = await feedClient.listFeedTags({});
-      return response.feedTags.map((ft) => ({
-        id: `${ft.feedId}-${ft.tagId}`,
-        feedId: ft.feedId,
-        tagId: ft.tagId,
-      }));
-    },
-    getKey: (feedTag: FeedTag) => feedTag.id,
-  }),
+export const feedTag = createRoot(() =>
+  createCollection(
+    queryCollectionOptions({
+      id: "feed-tags",
+      queryClient,
+      queryKey: ["feed-tags"],
+      queryFn: async () => {
+        const response = await feedClient.listFeedTags({});
+        return response.feedTags.map((ft) => ({
+          id: `${ft.feedId}-${ft.tagId}`,
+          feedId: ft.feedId,
+          tagId: ft.tagId,
+        }));
+      },
+      getKey: (feedTag: FeedTag) => feedTag.id,
+    }),
+  ),
 );

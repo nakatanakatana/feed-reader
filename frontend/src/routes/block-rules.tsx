@@ -9,11 +9,7 @@ import { BlockRulesTable } from "../components/BlockRulesTable";
 import { BulkAddBlockRulesModal } from "../components/BulkAddBlockRulesModal";
 import { ActionButton } from "../components/ui/ActionButton";
 import { PageLayout } from "../components/ui/PageLayout";
-import {
-  itemBlockRuleDelete,
-  itemBlockRuleInsert,
-  itemBlockRules,
-} from "../lib/block-db";
+import { itemBlockRules } from "../lib/block-db";
 
 export type BlockRulesSortField = "ruleType" | "value" | "domain";
 
@@ -98,7 +94,11 @@ function BlockRulesComponent() {
       value: string;
       domain?: string;
     }) => {
-      await itemBlockRuleInsert([newRule]);
+      await itemBlockRules.insert({
+        id: `temp-${Date.now()}`,
+        ...newRule,
+        // biome-ignore lint/suspicious/noExplicitAny: using any for partial rule insert
+      } as any);
     },
     onSuccess: () => {
       setValue("");
@@ -110,13 +110,16 @@ function BlockRulesComponent() {
     mutationFn: async (
       rules: { ruleType: string; value: string; domain?: string }[],
     ) => {
-      await itemBlockRuleInsert(rules);
+      await itemBlockRules.insert(
+        // biome-ignore lint/suspicious/noExplicitAny: using any for bulk insert
+        rules.map((r) => ({ id: `temp-${Date.now()}`, ...r })) as any,
+      );
     },
   }));
 
   const deleteMutation = createMutation(() => ({
     mutationFn: async (id: string) => {
-      await itemBlockRuleDelete(id);
+      await itemBlockRules.delete(id);
     },
   }));
 

@@ -5,7 +5,11 @@ import { flex } from "../../styled-system/patterns";
 import { ItemList } from "../components/ItemList";
 import { ActionButton } from "../components/ui/ActionButton";
 import { PageLayout } from "../components/ui/PageLayout";
-import { itemReadCollection, items, lastItemsSyncedAt } from "../lib/db";
+import {
+  itemReadCollection,
+  itemsCollection,
+  lastItemsSyncedAt,
+} from "../lib/db";
 import type { DateFilterValue } from "../lib/item-utils";
 
 interface ItemsSearch {
@@ -27,7 +31,6 @@ export const Route = createFileRoute("/_items")({
 
 function ItemsLayout() {
   const search = Route.useSearch();
-  const itemsCollection = items();
 
   onMount(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -44,7 +47,7 @@ function ItemsLayout() {
       if (e.key === "r" && !e.ctrlKey && !e.metaKey && !e.altKey) {
         e.preventDefault();
         itemsCollection.utils.refetch();
-        itemReadCollection().utils.refetch();
+        itemReadCollection.utils.refetch();
       }
     };
 
@@ -79,7 +82,7 @@ function ItemsLayout() {
                 variant="secondary"
                 onClick={() => {
                   itemsCollection.utils.refetch();
-                  itemReadCollection().utils.refetch();
+                  itemReadCollection.utils.refetch();
                 }}
                 disabled={
                   (itemsCollection as unknown as { isFetching: boolean })

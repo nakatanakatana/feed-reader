@@ -6,7 +6,6 @@ import { flex, stack } from "../../styled-system/patterns";
 import {
   exportFeeds,
   type Feed,
-  feedDelete,
   feeds,
   feedTag,
   refreshFeeds,
@@ -119,7 +118,7 @@ export function FeedList() {
   const handleDelete = async (id: string) => {
     setDeleteError(null);
     try {
-      await feedDelete(id);
+      await feeds.delete(id);
     } catch (e) {
       setDeleteError(
         e instanceof Error ? e : new Error("Failed to delete feed"),

@@ -2,7 +2,7 @@ import { useLiveQuery } from "@tanstack/solid-db";
 import { createSignal, For, type JSX, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
-import { feedInsert } from "../lib/db";
+import { feeds } from "../lib/db";
 import { tagsFeedQuery } from "../lib/tag-db";
 import { ActionButton } from "./ui/ActionButton";
 import { HorizontalScrollList } from "./ui/HorizontalScrollList";
@@ -31,13 +31,18 @@ export function AddFeedForm(props: AddFeedFormProps) {
 
     try {
       const tags = tagsQuery().filter((t) => selectedTagIds().includes(t.id));
-      // @ts-expect-error
-      await feedInsert(url(), tags);
+      await feeds.insert({
+        id: `temp-${Date.now()}`,
+        url: url(),
+        tags,
+        // biome-ignore lint/suspicious/noExplicitAny: using any for partial feed insert
+      } as any);
 
       setUrl("");
       setSelectedTagIds([]);
     } catch (e) {
-      setError(e instanceof Error ? e : new Error("Unknown error"));
+      console.error("AddFeedForm error:", e);
+      setError(e instanceof Error ? e : new Error(String(e)));
     } finally {
       setIsPending(false);
     }

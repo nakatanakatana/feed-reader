@@ -87,7 +87,7 @@ describe("ItemDetailRouteView Reactivity", () => {
     );
   };
 
-  it("should correctly compute next/prev items based on reactive items()", async () => {
+  it("should correctly compute next/prev items based on reactive itemsCollection", async () => {
     // Enable showRead to avoid items disappearing during navigation tests
     itemStore.setShowRead(true);
 

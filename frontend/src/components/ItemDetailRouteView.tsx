@@ -1,7 +1,12 @@
 import { eq, useLiveQuery } from "@tanstack/solid-db";
 import { useNavigate } from "@tanstack/solid-router";
 import { createEffect, createMemo } from "solid-js";
-import { feedTag, type Item, items, updateItemReadStatus } from "../lib/db";
+import {
+  feedTag,
+  type Item,
+  itemsCollection,
+  updateItemReadStatus,
+} from "../lib/db";
 import { getPrefetchIds, prefetchItems } from "../lib/item-prefetch";
 import { itemStore } from "../lib/item-store";
 import type { DateFilterValue } from "../lib/item-utils";
@@ -43,7 +48,7 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
 
   const itemsQuery = useLiveQuery((q) => {
     let query = q
-      .from({ item: items() })
+      .from({ item: itemsCollection })
       .orderBy(({ item }) => item.publishedAt, {
         direction: "asc",
         nulls: "last",
