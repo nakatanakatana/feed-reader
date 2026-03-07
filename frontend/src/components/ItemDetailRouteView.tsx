@@ -1,7 +1,7 @@
 import { eq, useLiveQuery } from "@tanstack/solid-db";
 import { useNavigate } from "@tanstack/solid-router";
 import { createEffect, createMemo } from "solid-js";
-import { feedTag, type Item, items } from "../lib/db";
+import { feedTag, type Item, items, updateItemReadStatus } from "../lib/db";
 import { getPrefetchIds, prefetchItems } from "../lib/item-prefetch";
 import { itemStore } from "../lib/item-store";
 import type { DateFilterValue } from "../lib/item-utils";
@@ -145,9 +145,7 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
 
   const markCurrentAsRead = () => {
     if (!props.itemId || isEndOfList()) return;
-    items().update(props.itemId, (draft) => {
-      draft.isRead = true;
-    });
+    updateItemReadStatus([props.itemId], true);
   };
 
   const prevItemIdMemo = createMemo(() => {

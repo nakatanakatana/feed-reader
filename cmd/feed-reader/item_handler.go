@@ -394,10 +394,11 @@ func (s *ItemServer) ListItemRead(ctx context.Context, req *connect.Request[item
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
+	pageSize := int(limit)
 	hasNextPage := false
-	if len(rows) > int(limit) {
+	if len(rows) > pageSize {
 		hasNextPage = true
-		rows = rows[:limit]
+		rows = rows[:pageSize]
 	}
 
 	itemReads := make([]*itemv1.ItemRead, len(rows))

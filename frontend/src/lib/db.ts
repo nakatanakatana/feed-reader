@@ -28,9 +28,9 @@ export const db = {
 
 export const resetDatabase = () => {
   console.log("DB: resetDatabase called");
-  // resetQueries will clear data and trigger refetch for active queries
-  queryClient.resetQueries();
   setLastFetched(null);
   setLastReadFetched(null);
   setLastItemsSyncedAt(null);
+  // resetQueries will clear data and trigger refetch for active queries
+  queryClient.resetQueries();
 };
