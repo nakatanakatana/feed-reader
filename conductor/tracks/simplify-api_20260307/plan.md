@@ -8,7 +8,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md) b65602f
 
 ## Phase 2: Backend Implementation (Go)
-- [ ] Task: Update `sql/query.sql` to support cursor-based pagination for items and regenerate sqlc.
+- [x] Task: Update `sql/query.sql` to support cursor-based pagination for items and regenerate sqlc. d3f377e
 - [ ] Task: Update `cmd/feed-reader/handler.go` to match the new feed and tag proto definitions.
 - [ ] Task: Update `cmd/feed-reader/item_handler.go` to match the new item proto definitions and implement cursor pagination.
 - [ ] Task: Run backend tests and fix any breakages.
