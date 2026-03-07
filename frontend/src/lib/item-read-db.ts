@@ -152,23 +152,18 @@ export const itemReadCollectionOptions = {
   },
 };
 
-export const createItemReadCollection = () => {
+const collection = createRoot(() => {
   return createCollection(
     // biome-ignore lint/suspicious/noExplicitAny: using any for options
     queryCollectionOptions(itemReadCollectionOptions as any),
   );
-};
-
-const collection = createRoot(() => {
-  return createItemReadCollection();
 });
 
 export const itemReadCollection = () => collection;
 
 export const updateItemReadStatus = async (ids: string[], isRead: boolean) => {
-  const coll = itemReadCollection();
   try {
-    coll.utils.writeUpsert(
+    await itemReadCollection().utils.writeUpsert(
       ids.map((id) => ({
         id,
         isRead,
@@ -178,12 +173,6 @@ export const updateItemReadStatus = async (ids: string[], isRead: boolean) => {
   } catch (e) {
     console.warn("ItemRead collection cache update failed", e);
   }
-
-  // Always send the authoritative update to the server
-  await itemClient.updateItemStatus({
-    ids: ids,
-    isRead: isRead,
-  });
 };
 
 export const markItemsRead = updateItemReadStatus;
