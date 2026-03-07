@@ -13,12 +13,11 @@ const markAsToastEligible = (err: unknown) => {
   }
 };
 
-const isToastEligible = (err: unknown) => {
+const isToastEligible = (err: unknown): boolean => {
   return (
     typeof err === "object" &&
     err !== null &&
-    // biome-ignore lint/suspicious/noExplicitAny: using Symbol to mark handled errors
-    (err as any)[ERROR_TOAST_ELIGIBLE]
+    !!(err as Record<symbol, unknown>)[ERROR_TOAST_ELIGIBLE]
   );
 };
 

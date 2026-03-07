@@ -134,4 +134,96 @@ describe("ItemList Bulk Actions", () => {
     // Verify API called
     await expect.poll(() => updateCount).toBe(1);
   });
+
+  it("shows 'Processing...' immediately and makes a single API call for large selections (>100)", async () => {
+    const itemCount = 150;
+    const items = Array.from({ length: itemCount }).map((_, i) => ({
+      id: `${i}`,
+      title: `Item ${i}`,
+      publishedAt: "2026-01-26",
+      createdAt: "2026-01-26",
+      isRead: false,
+      feedId: "feed1",
+    }));
+    setupMockData(items);
+
+    let totalRequestCount = 0;
+    let fullBatchRequestCount = 0;
+    worker.use(
+      http.post(
+        "*/item.v1.ItemService/UpdateItemStatus",
+        async ({ request }) => {
+          totalRequestCount++;
+          const body = (await request.json()) as {
+            ids: string[];
+            isRead: boolean;
+          };
+          // Increment only if it's a valid update request that includes all selected items
+          if (body.isRead === true && body.ids.length === itemCount) {
+            fullBatchRequestCount++;
+          }
+          // Simulate some network delay so we can see "Processing..."
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          return HttpResponse.json(
+            toJson(
+              UpdateItemStatusResponseSchema,
+              create(UpdateItemStatusResponseSchema, {}),
+            ),
+          );
+        },
+      ),
+    );
+
+    const history = createMemoryHistory({ initialEntries: ["/"] });
+    const router = createRouter({ routeTree, history });
+
+    dispose = render(
+      () => (
+        <TransportProvider transport={transport}>
+          <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} />
+          </QueryClientProvider>
+        </TransportProvider>
+      ),
+      document.body,
+    );
+
+    await expect.element(page.getByText("Item 0")).toBeInTheDocument();
+
+    const selectAll = page.getByLabelText(/Select All/i);
+    await selectAll.click();
+
+    const bulkMarkBtn = page
+      .getByRole("button", { name: "Mark as Read" })
+      .first();
+    await expect.element(bulkMarkBtn).toBeVisible();
+
+    // handleBulkMarkAsRead is async and awaits the network request.
+    // Locator clicks from vitest/browser are async and wait for the handler to complete,
+    // which means we would only see the final state, not the intermediate "Processing..." UI.
+    // To verify that intermediate state, we trigger a standard native DOM click on the element.
+    const el = bulkMarkBtn.element() as HTMLElement;
+    el.click();
+
+    // Selection should still be checked while processing
+    await expect.element(selectAll).toBeChecked();
+
+    // The handler yields immediately via setTimeout(0) before doing heavy work,
+    // and Solid needs a turn to render the updated isBulkMarking state.
+    // We should wait for the element to appear.
+    await expect
+      .poll(() => page.getByText("Processing...").query())
+      .not.toBeNull();
+
+    // Wait for the simulated network request to complete and UI to update
+    await expect
+      .poll(() => page.getByText("Processing...").query(), { timeout: 5000 })
+      .toBeNull();
+
+    // Selection should be cleared after processing finishes
+    await expect.element(selectAll).not.toBeChecked();
+    // Use poll because the updateCount might be incremented slightly after the UI updates.
+    await expect.poll(() => totalRequestCount).toBe(1);
+    await expect.poll(() => fullBatchRequestCount).toBe(1);
+  });
 });
