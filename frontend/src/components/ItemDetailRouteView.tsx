@@ -145,7 +145,9 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
 
   const markCurrentAsRead = () => {
     if (!props.itemId || isEndOfList()) return;
-    updateItemReadStatus([props.itemId], true);
+    void updateItemReadStatus([props.itemId], true).catch((error) => {
+      console.error("Failed to update item read status", error);
+    });
   };
 
   const prevItemIdMemo = createMemo(() => {

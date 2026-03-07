@@ -255,6 +255,38 @@ describe("ItemRead collection options", () => {
 
       expect(itemClient.updateItemStatus).toHaveBeenCalled();
     });
+
+    it("should perform optimistic update and rollback on server failure", async () => {
+      // Setup initial state
+      const initialData = [{ id: "1", isRead: false, updatedAt: "initial-date" }];
+      queryClient.setQueryData(itemReadCollectionOptions.queryKey, initialData);
+
+      // Mock server to fail
+      const error = new Error("Server error");
+      // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
+      (itemClient.updateItemStatus as any).mockRejectedValue(error);
+
+      // Spy on writeUpsert to verify call order and data
+      const writeUpsertSpy = vi.spyOn(itemReadCollection().utils, "writeUpsert");
+
+      // Attempt update
+      await expect(updateItemReadStatus(["1"], true)).rejects.toThrow("Server error");
+
+      // Verify call order:
+      // 1. Optimistic writeUpsert (id: "1", isRead: true)
+      // 2. Rollback writeUpsert (id: "1", isRead: false)
+      expect(writeUpsertSpy).toHaveBeenCalledTimes(2);
+
+      // First call (optimistic)
+      expect(writeUpsertSpy).toHaveBeenNthCalledWith(1, expect.arrayContaining([
+        expect.objectContaining({ id: "1", isRead: true })
+      ]));
+
+      // Second call (rollback)
+      expect(writeUpsertSpy).toHaveBeenNthCalledWith(2, expect.arrayContaining([
+        expect.objectContaining({ id: "1", isRead: false })
+      ]));
+    });
   });
 
   describe("Conflict Resolution", () => {

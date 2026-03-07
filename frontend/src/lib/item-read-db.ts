@@ -115,12 +115,14 @@ const collection = createRoot(() => {
 export const itemReadCollection = () => collection;
 
 export const updateItemReadStatus = async (ids: string[], isRead: boolean) => {
-  // Always send the authoritative update to the server first
-  await itemClient.updateItemStatus({
-    ids: ids,
-    isRead: isRead,
-  });
+  // Save previous states for rollback if needed
+  const existingData =
+    (queryClient.getQueryData(itemReadCollectionOptions.queryKey) as
+      | ItemRead[]
+      | undefined) || [];
+  const previousStates = existingData.filter((d) => ids.includes(d.id));
 
+  // Update local cache first (optimistic update)
   try {
     await itemReadCollection().utils.writeUpsert(
       ids.map((id) => ({
@@ -131,14 +133,34 @@ export const updateItemReadStatus = async (ids: string[], isRead: boolean) => {
     );
   } catch (e) {
     // If the collection is not ready, we can safely ignore the local cache update
-    // because the server has been updated and the next delta sync will fetch the state.
-    if (e instanceof Error && e.name === "SyncNotInitializedError") {
-      console.warn(
-        "ItemRead collection not ready for optimistic update, skipping local cache update",
-      );
-    } else {
+    // because the server will be updated and the next delta sync will fetch the state.
+    if (!(e instanceof Error && e.name === "SyncNotInitializedError")) {
       console.warn("ItemRead collection cache update failed", e);
     }
+  }
+
+  // Then send the authoritative update to the server
+  try {
+    await itemClient.updateItemStatus({
+      ids: ids,
+      isRead: isRead,
+    });
+  } catch (e) {
+    console.warn("Failed to update item status on server, rolling back", e);
+
+    // Rollback local cache to previous states
+    try {
+      if (previousStates.length > 0) {
+        await itemReadCollection().utils.writeUpsert(previousStates);
+      }
+      // Note: We don't have a direct way to remove newly added optimistic records
+      // if they weren't in the cache before, but restoring known previous states
+      // covers most rollback scenarios.
+    } catch (re) {
+      console.error("Rollback failed", re);
+    }
+
+    throw e;
   }
 };
 
