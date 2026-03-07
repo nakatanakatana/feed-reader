@@ -4,13 +4,15 @@
 
 import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
+import type { Timestamp } from "@bufbuild/protobuf/wkt";
+import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file tag/v1/tag.proto.
  */
 export const file_tag_v1_tag: GenFile = /*@__PURE__*/
-  fileDesc("ChB0YWcvdjEvdGFnLnByb3RvEgZ0YWcudjEicQoDVGFnEgoKAmlkGAEgASgJEgwKBG5hbWUYAiABKAkSEgoKY3JlYXRlZF9hdBgDIAEoCRISCgp1cGRhdGVkX2F0GAQgASgJEhQKDHVucmVhZF9jb3VudBgFIAEoAxISCgpmZWVkX2NvdW50GAYgASgDIk0KB0xpc3RUYWcSCgoCaWQYASABKAkSDAoEbmFtZRgCIAEoCRIUCgx1bnJlYWRfY291bnQYAyABKAMSEgoKZmVlZF9jb3VudBgEIAEoAyIgChBDcmVhdGVUYWdSZXF1ZXN0EgwKBG5hbWUYASABKAkiLQoRQ3JlYXRlVGFnUmVzcG9uc2USGAoDdGFnGAEgASgLMgsudGFnLnYxLlRhZyIRCg9MaXN0VGFnc1JlcXVlc3QiTQoQTGlzdFRhZ3NSZXNwb25zZRIdCgR0YWdzGAEgAygLMg8udGFnLnYxLkxpc3RUYWcSGgoSdG90YWxfdW5yZWFkX2NvdW50GAIgASgDIh4KEERlbGV0ZVRhZ1JlcXVlc3QSCgoCaWQYASABKAkiEwoRRGVsZXRlVGFnUmVzcG9uc2Uy1AEKClRhZ1NlcnZpY2USQAoJQ3JlYXRlVGFnEhgudGFnLnYxLkNyZWF0ZVRhZ1JlcXVlc3QaGS50YWcudjEuQ3JlYXRlVGFnUmVzcG9uc2USQgoITGlzdFRhZ3MSFy50YWcudjEuTGlzdFRhZ3NSZXF1ZXN0GhgudGFnLnYxLkxpc3RUYWdzUmVzcG9uc2UiA5ACARJACglEZWxldGVUYWcSGC50YWcudjEuRGVsZXRlVGFnUmVxdWVzdBoZLnRhZy52MS5EZWxldGVUYWdSZXNwb25zZUI7WjlnaXRodWIuY29tL25ha2F0YW5ha2F0YW5hL2ZlZWQtcmVhZGVyL2dlbi9nby90YWcvdjE7dGFndjFiBnByb3RvMw");
+  fileDesc("ChB0YWcvdjEvdGFnLnByb3RvEgZ0YWcudjEiqQEKA1RhZxIKCgJpZBgBIAEoCRIMCgRuYW1lGAIgASgJEi4KCmNyZWF0ZWRfYXQYAyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEi4KCnVwZGF0ZWRfYXQYBCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhQKDHVucmVhZF9jb3VudBgFIAEoAxISCgpmZWVkX2NvdW50GAYgASgDIiAKEENyZWF0ZVRhZ1JlcXVlc3QSDAoEbmFtZRgBIAEoCSItChFDcmVhdGVUYWdSZXNwb25zZRIYCgN0YWcYASABKAsyCy50YWcudjEuVGFnIhEKD0xpc3RUYWdzUmVxdWVzdCJJChBMaXN0VGFnc1Jlc3BvbnNlEhkKBHRhZ3MYASADKAsyCy50YWcudjEuVGFnEhoKEnRvdGFsX3VucmVhZF9jb3VudBgCIAEoAyIeChBEZWxldGVUYWdSZXF1ZXN0EgoKAmlkGAEgASgJIhMKEURlbGV0ZVRhZ1Jlc3BvbnNlMtQBCgpUYWdTZXJ2aWNlEkAKCUNyZWF0ZVRhZxIYLnRhZy52MS5DcmVhdGVUYWdSZXF1ZXN0GhkudGFnLnYxLkNyZWF0ZVRhZ1Jlc3BvbnNlEkIKCExpc3RUYWdzEhcudGFnLnYxLkxpc3RUYWdzUmVxdWVzdBoYLnRhZy52MS5MaXN0VGFnc1Jlc3BvbnNlIgOQAgESQAoJRGVsZXRlVGFnEhgudGFnLnYxLkRlbGV0ZVRhZ1JlcXVlc3QaGS50YWcudjEuRGVsZXRlVGFnUmVzcG9uc2VCO1o5Z2l0aHViLmNvbS9uYWthdGFuYWthdGFuYS9mZWVkLXJlYWRlci9nZW4vZ28vdGFnL3YxO3RhZ3YxYgZwcm90bzM", [file_google_protobuf_timestamp]);
 
 /**
  * @generated from message tag.v1.Tag
@@ -27,14 +29,14 @@ export type Tag = Message<"tag.v1.Tag"> & {
   name: string;
 
   /**
-   * @generated from field: string created_at = 3;
+   * @generated from field: google.protobuf.Timestamp created_at = 3;
    */
-  createdAt: string;
+  createdAt?: Timestamp;
 
   /**
-   * @generated from field: string updated_at = 4;
+   * @generated from field: google.protobuf.Timestamp updated_at = 4;
    */
-  updatedAt: string;
+  updatedAt?: Timestamp;
 
   /**
    * @generated from field: int64 unread_count = 5;
@@ -55,38 +57,6 @@ export const TagSchema: GenMessage<Tag> = /*@__PURE__*/
   messageDesc(file_tag_v1_tag, 0);
 
 /**
- * @generated from message tag.v1.ListTag
- */
-export type ListTag = Message<"tag.v1.ListTag"> & {
-  /**
-   * @generated from field: string id = 1;
-   */
-  id: string;
-
-  /**
-   * @generated from field: string name = 2;
-   */
-  name: string;
-
-  /**
-   * @generated from field: int64 unread_count = 3;
-   */
-  unreadCount: bigint;
-
-  /**
-   * @generated from field: int64 feed_count = 4;
-   */
-  feedCount: bigint;
-};
-
-/**
- * Describes the message tag.v1.ListTag.
- * Use `create(ListTagSchema)` to create a new message.
- */
-export const ListTagSchema: GenMessage<ListTag> = /*@__PURE__*/
-  messageDesc(file_tag_v1_tag, 1);
-
-/**
  * @generated from message tag.v1.CreateTagRequest
  */
 export type CreateTagRequest = Message<"tag.v1.CreateTagRequest"> & {
@@ -101,7 +71,7 @@ export type CreateTagRequest = Message<"tag.v1.CreateTagRequest"> & {
  * Use `create(CreateTagRequestSchema)` to create a new message.
  */
 export const CreateTagRequestSchema: GenMessage<CreateTagRequest> = /*@__PURE__*/
-  messageDesc(file_tag_v1_tag, 2);
+  messageDesc(file_tag_v1_tag, 1);
 
 /**
  * @generated from message tag.v1.CreateTagResponse
@@ -118,7 +88,7 @@ export type CreateTagResponse = Message<"tag.v1.CreateTagResponse"> & {
  * Use `create(CreateTagResponseSchema)` to create a new message.
  */
 export const CreateTagResponseSchema: GenMessage<CreateTagResponse> = /*@__PURE__*/
-  messageDesc(file_tag_v1_tag, 3);
+  messageDesc(file_tag_v1_tag, 2);
 
 /**
  * @generated from message tag.v1.ListTagsRequest
@@ -131,16 +101,16 @@ export type ListTagsRequest = Message<"tag.v1.ListTagsRequest"> & {
  * Use `create(ListTagsRequestSchema)` to create a new message.
  */
 export const ListTagsRequestSchema: GenMessage<ListTagsRequest> = /*@__PURE__*/
-  messageDesc(file_tag_v1_tag, 4);
+  messageDesc(file_tag_v1_tag, 3);
 
 /**
  * @generated from message tag.v1.ListTagsResponse
  */
 export type ListTagsResponse = Message<"tag.v1.ListTagsResponse"> & {
   /**
-   * @generated from field: repeated tag.v1.ListTag tags = 1;
+   * @generated from field: repeated tag.v1.Tag tags = 1;
    */
-  tags: ListTag[];
+  tags: Tag[];
 
   /**
    * @generated from field: int64 total_unread_count = 2;
@@ -153,7 +123,7 @@ export type ListTagsResponse = Message<"tag.v1.ListTagsResponse"> & {
  * Use `create(ListTagsResponseSchema)` to create a new message.
  */
 export const ListTagsResponseSchema: GenMessage<ListTagsResponse> = /*@__PURE__*/
-  messageDesc(file_tag_v1_tag, 5);
+  messageDesc(file_tag_v1_tag, 4);
 
 /**
  * @generated from message tag.v1.DeleteTagRequest
@@ -170,7 +140,7 @@ export type DeleteTagRequest = Message<"tag.v1.DeleteTagRequest"> & {
  * Use `create(DeleteTagRequestSchema)` to create a new message.
  */
 export const DeleteTagRequestSchema: GenMessage<DeleteTagRequest> = /*@__PURE__*/
-  messageDesc(file_tag_v1_tag, 6);
+  messageDesc(file_tag_v1_tag, 5);
 
 /**
  * @generated from message tag.v1.DeleteTagResponse
@@ -183,7 +153,7 @@ export type DeleteTagResponse = Message<"tag.v1.DeleteTagResponse"> & {
  * Use `create(DeleteTagResponseSchema)` to create a new message.
  */
 export const DeleteTagResponseSchema: GenMessage<DeleteTagResponse> = /*@__PURE__*/
-  messageDesc(file_tag_v1_tag, 7);
+  messageDesc(file_tag_v1_tag, 6);
 
 /**
  * @generated from service tag.v1.TagService

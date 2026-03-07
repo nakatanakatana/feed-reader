@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package tag.v1;
 
+import "google/protobuf/timestamp.proto";
+
 option go_package = "github.com/nakatanakatana/feed-reader/gen/go/tag/v1;tagv1";
 
 service TagService {
@@ -15,17 +17,10 @@ service TagService {
 message Tag {
   string id = 1;
   string name = 2;
-  string created_at = 3;
-  string updated_at = 4;
+  google.protobuf.Timestamp created_at = 3;
+  google.protobuf.Timestamp updated_at = 4;
   int64 unread_count = 5;
   int64 feed_count = 6;
-}
-
-message ListTag {
-  string id = 1;
-  string name = 2;
-  int64 unread_count = 3;
-  int64 feed_count = 4;
 }
 
 message CreateTagRequest {
@@ -39,7 +34,7 @@ message CreateTagResponse {
 message ListTagsRequest {}
 
 message ListTagsResponse {
-  repeated ListTag tags = 1;
+  repeated Tag tags = 1;
   int64 total_unread_count = 2;
 }
 

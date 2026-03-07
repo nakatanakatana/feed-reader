@@ -39,7 +39,7 @@ message ItemRead {
 }
 
 message ListItemReadRequest {
-  optional google.protobuf.Timestamp updated_since = 1;
+  optional google.protobuf.Timestamp since = 1;
   int32 page_size = 2;
   string page_token = 3;
 }
@@ -54,25 +54,14 @@ message Item {
   string url = 2;
   string title = 3;
   string description = 4;
-  string published_at = 5;
+  google.protobuf.Timestamp published_at = 5;
   string feed_id = 6;
   bool is_read = 7;
   string author = 9;
   string content = 10;
   string image_url = 11;
   string categories = 12;
-  string created_at = 13;
-}
-
-message ListItem {
-  string id = 1;
-  string title = 2;
-  string description = 3;
-  string published_at = 4;
-  string created_at = 5;
-  bool is_read = 6;
-  string feed_id = 7;
-  string url = 8;
+  google.protobuf.Timestamp created_at = 13;
 }
 
 message GetItemRequest {
@@ -89,13 +78,13 @@ message ListItemsRequest {
   optional string tag_id = 7;
   optional google.protobuf.Timestamp since = 8;
 
-  int32 limit = 5;
-  int32 offset = 6;
+  int32 page_size = 5;
+  string page_token = 6;
 }
 
 message ListItemsResponse {
-  repeated ListItem items = 1;
-  int32 total_count = 2;
+  repeated Item items = 1;
+  string next_page_token = 2;
 }
 
 message UpdateItemStatusRequest {
@@ -112,8 +101,8 @@ message ListItemFeedsRequest {
 message ItemFeed {
   string feed_id = 1;
   optional string feed_title = 2;
-  optional string published_at = 3;
-  string created_at = 4;
+  optional google.protobuf.Timestamp published_at = 3;
+  google.protobuf.Timestamp created_at = 4;
 }
 
 message ListItemFeedsResponse {
