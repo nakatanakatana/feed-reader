@@ -43,9 +43,9 @@
     - [x] **Action**: Trigger `ItemRead` delta sync immediately upon Refresh and reset the background sync timer.
 - [x] Task: Conductor - User Manual Verification 'Phase 3: UI Integration & Refresh Mechanism' (Protocol in workflow.md) e81e9bd
 
-## Phase 4: Final Polishing & Edge Cases
+## Phase 4: Final Polishing & Edge Cases [checkpoint: ed7cb75]
 - [x] Task: Conflict Resolution ("Server Wins") b4c65bc
     - [x] Verify that server-provided read states correctly overwrite local states during sync.
 - [x] Task: Transactional Bulk Updates b4c65bc
     - [x] Ensure "Mark all as read" operations use `tanstack/db` transactions to batch local updates and sync requests.
-- [~] Task: Conductor - User Manual Verification 'Phase 4: Final Polishing & Edge Cases' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Final Polishing & Edge Cases' (Protocol in workflow.md) ed7cb75
