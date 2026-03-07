@@ -1,11 +1,11 @@
 # Implementation Plan: API Simplification and Standardization
 
-## Phase 1: Protocol Buffer Definitions
+## Phase 1: Protocol Buffer Definitions [checkpoint: b65602f]
 - [x] Task: Update `proto/feed/v1/feed.proto` (Remove unused fields, update to Timestamp, merge message types, rename next_fetch). 8eadfaf
 - [x] Task: Update `proto/tag/v1/tag.proto` (Update to Timestamp, merge message types). 8eadfaf
 - [x] Task: Update `proto/item/v1/item.proto` (Update to Timestamp, merge message types, update pagination params). 8eadfaf
 - [x] Task: Run `buf generate` to generate Go and TypeScript code. 8eadfaf
-- [ ] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md) b65602f
 
 ## Phase 2: Backend Implementation (Go)
 - [ ] Task: Update `sql/query.sql` to support cursor-based pagination for items and regenerate sqlc.
