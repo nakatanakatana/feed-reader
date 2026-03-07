@@ -1,8 +1,9 @@
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { createCollection } from "@tanstack/solid-db";
-import { createRoot, createSignal } from "solid-js";
+import { createRoot } from "solid-js";
 import { itemClient } from "./api/client";
 import { lastFetched as itemsLastFetched } from "./item-db";
+import { lastReadFetched, setLastReadFetched } from "./item-read-sync-state";
 import { queryClient } from "./query";
 
 export interface ItemRead {
@@ -10,10 +11,6 @@ export interface ItemRead {
   isRead: boolean;
   updatedAt: string;
 }
-
-export const [lastReadFetched, setLastReadFetched] = createSignal<Date | null>(
-  null,
-);
 
 export const itemReadCollectionOptions = {
   id: "item-reads",
@@ -39,8 +36,6 @@ export const itemReadCollectionOptions = {
       pageSize: 1000,
     });
 
-    setLastReadFetched(new Date());
-
     const newReads: ItemRead[] = (response.itemReads || []).map((ir) => ({
       id: ir.itemId,
       isRead: ir.isRead,
@@ -48,6 +43,17 @@ export const itemReadCollectionOptions = {
         ? new Date(Number(ir.updatedAt.seconds) * 1000).toISOString()
         : new Date().toISOString(),
     }));
+
+    // Update anchor based on the most recent updatedAt from the server
+    if (newReads.length > 0) {
+      const maxUpdatedAt = new Date(
+        Math.max(...newReads.map((r) => new Date(r.updatedAt).getTime())),
+      );
+      setLastReadFetched(maxUpdatedAt);
+    } else {
+      // If no new data, use current time but allow for small overlap/drift
+      setLastReadFetched(new Date());
+    }
 
     const readMap = new Map<string, ItemRead>();
     for (const read of existingData) {
@@ -62,36 +68,49 @@ export const itemReadCollectionOptions = {
   getKey: (read: ItemRead) => read.id,
   // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB transaction
   onInsert: async ({ transaction }: any) => {
-    // biome-ignore lint/suspicious/noExplicitAny: using any for mutation
-    const ids = transaction.mutations.map((m: any) => {
-      return m.modified.id;
-    });
+    const idsByIsRead = new Map<boolean, string[]>();
 
-    const firstMutation = transaction.mutations[0];
-    const isRead = firstMutation.modified.isRead;
+    for (const m of transaction.mutations) {
+      const id = m.modified.id;
+      const isRead = m.modified.isRead;
+      let group = idsByIsRead.get(isRead);
+      if (!group) {
+        group = [];
+        idsByIsRead.set(isRead, group);
+      }
+      group.push(id);
+    }
 
-    await itemClient.updateItemStatus({
-      ids: ids,
-      isRead: isRead,
-    });
+    for (const [isRead, ids] of idsByIsRead.entries()) {
+      await itemClient.updateItemStatus({
+        ids: ids,
+        isRead: isRead,
+      });
+    }
 
     return { refetch: false };
   },
   // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB transaction
   onUpdate: async ({ transaction }: any) => {
-    // biome-ignore lint/suspicious/noExplicitAny: using any for mutation
-    const ids = transaction.mutations.map((m: any) => {
-      // Update local state immediately (handled by tanstack/db)
-      return m.modified.id;
-    });
+    const idsByIsRead = new Map<boolean, string[]>();
 
-    const firstMutation = transaction.mutations[0];
-    const isRead = firstMutation.modified.isRead;
+    for (const m of transaction.mutations) {
+      const id = m.modified.id;
+      const isRead = m.modified.isRead;
+      let group = idsByIsRead.get(isRead);
+      if (!group) {
+        group = [];
+        idsByIsRead.set(isRead, group);
+      }
+      group.push(id);
+    }
 
-    await itemClient.updateItemStatus({
-      ids: ids,
-      isRead: isRead,
-    });
+    for (const [isRead, ids] of idsByIsRead.entries()) {
+      await itemClient.updateItemStatus({
+        ids: ids,
+        isRead: isRead,
+      });
+    }
 
     return { refetch: false };
   },

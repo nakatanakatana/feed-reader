@@ -191,7 +191,7 @@ describe("ItemList", () => {
           title: "Item 1",
           publishedAt: fixedDate,
           createdAt: fixedDate,
-          isRead: false, // Server still thinks it's unread in main list
+          isRead: true, // Now prioritize item state for optimistic updates
         },
       ],
       [

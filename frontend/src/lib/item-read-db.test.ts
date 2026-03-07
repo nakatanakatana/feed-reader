@@ -1,10 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { itemClient } from "./api/client";
-import {
-  type ItemRead,
-  itemReadCollectionOptions,
-  setLastReadFetched,
-} from "./item-read-db";
+import { type ItemRead, itemReadCollectionOptions } from "./item-read-db";
+import { lastReadFetched, setLastReadFetched } from "./item-read-sync-state";
 import { queryClient } from "./query";
 
 describe("ItemRead collection options", () => {
@@ -102,6 +99,45 @@ describe("ItemRead collection options", () => {
         }),
       );
     });
+
+    it("should advance the anchor based on the most recent updatedAt from the server", async () => {
+      const initialAnchor = new Date(2026, 0, 1);
+      setLastReadFetched(initialAnchor);
+
+      const serverTime1 = new Date(2026, 0, 2);
+      const serverTime2 = new Date(2026, 0, 3);
+
+      const mockItemReads = [
+        {
+          itemId: "1",
+          isRead: true,
+          updatedAt: {
+            seconds: BigInt(serverTime1.getTime() / 1000),
+            nanos: 0,
+          },
+        },
+        {
+          itemId: "2",
+          isRead: true,
+          updatedAt: {
+            seconds: BigInt(serverTime2.getTime() / 1000),
+            nanos: 0,
+          },
+        },
+      ];
+
+      // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
+      (itemClient.listItemRead as any).mockResolvedValue({
+        itemReads: mockItemReads,
+      });
+
+      await // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB context
+      (itemReadCollectionOptions as any).queryFn({
+        queryKey: ["item-reads"],
+      });
+
+      expect(lastReadFetched()).toEqual(serverTime2);
+    });
   });
 
   describe("onUpdate", () => {
@@ -127,6 +163,34 @@ describe("ItemRead collection options", () => {
         isRead: true,
       });
       expect(result).toEqual({ refetch: false });
+    });
+
+    it("should handle mixed isRead values in a single transaction", async () => {
+      // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
+      (itemClient.updateItemStatus as any).mockResolvedValue({});
+
+      const mockTransaction = {
+        mutations: [
+          { modified: { id: "1", isRead: true } },
+          { modified: { id: "2", isRead: false } },
+          { modified: { id: "3", isRead: true } },
+        ],
+      };
+
+      await // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB transaction
+      (itemReadCollectionOptions as any).onUpdate({
+        transaction: mockTransaction,
+      });
+
+      expect(itemClient.updateItemStatus).toHaveBeenCalledTimes(2);
+      expect(itemClient.updateItemStatus).toHaveBeenCalledWith({
+        ids: ["1", "3"],
+        isRead: true,
+      });
+      expect(itemClient.updateItemStatus).toHaveBeenCalledWith({
+        ids: ["2"],
+        isRead: false,
+      });
     });
   });
 

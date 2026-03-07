@@ -2,7 +2,7 @@ import { Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import type { Item } from "../lib/db";
-import { items } from "../lib/db";
+import { items, updateItemReadStatus } from "../lib/db";
 import { extractHostname, formatDate } from "../lib/item-utils";
 import { GlobeIcon, PublishedIcon, ReceivedIcon } from "./ui/Icons";
 
@@ -16,6 +16,7 @@ interface ItemRowProps {
 export function ItemRow(props: ItemRowProps) {
   const setReadStatus = async (newIsRead: boolean) => {
     try {
+      await updateItemReadStatus([props.item.id], newIsRead);
       items().update(props.item.id, (draft) => {
         draft.id = props.item.id;
         draft.isRead = newIsRead;
