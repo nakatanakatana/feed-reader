@@ -198,11 +198,10 @@ describe("ItemList Bulk Actions", () => {
       .first();
     await expect.element(bulkMarkBtn).toBeVisible();
 
-    // Since handleBulkMarkAsRead is async and awaits the network request,
-    // userEvent.click will wait for the entire handler to complete.
-    // To verify "Processing..." is shown, we trigger a standard native DOM click.
-    // Vitest/Playwright locator clicks are async and wait for the handler to finish,
-    // which prevents us from asserting the intermediate UI state.
+    // handleBulkMarkAsRead is async and awaits the network request.
+    // Locator clicks from vitest/browser are async and wait for the handler to complete,
+    // which means we would only see the final state, not the intermediate "Processing..." UI.
+    // To verify that intermediate state, we trigger a standard native DOM click on the element.
     const el = bulkMarkBtn.element() as HTMLElement;
     el.click();
 
