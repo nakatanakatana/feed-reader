@@ -44,8 +44,8 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 3: UI Integration & Refresh Mechanism' (Protocol in workflow.md) e81e9bd
 
 ## Phase 4: Final Polishing & Edge Cases
-- [ ] Task: Conflict Resolution ("Server Wins")
-    - [ ] Verify that server-provided read states correctly overwrite local states during sync.
-- [ ] Task: Transactional Bulk Updates
-    - [ ] Ensure "Mark all as read" operations use `tanstack/db` transactions to batch local updates and sync requests.
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Final Polishing & Edge Cases' (Protocol in workflow.md)
+- [x] Task: Conflict Resolution ("Server Wins") b4c65bc
+    - [x] Verify that server-provided read states correctly overwrite local states during sync.
+- [x] Task: Transactional Bulk Updates b4c65bc
+    - [x] Ensure "Mark all as read" operations use `tanstack/db` transactions to batch local updates and sync requests.
+- [~] Task: Conductor - User Manual Verification 'Phase 4: Final Polishing & Edge Cases' (Protocol in workflow.md)
