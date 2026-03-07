@@ -58,30 +58,6 @@ describe("ItemRead collection options", () => {
       expect(data[1].isRead).toBe(false);
     });
 
-    it("should use lastItemsSyncedAt as initial baseline when lastReadFetched is null", async () => {
-      const syncedAt = new Date("2026-03-01T10:00:00Z");
-      setLastItemsSyncedAt(syncedAt);
-
-      // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
-      (itemClient.listItemRead as any).mockResolvedValue({
-        itemReads: [],
-      });
-
-      // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB context
-      await (itemReadCollectionOptions as any).queryFn({
-        queryKey: ["item-reads"],
-      });
-
-      expect(itemClient.listItemRead).toHaveBeenCalledWith(
-        expect.objectContaining({
-          updatedSince: {
-            seconds: BigInt(Math.floor(syncedAt.getTime() / 1000)),
-            nanos: (syncedAt.getTime() % 1000) * 1000000,
-          },
-        }),
-      );
-    });
-
     it("should advance anchor based on max server timestamp", async () => {
       const anchorDate = new Date("2026-03-07T12:00:00Z");
       setLastReadFetched(anchorDate);
@@ -256,9 +232,11 @@ describe("ItemRead collection options", () => {
       expect(itemClient.updateItemStatus).toHaveBeenCalled();
     });
 
-    it("should perform optimistic update and rollback on server failure", async () => {
-      // Setup initial state
-      const initialData = [{ id: "1", isRead: false, updatedAt: "initial-date" }];
+    it("should perform optimistic update and rollback on server failure, cleaning up new records", async () => {
+      // Setup initial state: id: "1" exists, "2" is new
+      const initialData = [
+        { id: "1", isRead: false, updatedAt: "initial-date" },
+      ];
       queryClient.setQueryData(itemReadCollectionOptions.queryKey, initialData);
 
       // Mock server to fail
@@ -266,26 +244,18 @@ describe("ItemRead collection options", () => {
       // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
       (itemClient.updateItemStatus as any).mockRejectedValue(error);
 
-      // Spy on writeUpsert to verify call order and data
-      const writeUpsertSpy = vi.spyOn(itemReadCollection().utils, "writeUpsert");
+      // Attempt update for both existing and new IDs
+      await expect(updateItemReadStatus(["1", "2"], true)).rejects.toThrow(
+        "Server error",
+      );
 
-      // Attempt update
-      await expect(updateItemReadStatus(["1"], true)).rejects.toThrow("Server error");
-
-      // Verify call order:
-      // 1. Optimistic writeUpsert (id: "1", isRead: true)
-      // 2. Rollback writeUpsert (id: "1", isRead: false)
-      expect(writeUpsertSpy).toHaveBeenCalledTimes(2);
-
-      // First call (optimistic)
-      expect(writeUpsertSpy).toHaveBeenNthCalledWith(1, expect.arrayContaining([
-        expect.objectContaining({ id: "1", isRead: true })
-      ]));
-
-      // Second call (rollback)
-      expect(writeUpsertSpy).toHaveBeenNthCalledWith(2, expect.arrayContaining([
-        expect.objectContaining({ id: "1", isRead: false })
-      ]));
+      const cache = queryClient.getQueryData(
+        itemReadCollectionOptions.queryKey,
+      ) as ItemRead[];
+      // id: "1" should be rolled back to false
+      expect(cache.find((i) => i.id === "1")?.isRead).toBe(false);
+      // id: "2" should be removed from cache
+      expect(cache.find((i) => i.id === "2")).toBeUndefined();
     });
   });
 

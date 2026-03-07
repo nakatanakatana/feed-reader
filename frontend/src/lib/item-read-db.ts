@@ -2,11 +2,7 @@ import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { createCollection } from "@tanstack/solid-db";
 import { createRoot } from "solid-js";
 import { itemClient } from "./api/client";
-import {
-  lastItemsSyncedAt,
-  lastReadFetched,
-  setLastReadFetched,
-} from "./item-sync-state";
+import { lastReadFetched, setLastReadFetched } from "./item-sync-state";
 import { dateToTimestamp } from "./item-utils";
 import { queryClient } from "./query";
 
@@ -28,11 +24,7 @@ export const itemReadCollectionOptions = {
       (queryClient.getQueryData(queryKey) as ItemRead[]) || [];
 
     // Initial sync anchor baseline
-    let anchor = lastReadFetched();
-    if (!anchor) {
-      // Use the completion time of the items list sync as the initial baseline
-      anchor = lastItemsSyncedAt();
-    }
+    const anchor = lastReadFetched();
 
     // Skip fetching read states if we don't have an anchor yet.
     // The anchor will be initialized during the initial items fetch.
@@ -151,11 +143,21 @@ export const updateItemReadStatus = async (ids: string[], isRead: boolean) => {
     // Rollback local cache to previous states
     try {
       if (previousStates.length > 0) {
-        await itemReadCollection().utils.writeUpsert(previousStates);
+        // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB writeUpsert
+        await itemReadCollection().utils.writeUpsert(previousStates as any);
       }
-      // Note: We don't have a direct way to remove newly added optimistic records
-      // if they weren't in the cache before, but restoring known previous states
-      // covers most rollback scenarios.
+
+      // Explicitly remove optimistic rows for ids that had no prior state
+      const idsWithPreviousState = new Set(previousStates.map((s) => s.id));
+      const idsToRemove = ids.filter((id) => !idsWithPreviousState.has(id));
+
+      if (idsToRemove.length > 0) {
+        queryClient.setQueryData(
+          itemReadCollectionOptions.queryKey,
+          (oldData: ItemRead[] | undefined) =>
+            (oldData || []).filter((item) => !idsToRemove.includes(item.id)),
+        );
+      }
     } catch (re) {
       console.error("Rollback failed", re);
     }

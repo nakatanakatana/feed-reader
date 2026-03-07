@@ -78,15 +78,6 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
         const syncTime = new Date();
         setLastItemsSyncedAt(syncTime);
 
-        // Initialize the read-state anchor if it hasn't been set yet.
-        // This baseline prevents fetching all historical read states, while
-        // using a small overlap window to avoid skipping concurrent updates.
-        if (!lastReadFetched()) {
-          const overlapMs = 5 * 1000; // 5 seconds overlap
-          const initialReadAnchor = new Date(syncTime.getTime() - overlapMs);
-          setLastReadFetched(initialReadAnchor);
-        }
-
         if (response.items && response.items.length > 0) {
           const validDates = response.items
             .map((item: ProtoListItem) =>
@@ -94,8 +85,18 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
             )
             .filter((t: number) => !Number.isNaN(t));
 
+          const maxTime = validDates.length > 0 ? Math.max(...validDates) : 0;
+
+          // Initialize the read-state anchor if it hasn't been set yet.
+          // This baseline prevents fetching all historical read states, while
+          // using a small overlap window to avoid skipping concurrent updates.
+          if (!lastReadFetched() && maxTime > 0) {
+            const overlapMs = 5 * 1000; // 5 seconds overlap
+            const initialReadAnchor = new Date(maxTime - overlapMs);
+            setLastReadFetched(initialReadAnchor);
+          }
+
           if (validDates.length > 0) {
-            const maxTime = Math.max(...validDates);
             const currentAnchorTime = lastFetchedValue
               ? lastFetchedValue.getTime()
               : 0;
