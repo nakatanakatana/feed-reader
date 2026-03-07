@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "skills": {
+    "db-core": {
+      "source": "tanstack/db",
+      "sourceType": "github",
+      "computedHash": "0459a8d15ab72e1b910f508853f6232f464d024aff85d340889bebfdfac1514b"
+    },
+    "db-core/collection-setup": {
+      "source": "tanstack/db",
+      "sourceType": "github",
+      "computedHash": "cb12f816c5c84c0c7dfee47f213feee2620d84e8081599fdcbf9bcf3b008f38c"
+    },
+    "db-core/custom-adapter": {
+      "source": "tanstack/db",
+      "sourceType": "github",
+      "computedHash": "e61b58ae7f092122757c76753856fdff7e32611cd873023a9b8c1a6e35b9f536"
+    },
+    "db-core/live-queries": {
+      "source": "tanstack/db",
+      "sourceType": "github",
+      "computedHash": "e9977ad8accd7cd6322843bdd1b25abab895c14a0b427cc85590dc4ecdcc888c"
+    },
+    "db-core/mutations-optimistic": {
+      "source": "tanstack/db",
+      "sourceType": "github",
+      "computedHash": "14903787855287b3cbcfa12851e774e9018b29e5f2b7787e2a6b58bb110673f9"
+    },
+    "meta-framework": {
+      "source": "tanstack/db",
+      "sourceType": "github",
+      "computedHash": "282b7fb48930b4b23bc420387898595bd087b9f852fef1da6fe7d35f9d031c05"
+    },
+    "offline": {
+      "source": "tanstack/db",
+      "sourceType": "github",
+      "computedHash": "0283d51594ab6611059b1038f60310c98dc4d160648126f9f27e98ff9aaf9c2f"
+    },
+    "solid-db": {
+      "source": "tanstack/db",
+      "sourceType": "github",
+      "computedHash": "d0ae78c90b87a90b5b7dbe692b6fd8541ba2af88d3f84b631a7273a60ad50bfd"
+    }
+  }
+}
