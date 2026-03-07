@@ -49,7 +49,7 @@ export const itemReadCollectionOptions = {
         isRead: ir.isRead,
         updatedAt: ir.updatedAt
           ? new Date(Number(ir.updatedAt.seconds) * 1000).toISOString()
-          : new Date().toISOString(),
+          : (anchor ?? new Date(0)).toISOString(),
       }));
       allNewReads = allNewReads.concat(newReads);
       pageToken = response.nextPageToken;

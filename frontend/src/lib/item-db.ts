@@ -150,12 +150,12 @@ export const itemsUnreadQuery = createRoot(() => {
       // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
       .where(({ item, read }: any) => {
         // Prioritize delta-synced read status for unread calculations
-        return eq(coalesce(read.isRead, item.isRead), false);
+        return eq(coalesce(read?.isRead, item.isRead), false);
       })
       // biome-ignore lint/suspicious/noExplicitAny: TanStack DB select types
       .select(({ item, read }: any) => ({
         ...item,
-        isRead: coalesce(read.isRead, item.isRead),
+        isRead: coalesce(read?.isRead, item.isRead),
       })),
   );
   return () => collection;

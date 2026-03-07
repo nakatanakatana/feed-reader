@@ -44,10 +44,12 @@ import { mockConnectWeb } from "./connect";
 const tags: Tag[] = [];
 const feeds: Feed[] = [];
 const items: Item[] = [];
+const itemReads = new Map<string, { isRead: boolean; updatedAt: Date }>();
 
 export const resetState = () => {
   console.log("MSW: resetState called");
   tags.length = 0;
+  itemReads.clear();
   tags.push(
     create(TagSchema, {
       id: "tag-1",
@@ -392,12 +394,16 @@ export const handlers = [
   mockConnectWeb(ItemService)({
     method: "updateItemStatus",
     handler: (req) => {
+      const updatedAt = new Date();
       for (const id of req.ids || []) {
         const item = items.find((i) => i.id === id);
         if (item) {
           if (req.isRead !== undefined) {
             item.isRead = req.isRead;
           }
+        }
+        if (req.isRead !== undefined) {
+          itemReads.set(id, { isRead: req.isRead, updatedAt });
         }
       }
       return create(UpdateItemStatusResponseSchema, {});
@@ -417,8 +423,33 @@ export const handlers = [
 
   mockConnectWeb(ItemService)({
     method: "listItemRead",
-    handler: () => {
-      return create(ListItemReadResponseSchema, { itemReads: [] });
+    handler: (req) => {
+      let results = Array.from(itemReads.entries()).map(([id, state]) => ({
+        itemId: id,
+        isRead: state.isRead,
+        updatedAt: state.updatedAt,
+      }));
+
+      if (req.updatedSince) {
+        const sinceDate = new Date(
+          Number(req.updatedSince.seconds) * 1000 +
+            req.updatedSince.nanos / 1000000,
+        );
+        results = results.filter((r) => r.updatedAt >= sinceDate);
+      }
+
+      const itemReadsResponse = results.map((r) => ({
+        itemId: r.itemId,
+        isRead: r.isRead,
+        updatedAt: {
+          seconds: BigInt(Math.floor(r.updatedAt.getTime() / 1000)),
+          nanos: (r.updatedAt.getTime() % 1000) * 1000000,
+        },
+      }));
+
+      return create(ListItemReadResponseSchema, {
+        itemReads: itemReadsResponse,
+      });
     },
   }),
 
