@@ -34,26 +34,62 @@ export const itemReadCollectionOptions = {
       anchor = lastItemsSyncedAt();
     }
 
-    // Record the start time of this fetch to use as the next anchor
-    const syncStartTime = new Date();
+    // Skip fetching read states if we don't have an anchor yet.
+    // The anchor will be initialized during the initial items fetch.
+    if (!anchor) {
+      return existingData;
+    }
 
-    const response = await itemClient.listItemRead({
-      updatedSince: anchor ? dateToTimestamp(anchor) : undefined,
-    });
+    let pageToken = "";
+    const allNewReads: ItemRead[] = [];
+    let maxServerUpdatedAt: Date | undefined;
 
-    const allNewReads: ItemRead[] = (response.itemReads || []).map((ir) => ({
-      id: ir.itemId,
-      isRead: ir.isRead,
-      updatedAt: ir.updatedAt
-        ? new Date(
+    do {
+      const response = await itemClient.listItemRead({
+        // The backend explicitly rejects requests that specify both updatedSince and pageToken.
+        // Send updatedSince only on the first page.
+        updatedSince:
+          !pageToken && anchor ? dateToTimestamp(anchor) : undefined,
+        pageToken: pageToken,
+      });
+
+      for (const ir of response.itemReads || []) {
+        let updatedAtDate: Date;
+
+        if (ir.updatedAt) {
+          updatedAtDate = new Date(
             Number(ir.updatedAt.seconds) * 1000 +
               Math.floor(ir.updatedAt.nanos / 1000000),
-          ).toISOString()
-        : (anchor ?? new Date(0)).toISOString(),
-    }));
+          );
 
-    // Update anchor based on the start time of the request
-    setLastReadFetched(syncStartTime);
+          if (
+            !maxServerUpdatedAt ||
+            updatedAtDate.getTime() > maxServerUpdatedAt.getTime()
+          ) {
+            maxServerUpdatedAt = updatedAtDate;
+          }
+        } else {
+          // Fall back to the previous anchor when server timestamp is missing
+          updatedAtDate = anchor ?? new Date(0);
+        }
+
+        allNewReads.push({
+          id: ir.itemId,
+          isRead: ir.isRead,
+          updatedAt: updatedAtDate.toISOString(),
+        });
+      }
+
+      pageToken = response.nextPageToken;
+    } while (pageToken);
+
+    // Advance the anchor based on the latest server-updated timestamp seen.
+    // If there are no results (or no server timestamps), leave the anchor unchanged.
+    if (maxServerUpdatedAt) {
+      if (!anchor || maxServerUpdatedAt.getTime() > anchor.getTime()) {
+        setLastReadFetched(maxServerUpdatedAt);
+      }
+    }
 
     const readMap = new Map<string, ItemRead>();
     for (const read of existingData) {

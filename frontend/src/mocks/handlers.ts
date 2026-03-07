@@ -430,15 +430,39 @@ export const handlers = [
         updatedAt: state.updatedAt,
       }));
 
-      if (req.updatedSince) {
+      // Sort by updatedAt then itemId for consistent pagination
+      results.sort((a, b) => {
+        const timeDiff = a.updatedAt.getTime() - b.updatedAt.getTime();
+        if (timeDiff !== 0) {
+          return timeDiff;
+        }
+        return a.itemId.localeCompare(b.itemId);
+      });
+
+      if (req.pageToken) {
+        // Simple mock pagination: the token is the index of the first item to return
+        const start = Number.parseInt(req.pageToken, 10);
+        results = results.slice(start);
+      } else if (req.updatedSince) {
         const sinceDate = new Date(
           Number(req.updatedSince.seconds) * 1000 +
             req.updatedSince.nanos / 1000000,
         );
-        results = results.filter((r) => r.updatedAt >= sinceDate);
+        // Use strict ">" as the backend does
+        results = results.filter((r) => r.updatedAt > sinceDate);
       }
 
-      const itemReadsResponse = results.map((r) => ({
+      const pageSize = req.pageSize || 1000;
+      const paginatedResults = results.slice(0, pageSize);
+      const nextPageToken =
+        results.length > pageSize
+          ? (
+              (req.pageToken ? Number.parseInt(req.pageToken, 10) : 0) +
+              pageSize
+            ).toString()
+          : "";
+
+      const itemReadsResponse = paginatedResults.map((r) => ({
         itemId: r.itemId,
         isRead: r.isRead,
         updatedAt: {
@@ -449,6 +473,7 @@ export const handlers = [
 
       return create(ListItemReadResponseSchema, {
         itemReads: itemReadsResponse,
+        nextPageToken,
       });
     },
   }),

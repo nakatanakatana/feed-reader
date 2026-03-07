@@ -20,6 +20,7 @@ describe("ItemRead collection options", () => {
 
   describe("queryFn", () => {
     it("should fetch and merge data correctly", async () => {
+      setLastReadFetched(new Date("2026-03-01T00:00:00Z"));
       const mockItemReads = [
         {
           itemId: "1",
@@ -76,12 +77,14 @@ describe("ItemRead collection options", () => {
       );
     });
 
-    it("should advance anchor based on fetch start time, not server timestamps", async () => {
-      const startTime = new Date("2026-03-07T12:00:00.500Z");
-      vi.useFakeTimers();
-      vi.setSystemTime(startTime);
+    it("should advance anchor based on max server timestamp", async () => {
+      const anchorDate = new Date("2026-03-07T12:00:00Z");
+      setLastReadFetched(anchorDate);
 
-      const serverTimestamp = { seconds: BigInt(2000), nanos: 0 }; // Much earlier than startTime
+      const serverTimestamp = {
+        seconds: BigInt(Math.floor(anchorDate.getTime() / 1000) + 10),
+        nanos: 0,
+      };
       const mockItemReads = [
         {
           itemId: "1",
@@ -93,6 +96,7 @@ describe("ItemRead collection options", () => {
       // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
       (itemClient.listItemRead as any).mockResolvedValue({
         itemReads: mockItemReads,
+        nextPageToken: "",
       });
 
       // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB context
@@ -100,19 +104,18 @@ describe("ItemRead collection options", () => {
         queryKey: ["item-reads"],
       });
 
-      // Anchor should be advanced to startTime, even though server returned older data
-      expect(lastReadFetched()).toEqual(startTime);
-      vi.useRealTimers();
+      const expectedAnchor = new Date(Number(serverTimestamp.seconds) * 1000);
+      expect(lastReadFetched()).toEqual(expectedAnchor);
     });
 
-    it("should advance anchor even when no new data is returned", async () => {
-      const startTime = new Date("2026-03-07T13:00:00.123Z");
-      vi.useFakeTimers();
-      vi.setSystemTime(startTime);
+    it("should keep anchor when no new data is returned", async () => {
+      const anchorDate = new Date("2026-03-07T13:00:00Z");
+      setLastReadFetched(anchorDate);
 
       // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
       (itemClient.listItemRead as any).mockResolvedValue({
         itemReads: [],
+        nextPageToken: "",
       });
 
       // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB context
@@ -120,11 +123,59 @@ describe("ItemRead collection options", () => {
         queryKey: ["item-reads"],
       });
 
-      expect(lastReadFetched()).toEqual(startTime);
-      vi.useRealTimers();
+      expect(lastReadFetched()).toEqual(anchorDate);
+    });
+
+    it("should handle pagination correctly and exclude updatedSince when pageToken is present", async () => {
+      const anchorDate = new Date("2026-03-07T14:00:00Z");
+      setLastReadFetched(anchorDate);
+
+      // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
+      (itemClient.listItemRead as any)
+        .mockResolvedValueOnce({
+          itemReads: [
+            {
+              itemId: "1",
+              isRead: true,
+              updatedAt: { seconds: BigInt(1), nanos: 0 },
+            },
+          ],
+          nextPageToken: "token-1",
+        })
+        .mockResolvedValueOnce({
+          itemReads: [
+            {
+              itemId: "2",
+              isRead: false,
+              updatedAt: { seconds: BigInt(2), nanos: 0 },
+            },
+          ],
+          nextPageToken: "",
+        });
+
+      // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB context
+      await (itemReadCollectionOptions as any).queryFn({
+        queryKey: ["item-reads"],
+      });
+
+      expect(itemClient.listItemRead).toHaveBeenCalledTimes(2);
+
+      // biome-ignore lint/suspicious/noExplicitAny: asserting mock calls
+      const firstCallArgs = (itemClient.listItemRead as any).mock.calls[0][0];
+      // biome-ignore lint/suspicious/noExplicitAny: asserting mock calls
+      const secondCallArgs = (itemClient.listItemRead as any).mock.calls[1][0];
+
+      // First page should include updatedSince
+      expect(firstCallArgs).toHaveProperty("updatedSince");
+      expect(firstCallArgs.pageToken).toBe("");
+
+      // Second page should include pageToken and OMIT updatedSince
+      expect(secondCallArgs.pageToken).toBe("token-1");
+      expect(secondCallArgs.updatedSince).toBeUndefined();
     });
 
     it("should merge with existing data", async () => {
+      setLastReadFetched(new Date("2026-03-01T00:00:00Z"));
       queryClient.setQueryData(
         ["item-reads"],
         [{ id: "1", isRead: false, updatedAt: "some-date" }],
@@ -154,28 +205,19 @@ describe("ItemRead collection options", () => {
       expect(data.find((d: ItemRead) => d.id === "2")?.isRead).toBe(true);
     });
 
-    it("should use the anchor (lastReadFetched) in the API call", async () => {
-      const anchorDate = new Date(2026, 0, 1, 12, 0, 0, 500);
-      setLastReadFetched(anchorDate);
+    it("should skip fetching and return existing data if no anchor is present", async () => {
+      setLastReadFetched(null);
+      setLastItemsSyncedAt(null);
+      const existingData = [{ id: "1", isRead: false, updatedAt: "date" }];
+      queryClient.setQueryData(["item-reads"], existingData);
 
-      // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
-      (itemClient.listItemRead as any).mockResolvedValue({
-        itemReads: [],
-      });
-
-      await // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB context
-      (itemReadCollectionOptions as any).queryFn({
+      // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB context
+      const data = await (itemReadCollectionOptions as any).queryFn({
         queryKey: ["item-reads"],
       });
 
-      expect(itemClient.listItemRead).toHaveBeenCalledWith(
-        expect.objectContaining({
-          updatedSince: {
-            seconds: BigInt(Math.floor(anchorDate.getTime() / 1000)),
-            nanos: (anchorDate.getTime() % 1000) * 1000000,
-          },
-        }),
-      );
+      expect(itemClient.listItemRead).not.toHaveBeenCalled();
+      expect(data).toEqual(existingData);
     });
   });
 
@@ -258,6 +300,7 @@ describe("ItemRead collection options", () => {
 
   describe("Conflict Resolution", () => {
     it("should allow server data to overwrite local data (Server Wins)", async () => {
+      setLastReadFetched(new Date("2026-03-01T00:00:00Z"));
       // Local data has id: "1" as isRead: true (optimistic update)
       queryClient.setQueryData(
         ["item-reads"],

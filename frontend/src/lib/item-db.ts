@@ -15,8 +15,10 @@ import { itemReadCollection } from "./item-read-db";
 import { itemStore } from "./item-store";
 import {
   lastFetched,
+  lastReadFetched,
   setLastFetched,
   setLastItemsSyncedAt,
+  setLastReadFetched,
 } from "./item-sync-state";
 import {
   type DateFilterValue,
@@ -73,7 +75,14 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
           offset: 0,
           ...isRead,
         });
-        setLastItemsSyncedAt(new Date());
+        const syncTime = new Date();
+        setLastItemsSyncedAt(syncTime);
+
+        // Initialize the read-state anchor if it hasn't been set yet.
+        // This baseline prevents fetching all historical read states.
+        if (!lastReadFetched()) {
+          setLastReadFetched(syncTime);
+        }
 
         if (response.items && response.items.length > 0) {
           const validDates = response.items
@@ -123,23 +132,40 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
       },
       getKey: (item: ListItem) => item.id,
       onUpdate: async ({ transaction }) => {
-        const ids = transaction.mutations.map((m) => m.modified.id);
-        const firstMutation = transaction.mutations[0];
-        const isRead = firstMutation.modified.isRead;
+        const idsByIsRead = new Map<boolean, string[]>();
 
-        // Efficiently update the query cache once instead of item-by-item
+        for (const m of transaction.mutations) {
+          const id = m.modified.id;
+          const isRead = m.modified.isRead;
+          let group = idsByIsRead.get(isRead);
+          if (!group) {
+            group = [];
+            idsByIsRead.set(isRead, group);
+          }
+          group.push(id);
+        }
+
+        // Update the query cache for each group
         queryClient.setQueryData(queryKey, (old: ListItem[] | undefined) => {
           if (!old) return old;
-          const idSet = new Set(ids);
-          return old.map((item) =>
-            idSet.has(item.id) ? { ...item, isRead } : item,
-          );
+          const updated = [...old];
+          for (const [isRead, ids] of idsByIsRead.entries()) {
+            const idSet = new Set(ids);
+            for (let i = 0; i < updated.length; i++) {
+              if (idSet.has(updated[i].id)) {
+                updated[i] = { ...updated[i], isRead };
+              }
+            }
+          }
+          return updated;
         });
 
-        await itemClient.updateItemStatus({
-          ids: ids,
-          isRead: isRead,
-        });
+        for (const [isRead, ids] of idsByIsRead.entries()) {
+          await itemClient.updateItemStatus({
+            ids: ids,
+            isRead: isRead,
+          });
+        }
 
         return { refetch: false };
       },

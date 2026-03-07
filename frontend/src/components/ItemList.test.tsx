@@ -194,7 +194,7 @@ describe("ItemList", () => {
           title: "Item 1",
           publishedAt: fixedDate,
           createdAt: fixedDate,
-          isRead: true, // Item state mirrors delta-synced read; UI prioritizes item.isRead for optimistic updates
+          isRead: true, // Item state mirrors delta-synced read; UI uses itemReads (delta read state) as the authoritative source when available
         },
       ],
       [
