@@ -62,14 +62,9 @@ func (s *TagServer) ListTags(ctx context.Context, req *connect.Request[tagv1.Lis
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	protoTags := make([]*tagv1.ListTag, len(tags))
+	protoTags := make([]*tagv1.Tag, len(tags))
 	for i, t := range tags {
-		protoTags[i] = &tagv1.ListTag{
-			Id:          t.ID,
-			Name:        t.Name,
-			UnreadCount: t.UnreadCount,
-			FeedCount:   t.FeedCount,
-		}
+		protoTags[i] = toProtoTagV1(t)
 	}
 
 	return connect.NewResponse(&tagv1.ListTagsResponse{
@@ -90,8 +85,8 @@ func toProtoTagV1(t store.TagWithCount) *tagv1.Tag {
 	return &tagv1.Tag{
 		Id:          t.ID,
 		Name:        t.Name,
-		CreatedAt:   t.CreatedAt,
-		UpdatedAt:   t.UpdatedAt,
+		CreatedAt:   toTimestamp(t.CreatedAt),
+		UpdatedAt:   toTimestamp(t.UpdatedAt),
 		UnreadCount: t.UnreadCount,
 		FeedCount:   t.FeedCount,
 	}

@@ -52,13 +52,12 @@ func TestItemServer_Blocking(t *testing.T) {
 
 	t.Run("ListItems excludes blocked items", func(t *testing.T) {
 		res, err := server.ListItems(ctx, connect.NewRequest(&itemv1.ListItemsRequest{
-			Limit: 10,
+			PageSize: 10,
 		}))
 		assert.NilError(t, err)
 		assert.Assert(t, cmp.Len(res.Msg.Items, 2))
 		for _, item := range res.Msg.Items {
 			assert.Assert(t, item.Id != item2ID)
 		}
-		assert.Equal(t, res.Msg.TotalCount, int32(2))
 	})
 }

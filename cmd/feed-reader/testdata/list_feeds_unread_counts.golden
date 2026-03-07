@@ -1,15 +1,19 @@
 {
   "feeds": [
     {
+      "createdAt": "2026-01-01T00:00:00Z",
       "id": "f1",
       "title": "Feed 1",
       "unreadCount": "1",
+      "updatedAt": "2026-01-01T00:00:00Z",
       "url": "u1"
     },
     {
+      "createdAt": "2026-01-01T00:00:00Z",
       "id": "f2",
       "title": "Feed 2",
       "unreadCount": "1",
+      "updatedAt": "2026-01-01T00:00:00Z",
       "url": "u2"
     }
   ]

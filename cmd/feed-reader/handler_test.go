@@ -612,10 +612,9 @@ func TestFeedServer_SuspendFeeds(t *testing.T) {
 		// Verify next_fetch
 		res, err := server.GetFeed(ctx, connect.NewRequest(&feedv1.GetFeedRequest{Id: id}))
 		assert.NilError(t, err)
-		assert.Assert(t, res.Msg.Feed.NextFetch != nil)
+		assert.Assert(t, res.Msg.Feed.NextFetchAt != nil)
 
-		nextFetch, err := time.Parse(time.RFC3339, *res.Msg.Feed.NextFetch)
-		assert.NilError(t, err)
+		nextFetch := res.Msg.Feed.NextFetchAt.AsTime()
 
 		// Should be roughly now + 1 hour
 		expected := time.Now().Add(time.Hour)

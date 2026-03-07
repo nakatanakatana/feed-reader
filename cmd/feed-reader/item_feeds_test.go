@@ -50,6 +50,6 @@ func TestListItemFeeds(t *testing.T) {
 		assert.Assert(t, res.Msg.Feeds[0].FeedTitle != nil)
 		assert.Equal(t, *res.Msg.Feeds[0].FeedTitle, "Example Feed")
 		assert.Assert(t, res.Msg.Feeds[0].PublishedAt != nil)
-		assert.Equal(t, *res.Msg.Feeds[0].PublishedAt, pubAt)
+		assert.Equal(t, res.Msg.Feeds[0].PublishedAt.AsTime().Format(time.RFC3339), pubAt)
 	})
 }
