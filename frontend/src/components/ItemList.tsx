@@ -178,17 +178,28 @@ export function ItemList(props: ItemListProps) {
     if (ids.length === 0) return;
 
     setIsBulkMarking(true);
+
+    // Yield to the event loop immediately to ensure UI updates (like showing "Processing...")
+    // are rendered before we start the heavy lifting.
+    // Use setTimeout(0) instead of requestAnimationFrame to avoid hanging in background tabs.
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
     try {
-      items().update(ids, (drafts) => {
+      // Perform a single bulk update so that any onUpdate side effects
+      // (such as server synchronization) are invoked only once.
+      // We update the local store and await the completion of the side effect.
+      await items().update(ids, (drafts) => {
         for (const draft of drafts) {
           draft.isRead = true;
         }
       });
+
+      // Clear the selection after the update to match the PR description's claim of visual feedback,
+      // while keeping the BulkActionBar mounted during the operation.
+      setSelectedItemIds(new Set<string>());
     } finally {
       setIsBulkMarking(false);
     }
-
-    setSelectedItemIds(new Set<string>());
   };
 
   const controls = (
