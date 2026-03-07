@@ -79,9 +79,12 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
         setLastItemsSyncedAt(syncTime);
 
         // Initialize the read-state anchor if it hasn't been set yet.
-        // This baseline prevents fetching all historical read states.
+        // This baseline prevents fetching all historical read states, while
+        // using a small overlap window to avoid skipping concurrent updates.
         if (!lastReadFetched()) {
-          setLastReadFetched(syncTime);
+          const overlapMs = 5 * 1000; // 5 seconds overlap
+          const initialReadAnchor = new Date(syncTime.getTime() - overlapMs);
+          setLastReadFetched(initialReadAnchor);
         }
 
         if (response.items && response.items.length > 0) {

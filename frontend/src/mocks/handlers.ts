@@ -448,8 +448,9 @@ export const handlers = [
           Number(req.updatedSince.seconds) * 1000 +
             req.updatedSince.nanos / 1000000,
         );
-        // Use strict ">" as the backend does
-        results = results.filter((r) => r.updatedAt > sinceDate);
+        // Match backend semantics: (updated_at, item_id) > (updated_after, '')
+        // With non-empty item IDs, this effectively includes updatedAt === sinceDate as well.
+        results = results.filter((r) => r.updatedAt >= sinceDate);
       }
 
       const pageSize = req.pageSize || 1000;
