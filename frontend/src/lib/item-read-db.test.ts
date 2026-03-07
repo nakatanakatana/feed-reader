@@ -1,10 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { itemClient } from "./api/client";
 import { type ItemRead, itemReadCollectionOptions } from "./item-read-db";
-import {
-  lastReadFetched,
-  setLastReadFetched,
-} from "./item-sync-state";
+import { lastReadFetched, setLastReadFetched } from "./item-sync-state";
 import { queryClient } from "./query";
 
 describe("ItemRead collection options", () => {
@@ -103,6 +100,7 @@ describe("ItemRead collection options", () => {
         nextPageToken: "",
       });
 
+      // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB context
       await (itemReadCollectionOptions as any).queryFn({
         queryKey: ["item-reads"],
       });
@@ -120,6 +118,7 @@ describe("ItemRead collection options", () => {
         nextPageToken: "",
       });
 
+      // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB context
       await (itemReadCollectionOptions as any).queryFn({
         queryKey: ["item-reads"],
       });

@@ -380,7 +380,6 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     if (!currentItem || isEndOfList()) return;
 
     const newIsRead = !currentItem.isRead;
-    const inCollection = collectionItem();
 
     // Always update the individual item query cache for immediate UI feedback in the modal.
     // This handles both the collection and fallback cases.

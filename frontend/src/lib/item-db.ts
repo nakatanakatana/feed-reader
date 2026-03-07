@@ -6,7 +6,7 @@ import {
   createLiveQueryCollection,
   eq,
 } from "@tanstack/solid-db";
-import { createMemo, createRoot, createSignal } from "solid-js";
+import { createMemo, createRoot } from "solid-js";
 import {
   ItemService,
   type ListItem as ProtoListItem,
