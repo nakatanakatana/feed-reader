@@ -4,3 +4,6 @@ import { createSignal } from "solid-js";
 export const [lastReadFetched, setLastReadFetched] = createSignal<Date | null>(
   null,
 );
+
+// Shared sync anchor for items list
+export const [lastFetched, setLastFetched] = createSignal<Date | null>(null);

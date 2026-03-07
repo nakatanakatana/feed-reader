@@ -15,7 +15,7 @@ import {
   ListItemsResponseSchema,
 } from "../gen/item/v1/item_pb";
 import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
-import { setLastFetched } from "../lib/item-db";
+import { setLastFetched } from "../lib/item-sync-state";
 import { itemStore } from "../lib/item-store";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";

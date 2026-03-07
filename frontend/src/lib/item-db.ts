@@ -13,6 +13,7 @@ import {
 } from "../gen/item/v1/item_pb";
 import { itemReadCollection } from "./item-read-db";
 import { itemStore } from "./item-store";
+import { lastFetched, setLastFetched } from "./item-sync-state";
 import {
   type DateFilterValue,
   dateToTimestamp,
@@ -39,8 +40,6 @@ export interface Item extends ListItem {
 }
 
 const itemClient = createClient(ItemService, transport);
-
-export const [lastFetched, setLastFetched] = createSignal<Date | null>(null);
 
 const createItems = (showRead: boolean, since: DateFilterValue) => {
   setLastFetched(null);
@@ -131,13 +130,13 @@ export const itemsUnreadQuery = createRoot(() => {
       )
       // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
       .where(({ item, read }: any) => {
-        // Prioritize local item state for optimistic updates, fall back to delta-synced read status
-        return eq(coalesce(item.isRead, read.isRead), false);
+        // Prioritize delta-synced read status for unread calculations
+        return eq(coalesce(read.isRead, item.isRead), false);
       })
       // biome-ignore lint/suspicious/noExplicitAny: TanStack DB select types
       .select(({ item, read }: any) => ({
         ...item,
-        isRead: coalesce(item.isRead, read.isRead),
+        isRead: coalesce(read.isRead, item.isRead),
       })),
   );
   return () => collection;

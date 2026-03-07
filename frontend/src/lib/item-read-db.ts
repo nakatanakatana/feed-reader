@@ -2,8 +2,11 @@ import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { createCollection } from "@tanstack/solid-db";
 import { createRoot } from "solid-js";
 import { itemClient } from "./api/client";
-import { lastFetched as itemsLastFetched } from "./item-db";
-import { lastReadFetched, setLastReadFetched } from "./item-read-sync-state";
+import {
+  lastFetched,
+  lastReadFetched,
+  setLastReadFetched,
+} from "./item-sync-state";
 import { queryClient } from "./query";
 
 export interface ItemRead {
@@ -26,40 +29,49 @@ export const itemReadCollectionOptions = {
     // Initial sync anchor baseline
     let anchor = lastReadFetched();
     if (!anchor) {
-      anchor = itemsLastFetched();
+      anchor = lastFetched();
     }
 
-    const response = await itemClient.listItemRead({
-      updatedSince: anchor
-        ? { seconds: BigInt(Math.floor(anchor.getTime() / 1000)), nanos: 0 }
-        : undefined,
-      pageSize: 1000,
-    });
+    let allNewReads: ItemRead[] = [];
+    let pageToken = "";
 
-    const newReads: ItemRead[] = (response.itemReads || []).map((ir) => ({
-      id: ir.itemId,
-      isRead: ir.isRead,
-      updatedAt: ir.updatedAt
-        ? new Date(Number(ir.updatedAt.seconds) * 1000).toISOString()
-        : new Date().toISOString(),
-    }));
+    do {
+      const response = await itemClient.listItemRead({
+        updatedSince: anchor
+          ? { seconds: BigInt(Math.floor(anchor.getTime() / 1000)), nanos: 0 }
+          : undefined,
+        pageSize: 1000,
+        pageToken: pageToken || undefined,
+      });
+
+      const newReads: ItemRead[] = (response.itemReads || []).map((ir) => ({
+        id: ir.itemId,
+        isRead: ir.isRead,
+        updatedAt: ir.updatedAt
+          ? new Date(Number(ir.updatedAt.seconds) * 1000).toISOString()
+          : new Date().toISOString(),
+      }));
+      allNewReads = allNewReads.concat(newReads);
+      pageToken = response.nextPageToken;
+    } while (pageToken);
 
     // Update anchor based on the most recent updatedAt from the server
-    if (newReads.length > 0) {
+    if (allNewReads.length > 0) {
       const maxUpdatedAt = new Date(
-        Math.max(...newReads.map((r) => new Date(r.updatedAt).getTime())),
+        Math.max(...allNewReads.map((r) => new Date(r.updatedAt).getTime())),
       );
+      // Advance to the max timestamp from results
       setLastReadFetched(maxUpdatedAt);
-    } else {
-      // If no new data, use current time but allow for small overlap/drift
-      setLastReadFetched(new Date());
+    } else if (anchor) {
+      // If no new data, keep using the previous anchor instead of advancing using client clock
+      setLastReadFetched(anchor);
     }
 
     const readMap = new Map<string, ItemRead>();
     for (const read of existingData) {
       readMap.set(read.id, read);
     }
-    for (const read of newReads) {
+    for (const read of allNewReads) {
       readMap.set(read.id, read);
     }
 

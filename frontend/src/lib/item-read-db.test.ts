@@ -1,7 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { itemClient } from "./api/client";
 import { type ItemRead, itemReadCollectionOptions } from "./item-read-db";
-import { lastReadFetched, setLastReadFetched } from "./item-read-sync-state";
+import {
+  lastFetched,
+  lastReadFetched,
+  setLastReadFetched,
+} from "./item-sync-state";
 import { queryClient } from "./query";
 
 describe("ItemRead collection options", () => {
@@ -31,6 +35,7 @@ describe("ItemRead collection options", () => {
       // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
       (itemClient.listItemRead as any).mockResolvedValue({
         itemReads: mockItemReads,
+        nextPageToken: "",
       });
 
       const data =
@@ -44,6 +49,83 @@ describe("ItemRead collection options", () => {
       expect(data[0].isRead).toBe(true);
       expect(data[1].id).toBe("2");
       expect(data[1].isRead).toBe(false);
+    });
+
+    it("should handle pagination correctly", async () => {
+      const mockItemReads1 = [
+        {
+          itemId: "1",
+          isRead: true,
+          updatedAt: { seconds: BigInt(1000), nanos: 0 },
+        },
+      ];
+      const mockItemReads2 = [
+        {
+          itemId: "2",
+          isRead: false,
+          updatedAt: { seconds: BigInt(1001), nanos: 0 },
+        },
+      ];
+
+      // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
+      (itemClient.listItemRead as any)
+        .mockResolvedValueOnce({
+          itemReads: mockItemReads1,
+          nextPageToken: "page2",
+        })
+        .mockResolvedValueOnce({
+          itemReads: mockItemReads2,
+          nextPageToken: "",
+        });
+
+      const data =
+        (await // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB context
+        (itemReadCollectionOptions as any).queryFn({
+          queryKey: ["item-reads"],
+        })) as ItemRead[];
+
+      expect(itemClient.listItemRead).toHaveBeenCalledTimes(2);
+      expect(data).toHaveLength(2);
+      expect(data.map((d) => d.id)).toEqual(["1", "2"]);
+    });
+
+    it("should advance anchor based on server updatedAt", async () => {
+      const mockItemReads = [
+        {
+          itemId: "1",
+          isRead: true,
+          updatedAt: { seconds: BigInt(2000), nanos: 0 },
+        },
+      ];
+
+      // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
+      (itemClient.listItemRead as any).mockResolvedValue({
+        itemReads: mockItemReads,
+        nextPageToken: "",
+      });
+
+      await (itemReadCollectionOptions as any).queryFn({
+        queryKey: ["item-reads"],
+      });
+
+      expect(lastReadFetched()?.getTime()).toBe(2000 * 1000);
+    });
+
+    it("should keep anchor when no new data is returned", async () => {
+      const initialAnchor = new Date(1500 * 1000);
+      setLastReadFetched(initialAnchor);
+
+      // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
+      (itemClient.listItemRead as any).mockResolvedValue({
+        itemReads: [],
+        nextPageToken: "",
+      });
+
+      await (itemReadCollectionOptions as any).queryFn({
+        queryKey: ["item-reads"],
+      });
+
+      expect(lastReadFetched()?.getTime()).toBe(1500 * 1000);
     });
 
     it("should merge with existing data", async () => {

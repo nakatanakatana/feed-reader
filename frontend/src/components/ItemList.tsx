@@ -89,7 +89,7 @@ export function ItemList(props: ItemListProps) {
     // biome-ignore lint/suspicious/noExplicitAny: TanStack DB select types
     return query.select(({ item, read }: any) => ({
       ...item,
-      isRead: coalesce(item.isRead, read?.isRead),
+      isRead: coalesce(read?.isRead, item.isRead),
     }));
   });
 
