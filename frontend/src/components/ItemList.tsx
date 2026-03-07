@@ -181,7 +181,8 @@ export function ItemList(props: ItemListProps) {
 
     // Yield to the event loop immediately to ensure UI updates (like showing "Processing...")
     // are rendered before we start the heavy lifting.
-    await new Promise((resolve) => requestAnimationFrame(resolve));
+    // Use setTimeout(0) instead of requestAnimationFrame to avoid hanging in background tabs.
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     try {
       // Perform a single bulk update so that any onUpdate side effects
