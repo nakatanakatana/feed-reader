@@ -121,7 +121,10 @@ export const updateItemReadStatus = async (ids: string[], isRead: boolean) => {
       })),
     );
   } catch (e) {
-    console.warn("ItemRead collection operation failed, calling API directly", e);
+    console.warn(
+      "ItemRead collection operation failed, calling API directly",
+      e,
+    );
     await itemClient.updateItemStatus({
       ids: ids,
       isRead: isRead,
