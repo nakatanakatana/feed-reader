@@ -156,8 +156,8 @@ describe("ItemList Bulk Actions", () => {
             ids: string[];
             isRead: boolean;
           };
-          // Increment if it's a valid update request for our items
-          if (body.ids.length > 0 && body.isRead === true) {
+          // Increment only if it's a valid update request that includes all selected items
+          if (body.isRead === true && body.ids.length === itemCount) {
             updateCount++;
           }
           // Simulate some network delay so we can see "Processing..."
@@ -204,6 +204,9 @@ describe("ItemList Bulk Actions", () => {
     const el = bulkMarkBtn.element() as HTMLElement;
     el.click();
 
+    // Selection should still be checked while processing
+    await expect.element(selectAll).toBeChecked();
+
     // The handler yields immediately via requestAnimationFrame before doing heavy work,
     // and Solid needs a turn to render the updated isBulkMarking state.
     // We should wait for the element to appear.
@@ -216,10 +219,8 @@ describe("ItemList Bulk Actions", () => {
       .poll(() => page.getByText("Processing...").query(), { timeout: 5000 })
       .toBeNull();
 
-    // Selection should be cleared
+    // Selection should be cleared after processing finishes
     await expect.element(selectAll).not.toBeChecked();
-
-    // Verify API was called exactly once with all items.
     // Use poll because the updateCount might be incremented slightly after the UI updates.
     await expect.poll(() => updateCount).toBe(1);
   });

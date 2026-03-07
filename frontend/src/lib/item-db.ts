@@ -44,6 +44,7 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
   setLastFetched(null);
   const isRead = showRead ? {} : { isRead: false };
   const sinceTimestamp = since !== "all" ? getPublishedSince(since) : undefined;
+  const queryKey = ["items", { since, showRead }] as const;
 
   return createCollection(
     queryCollectionOptions<ListItem>({
@@ -52,7 +53,7 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
       queryClient,
 
       refetchInterval: 1 * 60 * 1000,
-      queryKey: ["items", { since, showRead }],
+      queryKey,
       queryFn: async ({ queryKey }) => {
         const existingData =
           (queryClient.getQueryData(queryKey) as ListItem[]) || [];
@@ -97,16 +98,13 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
         const isRead = firstMutation.modified.isRead;
 
         // Efficiently update the query cache once instead of item-by-item
-        queryClient.setQueryData(
-          ["items", { since, showRead }],
-          (old: ListItem[] | undefined) => {
-            if (!old) return old;
-            const idSet = new Set(ids);
-            return old.map((item) =>
-              idSet.has(item.id) ? { ...item, isRead } : item,
-            );
-          },
-        );
+        queryClient.setQueryData(queryKey, (old: ListItem[] | undefined) => {
+          if (!old) return old;
+          const idSet = new Set(ids);
+          return old.map((item) =>
+            idSet.has(item.id) ? { ...item, isRead } : item,
+          );
+        });
 
         await itemClient.updateItemStatus({
           ids: ids,

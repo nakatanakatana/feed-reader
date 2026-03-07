@@ -193,7 +193,8 @@ export function ItemList(props: ItemListProps) {
         }
       });
 
-      // Clear the selection only after the operation finishes
+      // Clear the selection after the update to match the PR description's claim of visual feedback,
+      // while keeping the BulkActionBar mounted during the operation.
       setSelectedItemIds(new Set<string>());
     } finally {
       setIsBulkMarking(false);
