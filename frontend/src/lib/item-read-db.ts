@@ -4,6 +4,7 @@ import { createRoot } from "solid-js";
 import { itemClient } from "./api/client";
 import {
   lastFetched,
+  lastItemsSyncedAt,
   lastReadFetched,
   setLastReadFetched,
 } from "./item-sync-state";
@@ -30,8 +31,12 @@ export const itemReadCollectionOptions = {
     // Initial sync anchor baseline
     let anchor = lastReadFetched();
     if (!anchor) {
-      anchor = lastFetched();
+      // Use the completion time of the items list sync as the initial baseline
+      anchor = lastItemsSyncedAt();
     }
+
+    // Record the start time of this fetch to use as the next anchor
+    const syncStartTime = new Date();
 
     const response = await itemClient.listItemRead({
       updatedSince: anchor ? dateToTimestamp(anchor) : undefined,
@@ -48,23 +53,8 @@ export const itemReadCollectionOptions = {
         : (anchor ?? new Date(0)).toISOString(),
     }));
 
-    // Update anchor based on the most recent updatedAt from the server
-    if (allNewReads.length > 0) {
-      const maxTime = Math.max(
-        ...allNewReads.map((r) => new Date(r.updatedAt).getTime()),
-      );
-      const currentAnchorTime = anchor ? anchor.getTime() : 0;
-
-      // Only advance the anchor if we found a strictly newer timestamp
-      if (maxTime > currentAnchorTime) {
-        setLastReadFetched(new Date(maxTime));
-      } else if (anchor) {
-        setLastReadFetched(anchor);
-      }
-    } else if (anchor) {
-      // If no new data, keep using the previous anchor instead of advancing using client clock
-      setLastReadFetched(anchor);
-    }
+    // Update anchor based on the start time of the request
+    setLastReadFetched(syncStartTime);
 
     const readMap = new Map<string, ItemRead>();
     for (const read of existingData) {
