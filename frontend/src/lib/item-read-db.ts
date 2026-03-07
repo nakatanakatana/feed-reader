@@ -103,54 +103,6 @@ export const itemReadCollectionOptions = {
     return Array.from(readMap.values());
   },
   getKey: (read: ItemRead) => read.id,
-  // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB transaction
-  onInsert: async ({ transaction }: any) => {
-    const idsByIsRead = new Map<boolean, string[]>();
-
-    for (const m of transaction.mutations) {
-      const id = m.modified.id;
-      const isRead = m.modified.isRead;
-      let group = idsByIsRead.get(isRead);
-      if (!group) {
-        group = [];
-        idsByIsRead.set(isRead, group);
-      }
-      group.push(id);
-    }
-
-    for (const [isRead, ids] of idsByIsRead.entries()) {
-      await itemClient.updateItemStatus({
-        ids: ids,
-        isRead: isRead,
-      });
-    }
-
-    return { refetch: false };
-  },
-  // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB transaction
-  onUpdate: async ({ transaction }: any) => {
-    const idsByIsRead = new Map<boolean, string[]>();
-
-    for (const m of transaction.mutations) {
-      const id = m.modified.id;
-      const isRead = m.modified.isRead;
-      let group = idsByIsRead.get(isRead);
-      if (!group) {
-        group = [];
-        idsByIsRead.set(isRead, group);
-      }
-      group.push(id);
-    }
-
-    for (const [isRead, ids] of idsByIsRead.entries()) {
-      await itemClient.updateItemStatus({
-        ids: ids,
-        isRead: isRead,
-      });
-    }
-
-    return { refetch: false };
-  },
 };
 
 const collection = createRoot(() => {
@@ -163,6 +115,12 @@ const collection = createRoot(() => {
 export const itemReadCollection = () => collection;
 
 export const updateItemReadStatus = async (ids: string[], isRead: boolean) => {
+  // Always send the authoritative update to the server first
+  await itemClient.updateItemStatus({
+    ids: ids,
+    isRead: isRead,
+  });
+
   try {
     await itemReadCollection().utils.writeUpsert(
       ids.map((id) => ({
@@ -172,8 +130,13 @@ export const updateItemReadStatus = async (ids: string[], isRead: boolean) => {
       })),
     );
   } catch (e) {
-    console.warn("ItemRead collection cache update failed", e);
-    throw e;
+    // If the collection is not ready, we can safely ignore the local cache update
+    // because the server has been updated and the next delta sync will fetch the state.
+    if (e instanceof Error && e.name === "SyncNotInitializedError") {
+      console.warn("ItemRead collection not ready for optimistic update, skipping local cache update");
+    } else {
+      console.warn("ItemRead collection cache update failed", e);
+    }
   }
 };
 

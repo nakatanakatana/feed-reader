@@ -1,6 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { itemClient } from "./api/client";
-import { type ItemRead, itemReadCollectionOptions } from "./item-read-db";
+import {
+  type ItemRead,
+  itemReadCollection,
+  itemReadCollectionOptions,
+  updateItemReadStatus,
+} from "./item-read-db";
 import {
   lastReadFetched,
   setLastItemsSyncedAt,
@@ -221,80 +226,34 @@ describe("ItemRead collection options", () => {
     });
   });
 
-  describe("onUpdate", () => {
-    it("should call updateItemStatus and return refetch: false", async () => {
+  describe("updateItemReadStatus", () => {
+    it("should call updateItemStatus and writeUpsert", async () => {
       // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
       (itemClient.updateItemStatus as any).mockResolvedValue({});
 
-      const mockTransaction = {
-        mutations: [
-          { modified: { id: "1", isRead: true } },
-          { modified: { id: "2", isRead: true } },
-        ],
-      };
-
-      const result =
-        await // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB transaction
-        (itemReadCollectionOptions as any).onUpdate({
-          transaction: mockTransaction,
-        });
+      await updateItemReadStatus(["1", "2"], true);
 
       expect(itemClient.updateItemStatus).toHaveBeenCalledWith({
         ids: ["1", "2"],
         isRead: true,
       });
-      expect(result).toEqual({ refetch: false });
     });
 
-    it("should handle mixed isRead values in a single transaction", async () => {
+    it("should ignore SyncNotInitializedError during optimistic update", async () => {
       // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
       (itemClient.updateItemStatus as any).mockResolvedValue({});
 
-      const mockTransaction = {
-        mutations: [
-          { modified: { id: "1", isRead: true } },
-          { modified: { id: "2", isRead: false } },
-          { modified: { id: "3", isRead: true } },
-        ],
-      };
+      // Mock writeUpsert to throw SyncNotInitializedError
+      const error = new Error("Sync not initialized");
+      error.name = "SyncNotInitializedError";
+      vi.spyOn(itemReadCollection().utils, "writeUpsert").mockRejectedValue(
+        error,
+      );
 
-      await // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB transaction
-      (itemReadCollectionOptions as any).onUpdate({
-        transaction: mockTransaction,
-      });
+      // Should NOT throw
+      await updateItemReadStatus(["1"], true);
 
-      expect(itemClient.updateItemStatus).toHaveBeenCalledTimes(2);
-      expect(itemClient.updateItemStatus).toHaveBeenCalledWith({
-        ids: ["1", "3"],
-        isRead: true,
-      });
-      expect(itemClient.updateItemStatus).toHaveBeenCalledWith({
-        ids: ["2"],
-        isRead: false,
-      });
-    });
-  });
-
-  describe("onInsert", () => {
-    it("should call updateItemStatus and return refetch: false", async () => {
-      // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
-      (itemClient.updateItemStatus as any).mockResolvedValue({});
-
-      const mockTransaction = {
-        mutations: [{ modified: { id: "3", isRead: true } }],
-      };
-
-      const result =
-        await // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB transaction
-        (itemReadCollectionOptions as any).onInsert({
-          transaction: mockTransaction,
-        });
-
-      expect(itemClient.updateItemStatus).toHaveBeenCalledWith({
-        ids: ["3"],
-        isRead: true,
-      });
-      expect(result).toEqual({ refetch: false });
+      expect(itemClient.updateItemStatus).toHaveBeenCalled();
     });
   });
 
