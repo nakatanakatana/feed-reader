@@ -204,7 +204,7 @@ describe("ItemList Bulk Actions", () => {
     const el = bulkMarkBtn.element() as HTMLElement;
     el.click();
 
-    // The handler yields immediately (requestAnimationFrame or setTimeout) before doing heavy work,
+    // The handler yields immediately via requestAnimationFrame before doing heavy work,
     // and Solid needs a turn to render the updated isBulkMarking state.
     // We should wait for the element to appear.
     await expect
