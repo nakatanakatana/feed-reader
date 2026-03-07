@@ -69,7 +69,22 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
           offset: 0,
           ...isRead,
         });
-        setLastFetched(new Date());
+
+        if (response.items && response.items.length > 0) {
+          const validDates = response.items
+            .map((item: ProtoListItem) =>
+              new Date(item.createdAt || "").getTime(),
+            )
+            .filter((t: number) => !Number.isNaN(t));
+
+          if (validDates.length > 0) {
+            setLastFetched(new Date(Math.max(...validDates)));
+          } else if (lastFetchedValue !== null) {
+            setLastFetched(lastFetchedValue);
+          }
+        } else if (lastFetchedValue !== null) {
+          setLastFetched(lastFetchedValue);
+        }
 
         const respList = response.items.map((item: ProtoListItem) => ({
           id: item.id,
