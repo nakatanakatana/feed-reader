@@ -49,3 +49,6 @@
 - [x] Task: Transactional Bulk Updates b4c65bc
     - [x] Ensure "Mark all as read" operations use `tanstack/db` transactions to batch local updates and sync requests.
 - [x] Task: Conductor - User Manual Verification 'Phase 4: Final Polishing & Edge Cases' (Protocol in workflow.md) ed7cb75
+
+## Phase: Review Fixes
+- [x] Task: Apply review suggestions f7cc681
