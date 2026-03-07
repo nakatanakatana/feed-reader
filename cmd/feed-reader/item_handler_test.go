@@ -242,8 +242,8 @@ func TestItemServer_ListItemRead(t *testing.T) {
 		assert.NilError(t, err)
 		assert.Equal(t, len(res2.Msg.ItemReads), 1)
 		assert.Equal(t, res2.Msg.ItemReads[0].ItemId, item3ID)
-		// Now we always return a token for the last row even on final page
-		assert.Assert(t, res2.Msg.NextPageToken != "")
+		// We expect no token because there are no more pages
+		assert.Equal(t, res2.Msg.NextPageToken, "")
 	})
 
 	t.Run("ListItemRead_ValidationErrors", func(t *testing.T) {
