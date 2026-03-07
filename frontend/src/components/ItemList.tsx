@@ -18,6 +18,7 @@ import {
   itemReadCollection,
   items,
   itemsUnreadQuery,
+  markItemsRead,
   tags,
 } from "../lib/db";
 import { itemStore } from "../lib/item-store";
