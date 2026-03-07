@@ -9,9 +9,9 @@
 
 ## Phase 2: Backend Implementation (Go)
 - [x] Task: Update `sql/query.sql` to support cursor-based pagination for items and regenerate sqlc. d3f377e
-- [ ] Task: Update `cmd/feed-reader/handler.go` to match the new feed and tag proto definitions.
-- [ ] Task: Update `cmd/feed-reader/item_handler.go` to match the new item proto definitions and implement cursor pagination.
-- [ ] Task: Run backend tests and fix any breakages.
+- [x] Task: Update `cmd/feed-reader/handler.go` to match the new feed and tag proto definitions. 6f01f4a
+- [x] Task: Update `cmd/feed-reader/item_handler.go` to match the new item proto definitions and implement cursor pagination. 6f01f4a
+- [x] Task: Run backend tests and fix any breakages. 6f01f4a
 - [ ] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)
 
 ## Phase 3: Frontend Implementation (TypeScript)
