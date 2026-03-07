@@ -147,18 +147,20 @@ describe("ItemList Bulk Actions", () => {
     }));
     setupMockData(items);
 
-    let updateCount = 0;
+    let totalRequestCount = 0;
+    let fullBatchRequestCount = 0;
     worker.use(
       http.post(
         "*/item.v1.ItemService/UpdateItemStatus",
         async ({ request }) => {
+          totalRequestCount++;
           const body = (await request.json()) as {
             ids: string[];
             isRead: boolean;
           };
           // Increment only if it's a valid update request that includes all selected items
           if (body.isRead === true && body.ids.length === itemCount) {
-            updateCount++;
+            fullBatchRequestCount++;
           }
           // Simulate some network delay so we can see "Processing..."
           await new Promise((resolve) => setTimeout(resolve, 500));
@@ -222,6 +224,7 @@ describe("ItemList Bulk Actions", () => {
     // Selection should be cleared after processing finishes
     await expect.element(selectAll).not.toBeChecked();
     // Use poll because the updateCount might be incremented slightly after the UI updates.
-    await expect.poll(() => updateCount).toBe(1);
+    await expect.poll(() => totalRequestCount).toBe(1);
+    await expect.poll(() => fullBatchRequestCount).toBe(1);
   });
 });
