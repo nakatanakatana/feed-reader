@@ -1,8 +1,0 @@
-{
-  "track_id": "sync_item_read_20260304",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-03-04T00:00:00Z",
-  "updated_at": "2026-03-04T00:00:00Z",
-  "description": "ListItemReadのAPIから既読状態を前回の取得日時ベースで差分取得することで既読状態を同期する機能を追加してください ItemReadのクライアント側のステート管理はtanstack/dbを使ってcollectionを作って管理して、ItemListでの表示時にjoinすることで取得したものを一覧での表示を既読に変える実装にしてください"
-}
