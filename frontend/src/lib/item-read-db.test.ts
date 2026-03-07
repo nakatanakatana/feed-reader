@@ -1,24 +1,21 @@
+import { createRoot } from "solid-js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { itemClient } from "./api/client";
 import {
   type ItemRead,
+  createItemReadCollection,
   itemReadCollectionOptions,
   setLastReadFetched,
 } from "./item-read-db";
 import { queryClient } from "./query";
-
-vi.mock("./api/client", () => ({
-  itemClient: {
-    listItemRead: vi.fn(),
-    updateItemStatus: vi.fn(),
-  },
-}));
 
 describe("ItemRead collection options", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     queryClient.clear();
     setLastReadFetched(null);
+    vi.spyOn(itemClient, "listItemRead");
+    vi.spyOn(itemClient, "updateItemStatus");
   });
 
   describe("queryFn", () => {
@@ -155,6 +152,40 @@ describe("ItemRead collection options", () => {
         isRead: true,
       });
       expect(result).toEqual({ refetch: false });
+    });
+  });
+
+  describe("Conflict Resolution", () => {
+    it("should allow server data to overwrite local data (Server Wins)", async () => {
+      // Local data has id: "1" as isRead: true (optimistic update)
+      queryClient.setQueryData(
+        ["item-reads"],
+        [{ id: "1", isRead: true, updatedAt: "2026-03-06T00:00:00Z" }],
+      );
+
+      // Server returns id: "1" as isRead: false (e.g. changed on another device)
+      const mockItemReads = [
+        {
+          itemId: "1",
+          isRead: false,
+          updatedAt: { seconds: BigInt(2000), nanos: 0 },
+        },
+      ];
+
+      // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
+      (itemClient.listItemRead as any).mockResolvedValue({
+        itemReads: mockItemReads,
+      });
+
+      const data =
+        (await // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB context
+        (itemReadCollectionOptions as any).queryFn({
+          queryKey: ["item-reads"],
+        })) as ItemRead[];
+
+      expect(data).toHaveLength(1);
+      expect(data[0].id).toBe("1");
+      expect(data[0].isRead).toBe(false); // Server value wins
     });
   });
 });

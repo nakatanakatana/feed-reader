@@ -41,7 +41,7 @@ export const itemReadCollectionOptions = {
 
     setLastReadFetched(new Date());
 
-    const newReads: ItemRead[] = response.itemReads.map((ir) => ({
+    const newReads: ItemRead[] = (response.itemReads || []).map((ir) => ({
       id: ir.itemId,
       isRead: ir.isRead,
       updatedAt: ir.updatedAt
@@ -111,13 +111,22 @@ const collection = createRoot(() => {
 export const itemReadCollection = () => collection;
 
 export const updateItemReadStatus = async (ids: string[], isRead: boolean) => {
-  itemReadCollection().utils.writeUpsert(
-    ids.map((id) => ({
-      id,
-      isRead,
-      updatedAt: new Date().toISOString(),
-    })),
-  );
+  const coll = itemReadCollection();
+  try {
+    coll.utils.writeUpsert(
+      ids.map((id) => ({
+        id,
+        isRead,
+        updatedAt: new Date().toISOString(),
+      })),
+    );
+  } catch (e) {
+    console.warn("ItemRead collection operation failed, calling API directly", e);
+    await itemClient.updateItemStatus({
+      ids: ids,
+      isRead: isRead,
+    });
+  }
 };
 
 export const markItemsRead = updateItemReadStatus;
