@@ -83,7 +83,16 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
             .filter((t: number) => !Number.isNaN(t));
 
           if (validDates.length > 0) {
-            setLastFetched(new Date(Math.max(...validDates)));
+            const maxTime = Math.max(...validDates);
+            const currentAnchorTime = lastFetchedValue
+              ? lastFetchedValue.getTime()
+              : 0;
+
+            if (maxTime > currentAnchorTime) {
+              setLastFetched(new Date(maxTime));
+            } else if (lastFetchedValue !== null) {
+              setLastFetched(lastFetchedValue);
+            }
           } else if (lastFetchedValue !== null) {
             setLastFetched(lastFetchedValue);
           }

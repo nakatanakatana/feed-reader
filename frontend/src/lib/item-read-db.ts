@@ -7,6 +7,7 @@ import {
   lastReadFetched,
   setLastReadFetched,
 } from "./item-sync-state";
+import { type DateFilterValue, dateToTimestamp } from "./item-utils";
 import { queryClient } from "./query";
 
 export interface ItemRead {
@@ -33,26 +34,33 @@ export const itemReadCollectionOptions = {
     }
 
     const response = await itemClient.listItemRead({
-      updatedSince: anchor
-        ? { seconds: BigInt(Math.floor(anchor.getTime() / 1000)), nanos: 0 }
-        : undefined,
+      updatedSince: anchor ? dateToTimestamp(anchor) : undefined,
     });
 
     const allNewReads: ItemRead[] = (response.itemReads || []).map((ir) => ({
       id: ir.itemId,
       isRead: ir.isRead,
       updatedAt: ir.updatedAt
-        ? new Date(Number(ir.updatedAt.seconds) * 1000).toISOString()
+        ? new Date(
+            Number(ir.updatedAt.seconds) * 1000 +
+              Math.floor(ir.updatedAt.nanos / 1000000),
+          ).toISOString()
         : (anchor ?? new Date(0)).toISOString(),
     }));
 
     // Update anchor based on the most recent updatedAt from the server
     if (allNewReads.length > 0) {
-      const maxUpdatedAt = new Date(
-        Math.max(...allNewReads.map((r) => new Date(r.updatedAt).getTime())),
+      const maxTime = Math.max(
+        ...allNewReads.map((r) => new Date(r.updatedAt).getTime()),
       );
-      // Advance to the max timestamp from results
-      setLastReadFetched(maxUpdatedAt);
+      const currentAnchorTime = anchor ? anchor.getTime() : 0;
+
+      // Only advance the anchor if we found a strictly newer timestamp
+      if (maxTime > currentAnchorTime) {
+        setLastReadFetched(new Date(maxTime));
+      } else if (anchor) {
+        setLastReadFetched(anchor);
+      }
     } else if (anchor) {
       // If no new data, keep using the previous anchor instead of advancing using client clock
       setLastReadFetched(anchor);
