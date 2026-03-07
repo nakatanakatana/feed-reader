@@ -133,7 +133,9 @@ export const updateItemReadStatus = async (ids: string[], isRead: boolean) => {
     // If the collection is not ready, we can safely ignore the local cache update
     // because the server has been updated and the next delta sync will fetch the state.
     if (e instanceof Error && e.name === "SyncNotInitializedError") {
-      console.warn("ItemRead collection not ready for optimistic update, skipping local cache update");
+      console.warn(
+        "ItemRead collection not ready for optimistic update, skipping local cache update",
+      );
     } else {
       console.warn("ItemRead collection cache update failed", e);
     }
