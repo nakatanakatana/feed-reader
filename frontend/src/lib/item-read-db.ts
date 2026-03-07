@@ -32,28 +32,19 @@ export const itemReadCollectionOptions = {
       anchor = lastFetched();
     }
 
-    let allNewReads: ItemRead[] = [];
-    let pageToken = "";
+    const response = await itemClient.listItemRead({
+      updatedSince: anchor
+        ? { seconds: BigInt(Math.floor(anchor.getTime() / 1000)), nanos: 0 }
+        : undefined,
+    });
 
-    do {
-      const response = await itemClient.listItemRead({
-        updatedSince: anchor
-          ? { seconds: BigInt(Math.floor(anchor.getTime() / 1000)), nanos: 0 }
-          : undefined,
-        pageSize: 1000,
-        pageToken: pageToken || undefined,
-      });
-
-      const newReads: ItemRead[] = (response.itemReads || []).map((ir) => ({
-        id: ir.itemId,
-        isRead: ir.isRead,
-        updatedAt: ir.updatedAt
-          ? new Date(Number(ir.updatedAt.seconds) * 1000).toISOString()
-          : (anchor ?? new Date(0)).toISOString(),
-      }));
-      allNewReads = allNewReads.concat(newReads);
-      pageToken = response.nextPageToken;
-    } while (pageToken);
+    const allNewReads: ItemRead[] = (response.itemReads || []).map((ir) => ({
+      id: ir.itemId,
+      isRead: ir.isRead,
+      updatedAt: ir.updatedAt
+        ? new Date(Number(ir.updatedAt.seconds) * 1000).toISOString()
+        : (anchor ?? new Date(0)).toISOString(),
+    }));
 
     // Update anchor based on the most recent updatedAt from the server
     if (allNewReads.length > 0) {

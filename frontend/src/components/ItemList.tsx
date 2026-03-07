@@ -19,6 +19,7 @@ import {
   items,
   itemsUnreadQuery,
   tags,
+  updateItemReadStatus,
 } from "../lib/db";
 import { itemStore } from "../lib/item-store";
 import { type DateFilterValue, formatUnreadCount } from "../lib/item-utils";
@@ -202,6 +203,7 @@ export function ItemList(props: ItemListProps) {
       // Perform a single bulk update so that any onUpdate side effects
       // (such as server synchronization) are invoked only once.
       // We update the local store and await the completion of the side effect.
+      await updateItemReadStatus(ids, true);
       await items().update(ids, (drafts) => {
         for (const draft of drafts) {
           draft.isRead = true;

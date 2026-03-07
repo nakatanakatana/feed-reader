@@ -47,44 +47,6 @@ describe("ItemRead collection options", () => {
       expect(data[1].isRead).toBe(false);
     });
 
-    it("should handle pagination correctly", async () => {
-      const mockItemReads1 = [
-        {
-          itemId: "1",
-          isRead: true,
-          updatedAt: { seconds: BigInt(1000), nanos: 0 },
-        },
-      ];
-      const mockItemReads2 = [
-        {
-          itemId: "2",
-          isRead: false,
-          updatedAt: { seconds: BigInt(1001), nanos: 0 },
-        },
-      ];
-
-      // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
-      (itemClient.listItemRead as any)
-        .mockResolvedValueOnce({
-          itemReads: mockItemReads1,
-          nextPageToken: "page2",
-        })
-        .mockResolvedValueOnce({
-          itemReads: mockItemReads2,
-          nextPageToken: "",
-        });
-
-      const data =
-        (await // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB context
-        (itemReadCollectionOptions as any).queryFn({
-          queryKey: ["item-reads"],
-        })) as ItemRead[];
-
-      expect(itemClient.listItemRead).toHaveBeenCalledTimes(2);
-      expect(data).toHaveLength(2);
-      expect(data.map((d) => d.id)).toEqual(["1", "2"]);
-    });
-
     it("should advance anchor based on server updatedAt", async () => {
       const mockItemReads = [
         {
