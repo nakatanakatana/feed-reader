@@ -23,6 +23,7 @@ import {
   ItemSchema,
   ItemService,
   ListItemBlockRulesResponseSchema,
+  ListItemReadResponseSchema,
   ListItemSchema,
   ListItemsResponseSchema,
   ListURLParsingRulesResponseSchema,
@@ -43,10 +44,12 @@ import { mockConnectWeb } from "./connect";
 const tags: Tag[] = [];
 const feeds: Feed[] = [];
 const items: Item[] = [];
+const itemReads = new Map<string, { isRead: boolean; updatedAt: Date }>();
 
 export const resetState = () => {
   console.log("MSW: resetState called");
   tags.length = 0;
+  itemReads.clear();
   tags.push(
     create(TagSchema, {
       id: "tag-1",
@@ -122,7 +125,6 @@ export const handlers = [
     method: "listFeeds",
     handler: (req) => {
       let filteredFeeds = feeds;
-      // ... (rest of handlers remain same but with logging added to key ones)
 
       if (req.tagId) {
         filteredFeeds = feeds.filter((f) =>
@@ -392,12 +394,16 @@ export const handlers = [
   mockConnectWeb(ItemService)({
     method: "updateItemStatus",
     handler: (req) => {
+      const updatedAt = new Date();
       for (const id of req.ids || []) {
         const item = items.find((i) => i.id === id);
         if (item) {
           if (req.isRead !== undefined) {
             item.isRead = req.isRead;
           }
+        }
+        if (req.isRead !== undefined) {
+          itemReads.set(id, { isRead: req.isRead, updatedAt });
         }
       }
       return create(UpdateItemStatusResponseSchema, {});
@@ -412,6 +418,63 @@ export const handlers = [
         return create(GetItemResponseSchema, { item });
       }
       throw new Error("Item not found");
+    },
+  }),
+
+  mockConnectWeb(ItemService)({
+    method: "listItemRead",
+    handler: (req) => {
+      let results = Array.from(itemReads.entries()).map(([id, state]) => ({
+        itemId: id,
+        isRead: state.isRead,
+        updatedAt: state.updatedAt,
+      }));
+
+      // Sort by updatedAt then itemId for consistent pagination
+      results.sort((a, b) => {
+        const timeDiff = a.updatedAt.getTime() - b.updatedAt.getTime();
+        if (timeDiff !== 0) {
+          return timeDiff;
+        }
+        return a.itemId.localeCompare(b.itemId);
+      });
+
+      if (req.pageToken) {
+        // Simple mock pagination: the token is the index of the first item to return
+        const start = Number.parseInt(req.pageToken, 10);
+        results = results.slice(start);
+      } else if (req.updatedSince) {
+        const sinceDate = new Date(
+          Number(req.updatedSince.seconds) * 1000 +
+            req.updatedSince.nanos / 1000000,
+        );
+        // Use strict ">" cursor to avoid repeatedly returning the last row.
+        results = results.filter((r) => r.updatedAt > sinceDate);
+      }
+
+      const pageSize = req.pageSize || 1000;
+      const paginatedResults = results.slice(0, pageSize);
+      const nextPageToken =
+        results.length > pageSize
+          ? (
+              (req.pageToken ? Number.parseInt(req.pageToken, 10) : 0) +
+              pageSize
+            ).toString()
+          : "";
+
+      const itemReadsResponse = paginatedResults.map((r) => ({
+        itemId: r.itemId,
+        isRead: r.isRead,
+        updatedAt: {
+          seconds: BigInt(Math.floor(r.updatedAt.getTime() / 1000)),
+          nanos: (r.updatedAt.getTime() % 1000) * 1000000,
+        },
+      }));
+
+      return create(ListItemReadResponseSchema, {
+        itemReads: itemReadsResponse,
+        nextPageToken,
+      });
     },
   }),
 

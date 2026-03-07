@@ -5,7 +5,7 @@ import { flex } from "../../styled-system/patterns";
 import { ItemList } from "../components/ItemList";
 import { ActionButton } from "../components/ui/ActionButton";
 import { PageLayout } from "../components/ui/PageLayout";
-import { items, lastFetched } from "../lib/item-db";
+import { itemReadCollection, items, lastItemsSyncedAt } from "../lib/db";
 import type { DateFilterValue } from "../lib/item-utils";
 
 interface ItemsSearch {
@@ -44,6 +44,7 @@ function ItemsLayout() {
       if (e.key === "r" && !e.ctrlKey && !e.metaKey && !e.altKey) {
         e.preventDefault();
         itemsCollection.utils.refetch();
+        itemReadCollection().utils.refetch();
       }
     };
 
@@ -68,15 +69,18 @@ function ItemsLayout() {
           fixedControls
           headerActions={
             <div class={flex({ gap: "2", alignItems: "center" })}>
-              {lastFetched() && (
+              {lastItemsSyncedAt() && (
                 <span class={css({ fontSize: "sm", color: "gray.500" })}>
-                  {lastFetched()?.toLocaleTimeString()}
+                  {lastItemsSyncedAt()?.toLocaleTimeString()}
                 </span>
               )}
               <ActionButton
                 size="sm"
                 variant="secondary"
-                onClick={() => itemsCollection.utils.refetch()}
+                onClick={() => {
+                  itemsCollection.utils.refetch();
+                  itemReadCollection().utils.refetch();
+                }}
                 disabled={
                   (itemsCollection as unknown as { isFetching: boolean })
                     .isFetching

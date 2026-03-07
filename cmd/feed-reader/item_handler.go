@@ -362,7 +362,7 @@ func (s *ItemServer) ListItemRead(ctx context.Context, req *connect.Request[item
 	}
 
 	params := store.ListItemReadParams{
-		Limit: limit,
+		Limit: limit + 1,
 	}
 
 	if req.Msg.PageToken != "" {
@@ -394,6 +394,13 @@ func (s *ItemServer) ListItemRead(ctx context.Context, req *connect.Request[item
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
+	pageSize := int(limit)
+	hasNextPage := false
+	if len(rows) > pageSize {
+		hasNextPage = true
+		rows = rows[:pageSize]
+	}
+
 	itemReads := make([]*itemv1.ItemRead, len(rows))
 	for i, row := range rows {
 		updatedAt, err := time.Parse(time.RFC3339, row.UpdatedAt)
@@ -409,7 +416,7 @@ func (s *ItemServer) ListItemRead(ctx context.Context, req *connect.Request[item
 	}
 
 	var nextPageToken string
-	if len(rows) > 0 {
+	if hasNextPage && len(rows) > 0 {
 		lastRow := rows[len(rows)-1]
 		token := listItemReadPageToken{
 			UpdatedAt: lastRow.UpdatedAt,

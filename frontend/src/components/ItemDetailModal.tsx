@@ -1,4 +1,4 @@
-import { eq, useLiveQuery } from "@tanstack/solid-db";
+import { coalesce, eq, useLiveQuery } from "@tanstack/solid-db";
 import {
   createMutation,
   useQuery,
@@ -16,13 +16,9 @@ import {
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
 import { itemBlockRuleInsert, urlParsingRules } from "../lib/block-db";
-import {
-  getItem,
-  type Item,
-  items,
-  updateItemReadStatus,
-} from "../lib/item-db";
+import { getItem, type Item, items } from "../lib/item-db";
 import { ITEM_STALE_TIME } from "../lib/item-query-constants";
+import { itemReadCollection, updateItemReadStatus } from "../lib/item-read-db";
 import {
   extractHostname,
   formatDate,
@@ -274,15 +270,37 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     const id = props.itemId;
     if (!id || id === "end-of-list") {
       // Return a non-matching query to initialize the signal correctly
-      return q
-        .from({ item: items() })
-        .where(({ item }) => eq(item.id, "__none__"))
-        .select(({ item }) => ({ ...item }));
+      return (
+        q
+          .from({ item: items() })
+          // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
+          .leftJoin({ read: itemReadCollection() }, ({ item, read }: any) =>
+            eq(item.id, read.id),
+          )
+          // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
+          .where(({ item }: any) => eq(item.id, "__none__"))
+          // biome-ignore lint/suspicious/noExplicitAny: TanStack DB select types
+          .select(({ item, read }: any) => ({
+            ...item,
+            isRead: coalesce(read?.isRead, item.isRead),
+          }))
+      );
     }
-    return q
-      .from({ item: items() })
-      .where(({ item }) => eq(item.id, id))
-      .select(({ item }) => ({ ...item }));
+    return (
+      q
+        .from({ item: items() })
+        // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
+        .leftJoin({ read: itemReadCollection() }, ({ item, read }: any) =>
+          eq(item.id, read.id),
+        )
+        // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
+        .where(({ item }: any) => eq(item.id, id))
+        // biome-ignore lint/suspicious/noExplicitAny: TanStack DB select types
+        .select(({ item, read }: any) => ({
+          ...item,
+          isRead: coalesce(read?.isRead, item.isRead),
+        }))
+    );
   });
 
   const collectionItem = () => collectionItems()[0];
@@ -384,7 +402,6 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     if (!currentItem || isEndOfList()) return;
 
     const newIsRead = !currentItem.isRead;
-    const inCollection = collectionItem();
 
     // Always update the individual item query cache for immediate UI feedback in the modal.
     // This handles both the collection and fallback cases.
@@ -397,15 +414,9 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     );
 
     try {
-      // Use items().update if the item is in the collection to keep the list in sync
-      if (inCollection) {
-        items().update(currentItem.id, (draft) => {
-          draft.isRead = newIsRead;
-        });
-      } else {
-        // Call the API directly only if NOT in collection (items().update handles it otherwise)
-        await updateItemReadStatus([currentItem.id], newIsRead);
-      }
+      // Use the authoritative updateItemReadStatus for delta sync and mixed state handling
+      await updateItemReadStatus([currentItem.id], newIsRead);
+
       setAnnouncement(newIsRead ? "Marked as read" : "Marked as unread");
       // Clear announcement after a short delay so it can be re-announced if toggled again
       if (announcementTimeout) clearTimeout(announcementTimeout);

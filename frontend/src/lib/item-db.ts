@@ -1,16 +1,25 @@
 import { createClient } from "@connectrpc/connect";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import {
+  coalesce,
   createCollection,
   createLiveQueryCollection,
   eq,
 } from "@tanstack/solid-db";
-import { createMemo, createRoot, createSignal } from "solid-js";
+import { createMemo, createRoot } from "solid-js";
 import {
   ItemService,
   type ListItem as ProtoListItem,
 } from "../gen/item/v1/item_pb";
+import { itemReadCollection } from "./item-read-db";
 import { itemStore } from "./item-store";
+import {
+  lastFetched,
+  lastReadFetched,
+  setLastFetched,
+  setLastItemsSyncedAt,
+  setLastReadFetched,
+} from "./item-sync-state";
 import {
   type DateFilterValue,
   dateToTimestamp,
@@ -37,8 +46,6 @@ export interface Item extends ListItem {
 }
 
 const itemClient = createClient(ItemService, transport);
-
-export const [lastFetched, setLastFetched] = createSignal<Date | null>(null);
 
 const createItems = (showRead: boolean, since: DateFilterValue) => {
   setLastFetched(null);
@@ -68,7 +75,43 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
           offset: 0,
           ...isRead,
         });
-        setLastFetched(new Date());
+        const syncTime = new Date();
+        setLastItemsSyncedAt(syncTime);
+
+        if (response.items && response.items.length > 0) {
+          const validDates = response.items
+            .map((item: ProtoListItem) =>
+              new Date(item.createdAt || "").getTime(),
+            )
+            .filter((t: number) => !Number.isNaN(t));
+
+          const maxTime = validDates.length > 0 ? Math.max(...validDates) : 0;
+
+          // Initialize the read-state anchor if it hasn't been set yet.
+          // This baseline prevents fetching all historical read states, while
+          // using a small overlap window to avoid skipping concurrent updates.
+          if (!lastReadFetched() && maxTime > 0) {
+            const overlapMs = 5 * 1000; // 5 seconds overlap
+            const initialReadAnchor = new Date(maxTime - overlapMs);
+            setLastReadFetched(initialReadAnchor);
+          }
+
+          if (validDates.length > 0) {
+            const currentAnchorTime = lastFetchedValue
+              ? lastFetchedValue.getTime()
+              : 0;
+
+            if (maxTime > currentAnchorTime) {
+              setLastFetched(new Date(maxTime));
+            } else if (lastFetchedValue !== null) {
+              setLastFetched(lastFetchedValue);
+            }
+          } else if (lastFetchedValue !== null) {
+            setLastFetched(lastFetchedValue);
+          }
+        } else if (lastFetchedValue !== null) {
+          setLastFetched(lastFetchedValue);
+        }
 
         const respList = response.items.map((item: ProtoListItem) => ({
           id: item.id,
@@ -93,23 +136,40 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
       },
       getKey: (item: ListItem) => item.id,
       onUpdate: async ({ transaction }) => {
-        const ids = transaction.mutations.map((m) => m.modified.id);
-        const firstMutation = transaction.mutations[0];
-        const isRead = firstMutation.modified.isRead;
+        const idsByIsRead = new Map<boolean, string[]>();
 
-        // Efficiently update the query cache once instead of item-by-item
+        for (const m of transaction.mutations) {
+          const id = m.modified.id;
+          const isRead = m.modified.isRead;
+          let group = idsByIsRead.get(isRead);
+          if (!group) {
+            group = [];
+            idsByIsRead.set(isRead, group);
+          }
+          group.push(id);
+        }
+
+        // Update the query cache for each group
         queryClient.setQueryData(queryKey, (old: ListItem[] | undefined) => {
           if (!old) return old;
-          const idSet = new Set(ids);
-          return old.map((item) =>
-            idSet.has(item.id) ? { ...item, isRead } : item,
-          );
+          const updated = [...old];
+          for (const [isRead, ids] of idsByIsRead.entries()) {
+            const idSet = new Set(ids);
+            for (let i = 0; i < updated.length; i++) {
+              if (idSet.has(updated[i].id)) {
+                updated[i] = { ...updated[i], isRead };
+              }
+            }
+          }
+          return updated;
         });
 
-        await itemClient.updateItemStatus({
-          ids: ids,
-          isRead: isRead,
-        });
+        for (const [isRead, ids] of idsByIsRead.entries()) {
+          await itemClient.updateItemStatus({
+            ids: ids,
+            isRead: isRead,
+          });
+        }
 
         return { refetch: false };
       },
@@ -127,8 +187,20 @@ export const itemsUnreadQuery = createRoot(() => {
   const collection = createLiveQueryCollection((q) =>
     q
       .from({ item: items() })
-      .where(({ item }) => eq(item.isRead, false))
-      .select(({ item }) => ({ ...item })),
+      // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
+      .leftJoin({ read: itemReadCollection() }, ({ item, read }: any) =>
+        eq(item.id, read.id),
+      )
+      // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
+      .where(({ item, read }: any) => {
+        // Prioritize delta-synced read status for unread calculations
+        return eq(coalesce(read?.isRead, item.isRead), false);
+      })
+      // biome-ignore lint/suspicious/noExplicitAny: TanStack DB select types
+      .select(({ item, read }: any) => ({
+        ...item,
+        isRead: coalesce(read?.isRead, item.isRead),
+      })),
   );
   return () => collection;
 });
@@ -150,11 +222,4 @@ export const getItem = async (id: string): Promise<Item | null> => {
     imageUrl: response.item.imageUrl,
     content: response.item.content,
   };
-};
-
-export const updateItemReadStatus = async (ids: string[], isRead: boolean) => {
-  await itemClient.updateItemStatus({
-    ids: ids,
-    isRead: isRead,
-  });
 };
