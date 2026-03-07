@@ -87,7 +87,6 @@ func TestTags(t *testing.T) {
 	items, err := s.ListItems(ctx, store.StoreListItemsParams{
 		TagID:     "tag-1",
 		Limit:     10,
-		Offset:    0,
 		IsBlocked: false,
 	})
 	assert.NilError(t, err)
@@ -98,7 +97,6 @@ func TestTags(t *testing.T) {
 	items, err = s.ListItems(ctx, store.StoreListItemsParams{
 		TagID:     "tag-2",
 		Limit:     10,
-		Offset:    0,
 		IsBlocked: false,
 	})
 	assert.NilError(t, err)

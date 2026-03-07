@@ -203,12 +203,17 @@ WHERE
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = sqlc.narg('tag_id')
   )) AND
   (sqlc.narg('since') IS NULL OR i.created_at >= sqlc.narg('since')) AND
-  (sqlc.narg('is_blocked') IS NULL OR (CASE WHEN ib.item_id IS NOT NULL THEN 1 ELSE 0 END = sqlc.narg('is_blocked')))
+  (sqlc.narg('is_blocked') IS NULL OR (CASE WHEN ib.item_id IS NOT NULL THEN 1 ELSE 0 END = sqlc.narg('is_blocked'))) AND
+  (
+    (sqlc.narg('created_at_cursor') IS NULL OR sqlc.narg('id_cursor') IS NULL) OR
+    (i.created_at, i.id) > (sqlc.narg('created_at_cursor'), sqlc.narg('id_cursor'))
+  )
 GROUP BY
   i.id
 ORDER BY
-  i.created_at ASC
-LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
+  i.created_at ASC,
+  i.id ASC
+LIMIT sqlc.arg('limit');
 
 -- name: ListRecentItemPublishedDates :many
 SELECT
