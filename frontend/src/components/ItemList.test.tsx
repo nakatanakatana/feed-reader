@@ -16,7 +16,9 @@ import {
   ListItemsResponseSchema,
 } from "../gen/item/v1/item_pb";
 import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
-import { setLastFetched } from "../lib/item-sync-state";
+import { resetDatabase } from "../lib/db";
+import { setLastFetched, setLastItemsSyncedAt, setLastReadFetched } from "../lib/item-sync-state";
+import { itemsQueryKey } from "../lib/item-utils";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
@@ -26,14 +28,14 @@ describe("ItemList", () => {
   let dispose: () => void;
   let localeTimeSpy: ReturnType<typeof vi.spyOn> | null = null;
 
-  afterEach(() => {
+  afterEach(async () => {
     if (dispose) dispose();
     document.body.innerHTML = "";
     vi.clearAllMocks();
     vi.useRealTimers();
     localeTimeSpy?.mockRestore();
     localeTimeSpy = null;
-    setLastFetched(null);
+    await resetDatabase();
   });
 
   beforeEach(() => {
@@ -205,8 +207,11 @@ describe("ItemList", () => {
       ],
     );
 
-    // Trigger refetch for item-reads
-    await queryClient.refetchQueries({ queryKey: ["item-reads"] });
+    // Trigger refetch for item-reads and items
+    await Promise.all([
+      queryClient.refetchQueries({ queryKey: ["item-reads"] }),
+      queryClient.refetchQueries({ queryKey: itemsQueryKey as any }),
+    ]);
 
     // Item 1 should now be read (has gray color class)
     await expect.poll(() => item1.element()).toHaveClass(/c_gray\.500/);

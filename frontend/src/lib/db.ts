@@ -9,7 +9,9 @@ export * from "./tag-db";
 
 // Import for db object
 import { feeds, feedTag } from "./feed-db";
+import { itemsCollection } from "./item-db";
 import { itemReadCollection } from "./item-read-db";
+import { itemStore } from "./item-store";
 import {
   setLastFetched,
   setLastItemsSyncedAt,
@@ -24,13 +26,14 @@ export const db = {
   feedTag,
   tags,
   itemRead: itemReadCollection,
+  items: itemsCollection,
 };
 
-export const resetDatabase = () => {
-  console.log("DB: resetDatabase called");
+export const resetDatabase = async () => {
   setLastFetched(null);
   setLastReadFetched(null);
   setLastItemsSyncedAt(null);
+  itemStore.reset();
   // resetQueries will clear data and trigger refetch for active queries
   queryClient.resetQueries();
 };
