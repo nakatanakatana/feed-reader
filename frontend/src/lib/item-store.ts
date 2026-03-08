@@ -44,12 +44,22 @@ function createItemStore() {
     setState("transientRemovedIds", reconcile({}));
   };
 
+  const reset = () => {
+    setState({
+      showRead: itemsShowReadFilter,
+      since: itemsDateFilter as DateFilterValue,
+      transientRemovedIds: {},
+    });
+    setLastFetched(null);
+  };
+
   return {
     state,
     setShowRead,
     setDateFilter,
     addTransientRemovedIds,
     clearTransientRemovedIds,
+    reset,
   };
 }
 

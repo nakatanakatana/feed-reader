@@ -238,7 +238,8 @@ describe("Block Rules Page", () => {
       .element(page.getByText("to-delete.com").first())
       .toBeInTheDocument();
 
-    const deleteButton = page.getByRole("button", { name: "Delete" }).first();
+    const row = page.getByRole("row", { name: /to-delete\.com/ });
+    const deleteButton = row.getByRole("button", { name: "Delete" });
     await deleteButton.click();
 
     await expect

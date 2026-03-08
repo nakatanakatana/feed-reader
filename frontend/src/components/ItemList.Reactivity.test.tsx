@@ -22,6 +22,10 @@ import { routeTree } from "../routeTree.gen";
 describe("ItemList Reactivity", () => {
   let dispose: () => void;
 
+  beforeEach(() => {
+    itemStore.reset();
+  });
+
   afterEach(() => {
     if (dispose) dispose();
     document.body.innerHTML = "";

@@ -61,6 +61,7 @@ export const urlParsingRulesOptions = queryCollectionOptions({
         });
       }
     }
+    await queryClient.invalidateQueries({ queryKey: ["url-rules"] });
   },
 });
 
@@ -105,6 +106,7 @@ export const itemBlockRulesOptions = queryCollectionOptions({
         });
       }
     }
+    await queryClient.invalidateQueries({ queryKey: ["block-rules"] });
   },
 });
 
