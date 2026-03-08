@@ -35,5 +35,5 @@ export const resetDatabase = async () => {
   setLastItemsSyncedAt(null);
   itemStore.reset();
   // resetQueries will clear data and trigger refetch for active queries
-  queryClient.resetQueries();
+  return queryClient.resetQueries();
 };

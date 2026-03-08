@@ -39,7 +39,7 @@ export function AddFeedForm(props: AddFeedFormProps) {
       // Use the collection's insert method to trigger the optimistic UI flow
       // and centralized onInsert/onDelete invalidations defined in feed-db.ts.
       const tx = feeds.insert({
-        id: `temp-${Date.now()}`,
+        id: `temp-${crypto.randomUUID()}`,
         url: url(),
         title: "Adding...",
         tags,

@@ -69,7 +69,7 @@ describe("BlockRules page bulk add button", () => {
 
     // Register mock handler
     worker.use(
-      http.post(
+      http.all(
         "*/item.v1.ItemService/AddItemBlockRules",
         async ({ request }) => {
           const body = await request.json();

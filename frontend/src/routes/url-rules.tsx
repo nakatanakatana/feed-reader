@@ -28,7 +28,7 @@ function URLRulesComponent() {
       pattern: string;
     }) => {
       await urlParsingRules.insert({
-        id: `temp-${Date.now()}`,
+        id: `temp-${crypto.randomUUID()}`,
         ...newRule,
         // biome-ignore lint/suspicious/noExplicitAny: using any for partial rule insert
       } as any);

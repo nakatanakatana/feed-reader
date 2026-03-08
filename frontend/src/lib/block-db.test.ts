@@ -1,4 +1,11 @@
+import { create, toJson } from "@bufbuild/protobuf";
+import { HttpResponse, http } from "msw";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  AddItemBlockRulesResponseSchema,
+  AddURLParsingRuleResponseSchema,
+} from "../gen/item/v1/item_pb";
+import { worker } from "../mocks/browser";
 import { itemBlockRulesOptions, urlParsingRulesOptions } from "./block-db";
 import { queryClient } from "./query";
 
@@ -16,6 +23,17 @@ describe("block-db", () => {
       if (!urlParsingRulesOptions.onInsert)
         throw new Error("onInsert not defined");
 
+      worker.use(
+        http.all("*/item.v1.ItemService/AddURLParsingRule", () => {
+          return HttpResponse.json(
+            toJson(
+              AddURLParsingRuleResponseSchema,
+              create(AddURLParsingRuleResponseSchema, {}),
+            ),
+          );
+        }),
+      );
+
       const transaction = {
         mutations: [
           {
@@ -29,19 +47,12 @@ describe("block-db", () => {
         ],
       };
 
-      // Mock queryClient.invalidateQueries is already spied in beforeEach
-      // We don't easily mock the RPC call here but we can check if invalidation is called
-      // Since it's an async call that might fail due to RPC, we catch it
-      try {
-        await urlParsingRulesOptions.onInsert({
-          // biome-ignore lint/suspicious/noExplicitAny: mock
-          transaction: transaction as any,
-          // biome-ignore lint/suspicious/noExplicitAny: mock
-          collection: {} as any,
-        });
-      } catch (_e) {
-        // Expected to fail because RPC is not mocked, but invalidation should still be called if it's before or after
-      }
+      await urlParsingRulesOptions.onInsert({
+        // biome-ignore lint/suspicious/noExplicitAny: mock
+        transaction: transaction as any,
+        // biome-ignore lint/suspicious/noExplicitAny: mock
+        collection: {} as any,
+      });
 
       expect(queryClient.invalidateQueries).toHaveBeenCalledWith({
         queryKey: ["url-rules"],
@@ -52,6 +63,17 @@ describe("block-db", () => {
       if (!itemBlockRulesOptions.onInsert)
         throw new Error("onInsert not defined");
 
+      worker.use(
+        http.all("*/item.v1.ItemService/AddItemBlockRules", () => {
+          return HttpResponse.json(
+            toJson(
+              AddItemBlockRulesResponseSchema,
+              create(AddItemBlockRulesResponseSchema, {}),
+            ),
+          );
+        }),
+      );
+
       const transaction = {
         mutations: [
           {
@@ -61,14 +83,12 @@ describe("block-db", () => {
         ],
       };
 
-      try {
-        await itemBlockRulesOptions.onInsert({
-          // biome-ignore lint/suspicious/noExplicitAny: mock
-          transaction: transaction as any,
-          // biome-ignore lint/suspicious/noExplicitAny: mock
-          collection: {} as any,
-        });
-      } catch (_e) {}
+      await itemBlockRulesOptions.onInsert({
+        // biome-ignore lint/suspicious/noExplicitAny: mock
+        transaction: transaction as any,
+        // biome-ignore lint/suspicious/noExplicitAny: mock
+        collection: {} as any,
+      });
 
       expect(queryClient.invalidateQueries).toHaveBeenCalledWith({
         queryKey: ["block-rules"],
