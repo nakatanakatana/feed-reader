@@ -60,8 +60,13 @@ export const urlParsingRulesOptions = queryCollectionOptions({
     try {
       for (const mutation of transaction.mutations) {
         if (mutation.type === "delete") {
+          const id = mutation.key as string;
+          // Skip backend delete for optimistic entries that still have a temporary ID.
+          if (typeof id === "string" && id.startsWith("temp-")) {
+            continue;
+          }
           await itemClient.deleteURLParsingRule({
-            id: mutation.key as string,
+            id,
           });
         }
       }
@@ -111,8 +116,13 @@ export const itemBlockRulesOptions = queryCollectionOptions({
     try {
       for (const mutation of transaction.mutations) {
         if (mutation.type === "delete") {
+          const id = mutation.key as string;
+          // Skip backend deletes for optimistic rows that still have temporary IDs.
+          if (typeof id === "string" && id.startsWith("temp-")) {
+            continue;
+          }
           await itemClient.deleteItemBlockRule({
-            id: mutation.key as string,
+            id,
           });
         }
       }

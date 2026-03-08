@@ -135,7 +135,12 @@ export const feeds = createRoot(() =>
         try {
           for (const mutation of transaction.mutations) {
             if (mutation.type === "delete") {
-              await feedClient.deleteFeed({ id: mutation.key as string });
+              const id = mutation.key as string;
+              // Skip deletes for optimistic temporary IDs (e.g., "temp-...")
+              if (typeof id === "string" && id.startsWith("temp-")) {
+                continue;
+              }
+              await feedClient.deleteFeed({ id });
             }
           }
         } finally {

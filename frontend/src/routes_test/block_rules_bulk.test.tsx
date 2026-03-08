@@ -7,9 +7,13 @@ import {
 } from "@tanstack/solid-router";
 import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { AddItemBlockRulesResponseSchema } from "../gen/item/v1/item_pb";
+import {
+  AddItemBlockRulesResponseSchema,
+  ListItemBlockRulesResponseSchema,
+  ListURLParsingRulesResponseSchema,
+} from "../gen/item/v1/item_pb";
 import { queryClient, transport } from "../lib/query";
 import { ToastProvider } from "../lib/toast";
 import { TransportProvider } from "../lib/transport-context";
@@ -18,6 +22,27 @@ import { routeTree } from "../routeTree.gen";
 
 describe("BlockRules page bulk add button", () => {
   let dispose: (() => void) | undefined;
+
+  beforeEach(() => {
+    worker.use(
+      http.all("*/item.v1.ItemService/ListItemBlockRules", () => {
+        return HttpResponse.json(
+          toJson(
+            ListItemBlockRulesResponseSchema,
+            create(ListItemBlockRulesResponseSchema, { rules: [] }),
+          ),
+        );
+      }),
+      http.all("*/item.v1.ItemService/ListURLParsingRules", () => {
+        return HttpResponse.json(
+          toJson(
+            ListURLParsingRulesResponseSchema,
+            create(ListURLParsingRulesResponseSchema, { rules: [] }),
+          ),
+        );
+      }),
+    );
+  });
 
   afterEach(() => {
     if (dispose) dispose();
