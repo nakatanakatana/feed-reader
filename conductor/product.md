@@ -35,7 +35,7 @@ The primary target audience is individuals and organizations seeking control ove
 - **Fetch Scheduling & Suspend:** Take control of feed updates with an intelligent, database-backed scheduling system.
   - **Adaptive Intervals:** Automatically adjusts fetch frequency based on item update history, prioritizing active feeds while reducing load from static ones.
   - **Manual Suspend:** Temporarily halt updates for specific feeds for a set duration (1 Day, 3 Days, 1 Week, or 1 Month) directly from the context menu or bulk action bar.
-  - **Visual Scheduling:** View the scheduled "Next fetch" time for each feed in the list view, providing transparency into the background fetch cycle.
+  - **Visual Scheduling:** View the scheduled "Next fetch at" time for each feed in the list view, providing transparency into the background fetch cycle.
 
 - **Item Hiding (Block):** Automatically hide unwanted articles based on customizable rules.
   - **URL-Based Extraction:** Define rules to extract user information from complex URLs (e.g., subdomain or path-based) to block specific content creators across different domains.
