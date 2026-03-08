@@ -394,6 +394,11 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
       });
     }
 
+    actions.push({
+      label: "Close",
+      onClick: props.onClose,
+    });
+
     return actions;
   });
 
@@ -545,12 +550,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             </Show>
           </h2>
           <div class={flex({ gap: "2", alignItems: "center" })}>
-            <Show when={menuActions().length > 0}>
-              <KebabMenu actions={menuActions()} />
-            </Show>
-            <ActionButton variant="ghost" onClick={props.onClose}>
-              Close
-            </ActionButton>
+            <KebabMenu actions={menuActions()} />
           </div>
         </div>
 
