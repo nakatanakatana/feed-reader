@@ -2,6 +2,8 @@ import type { Timestamp } from "@bufbuild/protobuf/wkt";
 
 export type DateFilterValue = "all" | "24h" | "7d" | "30d" | "90d" | "365d";
 
+export const itemsQueryKey = ["items"] as const;
+
 export interface Item {
   id: string;
   title: string;

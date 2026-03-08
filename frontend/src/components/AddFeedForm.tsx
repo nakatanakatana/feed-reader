@@ -39,7 +39,11 @@ export function AddFeedForm(props: AddFeedFormProps) {
         url: url(),
         tagIds: tags.map((t) => t.id),
       });
-      await queryClient.invalidateQueries({ queryKey: ["feeds"] });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["feeds"] }),
+        queryClient.invalidateQueries({ queryKey: ["tags"] }),
+        queryClient.invalidateQueries({ queryKey: ["feed-tags"] }),
+      ]);
 
       setUrl("");
       setSelectedTagIds([]);

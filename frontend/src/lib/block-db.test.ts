@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { itemBlockRules, urlParsingRules } from "./block-db";
+import { itemBlockRulesOptions, urlParsingRulesOptions } from "./block-db";
 import { queryClient } from "./query";
 
 describe("block-db", () => {
@@ -11,25 +11,68 @@ describe("block-db", () => {
     vi.restoreAllMocks();
   });
 
-  describe("collections", () => {
-    it("urlParsingRules collection should be defined", () => {
-      expect(urlParsingRules).toBeDefined();
+  describe("lifecycle hooks", () => {
+    it("urlParsingRules.onInsert should trigger invalidation", async () => {
+      if (!urlParsingRulesOptions.onInsert)
+        throw new Error("onInsert not defined");
+
+      const transaction = {
+        mutations: [
+          {
+            type: "insert",
+            modified: {
+              domain: "test.com",
+              ruleType: "subdomain",
+              pattern: "test",
+            },
+          },
+        ],
+      };
+
+      // Mock queryClient.invalidateQueries is already spied in beforeEach
+      // We don't easily mock the RPC call here but we can check if invalidation is called
+      // Since it's an async call that might fail due to RPC, we catch it
+      try {
+        await urlParsingRulesOptions.onInsert({
+          // biome-ignore lint/suspicious/noExplicitAny: mock
+          transaction: transaction as any,
+          // biome-ignore lint/suspicious/noExplicitAny: mock
+          collection: {} as any,
+        });
+      } catch (_e) {
+        // Expected to fail because RPC is not mocked, but invalidation should still be called if it's before or after
+      }
+
+      expect(queryClient.invalidateQueries).toHaveBeenCalledWith({
+        queryKey: ["url-rules"],
+      });
     });
 
-    it("itemBlockRules collection should be defined", () => {
-      expect(itemBlockRules).toBeDefined();
-    });
-  });
+    it("itemBlockRules.onInsert should trigger invalidation", async () => {
+      if (!itemBlockRulesOptions.onInsert)
+        throw new Error("onInsert not defined");
 
-  describe("collection methods", () => {
-    it("urlParsingRules.insert should trigger invalidation (indirectly via onInsert)", async () => {
-      // NOTE: We can't easily test onInsert behavior without mocking the whole DB cycle,
-      // but we can at least verify the collection is usable.
-      expect(urlParsingRules.insert).toBeDefined();
-    });
+      const transaction = {
+        mutations: [
+          {
+            type: "insert",
+            modified: { ruleType: "user", value: "bad-user" },
+          },
+        ],
+      };
 
-    it("itemBlockRules.insert should trigger invalidation", async () => {
-      expect(itemBlockRules.insert).toBeDefined();
+      try {
+        await itemBlockRulesOptions.onInsert({
+          // biome-ignore lint/suspicious/noExplicitAny: mock
+          transaction: transaction as any,
+          // biome-ignore lint/suspicious/noExplicitAny: mock
+          collection: {} as any,
+        });
+      } catch (_e) {}
+
+      expect(queryClient.invalidateQueries).toHaveBeenCalledWith({
+        queryKey: ["block-rules"],
+      });
     });
   });
 });

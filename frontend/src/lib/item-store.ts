@@ -2,7 +2,7 @@ import { createRoot } from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
 import { itemsDateFilter, itemsShowReadFilter } from "./default";
 import { setLastFetched } from "./item-sync-state";
-import type { DateFilterValue } from "./item-utils";
+import { type DateFilterValue, itemsQueryKey } from "./item-utils";
 import { queryClient } from "./query";
 
 function createItemStore() {
@@ -14,8 +14,10 @@ function createItemStore() {
 
   const resetCacheAndSync = () => {
     setLastFetched(null);
-    queryClient.setQueryData(["items"], undefined);
-    queryClient.invalidateQueries({ queryKey: ["items"] });
+    // biome-ignore lint/suspicious/noExplicitAny: complex generic
+    queryClient.setQueryData(itemsQueryKey as any, undefined);
+    // biome-ignore lint/suspicious/noExplicitAny: complex generic
+    queryClient.refetchQueries({ queryKey: itemsQueryKey as any });
   };
 
   const setShowRead = (showRead: boolean) => {

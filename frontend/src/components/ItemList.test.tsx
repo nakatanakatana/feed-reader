@@ -209,7 +209,7 @@ describe("ItemList", () => {
     await queryClient.refetchQueries({ queryKey: ["item-reads"] });
 
     // Item 1 should now be read (has gray color class)
-    await expect.element(item1).toHaveClass(/c_gray\.500/);
+    await expect.poll(() => item1.element()).toHaveClass(/c_gray\.500/);
   });
 
   it("renders tag filters in a horizontal scroll list", async () => {

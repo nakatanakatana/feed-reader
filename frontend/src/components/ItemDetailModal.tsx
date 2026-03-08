@@ -327,13 +327,13 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     mutationFn: async (req: {
       rules: { ruleType: string; value: string; domain?: string }[];
     }) => {
-      for (const rule of req.rules) {
-        await itemBlockRules.insert({
-          ...rule,
-          id: `temp-${Date.now()}-${Math.random()}`,
-          // biome-ignore lint/suspicious/noExplicitAny: generic insert
-        } as any);
-      }
+      const now = Date.now();
+      const rulesToInsert = req.rules.map((rule, index) => ({
+        ...rule,
+        id: `temp-${now}-${index}-${Math.random()}`,
+      }));
+      // biome-ignore lint/suspicious/noExplicitAny: generic insert
+      await itemBlockRules.insert(rulesToInsert as any);
     },
     onSuccess: () => {
       show("Block rule added successfully", "success");

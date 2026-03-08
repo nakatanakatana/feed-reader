@@ -20,7 +20,11 @@ import {
   setLastItemsSyncedAt,
   setLastReadFetched,
 } from "./item-sync-state";
-import { dateToTimestamp, getPublishedSince } from "./item-utils";
+import {
+  dateToTimestamp,
+  getPublishedSince,
+  itemsQueryKey,
+} from "./item-utils";
 import { queryClient, transport } from "./query";
 
 export interface ListItem {
@@ -51,7 +55,8 @@ export const itemsCollection = createRoot(() =>
       queryClient,
 
       refetchInterval: 1 * 60 * 1000,
-      queryKey: ["items"],
+      // biome-ignore lint/suspicious/noExplicitAny: complex generic
+      queryKey: itemsQueryKey as any,
       queryFn: async ({ queryKey }) => {
         const showRead = itemStore.state.showRead;
         const since = itemStore.state.since;
@@ -147,19 +152,23 @@ export const itemsCollection = createRoot(() =>
         }
 
         // Update the query cache for each group
-        queryClient.setQueryData(["items"], (old: ListItem[] | undefined) => {
-          if (!old) return old;
-          const updated = [...old];
-          for (const [isRead, ids] of idsByIsRead.entries()) {
-            const idSet = new Set(ids);
-            for (let i = 0; i < updated.length; i++) {
-              if (idSet.has(updated[i].id)) {
-                updated[i] = { ...updated[i], isRead };
+        queryClient.setQueryData(
+          // biome-ignore lint/suspicious/noExplicitAny: complex generic
+          itemsQueryKey as any,
+          (old: ListItem[] | undefined) => {
+            if (!old) return old;
+            const updated = [...old];
+            for (const [isRead, ids] of idsByIsRead.entries()) {
+              const idSet = new Set(ids);
+              for (let i = 0; i < updated.length; i++) {
+                if (idSet.has(updated[i].id)) {
+                  updated[i] = { ...updated[i], isRead };
+                }
               }
             }
-          }
-          return updated;
-        });
+            return updated;
+          },
+        );
 
         for (const [isRead, ids] of idsByIsRead.entries()) {
           await itemClient.updateItemStatus({
