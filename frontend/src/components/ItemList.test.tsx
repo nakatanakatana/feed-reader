@@ -17,7 +17,7 @@ import {
 } from "../gen/item/v1/item_pb";
 import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
 import { resetDatabase } from "../lib/db";
-import { setLastFetched, setLastItemsSyncedAt, setLastReadFetched } from "../lib/item-sync-state";
+import { setLastFetched } from "../lib/item-sync-state";
 import { itemsQueryKey } from "../lib/item-utils";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
@@ -210,6 +210,7 @@ describe("ItemList", () => {
     // Trigger refetch for item-reads and items
     await Promise.all([
       queryClient.refetchQueries({ queryKey: ["item-reads"] }),
+      // biome-ignore lint/suspicious/noExplicitAny: itemsQueryKey is a constant array
       queryClient.refetchQueries({ queryKey: itemsQueryKey as any }),
     ]);
 

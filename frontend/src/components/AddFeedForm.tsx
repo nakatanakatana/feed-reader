@@ -38,12 +38,12 @@ export function AddFeedForm(props: AddFeedFormProps) {
 
       // Use the collection's insert method to trigger the optimistic UI flow
       // and centralized onInsert/onDelete invalidations defined in feed-db.ts.
-      // biome-ignore lint/suspicious/noExplicitAny: generic insert
       const tx = feeds.insert({
         id: `temp-${Date.now()}`,
         url: url(),
         title: "Adding...",
         tags,
+        // biome-ignore lint/suspicious/noExplicitAny: generic insert
       } as any);
 
       // Await the persistence to catch any errors from the onInsert handler
