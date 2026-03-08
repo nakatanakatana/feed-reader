@@ -14,12 +14,12 @@
 - [x] Task: Run backend tests and fix any breakages. 6f01f4a
 - [x] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md) 0dea25f
 
-## Phase 3: Frontend Implementation (TypeScript)
+## Phase 3: Frontend Implementation (TypeScript) [checkpoint: 8199701]
 - [x] Task: Update `frontend/src/lib/` API clients and data models to use the new generated types and Date objects. 695a17f
 - [x] Task: Update MSW mocks in `frontend/src/mocks/handlers.ts` to match the new API structure. 695a17f
 - [x] Task: Update components in `frontend/src/components/` (e.g., FeedList, ItemList) to adapt to unified types and standardized pagination. 695a17f
 - [x] Task: Run frontend tests and fix any breakages. 695a17f
-- [ ] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md) 8199701
 
 ## Phase 4: Final Validation
 - [ ] Task: Run all CI checks (linting, tests) to ensure no regressions.
