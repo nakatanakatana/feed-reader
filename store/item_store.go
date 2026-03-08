@@ -17,6 +17,9 @@ type StoreListItemsParams struct {
 }
 
 func (s *Store) ListItems(ctx context.Context, params StoreListItemsParams) ([]ListItemsRow, error) {
+	if (params.CreatedAtCursor != nil && params.IDCursor == nil) || (params.CreatedAtCursor == nil && params.IDCursor != nil) {
+		return nil, errors.New("both created_at_cursor and id_cursor must be provided together for pagination")
+	}
 	arg := ListItemsParams{
 		FeedID:          params.FeedID,
 		IsRead:          params.IsRead,

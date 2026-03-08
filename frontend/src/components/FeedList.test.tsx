@@ -21,8 +21,6 @@ import { worker } from "../mocks/browser";
 import { mockConnectWeb } from "../mocks/connect";
 import { routeTree } from "../routeTree.gen";
 
-// Mock Link from solid-router to avoid Context issues
-
 describe("FeedList", () => {
   let dispose: () => void;
 

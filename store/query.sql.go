@@ -1731,7 +1731,7 @@ func (q *Queries) ListTags(ctx context.Context) ([]Tag, error) {
 const listTagsByFeedIDs = `-- name: ListTagsByFeedIDs :many
 SELECT
   ft.feed_id,
-  t.name
+  t.id, t.name, t.created_at, t.updated_at
 FROM
   tags t
 JOIN
@@ -1743,8 +1743,11 @@ ORDER BY
 `
 
 type ListTagsByFeedIDsRow struct {
-	FeedID string `json:"feed_id"`
-	Name   string `json:"name"`
+	FeedID    string `json:"feed_id"`
+	ID        string `json:"id"`
+	Name      string `json:"name"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
 }
 
 func (q *Queries) ListTagsByFeedIDs(ctx context.Context, feedIds []string) ([]ListTagsByFeedIDsRow, error) {
@@ -1766,7 +1769,13 @@ func (q *Queries) ListTagsByFeedIDs(ctx context.Context, feedIds []string) ([]Li
 	var items []ListTagsByFeedIDsRow
 	for rows.Next() {
 		var i ListTagsByFeedIDsRow
-		if err := rows.Scan(&i.FeedID, &i.Name); err != nil {
+		if err := rows.Scan(
+			&i.FeedID,
+			&i.ID,
+			&i.Name,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

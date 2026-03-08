@@ -443,7 +443,8 @@ export const handlers = [
 
       if (req.pageToken) {
         // Simple mock pagination: the token is the index of the first item to return
-        const start = Number.parseInt(req.pageToken, 10);
+        const parsedToken = Number.parseInt(req.pageToken, 10);
+        const start = Number.isNaN(parsedToken) ? 0 : parsedToken;
         results = results.slice(start);
       } else if (req.since) {
         const sinceDate = timestampToDate(req.since);

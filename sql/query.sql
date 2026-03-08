@@ -422,7 +422,7 @@ ORDER BY
 -- name: ListTagsByFeedIDs :many
 SELECT
   ft.feed_id,
-  t.name
+  t.*
 FROM
   tags t
 JOIN

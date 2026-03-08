@@ -84,29 +84,38 @@ func (s *FeedServer) ListFeeds(ctx context.Context, req *connect.Request[feedv1.
 		countsMap[c.FeedID] = c.Count
 	}
 
+	// Fetch all tags for all feeds to avoid N+1 queries
+	feedIDs := make([]string, len(feeds))
+	for i, f := range feeds {
+		feedIDs[i] = f.ID
+	}
+	allTags, err := s.store.ListTagsByFeedIDs(ctx, feedIDs)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	tagsByFeed := make(map[string][]*tagv1.Tag)
+	for _, t := range allTags {
+		createdAt, err := toTimestamp(t.CreatedAt)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("invalid created_at for tag %s: %w", t.ID, err))
+		}
+		updatedAt, err := toTimestamp(t.UpdatedAt)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("invalid updated_at for tag %s: %w", t.ID, err))
+		}
+		tagsByFeed[t.FeedID] = append(tagsByFeed[t.FeedID], &tagv1.Tag{
+			Id:        t.ID,
+			Name:      t.Name,
+			CreatedAt: createdAt,
+			UpdatedAt: updatedAt,
+		})
+	}
+
 	protoFeeds := make([]*feedv1.Feed, len(feeds))
 	for i, f := range feeds {
-		tags, err := s.store.ListTagsByFeedId(ctx, f.ID)
-		if err != nil {
-			return nil, connect.NewError(connect.CodeInternal, err)
-		}
-
-		protoTags := make([]*tagv1.Tag, len(tags))
-		for j, t := range tags {
-			createdAt, err := toTimestamp(t.CreatedAt)
-			if err != nil {
-				return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("invalid created_at for tag %s: %w", t.ID, err))
-			}
-			updatedAt, err := toTimestamp(t.UpdatedAt)
-			if err != nil {
-				return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("invalid updated_at for tag %s: %w", t.ID, err))
-			}
-			protoTags[j] = &tagv1.Tag{
-				Id:        t.ID,
-				Name:      t.Name,
-				CreatedAt: createdAt,
-				UpdatedAt: updatedAt,
-			}
+		protoTags := tagsByFeed[f.ID]
+		if protoTags == nil {
+			protoTags = []*tagv1.Tag{}
 		}
 
 		var title string
