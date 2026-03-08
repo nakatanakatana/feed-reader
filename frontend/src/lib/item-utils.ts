@@ -6,8 +6,8 @@ export interface Item {
   id: string;
   title: string;
   description: string;
-  publishedAt: string;
-  createdAt: string;
+  publishedAt?: Date;
+  createdAt?: Date;
   isRead: boolean;
 }
 
@@ -53,53 +53,59 @@ export const formatUnreadCount = (count: number): string => {
   return count.toString();
 };
 
-export const formatDate = (dateString: string) => {
-  if (!dateString) return "";
-  try {
-    const date = new Date(dateString);
-    return date.toLocaleString();
-  } catch (_e) {
-    return dateString;
+const toDate = (
+  ts: Date | Timestamp | string | undefined,
+): Date | undefined => {
+  if (!ts) return undefined;
+  if (ts instanceof Date) return ts;
+  if (typeof ts === "string") {
+    const d = new Date(ts);
+    return Number.isNaN(d.getTime()) ? undefined : d;
   }
+  return new Date(Number(ts.seconds) * 1000 + ts.nanos / 1000000);
 };
 
-export const formatRelativeDate = (dateString: string) => {
-  if (!dateString) return "";
-  try {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInSeconds = Math.floor((date.getTime() - now.getTime()) / 1000);
-    const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: "auto" });
+export const formatDate = (date: Date | Timestamp | string | undefined) => {
+  const d = toDate(date);
+  if (!d) return "";
+  return d.toLocaleString();
+};
 
-    const absDiffInSeconds = Math.abs(diffInSeconds);
-    if (absDiffInSeconds < 60) {
-      return rtf.format(diffInSeconds, "second");
-    }
-    const diffInMinutes = Math.floor(diffInSeconds / 60);
-    const absDiffInMinutes = Math.abs(diffInMinutes);
-    if (absDiffInMinutes < 60) {
-      return rtf.format(diffInMinutes, "minute");
-    }
-    const diffInHours = Math.floor(diffInMinutes / 60);
-    const absDiffInHours = Math.abs(diffInHours);
-    if (absDiffInHours < 24) {
-      return rtf.format(diffInHours, "hour");
-    }
-    const diffInDays = Math.floor(diffInHours / 24);
-    const absDiffInDays = Math.abs(diffInDays);
-    if (absDiffInDays < 30) {
-      return rtf.format(diffInDays, "day");
-    }
-    const diffInMonths = Math.floor(diffInDays / 30);
-    const absDiffInMonths = Math.abs(diffInMonths);
-    if (absDiffInMonths < 12) {
-      return rtf.format(diffInMonths, "month");
-    }
-    const diffInYears = Math.floor(diffInMonths / 12);
-    return rtf.format(diffInYears, "year");
-  } catch (_e) {
-    return dateString;
+export const formatRelativeDate = (
+  date: Date | Timestamp | string | undefined,
+) => {
+  const d = toDate(date);
+  if (!d) return "";
+  const now = new Date();
+  const diffInSeconds = Math.floor((d.getTime() - now.getTime()) / 1000);
+  const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: "auto" });
+
+  const absDiffInSeconds = Math.abs(diffInSeconds);
+  if (absDiffInSeconds < 60) {
+    return rtf.format(diffInSeconds, "second");
   }
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  const absDiffInMinutes = Math.abs(diffInMinutes);
+  if (absDiffInMinutes < 60) {
+    return rtf.format(diffInMinutes, "minute");
+  }
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  const absDiffInHours = Math.abs(diffInHours);
+  if (absDiffInHours < 24) {
+    return rtf.format(diffInHours, "hour");
+  }
+  const diffInDays = Math.floor(diffInHours / 24);
+  const absDiffInDays = Math.abs(diffInDays);
+  if (absDiffInDays < 30) {
+    return rtf.format(diffInDays, "day");
+  }
+  const diffInMonths = Math.floor(diffInDays / 30);
+  const absDiffInMonths = Math.abs(diffInMonths);
+  if (absDiffInMonths < 12) {
+    return rtf.format(diffInMonths, "month");
+  }
+  const diffInYears = Math.floor(diffInMonths / 12);
+  return rtf.format(diffInYears, "year");
 };
 
 export const normalizeCategories = (categories: string): string[] => {

@@ -7,10 +7,7 @@ import {
   eq,
 } from "@tanstack/solid-db";
 import { createMemo, createRoot } from "solid-js";
-import {
-  ItemService,
-  type ListItem as ProtoListItem,
-} from "../gen/item/v1/item_pb";
+import { ItemService } from "../gen/item/v1/item_pb";
 import { itemReadCollection } from "./item-read-db";
 import { itemStore } from "./item-store";
 import {
@@ -31,9 +28,9 @@ export interface ListItem {
   id: string;
   title: string;
   description?: string;
-  publishedAt: string;
+  publishedAt?: Date;
   isRead: boolean;
-  createdAt: string;
+  createdAt?: Date;
   feedId: string;
   url?: string;
 }
@@ -46,6 +43,11 @@ export interface Item extends ListItem {
 }
 
 const itemClient = createClient(ItemService, transport);
+
+const toDate = (ts: { seconds: bigint; nanos: number } | undefined) => {
+  if (!ts) return undefined;
+  return new Date(Number(ts.seconds) * 1000 + ts.nanos / 1000000);
+};
 
 const createItems = (showRead: boolean, since: DateFilterValue) => {
   setLastFetched(null);
@@ -71,8 +73,8 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
             : dateToTimestamp(lastFetchedValue);
         const response = await itemClient.listItems({
           since: searchSince,
-          limit: 10000,
-          offset: 0,
+          pageSize: 10000,
+          pageToken: "",
           ...isRead,
         });
         const syncTime = new Date();
@@ -80,10 +82,8 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
 
         if (response.items && response.items.length > 0) {
           const validDates = response.items
-            .map((item: ProtoListItem) =>
-              new Date(item.createdAt || "").getTime(),
-            )
-            .filter((t: number) => !Number.isNaN(t));
+            .map((item) => toDate(item.createdAt)?.getTime())
+            .filter((t): t is number => t !== undefined && !Number.isNaN(t));
 
           const maxTime = validDates.length > 0 ? Math.max(...validDates) : 0;
 
@@ -113,13 +113,13 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
           setLastFetched(lastFetchedValue);
         }
 
-        const respList = response.items.map((item: ProtoListItem) => ({
+        const respList: ListItem[] = response.items.map((item) => ({
           id: item.id,
           title: item.title,
           description: item.description,
-          publishedAt: item.publishedAt,
+          publishedAt: toDate(item.publishedAt),
           isRead: item.isRead,
-          createdAt: item.createdAt,
+          createdAt: toDate(item.createdAt),
           feedId: item.feedId,
           url: item.url,
         }));
@@ -212,9 +212,9 @@ export const getItem = async (id: string): Promise<Item | null> => {
     id: response.item.id,
     title: response.item.title,
     description: response.item.description,
-    publishedAt: response.item.publishedAt,
+    publishedAt: toDate(response.item.publishedAt),
     isRead: response.item.isRead,
-    createdAt: response.item.createdAt,
+    createdAt: toDate(response.item.createdAt),
     feedId: response.item.feedId,
     url: response.item.url,
     author: response.item.author,

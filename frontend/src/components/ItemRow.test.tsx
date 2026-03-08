@@ -7,11 +7,12 @@ import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page, userEvent } from "vitest/browser";
 import {
-  ListItemSchema,
+  ItemSchema,
   ListItemsResponseSchema,
   UpdateItemStatusResponseSchema,
 } from "../gen/item/v1/item_pb";
 import { items } from "../lib/db";
+import { dateToTimestamp } from "../lib/item-utils";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
@@ -29,8 +30,8 @@ describe("ItemRow", () => {
   const mockItem = {
     id: "1",
     title: "Test Article Title",
-    publishedAt: "2026-01-21T10:00:00Z",
-    createdAt: "2026-01-20T10:00:00Z",
+    publishedAt: new Date("2026-03-01T00:00:00Z"),
+    createdAt: new Date("2026-03-01T00:00:00Z"),
     description: "This is a test description snippet that should be displayed.",
     isRead: false,
     feedId: "feed-1",
@@ -143,8 +144,14 @@ describe("ItemRow", () => {
           toJson(
             ListItemsResponseSchema,
             create(ListItemsResponseSchema, {
-              items: [create(ListItemSchema, mockItemWithUrl)],
-              totalCount: 1,
+              items: [
+                create(ItemSchema, {
+                  ...mockItemWithUrl,
+                  publishedAt: dateToTimestamp(mockItemWithUrl.publishedAt),
+                  createdAt: dateToTimestamp(mockItemWithUrl.createdAt),
+                }),
+              ],
+              nextPageToken: "",
             }),
           ),
         );

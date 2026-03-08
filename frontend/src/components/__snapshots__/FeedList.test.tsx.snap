@@ -304,6 +304,11 @@ exports[`FeedList > displays a list of feeds 1`] = `
                         >
                           Example Feed 1
                         </a>
+                        <span
+                          class="fs_xs fw_bold px_2 py_0.5 bdr_full min-w_2rem ta_center bg-c_gray.100 c_gray.700 flex-sh_0"
+                        >
+                          Tech
+                        </span>
                         <div
                           class="d_flex ai_center gap_2"
                         />
@@ -489,6 +494,11 @@ exports[`FeedList > displays a list of feeds 1`] = `
                         >
                           Example Feed 2
                         </a>
+                        <span
+                          class="fs_xs fw_bold px_2 py_0.5 bdr_full min-w_2rem ta_center bg-c_gray.100 c_gray.700 flex-sh_0"
+                        >
+                          News
+                        </span>
                         <div
                           class="d_flex ai_center gap_2"
                         />

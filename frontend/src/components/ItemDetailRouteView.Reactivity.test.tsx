@@ -13,7 +13,6 @@ import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
 import {
   GetItemResponseSchema,
   ItemSchema,
-  ListItemSchema,
   ListItemsResponseSchema,
   ListURLParsingRulesResponseSchema,
 } from "../gen/item/v1/item_pb";
@@ -40,8 +39,7 @@ describe("ItemDetailRouteView Reactivity", () => {
     worker.use(
       http.all("*/item.v1.ItemService/ListItems", () => {
         const msg = create(ListItemsResponseSchema, {
-          items: itemsData.map((i) => create(ListItemSchema, i)),
-          totalCount: itemsData.length,
+          items: itemsData.map((i) => create(ItemSchema, i)),
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),

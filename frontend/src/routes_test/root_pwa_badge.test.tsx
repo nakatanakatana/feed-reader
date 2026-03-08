@@ -1,3 +1,4 @@
+import { create, toJson } from "@bufbuild/protobuf";
 import {
   createMemoryHistory,
   createRoute,
@@ -7,6 +8,9 @@ import {
 import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { ListItemsResponseSchema } from "../gen/item/v1/item_pb";
+import { dateToTimestamp } from "../lib/item-utils";
+import { safeJson } from "../mocks/connect";
 import { worker } from "../mocks/browser";
 import { Route as RootRoute } from "../routes/__root";
 import "../styles.css";
@@ -50,17 +54,18 @@ describe("Root PWA Badge Integration", () => {
     // 2. Mock API to return 5 unread items
     worker.use(
       http.all("*/item.v1.ItemService/ListItems", () => {
-        return HttpResponse.json({
+        const msg = create(ListItemsResponseSchema, {
           items: Array.from({ length: 5 }, (_, i) => ({
             id: `item-${i}`,
             title: `Item ${i}`,
             isRead: false,
-            publishedAt: new Date().toISOString(),
-            createdAt: new Date().toISOString(),
+            publishedAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
+            createdAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
             feedId: "feed-1",
           })),
-          totalCount: 5,
+          nextPageToken: "",
         });
+        return safeJson(toJson(ListItemsResponseSchema, msg));
       }),
     );
 
@@ -73,10 +78,11 @@ describe("Root PWA Badge Integration", () => {
     // 5. Mock API to return 0 unread items
     worker.use(
       http.all("*/item.v1.ItemService/ListItems", () => {
-        return HttpResponse.json({
+        const msg = create(ListItemsResponseSchema, {
           items: [],
-          totalCount: 0,
+          nextPageToken: "",
         });
+        return safeJson(toJson(ListItemsResponseSchema, msg));
       }),
     );
 

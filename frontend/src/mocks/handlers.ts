@@ -5,7 +5,6 @@ import {
   type Feed,
   FeedSchema,
   FeedService,
-  ListFeedSchema,
   ListFeedsResponseSchema,
   ListFeedTagsResponseSchema,
   ManageFeedTagsResponseSchema,
@@ -24,7 +23,6 @@ import {
   ItemService,
   ListItemBlockRulesResponseSchema,
   ListItemReadResponseSchema,
-  ListItemSchema,
   ListItemsResponseSchema,
   ListURLParsingRulesResponseSchema,
   UpdateItemStatusResponseSchema,
@@ -33,37 +31,53 @@ import {
 import {
   CreateTagResponseSchema,
   DeleteTagResponseSchema,
-  ListTagSchema,
   ListTagsResponseSchema,
   type Tag,
   TagSchema,
   TagService,
 } from "../gen/tag/v1/tag_pb";
-import { mockConnectWeb } from "./connect";
+import { dateToTimestamp } from "../lib/item-utils";
+import { mockConnectWeb, safeJson } from "./connect";
 
 const tags: Tag[] = [];
 const feeds: Feed[] = [];
 const items: Item[] = [];
 const itemReads = new Map<string, { isRead: boolean; updatedAt: Date }>();
 
+const timestampToDate = (ts: any): Date | undefined => {
+  if (!ts) return undefined;
+  if (ts instanceof Date) return ts;
+  if (typeof ts === "string") {
+    const d = new Date(ts);
+    return Number.isNaN(d.getTime()) ? undefined : d;
+  }
+  if (ts.seconds !== undefined && ts.nanos !== undefined) {
+    const d = new Date(Number(ts.seconds) * 1000 + Number(ts.nanos) / 1000000);
+    return Number.isNaN(d.getTime()) ? undefined : d;
+  }
+  const d = new Date(ts);
+  return Number.isNaN(d.getTime()) ? undefined : d;
+};
+
 export const resetState = () => {
   console.log("MSW: resetState called");
   tags.length = 0;
   itemReads.clear();
+  const now = new Date("2026-03-01T00:00:00Z");
   tags.push(
     create(TagSchema, {
       id: "tag-1",
       name: "Tech",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      createdAt: dateToTimestamp(now),
+      updatedAt: dateToTimestamp(now),
       unreadCount: 5n,
       feedCount: 1n,
     }),
     create(TagSchema, {
       id: "tag-2",
       name: "News",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      createdAt: dateToTimestamp(now),
+      updatedAt: dateToTimestamp(now),
       unreadCount: 3n,
       feedCount: 2n,
     }),
@@ -76,9 +90,9 @@ export const resetState = () => {
       url: "https://example.com/feed1.xml",
       link: "https://example.com/",
       title: "Example Feed 1",
-      lastFetchedAt: new Date().toISOString(),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      lastFetchedAt: dateToTimestamp(now),
+      createdAt: dateToTimestamp(now),
+      updatedAt: dateToTimestamp(now),
       tags: [tags[0]],
     }),
     create(FeedSchema, {
@@ -86,9 +100,9 @@ export const resetState = () => {
       url: "https://example.com/feed2.xml",
       link: "https://example.com/news",
       title: "Example Feed 2",
-      lastFetchedAt: new Date().toISOString(),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      lastFetchedAt: dateToTimestamp(now),
+      createdAt: dateToTimestamp(now),
+      updatedAt: dateToTimestamp(now),
       tags: [tags[1]],
     }),
   );
@@ -96,7 +110,7 @@ export const resetState = () => {
   items.length = 0;
   for (let i = 0; i < 40; i++) {
     const id = (i + 1).toString();
-    const date = new Date();
+    const date = new Date(now);
     if (i < 10) date.setHours(date.getHours() - i);
     else if (i < 20) date.setDate(date.getDate() - 2);
     else if (i < 30) date.setDate(date.getDate() - 10);
@@ -106,8 +120,8 @@ export const resetState = () => {
       create(ItemSchema, {
         id,
         title: `Item ${id}`,
-        publishedAt: date.toISOString(),
-        createdAt: date.toISOString(),
+        publishedAt: dateToTimestamp(date),
+        createdAt: dateToTimestamp(date),
         isRead: false,
         description: `<p>Full content for item ${id}</p>`,
         author: "Mock Author",
@@ -131,31 +145,21 @@ export const handlers = [
           f.tags.some((t: Tag) => t.id === req.tagId),
         );
       }
-      const listFeeds = filteredFeeds.map((feed) =>
-        create(ListFeedSchema, {
-          id: feed.id,
-          url: feed.url,
-          title: feed.title,
-          unreadCount: feed.unreadCount ?? 0n,
-          link: feed.link,
-          lastFetchedAt: feed.lastFetchedAt,
-          nextFetch: feed.nextFetch,
-        }),
-      );
-      return create(ListFeedsResponseSchema, { feeds: listFeeds });
+      return create(ListFeedsResponseSchema, { feeds: filteredFeeds });
     },
   }),
 
   mockConnectWeb(FeedService)({
     method: "suspendFeeds",
     handler: (req) => {
-      const nextFetch = new Date(
+      const nextFetchDate = new Date(
         Date.now() + Number(req.suspendSeconds) * 1000,
-      ).toISOString();
+      );
+      const nextFetchAt = dateToTimestamp(nextFetchDate);
       for (const id of req.ids || []) {
         const feed = feeds.find((f) => f.id === id);
         if (feed) {
-          feed.nextFetch = nextFetch;
+          feed.nextFetchAt = nextFetchAt;
         }
       }
       return create(SuspendFeedsResponseSchema, {});
@@ -169,8 +173,8 @@ export const handlers = [
         id: crypto.randomUUID(),
         url: req.url,
         title: req.title || "New Feed",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        createdAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
+        updatedAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
         tags: (req.tagIds || []).map(
           (id) =>
             tags.find((t) => t.id === id) ||
@@ -208,7 +212,9 @@ export const handlers = [
           ).length;
           t.feedCount = BigInt(count);
         });
-        feeds[index].updatedAt = new Date().toISOString();
+        feeds[index].updatedAt = dateToTimestamp(
+          new Date("2026-03-01T00:00:00Z"),
+        );
         return create(UpdateFeedResponseSchema, { feed: feeds[index] });
       }
       throw new Error("Feed not found");
@@ -237,15 +243,7 @@ export const handlers = [
   mockConnectWeb(TagService)({
     method: "listTags",
     handler: () => {
-      const listTags = tags.map((tag) =>
-        create(ListTagSchema, {
-          id: tag.id,
-          name: tag.name,
-          unreadCount: tag.unreadCount ?? 0n,
-          feedCount: tag.feedCount ?? 0n,
-        }),
-      );
-      return create(ListTagsResponseSchema, { tags: listTags });
+      return create(ListTagsResponseSchema, { tags });
     },
   }),
 
@@ -255,8 +253,8 @@ export const handlers = [
       const newTag = create(TagSchema, {
         id: crypto.randomUUID(),
         name: req.name,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        createdAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
+        updatedAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
         feedCount: 0n,
       });
       tags.push(newTag);
@@ -356,37 +354,31 @@ export const handlers = [
   mockConnectWeb(ItemService)({
     method: "listItems",
     handler: (req) => {
-      const offset = req.offset ?? 0;
-      const limit = req.limit ?? 100;
+      // Basic mock pagination: pageToken is the index
+      const start = req.pageToken ? Number.parseInt(req.pageToken, 10) : 0;
+      const pageSize = req.pageSize || 100;
 
       let filteredItems = items;
 
       if (req.since) {
-        const sinceDate = new Date(
-          Number(req.since.seconds) * 1000 + req.since.nanos / 1000000,
-        );
-        filteredItems = items.filter(
-          (item) => new Date(item.createdAt) >= sinceDate,
-        );
+        const sinceDate = timestampToDate(req.since);
+        if (sinceDate) {
+          filteredItems = items.filter((item) => {
+            const createdAt = timestampToDate(item.createdAt);
+            return createdAt && createdAt >= sinceDate;
+          });
+        }
       }
 
-      const totalCount = filteredItems.length;
-      const resultItems = filteredItems
-        .slice(offset, offset + limit)
-        .map((item) =>
-          create(ListItemSchema, {
-            id: item.id,
-            title: item.title,
-            publishedAt: item.publishedAt,
-            createdAt: item.createdAt,
-            isRead: item.isRead,
-            url: item.url,
-          }),
-        );
+      const paginatedResults = filteredItems.slice(start, start + pageSize);
+      const nextPageToken =
+        filteredItems.length > start + pageSize
+          ? (start + pageSize).toString()
+          : "";
 
       return create(ListItemsResponseSchema, {
-        items: resultItems,
-        totalCount,
+        items: paginatedResults,
+        nextPageToken,
       });
     },
   }),
@@ -394,7 +386,7 @@ export const handlers = [
   mockConnectWeb(ItemService)({
     method: "updateItemStatus",
     handler: (req) => {
-      const updatedAt = new Date();
+      const updatedAt = new Date("2026-03-01T00:00:00Z");
       for (const id of req.ids || []) {
         const item = items.find((i) => i.id === id);
         if (item) {
@@ -443,13 +435,12 @@ export const handlers = [
         // Simple mock pagination: the token is the index of the first item to return
         const start = Number.parseInt(req.pageToken, 10);
         results = results.slice(start);
-      } else if (req.updatedSince) {
-        const sinceDate = new Date(
-          Number(req.updatedSince.seconds) * 1000 +
-            req.updatedSince.nanos / 1000000,
-        );
-        // Use strict ">" cursor to avoid repeatedly returning the last row.
-        results = results.filter((r) => r.updatedAt > sinceDate);
+      } else if (req.since) {
+        const sinceDate = timestampToDate(req.since);
+        if (sinceDate) {
+          // Use strict ">" cursor to avoid repeatedly returning the last row.
+          results = results.filter((r) => r.updatedAt > sinceDate);
+        }
       }
 
       const pageSize = req.pageSize || 1000;
@@ -465,10 +456,7 @@ export const handlers = [
       const itemReadsResponse = paginatedResults.map((r) => ({
         itemId: r.itemId,
         isRead: r.isRead,
-        updatedAt: {
-          seconds: BigInt(Math.floor(r.updatedAt.getTime() / 1000)),
-          nanos: (r.updatedAt.getTime() % 1000) * 1000000,
-        },
+        updatedAt: dateToTimestamp(r.updatedAt),
       }));
 
       return create(ListItemReadResponseSchema, {

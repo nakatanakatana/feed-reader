@@ -38,7 +38,7 @@ exports[`ItemRow > renders item title, description and metadata 1`] = `
           >
             <span
               class="d_flex ai_center gap_1"
-              title="Published: 1/21/2026, 10:00:00 AM"
+              title="Published: 3/1/2026, 12:00:00 AM"
             >
               <span
                 class="d_none xs:d_inline"
@@ -74,11 +74,11 @@ exports[`ItemRow > renders item title, description and metadata 1`] = `
                   Published:
                 </span>
               </span>
-              1/21/2026, 10:00:00 AM
+              3/1/2026, 12:00:00 AM
             </span>
             <span
               class="d_flex ai_center gap_1"
-              title="Received: 1/20/2026, 10:00:00 AM"
+              title="Received: 3/1/2026, 12:00:00 AM"
             >
               <span
                 class="d_none xs:d_inline"
@@ -116,7 +116,7 @@ exports[`ItemRow > renders item title, description and metadata 1`] = `
                   Received:
                 </span>
               </span>
-              1/20/2026, 10:00:00 AM
+              3/1/2026, 12:00:00 AM
             </span>
           </div>
         </div>

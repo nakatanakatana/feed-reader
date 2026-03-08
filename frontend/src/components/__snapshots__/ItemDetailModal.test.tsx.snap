@@ -204,7 +204,7 @@ exports[`ItemDetailModal > renders item content when itemId is provided 1`] = `
                   Published:
                 </span>
               </span>
-              1/24/2026, 10:00:00 AM
+              3/1/2026, 12:00:00 AM
             </span>
             <span
               class="d_flex ai_center gap_1"
@@ -246,7 +246,7 @@ exports[`ItemDetailModal > renders item content when itemId is provided 1`] = `
                   Received:
                 </span>
               </span>
-              1/24/2026, 9:00:00 AM
+              3/1/2026, 12:00:00 AM
             </span>
             <span>
               By Test Author

@@ -10,11 +10,9 @@ import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
-import {
-  ListItemSchema,
-  ListItemsResponseSchema,
-} from "../gen/item/v1/item_pb";
+import { ItemSchema, ListItemsResponseSchema } from "../gen/item/v1/item_pb";
 import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
+import { dateToTimestamp } from "../lib/item-utils";
 import { itemStore } from "../lib/item-store";
 import { setLastFetched } from "../lib/item-sync-state";
 import { queryClient, transport } from "../lib/query";
@@ -34,14 +32,14 @@ describe("ItemList Clear Read Items", () => {
     itemStore.clearTransientRemovedIds();
   });
 
-  const setupMockData = (items: Record<string, unknown>[] = []) => {
+  const setupMockData = (items: any[] = []) => {
     listItemsCount = 0;
     worker.use(
       http.all("*/item.v1.ItemService/ListItems", () => {
         listItemsCount++;
         const msg = create(ListItemsResponseSchema, {
-          items: items.map((i) => create(ListItemSchema, i)),
-          totalCount: items.length,
+          items: items.map((i) => create(ItemSchema, i)),
+          nextPageToken: "",
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),
@@ -65,22 +63,24 @@ describe("ItemList Clear Read Items", () => {
   };
 
   it("removes read items from the view when 'Clear Read Items' is clicked", async () => {
-    const fixedDate = "2026-01-20T19:00:00Z";
-    setLastFetched(new Date(fixedDate));
+    const fixedDate = new Date("2026-03-01T00:00:00Z");
+    setLastFetched(fixedDate);
     setupMockData([
       {
         id: "1",
         title: "Unread Item",
-        publishedAt: fixedDate,
-        createdAt: fixedDate,
+        publishedAt: dateToTimestamp(fixedDate),
+        createdAt: dateToTimestamp(fixedDate),
         isRead: false,
+        feedId: "feed-1",
       },
       {
         id: "2",
         title: "Read Item",
-        publishedAt: fixedDate,
-        createdAt: fixedDate,
+        publishedAt: dateToTimestamp(fixedDate),
+        createdAt: dateToTimestamp(fixedDate),
         isRead: true,
+        feedId: "feed-1",
       },
     ]);
 

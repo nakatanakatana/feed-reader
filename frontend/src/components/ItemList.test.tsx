@@ -11,11 +11,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
 import {
+  ItemSchema,
   ListItemReadResponseSchema,
-  ListItemSchema,
   ListItemsResponseSchema,
 } from "../gen/item/v1/item_pb";
 import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
+import { dateToTimestamp } from "../lib/item-utils";
 import { setLastFetched } from "../lib/item-sync-state";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
@@ -38,21 +39,21 @@ describe("ItemList", () => {
 
   beforeEach(() => {
     vi.useFakeTimers();
-    vi.setSystemTime(new Date("2026-01-20T19:00:00Z"));
+    vi.setSystemTime(new Date("2026-03-07T12:00:00Z"));
     localeTimeSpy = vi
       .spyOn(Date.prototype, "toLocaleTimeString")
       .mockReturnValue("4:00:00 AM");
   });
 
   const setupMockData = (
-    items: Record<string, unknown>[] = [],
-    itemReads: Record<string, unknown>[] = [],
+    items: any[] = [],
+    itemReads: any[] = [],
   ) => {
     worker.use(
       http.all("*/item.v1.ItemService/ListItems", () => {
         const msg = create(ListItemsResponseSchema, {
-          items: items.map((i) => create(ListItemSchema, i)),
-          totalCount: items.length,
+          items: items.map((i) => create(ItemSchema, i)),
+          nextPageToken: "",
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),
@@ -61,11 +62,9 @@ describe("ItemList", () => {
           itemReads: itemReads.map((ir) => ({
             itemId: ir.itemId as string,
             isRead: ir.isRead as boolean,
-            updatedAt: {
-              seconds: BigInt(Math.floor(Date.now() / 1000)),
-              nanos: 0,
-            },
+            updatedAt: dateToTimestamp(new Date()),
           })),
+          nextPageToken: "",
         });
         return HttpResponse.json(toJson(ListItemReadResponseSchema, msg));
       }),
@@ -89,7 +88,7 @@ describe("ItemList", () => {
   };
 
   it("renders empty state when no items", async () => {
-    setLastFetched(new Date("2026-01-20T19:00:00Z"));
+    setLastFetched(new Date("2026-03-01T00:00:00Z"));
     setupMockData([]);
     const history = createMemoryHistory({ initialEntries: ["/"] });
     const router = createRouter({ routeTree, history });
@@ -112,22 +111,24 @@ describe("ItemList", () => {
   });
 
   it("displays a list of items", async () => {
-    const fixedDate = "2026-01-20T19:00:00Z";
-    setLastFetched(new Date(fixedDate));
+    const fixedDate = new Date("2026-03-01T00:00:00Z");
+    setLastFetched(fixedDate);
     setupMockData([
       {
         id: "1",
         title: "Item 1",
-        publishedAt: fixedDate,
-        createdAt: fixedDate,
+        publishedAt: dateToTimestamp(fixedDate),
+        createdAt: dateToTimestamp(fixedDate),
         isRead: false,
+        feedId: "feed-1",
       },
       {
         id: "2",
         title: "Item 2",
-        publishedAt: fixedDate,
-        createdAt: fixedDate,
+        publishedAt: dateToTimestamp(fixedDate),
+        createdAt: dateToTimestamp(fixedDate),
         isRead: true,
+        feedId: "feed-1",
       },
     ]);
 
@@ -152,21 +153,23 @@ describe("ItemList", () => {
   });
 
   it("updates item read status via delta sync", async () => {
-    const fixedDate = "2026-01-20T19:00:00Z";
-    setLastFetched(new Date(fixedDate));
+    const fixedDate = new Date("2026-03-01T00:00:00Z");
+    setLastFetched(fixedDate);
 
     // Initially Item 1 is unread
     setupMockData([
       {
         id: "1",
         title: "Item 1",
-        publishedAt: fixedDate,
-        createdAt: fixedDate,
+        publishedAt: dateToTimestamp(fixedDate),
+        createdAt: dateToTimestamp(fixedDate),
         isRead: false,
+        feedId: "feed-1",
       },
     ]);
 
-    const history = createMemoryHistory({ initialEntries: ["/"] });
+    // Use showRead=true so the item doesn't disappear when marked as read
+    const history = createMemoryHistory({ initialEntries: ["/?showRead=true"] });
     const router = createRouter({ routeTree, history });
 
     dispose = render(
@@ -192,9 +195,10 @@ describe("ItemList", () => {
         {
           id: "1",
           title: "Item 1",
-          publishedAt: fixedDate,
-          createdAt: fixedDate,
-          isRead: true, // Item state mirrors delta-synced read; UI uses itemReads (delta read state) as the authoritative source when available
+          publishedAt: dateToTimestamp(fixedDate),
+          createdAt: dateToTimestamp(fixedDate),
+          isRead: true, // Item state mirrors delta-synced read
+          feedId: "feed-1",
         },
       ],
       [
@@ -213,7 +217,7 @@ describe("ItemList", () => {
   });
 
   it("renders tag filters in a horizontal scroll list", async () => {
-    setLastFetched(new Date("2026-01-20T19:00:00Z"));
+    setLastFetched(new Date("2026-03-01T00:00:00Z"));
     setupMockData([]);
     const history = createMemoryHistory({ initialEntries: ["/"] });
     const router = createRouter({ routeTree, history });

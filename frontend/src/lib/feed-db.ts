@@ -1,7 +1,6 @@
 import { createClient } from "@connectrpc/connect";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { createCollection } from "@tanstack/solid-db";
-import type { ListFeed } from "../gen/feed/v1/feed_pb";
 import { FeedService } from "../gen/feed/v1/feed_pb";
 import type { Tag } from "../gen/tag/v1/tag_pb";
 import { fetchingState } from "./fetching-state";
@@ -13,8 +12,10 @@ export interface Feed {
   link?: string;
   title: string;
   unreadCount?: bigint;
-  lastFetchedAt?: string;
-  nextFetch?: string;
+  lastFetchedAt?: Date;
+  nextFetchAt?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
   tags?: Tag[];
 }
 
@@ -93,6 +94,11 @@ export const exportFeeds = async (feedIds: string[]) => {
   setTimeout(() => URL.revokeObjectURL(url), 100);
 };
 
+const toDate = (ts: { seconds: bigint; nanos: number } | undefined) => {
+  if (!ts) return undefined;
+  return new Date(Number(ts.seconds) * 1000 + ts.nanos / 1000000);
+};
+
 export const feeds = createCollection(
   queryCollectionOptions({
     id: "feeds",
@@ -101,14 +107,16 @@ export const feeds = createCollection(
     gcTime: 5 * 1000,
     queryFn: async () => {
       const response = await feedClient.listFeeds({});
-      return response.feeds.map((feed: ListFeed) => ({
+      return response.feeds.map((feed) => ({
         id: feed.id,
         url: feed.url,
         link: feed.link,
         title: feed.title,
         unreadCount: feed.unreadCount,
-        lastFetchedAt: feed.lastFetchedAt,
-        nextFetch: feed.nextFetch,
+        lastFetchedAt: toDate(feed.lastFetchedAt),
+        nextFetchAt: toDate(feed.nextFetchAt),
+        createdAt: toDate(feed.createdAt),
+        updatedAt: toDate(feed.updatedAt),
         tags: feed.tags,
       }));
     },

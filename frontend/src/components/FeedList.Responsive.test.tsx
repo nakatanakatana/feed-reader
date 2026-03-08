@@ -15,7 +15,7 @@ import "../styles.css";
 import { create, toJson } from "@bufbuild/protobuf";
 import { HttpResponse, http } from "msw";
 import {
-  ListFeedSchema,
+  FeedSchema,
   ListFeedsResponseSchema,
   ListFeedTagsResponseSchema,
 } from "../gen/feed/v1/feed_pb";
@@ -61,7 +61,7 @@ describe("FeedList Responsive", () => {
       http.all("*/feed.v1.FeedService/ListFeeds", () => {
         const msg = create(ListFeedsResponseSchema, {
           feeds: [
-            create(ListFeedSchema, {
+            create(FeedSchema, {
               id: "1",
               title,
               url,

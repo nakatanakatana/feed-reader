@@ -13,10 +13,10 @@ import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
 import {
   GetItemResponseSchema,
   ItemSchema,
-  ListItemSchema,
   ListItemsResponseSchema,
 } from "../gen/item/v1/item_pb";
 import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
+import { dateToTimestamp } from "../lib/item-utils";
 import { queryClient, transport } from "../lib/query";
 import { ToastProvider } from "../lib/toast";
 import { TransportProvider } from "../lib/transport-context";
@@ -39,12 +39,12 @@ describe("ItemDetailRouteView Prefetching", () => {
 
   const setupMockData = (count = 10) => {
     const mockItems = Array.from({ length: count }, (_, i) =>
-      create(ListItemSchema, {
+      create(ItemSchema, {
         id: `item-${i.toString().padStart(3, "0")}`,
         title: `Item ${i}`,
         isRead: false,
-        createdAt: new Date().toISOString(),
-        publishedAt: new Date().toISOString(),
+        createdAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
+        publishedAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
       }),
     );
 
@@ -52,7 +52,6 @@ describe("ItemDetailRouteView Prefetching", () => {
       http.all("*/item.v1.ItemService/ListItems", () => {
         const msg = create(ListItemsResponseSchema, {
           items: mockItems,
-          totalCount: mockItems.length,
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),

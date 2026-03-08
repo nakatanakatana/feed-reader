@@ -6,7 +6,6 @@ import {
   createLiveQueryCollection,
   eq,
 } from "@tanstack/solid-db";
-import type { ListTag } from "../gen/tag/v1/tag_pb";
 import { TagService } from "../gen/tag/v1/tag_pb";
 import { feedTag } from "./feed-db";
 import { queryClient, transport } from "./query";
@@ -16,9 +15,16 @@ export interface Tag {
   name: string;
   unreadCount?: bigint;
   feedCount?: bigint;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 const tagClient = createClient(TagService, transport);
+
+const toDate = (ts: { seconds: bigint; nanos: number } | undefined) => {
+  if (!ts) return undefined;
+  return new Date(Number(ts.seconds) * 1000 + ts.nanos / 1000000);
+};
 
 export const tags = createCollection(
   queryCollectionOptions({
@@ -27,11 +33,13 @@ export const tags = createCollection(
     queryKey: ["tags"],
     queryFn: async () => {
       const response = await tagClient.listTags({});
-      return response.tags.map((tag: ListTag) => ({
+      return response.tags.map((tag) => ({
         id: tag.id,
         name: tag.name,
         unreadCount: tag.unreadCount,
         feedCount: tag.feedCount,
+        createdAt: toDate(tag.createdAt),
+        updatedAt: toDate(tag.updatedAt),
       }));
     },
     onInsert: async ({ transaction }) => {
@@ -60,11 +68,20 @@ export const tagsFeedQuery = createLiveQueryCollection((q) =>
   q
     .from({ tag: tagsBaseQuery })
     .leftJoin({ ft: feedTag }, ({ tag, ft }) => eq(tag.id, ft.tagId))
-    .groupBy(({ tag }) => [tag.id, tag.name, tag.unreadCount, tag.feedCount])
+    .groupBy(({ tag }) => [
+      tag.id,
+      tag.name,
+      tag.unreadCount,
+      tag.feedCount,
+      tag.createdAt,
+      tag.updatedAt,
+    ])
     .select(({ tag, ft }) => ({
       id: tag.id,
       name: tag.name,
       unreadCount: tag.unreadCount,
       feedCount: tag.feedCount ?? count(ft?.feedId),
+      createdAt: tag.createdAt,
+      updatedAt: tag.updatedAt,
     })),
 );

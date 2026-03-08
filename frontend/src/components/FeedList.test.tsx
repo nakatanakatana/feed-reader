@@ -7,13 +7,14 @@ import {
 } from "@tanstack/solid-router";
 import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { page, userEvent } from "vitest/browser";
 import {
+  FeedSchema,
   FeedService,
-  ListFeedSchema,
   ListFeedsResponseSchema,
 } from "../gen/feed/v1/feed_pb";
+import { dateToTimestamp } from "../lib/item-utils";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
@@ -39,10 +40,15 @@ vi.mock("@tanstack/solid-router", async (importOriginal) => {
 describe("FeedList", () => {
   let dispose: () => void;
 
+  beforeEach(() => {
+    vi.setSystemTime(new Date("2026-03-07T12:00:00Z"));
+  });
+
   afterEach(async () => {
     if (dispose) dispose();
     document.body.innerHTML = "";
     vi.clearAllMocks();
+    vi.useRealTimers();
     await new Promise((resolve) => setTimeout(resolve, 50));
   });
 
@@ -181,11 +187,9 @@ describe("FeedList", () => {
   });
 
   it("displays 'Soon' when nextFetch is in the past", async () => {
-    // Override MSW handler to return a feed with a past nextFetch
-    const pastDate = new Date();
-    pastDate.setMinutes(pastDate.getMinutes() - 5);
-    const futureDate = new Date();
-    futureDate.setMinutes(futureDate.getMinutes() + 5);
+    // Override MSW handler to return a feed with a past nextFetchAt
+    const pastDate = new Date("2026-03-07T11:55:00Z");
+    const futureDate = new Date("2026-03-07T12:05:00Z");
 
     worker.use(
       mockConnectWeb(FeedService)({
@@ -193,17 +197,17 @@ describe("FeedList", () => {
         handler: () => {
           return create(ListFeedsResponseSchema, {
             feeds: [
-              create(ListFeedSchema, {
+              create(FeedSchema, {
                 id: "past-feed",
                 url: "https://example.com/past.xml",
                 title: "Past Feed",
-                nextFetch: pastDate.toISOString(),
+                nextFetchAt: dateToTimestamp(pastDate),
               }),
-              create(ListFeedSchema, {
+              create(FeedSchema, {
                 id: "future-feed",
                 url: "https://example.com/future.xml",
                 title: "Future Feed",
-                nextFetch: futureDate.toISOString(),
+                nextFetchAt: dateToTimestamp(futureDate),
               }),
             ],
           });

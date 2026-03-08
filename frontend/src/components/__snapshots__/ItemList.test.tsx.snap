@@ -329,7 +329,7 @@ exports[`ItemList > displays a list of items 1`] = `
                       >
                         <span
                           class="d_flex ai_center gap_1"
-                          title="Published: 1/20/2026, 7:00:00 PM"
+                          title="Published: 3/1/2026, 12:00:00 AM"
                         >
                           <span
                             class="d_none xs:d_inline"
@@ -365,11 +365,11 @@ exports[`ItemList > displays a list of items 1`] = `
                               Published:
                             </span>
                           </span>
-                          1/20/2026, 7:00:00 PM
+                          3/1/2026, 12:00:00 AM
                         </span>
                         <span
                           class="d_flex ai_center gap_1"
-                          title="Received: 1/20/2026, 7:00:00 PM"
+                          title="Received: 3/1/2026, 12:00:00 AM"
                         >
                           <span
                             class="d_none xs:d_inline"
@@ -407,7 +407,7 @@ exports[`ItemList > displays a list of items 1`] = `
                               Received:
                             </span>
                           </span>
-                          1/20/2026, 7:00:00 PM
+                          3/1/2026, 12:00:00 AM
                         </span>
                       </div>
                     </div>
@@ -445,7 +445,7 @@ exports[`ItemList > displays a list of items 1`] = `
                       >
                         <span
                           class="d_flex ai_center gap_1"
-                          title="Published: 1/20/2026, 7:00:00 PM"
+                          title="Published: 3/1/2026, 12:00:00 AM"
                         >
                           <span
                             class="d_none xs:d_inline"
@@ -481,11 +481,11 @@ exports[`ItemList > displays a list of items 1`] = `
                               Published:
                             </span>
                           </span>
-                          1/20/2026, 7:00:00 PM
+                          3/1/2026, 12:00:00 AM
                         </span>
                         <span
                           class="d_flex ai_center gap_1"
-                          title="Received: 1/20/2026, 7:00:00 PM"
+                          title="Received: 3/1/2026, 12:00:00 AM"
                         >
                           <span
                             class="d_none xs:d_inline"
@@ -523,7 +523,7 @@ exports[`ItemList > displays a list of items 1`] = `
                               Received:
                             </span>
                           </span>
-                          1/20/2026, 7:00:00 PM
+                          3/1/2026, 12:00:00 AM
                         </span>
                       </div>
                       <span

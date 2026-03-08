@@ -40,7 +40,7 @@ describe("ItemList Show Read Toggle", () => {
         return HttpResponse.json(
           toJson(
             ListItemsResponseSchema,
-            create(ListItemsResponseSchema, { items: [], totalCount: 0 }),
+            create(ListItemsResponseSchema, { items: [], nextPageToken: "" }),
           ),
         );
       }),

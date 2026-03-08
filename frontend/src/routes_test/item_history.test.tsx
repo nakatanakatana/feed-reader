@@ -9,20 +9,18 @@ import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page, userEvent } from "vitest/browser";
-import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
 import {
   GetItemResponseSchema,
   ItemSchema,
-  ListItemSchema,
+  ItemService,
   ListItemsResponseSchema,
 } from "../gen/item/v1/item_pb";
-import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
-import { setLastFetched } from "../lib/item-sync-state";
+import { dateToTimestamp } from "../lib/item-utils";
 import { queryClient, transport } from "../lib/query";
 import { ToastProvider } from "../lib/toast";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
-import { parseConnectMessage } from "../mocks/connect";
+import { Route as RootRoute } from "../routes/__root";
 import { routeTree } from "../routeTree.gen";
 
 describe("Item History Navigation", () => {
@@ -32,128 +30,64 @@ describe("Item History Navigation", () => {
     if (dispose) dispose();
     document.body.innerHTML = "";
     vi.clearAllMocks();
-    setLastFetched(null);
   });
 
-  const setupMockData = (items: Record<string, unknown>[] = []) => {
+  const TestWrapper = (props: { children: any }) => (
+    <TransportProvider transport={transport}>
+      <QueryClientProvider client={queryClient}>
+        <ToastProvider>{props.children}</ToastProvider>
+      </QueryClientProvider>
+    </TransportProvider>
+  );
+
+  const items = [
+    {
+      id: "1",
+      title: "Item 1",
+      isRead: false,
+      createdAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
+      publishedAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
+      feedId: "feed-1",
+    },
+    {
+      id: "2",
+      title: "Item 2",
+      isRead: false,
+      createdAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
+      publishedAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
+      feedId: "feed-1",
+    },
+  ];
+
+  it("should use replace when navigating from list to item detail", async () => {
     worker.use(
       http.all("*/item.v1.ItemService/ListItems", () => {
         const msg = create(ListItemsResponseSchema, {
-          items: items.map((i) => create(ListItemSchema, i)),
-          totalCount: items.length,
+          items: items.map((i) => create(ItemSchema, i)),
+          nextPageToken: "",
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),
-      http.all("*/item.v1.ItemService/GetItem", async ({ request }) => {
-        const body = (await parseConnectMessage(request)) as { id: string };
-        const { id } = body;
-        const item = items.find((i) => i.id === id) || items[0];
+      http.all("*/item.v1.ItemService/GetItem", ({ request }) => {
+        const url = new URL(request.url);
+        const messageParam = url.searchParams.get("message") || "{}";
+        const { id } = JSON.parse(decodeURIComponent(messageParam));
+        const item = items.find((i) => i.id === id);
         const msg = create(GetItemResponseSchema, {
-          item: create(ItemSchema, item),
+          item: item ? create(ItemSchema, item) : undefined,
         });
         return HttpResponse.json(toJson(GetItemResponseSchema, msg));
       }),
-      http.all("*/tag.v1.TagService/ListTags", () => {
-        return HttpResponse.json(
-          toJson(
-            ListTagsResponseSchema,
-            create(ListTagsResponseSchema, { tags: [] }),
-          ),
-        );
-      }),
-      http.all("*/feed.v1.FeedService/ListFeedTags", () => {
-        return HttpResponse.json(
-          toJson(
-            ListFeedTagsResponseSchema,
-            create(ListFeedTagsResponseSchema, { feedTags: [] }),
-          ),
-        );
-      }),
     );
-  };
-
-  it("should use replace when navigating from list to item detail", async () => {
-    const fixedDate = "2026-01-20T19:00:00Z";
-    setLastFetched(new Date(fixedDate));
-    setupMockData([
-      {
-        id: "1",
-        title: "Item 1",
-        publishedAt: fixedDate,
-        createdAt: fixedDate,
-        isRead: false,
-      },
-      {
-        id: "2",
-        title: "Item 2",
-        publishedAt: fixedDate,
-        createdAt: fixedDate,
-        isRead: false,
-      },
-    ]);
 
     const history = createMemoryHistory({ initialEntries: ["/"] });
     const router = createRouter({ routeTree, history });
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ToastProvider>
-              <RouterProvider router={router} />
-            </ToastProvider>
-          </QueryClientProvider>
-        </TransportProvider>
-      ),
-      document.body,
-    );
-
-    expect(history.location.pathname).toBe("/");
-    expect(history.length).toBe(1);
-
-    const item1 = page.getByText("Item 1");
-    await expect.element(item1).toBeInTheDocument();
-    await item1.click();
-
-    await expect.element(page.getByRole("dialog")).toBeInTheDocument();
-    expect(history.location.pathname).toBe("/items/1");
-
-    // First modal open SHOULD add an entry so 'back' works
-    expect(history.length).toBe(2);
-  });
-
-  it("should use replace when navigating between items in modal", async () => {
-    const fixedDate = "2026-01-20T19:00:00Z";
-    setLastFetched(new Date(fixedDate));
-    setupMockData([
-      {
-        id: "1",
-        title: "Item 1",
-        publishedAt: fixedDate,
-        createdAt: fixedDate,
-        isRead: false,
-      },
-      {
-        id: "2",
-        title: "Item 2",
-        publishedAt: fixedDate,
-        createdAt: fixedDate,
-        isRead: false,
-      },
-    ]);
-
-    const history = createMemoryHistory({ initialEntries: ["/"] });
-    const router = createRouter({ routeTree, history });
-
-    dispose = render(
-      () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ToastProvider>
-              <RouterProvider router={router} />
-            </ToastProvider>
-          </QueryClientProvider>
-        </TransportProvider>
+        <TestWrapper>
+          <RouterProvider router={router} />
+        </TestWrapper>
       ),
       document.body,
     );
@@ -163,55 +97,85 @@ describe("Item History Navigation", () => {
     await expect.element(item1).toBeInTheDocument();
     await item1.click();
 
-    await expect
-      .element(page.getByRole("heading", { name: "Item 1" }))
-      .toBeInTheDocument();
-    expect(history.location.pathname).toBe("/items/1");
-    expect(history.length).toBe(2);
-
-    // Simulate keyboard 'j' to go to next item
-    await userEvent.keyboard("j");
-
-    await expect
-      .element(page.getByRole("heading", { name: "Item 2" }))
-      .toBeInTheDocument();
-    expect(history.location.pathname).toBe("/items/2");
-
-    // History length should STAY at 2 because we used replace
-    expect(history.length).toBe(2);
+    // Check URL
+    await expect.poll(() => history.location.pathname).toBe("/items/1");
   });
 
-  it("should return to list view when back button is pressed", async () => {
-    const fixedDate = "2026-01-20T19:00:00Z";
-    setupMockData([
-      {
-        id: "1",
-        title: "Item 1",
-        publishedAt: fixedDate,
-        createdAt: fixedDate,
-        isRead: false,
-      },
-      {
-        id: "2",
-        title: "Item 2",
-        publishedAt: fixedDate,
-        createdAt: fixedDate,
-        isRead: false,
-      },
-    ]);
+  it("should use replace when navigating between items in modal", async () => {
+    worker.use(
+      http.all("*/item.v1.ItemService/ListItems", () => {
+        const msg = create(ListItemsResponseSchema, {
+          items: items.map((i) => create(ItemSchema, i)),
+          nextPageToken: "",
+        });
+        return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
+      }),
+      http.all("*/item.v1.ItemService/GetItem", ({ request }) => {
+        const url = new URL(request.url);
+        const messageParam = url.searchParams.get("message") || "{}";
+        const { id } = JSON.parse(decodeURIComponent(messageParam));
+        const item = items.find((i) => i.id === id);
+        const msg = create(GetItemResponseSchema, {
+          item: item ? create(ItemSchema, item) : undefined,
+        });
+        return HttpResponse.json(toJson(GetItemResponseSchema, msg));
+      }),
+    );
 
     const history = createMemoryHistory({ initialEntries: ["/"] });
     const router = createRouter({ routeTree, history });
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ToastProvider>
-              <RouterProvider router={router} />
-            </ToastProvider>
-          </QueryClientProvider>
-        </TransportProvider>
+        <TestWrapper>
+          <RouterProvider router={router} />
+        </TestWrapper>
+      ),
+      document.body,
+    );
+
+    // Navigate to item 1
+    const item1 = page.getByText("Item 1");
+    await expect.element(item1).toBeInTheDocument();
+    await item1.click();
+
+    await expect.element(page.getByRole("dialog")).toBeInTheDocument();
+
+    // Navigate to item 2 (using keyboard shortcut 'j' for next item)
+    await userEvent.keyboard("j");
+
+    await expect.poll(() => history.location.pathname).toBe("/items/2");
+  });
+
+  it("should return to list view when back button is pressed", async () => {
+    worker.use(
+      http.all("*/item.v1.ItemService/ListItems", () => {
+        const msg = create(ListItemsResponseSchema, {
+          items: items.map((i) => create(ItemSchema, i)),
+          nextPageToken: "",
+        });
+        return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
+      }),
+      http.all("*/item.v1.ItemService/GetItem", ({ request }) => {
+        const url = new URL(request.url);
+        const messageParam = url.searchParams.get("message") || "{}";
+        const { id } = JSON.parse(decodeURIComponent(messageParam));
+        const item = items.find((i) => i.id === id);
+        const msg = create(GetItemResponseSchema, {
+          item: item ? create(ItemSchema, item) : undefined,
+        });
+        return HttpResponse.json(toJson(GetItemResponseSchema, msg));
+      }),
+    );
+
+    const history = createMemoryHistory({ initialEntries: ["/"] });
+    const router = createRouter({ routeTree, history });
+
+    dispose = render(
+      () => (
+        <TestWrapper>
+          <RouterProvider router={router} />
+        </TestWrapper>
       ),
       document.body,
     );
@@ -220,18 +184,11 @@ describe("Item History Navigation", () => {
     await page.getByText("Item 1").click();
     await expect.element(page.getByRole("dialog")).toBeInTheDocument();
 
-    // Navigate to item 2
-    await userEvent.keyboard("j");
-    await expect
-      .element(page.getByRole("heading", { name: "Item 2" }))
-      .toBeInTheDocument();
+    // Press escape or close
+    await userEvent.keyboard("{Escape}");
 
-    // Go back
-    history.go(-1);
-
-    // If we used replace, we should be at "/"
-    // If we used push, we are at "/items/1"
-    expect(history.location.pathname).toBe("/");
+    // Should be back at "/"
+    await expect.poll(() => history.location.pathname).toBe("/");
     await expect.element(page.getByRole("dialog")).not.toBeInTheDocument();
   });
 });

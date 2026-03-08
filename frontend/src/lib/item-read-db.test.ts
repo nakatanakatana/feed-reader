@@ -146,20 +146,20 @@ describe("ItemRead collection options", () => {
       // biome-ignore lint/suspicious/noExplicitAny: asserting mock calls
       const secondCallArgs = (itemClient.listItemRead as any).mock.calls[1][0];
 
-      // First page should include updatedSince
-      expect(firstCallArgs).toHaveProperty("updatedSince");
+      // First page should include since
+      expect(firstCallArgs).toHaveProperty("since");
       expect(firstCallArgs.pageToken).toBe("");
 
-      // Second page should include pageToken and OMIT updatedSince
+      // Second page should include pageToken and OMIT since
       expect(secondCallArgs.pageToken).toBe("token-1");
-      expect(secondCallArgs.updatedSince).toBeUndefined();
+      expect(secondCallArgs.since).toBeUndefined();
     });
 
     it("should merge with existing data", async () => {
       setLastReadFetched(new Date("2026-03-01T00:00:00Z"));
       queryClient.setQueryData(
         ["item-reads"],
-        [{ id: "1", isRead: false, updatedAt: "some-date" }],
+        [{ id: "1", isRead: false, updatedAt: new Date() }],
       );
 
       const mockItemReads = [
@@ -189,7 +189,7 @@ describe("ItemRead collection options", () => {
     it("should skip fetching and return existing data if no anchor is present", async () => {
       setLastReadFetched(null);
       setLastItemsSyncedAt(null);
-      const existingData = [{ id: "1", isRead: false, updatedAt: "date" }];
+      const existingData = [{ id: "1", isRead: false, updatedAt: new Date() }];
       queryClient.setQueryData(["item-reads"], existingData);
 
       // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB context
@@ -235,7 +235,7 @@ describe("ItemRead collection options", () => {
     it("should perform optimistic update and rollback on server failure, cleaning up new records", async () => {
       // Setup initial state: id: "1" exists, "2" is new
       const initialData = [
-        { id: "1", isRead: false, updatedAt: "initial-date" },
+        { id: "1", isRead: false, updatedAt: new Date() },
       ];
       queryClient.setQueryData(itemReadCollectionOptions.queryKey, initialData);
 
@@ -265,7 +265,7 @@ describe("ItemRead collection options", () => {
       // Local data has id: "1" as isRead: true (optimistic update)
       queryClient.setQueryData(
         ["item-reads"],
-        [{ id: "1", isRead: true, updatedAt: "2026-03-06T00:00:00Z" }],
+        [{ id: "1", isRead: true, updatedAt: new Date("2026-03-06T00:00:00Z") }],
       );
 
       // Server returns id: "1" as isRead: false (e.g. changed on another device)

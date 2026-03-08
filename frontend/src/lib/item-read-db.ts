@@ -9,7 +9,7 @@ import { queryClient } from "./query";
 export interface ItemRead {
   id: string;
   isRead: boolean;
-  updatedAt: string;
+  updatedAt: Date;
 }
 
 export const itemReadCollectionOptions = {
@@ -38,10 +38,9 @@ export const itemReadCollectionOptions = {
 
     do {
       const response = await itemClient.listItemRead({
-        // The backend explicitly rejects requests that specify both updatedSince and pageToken.
-        // Send updatedSince only on the first page.
-        updatedSince:
-          !pageToken && anchor ? dateToTimestamp(anchor) : undefined,
+        // The backend explicitly rejects requests that specify both since and pageToken.
+        // Send since only on the first page.
+        since: !pageToken && anchor ? dateToTimestamp(anchor) : undefined,
         pageToken: pageToken,
         pageSize: 1000,
       });
@@ -69,7 +68,7 @@ export const itemReadCollectionOptions = {
         allNewReads.push({
           id: ir.itemId,
           isRead: ir.isRead,
-          updatedAt: updatedAtDate.toISOString(),
+          updatedAt: updatedAtDate,
         });
       }
 
@@ -120,7 +119,7 @@ export const updateItemReadStatus = async (ids: string[], isRead: boolean) => {
       ids.map((id) => ({
         id,
         isRead,
-        updatedAt: new Date().toISOString(),
+        updatedAt: new Date(),
       })),
     );
   } catch (e) {

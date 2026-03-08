@@ -11,7 +11,7 @@ import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import {
-  ListFeedSchema,
+  FeedSchema,
   ListFeedsResponseSchema,
   ListFeedTagsResponseSchema,
 } from "../gen/feed/v1/feed_pb";
@@ -59,7 +59,7 @@ describe("FeedList Navigation", () => {
       http.all("*/feed.v1.FeedService/ListFeeds", () => {
         const msg = create(ListFeedsResponseSchema, {
           feeds: [
-            create(ListFeedSchema, {
+            create(FeedSchema, {
               id: "1",
               title: "Feed 1",
               url: "url1",
