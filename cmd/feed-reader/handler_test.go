@@ -412,6 +412,55 @@ func TestFeedServer_UpdateFeed(t *testing.T) {
 	}
 }
 
+func TestFeedServer_UpdateFeed_PreservesMetadata(t *testing.T) {
+	ctx := context.Background()
+	_, db := setupTestDB(t)
+	server := setupServer(t, db, nil, &mockFetcher{}, &mockItemFetcher{})
+
+	created, err := server.CreateFeed(ctx, connect.NewRequest(&feedv1.CreateFeedRequest{
+		Url:   "https://example.com/metadata",
+		Title: new("Original"),
+	}))
+	assert.NilError(t, err)
+
+	feedID := created.Msg.Feed.Id
+	lang := "ja"
+	copyright := "(c) example"
+	feedType := "rss"
+	feedVersion := "2.0"
+	_, err = db.ExecContext(ctx,
+		"UPDATE feeds SET lang = ?, copyright = ?, feed_type = ?, feed_version = ? WHERE id = ?",
+		lang,
+		copyright,
+		feedType,
+		feedVersion,
+		feedID,
+	)
+	assert.NilError(t, err)
+
+	_, err = server.UpdateFeed(ctx, connect.NewRequest(&feedv1.UpdateFeedRequest{
+		Id:    feedID,
+		Title: new("Updated"),
+	}))
+	assert.NilError(t, err)
+
+	var gotLang, gotCopyright, gotFeedType, gotFeedVersion sql.NullString
+	err = db.QueryRowContext(ctx,
+		"SELECT lang, copyright, feed_type, feed_version FROM feeds WHERE id = ?",
+		feedID,
+	).Scan(&gotLang, &gotCopyright, &gotFeedType, &gotFeedVersion)
+	assert.NilError(t, err)
+
+	assert.Check(t, gotLang.Valid)
+	assert.Check(t, gotCopyright.Valid)
+	assert.Check(t, gotFeedType.Valid)
+	assert.Check(t, gotFeedVersion.Valid)
+	assert.Equal(t, gotLang.String, lang)
+	assert.Equal(t, gotCopyright.String, copyright)
+	assert.Equal(t, gotFeedType.String, feedType)
+	assert.Equal(t, gotFeedVersion.String, feedVersion)
+}
+
 func TestFeedServer_DeleteFeed(t *testing.T) {
 	ctx := context.Background()
 

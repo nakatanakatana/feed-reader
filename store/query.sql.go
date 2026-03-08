@@ -1932,14 +1932,14 @@ const updateFeed = `-- name: UpdateFeed :one
 UPDATE
   feeds
 SET
-  link = ?,
-  title = ?,
-  description = ?,
-  lang = ?,
-  image_url = ?,
-  copyright = ?,
-  feed_type = ?,
-  feed_version = ?,
+  link = COALESCE(?, link),
+  title = COALESCE(?, title),
+  description = COALESCE(?, description),
+  lang = COALESCE(?, lang),
+  image_url = COALESCE(?, image_url),
+  copyright = COALESCE(?, copyright),
+  feed_type = COALESCE(?, feed_type),
+  feed_version = COALESCE(?, feed_version),
   updated_at = (strftime('%FT%TZ', 'now'))
 WHERE
   id = ?
