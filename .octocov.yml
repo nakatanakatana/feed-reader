@@ -20,6 +20,9 @@ codeToTestRatio:
     - '**/*.test.tsx'
 testExecutionTime:
   if: true
+  steps:
+    - Run backend tests
+    - Run frontend tests
 diff:
   datastores:
     - artifact://${GITHUB_REPOSITORY}
