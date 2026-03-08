@@ -44,18 +44,24 @@ const feeds: Feed[] = [];
 const items: Item[] = [];
 const itemReads = new Map<string, { isRead: boolean; updatedAt: Date }>();
 
-const timestampToDate = (ts: any): Date | undefined => {
+const timestampToDate = (ts: unknown): Date | undefined => {
   if (!ts) return undefined;
   if (ts instanceof Date) return ts;
   if (typeof ts === "string") {
     const d = new Date(ts);
     return Number.isNaN(d.getTime()) ? undefined : d;
   }
-  if (ts.seconds !== undefined && ts.nanos !== undefined) {
-    const d = new Date(Number(ts.seconds) * 1000 + Number(ts.nanos) / 1000000);
+  if (
+    typeof ts === "object" &&
+    ts !== null &&
+    "seconds" in ts &&
+    "nanos" in ts
+  ) {
+    const t = ts as { seconds: bigint | number; nanos: number };
+    const d = new Date(Number(t.seconds) * 1000 + Number(t.nanos) / 1000000);
     return Number.isNaN(d.getTime()) ? undefined : d;
   }
-  const d = new Date(ts);
+  const d = new Date(ts as any);
   return Number.isNaN(d.getTime()) ? undefined : d;
 };
 

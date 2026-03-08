@@ -10,7 +10,11 @@ import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
-import { ItemSchema, ListItemsResponseSchema } from "../gen/item/v1/item_pb";
+import {
+  ItemSchema,
+  ListItemsResponseSchema,
+  type Item as ProtoItem,
+} from "../gen/item/v1/item_pb";
 import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
 import { itemStore } from "../lib/item-store";
 import { setLastFetched } from "../lib/item-sync-state";
@@ -32,13 +36,13 @@ describe("ItemList Clear Read Items", () => {
     itemStore.clearTransientRemovedIds();
   });
 
-  const setupMockData = (items: any[] = []) => {
+  const setupMockData = (items: Partial<ProtoItem>[] = []) => {
     listItemsCount = 0;
     worker.use(
       http.all("*/item.v1.ItemService/ListItems", () => {
         listItemsCount++;
         const msg = create(ListItemsResponseSchema, {
-          items: items.map((i) => create(ItemSchema, i)),
+          items: items.map((i) => create(ItemSchema, i as any)),
           nextPageToken: "",
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));

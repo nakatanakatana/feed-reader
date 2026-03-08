@@ -41,7 +41,7 @@ export const parseConnectMessage = async (
 /**
  * Robust JSON serialization that handles BigInt and Date by converting them to strings.
  */
-export const safeJson = (data: any): HttpResponse<any> => {
+export const safeJson = (data: unknown): HttpResponse<any> => {
   const body = JSON.stringify(data, (_key, value) => {
     if (typeof value === "bigint") return value.toString();
     // Check if it looks like an Invalid Date

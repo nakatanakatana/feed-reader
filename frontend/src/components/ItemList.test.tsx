@@ -14,10 +14,11 @@ import {
   ItemSchema,
   ListItemReadResponseSchema,
   ListItemsResponseSchema,
+  type Item as ProtoItem,
 } from "../gen/item/v1/item_pb";
 import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
-import { dateToTimestamp } from "../lib/item-utils";
 import { setLastFetched } from "../lib/item-sync-state";
+import { dateToTimestamp } from "../lib/item-utils";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
@@ -46,13 +47,13 @@ describe("ItemList", () => {
   });
 
   const setupMockData = (
-    items: any[] = [],
-    itemReads: any[] = [],
+    items: Partial<ProtoItem>[] = [],
+    itemReads: { itemId: string; isRead: boolean }[] = [],
   ) => {
     worker.use(
       http.all("*/item.v1.ItemService/ListItems", () => {
         const msg = create(ListItemsResponseSchema, {
-          items: items.map((i) => create(ItemSchema, i)),
+          items: items.map((i) => create(ItemSchema, i as any)),
           nextPageToken: "",
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
@@ -60,8 +61,8 @@ describe("ItemList", () => {
       http.all("*/item.v1.ItemService/ListItemRead", () => {
         const msg = create(ListItemReadResponseSchema, {
           itemReads: itemReads.map((ir) => ({
-            itemId: ir.itemId as string,
-            isRead: ir.isRead as boolean,
+            itemId: ir.itemId,
+            isRead: ir.isRead,
             updatedAt: dateToTimestamp(new Date()),
           })),
           nextPageToken: "",
@@ -169,7 +170,9 @@ describe("ItemList", () => {
     ]);
 
     // Use showRead=true so the item doesn't disappear when marked as read
-    const history = createMemoryHistory({ initialEntries: ["/?showRead=true"] });
+    const history = createMemoryHistory({
+      initialEntries: ["/?showRead=true"],
+    });
     const router = createRouter({ routeTree, history });
 
     dispose = render(
@@ -213,7 +216,9 @@ describe("ItemList", () => {
     await queryClient.refetchQueries({ queryKey: ["item-reads"] });
 
     // Item 1 should now be read
-    await expect.poll(() => itemRow.element().getAttribute("data-is-read")).toBe("true");
+    await expect
+      .poll(() => itemRow.element().getAttribute("data-is-read"))
+      .toBe("true");
   });
 
   it("renders tag filters in a horizontal scroll list", async () => {

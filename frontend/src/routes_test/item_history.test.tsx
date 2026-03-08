@@ -6,6 +6,7 @@ import {
   RouterProvider,
 } from "@tanstack/solid-router";
 import { HttpResponse, http } from "msw";
+import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page, userEvent } from "vitest/browser";
@@ -30,7 +31,7 @@ describe("Item History Navigation", () => {
     vi.clearAllMocks();
   });
 
-  const TestWrapper = (props: { children: any }) => (
+  const TestWrapper = (props: { children: JSX.Element }) => (
     <TransportProvider transport={transport}>
       <QueryClientProvider client={queryClient}>
         <ToastProvider>{props.children}</ToastProvider>
