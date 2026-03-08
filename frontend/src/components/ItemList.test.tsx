@@ -158,8 +158,7 @@ describe("ItemList", () => {
     const fixedDate = new Date("2026-03-01T00:00:00Z");
     setLastFetched(fixedDate);
 
-    // Initially Item 1 is unread
-    setupMockData([
+    const items: Partial<ProtoItem>[] = [
       {
         id: "1",
         title: "Item 1",
@@ -168,7 +167,9 @@ describe("ItemList", () => {
         isRead: false,
         feedId: "feed-1",
       },
-    ]);
+    ];
+
+    setupMockData(items);
 
     // Use showRead=true so the item doesn't disappear when marked as read
     const history = createMemoryHistory({
@@ -194,37 +195,22 @@ describe("ItemList", () => {
     await expect.element(itemRow).toHaveAttribute("data-is-read", "false");
 
     // Mock delta sync: Item 1 becomes read
-    setupMockData(
-      [
-        {
-          id: "1",
-          title: "Item 1",
-          publishedAt: dateToTimestamp(fixedDate),
-          createdAt: dateToTimestamp(fixedDate),
-          isRead: true, // Item state mirrors delta-synced read
-          feedId: "feed-1",
-        },
-      ],
-      [
-        {
-          itemId: "1",
-          isRead: true,
-        },
-      ],
-    );
-
-    // Trigger refetch for item-reads and items to ensure new mock data is picked up
-    await Promise.all([
-      queryClient.refetchQueries({ queryKey: ["item-reads"] }),
-      queryClient.refetchQueries({ queryKey: ["items"] }),
+    setupMockData(items, [
+      {
+        itemId: "1",
+        isRead: true,
+      },
     ]);
 
+    // Advance fake timers so system time moves forward.
+    // This ensures that the updatedAt timestamp in the mock is newer than the anchor.
+    await vi.advanceTimersByTimeAsync(100);
+
+    // Trigger refetch for item-reads
+    await queryClient.refetchQueries({ queryKey: ["item-reads"] });
+
     // Item 1 should now be read
-    await expect
-      .poll(() => itemRow.element().getAttribute("data-is-read"), {
-        timeout: 10000,
-      })
-      .toBe("true");
+    await expect.element(itemRow).toHaveAttribute("data-is-read", "true");
   });
 
   it("renders tag filters in a horizontal scroll list", async () => {

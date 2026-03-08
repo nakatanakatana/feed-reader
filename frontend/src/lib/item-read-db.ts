@@ -20,17 +20,17 @@ export const itemReadCollectionOptions = {
   queryKey: ["item-reads"],
   // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB context
   queryFn: async ({ queryKey }: any) => {
-    const existingData =
-      (queryClient.getQueryData(queryKey) as ItemRead[]) || [];
-
     // Initial sync anchor baseline
     const anchor = lastReadFetched();
 
     // Skip fetching read states if we don't have an anchor yet.
-    // The anchor will be initialized during the initial items fetch.
+    // Return an empty array to ensure a clean state (e.g. during reset).
     if (!anchor) {
-      return existingData;
+      return [];
     }
+
+    const existingData =
+      (queryClient.getQueryData(queryKey) as ItemRead[]) || [];
 
     let pageToken = "";
     const allNewReads: ItemRead[] = [];
