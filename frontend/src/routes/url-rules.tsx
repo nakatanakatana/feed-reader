@@ -27,11 +27,12 @@ function URLRulesComponent() {
       ruleType: string;
       pattern: string;
     }) => {
-      await urlParsingRules.insert({
+      const tx = urlParsingRules.insert({
         id: `temp-${crypto.randomUUID()}`,
         ...newRule,
         // biome-ignore lint/suspicious/noExplicitAny: using any for partial rule insert
       } as any);
+      await tx.isPersisted.promise;
     },
     onSuccess: () => {
       setDomain("");

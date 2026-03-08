@@ -94,11 +94,12 @@ function BlockRulesComponent() {
       value: string;
       domain?: string;
     }) => {
-      await itemBlockRules.insert({
+      const tx = itemBlockRules.insert({
         id: `temp-${crypto.randomUUID()}`,
         ...newRule,
         // biome-ignore lint/suspicious/noExplicitAny: using any for partial rule insert
       } as any);
+      await tx.isPersisted.promise;
     },
     onSuccess: () => {
       setValue("");
@@ -115,7 +116,8 @@ function BlockRulesComponent() {
         ...r,
       }));
       // biome-ignore lint/suspicious/noExplicitAny: using any for bulk insert
-      await itemBlockRules.insert(rulesToInsert as any);
+      const tx = itemBlockRules.insert(rulesToInsert as any);
+      await tx.isPersisted.promise;
     },
   }));
 
