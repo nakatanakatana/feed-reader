@@ -25,16 +25,19 @@ describe("block-db", () => {
 
       const rpcSpy = vi.fn();
       worker.use(
-        http.all("*/item.v1.ItemService/AddURLParsingRule", async ({ request }) => {
-          const body = await request.json();
-          rpcSpy(body);
-          return HttpResponse.json(
-            toJson(
-              AddURLParsingRuleResponseSchema,
-              create(AddURLParsingRuleResponseSchema, {}),
-            ),
-          );
-        }),
+        http.all(
+          "*/item.v1.ItemService/AddURLParsingRule",
+          async ({ request }) => {
+            const body = await request.json();
+            rpcSpy(body);
+            return HttpResponse.json(
+              toJson(
+                AddURLParsingRuleResponseSchema,
+                create(AddURLParsingRuleResponseSchema, {}),
+              ),
+            );
+          },
+        ),
       );
 
       const transaction = {
@@ -73,16 +76,19 @@ describe("block-db", () => {
 
       const rpcSpy = vi.fn();
       worker.use(
-        http.all("*/item.v1.ItemService/AddItemBlockRules", async ({ request }) => {
-          const body = await request.json();
-          rpcSpy(body);
-          return HttpResponse.json(
-            toJson(
-              AddItemBlockRulesResponseSchema,
-              create(AddItemBlockRulesResponseSchema, {}),
-            ),
-          );
-        }),
+        http.all(
+          "*/item.v1.ItemService/AddItemBlockRules",
+          async ({ request }) => {
+            const body = await request.json();
+            rpcSpy(body);
+            return HttpResponse.json(
+              toJson(
+                AddItemBlockRulesResponseSchema,
+                create(AddItemBlockRulesResponseSchema, {}),
+              ),
+            );
+          },
+        ),
       );
 
       const transaction = {
@@ -115,11 +121,14 @@ describe("block-db", () => {
 
       const rpcSpy = vi.fn();
       worker.use(
-        http.all("*/item.v1.ItemService/DeleteURLParsingRule", async ({ request }) => {
-          const body = await request.json();
-          rpcSpy(body);
-          return HttpResponse.json({});
-        }),
+        http.all(
+          "*/item.v1.ItemService/DeleteURLParsingRule",
+          async ({ request }) => {
+            const body = await request.json();
+            rpcSpy(body);
+            return HttpResponse.json({});
+          },
+        ),
       );
 
       const transaction = {
