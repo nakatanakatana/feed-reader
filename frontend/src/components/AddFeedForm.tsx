@@ -1,8 +1,10 @@
+import { createClient } from "@connectrpc/connect";
 import { useLiveQuery } from "@tanstack/solid-db";
 import { createSignal, For, type JSX, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
-import { feeds } from "../lib/db";
+import { FeedService } from "../gen/feed/v1/feed_pb";
+import { queryClient, transport } from "../lib/query";
 import { tagsFeedQuery } from "../lib/tag-db";
 import { ActionButton } from "./ui/ActionButton";
 import { HorizontalScrollList } from "./ui/HorizontalScrollList";
@@ -11,6 +13,8 @@ import { TagChip } from "./ui/TagChip";
 interface AddFeedFormProps {
   headerActions?: JSX.Element;
 }
+
+const feedClient = createClient(FeedService, transport);
 
 export function AddFeedForm(props: AddFeedFormProps) {
   const [url, setUrl] = createSignal("");
@@ -31,12 +35,11 @@ export function AddFeedForm(props: AddFeedFormProps) {
 
     try {
       const tags = tagsQuery().filter((t) => selectedTagIds().includes(t.id));
-      await feeds.insert({
-        id: `temp-${Date.now()}`,
+      await feedClient.createFeed({
         url: url(),
-        tags,
-        // biome-ignore lint/suspicious/noExplicitAny: using any for partial feed insert
-      } as any);
+        tagIds: tags.map((t) => t.id),
+      });
+      await queryClient.invalidateQueries({ queryKey: ["feeds"] });
 
       setUrl("");
       setSelectedTagIds([]);

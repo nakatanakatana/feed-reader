@@ -137,20 +137,23 @@ domain,example.com`);
       name: /Register \(2 rules\)/,
     });
     await registerButton.click();
-
-    // Verify backend call
-    await expect.poll(() => addItemBlockRulesSpy).toHaveBeenCalled();
-    const callArgs = addItemBlockRulesSpy.mock.calls[0][0];
-    expect(callArgs.rules).toHaveLength(2);
-    expect(callArgs.rules[0]).toMatchObject({
-      ruleType: "user",
-      value: "john_doe",
-    });
-    expect(callArgs.rules[1]).toMatchObject({
-      ruleType: "domain",
-      value: "example.com",
-    });
-
+// Verify backend call
+await expect.poll(() => {
+  const allRules = addItemBlockRulesSpy.mock.calls.flatMap(call => call[0].rules);
+  return allRules.length;
+}).toBe(2);
+const allRulesSent = addItemBlockRulesSpy.mock.calls.flatMap(
+  (call) => call[0].rules
+);
+expect(allRulesSent).toHaveLength(2);
+expect(allRulesSent[0]).toMatchObject({
+  ruleType: "user",
+  value: "john_doe",
+});
+expect(allRulesSent[1]).toMatchObject({
+  ruleType: "domain",
+  value: "example.com",
+});
     // Verify success message and Done button
     await expect
       .element(page.getByText("Successfully registered rules!"))

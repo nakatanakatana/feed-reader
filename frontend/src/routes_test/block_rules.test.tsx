@@ -242,7 +242,10 @@ describe("Block Rules Page", () => {
     await deleteButton.click();
 
     await expect
-      .element(page.getByText("to-delete.com").first())
-      .not.toBeInTheDocument();
+      .poll(() => {
+        const textElement = page.getByText("to-delete.com").elements()[0];
+        return textElement !== undefined;
+      })
+      .toBe(false);
   });
 });

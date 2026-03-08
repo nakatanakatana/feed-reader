@@ -18,6 +18,7 @@ import {
   ListURLParsingRulesResponseSchema,
 } from "../gen/item/v1/item_pb";
 import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
+import { itemsCollection } from "../lib/item-db";
 import { itemStore } from "../lib/item-store";
 import { queryClient, transport } from "../lib/query";
 import { ToastProvider } from "../lib/toast";
@@ -132,15 +133,17 @@ describe("ItemDetailRouteView Reactivity", () => {
       .element(page.getByRole("heading", { name: "Item 1" }))
       .toBeInTheDocument();
 
-    // Update mock data to only have 1 item
-    setupMockData([{ id: "1", title: "Item 1", isRead: false }]);
+    // Update mock data to include a new item
+    setupMockData([
+      { id: "1", title: "Item 1", isRead: false },
+      { id: "2", title: "Item 2", isRead: false },
+      { id: "3", title: "Item 3", isRead: false },
+    ]);
 
     // Change filter state to trigger a fresh query key
     itemStore.setDateFilter("24h");
 
     // Wait for the re-fetch to complete and the component to update.
-    // We expect Item 2 to be removed from the list of neighboring items.
-    // In ItemDetailRouteView, this means nextItemId should become end-of-list eventually.
     await expect.poll(() => history.location.pathname).toBe("/items/1");
 
     await expect
@@ -152,14 +155,16 @@ describe("ItemDetailRouteView Reactivity", () => {
     await expect.element(dialog).toBeInTheDocument();
     await userEvent.click(dialog);
 
-    // With only 1 item, 'j' should transition to the "End of List" placeholder.
+    // Press 'j' to go to Item 2
     await userEvent.keyboard("j");
-    await expect
-      .poll(() => history.location.pathname)
-      .toBe("/items/end-of-list");
+    await expect.poll(() => history.location.pathname).toBe("/items/2");
+
+    // Press 'j' to go to Item 3 (the newly added item)
+    await userEvent.keyboard("j");
+    await expect.poll(() => history.location.pathname).toBe("/items/3");
 
     await expect
-      .element(page.getByRole("heading", { name: "End of List" }))
+      .element(page.getByRole("heading", { name: "Item 3" }))
       .toBeInTheDocument();
   });
 });

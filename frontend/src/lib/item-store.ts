@@ -1,6 +1,7 @@
 import { createRoot } from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
 import { itemsDateFilter, itemsShowReadFilter } from "./default";
+import { setLastFetched, setLastReadFetched } from "./item-sync-state";
 import type { DateFilterValue } from "./item-utils";
 import { queryClient } from "./query";
 
@@ -11,14 +12,22 @@ function createItemStore() {
     transientRemovedIds: {} as Record<string, boolean>,
   });
 
-  const setShowRead = (showRead: boolean) => {
-    setState("showRead", showRead);
+  const resetCacheAndSync = () => {
+    setLastFetched(null);
+    queryClient.setQueryData(["items"], undefined);
     queryClient.invalidateQueries({ queryKey: ["items"] });
   };
 
+  const setShowRead = (showRead: boolean) => {
+    if (state.showRead === showRead) return;
+    setState("showRead", showRead);
+    resetCacheAndSync();
+  };
+
   const setDateFilter = (since: DateFilterValue) => {
+    if (state.since === since) return;
     setState("since", since);
-    queryClient.invalidateQueries({ queryKey: ["items"] });
+    resetCacheAndSync();
   };
 
   const addTransientRemovedIds = (ids: string[]) => {

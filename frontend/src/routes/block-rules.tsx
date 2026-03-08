@@ -110,10 +110,13 @@ function BlockRulesComponent() {
     mutationFn: async (
       rules: { ruleType: string; value: string; domain?: string }[],
     ) => {
-      await itemBlockRules.insert(
-        // biome-ignore lint/suspicious/noExplicitAny: using any for bulk insert
-        rules.map((r) => ({ id: `temp-${Date.now()}`, ...r })) as any,
-      );
+      for (const r of rules) {
+        await itemBlockRules.insert({
+          id: `temp-${Date.now()}-${Math.random()}`,
+          ...r,
+          // biome-ignore lint/suspicious/noExplicitAny: using any for partial rule insert
+        } as any);
+      }
     },
   }));
 

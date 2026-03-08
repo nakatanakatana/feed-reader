@@ -327,8 +327,10 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     mutationFn: async (req: {
       rules: { ruleType: string; value: string; domain?: string }[];
     }) => {
-      // biome-ignore lint/suspicious/noExplicitAny: using any for bulk insert
-      await itemBlockRules.insert(req.rules as any);
+      for (const rule of req.rules) {
+        // biome-ignore lint/suspicious/noExplicitAny: generic insert
+        await itemBlockRules.insert({ ...rule, id: `temp-${Date.now()}-${Math.random()}` } as any);
+      }
     },
     onSuccess: () => {
       show("Block rule added successfully", "success");
