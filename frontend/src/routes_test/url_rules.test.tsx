@@ -171,7 +171,7 @@ describe("URL Rules Page", () => {
 
     await expect.element(page.getByText("example.com")).toBeInTheDocument();
 
-    const deleteButton = page.getByRole("button", { name: "Delete" });
+    const deleteButton = page.getByRole("button", { name: "Delete" }).first();
     await deleteButton.click();
 
     await expect.element(page.getByText("example.com")).not.toBeInTheDocument();

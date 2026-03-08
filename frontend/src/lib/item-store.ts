@@ -1,7 +1,7 @@
 import { createRoot } from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
 import { itemsDateFilter, itemsShowReadFilter } from "./default";
-import { setLastFetched, setLastReadFetched } from "./item-sync-state";
+import { setLastFetched } from "./item-sync-state";
 import type { DateFilterValue } from "./item-utils";
 import { queryClient } from "./query";
 

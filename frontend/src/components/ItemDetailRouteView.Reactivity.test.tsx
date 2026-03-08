@@ -18,7 +18,6 @@ import {
   ListURLParsingRulesResponseSchema,
 } from "../gen/item/v1/item_pb";
 import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
-import { itemsCollection } from "../lib/item-db";
 import { itemStore } from "../lib/item-store";
 import { queryClient, transport } from "../lib/query";
 import { ToastProvider } from "../lib/toast";

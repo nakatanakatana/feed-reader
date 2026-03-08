@@ -328,8 +328,11 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
       rules: { ruleType: string; value: string; domain?: string }[];
     }) => {
       for (const rule of req.rules) {
-        // biome-ignore lint/suspicious/noExplicitAny: generic insert
-        await itemBlockRules.insert({ ...rule, id: `temp-${Date.now()}-${Math.random()}` } as any);
+        await itemBlockRules.insert({
+          ...rule,
+          id: `temp-${Date.now()}-${Math.random()}`,
+          // biome-ignore lint/suspicious/noExplicitAny: generic insert
+        } as any);
       }
     },
     onSuccess: () => {
