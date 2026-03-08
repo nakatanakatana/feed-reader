@@ -20,6 +20,8 @@ import {
   DeleteURLParsingRuleResponseSchema,
   GetItemResponseSchema,
   type Item,
+  type ItemBlockRule,
+  ItemBlockRuleSchema,
   ItemSchema,
   ItemService,
   ListItemBlockRulesResponseSchema,
@@ -28,6 +30,7 @@ import {
   ListItemsResponseSchema,
   ListURLParsingRulesResponseSchema,
   UpdateItemStatusResponseSchema,
+  type URLParsingRule,
   URLParsingRuleSchema,
 } from "../gen/item/v1/item_pb";
 import {
@@ -45,8 +48,8 @@ const tags: Tag[] = [];
 const feeds: Feed[] = [];
 const items: Item[] = [];
 const itemReads = new Map<string, { isRead: boolean; updatedAt: Date }>();
-const urlParsingRules: any[] = [];
-const itemBlockRules: any[] = [];
+const urlParsingRules: URLParsingRule[] = [];
+const itemBlockRules: ItemBlockRule[] = [];
 
 // Fixed date for consistent testing
 const NOW = new Date("2026-03-08T10:00:00Z");
@@ -138,8 +141,16 @@ export const resetState = () => {
 
   itemBlockRules.length = 0;
   itemBlockRules.push(
-    { id: "block-1", ruleType: "keyword", value: "alice" },
-    { id: "block-2", ruleType: "domain", value: "to-delete.com" },
+    create(ItemBlockRuleSchema, {
+      id: "block-1",
+      ruleType: "keyword",
+      value: "alice",
+    }),
+    create(ItemBlockRuleSchema, {
+      id: "block-2",
+      ruleType: "domain",
+      value: "to-delete.com",
+    }),
   );
 };
 
@@ -554,10 +565,14 @@ export const handlers = [
             `invalid rule_type at index ${i}: ${r.ruleType}. Must be 'user', 'domain', 'user_domain', or 'keyword'`,
           );
         }
-        itemBlockRules.push({
-          id: Math.random().toString(36).substring(7),
-          ...r,
-        });
+        itemBlockRules.push(
+          create(ItemBlockRuleSchema, {
+            id: Math.random().toString(36).substring(7),
+            ruleType: r.ruleType,
+            value: r.value,
+            domain: r.domain,
+          }),
+        );
       }
       return create(AddItemBlockRulesResponseSchema, {});
     },
