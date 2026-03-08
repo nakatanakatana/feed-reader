@@ -125,7 +125,6 @@ export default defineConfig({
                   headless: true,
                 },
                 exclude: [
-                  "src/pwa-infrastructure.test.ts",
                   "src/**/*.node.test.{ts,tsx}",
                   "**/node_modules/**",
                   "**/dist/**",
@@ -146,11 +145,10 @@ export default defineConfig({
           root: "frontend",
           environment: "node",
           isolate: false,
+          restoreMocks: true,
+          mockReset: true,
           globals: true,
-          include: [
-            "src/pwa-infrastructure.test.ts",
-            "src/**/*.node.test.{ts,tsx}",
-          ],
+          include: ["src/**/*.node.test.{ts,tsx}"],
         },
       },
     ],
