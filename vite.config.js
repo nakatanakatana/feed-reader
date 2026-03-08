@@ -99,6 +99,7 @@ export default defineConfig({
   },
   test: {
     environment: "node",
+    silent: "passed-only",
     coverage: {
       provider: "v8",
       reporter: ["lcov"],
