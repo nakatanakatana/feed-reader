@@ -24,7 +24,7 @@ export const itemReadCollectionOptions = {
     const anchor = lastReadFetched();
 
     // Skip fetching read states if we don't have an anchor yet.
-    // Return an empty array to ensure a clean state (e.g. during reset).
+    // Return an empty array to ensure a clean state (e.g. during reset or initial sync).
     if (!anchor) {
       return [];
     }

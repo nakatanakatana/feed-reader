@@ -186,7 +186,7 @@ describe("ItemRead collection options", () => {
       expect(data.find((d: ItemRead) => d.id === "2")?.isRead).toBe(true);
     });
 
-    it("should skip fetching and return existing data if no anchor is present", async () => {
+    it("should skip fetching and return an empty array if no anchor is present", async () => {
       setLastReadFetched(null);
       setLastItemsSyncedAt(null);
       const existingData = [{ id: "1", isRead: false, updatedAt: new Date() }];
@@ -198,7 +198,7 @@ describe("ItemRead collection options", () => {
       });
 
       expect(itemClient.listItemRead).not.toHaveBeenCalled();
-      expect(data).toEqual(existingData);
+      expect(data).toEqual([]);
     });
   });
 
