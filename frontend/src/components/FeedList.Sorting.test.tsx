@@ -210,13 +210,9 @@ describe("FeedList Sorting", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <TestWrapper>
-              <RouterProvider router={router} />
-            </TestWrapper>
-          </QueryClientProvider>
-        </TransportProvider>
+        <TestWrapper>
+          <RouterProvider router={router} />
+        </TestWrapper>
       ),
       document.body,
     );

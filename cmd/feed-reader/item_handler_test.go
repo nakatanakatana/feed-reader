@@ -297,7 +297,7 @@ func TestItemServer_ListItemRead(t *testing.T) {
 		assert.Equal(t, connect.CodeOf(err), connect.CodeInvalidArgument)
 
 		// 3. Invalid JSON PageToken
-		badJSONToken := base64.StdEncoding.EncodeToString([]byte("{invalid-json}"))
+		badJSONToken := base64.RawURLEncoding.EncodeToString([]byte("{invalid-json}"))
 		_, err = server.ListItemRead(ctx, connect.NewRequest(&itemv1.ListItemReadRequest{
 			PageToken: badJSONToken,
 		}))
@@ -305,7 +305,7 @@ func TestItemServer_ListItemRead(t *testing.T) {
 		assert.Equal(t, connect.CodeOf(err), connect.CodeInvalidArgument)
 
 		// 4. Missing required fields in token
-		missingFieldsToken := base64.StdEncoding.EncodeToString([]byte(`{"updated_at": "2023-01-01T00:00:00Z"}`))
+		missingFieldsToken := base64.RawURLEncoding.EncodeToString([]byte(`{"updated_at": "2023-01-01T00:00:00Z"}`))
 		_, err = server.ListItemRead(ctx, connect.NewRequest(&itemv1.ListItemReadRequest{
 			PageToken: missingFieldsToken,
 		}))
@@ -313,7 +313,7 @@ func TestItemServer_ListItemRead(t *testing.T) {
 		assert.Equal(t, connect.CodeOf(err), connect.CodeInvalidArgument)
 
 		// 5. Invalid time format in token
-		badTimeToken := base64.StdEncoding.EncodeToString([]byte(`{"updated_at": "invalid-time", "item_id": "item1"}`))
+		badTimeToken := base64.RawURLEncoding.EncodeToString([]byte(`{"updated_at": "invalid-time", "item_id": "item1"}`))
 		_, err = server.ListItemRead(ctx, connect.NewRequest(&itemv1.ListItemReadRequest{
 			PageToken: badTimeToken,
 		}))
