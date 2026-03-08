@@ -75,13 +75,6 @@ exports[`ItemDetailModal UI Updates > falls back to CSV parsing when JSON is mal
                 </svg>
               </button>
             </div>
-            <button
-              class="bdr_md fw_medium cursor_pointer bd_1px_solid bd-c_transparent trs_all_0.2s d_inline-flex ai_center jc_center gap_2 disabled:op_0.5 disabled:cursor_not-allowed fs_sm py_2 px_4 bg_transparent c_blue.600 hover:bg_blue.50 hover:c_blue.700"
-              type="button"
-              variant="ghost"
-            >
-              Close
-            </button>
           </div>
         </div>
         <div
@@ -314,13 +307,6 @@ exports[`ItemDetailModal UI Updates > renders comma-separated categories when JS
                 </svg>
               </button>
             </div>
-            <button
-              class="bdr_md fw_medium cursor_pointer bd_1px_solid bd-c_transparent trs_all_0.2s d_inline-flex ai_center jc_center gap_2 disabled:op_0.5 disabled:cursor_not-allowed fs_sm py_2 px_4 bg_transparent c_blue.600 hover:bg_blue.50 hover:c_blue.700"
-              type="button"
-              variant="ghost"
-            >
-              Close
-            </button>
           </div>
         </div>
         <div
@@ -553,13 +539,6 @@ exports[`ItemDetailModal UI Updates > renders title as a link and displays conte
                 </svg>
               </button>
             </div>
-            <button
-              class="bdr_md fw_medium cursor_pointer bd_1px_solid bd-c_transparent trs_all_0.2s d_inline-flex ai_center jc_center gap_2 disabled:op_0.5 disabled:cursor_not-allowed fs_sm py_2 px_4 bg_transparent c_blue.600 hover:bg_blue.50 hover:c_blue.700"
-              type="button"
-              variant="ghost"
-            >
-              Close
-            </button>
           </div>
         </div>
         <div
