@@ -1,4 +1,5 @@
 import type { Timestamp } from "@bufbuild/protobuf/wkt";
+import { dateToTimestamp, toDate } from "./date-utils";
 
 export type DateFilterValue = "all" | "24h" | "7d" | "30d" | "90d" | "365d";
 
@@ -11,12 +12,7 @@ export interface Item {
   isRead: boolean;
 }
 
-export const dateToTimestamp = (d: Date): Timestamp => {
-  return {
-    seconds: BigInt(Math.floor(d.getTime() / 1000)),
-    nanos: (d.getTime() % 1000) * 1000000,
-  } as Timestamp;
-};
+export { dateToTimestamp, toDate };
 
 export const getPublishedSince = (
   value: DateFilterValue,
@@ -51,18 +47,6 @@ export const formatUnreadCount = (count: number): string => {
     return "999+";
   }
   return count.toString();
-};
-
-const toDate = (
-  ts: Date | Timestamp | string | undefined,
-): Date | undefined => {
-  if (!ts) return undefined;
-  if (ts instanceof Date) return ts;
-  if (typeof ts === "string") {
-    const d = new Date(ts);
-    return Number.isNaN(d.getTime()) ? undefined : d;
-  }
-  return new Date(Number(ts.seconds) * 1000 + ts.nanos / 1000000);
 };
 
 export const formatDate = (date: Date | Timestamp | string | undefined) => {

@@ -36,35 +36,13 @@ import {
   TagSchema,
   TagService,
 } from "../gen/tag/v1/tag_pb";
-import { dateToTimestamp } from "../lib/item-utils";
+import { dateToTimestamp, toDate } from "../lib/date-utils";
 import { mockConnectWeb } from "./connect";
 
 const tags: Tag[] = [];
 const feeds: Feed[] = [];
 const items: Item[] = [];
 const itemReads = new Map<string, { isRead: boolean; updatedAt: Date }>();
-
-const timestampToDate = (ts: unknown): Date | undefined => {
-  if (!ts) return undefined;
-  if (ts instanceof Date) return ts;
-  if (typeof ts === "string") {
-    const d = new Date(ts);
-    return Number.isNaN(d.getTime()) ? undefined : d;
-  }
-  if (
-    typeof ts === "object" &&
-    ts !== null &&
-    "seconds" in ts &&
-    "nanos" in ts
-  ) {
-    const t = ts as { seconds: bigint | number; nanos: number };
-    const d = new Date(Number(t.seconds) * 1000 + Number(t.nanos) / 1000000);
-    return Number.isNaN(d.getTime()) ? undefined : d;
-  }
-  // biome-ignore lint/suspicious/noExplicitAny: catch-all for potential date-like inputs
-  const d = new Date(ts as any);
-  return Number.isNaN(d.getTime()) ? undefined : d;
-};
 
 export const resetState = () => {
   console.log("MSW: resetState called");
@@ -371,10 +349,10 @@ export const handlers = [
       let filteredItems = items;
 
       if (req.since) {
-        const sinceDate = timestampToDate(req.since);
+        const sinceDate = toDate(req.since);
         if (sinceDate) {
           filteredItems = items.filter((item) => {
-            const createdAt = timestampToDate(item.createdAt);
+            const createdAt = toDate(item.createdAt);
             return createdAt && createdAt >= sinceDate;
           });
         }
@@ -447,7 +425,7 @@ export const handlers = [
         const start = Number.isNaN(parsedToken) ? 0 : parsedToken;
         results = results.slice(start);
       } else if (req.since) {
-        const sinceDate = timestampToDate(req.since);
+        const sinceDate = toDate(req.since);
         if (sinceDate) {
           // Use strict ">" cursor to avoid repeatedly returning the last row.
           results = results.filter((r) => r.updatedAt > sinceDate);

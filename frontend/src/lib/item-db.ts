@@ -8,6 +8,7 @@ import {
 } from "@tanstack/solid-db";
 import { createMemo, createRoot } from "solid-js";
 import { ItemService } from "../gen/item/v1/item_pb";
+import { toDate } from "./date-utils";
 import { itemReadCollection } from "./item-read-db";
 import { itemStore } from "./item-store";
 import {
@@ -43,11 +44,6 @@ export interface Item extends ListItem {
 }
 
 const itemClient = createClient(ItemService, transport);
-
-const toDate = (ts: { seconds: bigint; nanos: number } | undefined) => {
-  if (!ts) return undefined;
-  return new Date(Number(ts.seconds) * 1000 + ts.nanos / 1000000);
-};
 
 const createItems = (showRead: boolean, since: DateFilterValue) => {
   setLastFetched(null);

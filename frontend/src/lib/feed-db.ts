@@ -3,6 +3,7 @@ import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { createCollection } from "@tanstack/solid-db";
 import { FeedService } from "../gen/feed/v1/feed_pb";
 import type { Tag } from "../gen/tag/v1/tag_pb";
+import { toDate } from "./date-utils";
 import { fetchingState } from "./fetching-state";
 import { queryClient, transport } from "./query";
 
@@ -92,11 +93,6 @@ export const exportFeeds = async (feedIds: string[]) => {
   a.click();
   document.body.removeChild(a);
   setTimeout(() => URL.revokeObjectURL(url), 100);
-};
-
-const toDate = (ts: { seconds: bigint; nanos: number } | undefined) => {
-  if (!ts) return undefined;
-  return new Date(Number(ts.seconds) * 1000 + ts.nanos / 1000000);
 };
 
 export const feeds = createCollection(

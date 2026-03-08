@@ -7,6 +7,7 @@ import {
   eq,
 } from "@tanstack/solid-db";
 import { TagService } from "../gen/tag/v1/tag_pb";
+import { toDate } from "./date-utils";
 import { feedTag } from "./feed-db";
 import { queryClient, transport } from "./query";
 
@@ -20,11 +21,6 @@ export interface Tag {
 }
 
 const tagClient = createClient(TagService, transport);
-
-const toDate = (ts: { seconds: bigint; nanos: number } | undefined) => {
-  if (!ts) return undefined;
-  return new Date(Number(ts.seconds) * 1000 + ts.nanos / 1000000);
-};
 
 export const tags = createCollection(
   queryCollectionOptions({

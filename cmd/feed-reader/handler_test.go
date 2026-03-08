@@ -357,6 +357,33 @@ func TestFeedServer_ListFeeds_UnreadCounts(t *testing.T) {
 	assertResponseGolden(t, res.Msg, "list_feeds_unread_counts.golden")
 }
 
+func TestFeedServer_ListFeeds_IncludesMetadata(t *testing.T) {
+	ctx := context.Background()
+	_, db := setupTestDB(t)
+	s := store.NewStore(db)
+	server := setupServer(t, db, nil, &mockFetcher{}, &mockItemFetcher{})
+
+	title := "Feed 1"
+	description := "Feed description"
+	imageURL := "https://example.com/image.png"
+	_, err := s.CreateFeed(ctx, store.CreateFeedParams{
+		ID:          "f1",
+		Url:         "https://example.com/feed.xml",
+		Title:       &title,
+		Description: &description,
+		ImageUrl:    &imageURL,
+	})
+	assert.NilError(t, err)
+
+	res, err := server.ListFeeds(ctx, connect.NewRequest(&feedv1.ListFeedsRequest{}))
+	assert.NilError(t, err)
+	assert.Assert(t, cmp.Len(res.Msg.Feeds, 1))
+
+	got := res.Msg.Feeds[0]
+	assert.Equal(t, got.GetDescription(), description)
+	assert.Equal(t, got.GetImageUrl(), imageURL)
+}
+
 func TestFeedServer_UpdateFeed(t *testing.T) {
 	ctx := context.Background()
 
