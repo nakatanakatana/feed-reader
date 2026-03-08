@@ -114,6 +114,7 @@ export default defineConfig({
                 name: "browser",
                 browser: {
                   enabled: true,
+                  isolate: true, // Use isolation for clean environment per file
                   provider: playwright(),
                   screenshotFailures: false,
                   instances: [
@@ -125,7 +126,7 @@ export default defineConfig({
                   headless: true,
                 },
                 exclude: [
-                  "src/pwa-infrastructure.test.ts",
+                  "src/**/*.node.test.{ts,tsx}",
                   "**/node_modules/**",
                   "**/dist/**",
                   "**/cypress/**",
@@ -145,7 +146,7 @@ export default defineConfig({
           root: "frontend",
           environment: "node",
           globals: true,
-          include: ["src/pwa-infrastructure.test.ts"],
+          include: ["src/**/*.node.test.{ts,tsx}"],
         },
       },
     ],

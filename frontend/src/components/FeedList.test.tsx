@@ -68,8 +68,8 @@ describe("FeedList", () => {
       document.body,
     );
 
-    await expect.element(page.getByText("Example Feed 1")).toBeInTheDocument();
-    await expect.element(page.getByText("Example Feed 2")).toBeInTheDocument();
+    await expect.element(page.getByText("Example Feed 1", { exact: true })).toBeInTheDocument();
+    await expect.element(page.getByText("Example Feed 2", { exact: true })).toBeInTheDocument();
 
     // Snapshot testing with masking for dynamic timestamps
     const html = document.body.innerHTML.replace(
@@ -106,7 +106,7 @@ describe("FeedList", () => {
     // Wait for the feed to disappear
     await expect
       .poll(async () => {
-        const elements = await page.getByText("Example Feed 1").all();
+        const elements = await page.getByText("Example Feed 1", { exact: true }).all();
         return elements.length;
       })
       .toBe(0);
@@ -225,8 +225,8 @@ describe("FeedList", () => {
     );
 
     // Wait for feeds to render
-    await expect.element(page.getByText("Past Feed")).toBeInTheDocument();
-    await expect.element(page.getByText("Future Feed")).toBeInTheDocument();
+    await expect.element(page.getByText("Past Feed", { exact: true })).toBeInTheDocument();
+    await expect.element(page.getByText("Future Feed", { exact: true })).toBeInTheDocument();
 
     // The past feed should display "Soon"
     const soonText = page.getByText("Next fetch: Soon");

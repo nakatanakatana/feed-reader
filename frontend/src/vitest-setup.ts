@@ -4,6 +4,8 @@ import { resetDatabase } from "./lib/db";
 import { worker } from "./mocks/browser";
 import { resetState } from "./mocks/handlers";
 
+import { queryClient } from "./lib/query";
+
 // Force UTC timezone for consistent snapshot testing
 const originalToLocaleString = Date.prototype.toLocaleString;
 Date.prototype.toLocaleString = function (
@@ -47,15 +49,19 @@ expect.addSnapshotSerializer({
 });
 
 beforeAll(async () => {
-  await worker.start({ onUnhandledRequest: "bypass" });
+  await worker.start({ onUnhandledRequest: "bypass", quiet: true });
 });
 
-afterEach(() => {
-  worker.resetHandlers();
+afterEach(async () => {
+  await worker.resetHandlers();
   resetState();
-  resetDatabase();
+  await resetDatabase();
+  queryClient.clear();
+  queryClient.getQueryCache().clear();
+  queryClient.getMutationCache().clear();
   vi.useRealTimers();
   vi.clearAllMocks();
+  document.body.innerHTML = "";
 });
 
 afterAll(() => {

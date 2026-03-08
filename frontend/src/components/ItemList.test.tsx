@@ -145,8 +145,8 @@ describe("ItemList", () => {
       document.body,
     );
 
-    await expect.element(page.getByText("Item 1")).toBeInTheDocument();
-    await expect.element(page.getByText("Item 2")).toBeInTheDocument();
+    await expect.element(page.getByText("Item 1", { exact: true })).toBeInTheDocument();
+    await expect.element(page.getByText("Item 2", { exact: true })).toBeInTheDocument();
 
     expect(document.body.innerHTML).toMatchSnapshot();
   });
@@ -180,7 +180,7 @@ describe("ItemList", () => {
       document.body,
     );
 
-    const item1 = page.getByText("Item 1");
+    const item1 = page.getByText("Item 1", { exact: true });
     await expect.element(item1).toBeInTheDocument();
 
     // Verify it's unread (has blue color class)
