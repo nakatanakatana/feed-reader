@@ -16,8 +16,8 @@ import {
   ListItemsResponseSchema,
 } from "../gen/item/v1/item_pb";
 import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
-import { dateToTimestamp } from "../lib/item-utils";
 import { setLastFetched } from "../lib/item-sync-state";
+import { dateToTimestamp } from "../lib/item-utils";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
@@ -45,10 +45,7 @@ describe("ItemList", () => {
       .mockReturnValue("4:00:00 AM");
   });
 
-  const setupMockData = (
-    items: any[] = [],
-    itemReads: any[] = [],
-  ) => {
+  const setupMockData = (items: any[] = [], itemReads: any[] = []) => {
     worker.use(
       http.all("*/item.v1.ItemService/ListItems", () => {
         const msg = create(ListItemsResponseSchema, {
@@ -169,7 +166,9 @@ describe("ItemList", () => {
     ]);
 
     // Use showRead=true so the item doesn't disappear when marked as read
-    const history = createMemoryHistory({ initialEntries: ["/?showRead=true"] });
+    const history = createMemoryHistory({
+      initialEntries: ["/?showRead=true"],
+    });
     const router = createRouter({ routeTree, history });
 
     dispose = render(

@@ -5,13 +5,13 @@ import {
   createRouter,
   RouterProvider,
 } from "@tanstack/solid-router";
-import { HttpResponse, http } from "msw";
+import { http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ListItemsResponseSchema } from "../gen/item/v1/item_pb";
 import { dateToTimestamp } from "../lib/item-utils";
-import { safeJson } from "../mocks/connect";
 import { worker } from "../mocks/browser";
+import { safeJson } from "../mocks/connect";
 import { Route as RootRoute } from "../routes/__root";
 import "../styles.css";
 

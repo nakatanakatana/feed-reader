@@ -37,7 +37,7 @@ import {
   TagService,
 } from "../gen/tag/v1/tag_pb";
 import { dateToTimestamp } from "../lib/item-utils";
-import { mockConnectWeb, safeJson } from "./connect";
+import { mockConnectWeb } from "./connect";
 
 const tags: Tag[] = [];
 const feeds: Feed[] = [];

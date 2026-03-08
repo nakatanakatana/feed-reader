@@ -234,9 +234,7 @@ describe("ItemRead collection options", () => {
 
     it("should perform optimistic update and rollback on server failure, cleaning up new records", async () => {
       // Setup initial state: id: "1" exists, "2" is new
-      const initialData = [
-        { id: "1", isRead: false, updatedAt: new Date() },
-      ];
+      const initialData = [{ id: "1", isRead: false, updatedAt: new Date() }];
       queryClient.setQueryData(itemReadCollectionOptions.queryKey, initialData);
 
       // Mock server to fail
@@ -265,7 +263,13 @@ describe("ItemRead collection options", () => {
       // Local data has id: "1" as isRead: true (optimistic update)
       queryClient.setQueryData(
         ["item-reads"],
-        [{ id: "1", isRead: true, updatedAt: new Date("2026-03-06T00:00:00Z") }],
+        [
+          {
+            id: "1",
+            isRead: true,
+            updatedAt: new Date("2026-03-06T00:00:00Z"),
+          },
+        ],
       );
 
       // Server returns id: "1" as isRead: false (e.g. changed on another device)

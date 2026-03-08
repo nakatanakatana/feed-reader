@@ -12,7 +12,6 @@ import { page, userEvent } from "vitest/browser";
 import {
   GetItemResponseSchema,
   ItemSchema,
-  ItemService,
   ListItemsResponseSchema,
 } from "../gen/item/v1/item_pb";
 import { dateToTimestamp } from "../lib/item-utils";
@@ -20,7 +19,6 @@ import { queryClient, transport } from "../lib/query";
 import { ToastProvider } from "../lib/toast";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
-import { Route as RootRoute } from "../routes/__root";
 import { routeTree } from "../routeTree.gen";
 
 describe("Item History Navigation", () => {
