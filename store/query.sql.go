@@ -1444,7 +1444,7 @@ WHERE
   (?4 IS NULL OR i.created_at >= ?4) AND
   (?5 IS NULL OR (CASE WHEN ib.item_id IS NOT NULL THEN 1 ELSE 0 END = ?5)) AND
   (
-    (?6 IS NULL OR ?7 IS NULL) OR
+    (?6 IS NULL AND ?7 IS NULL) OR
     (i.created_at, i.id) > (?6, ?7)
   )
 GROUP BY

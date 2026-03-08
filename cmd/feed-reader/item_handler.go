@@ -98,7 +98,7 @@ func (s *ItemServer) ListItems(ctx context.Context, req *connect.Request[itemv1.
 			return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("invalid page_token: %w", err))
 		}
 		if token.CreatedAt == "" || token.ID == "" {
-			return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("invalid page_token: missing required fields"))
+			return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("invalid page_token: both created_at and id must be provided for pagination"))
 		}
 		params.CreatedAtCursor = token.CreatedAt
 		params.IDCursor = token.ID
@@ -405,7 +405,7 @@ func (s *ItemServer) ListItemRead(ctx context.Context, req *connect.Request[item
 		}
 		// Validate decoded page_token fields before using them.
 		if token.UpdatedAt == "" || token.ItemID == "" {
-			return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("invalid page_token: missing required fields"))
+			return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("invalid page_token: both updated_at and item_id must be provided for pagination"))
 		}
 		parsedUpdatedAt, err := time.Parse(time.RFC3339, token.UpdatedAt)
 		if err != nil {

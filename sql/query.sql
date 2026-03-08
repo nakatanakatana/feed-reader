@@ -205,7 +205,7 @@ WHERE
   (sqlc.narg('since') IS NULL OR i.created_at >= sqlc.narg('since')) AND
   (sqlc.narg('is_blocked') IS NULL OR (CASE WHEN ib.item_id IS NOT NULL THEN 1 ELSE 0 END = sqlc.narg('is_blocked'))) AND
   (
-    (sqlc.narg('created_at_cursor') IS NULL OR sqlc.narg('id_cursor') IS NULL) OR
+    (sqlc.narg('created_at_cursor') IS NULL AND sqlc.narg('id_cursor') IS NULL) OR
     (i.created_at, i.id) > (sqlc.narg('created_at_cursor'), sqlc.narg('id_cursor'))
   )
 GROUP BY
