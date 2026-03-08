@@ -42,15 +42,32 @@ export const parseConnectMessage = async (
  * Robust JSON serialization that handles BigInt and Date by converting them to strings.
  */
 export const safeJson = (data: unknown): HttpResponse<any> => {
-  const body = JSON.stringify(data, (_key, value) => {
+  const replacer = (_key: string, value: unknown): unknown => {
     if (typeof value === "bigint") return value.toString();
-    // Check if it looks like an Invalid Date
-    if (value instanceof Date && Number.isNaN(value.getTime())) {
-      console.warn("safeJson encountered an Invalid Date");
-      return null;
-    }
     return value;
-  });
+  };
+
+  // Pre-process Date objects because JSON.stringify calls .toJSON() before the replacer.
+  const processDates = (obj: unknown): unknown => {
+    if (obj instanceof Date) {
+      if (Number.isNaN(obj.getTime())) {
+        console.warn("safeJson encountered an Invalid Date");
+        return null;
+      }
+      return obj.toISOString();
+    }
+    if (Array.isArray(obj)) {
+      return obj.map(processDates);
+    }
+    if (obj !== null && typeof obj === "object") {
+      return Object.fromEntries(
+        Object.entries(obj).map(([k, v]) => [k, processDates(v)]),
+      );
+    }
+    return obj;
+  };
+
+  const body = JSON.stringify(processDates(data), replacer);
   return new HttpResponse(body, {
     headers: {
       "Content-Type": "application/json",

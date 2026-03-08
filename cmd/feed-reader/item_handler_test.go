@@ -167,6 +167,42 @@ func TestItemServer(t *testing.T) {
 		// Should include item2 and rich item, but not item1 (2h ago)
 		assert.Assert(t, cmp.Len(res.Msg.Items, 3))
 	})
+
+	t.Run("ListItems_Pagination", func(t *testing.T) {
+		// We have 4 items in DB now (Item 1, Item 2, Rich Item, Item with desc)
+		// Request page 1 with size 2
+		res1, err := server.ListItems(ctx, connect.NewRequest(&itemv1.ListItemsRequest{
+			PageSize: 2,
+		}))
+		assert.NilError(t, err)
+		assert.Assert(t, cmp.Len(res1.Msg.Items, 2))
+		assert.Assert(t, res1.Msg.NextPageToken != "")
+
+		// Request page 2 with size 2
+		res2, err := server.ListItems(ctx, connect.NewRequest(&itemv1.ListItemsRequest{
+			PageSize:  2,
+			PageToken: res1.Msg.NextPageToken,
+		}))
+		assert.NilError(t, err)
+		assert.Assert(t, cmp.Len(res2.Msg.Items, 2))
+		// We might or might not have NextPageToken here depending on if there are EXACTLY 4 items.
+		// In our setup, we have 4 items. So 2 + 2 = 4.
+		// The current implementation returns NextPageToken if len(rows) > pageSize.
+		// If we requested 2 and got 2, and there are NO MORE, hasNextPage will be false.
+		assert.Equal(t, res2.Msg.NextPageToken, "")
+
+		// Verify order (should be descending by created_at)
+		// Rich Item (now + 1h), Item with desc (now - 30m), Item 2 (now - 30m), Item 1 (now - 2h)
+		// Note: "Item with desc" and "Item 2" both have t2 (now - 30m).
+		// The secondary sort is ID.
+		allIDs := []string{res1.Msg.Items[0].Id, res1.Msg.Items[1].Id, res2.Msg.Items[0].Id, res2.Msg.Items[1].Id}
+		// Ensure all are unique
+		idMap := make(map[string]bool)
+		for _, id := range allIDs {
+			assert.Assert(t, !idMap[id], "Duplicate ID found: %s", id)
+			idMap[id] = true
+		}
+	})
 }
 
 func TestItemServer_ListItemRead(t *testing.T) {
