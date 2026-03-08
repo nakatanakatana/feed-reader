@@ -56,8 +56,6 @@ afterEach(async () => {
   resetState();
   await resetDatabase();
   queryClient.clear();
-  queryClient.getQueryCache().clear();
-  queryClient.getMutationCache().clear();
   vi.useRealTimers();
   vi.clearAllMocks();
   document.body.innerHTML = "";

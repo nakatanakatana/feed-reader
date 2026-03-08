@@ -394,7 +394,16 @@ export const handlers = [
       const offset = req.offset ?? 0;
       const limit = req.limit ?? 100;
 
-      const filteredItems = items; // Disable filtering by since for test stability
+      let filteredItems = items;
+
+      if (req.since) {
+        const sinceDate = new Date(
+          Number(req.since.seconds) * 1000 + req.since.nanos / 1000000,
+        );
+        filteredItems = items.filter(
+          (item) => new Date(item.createdAt) >= sinceDate,
+        );
+      }
 
       const totalCount = filteredItems.length;
       const resultItems = filteredItems
