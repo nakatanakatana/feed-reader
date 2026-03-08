@@ -46,8 +46,13 @@ func (s *TagServer) CreateTag(ctx context.Context, req *connect.Request[tagv1.Cr
 		UpdatedAt: dbTag.UpdatedAt,
 	}
 
+	protoTag, err := toProtoTagV1(tag)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
 	return connect.NewResponse(&tagv1.CreateTagResponse{
-		Tag: toProtoTagV1(tag),
+		Tag: protoTag,
 	}), nil
 }
 
@@ -64,7 +69,11 @@ func (s *TagServer) ListTags(ctx context.Context, req *connect.Request[tagv1.Lis
 
 	protoTags := make([]*tagv1.Tag, len(tags))
 	for i, t := range tags {
-		protoTags[i] = toProtoTagV1(t)
+		pt, err := toProtoTagV1(t)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("invalid tag %s: %w", t.ID, err))
+		}
+		protoTags[i] = pt
 	}
 
 	return connect.NewResponse(&tagv1.ListTagsResponse{
@@ -81,13 +90,21 @@ func (s *TagServer) DeleteTag(ctx context.Context, req *connect.Request[tagv1.De
 	return connect.NewResponse(&tagv1.DeleteTagResponse{}), nil
 }
 
-func toProtoTagV1(t store.TagWithCount) *tagv1.Tag {
+func toProtoTagV1(t store.TagWithCount) (*tagv1.Tag, error) {
+	createdAt, err := toTimestamp(t.CreatedAt)
+	if err != nil {
+		return nil, err
+	}
+	updatedAt, err := toTimestamp(t.UpdatedAt)
+	if err != nil {
+		return nil, err
+	}
 	return &tagv1.Tag{
 		Id:          t.ID,
 		Name:        t.Name,
-		CreatedAt:   toTimestamp(t.CreatedAt),
-		UpdatedAt:   toTimestamp(t.UpdatedAt),
+		CreatedAt:   createdAt,
+		UpdatedAt:   updatedAt,
 		UnreadCount: t.UnreadCount,
 		FeedCount:   t.FeedCount,
-	}
+	}, nil
 }

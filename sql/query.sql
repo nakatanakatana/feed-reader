@@ -624,3 +624,15 @@ WHERE
 GROUP BY
   day_of_week, hour_of_day;
 
+
+-- name: CountUnreadItemsByFeedID :one
+SELECT
+  COUNT(DISTINCT fi.item_id) AS count
+FROM
+  feed_items fi
+LEFT JOIN
+  item_reads ir ON fi.item_id = ir.item_id
+WHERE
+  fi.feed_id = ? AND
+  COALESCE(ir.is_read, 0) = 0 AND
+  NOT EXISTS (SELECT 1 FROM item_blocks ib WHERE ib.item_id = fi.item_id);

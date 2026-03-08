@@ -109,6 +109,26 @@ func (q *Queries) CountTotalUnreadItems(ctx context.Context) (int64, error) {
 	return count, err
 }
 
+const countUnreadItemsByFeedID = `-- name: CountUnreadItemsByFeedID :one
+SELECT
+  COUNT(DISTINCT fi.item_id) AS count
+FROM
+  feed_items fi
+LEFT JOIN
+  item_reads ir ON fi.item_id = ir.item_id
+WHERE
+  fi.feed_id = ? AND
+  COALESCE(ir.is_read, 0) = 0 AND
+  NOT EXISTS (SELECT 1 FROM item_blocks ib WHERE ib.item_id = fi.item_id)
+`
+
+func (q *Queries) CountUnreadItemsByFeedID(ctx context.Context, feedID string) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countUnreadItemsByFeedID, feedID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const countUnreadItemsPerFeed = `-- name: CountUnreadItemsPerFeed :many
 SELECT
   fi.feed_id,

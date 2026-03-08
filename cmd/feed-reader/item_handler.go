@@ -40,8 +40,13 @@ func (s *ItemServer) GetItem(ctx context.Context, req *connect.Request[itemv1.Ge
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
+	protoItem, err := toProtoItem(item)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
 	return connect.NewResponse(&itemv1.GetItemResponse{
-		Item: toProtoItem(item),
+		Item: protoItem,
 	}), nil
 }
 
@@ -51,11 +56,16 @@ type listItemsPageToken struct {
 }
 
 func (s *ItemServer) ListItems(ctx context.Context, req *connect.Request[itemv1.ListItemsRequest]) (*connect.Response[itemv1.ListItemsResponse], error) {
-	pageSize := int64(req.Msg.PageSize)
-	if pageSize <= 0 {
+	var pageSize int64
+	if req.Msg.PageSize <= 0 {
 		pageSize = 100
-	} else if pageSize > 1000 {
-		pageSize = 1000
+	} else if req.Msg.PageSize > 1000 {
+		return nil, connect.NewError(
+			connect.CodeInvalidArgument,
+			fmt.Errorf("page_size must be between 1 and 1000, got %d", req.Msg.PageSize),
+		)
+	} else {
+		pageSize = int64(req.Msg.PageSize)
 	}
 
 	var feedID any
@@ -89,7 +99,7 @@ func (s *ItemServer) ListItems(ctx context.Context, req *connect.Request[itemv1.
 	}
 
 	if req.Msg.PageToken != "" {
-		b, err := base64.StdEncoding.DecodeString(req.Msg.PageToken)
+		b, err := base64.RawURLEncoding.DecodeString(req.Msg.PageToken)
 		if err != nil {
 			return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("invalid page_token: %w", err))
 		}
@@ -100,7 +110,14 @@ func (s *ItemServer) ListItems(ctx context.Context, req *connect.Request[itemv1.
 		if token.CreatedAt == "" || token.ID == "" {
 			return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("invalid page_token: both created_at and id must be provided for pagination"))
 		}
-		params.CreatedAtCursor = token.CreatedAt
+
+		// Validate and normalize created_at from token
+		createdAt, err := time.Parse(time.RFC3339, token.CreatedAt)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("invalid page_token: created_at must be RFC3339: %w", err))
+		}
+
+		params.CreatedAtCursor = createdAt.UTC().Format(time.RFC3339)
 		params.IDCursor = token.ID
 	}
 
@@ -117,7 +134,11 @@ func (s *ItemServer) ListItems(ctx context.Context, req *connect.Request[itemv1.
 
 	protoItems := make([]*itemv1.Item, len(rows))
 	for i, row := range rows {
-		protoItems[i] = toProtoItem(GetItemRowFromListItemsRow(row))
+		pi, err := toProtoItem(GetItemRowFromListItemsRow(row))
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to convert item %s to proto: %w", row.ID, err))
+		}
+		protoItems[i] = pi
 	}
 
 	var nextPageToken string
@@ -131,7 +152,7 @@ func (s *ItemServer) ListItems(ctx context.Context, req *connect.Request[itemv1.
 		if err != nil {
 			slog.Error("failed to marshal listItemsPageToken", "error", err)
 		} else {
-			nextPageToken = base64.StdEncoding.EncodeToString(b)
+			nextPageToken = base64.RawURLEncoding.EncodeToString(b)
 		}
 	}
 
@@ -179,11 +200,19 @@ func (s *ItemServer) ListItemFeeds(ctx context.Context, req *connect.Request[ite
 
 	protoFeeds := make([]*itemv1.ItemFeed, len(rows))
 	for i, row := range rows {
+		pubAt, err := toOptionalTimestamp(row.PublishedAt)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("invalid published_at for item feed: %w", err))
+		}
+		createdAt, err := toTimestamp(row.CreatedAt)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("invalid created_at for item feed: %w", err))
+		}
 		protoFeeds[i] = &itemv1.ItemFeed{
 			FeedId:      row.FeedID,
 			FeedTitle:   row.FeedTitle,
-			PublishedAt: toOptionalTimestamp(row.PublishedAt),
-			CreatedAt:   toTimestamp(row.CreatedAt),
+			PublishedAt: pubAt,
+			CreatedAt:   createdAt,
 		}
 	}
 
@@ -378,11 +407,16 @@ type listItemReadPageToken struct {
 }
 
 func (s *ItemServer) ListItemRead(ctx context.Context, req *connect.Request[itemv1.ListItemReadRequest]) (*connect.Response[itemv1.ListItemReadResponse], error) {
-	limit := int64(req.Msg.PageSize)
-	if limit <= 0 {
+	var limit int64
+	if req.Msg.PageSize <= 0 {
 		limit = 100
-	} else if limit > 1000 {
-		limit = 1000
+	} else if req.Msg.PageSize > 1000 {
+		return nil, connect.NewError(
+			connect.CodeInvalidArgument,
+			fmt.Errorf("page_size must be between 1 and 1000, got %d", req.Msg.PageSize),
+		)
+	} else {
+		limit = int64(req.Msg.PageSize)
 	}
 
 	// Validate that both page_token and since are not provided at the same time.
@@ -395,7 +429,7 @@ func (s *ItemServer) ListItemRead(ctx context.Context, req *connect.Request[item
 	}
 
 	if req.Msg.PageToken != "" {
-		b, err := base64.StdEncoding.DecodeString(req.Msg.PageToken)
+		b, err := base64.RawURLEncoding.DecodeString(req.Msg.PageToken)
 		if err != nil {
 			return nil, connect.NewError(connect.CodeInvalidArgument, fmt.Errorf("invalid page_token: %w", err))
 		}
@@ -432,10 +466,14 @@ func (s *ItemServer) ListItemRead(ctx context.Context, req *connect.Request[item
 
 	itemReads := make([]*itemv1.ItemRead, len(rows))
 	for i, row := range rows {
+		updatedAt, err := toTimestamp(row.UpdatedAt)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("invalid updated_at for item read %s: %w", row.ItemID, err))
+		}
 		itemReads[i] = &itemv1.ItemRead{
 			ItemId:    row.ItemID,
 			IsRead:    row.IsRead == 1,
-			UpdatedAt: toTimestamp(row.UpdatedAt),
+			UpdatedAt: updatedAt,
 		}
 	}
 
@@ -450,7 +488,7 @@ func (s *ItemServer) ListItemRead(ctx context.Context, req *connect.Request[item
 		if err != nil {
 			slog.Error("failed to marshal listItemReadPageToken", "error", err)
 		} else {
-			nextPageToken = base64.StdEncoding.EncodeToString(b)
+			nextPageToken = base64.RawURLEncoding.EncodeToString(b)
 		}
 	}
 
@@ -478,7 +516,7 @@ func GetItemRowFromListItemsRow(row store.ListItemsRow) store.GetItemRow {
 	}
 }
 
-func toProtoItem(row store.GetItemRow) *itemv1.Item {
+func toProtoItem(row store.GetItemRow) (*itemv1.Item, error) {
 	var title string
 	if row.Title != nil {
 		title = *row.Title
@@ -504,18 +542,27 @@ func toProtoItem(row store.GetItemRow) *itemv1.Item {
 		cats = *row.Categories
 	}
 
+	publishedAt, err := toOptionalTimestamp(row.PublishedAt)
+	if err != nil {
+		return nil, fmt.Errorf("invalid published_at for item %s: %w", row.ID, err)
+	}
+	createdAt, err := toTimestamp(row.CreatedAt)
+	if err != nil {
+		return nil, fmt.Errorf("invalid created_at for item %s: %w", row.ID, err)
+	}
+
 	return &itemv1.Item{
 		Id:          row.ID,
 		Url:         row.Url,
 		Title:       title,
 		Description: desc,
-		PublishedAt: toOptionalTimestamp(row.PublishedAt),
+		PublishedAt: publishedAt,
 		Author:      author,
 		FeedId:      row.FeedID,
 		IsRead:      row.IsRead == 1,
 		Content:     content,
 		ImageUrl:    img,
 		Categories:  cats,
-		CreatedAt:   toTimestamp(row.CreatedAt),
-	}
+		CreatedAt:   createdAt,
+	}, nil
 }

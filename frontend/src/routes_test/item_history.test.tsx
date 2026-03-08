@@ -13,6 +13,7 @@ import { page, userEvent } from "vitest/browser";
 import {
   GetItemResponseSchema,
   ItemSchema,
+  ItemService,
   ListItemsResponseSchema,
 } from "../gen/item/v1/item_pb";
 import { dateToTimestamp } from "../lib/item-utils";
@@ -20,6 +21,7 @@ import { queryClient, transport } from "../lib/query";
 import { ToastProvider } from "../lib/toast";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
+import { parseConnectMessage } from "../mocks/connect";
 import { routeTree } from "../routeTree.gen";
 
 describe("Item History Navigation", () => {
@@ -67,10 +69,8 @@ describe("Item History Navigation", () => {
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),
-      http.all("*/item.v1.ItemService/GetItem", ({ request }) => {
-        const url = new URL(request.url);
-        const messageParam = url.searchParams.get("message") || "{}";
-        const { id } = JSON.parse(decodeURIComponent(messageParam));
+      http.all("*/item.v1.ItemService/GetItem", async ({ request }) => {
+        const { id } = (await parseConnectMessage(request)) as { id: string };
         const item = items.find((i) => i.id === id);
         const msg = create(GetItemResponseSchema, {
           item: item ? create(ItemSchema, item) : undefined,
@@ -109,10 +109,8 @@ describe("Item History Navigation", () => {
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),
-      http.all("*/item.v1.ItemService/GetItem", ({ request }) => {
-        const url = new URL(request.url);
-        const messageParam = url.searchParams.get("message") || "{}";
-        const { id } = JSON.parse(decodeURIComponent(messageParam));
+      http.all("*/item.v1.ItemService/GetItem", async ({ request }) => {
+        const { id } = (await parseConnectMessage(request)) as { id: string };
         const item = items.find((i) => i.id === id);
         const msg = create(GetItemResponseSchema, {
           item: item ? create(ItemSchema, item) : undefined,
@@ -155,10 +153,8 @@ describe("Item History Navigation", () => {
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),
-      http.all("*/item.v1.ItemService/GetItem", ({ request }) => {
-        const url = new URL(request.url);
-        const messageParam = url.searchParams.get("message") || "{}";
-        const { id } = JSON.parse(decodeURIComponent(messageParam));
+      http.all("*/item.v1.ItemService/GetItem", async ({ request }) => {
+        const { id } = (await parseConnectMessage(request)) as { id: string };
         const item = items.find((i) => i.id === id);
         const msg = create(GetItemResponseSchema, {
           item: item ? create(ItemSchema, item) : undefined,
