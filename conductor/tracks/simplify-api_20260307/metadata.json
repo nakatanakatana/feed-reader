@@ -1,8 +1,0 @@
-{
-  "track_id": "simplify-api_20260307",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-03-07T00:00:00Z",
-  "updated_at": "2026-03-07T00:00:00Z",
-  "description": "Simplify API by removing unused parameters, standardizing fields, and unifying message structures."
-}
