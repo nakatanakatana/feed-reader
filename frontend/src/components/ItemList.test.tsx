@@ -53,6 +53,7 @@ describe("ItemList", () => {
     worker.use(
       http.all("*/item.v1.ItemService/ListItems", () => {
         const msg = create(ListItemsResponseSchema, {
+          // biome-ignore lint/suspicious/noExplicitAny: mocking message shapes is more efficient with any here
           items: items.map((i) => create(ItemSchema, i as any)),
           nextPageToken: "",
         });

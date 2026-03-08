@@ -42,6 +42,7 @@ describe("ItemList Clear Read Items", () => {
       http.all("*/item.v1.ItemService/ListItems", () => {
         listItemsCount++;
         const msg = create(ListItemsResponseSchema, {
+          // biome-ignore lint/suspicious/noExplicitAny: create() requires a complex message shape that's easier to mock with any
           items: items.map((i) => create(ItemSchema, i as any)),
           nextPageToken: "",
         });

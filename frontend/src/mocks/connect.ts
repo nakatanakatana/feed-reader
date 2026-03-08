@@ -41,6 +41,7 @@ export const parseConnectMessage = async (
 /**
  * Robust JSON serialization that handles BigInt and Date by converting them to strings.
  */
+// biome-ignore lint/suspicious/noExplicitAny: MSW HttpResponse requires a type argument
 export const safeJson = (data: unknown): HttpResponse<any> => {
   const replacer = (_key: string, value: unknown): unknown => {
     if (typeof value === "bigint") return value.toString();

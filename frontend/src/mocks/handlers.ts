@@ -61,6 +61,7 @@ const timestampToDate = (ts: unknown): Date | undefined => {
     const d = new Date(Number(t.seconds) * 1000 + Number(t.nanos) / 1000000);
     return Number.isNaN(d.getTime()) ? undefined : d;
   }
+  // biome-ignore lint/suspicious/noExplicitAny: catch-all for potential date-like inputs
   const d = new Date(ts as any);
   return Number.isNaN(d.getTime()) ? undefined : d;
 };
@@ -361,7 +362,9 @@ export const handlers = [
     method: "listItems",
     handler: (req) => {
       // Basic mock pagination: pageToken is the index
-      const parsedToken = req.pageToken ? Number.parseInt(req.pageToken, 10) : 0;
+      const parsedToken = req.pageToken
+        ? Number.parseInt(req.pageToken, 10)
+        : 0;
       const start = Number.isNaN(parsedToken) ? 0 : parsedToken;
       const pageSize = req.pageSize || 100;
 

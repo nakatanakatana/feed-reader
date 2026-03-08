@@ -13,7 +13,6 @@ import { page, userEvent } from "vitest/browser";
 import {
   GetItemResponseSchema,
   ItemSchema,
-  ItemService,
   ListItemsResponseSchema,
 } from "../gen/item/v1/item_pb";
 import { dateToTimestamp } from "../lib/item-utils";
