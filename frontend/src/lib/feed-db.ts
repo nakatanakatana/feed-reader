@@ -116,25 +116,31 @@ export const feeds = createRoot(() =>
       },
       getKey: (feed: Feed) => feed.id,
       onInsert: async ({ transaction }) => {
-        for (const m of transaction.mutations) {
-          if (m.type === "insert") {
-            const tagIds = m.modified.tags?.map((t) => t.id) || [];
-            await feedClient.createFeed({ url: m.modified.url, tagIds });
+        try {
+          for (const m of transaction.mutations) {
+            if (m.type === "insert") {
+              const tagIds = m.modified.tags?.map((t: Tag) => t.id) || [];
+              await feedClient.createFeed({ url: m.modified.url, tagIds });
+            }
           }
+        } finally {
+          await queryClient.invalidateQueries({ queryKey: ["feeds"] });
+          await queryClient.invalidateQueries({ queryKey: ["tags"] });
+          await queryClient.invalidateQueries({ queryKey: ["feed-tags"] });
         }
-        await queryClient.invalidateQueries({ queryKey: ["feeds"] });
-        await queryClient.invalidateQueries({ queryKey: ["tags"] });
-        await queryClient.invalidateQueries({ queryKey: ["feed-tags"] });
       },
       onDelete: async ({ transaction }) => {
-        for (const mutation of transaction.mutations) {
-          if (mutation.type === "delete") {
-            await feedClient.deleteFeed({ id: mutation.key as string });
+        try {
+          for (const mutation of transaction.mutations) {
+            if (mutation.type === "delete") {
+              await feedClient.deleteFeed({ id: mutation.key as string });
+            }
           }
+        } finally {
+          await queryClient.invalidateQueries({ queryKey: ["feeds"] });
+          await queryClient.invalidateQueries({ queryKey: ["tags"] });
+          await queryClient.invalidateQueries({ queryKey: ["feed-tags"] });
         }
-        await queryClient.invalidateQueries({ queryKey: ["feeds"] });
-        await queryClient.invalidateQueries({ queryKey: ["tags"] });
-        await queryClient.invalidateQueries({ queryKey: ["feed-tags"] });
       },
     }),
   ),

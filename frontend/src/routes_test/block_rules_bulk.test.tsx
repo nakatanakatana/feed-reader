@@ -5,10 +5,10 @@ import {
   createRouter,
   RouterProvider,
 } from "@tanstack/solid-router";
-import { page } from "@vitest/browser/context";
 import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { page } from "vitest/browser";
 import { AddItemBlockRulesResponseSchema } from "../gen/item/v1/item_pb";
 import { queryClient, transport } from "../lib/query";
 import { ToastProvider } from "../lib/toast";

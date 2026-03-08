@@ -41,27 +41,33 @@ export const urlParsingRulesOptions = queryCollectionOptions({
   },
   getKey: (rule: URLParsingRule) => rule.id,
   onInsert: async ({ transaction }) => {
-    for (const mutation of transaction.mutations) {
-      if (mutation.type === "insert") {
-        await itemClient.addURLParsingRule({
-          domain: mutation.modified.domain,
-          ruleType: mutation.modified.ruleType,
-          pattern: mutation.modified.pattern,
-        });
+    try {
+      for (const mutation of transaction.mutations) {
+        if (mutation.type === "insert") {
+          await itemClient.addURLParsingRule({
+            domain: mutation.modified.domain,
+            ruleType: mutation.modified.ruleType,
+            pattern: mutation.modified.pattern,
+          });
+        }
       }
+    } finally {
+      // Invalidate to get the real IDs from the server
+      await queryClient.invalidateQueries({ queryKey: ["url-rules"] });
     }
-    // Invalidate to get the real IDs from the server
-    await queryClient.invalidateQueries({ queryKey: ["url-rules"] });
   },
   onDelete: async ({ transaction }) => {
-    for (const mutation of transaction.mutations) {
-      if (mutation.type === "delete") {
-        await itemClient.deleteURLParsingRule({
-          id: mutation.key as string,
-        });
+    try {
+      for (const mutation of transaction.mutations) {
+        if (mutation.type === "delete") {
+          await itemClient.deleteURLParsingRule({
+            id: mutation.key as string,
+          });
+        }
       }
+    } finally {
+      await queryClient.invalidateQueries({ queryKey: ["url-rules"] });
     }
-    await queryClient.invalidateQueries({ queryKey: ["url-rules"] });
   },
 });
 
@@ -85,28 +91,34 @@ export const itemBlockRulesOptions = queryCollectionOptions({
   },
   getKey: (rule: ItemBlockRule) => rule.id,
   onInsert: async ({ transaction }) => {
-    const rulesToInsert = transaction.mutations
-      .filter((m) => m.type === "insert")
-      .map((m) => ({
-        ruleType: m.modified.ruleType,
-        value: m.modified.value,
-        domain: m.modified.domain,
-      }));
+    try {
+      const rulesToInsert = transaction.mutations
+        .filter((m) => m.type === "insert")
+        .map((m) => ({
+          ruleType: m.modified.ruleType,
+          value: m.modified.value,
+          domain: m.modified.domain,
+        }));
 
-    if (rulesToInsert.length > 0) {
-      await itemClient.addItemBlockRules({ rules: rulesToInsert });
+      if (rulesToInsert.length > 0) {
+        await itemClient.addItemBlockRules({ rules: rulesToInsert });
+      }
+    } finally {
+      await queryClient.invalidateQueries({ queryKey: ["block-rules"] });
     }
-    await queryClient.invalidateQueries({ queryKey: ["block-rules"] });
   },
   onDelete: async ({ transaction }) => {
-    for (const mutation of transaction.mutations) {
-      if (mutation.type === "delete") {
-        await itemClient.deleteItemBlockRule({
-          id: mutation.key as string,
-        });
+    try {
+      for (const mutation of transaction.mutations) {
+        if (mutation.type === "delete") {
+          await itemClient.deleteItemBlockRule({
+            id: mutation.key as string,
+          });
+        }
       }
+    } finally {
+      await queryClient.invalidateQueries({ queryKey: ["block-rules"] });
     }
-    await queryClient.invalidateQueries({ queryKey: ["block-rules"] });
   },
 });
 

@@ -1,10 +1,8 @@
-import { createClient } from "@connectrpc/connect";
 import { useLiveQuery } from "@tanstack/solid-db";
 import { createSignal, For, type JSX, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
-import { FeedService } from "../gen/feed/v1/feed_pb";
-import { queryClient, transport } from "../lib/query";
+import { feeds } from "../lib/db";
 import { tagsFeedQuery } from "../lib/tag-db";
 import { ActionButton } from "./ui/ActionButton";
 import { HorizontalScrollList } from "./ui/HorizontalScrollList";
@@ -13,8 +11,6 @@ import { TagChip } from "./ui/TagChip";
 interface AddFeedFormProps {
   headerActions?: JSX.Element;
 }
-
-const feedClient = createClient(FeedService, transport);
 
 export function AddFeedForm(props: AddFeedFormProps) {
   const [url, setUrl] = createSignal("");
@@ -30,20 +26,28 @@ export function AddFeedForm(props: AddFeedFormProps) {
 
   const handleSubmit = async (e: Event) => {
     e.preventDefault();
+    if (!url()) return;
+
     setIsPending(true);
     setError(null);
 
     try {
-      const tags = tagsQuery().filter((t) => selectedTagIds().includes(t.id));
-      await feedClient.createFeed({
+      const tags = tagsQuery()
+        .filter((t) => selectedTagIds().includes(t.id))
+        .map((t) => ({ id: t.id, name: t.name }));
+
+      // Use the collection's insert method to trigger the optimistic UI flow
+      // and centralized onInsert/onDelete invalidations defined in feed-db.ts.
+      // biome-ignore lint/suspicious/noExplicitAny: generic insert
+      const tx = feeds.insert({
+        id: `temp-${Date.now()}`,
         url: url(),
-        tagIds: tags.map((t) => t.id),
-      });
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ["feeds"] }),
-        queryClient.invalidateQueries({ queryKey: ["tags"] }),
-        queryClient.invalidateQueries({ queryKey: ["feed-tags"] }),
-      ]);
+        title: "Adding...",
+        tags,
+      } as any);
+
+      // Await the persistence to catch any errors from the onInsert handler
+      await tx.isPersisted.promise;
 
       setUrl("");
       setSelectedTagIds([]);
