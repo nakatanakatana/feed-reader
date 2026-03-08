@@ -31,7 +31,6 @@ describe("ItemList Date Filter", () => {
       http.all("*/item.v1.ItemService/ListItems", () => {
         const msg = create(ListItemsResponseSchema, {
           items: [],
-          totalCount: 0,
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),

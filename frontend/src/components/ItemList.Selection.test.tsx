@@ -10,11 +10,9 @@ import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
-import {
-  ListItemSchema,
-  ListItemsResponseSchema,
-} from "../gen/item/v1/item_pb";
+import { ItemSchema, ListItemsResponseSchema } from "../gen/item/v1/item_pb";
 import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
+import { dateToTimestamp } from "../lib/item-utils";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
@@ -33,8 +31,7 @@ describe("ItemList Selection", () => {
     worker.use(
       http.all("*/item.v1.ItemService/ListItems", () => {
         const msg = create(ListItemsResponseSchema, {
-          items: items.map((i) => create(ListItemSchema, i)),
-          totalCount: items.length,
+          items: items.map((i) => create(ItemSchema, i)),
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),
@@ -62,16 +59,16 @@ describe("ItemList Selection", () => {
       {
         id: "1",
         title: "Item 1",
-        publishedAt: "2026-01-26",
-        createdAt: "2026-01-26",
+        publishedAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
+        createdAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
         isRead: false,
         feedId: "feed1",
       },
       {
         id: "2",
         title: "Item 2",
-        publishedAt: "2026-01-26",
-        createdAt: "2026-01-26",
+        publishedAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
+        createdAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
         isRead: false,
         feedId: "feed1",
       },
@@ -125,16 +122,16 @@ describe("ItemList Selection", () => {
       {
         id: "1",
         title: "Item 1",
-        publishedAt: "2026-01-26",
-        createdAt: "2026-01-26",
+        publishedAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
+        createdAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
         isRead: false,
         feedId: "feed1",
       },
       {
         id: "2",
         title: "Item 2",
-        publishedAt: "2026-01-26",
-        createdAt: "2026-01-26",
+        publishedAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
+        createdAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
         isRead: false,
         feedId: "feed1",
       },

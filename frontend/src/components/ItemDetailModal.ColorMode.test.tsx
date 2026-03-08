@@ -5,6 +5,7 @@ import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { GetItemResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
+import { dateToTimestamp } from "../lib/item-utils";
 import { queryClient, transport } from "../lib/query";
 import { ToastProvider } from "../lib/toast";
 import { TransportProvider } from "../lib/transport-context";
@@ -28,8 +29,8 @@ describe("ItemDetailModal Color Mode Support", () => {
             id: "test-id",
             title: "Test Item",
             description: content,
-            publishedAt: "2026-01-24T10:00:00Z",
-            createdAt: "2026-01-24T09:00:00Z",
+            publishedAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
+            createdAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
             author: "Test Author",
             url: "http://example.com",
             isRead: false,

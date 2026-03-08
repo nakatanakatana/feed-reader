@@ -7,10 +7,8 @@ import {
   eq,
 } from "@tanstack/solid-db";
 import { createMemo, createRoot } from "solid-js";
-import {
-  ItemService,
-  type ListItem as ProtoListItem,
-} from "../gen/item/v1/item_pb";
+import { ItemService } from "../gen/item/v1/item_pb";
+import { toDate } from "./date-utils";
 import { itemReadCollection } from "./item-read-db";
 import { itemStore } from "./item-store";
 import {
@@ -31,9 +29,9 @@ export interface ListItem {
   id: string;
   title: string;
   description?: string;
-  publishedAt: string;
+  publishedAt?: Date;
   isRead: boolean;
-  createdAt: string;
+  createdAt?: Date;
   feedId: string;
   url?: string;
 }
@@ -49,7 +47,7 @@ const itemClient = createClient(ItemService, transport);
 
 const createItems = (showRead: boolean, since: DateFilterValue) => {
   setLastFetched(null);
-  const isRead = showRead ? {} : { isRead: false };
+  const isReadParam = showRead ? {} : { isRead: false };
   const sinceTimestamp = since !== "all" ? getPublishedSince(since) : undefined;
   const queryKey = ["items", { since, showRead }] as const;
 
@@ -62,34 +60,56 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
       refetchInterval: 1 * 60 * 1000,
       queryKey,
       queryFn: async ({ queryKey }) => {
-        const existingData =
-          (queryClient.getQueryData(queryKey) as ListItem[]) || [];
         const lastFetchedValue = lastFetched();
+        const existingData =
+          lastFetchedValue === null
+            ? []
+            : (queryClient.getQueryData(queryKey) as ListItem[]) || [];
         const searchSince =
           lastFetchedValue === null
             ? sinceTimestamp
             : dateToTimestamp(lastFetchedValue);
-        const response = await itemClient.listItems({
-          since: searchSince,
-          limit: 10000,
-          offset: 0,
-          ...isRead,
-        });
+
+        let pageToken = "";
+        const allNewItems: ListItem[] = [];
+
+        do {
+          const response = await itemClient.listItems({
+            since: searchSince,
+            pageSize: 1000,
+            pageToken: pageToken,
+            ...isReadParam,
+          });
+
+          if (response.items && response.items.length > 0) {
+            allNewItems.push(
+              ...response.items.map((item) => ({
+                id: item.id,
+                title: item.title,
+                description: item.description,
+                publishedAt: toDate(item.publishedAt),
+                isRead: item.isRead,
+                createdAt: toDate(item.createdAt),
+                feedId: item.feedId,
+                url: item.url,
+              })),
+            );
+          }
+
+          pageToken = response.nextPageToken;
+        } while (pageToken);
+
         const syncTime = new Date();
         setLastItemsSyncedAt(syncTime);
 
-        if (response.items && response.items.length > 0) {
-          const validDates = response.items
-            .map((item: ProtoListItem) =>
-              new Date(item.createdAt || "").getTime(),
-            )
-            .filter((t: number) => !Number.isNaN(t));
+        if (allNewItems.length > 0) {
+          const validDates = allNewItems
+            .map((item) => item.createdAt?.getTime())
+            .filter((t): t is number => t !== undefined && !Number.isNaN(t));
 
           const maxTime = validDates.length > 0 ? Math.max(...validDates) : 0;
 
           // Initialize the read-state anchor if it hasn't been set yet.
-          // This baseline prevents fetching all historical read states, while
-          // using a small overlap window to avoid skipping concurrent updates.
           if (!lastReadFetched() && maxTime > 0) {
             const overlapMs = 5 * 1000; // 5 seconds overlap
             const initialReadAnchor = new Date(maxTime - overlapMs);
@@ -113,22 +133,11 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
           setLastFetched(lastFetchedValue);
         }
 
-        const respList = response.items.map((item: ProtoListItem) => ({
-          id: item.id,
-          title: item.title,
-          description: item.description,
-          publishedAt: item.publishedAt,
-          isRead: item.isRead,
-          createdAt: item.createdAt,
-          feedId: item.feedId,
-          url: item.url,
-        }));
-
         const itemMap = new Map<string, ListItem>();
         for (const item of existingData) {
           itemMap.set(item.id, item);
         }
-        for (const item of respList) {
+        for (const item of allNewItems) {
           itemMap.set(item.id, item);
         }
 
@@ -212,9 +221,9 @@ export const getItem = async (id: string): Promise<Item | null> => {
     id: response.item.id,
     title: response.item.title,
     description: response.item.description,
-    publishedAt: response.item.publishedAt,
+    publishedAt: toDate(response.item.publishedAt),
     isRead: response.item.isRead,
-    createdAt: response.item.createdAt,
+    createdAt: toDate(response.item.createdAt),
     feedId: response.item.feedId,
     url: response.item.url,
     author: response.item.author,

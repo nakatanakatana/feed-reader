@@ -41,7 +41,7 @@ describe("ItemList Reactivity", () => {
         return HttpResponse.json(
           toJson(
             ListItemsResponseSchema,
-            create(ListItemsResponseSchema, { items: [], totalCount: 0 }),
+            create(ListItemsResponseSchema, { items: [], nextPageToken: "" }),
           ),
         );
       }),

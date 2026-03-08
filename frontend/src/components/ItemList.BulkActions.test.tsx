@@ -11,11 +11,12 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
 import {
-  ListItemSchema,
+  ItemSchema,
   ListItemsResponseSchema,
   UpdateItemStatusResponseSchema,
 } from "../gen/item/v1/item_pb";
 import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
+import { dateToTimestamp } from "../lib/item-utils";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
@@ -35,8 +36,7 @@ describe("ItemList Bulk Actions", () => {
       http.all("*/item.v1.ItemService/ListItems", () => {
         const msg = create(ListItemsResponseSchema, {
           // biome-ignore lint/suspicious/noExplicitAny: mock data
-          items: items.map((i) => create(ListItemSchema, i as any)),
-          totalCount: items.length,
+          items: items.map((i) => create(ItemSchema, i as any)),
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),
@@ -64,16 +64,16 @@ describe("ItemList Bulk Actions", () => {
       {
         id: "1",
         title: "Item 1",
-        publishedAt: "2026-01-26",
-        createdAt: "2026-01-26",
+        publishedAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
+        createdAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
         isRead: false,
         feedId: "feed1",
       },
       {
         id: "2",
         title: "Item 2",
-        publishedAt: "2026-01-26",
-        createdAt: "2026-01-26",
+        publishedAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
+        createdAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
         isRead: false,
         feedId: "feed1",
       },
@@ -140,8 +140,8 @@ describe("ItemList Bulk Actions", () => {
     const items = Array.from({ length: itemCount }).map((_, i) => ({
       id: `${i}`,
       title: `Item ${i}`,
-      publishedAt: "2026-01-26",
-      createdAt: "2026-01-26",
+      publishedAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
+      createdAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
       isRead: false,
       feedId: "feed1",
     }));

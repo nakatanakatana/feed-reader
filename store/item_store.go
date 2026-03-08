@@ -6,24 +6,29 @@ import (
 )
 
 type StoreListItemsParams struct {
-	FeedID    interface{}
-	IsRead    interface{}
-	TagID     interface{}
-	Since     interface{}
-	Offset    int64
-	Limit     int64
-	IsBlocked interface{}
+	FeedID          interface{}
+	IsRead          interface{}
+	TagID           interface{}
+	Since           interface{}
+	CreatedAtCursor interface{}
+	IDCursor        interface{}
+	Limit           int64
+	IsBlocked       interface{}
 }
 
 func (s *Store) ListItems(ctx context.Context, params StoreListItemsParams) ([]ListItemsRow, error) {
+	if (params.CreatedAtCursor != nil && params.IDCursor == nil) || (params.CreatedAtCursor == nil && params.IDCursor != nil) {
+		return nil, errors.New("both created_at_cursor and id_cursor must be provided together for pagination")
+	}
 	arg := ListItemsParams{
-		FeedID:    params.FeedID,
-		IsRead:    params.IsRead,
-		TagID:     params.TagID,
-		Since:     params.Since,
-		Offset:    params.Offset,
-		Limit:     params.Limit,
-		IsBlocked: params.IsBlocked,
+		FeedID:          params.FeedID,
+		IsRead:          params.IsRead,
+		TagID:           params.TagID,
+		Since:           params.Since,
+		CreatedAtCursor: params.CreatedAtCursor,
+		IDCursor:        params.IDCursor,
+		Limit:           params.Limit,
+		IsBlocked:       params.IsBlocked,
 	}
 	return s.Queries.ListItems(ctx, arg)
 }

@@ -11,31 +11,18 @@ import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import {
-  ListFeedSchema,
+  FeedSchema,
   ListFeedsResponseSchema,
   ListFeedTagsResponseSchema,
 } from "../gen/feed/v1/feed_pb";
 import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
+import { dateToTimestamp } from "../lib/item-utils";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
 import { routeTree } from "../routeTree.gen";
 
 // Mock Link from solid-router
-vi.mock("@tanstack/solid-router", async (importOriginal) => {
-  const actual =
-    await importOriginal<typeof import("@tanstack/solid-router")>();
-  return {
-    ...actual,
-    Link: (
-      props: { to: string; children: JSX.Element } & JSX.IntrinsicElements["a"],
-    ) => (
-      <a href={props.to} {...props}>
-        {props.children}
-      </a>
-    ),
-  };
-});
 
 describe("FeedList Sorting", () => {
   let dispose: () => void;
@@ -59,19 +46,19 @@ describe("FeedList Sorting", () => {
       http.all("*/feed.v1.FeedService/ListFeeds", () => {
         const msg = create(ListFeedsResponseSchema, {
           feeds: [
-            create(ListFeedSchema, {
+            create(FeedSchema, {
               id: "1",
               title: "B Feed",
               url: "url1",
               tags: [],
             }),
-            create(ListFeedSchema, {
+            create(FeedSchema, {
               id: "2",
               title: "A Feed",
               url: "url2",
               tags: [],
             }),
-            create(ListFeedSchema, {
+            create(FeedSchema, {
               id: "3",
               title: "C Feed",
               url: "url3",
@@ -163,34 +150,34 @@ describe("FeedList Sorting", () => {
       http.all("*/feed.v1.FeedService/ListFeeds", () => {
         const msg = create(ListFeedsResponseSchema, {
           feeds: [
-            create(ListFeedSchema, {
+            create(FeedSchema, {
               id: "1",
               title: "Middle",
               url: "url1",
-              lastFetchedAt: "2023-10-01T00:00:00Z",
+              lastFetchedAt: dateToTimestamp(new Date("2023-10-01T00:00:00Z")),
               tags: [],
             }),
-            create(ListFeedSchema, {
+            create(FeedSchema, {
               id: "2",
               title: "Oldest",
               url: "url2",
-              lastFetchedAt: "2023-01-01T00:00:00Z",
+              lastFetchedAt: dateToTimestamp(new Date("2023-01-01T00:00:00Z")),
               tags: [],
             }),
-            create(ListFeedSchema, {
+            create(FeedSchema, {
               id: "3",
               title: "Newest",
               url: "url3",
-              lastFetchedAt: "2023-12-31T00:00:00Z",
+              lastFetchedAt: dateToTimestamp(new Date("2023-12-31T00:00:00Z")),
               tags: [],
             }),
-            create(ListFeedSchema, {
+            create(FeedSchema, {
               id: "4",
               title: "A Unfetched",
               url: "url4",
               tags: [],
             }),
-            create(ListFeedSchema, {
+            create(FeedSchema, {
               id: "5",
               title: "Z Unfetched",
               url: "url5",

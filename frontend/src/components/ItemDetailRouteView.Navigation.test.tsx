@@ -13,7 +13,6 @@ import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
 import {
   GetItemResponseSchema,
   ItemSchema,
-  ListItemSchema,
   ListItemsResponseSchema,
   UpdateItemStatusResponseSchema,
 } from "../gen/item/v1/item_pb";
@@ -38,15 +37,14 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
 
   const setupMockData = (
     mockItems = [
-      create(ListItemSchema, { id: "1", title: "Item 1", isRead: false }),
-      create(ListItemSchema, { id: "2", title: "Item 2", isRead: false }),
+      create(ItemSchema, { id: "1", title: "Item 1", isRead: false }),
+      create(ItemSchema, { id: "2", title: "Item 2", isRead: false }),
     ],
   ) => {
     worker.use(
       http.all("*/item.v1.ItemService/ListItems", () => {
         const msg = create(ListItemsResponseSchema, {
           items: mockItems,
-          totalCount: mockItems.length,
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),
@@ -317,13 +315,13 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
     // Item 1 is unread, Item 2 is read.
     // If showRead is false, only Item 1 is visible.
     const mockItems = [
-      create(ListItemSchema, {
+      create(ItemSchema, {
         id: "1",
         title: "Item 1",
         isRead: false,
         feedId: "f1",
       }),
-      create(ListItemSchema, {
+      create(ItemSchema, {
         id: "2",
         title: "Item 2",
         isRead: true,

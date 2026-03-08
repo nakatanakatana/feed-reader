@@ -10,10 +10,7 @@ import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import {
-  ListFeedSchema,
-  ListFeedsResponseSchema,
-} from "../gen/feed/v1/feed_pb";
+import { FeedSchema, ListFeedsResponseSchema } from "../gen/feed/v1/feed_pb";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
@@ -41,19 +38,19 @@ describe("FeedList Unread Counts", () => {
       http.all("*/feed.v1.FeedService/ListFeeds", () => {
         const msg = create(ListFeedsResponseSchema, {
           feeds: [
-            create(ListFeedSchema, {
+            create(FeedSchema, {
               id: "1",
               title: "Feed 1",
               url: "http://example.com/1",
               unreadCount: 5n,
             }),
-            create(ListFeedSchema, {
+            create(FeedSchema, {
               id: "2",
               title: "Feed 2",
               url: "http://example.com/2",
               unreadCount: 0n,
             }),
-            create(ListFeedSchema, {
+            create(FeedSchema, {
               id: "3",
               title: "Feed 3",
               url: "http://example.com/3",

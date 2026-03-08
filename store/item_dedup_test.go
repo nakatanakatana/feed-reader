@@ -52,7 +52,6 @@ func TestStore_ItemDeduplication(t *testing.T) {
 	t.Run("ListItems should not have duplicates", func(t *testing.T) {
 		items, err := s.ListItems(ctx, store.StoreListItemsParams{
 			Limit:     10,
-			Offset:    0,
 			IsBlocked: false,
 		})
 		assert.NilError(t, err)
@@ -117,7 +116,6 @@ func TestStore_ItemDeduplication_PBT(t *testing.T) {
 
 		items, err := s.ListItems(ctx, store.StoreListItemsParams{
 			Limit:     1000,
-			Offset:    0,
 			IsBlocked: false,
 		})
 		assert.NilError(t, err)

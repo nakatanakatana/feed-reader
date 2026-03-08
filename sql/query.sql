@@ -71,14 +71,14 @@ RETURNING *;
 UPDATE
   feeds
 SET
-  link = ?,
-  title = ?,
-  description = ?,
-  lang = ?,
-  image_url = ?,
-  copyright = ?,
-  feed_type = ?,
-  feed_version = ?,
+  link = COALESCE(?, link),
+  title = COALESCE(?, title),
+  description = COALESCE(?, description),
+  lang = COALESCE(?, lang),
+  image_url = COALESCE(?, image_url),
+  copyright = COALESCE(?, copyright),
+  feed_type = COALESCE(?, feed_type),
+  feed_version = COALESCE(?, feed_version),
   updated_at = (strftime('%FT%TZ', 'now'))
 WHERE
   id = ?
@@ -203,12 +203,17 @@ WHERE
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = sqlc.narg('tag_id')
   )) AND
   (sqlc.narg('since') IS NULL OR i.created_at >= sqlc.narg('since')) AND
-  (sqlc.narg('is_blocked') IS NULL OR (CASE WHEN ib.item_id IS NOT NULL THEN 1 ELSE 0 END = sqlc.narg('is_blocked')))
+  (sqlc.narg('is_blocked') IS NULL OR (CASE WHEN ib.item_id IS NOT NULL THEN 1 ELSE 0 END = sqlc.narg('is_blocked'))) AND
+  (
+    (sqlc.narg('created_at_cursor') IS NULL AND sqlc.narg('id_cursor') IS NULL) OR
+    (i.created_at, i.id) > (sqlc.narg('created_at_cursor'), sqlc.narg('id_cursor'))
+  )
 GROUP BY
   i.id
 ORDER BY
-  i.created_at ASC
-LIMIT sqlc.arg('limit') OFFSET sqlc.arg('offset');
+  i.created_at ASC,
+  i.id ASC
+LIMIT sqlc.arg('limit');
 
 -- name: ListRecentItemPublishedDates :many
 SELECT
@@ -417,7 +422,7 @@ ORDER BY
 -- name: ListTagsByFeedIDs :many
 SELECT
   ft.feed_id,
-  t.name
+  t.*
 FROM
   tags t
 JOIN
@@ -619,3 +624,15 @@ WHERE
 GROUP BY
   day_of_week, hour_of_day;
 
+
+-- name: CountUnreadItemsByFeedID :one
+SELECT
+  COUNT(DISTINCT fi.item_id) AS count
+FROM
+  feed_items fi
+LEFT JOIN
+  item_reads ir ON fi.item_id = ir.item_id
+WHERE
+  fi.feed_id = ? AND
+  COALESCE(ir.is_read, 0) = 0 AND
+  NOT EXISTS (SELECT 1 FROM item_blocks ib WHERE ib.item_id = fi.item_id);

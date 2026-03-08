@@ -24,8 +24,8 @@ describe("ItemRow Overflow", () => {
       title: "Test Article",
       url: longUrl,
       // Use explicit dates that will be formatted
-      publishedAt: "2026-01-21T10:00:00Z",
-      createdAt: "2026-01-20T10:00:00Z",
+      publishedAt: new Date("2026-03-01T00:00:00Z"),
+      createdAt: new Date("2026-03-01T00:00:00Z"),
       description: "Desc",
       isRead: false,
       feedId: "feed-1",

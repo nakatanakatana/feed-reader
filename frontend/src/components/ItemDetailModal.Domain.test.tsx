@@ -6,6 +6,7 @@ import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { GetItemResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
+import { dateToTimestamp } from "../lib/item-utils";
 import { queryClient, transport } from "../lib/query";
 import { ToastProvider } from "../lib/toast";
 import { TransportProvider } from "../lib/transport-context";
@@ -48,7 +49,7 @@ describe("ItemDetailModal Domain Display", () => {
     setupMockData("test-item", {
       title: "Test Item",
       url: "https://www.example.com/some/article",
-      createdAt: "2026-02-21T12:00:00Z",
+      createdAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
     });
 
     dispose = render(

@@ -11,15 +11,11 @@ import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import {
-  ListFeedSchema,
+  FeedSchema,
   ListFeedsResponseSchema,
   ListFeedTagsResponseSchema,
 } from "../gen/feed/v1/feed_pb";
-import {
-  ListTagSchema,
-  ListTagsResponseSchema,
-  TagSchema,
-} from "../gen/tag/v1/tag_pb";
+import { ListTagsResponseSchema, TagSchema } from "../gen/tag/v1/tag_pb";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
@@ -63,13 +59,13 @@ describe("FeedList Tag Filters", () => {
       http.all("*/feed.v1.FeedService/ListFeeds", () => {
         const msg = create(ListFeedsResponseSchema, {
           feeds: [
-            create(ListFeedSchema, {
+            create(FeedSchema, {
               id: "1",
               title: "Tagged Feed",
               url: "url1",
               tags: [create(TagSchema, { id: "t1", name: "Tech" })],
             }),
-            create(ListFeedSchema, {
+            create(FeedSchema, {
               id: "2",
               title: "Untagged Feed",
               url: "url2",
@@ -81,7 +77,7 @@ describe("FeedList Tag Filters", () => {
       }),
       http.all("*/tag.v1.TagService/ListTags", () => {
         const msg = create(ListTagsResponseSchema, {
-          tags: [create(ListTagSchema, { id: "t1", name: "Tech" })],
+          tags: [create(TagSchema, { id: "t1", name: "Tech" })],
         });
         return HttpResponse.json(toJson(ListTagsResponseSchema, msg));
       }),

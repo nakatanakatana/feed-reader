@@ -109,6 +109,26 @@ func (q *Queries) CountTotalUnreadItems(ctx context.Context) (int64, error) {
 	return count, err
 }
 
+const countUnreadItemsByFeedID = `-- name: CountUnreadItemsByFeedID :one
+SELECT
+  COUNT(DISTINCT fi.item_id) AS count
+FROM
+  feed_items fi
+LEFT JOIN
+  item_reads ir ON fi.item_id = ir.item_id
+WHERE
+  fi.feed_id = ? AND
+  COALESCE(ir.is_read, 0) = 0 AND
+  NOT EXISTS (SELECT 1 FROM item_blocks ib WHERE ib.item_id = fi.item_id)
+`
+
+func (q *Queries) CountUnreadItemsByFeedID(ctx context.Context, feedID string) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countUnreadItemsByFeedID, feedID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const countUnreadItemsPerFeed = `-- name: CountUnreadItemsPerFeed :many
 SELECT
   fi.feed_id,
@@ -1442,22 +1462,28 @@ WHERE
     SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = ?3
   )) AND
   (?4 IS NULL OR i.created_at >= ?4) AND
-  (?5 IS NULL OR (CASE WHEN ib.item_id IS NOT NULL THEN 1 ELSE 0 END = ?5))
+  (?5 IS NULL OR (CASE WHEN ib.item_id IS NOT NULL THEN 1 ELSE 0 END = ?5)) AND
+  (
+    (?6 IS NULL AND ?7 IS NULL) OR
+    (i.created_at, i.id) > (?6, ?7)
+  )
 GROUP BY
   i.id
 ORDER BY
-  i.created_at ASC
-LIMIT ?7 OFFSET ?6
+  i.created_at ASC,
+  i.id ASC
+LIMIT ?8
 `
 
 type ListItemsParams struct {
-	FeedID    interface{} `json:"feed_id"`
-	IsRead    interface{} `json:"is_read"`
-	TagID     interface{} `json:"tag_id"`
-	Since     interface{} `json:"since"`
-	IsBlocked interface{} `json:"is_blocked"`
-	Offset    int64       `json:"offset"`
-	Limit     int64       `json:"limit"`
+	FeedID          interface{} `json:"feed_id"`
+	IsRead          interface{} `json:"is_read"`
+	TagID           interface{} `json:"tag_id"`
+	Since           interface{} `json:"since"`
+	IsBlocked       interface{} `json:"is_blocked"`
+	CreatedAtCursor interface{} `json:"created_at_cursor"`
+	IDCursor        interface{} `json:"id_cursor"`
+	Limit           int64       `json:"limit"`
 }
 
 type ListItemsRow struct {
@@ -1483,7 +1509,8 @@ func (q *Queries) ListItems(ctx context.Context, arg ListItemsParams) ([]ListIte
 		arg.TagID,
 		arg.Since,
 		arg.IsBlocked,
-		arg.Offset,
+		arg.CreatedAtCursor,
+		arg.IDCursor,
 		arg.Limit,
 	)
 	if err != nil {
@@ -1704,7 +1731,7 @@ func (q *Queries) ListTags(ctx context.Context) ([]Tag, error) {
 const listTagsByFeedIDs = `-- name: ListTagsByFeedIDs :many
 SELECT
   ft.feed_id,
-  t.name
+  t.id, t.name, t.created_at, t.updated_at
 FROM
   tags t
 JOIN
@@ -1716,8 +1743,11 @@ ORDER BY
 `
 
 type ListTagsByFeedIDsRow struct {
-	FeedID string `json:"feed_id"`
-	Name   string `json:"name"`
+	FeedID    string `json:"feed_id"`
+	ID        string `json:"id"`
+	Name      string `json:"name"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
 }
 
 func (q *Queries) ListTagsByFeedIDs(ctx context.Context, feedIds []string) ([]ListTagsByFeedIDsRow, error) {
@@ -1739,7 +1769,13 @@ func (q *Queries) ListTagsByFeedIDs(ctx context.Context, feedIds []string) ([]Li
 	var items []ListTagsByFeedIDsRow
 	for rows.Next() {
 		var i ListTagsByFeedIDsRow
-		if err := rows.Scan(&i.FeedID, &i.Name); err != nil {
+		if err := rows.Scan(
+			&i.FeedID,
+			&i.ID,
+			&i.Name,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -1896,14 +1932,14 @@ const updateFeed = `-- name: UpdateFeed :one
 UPDATE
   feeds
 SET
-  link = ?,
-  title = ?,
-  description = ?,
-  lang = ?,
-  image_url = ?,
-  copyright = ?,
-  feed_type = ?,
-  feed_version = ?,
+  link = COALESCE(?, link),
+  title = COALESCE(?, title),
+  description = COALESCE(?, description),
+  lang = COALESCE(?, lang),
+  image_url = COALESCE(?, image_url),
+  copyright = COALESCE(?, copyright),
+  feed_type = COALESCE(?, feed_type),
+  feed_version = COALESCE(?, feed_version),
   updated_at = (strftime('%FT%TZ', 'now'))
 WHERE
   id = ?

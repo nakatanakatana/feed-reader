@@ -11,12 +11,14 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
 import {
+  ItemSchema,
   ListItemReadResponseSchema,
-  ListItemSchema,
   ListItemsResponseSchema,
+  type Item as ProtoItem,
 } from "../gen/item/v1/item_pb";
 import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
 import { setLastFetched } from "../lib/item-sync-state";
+import { dateToTimestamp } from "../lib/item-utils";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
@@ -38,34 +40,33 @@ describe("ItemList", () => {
 
   beforeEach(() => {
     vi.useFakeTimers();
-    vi.setSystemTime(new Date("2026-01-20T19:00:00Z"));
+    vi.setSystemTime(new Date("2026-03-07T12:00:00Z"));
     localeTimeSpy = vi
       .spyOn(Date.prototype, "toLocaleTimeString")
       .mockReturnValue("4:00:00 AM");
   });
 
   const setupMockData = (
-    items: Record<string, unknown>[] = [],
-    itemReads: Record<string, unknown>[] = [],
+    items: Partial<ProtoItem>[] = [],
+    itemReads: { itemId: string; isRead: boolean }[] = [],
   ) => {
     worker.use(
       http.all("*/item.v1.ItemService/ListItems", () => {
         const msg = create(ListItemsResponseSchema, {
-          items: items.map((i) => create(ListItemSchema, i)),
-          totalCount: items.length,
+          // biome-ignore lint/suspicious/noExplicitAny: mocking message shapes is more efficient with any here
+          items: items.map((i) => create(ItemSchema, i as any)),
+          nextPageToken: "",
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),
       http.all("*/item.v1.ItemService/ListItemRead", () => {
         const msg = create(ListItemReadResponseSchema, {
           itemReads: itemReads.map((ir) => ({
-            itemId: ir.itemId as string,
-            isRead: ir.isRead as boolean,
-            updatedAt: {
-              seconds: BigInt(Math.floor(Date.now() / 1000)),
-              nanos: 0,
-            },
+            itemId: ir.itemId,
+            isRead: ir.isRead,
+            updatedAt: dateToTimestamp(new Date()),
           })),
+          nextPageToken: "",
         });
         return HttpResponse.json(toJson(ListItemReadResponseSchema, msg));
       }),
@@ -89,7 +90,7 @@ describe("ItemList", () => {
   };
 
   it("renders empty state when no items", async () => {
-    setLastFetched(new Date("2026-01-20T19:00:00Z"));
+    setLastFetched(new Date("2026-03-01T00:00:00Z"));
     setupMockData([]);
     const history = createMemoryHistory({ initialEntries: ["/"] });
     const router = createRouter({ routeTree, history });
@@ -112,22 +113,24 @@ describe("ItemList", () => {
   });
 
   it("displays a list of items", async () => {
-    const fixedDate = "2026-01-20T19:00:00Z";
-    setLastFetched(new Date(fixedDate));
+    const fixedDate = new Date("2026-03-01T00:00:00Z");
+    setLastFetched(fixedDate);
     setupMockData([
       {
         id: "1",
         title: "Item 1",
-        publishedAt: fixedDate,
-        createdAt: fixedDate,
+        publishedAt: dateToTimestamp(fixedDate),
+        createdAt: dateToTimestamp(fixedDate),
         isRead: false,
+        feedId: "feed-1",
       },
       {
         id: "2",
         title: "Item 2",
-        publishedAt: fixedDate,
-        createdAt: fixedDate,
+        publishedAt: dateToTimestamp(fixedDate),
+        createdAt: dateToTimestamp(fixedDate),
         isRead: true,
+        feedId: "feed-1",
       },
     ]);
 
@@ -152,21 +155,26 @@ describe("ItemList", () => {
   });
 
   it("updates item read status via delta sync", async () => {
-    const fixedDate = "2026-01-20T19:00:00Z";
-    setLastFetched(new Date(fixedDate));
+    const fixedDate = new Date("2026-03-01T00:00:00Z");
+    setLastFetched(fixedDate);
 
-    // Initially Item 1 is unread
-    setupMockData([
+    const items: Partial<ProtoItem>[] = [
       {
         id: "1",
         title: "Item 1",
-        publishedAt: fixedDate,
-        createdAt: fixedDate,
+        publishedAt: dateToTimestamp(fixedDate),
+        createdAt: dateToTimestamp(fixedDate),
         isRead: false,
+        feedId: "feed-1",
       },
-    ]);
+    ];
 
-    const history = createMemoryHistory({ initialEntries: ["/"] });
+    setupMockData(items);
+
+    // Use showRead=true so the item doesn't disappear when marked as read
+    const history = createMemoryHistory({
+      initialEntries: ["/?showRead=true"],
+    });
     const router = createRouter({ routeTree, history });
 
     dispose = render(
@@ -180,40 +188,33 @@ describe("ItemList", () => {
       document.body,
     );
 
-    const item1 = page.getByText("Item 1");
-    await expect.element(item1).toBeInTheDocument();
+    const itemRow = page.getByTestId("item-row-1");
+    await expect.element(itemRow).toBeInTheDocument();
 
-    // Verify it's unread (has blue color class)
-    await expect.element(item1).toHaveClass(/c_blue\.600/);
+    // Verify it's unread
+    await expect.element(itemRow).toHaveAttribute("data-is-read", "false");
 
     // Mock delta sync: Item 1 becomes read
-    setupMockData(
-      [
-        {
-          id: "1",
-          title: "Item 1",
-          publishedAt: fixedDate,
-          createdAt: fixedDate,
-          isRead: true, // Item state mirrors delta-synced read; UI uses itemReads (delta read state) as the authoritative source when available
-        },
-      ],
-      [
-        {
-          itemId: "1",
-          isRead: true,
-        },
-      ],
-    );
+    setupMockData(items, [
+      {
+        itemId: "1",
+        isRead: true,
+      },
+    ]);
+
+    // Advance fake timers so system time moves forward.
+    // This ensures that the updatedAt timestamp in the mock is newer than the anchor.
+    await vi.advanceTimersByTimeAsync(100);
 
     // Trigger refetch for item-reads
     await queryClient.refetchQueries({ queryKey: ["item-reads"] });
 
-    // Item 1 should now be read (has gray color class)
-    await expect.element(item1).toHaveClass(/c_gray\.500/);
+    // Item 1 should now be read
+    await expect.element(itemRow).toHaveAttribute("data-is-read", "true");
   });
 
   it("renders tag filters in a horizontal scroll list", async () => {
-    setLastFetched(new Date("2026-01-20T19:00:00Z"));
+    setLastFetched(new Date("2026-03-01T00:00:00Z"));
     setupMockData([]);
     const history = createMemoryHistory({ initialEntries: ["/"] });
     const router = createRouter({ routeTree, history });

@@ -49,7 +49,6 @@ func TestStore_ListItems_DateFilter(t *testing.T) {
 		items, err := s.ListItems(ctx, store.StoreListItemsParams{
 			Since:     &since,
 			Limit:     10,
-			Offset:    0,
 			IsBlocked: false,
 		})
 		assert.NilError(t, err)
@@ -64,7 +63,6 @@ func TestStore_ListItems_DateFilter(t *testing.T) {
 		items, err := s.ListItems(ctx, store.StoreListItemsParams{
 			Since:     &since,
 			Limit:     10,
-			Offset:    0,
 			IsBlocked: false,
 		})
 		assert.NilError(t, err)
@@ -76,7 +74,6 @@ func TestStore_ListItems_DateFilter(t *testing.T) {
 		items, err := s.ListItems(ctx, store.StoreListItemsParams{
 			Since:     nil,
 			Limit:     10,
-			Offset:    0,
 			IsBlocked: false,
 		})
 		assert.NilError(t, err)
@@ -134,14 +131,12 @@ func TestStore_ListItems_DateFilter_Monotonic_PBT(t *testing.T) {
 		itemsA, err := s.ListItems(ctx, store.StoreListItemsParams{
 			Since:     &sinceA,
 			Limit:     100,
-			Offset:    0,
 			IsBlocked: false,
 		})
 		assert.NilError(t, err)
 		itemsB, err := s.ListItems(ctx, store.StoreListItemsParams{
 			Since:     &sinceB,
 			Limit:     100,
-			Offset:    0,
 			IsBlocked: false,
 		})
 		assert.NilError(t, err)
@@ -184,7 +179,6 @@ func TestStore_ListItems_CountMatches_List_PBT(t *testing.T) {
 		items, err := s.ListItems(ctx, store.StoreListItemsParams{
 			Since:     &since,
 			Limit:     100,
-			Offset:    0,
 			IsBlocked: false,
 		})
 		assert.NilError(t, err)

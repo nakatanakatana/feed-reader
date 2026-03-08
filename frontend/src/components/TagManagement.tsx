@@ -25,6 +25,8 @@ export const TagManagement = () => {
       name: newTagName(),
       unreadCount: 0n,
       feedCount: 0n,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
     setNewTagName("");
   };

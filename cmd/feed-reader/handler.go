@@ -12,6 +12,7 @@ import (
 	"github.com/nakatanakatana/feed-reader/gen/go/feed/v1/feedv1connect"
 	tagv1 "github.com/nakatanakatana/feed-reader/gen/go/tag/v1"
 	"github.com/nakatanakatana/feed-reader/store"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type FeedServer struct {
@@ -83,36 +84,75 @@ func (s *FeedServer) ListFeeds(ctx context.Context, req *connect.Request[feedv1.
 		countsMap[c.FeedID] = c.Count
 	}
 
-	protoFeeds := make([]*feedv1.ListFeed, len(feeds))
+	// Fetch all tags for all feeds to avoid N+1 queries
+	feedIDs := make([]string, len(feeds))
 	for i, f := range feeds {
+		feedIDs[i] = f.ID
+	}
+	allTags, err := s.store.ListTagsByFeedIDs(ctx, feedIDs)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	tagsByFeed := make(map[string][]*tagv1.Tag)
+	for _, t := range allTags {
+		createdAt, err := toTimestamp(t.CreatedAt)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("invalid created_at for tag %s: %w", t.ID, err))
+		}
+		updatedAt, err := toTimestamp(t.UpdatedAt)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("invalid updated_at for tag %s: %w", t.ID, err))
+		}
+		tagsByFeed[t.FeedID] = append(tagsByFeed[t.FeedID], &tagv1.Tag{
+			Id:        t.ID,
+			Name:      t.Name,
+			CreatedAt: createdAt,
+			UpdatedAt: updatedAt,
+		})
+	}
+
+	protoFeeds := make([]*feedv1.Feed, len(feeds))
+	for i, f := range feeds {
+		protoTags := tagsByFeed[f.ID]
+		if protoTags == nil {
+			protoTags = []*tagv1.Tag{}
+		}
+
 		var title string
 		if f.Title != nil {
 			title = *f.Title
 		}
 
-		tags, err := s.store.ListTagsByFeedId(ctx, f.ID)
+		lastFetchedAt, err := toOptionalTimestamp(f.LastFetchedAt)
 		if err != nil {
-			return nil, connect.NewError(connect.CodeInternal, err)
+			return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("invalid last_fetched_at for feed %s: %w", f.ID, err))
+		}
+		nextFetchAt, err := toOptionalTimestamp(f.NextFetch)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("invalid next_fetch for feed %s: %w", f.ID, err))
+		}
+		createdAt, err := toTimestamp(f.CreatedAt)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("invalid created_at for feed %s: %w", f.ID, err))
+		}
+		updatedAt, err := toTimestamp(f.UpdatedAt)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("invalid updated_at for feed %s: %w", f.ID, err))
 		}
 
-		protoTags := make([]*tagv1.Tag, len(tags))
-		for i, t := range tags {
-			protoTags[i] = &tagv1.Tag{
-				Id:        t.ID,
-				Name:      t.Name,
-				CreatedAt: t.CreatedAt,
-				UpdatedAt: t.UpdatedAt,
-			}
-		}
-		protoFeeds[i] = &feedv1.ListFeed{
+		protoFeeds[i] = &feedv1.Feed{
 			Id:            f.ID,
 			Url:           f.Url,
 			Title:         title,
+			Description:   f.Description,
 			UnreadCount:   countsMap[f.ID],
 			Tags:          protoTags,
 			Link:          f.Link,
-			LastFetchedAt: f.LastFetchedAt,
-			NextFetch:     f.NextFetch,
+			ImageUrl:      f.ImageUrl,
+			LastFetchedAt: lastFetchedAt,
+			NextFetchAt:   nextFetchAt,
+			CreatedAt:     createdAt,
+			UpdatedAt:     updatedAt,
 		}
 	}
 
@@ -233,11 +273,7 @@ func (s *FeedServer) UpdateFeed(ctx context.Context, req *connect.Request[feedv1
 		Link:        req.Msg.Link,
 		Title:       req.Msg.Title,
 		Description: req.Msg.Description,
-		Lang:        req.Msg.Lang,
 		ImageUrl:    req.Msg.ImageUrl,
-		Copyright:   req.Msg.Copyright,
-		FeedType:    req.Msg.FeedType,
-		FeedVersion: req.Msg.FeedVersion,
 		ID:          req.Msg.Id,
 	})
 	if err != nil {
@@ -377,12 +413,43 @@ func (s *FeedServer) toProtoFeed(ctx context.Context, f store.FullFeed) (*feedv1
 
 	protoTags := make([]*tagv1.Tag, len(tags))
 	for i, t := range tags {
+		createdAt, err := toTimestamp(t.CreatedAt)
+		if err != nil {
+			return nil, fmt.Errorf("invalid created_at for tag %s: %w", t.ID, err)
+		}
+		updatedAt, err := toTimestamp(t.UpdatedAt)
+		if err != nil {
+			return nil, fmt.Errorf("invalid updated_at for tag %s: %w", t.ID, err)
+		}
 		protoTags[i] = &tagv1.Tag{
 			Id:        t.ID,
 			Name:      t.Name,
-			CreatedAt: t.CreatedAt,
-			UpdatedAt: t.UpdatedAt,
+			CreatedAt: createdAt,
+			UpdatedAt: updatedAt,
 		}
+	}
+
+	// Fetch unread count for this feed without aggregating all feeds
+	unreadCount, err := s.store.CountUnreadItemsByFeedID(ctx, f.ID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to count unread items for feed %s: %w", f.ID, err)
+	}
+
+	lastFetchedAt, err := toOptionalTimestamp(f.LastFetchedAt)
+	if err != nil {
+		return nil, fmt.Errorf("invalid last_fetched_at for feed %s: %w", f.ID, err)
+	}
+	nextFetchAt, err := toOptionalTimestamp(f.NextFetch)
+	if err != nil {
+		return nil, fmt.Errorf("invalid next_fetch for feed %s: %w", f.ID, err)
+	}
+	createdAt, err := toTimestamp(f.CreatedAt)
+	if err != nil {
+		return nil, fmt.Errorf("invalid created_at for feed %s: %w", f.ID, err)
+	}
+	updatedAt, err := toTimestamp(f.UpdatedAt)
+	if err != nil {
+		return nil, fmt.Errorf("invalid updated_at for feed %s: %w", f.ID, err)
 	}
 
 	return &feedv1.Feed{
@@ -391,16 +458,13 @@ func (s *FeedServer) toProtoFeed(ctx context.Context, f store.FullFeed) (*feedv1
 		Link:          f.Link,
 		Title:         title,
 		Description:   f.Description,
-		Lang:          f.Lang,
 		ImageUrl:      f.ImageUrl,
-		Copyright:     f.Copyright,
-		FeedType:      f.FeedType,
-		FeedVersion:   f.FeedVersion,
-		LastFetchedAt: f.LastFetchedAt,
-		NextFetch:     f.NextFetch,
-		CreatedAt:     f.CreatedAt,
-		UpdatedAt:     f.UpdatedAt,
+		LastFetchedAt: lastFetchedAt,
+		NextFetchAt:   nextFetchAt,
+		CreatedAt:     createdAt,
+		UpdatedAt:     updatedAt,
 		Tags:          protoTags,
+		UnreadCount:   unreadCount,
 	}, nil
 }
 
@@ -466,4 +530,19 @@ func (s *FeedServer) ExportOpml(ctx context.Context, req *connect.Request[feedv1
 	return connect.NewResponse(&feedv1.ExportOpmlResponse{
 		OpmlContent: opmlContent,
 	}), nil
+}
+
+func toTimestamp(s string) (*timestamppb.Timestamp, error) {
+	t, err := time.Parse(time.RFC3339, s)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse RFC3339 time %q: %w", s, err)
+	}
+	return timestamppb.New(t), nil
+}
+
+func toOptionalTimestamp(s *string) (*timestamppb.Timestamp, error) {
+	if s == nil {
+		return nil, nil
+	}
+	return toTimestamp(*s)
 }

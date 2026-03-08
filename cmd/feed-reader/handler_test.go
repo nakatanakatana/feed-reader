@@ -357,6 +357,33 @@ func TestFeedServer_ListFeeds_UnreadCounts(t *testing.T) {
 	assertResponseGolden(t, res.Msg, "list_feeds_unread_counts.golden")
 }
 
+func TestFeedServer_ListFeeds_IncludesMetadata(t *testing.T) {
+	ctx := context.Background()
+	_, db := setupTestDB(t)
+	s := store.NewStore(db)
+	server := setupServer(t, db, nil, &mockFetcher{}, &mockItemFetcher{})
+
+	title := "Feed 1"
+	description := "Feed description"
+	imageURL := "https://example.com/image.png"
+	_, err := s.CreateFeed(ctx, store.CreateFeedParams{
+		ID:          "f1",
+		Url:         "https://example.com/feed.xml",
+		Title:       &title,
+		Description: &description,
+		ImageUrl:    &imageURL,
+	})
+	assert.NilError(t, err)
+
+	res, err := server.ListFeeds(ctx, connect.NewRequest(&feedv1.ListFeedsRequest{}))
+	assert.NilError(t, err)
+	assert.Assert(t, cmp.Len(res.Msg.Feeds, 1))
+
+	got := res.Msg.Feeds[0]
+	assert.Equal(t, got.GetDescription(), description)
+	assert.Equal(t, got.GetImageUrl(), imageURL)
+}
+
 func TestFeedServer_UpdateFeed(t *testing.T) {
 	ctx := context.Background()
 
@@ -410,6 +437,55 @@ func TestFeedServer_UpdateFeed(t *testing.T) {
 			assert.NilError(t, err)
 		})
 	}
+}
+
+func TestFeedServer_UpdateFeed_PreservesMetadata(t *testing.T) {
+	ctx := context.Background()
+	_, db := setupTestDB(t)
+	server := setupServer(t, db, nil, &mockFetcher{}, &mockItemFetcher{})
+
+	created, err := server.CreateFeed(ctx, connect.NewRequest(&feedv1.CreateFeedRequest{
+		Url:   "https://example.com/metadata",
+		Title: new("Original"),
+	}))
+	assert.NilError(t, err)
+
+	feedID := created.Msg.Feed.Id
+	lang := "ja"
+	copyright := "(c) example"
+	feedType := "rss"
+	feedVersion := "2.0"
+	_, err = db.ExecContext(ctx,
+		"UPDATE feeds SET lang = ?, copyright = ?, feed_type = ?, feed_version = ? WHERE id = ?",
+		lang,
+		copyright,
+		feedType,
+		feedVersion,
+		feedID,
+	)
+	assert.NilError(t, err)
+
+	_, err = server.UpdateFeed(ctx, connect.NewRequest(&feedv1.UpdateFeedRequest{
+		Id:    feedID,
+		Title: new("Updated"),
+	}))
+	assert.NilError(t, err)
+
+	var gotLang, gotCopyright, gotFeedType, gotFeedVersion sql.NullString
+	err = db.QueryRowContext(ctx,
+		"SELECT lang, copyright, feed_type, feed_version FROM feeds WHERE id = ?",
+		feedID,
+	).Scan(&gotLang, &gotCopyright, &gotFeedType, &gotFeedVersion)
+	assert.NilError(t, err)
+
+	assert.Check(t, gotLang.Valid)
+	assert.Check(t, gotCopyright.Valid)
+	assert.Check(t, gotFeedType.Valid)
+	assert.Check(t, gotFeedVersion.Valid)
+	assert.Equal(t, gotLang.String, lang)
+	assert.Equal(t, gotCopyright.String, copyright)
+	assert.Equal(t, gotFeedType.String, feedType)
+	assert.Equal(t, gotFeedVersion.String, feedVersion)
 }
 
 func TestFeedServer_DeleteFeed(t *testing.T) {
@@ -612,10 +688,9 @@ func TestFeedServer_SuspendFeeds(t *testing.T) {
 		// Verify next_fetch
 		res, err := server.GetFeed(ctx, connect.NewRequest(&feedv1.GetFeedRequest{Id: id}))
 		assert.NilError(t, err)
-		assert.Assert(t, res.Msg.Feed.NextFetch != nil)
+		assert.Assert(t, res.Msg.Feed.NextFetchAt != nil)
 
-		nextFetch, err := time.Parse(time.RFC3339, *res.Msg.Feed.NextFetch)
-		assert.NilError(t, err)
+		nextFetch := res.Msg.Feed.NextFetchAt.AsTime()
 
 		// Should be roughly now + 1 hour
 		expected := time.Now().Add(time.Hour)

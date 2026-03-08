@@ -10,11 +10,8 @@ import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import {
-  ListFeedSchema,
-  ListFeedsResponseSchema,
-} from "../gen/feed/v1/feed_pb";
-import { ListTagSchema, ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
+import { FeedSchema, ListFeedsResponseSchema } from "../gen/feed/v1/feed_pb";
+import { ListTagsResponseSchema, TagSchema } from "../gen/tag/v1/tag_pb";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
@@ -42,13 +39,13 @@ describe("FeedList Feed Counts", () => {
       http.all("*/tag.v1.TagService/ListTags", () => {
         const msg = create(ListTagsResponseSchema, {
           tags: [
-            create(ListTagSchema, {
+            create(TagSchema, {
               id: "tag-1",
               name: "Tech",
               unreadCount: 5n,
               feedCount: 1n,
             }),
-            create(ListTagSchema, {
+            create(TagSchema, {
               id: "tag-2",
               name: "News",
               unreadCount: 0n,
@@ -61,7 +58,7 @@ describe("FeedList Feed Counts", () => {
       http.all("*/feed.v1.FeedService/ListFeeds", () => {
         const msg = create(ListFeedsResponseSchema, {
           feeds: [
-            create(ListFeedSchema, {
+            create(FeedSchema, {
               id: "1",
               title: "Feed 1",
               url: "http://example.com/1",
@@ -101,7 +98,7 @@ describe("FeedList Feed Counts", () => {
       http.all("*/tag.v1.TagService/ListTags", () => {
         const msg = create(ListTagsResponseSchema, {
           tags: [
-            create(ListTagSchema, {
+            create(TagSchema, {
               id: "tag-1",
               name: "Big",
               unreadCount: 1500n,

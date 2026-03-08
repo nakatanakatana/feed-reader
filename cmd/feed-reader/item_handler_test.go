@@ -70,7 +70,7 @@ func TestItemServer(t *testing.T) {
 		assert.Equal(t, res.Msg.Item.Id, item1ID)
 		assert.Equal(t, res.Msg.Item.Title, "Item 1")
 		assert.Equal(t, res.Msg.Item.Author, author)
-		assert.Assert(t, res.Msg.Item.CreatedAt != "")
+		assert.Assert(t, res.Msg.Item.CreatedAt != nil)
 	})
 
 	t.Run("GetItem_WithRichContent", func(t *testing.T) {
@@ -101,7 +101,7 @@ func TestItemServer(t *testing.T) {
 		assert.Equal(t, res.Msg.Item.Content, content)
 		assert.Equal(t, res.Msg.Item.ImageUrl, img)
 		assert.Equal(t, res.Msg.Item.Categories, cats)
-		assert.Assert(t, res.Msg.Item.CreatedAt != "")
+		assert.Assert(t, res.Msg.Item.CreatedAt != nil)
 	})
 
 	t.Run("ListItems", func(t *testing.T) {
@@ -126,13 +126,13 @@ func TestItemServer(t *testing.T) {
 		assert.NilError(t, err)
 
 		res, err := server.ListItems(ctx, connect.NewRequest(&itemv1.ListItemsRequest{
-			Limit: 10,
+			PageSize: 10,
 		}))
 		assert.NilError(t, err)
 		assert.Assert(t, cmp.Len(res.Msg.Items, 4))
 		for _, item := range res.Msg.Items {
 			assert.Assert(t, item.Title != "")
-			assert.Assert(t, item.CreatedAt != "")
+			assert.Assert(t, item.CreatedAt != nil)
 		}
 
 		var found bool
@@ -160,12 +160,46 @@ func TestItemServer(t *testing.T) {
 	t.Run("ListItems_DateFilter", func(t *testing.T) {
 		since := now.Add(-90 * time.Minute)
 		res, err := server.ListItems(ctx, connect.NewRequest(&itemv1.ListItemsRequest{
-			Since: timestamppb.New(since),
-			Limit: 10,
+			Since:    timestamppb.New(since),
+			PageSize: 10,
 		}))
 		assert.NilError(t, err)
 		// Should include item2 and rich item, but not item1 (2h ago)
 		assert.Assert(t, cmp.Len(res.Msg.Items, 3))
+	})
+
+	t.Run("ListItems_Pagination", func(t *testing.T) {
+		// We have 4 items in DB now (Item 1, Item 2, Rich Item, Item with desc)
+		// Request page 1 with size 2
+		res1, err := server.ListItems(ctx, connect.NewRequest(&itemv1.ListItemsRequest{
+			PageSize: 2,
+		}))
+		assert.NilError(t, err)
+		assert.Assert(t, cmp.Len(res1.Msg.Items, 2))
+		assert.Assert(t, res1.Msg.NextPageToken != "")
+
+		// Request page 2 with size 2
+		res2, err := server.ListItems(ctx, connect.NewRequest(&itemv1.ListItemsRequest{
+			PageSize:  2,
+			PageToken: res1.Msg.NextPageToken,
+		}))
+		assert.NilError(t, err)
+		assert.Assert(t, cmp.Len(res2.Msg.Items, 2))
+		// We might or might not have NextPageToken here depending on if there are EXACTLY 4 items.
+		// In our setup, we have 4 items. So 2 + 2 = 4.
+		// The current implementation returns NextPageToken if len(rows) > pageSize.
+		// If we requested 2 and got 2, and there are NO MORE, hasNextPage will be false.
+		assert.Equal(t, res2.Msg.NextPageToken, "")
+
+		// Verify order (The ListItems implementation orders results by created_at ASC, then by ID ASC)
+		// Items with the same created_at (e.g., "Item with desc" and "Item 2") are ordered by ID.
+		allIDs := []string{res1.Msg.Items[0].Id, res1.Msg.Items[1].Id, res2.Msg.Items[0].Id, res2.Msg.Items[1].Id}
+		// Ensure all are unique
+		idMap := make(map[string]bool)
+		for _, id := range allIDs {
+			assert.Assert(t, !idMap[id], "Duplicate ID found: %s", id)
+			idMap[id] = true
+		}
 	})
 }
 
@@ -210,11 +244,11 @@ func TestItemServer_ListItemRead(t *testing.T) {
 		assert.Equal(t, res.Msg.ItemReads[2].ItemId, item3ID)
 	})
 
-	t.Run("Filter by updated_since", func(t *testing.T) {
+	t.Run("Filter by since", func(t *testing.T) {
 		after, err := time.Parse(time.RFC3339, t1)
 		assert.NilError(t, err)
 		res, err := server.ListItemRead(ctx, connect.NewRequest(&itemv1.ListItemReadRequest{
-			UpdatedSince: timestamppb.New(after),
+			Since: timestamppb.New(after),
 		}))
 		assert.NilError(t, err)
 		assert.Equal(t, len(res.Msg.ItemReads), 3)
@@ -247,10 +281,10 @@ func TestItemServer_ListItemRead(t *testing.T) {
 	})
 
 	t.Run("ListItemRead_ValidationErrors", func(t *testing.T) {
-		// 1. Both PageToken and UpdatedSince
+		// 1. Both PageToken and Since
 		_, err := server.ListItemRead(ctx, connect.NewRequest(&itemv1.ListItemReadRequest{
-			PageToken:    "some-token",
-			UpdatedSince: timestamppb.Now(),
+			PageToken: "some-token",
+			Since:     timestamppb.Now(),
 		}))
 		assert.Assert(t, err != nil)
 		assert.Equal(t, connect.CodeOf(err), connect.CodeInvalidArgument)
@@ -263,7 +297,7 @@ func TestItemServer_ListItemRead(t *testing.T) {
 		assert.Equal(t, connect.CodeOf(err), connect.CodeInvalidArgument)
 
 		// 3. Invalid JSON PageToken
-		badJSONToken := base64.StdEncoding.EncodeToString([]byte("{invalid-json}"))
+		badJSONToken := base64.RawURLEncoding.EncodeToString([]byte("{invalid-json}"))
 		_, err = server.ListItemRead(ctx, connect.NewRequest(&itemv1.ListItemReadRequest{
 			PageToken: badJSONToken,
 		}))
@@ -271,7 +305,7 @@ func TestItemServer_ListItemRead(t *testing.T) {
 		assert.Equal(t, connect.CodeOf(err), connect.CodeInvalidArgument)
 
 		// 4. Missing required fields in token
-		missingFieldsToken := base64.StdEncoding.EncodeToString([]byte(`{"updated_at": "2023-01-01T00:00:00Z"}`))
+		missingFieldsToken := base64.RawURLEncoding.EncodeToString([]byte(`{"updated_at": "2023-01-01T00:00:00Z"}`))
 		_, err = server.ListItemRead(ctx, connect.NewRequest(&itemv1.ListItemReadRequest{
 			PageToken: missingFieldsToken,
 		}))
@@ -279,7 +313,7 @@ func TestItemServer_ListItemRead(t *testing.T) {
 		assert.Equal(t, connect.CodeOf(err), connect.CodeInvalidArgument)
 
 		// 5. Invalid time format in token
-		badTimeToken := base64.StdEncoding.EncodeToString([]byte(`{"updated_at": "invalid-time", "item_id": "item1"}`))
+		badTimeToken := base64.RawURLEncoding.EncodeToString([]byte(`{"updated_at": "invalid-time", "item_id": "item1"}`))
 		_, err = server.ListItemRead(ctx, connect.NewRequest(&itemv1.ListItemReadRequest{
 			PageToken: badTimeToken,
 		}))

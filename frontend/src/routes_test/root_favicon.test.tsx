@@ -1,13 +1,17 @@
+import { create, toJson } from "@bufbuild/protobuf";
 import {
   createMemoryHistory,
   createRoute,
   createRouter,
   RouterProvider,
 } from "@tanstack/solid-router";
-import { HttpResponse, http } from "msw";
+import { http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { ListItemsResponseSchema } from "../gen/item/v1/item_pb";
+import { dateToTimestamp } from "../lib/item-utils";
 import { worker } from "../mocks/browser";
+import { safeJson } from "../mocks/connect";
 import { Route as RootRoute } from "../routes/__root";
 import "../styles.css";
 
@@ -57,17 +61,18 @@ describe("Root Favicon Integration", () => {
     // 2. Mock API to return 5 unread items
     worker.use(
       http.all("*/item.v1.ItemService/ListItems", () => {
-        return HttpResponse.json({
+        const msg = create(ListItemsResponseSchema, {
           items: Array.from({ length: 5 }, (_, i) => ({
             id: `item-${i}`,
             title: `Item ${i}`,
             isRead: false,
-            publishedAt: new Date().toISOString(),
-            createdAt: new Date().toISOString(),
+            publishedAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
+            createdAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
             feedId: "feed-1",
           })),
-          totalCount: 5,
+          nextPageToken: "",
         });
+        return safeJson(toJson(ListItemsResponseSchema, msg));
       }),
     );
 
@@ -91,17 +96,18 @@ describe("Root Favicon Integration", () => {
     // 5. Mock API to return 250 unread items (Orange)
     worker.use(
       http.all("*/item.v1.ItemService/ListItems", () => {
-        return HttpResponse.json({
+        const msg = create(ListItemsResponseSchema, {
           items: Array.from({ length: 250 }, (_, i) => ({
             id: `item-${i}`,
             title: `Item ${i}`,
             isRead: false,
-            publishedAt: new Date().toISOString(),
-            createdAt: new Date().toISOString(),
+            publishedAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
+            createdAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
             feedId: "feed-1",
           })),
-          totalCount: 250,
+          nextPageToken: "",
         });
+        return safeJson(toJson(ListItemsResponseSchema, msg));
       }),
     );
 
@@ -124,17 +130,18 @@ describe("Root Favicon Integration", () => {
     // 6. Mock API to return 1000 unread items (Red)
     worker.use(
       http.all("*/item.v1.ItemService/ListItems", () => {
-        return HttpResponse.json({
+        const msg = create(ListItemsResponseSchema, {
           items: Array.from({ length: 1000 }, (_, i) => ({
             id: `item-${i}`,
             title: `Item ${i}`,
             isRead: false,
-            publishedAt: new Date().toISOString(),
-            createdAt: new Date().toISOString(),
+            publishedAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
+            createdAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
             feedId: "feed-1",
           })),
-          totalCount: 1000,
+          nextPageToken: "",
         });
+        return safeJson(toJson(ListItemsResponseSchema, msg));
       }),
     );
 
@@ -157,10 +164,11 @@ describe("Root Favicon Integration", () => {
     // 7. Mock API to return 0 unread items (Blue)
     worker.use(
       http.all("*/item.v1.ItemService/ListItems", () => {
-        return HttpResponse.json({
+        const msg = create(ListItemsResponseSchema, {
           items: [],
-          totalCount: 0,
+          nextPageToken: "",
         });
+        return safeJson(toJson(ListItemsResponseSchema, msg));
       }),
     );
 

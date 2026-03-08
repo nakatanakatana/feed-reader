@@ -32,7 +32,7 @@ describe("ItemList Defaults", () => {
         return HttpResponse.json(
           toJson(
             ListItemsResponseSchema,
-            create(ListItemsResponseSchema, { items: [], totalCount: 0 }),
+            create(ListItemsResponseSchema, { items: [], nextPageToken: "" }),
           ),
         );
       }),

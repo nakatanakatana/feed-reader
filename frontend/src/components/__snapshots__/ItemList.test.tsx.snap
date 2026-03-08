@@ -300,6 +300,8 @@ exports[`ItemList > displays a list of items 1`] = `
             >
               <div
                 class="d_flex ai_center jc_space-between bd_1px_solid bd-c_gray.100 bdr_md cursor_pointer w_full ov_hidden hover:bg-c_gray.50"
+                data-is-read="false"
+                data-testid="item-row-1"
               >
                 <div
                   class="d_flex ai_center flex_1"
@@ -329,7 +331,7 @@ exports[`ItemList > displays a list of items 1`] = `
                       >
                         <span
                           class="d_flex ai_center gap_1"
-                          title="Published: 1/20/2026, 7:00:00 PM"
+                          title="Published: 3/1/2026, 12:00:00 AM"
                         >
                           <span
                             class="d_none xs:d_inline"
@@ -365,11 +367,11 @@ exports[`ItemList > displays a list of items 1`] = `
                               Published:
                             </span>
                           </span>
-                          1/20/2026, 7:00:00 PM
+                          3/1/2026, 12:00:00 AM
                         </span>
                         <span
                           class="d_flex ai_center gap_1"
-                          title="Received: 1/20/2026, 7:00:00 PM"
+                          title="Received: 3/1/2026, 12:00:00 AM"
                         >
                           <span
                             class="d_none xs:d_inline"
@@ -407,7 +409,7 @@ exports[`ItemList > displays a list of items 1`] = `
                               Received:
                             </span>
                           </span>
-                          1/20/2026, 7:00:00 PM
+                          3/1/2026, 12:00:00 AM
                         </span>
                       </div>
                     </div>
@@ -416,6 +418,8 @@ exports[`ItemList > displays a list of items 1`] = `
               </div>
               <div
                 class="d_flex ai_center jc_space-between bd_1px_solid bd-c_gray.100 bdr_md cursor_pointer w_full ov_hidden hover:bg-c_gray.50"
+                data-is-read="true"
+                data-testid="item-row-2"
               >
                 <div
                   class="d_flex ai_center flex_1"
@@ -445,7 +449,7 @@ exports[`ItemList > displays a list of items 1`] = `
                       >
                         <span
                           class="d_flex ai_center gap_1"
-                          title="Published: 1/20/2026, 7:00:00 PM"
+                          title="Published: 3/1/2026, 12:00:00 AM"
                         >
                           <span
                             class="d_none xs:d_inline"
@@ -481,11 +485,11 @@ exports[`ItemList > displays a list of items 1`] = `
                               Published:
                             </span>
                           </span>
-                          1/20/2026, 7:00:00 PM
+                          3/1/2026, 12:00:00 AM
                         </span>
                         <span
                           class="d_flex ai_center gap_1"
-                          title="Received: 1/20/2026, 7:00:00 PM"
+                          title="Received: 3/1/2026, 12:00:00 AM"
                         >
                           <span
                             class="d_none xs:d_inline"
@@ -523,7 +527,7 @@ exports[`ItemList > displays a list of items 1`] = `
                               Received:
                             </span>
                           </span>
-                          1/20/2026, 7:00:00 PM
+                          3/1/2026, 12:00:00 AM
                         </span>
                       </div>
                       <span

@@ -1,9 +1,9 @@
 import { createClient } from "@connectrpc/connect";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { createCollection } from "@tanstack/solid-db";
-import type { ListFeed } from "../gen/feed/v1/feed_pb";
 import { FeedService } from "../gen/feed/v1/feed_pb";
 import type { Tag } from "../gen/tag/v1/tag_pb";
+import { toDate } from "./date-utils";
 import { fetchingState } from "./fetching-state";
 import { queryClient, transport } from "./query";
 
@@ -13,8 +13,10 @@ export interface Feed {
   link?: string;
   title: string;
   unreadCount?: bigint;
-  lastFetchedAt?: string;
-  nextFetch?: string;
+  lastFetchedAt?: Date;
+  nextFetchAt?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
   tags?: Tag[];
 }
 
@@ -101,14 +103,16 @@ export const feeds = createCollection(
     gcTime: 5 * 1000,
     queryFn: async () => {
       const response = await feedClient.listFeeds({});
-      return response.feeds.map((feed: ListFeed) => ({
+      return response.feeds.map((feed) => ({
         id: feed.id,
         url: feed.url,
         link: feed.link,
         title: feed.title,
         unreadCount: feed.unreadCount,
-        lastFetchedAt: feed.lastFetchedAt,
-        nextFetch: feed.nextFetch,
+        lastFetchedAt: toDate(feed.lastFetchedAt),
+        nextFetchAt: toDate(feed.nextFetchAt),
+        createdAt: toDate(feed.createdAt),
+        updatedAt: toDate(feed.updatedAt),
         tags: feed.tags,
       }));
     },

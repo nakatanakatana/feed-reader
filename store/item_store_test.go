@@ -72,7 +72,6 @@ func TestStore_ItemOperations(t *testing.T) {
 		// All items, asc (standardized)
 		all, err := s.ListItems(ctx, store.StoreListItemsParams{
 			Limit:     10,
-			Offset:    0,
 			IsBlocked: false,
 		})
 		assert.NilError(t, err)

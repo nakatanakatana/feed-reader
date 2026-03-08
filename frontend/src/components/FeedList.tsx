@@ -63,11 +63,11 @@ export function FeedList() {
       query = query.orderBy(({ feed }) => feed.title, "desc");
     } else if (currentSort === "last_fetched") {
       query = query
-        .orderBy(({ feed }) => feed.lastFetchedAt || "", "asc")
+        .orderBy(({ feed }) => feed.lastFetchedAt, "asc")
         .orderBy(({ feed }) => feed.title, "asc");
     } else if (currentSort === "next_fetch") {
       query = query
-        .orderBy(({ feed }) => feed.nextFetch || "", "asc")
+        .orderBy(({ feed }) => feed.nextFetchAt, "asc")
         .orderBy(({ feed }) => feed.title, "asc");
     } else {
       query = query.orderBy(({ feed }) => feed.title, "asc");
@@ -513,11 +513,10 @@ export function FeedList() {
                             ? formatDate(feed.lastFetchedAt)
                             : "Not fetched yet"}
                         </span>
-                        <Show when={feed.nextFetch}>
-                          {(nextFetch) => {
-                            const nextFetchDate = new Date(nextFetch());
+                        <Show when={feed.nextFetchAt}>
+                          {(nextFetchAt) => {
                             const isFuture =
-                              nextFetchDate.getTime() > Date.now();
+                              nextFetchAt().getTime() > Date.now();
                             return (
                               <span
                                 class={css({
@@ -528,7 +527,7 @@ export function FeedList() {
                               >
                                 Next fetch:{" "}
                                 {isFuture
-                                  ? formatRelativeDate(nextFetch())
+                                  ? formatRelativeDate(nextFetchAt())
                                   : "Soon"}
                               </span>
                             );

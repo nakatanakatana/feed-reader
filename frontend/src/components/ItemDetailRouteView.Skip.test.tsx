@@ -13,7 +13,6 @@ import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
 import {
   GetItemResponseSchema,
   ItemSchema,
-  ListItemSchema,
   ListItemsResponseSchema,
   UpdateItemStatusResponseSchema,
 } from "../gen/item/v1/item_pb";
@@ -39,15 +38,14 @@ describe("ItemDetailRouteView Skip Navigation", () => {
 
   const setupMockData = (
     mockItems = [
-      create(ListItemSchema, { id: "1", title: "Item 1", isRead: false }),
-      create(ListItemSchema, { id: "2", title: "Item 2", isRead: false }),
+      create(ItemSchema, { id: "1", title: "Item 1", isRead: false }),
+      create(ItemSchema, { id: "2", title: "Item 2", isRead: false }),
     ],
   ) => {
     worker.use(
       http.all("*/item.v1.ItemService/ListItems", () => {
         const msg = create(ListItemsResponseSchema, {
           items: mockItems,
-          totalCount: mockItems.length,
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),

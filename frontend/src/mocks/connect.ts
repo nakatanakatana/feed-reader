@@ -38,6 +38,44 @@ export const parseConnectMessage = async (
   return (await request.json()) as JsonValue;
 };
 
+/**
+ * Robust JSON serialization that handles BigInt and Date by converting them to strings.
+ */
+// biome-ignore lint/suspicious/noExplicitAny: MSW HttpResponse requires a type argument
+export const safeJson = (data: unknown): HttpResponse<any> => {
+  const replacer = (_key: string, value: unknown): unknown => {
+    if (typeof value === "bigint") return value.toString();
+    return value;
+  };
+
+  // Pre-process Date objects because JSON.stringify calls .toJSON() before the replacer.
+  const processDates = (obj: unknown): unknown => {
+    if (obj instanceof Date) {
+      if (Number.isNaN(obj.getTime())) {
+        console.warn("safeJson encountered an Invalid Date");
+        return null;
+      }
+      return obj.toISOString();
+    }
+    if (Array.isArray(obj)) {
+      return obj.map(processDates);
+    }
+    if (obj !== null && typeof obj === "object") {
+      return Object.fromEntries(
+        Object.entries(obj).map(([k, v]) => [k, processDates(v)]),
+      );
+    }
+    return obj;
+  };
+
+  const body = JSON.stringify(processDates(data), replacer);
+  return new HttpResponse(body, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};
+
 export const mockConnectWeb =
   <T extends Record<string, MethodDef>>(service: GenService<T>) =>
   <U extends keyof T & string>(props: {
@@ -80,6 +118,6 @@ export const mockConnectWeb =
 
       // Encode the response Message back to JSON
       const respJson = toJson(methodDef.output, resp);
-      return HttpResponse.json(respJson);
+      return safeJson(respJson);
     });
   };
