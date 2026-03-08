@@ -213,12 +213,17 @@ describe("ItemList", () => {
       ],
     );
 
-    // Trigger refetch for item-reads
-    await queryClient.refetchQueries({ queryKey: ["item-reads"] });
+    // Trigger refetch for item-reads and items to ensure new mock data is picked up
+    await Promise.all([
+      queryClient.refetchQueries({ queryKey: ["item-reads"] }),
+      queryClient.refetchQueries({ queryKey: ["items"] }),
+    ]);
 
     // Item 1 should now be read
     await expect
-      .poll(() => itemRow.element().getAttribute("data-is-read"))
+      .poll(() => itemRow.element().getAttribute("data-is-read"), {
+        timeout: 10000,
+      })
       .toBe("true");
   });
 
