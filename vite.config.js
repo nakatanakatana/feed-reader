@@ -99,6 +99,7 @@ export default defineConfig({
   },
   test: {
     environment: "node",
+    silent: "passed-only",
     coverage: {
       provider: "v8",
       reporter: ["lcov"],
@@ -124,7 +125,7 @@ export default defineConfig({
                   headless: true,
                 },
                 exclude: [
-                  "src/pwa-infrastructure.test.ts",
+                  "src/**/*.node.test.{ts,tsx}",
                   "**/node_modules/**",
                   "**/dist/**",
                   "**/cypress/**",
@@ -143,8 +144,11 @@ export default defineConfig({
           name: "node",
           root: "frontend",
           environment: "node",
+          isolate: false,
+          restoreMocks: true,
+          mockReset: true,
           globals: true,
-          include: ["src/pwa-infrastructure.test.ts"],
+          include: ["src/**/*.node.test.{ts,tsx}"],
         },
       },
     ],

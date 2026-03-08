@@ -181,8 +181,13 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
       .element(page.getByRole("heading", { name: "Item 1" }))
       .toBeInTheDocument();
 
-    const closeButton = page.getByRole("button", { name: "Close" });
-    await closeButton.click();
+    const moreActionsButton = page.getByRole("button", {
+      name: "More actions",
+    });
+    await moreActionsButton.click();
+
+    const closeMenuItem = page.getByRole("menuitem", { name: "Close" });
+    await closeMenuItem.click();
 
     await expect.poll(() => history.location.pathname).toBe("/");
     await expect
