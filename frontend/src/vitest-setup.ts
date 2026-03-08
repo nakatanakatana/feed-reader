@@ -47,7 +47,7 @@ expect.addSnapshotSerializer({
 });
 
 beforeAll(async () => {
-  await worker.start({ onUnhandledRequest: "bypass" });
+  await worker.start({ onUnhandledRequest: "bypass", quiet: true });
 });
 
 afterEach(() => {

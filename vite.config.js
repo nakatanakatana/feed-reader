@@ -126,6 +126,7 @@ export default defineConfig({
                 },
                 exclude: [
                   "src/pwa-infrastructure.test.ts",
+                  "src/**/*.node.test.{ts,tsx}",
                   "**/node_modules/**",
                   "**/dist/**",
                   "**/cypress/**",
@@ -144,8 +145,12 @@ export default defineConfig({
           name: "node",
           root: "frontend",
           environment: "node",
+          isolate: false,
           globals: true,
-          include: ["src/pwa-infrastructure.test.ts"],
+          include: [
+            "src/pwa-infrastructure.test.ts",
+            "src/**/*.node.test.{ts,tsx}",
+          ],
         },
       },
     ],
