@@ -35,7 +35,7 @@ describe("Root PWA Badge Integration", () => {
   it("updates PWA badge based on unread items from API", async () => {
     // 0. Reset DB before starting to ensure a clean state
     const { resetDatabase } = await import("../lib/db");
-    resetDatabase();
+    await resetDatabase();
 
     // 1. Setup mock index route
     const indexRoute = createRoute({
@@ -81,7 +81,7 @@ describe("Root PWA Badge Integration", () => {
     );
 
     // Trigger a refetch by resetting DB (which causes live query to re-evaluate)
-    resetDatabase();
+    await resetDatabase();
 
     await expect.poll(() => navigator.clearAppBadge).toHaveBeenCalled();
   });

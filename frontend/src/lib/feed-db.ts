@@ -124,9 +124,11 @@ export const feeds = createRoot(() =>
             }
           }
         } finally {
-          await queryClient.invalidateQueries({ queryKey: ["feeds"] });
-          await queryClient.invalidateQueries({ queryKey: ["tags"] });
-          await queryClient.invalidateQueries({ queryKey: ["feed-tags"] });
+          await Promise.all([
+            queryClient.invalidateQueries({ queryKey: ["feeds"] }),
+            queryClient.invalidateQueries({ queryKey: ["tags"] }),
+            queryClient.invalidateQueries({ queryKey: ["feed-tags"] }),
+          ]);
         }
       },
       onDelete: async ({ transaction }) => {
@@ -137,9 +139,11 @@ export const feeds = createRoot(() =>
             }
           }
         } finally {
-          await queryClient.invalidateQueries({ queryKey: ["feeds"] });
-          await queryClient.invalidateQueries({ queryKey: ["tags"] });
-          await queryClient.invalidateQueries({ queryKey: ["feed-tags"] });
+          await Promise.all([
+            queryClient.invalidateQueries({ queryKey: ["feeds"] }),
+            queryClient.invalidateQueries({ queryKey: ["tags"] }),
+            queryClient.invalidateQueries({ queryKey: ["feed-tags"] }),
+          ]);
         }
       },
     }),

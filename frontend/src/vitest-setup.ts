@@ -50,10 +50,10 @@ beforeAll(async () => {
   await worker.start({ onUnhandledRequest: "bypass" });
 });
 
-afterEach(() => {
+afterEach(async () => {
   worker.resetHandlers();
   resetState();
-  resetDatabase();
+  await resetDatabase();
   vi.useRealTimers();
   vi.clearAllMocks();
 });

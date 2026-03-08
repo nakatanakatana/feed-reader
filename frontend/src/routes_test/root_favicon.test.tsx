@@ -42,7 +42,7 @@ describe("Root Favicon Integration", () => {
   it("updates favicon based on unread items from API", async () => {
     // 0. Reset DB before starting to ensure a clean state
     const { resetDatabase } = await import("../lib/db");
-    resetDatabase();
+    await resetDatabase();
 
     // 1. Setup mock index route
     const indexRoute = createRoute({
@@ -106,7 +106,7 @@ describe("Root Favicon Integration", () => {
     );
 
     // Trigger a refetch
-    resetDatabase();
+    await resetDatabase();
 
     await vi.waitFor(
       () => {
@@ -139,7 +139,7 @@ describe("Root Favicon Integration", () => {
     );
 
     // Trigger a refetch
-    resetDatabase();
+    await resetDatabase();
 
     await vi.waitFor(
       () => {
@@ -165,7 +165,7 @@ describe("Root Favicon Integration", () => {
     );
 
     // Trigger a refetch
-    resetDatabase();
+    await resetDatabase();
 
     await vi.waitFor(
       () => {
