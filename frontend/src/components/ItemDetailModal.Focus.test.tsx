@@ -113,7 +113,7 @@ describe("ItemDetailModal Focus", () => {
 
     // The DOM focus order:
     // 1. Header Title Link: <a ...>Test Item 1</a>
-    // 2. Header Close Button
+    // 2. Header More Actions Button
     // 3. Footer Mark as Read (Prev/Next are disabled in this test case so skipped)
 
     // Initial focus is on the dialog container (index -1)
@@ -123,14 +123,10 @@ describe("ItemDetailModal Focus", () => {
     const titleLink = page.getByRole("link", { name: "Test Item 1" });
     await expect.element(titleLink).toHaveFocus();
 
-    // Tab 2: Should go to Close Button
+    // Tab 2: Should go to More actions Button
     await userEvent.keyboard("{Tab}");
     const kebabMenu = page.getByRole("button", { name: "More actions" });
     await expect.element(kebabMenu).toHaveFocus();
-
-    await userEvent.keyboard("{Tab}");
-    const closeButton = page.getByRole("button", { name: "Close" });
-    await expect.element(closeButton).toHaveFocus();
 
     // Tab 3: Should go to Mark as Read Button
     await userEvent.keyboard("{Tab}");
