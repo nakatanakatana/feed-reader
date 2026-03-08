@@ -23,20 +23,6 @@ import { worker } from "../mocks/browser";
 import { routeTree } from "../routeTree.gen";
 
 // Mock Link from solid-router
-vi.mock("@tanstack/solid-router", async (importOriginal) => {
-  const actual =
-    await importOriginal<typeof import("@tanstack/solid-router")>();
-  return {
-    ...actual,
-    Link: (
-      props: { to: string; children: JSX.Element } & JSX.IntrinsicElements["a"],
-    ) => (
-      <a href={props.to} {...props}>
-        {props.children}
-      </a>
-    ),
-  };
-});
 
 describe("FeedList Sorting", () => {
   let dispose: () => void;

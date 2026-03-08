@@ -22,5 +22,5 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md) 8199701
 
 ## Phase 4: Final Validation
-- [ ] Task: Run all CI checks (linting, tests) to ensure no regressions.
+- [~] Task: Run all CI checks (linting, tests) to ensure no regressions.
 - [ ] Task: Conductor - User Manual Verification 'Phase 4' (Protocol in workflow.md)

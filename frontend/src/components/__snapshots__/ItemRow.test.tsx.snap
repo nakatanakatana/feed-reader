@@ -4,6 +4,8 @@ exports[`ItemRow > renders item title, description and metadata 1`] = `
 <DocumentFragment>
   <div
     class="d_flex ai_center jc_space-between bd_1px_solid bd-c_gray.100 bdr_md cursor_pointer w_full ov_hidden hover:bg-c_gray.50"
+    data-is-read="false"
+    data-testid="item-row-1"
   >
     <div
       class="d_flex ai_center flex_1"

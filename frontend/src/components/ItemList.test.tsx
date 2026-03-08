@@ -182,11 +182,8 @@ describe("ItemList", () => {
       document.body,
     );
 
-    const item1 = page.getByText("Item 1");
-    await expect.element(item1).toBeInTheDocument();
-
-    // Verify it's unread (has blue color class)
-    await expect.element(item1).toHaveClass(/c_blue\.600/);
+    // Verify it's unread
+    await expect.element(page.getByTestId("item-row-1")).toHaveAttribute("data-is-read", "false");
 
     // Mock delta sync: Item 1 becomes read
     setupMockData(
@@ -211,8 +208,8 @@ describe("ItemList", () => {
     // Trigger refetch for item-reads
     await queryClient.refetchQueries({ queryKey: ["item-reads"] });
 
-    // Item 1 should now be read (has gray color class)
-    await expect.element(item1).toHaveClass(/c_gray\.500/);
+    // Item 1 should now be read
+    await expect.element(page.getByTestId("item-row-1")).toHaveAttribute("data-is-read", "true");
   });
 
   it("renders tag filters in a horizontal scroll list", async () => {
