@@ -361,7 +361,8 @@ export const handlers = [
     method: "listItems",
     handler: (req) => {
       // Basic mock pagination: pageToken is the index
-      const start = req.pageToken ? Number.parseInt(req.pageToken, 10) : 0;
+      const parsedToken = req.pageToken ? Number.parseInt(req.pageToken, 10) : 0;
+      const start = Number.isNaN(parsedToken) ? 0 : parsedToken;
       const pageSize = req.pageSize || 100;
 
       let filteredItems = items;

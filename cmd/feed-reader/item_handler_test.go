@@ -191,10 +191,8 @@ func TestItemServer(t *testing.T) {
 		// If we requested 2 and got 2, and there are NO MORE, hasNextPage will be false.
 		assert.Equal(t, res2.Msg.NextPageToken, "")
 
-		// Verify order (should be descending by created_at)
-		// Rich Item (now + 1h), Item with desc (now - 30m), Item 2 (now - 30m), Item 1 (now - 2h)
-		// Note: "Item with desc" and "Item 2" both have t2 (now - 30m).
-		// The secondary sort is ID.
+		// Verify order (The ListItems implementation orders results by created_at ASC, then by ID ASC)
+		// Items with the same created_at (e.g., "Item with desc" and "Item 2") are ordered by ID.
 		allIDs := []string{res1.Msg.Items[0].Id, res1.Msg.Items[1].Id, res2.Msg.Items[0].Id, res2.Msg.Items[1].Id}
 		// Ensure all are unique
 		idMap := make(map[string]bool)
