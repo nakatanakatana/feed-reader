@@ -86,6 +86,31 @@
       "algorithm": "sha256"
     },
     {
+      "id": "github_release/github.com/k1LoW/mo/v0.16.1/mo_v0.16.1_darwin_amd64.zip",
+      "checksum": "E1489BE9E6410CA148E305C001A040892D21EDD7977B3614DAA9475022BAC0A6",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/k1LoW/mo/v0.16.1/mo_v0.16.1_darwin_arm64.zip",
+      "checksum": "30BFDD68B6E50F5D9E368256D3A750BCCF68C9F1303601A723E1F19695653C5D",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/k1LoW/mo/v0.16.1/mo_v0.16.1_linux_amd64.tar.gz",
+      "checksum": "06B016C085F584B3114E0234AA24D094F9E30961383AB3B4F848979901A01F03",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/k1LoW/mo/v0.16.1/mo_v0.16.1_linux_arm64.tar.gz",
+      "checksum": "5A5F3539230E616DF5C5CFE7CB893D53D1B59E02DA4C2243EB6BA9CA1DD0C86A",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/k1LoW/mo/v0.16.1/mo_v0.16.1_windows_amd64.tar.gz",
+      "checksum": "158348C7E67D41FF134670656D5DD0ADEB92FDB67287E68A23F4C8609F692A05",
+      "algorithm": "sha256"
+    },
+    {
       "id": "github_release/github.com/k1LoW/octocov/v0.75.3/octocov_v0.75.3_darwin_amd64.zip",
       "checksum": "EA56EEFC57CAE4C953DEFC334D33563DD0EEF708876156D7D2392569E71717AE",
       "algorithm": "sha256"
