@@ -72,7 +72,7 @@ exports[`ItemList > displays a list of items 1`] = `
                   <span
                     class="fs_xs fw_bold px_2 py_0.5 bdr_full min-w_2rem ta_center bg-c_blue.100 c_blue.700 ml_1.5 fs_10px min-w_1.5rem"
                   >
-                    1
+                    2
                   </span>
                 </button>
               </section>

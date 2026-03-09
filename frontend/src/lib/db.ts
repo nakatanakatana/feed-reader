@@ -5,6 +5,8 @@ export * from "./feed-db";
 export * from "./item-db";
 export * from "./item-read-db";
 export * from "./item-sync-state";
+export * from "./queries/feed-queries";
+export * from "./queries/item-queries";
 export * from "./tag-db";
 
 // Import for db object

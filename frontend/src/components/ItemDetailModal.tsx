@@ -1,4 +1,4 @@
-import { coalesce, eq, useLiveQuery } from "@tanstack/solid-db";
+import { eq, useLiveQuery } from "@tanstack/solid-db";
 import {
   createMutation,
   useQuery,
@@ -16,14 +16,15 @@ import {
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
 import { itemBlockRuleInsert, urlParsingRules } from "../lib/block-db";
-import { getItem, type Item, items } from "../lib/item-db";
+import { getItem, type Item } from "../lib/item-db";
 import { ITEM_STALE_TIME } from "../lib/item-query-constants";
-import { itemReadCollection, updateItemReadStatus } from "../lib/item-read-db";
+import { updateItemReadStatus } from "../lib/item-read-db";
 import {
   extractHostname,
   formatDate,
   normalizeCategories,
 } from "../lib/item-utils";
+import { buildItemsWithReadStateQuery } from "../lib/queries/item-queries";
 import { useToast } from "../lib/toast";
 import { URLParser } from "../lib/url-parser";
 import { useSwipe } from "../lib/use-swipe";
@@ -268,38 +269,12 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   // Prioritize looking up the target item within the items collection
   const collectionItems = useLiveQuery((q) => {
     const id = props.itemId;
-    if (!id || id === "end-of-list") {
-      // Return a non-matching query to initialize the signal correctly
-      return (
-        q
-          .from({ item: items() })
-          // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
-          .leftJoin({ read: itemReadCollection() }, ({ item, read }: any) =>
-            eq(item.id, read.id),
-          )
-          // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
-          .where(({ item }: any) => eq(item.id, "__none__"))
-          // biome-ignore lint/suspicious/noExplicitAny: TanStack DB select types
-          .select(({ item, read }: any) => ({
-            ...item,
-            isRead: coalesce(read?.isRead, item.isRead),
-          }))
-      );
-    }
     return (
-      q
-        .from({ item: items() })
-        // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
-        .leftJoin({ read: itemReadCollection() }, ({ item, read }: any) =>
-          eq(item.id, read.id),
-        )
+      buildItemsWithReadStateQuery(q)
         // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
-        .where(({ item }: any) => eq(item.id, id))
-        // biome-ignore lint/suspicious/noExplicitAny: TanStack DB select types
-        .select(({ item, read }: any) => ({
-          ...item,
-          isRead: coalesce(read?.isRead, item.isRead),
-        }))
+        .where(({ item }: any) =>
+          eq(item.id, !id || id === "end-of-list" ? "__none__" : id),
+        )
     );
   });
 

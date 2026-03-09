@@ -2,7 +2,7 @@ import { useLiveQuery } from "@tanstack/solid-db";
 import { createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
-import { tags, tagsFeedQuery } from "../lib/tag-db";
+import { tagPickerQuery, tags } from "../lib/db";
 import { ActionButton } from "./ui/ActionButton";
 import { Badge } from "./ui/Badge";
 import { EmptyState } from "./ui/EmptyState";
@@ -10,11 +10,7 @@ import { EmptyState } from "./ui/EmptyState";
 export const TagManagement = () => {
   const [newTagName, setNewTagName] = createSignal("");
 
-  const tagsQuery = useLiveQuery((q) => {
-    return q
-      .from({ tag: tagsFeedQuery })
-      .orderBy(({ tag }) => tag.feedCount, "desc");
-  });
+  const tagsQuery = useLiveQuery(() => tagPickerQuery);
 
   const handleCreateTag = (e: Event) => {
     e.preventDefault();

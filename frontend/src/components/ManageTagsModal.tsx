@@ -3,8 +3,7 @@ import { useMutation } from "@tanstack/solid-query";
 import { createSignal, For } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
-import { manageFeedTags } from "../lib/db";
-import { tags as tagsCollection } from "../lib/tag-db";
+import { manageFeedTags, tagPickerQuery } from "../lib/db";
 import { ActionButton } from "./ui/ActionButton";
 import { Modal } from "./ui/Modal";
 
@@ -15,9 +14,7 @@ interface ManageTagsModalProps {
 }
 
 export function ManageTagsModal(props: ManageTagsModalProps) {
-  const tagsQuery = useLiveQuery((q) => {
-    return q.from({ tag: tagsCollection }).select(({ tag }) => ({ ...tag }));
-  });
+  const tagsQuery = useLiveQuery(() => tagPickerQuery);
   const manageTagsMutation = useMutation(() => ({
     mutationFn: manageFeedTags,
   }));

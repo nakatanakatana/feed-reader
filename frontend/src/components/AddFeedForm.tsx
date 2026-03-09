@@ -2,8 +2,7 @@ import { useLiveQuery } from "@tanstack/solid-db";
 import { createSignal, For, type JSX, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
-import { feedInsert } from "../lib/db";
-import { tagsFeedQuery } from "../lib/tag-db";
+import { feedInsert, tagPickerQuery } from "../lib/db";
 import { ActionButton } from "./ui/ActionButton";
 import { HorizontalScrollList } from "./ui/HorizontalScrollList";
 import { TagChip } from "./ui/TagChip";
@@ -18,11 +17,7 @@ export function AddFeedForm(props: AddFeedFormProps) {
   const [isPending, setIsPending] = createSignal(false);
   const [error, setError] = createSignal<Error | null>(null);
 
-  const tagsQuery = useLiveQuery((q) => {
-    return q
-      .from({ tag: tagsFeedQuery })
-      .orderBy(({ tag }) => tag.feedCount, "desc");
-  });
+  const tagsQuery = useLiveQuery(() => tagPickerQuery);
 
   const handleSubmit = async (e: Event) => {
     e.preventDefault();

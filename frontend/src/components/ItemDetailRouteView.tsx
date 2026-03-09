@@ -1,7 +1,12 @@
-import { eq, useLiveQuery } from "@tanstack/solid-db";
+import { useLiveQuery } from "@tanstack/solid-db";
 import { useNavigate } from "@tanstack/solid-router";
 import { createEffect, createMemo } from "solid-js";
-import { feedTag, type Item, items, updateItemReadStatus } from "../lib/db";
+import {
+  buildItemsWithReadStateQuery,
+  feedTag,
+  type Item,
+  updateItemReadStatus,
+} from "../lib/db";
 import { getPrefetchIds, prefetchItems } from "../lib/item-prefetch";
 import { itemStore } from "../lib/item-store";
 import type { DateFilterValue } from "../lib/item-utils";
@@ -42,25 +47,10 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
   const isEndOfList = () => props.itemId === "end-of-list";
 
   const itemsQuery = useLiveQuery((q) => {
-    let query = q
-      .from({ item: items() })
-      .orderBy(({ item }) => item.publishedAt, {
-        direction: "asc",
-        nulls: "last",
-      })
-      .orderBy(({ item }) => item.createdAt, "asc");
-    if (props.tagId) {
-      query = query
-        .innerJoin(
-          { ft: feedTag },
-          // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
-          ({ item, ft }: any) => eq(item.feedId, ft.feedId),
-        )
-        // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
-        .where(({ ft }: any) => eq(ft.tagId, props.tagId));
-    }
-    // biome-ignore lint/suspicious/noExplicitAny: TanStack DB select types
-    return query.select(({ item }: any) => ({ ...item }));
+    return buildItemsWithReadStateQuery(q, {
+      feedTagCollection: feedTag,
+      tagId: props.tagId,
+    });
   });
 
   const filteredItems = createMemo(() => {
