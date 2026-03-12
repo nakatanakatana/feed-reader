@@ -28,6 +28,10 @@ describe("ItemList Clear Read Items", () => {
   let dispose: () => void;
   let listItemsCount = 0;
 
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
   afterEach(() => {
     if (dispose) dispose();
     document.body.innerHTML = "";
