@@ -1,0 +1,26 @@
+schema: spec-driven
+
+context: |
+  Language: Japanese for user interaction; English for all code, documentation, and commits.
+
+  Tech Stack:
+  - Backend: Go (Connect RPC, SQLite/sqlc, gofeed, buf, aqua)
+  - Frontend: SolidJS, TanStack Router/Query/DB, TypeScript, Panda CSS
+  - Testing: gotest.tools (with hand-written mocks), rapid, Vitest, Playwright, MSW, fast-check
+  - Tooling: OpenTelemetry, BiomeJS, Docker
+
+  Workflow & Conventions:
+  - Test-Driven Development (TDD) required (Red-Green-Refactor)
+  - Target High Code Coverage (>80%)
+  - Conventional Commits strictly followed
+  - Non-Interactive & CI-Aware commands preferred
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always include a "Non-goals" section
+#     tasks:
+#       - Break tasks into chunks of max 2 hours
