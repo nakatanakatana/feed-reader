@@ -1,8 +1,8 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   getStorageValue,
-  setStorageValue,
   STORAGE_KEYS,
+  setStorageValue,
 } from "./storage-utils";
 
 describe("storage-utils", () => {
@@ -22,8 +22,7 @@ describe("storage-utils", () => {
     it("should handle objects", () => {
       const key = STORAGE_KEYS.FEED_SORT_BY;
       const value = { sort: "title" };
-      // @ts-expect-error - testing arbitrary objects
-      setStorageValue(key, value);
+      setStorageValue(key, value as unknown as any);
       expect(localStorage.getItem(key)).toBe('{"sort":"title"}');
     });
 
@@ -35,7 +34,9 @@ describe("storage-utils", () => {
     });
 
     it("should log error on failure", () => {
-      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      const consoleSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
       const originalSetItem = localStorage.setItem;
       // Manually overwrite to ensure it throws
       localStorage.setItem = () => {
@@ -81,7 +82,9 @@ describe("storage-utils", () => {
     });
 
     it("should return default value on parse error", () => {
-      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      const consoleSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
       const key = STORAGE_KEYS.FEED_SORT_BY;
       localStorage.setItem(key, "invalid-json");
 

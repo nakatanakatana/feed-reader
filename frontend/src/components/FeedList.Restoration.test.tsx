@@ -9,14 +9,17 @@ import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { ListFeedsResponseSchema, ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
+import {
+  ListFeedsResponseSchema,
+  ListFeedTagsResponseSchema,
+} from "../gen/feed/v1/feed_pb";
 import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
+import { feedStore } from "../lib/feed-store";
 import { queryClient, transport } from "../lib/query";
-import { TransportProvider } from "../lib/transport-context";
 import { STORAGE_KEYS } from "../lib/storage-utils";
+import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
 import { routeTree } from "../routeTree.gen";
-import { feedStore } from "../lib/feed-store";
 
 describe("FeedList Restoration", () => {
   let dispose: () => void;
@@ -26,23 +29,32 @@ describe("FeedList Restoration", () => {
     // Reset store state to defaults manually since it's a singleton
     feedStore.setSortBy("title_asc");
     feedStore.setSelectedTagId(undefined);
-    
+
     worker.use(
       http.all("*/feed.v1.FeedService/ListFeeds", () => {
         return HttpResponse.json(
-          toJson(ListFeedsResponseSchema, create(ListFeedsResponseSchema, { feeds: [] })),
+          toJson(
+            ListFeedsResponseSchema,
+            create(ListFeedsResponseSchema, { feeds: [] }),
+          ),
         );
       }),
       http.all("*/tag.v1.TagService/ListTags", () => {
         return HttpResponse.json(
-          toJson(ListTagsResponseSchema, create(ListTagsResponseSchema, { tags: [
-            { id: "tag-1", name: "News" }
-          ] })),
+          toJson(
+            ListTagsResponseSchema,
+            create(ListTagsResponseSchema, {
+              tags: [{ id: "tag-1", name: "News" }],
+            }),
+          ),
         );
       }),
       http.all("*/feed.v1.FeedService/ListFeedTags", () => {
         return HttpResponse.json(
-          toJson(ListFeedTagsResponseSchema, create(ListFeedTagsResponseSchema, { feedTags: [] })),
+          toJson(
+            ListFeedTagsResponseSchema,
+            create(ListFeedTagsResponseSchema, { feedTags: [] }),
+          ),
         );
       }),
     );
@@ -56,7 +68,10 @@ describe("FeedList Restoration", () => {
 
   it("restores sortBy and selectedTagId from localStorage on mount", async () => {
     // 1. Pre-set values in localStorage
-    localStorage.setItem(STORAGE_KEYS.FEED_SORT_BY, JSON.stringify("last_fetched"));
+    localStorage.setItem(
+      STORAGE_KEYS.FEED_SORT_BY,
+      JSON.stringify("last_fetched"),
+    );
     localStorage.setItem(STORAGE_KEYS.FEED_TAG_FILTER, JSON.stringify("tag-1"));
 
     // 2. Manually trigger re-init logic or just rely on the fact that we'll set the store

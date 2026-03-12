@@ -20,11 +20,15 @@ describe("feedStore Persistence", () => {
   it("should save sortBy to localStorage when changed", async () => {
     feedStore.setSortBy("last_fetched");
     await wait(); // wait for effect
-    expect(localStorage.getItem(STORAGE_KEYS.FEED_SORT_BY)).toBe('"last_fetched"');
+    expect(localStorage.getItem(STORAGE_KEYS.FEED_SORT_BY)).toBe(
+      '"last_fetched"',
+    );
 
     feedStore.setSortBy("title_desc");
     await wait(); // wait for effect
-    expect(localStorage.getItem(STORAGE_KEYS.FEED_SORT_BY)).toBe('"title_desc"');
+    expect(localStorage.getItem(STORAGE_KEYS.FEED_SORT_BY)).toBe(
+      '"title_desc"',
+    );
   });
 
   it("should save selectedTagId to localStorage when changed", async () => {
@@ -34,7 +38,7 @@ describe("feedStore Persistence", () => {
 
     feedStore.setSelectedTagId(null); // untagged
     await wait(); // wait for effect
-    expect(localStorage.getItem(STORAGE_KEYS.FEED_TAG_FILTER)).toBe('null');
+    expect(localStorage.getItem(STORAGE_KEYS.FEED_TAG_FILTER)).toBe("null");
 
     feedStore.setSelectedTagId(undefined); // all
     await wait(); // wait for effect

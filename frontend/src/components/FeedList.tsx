@@ -1,6 +1,6 @@
 import { eq, isUndefined, useLiveQuery } from "@tanstack/solid-db";
 import { useMutation } from "@tanstack/solid-query";
-import { createEffect, createSignal, For, type JSX, Show } from "solid-js";
+import { createEffect, createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import {
@@ -12,7 +12,7 @@ import {
   refreshFeeds,
   suspendFeeds,
 } from "../lib/db";
-import { feedStore, type FeedSortBy } from "../lib/feed-store";
+import { type FeedSortBy, feedStore } from "../lib/feed-store";
 import { fetchingState } from "../lib/fetching-state";
 import { formatDate, formatRelativeDate } from "../lib/item-utils";
 import { tagsFeedQuery } from "../lib/tag-db";
@@ -41,10 +41,11 @@ export function FeedList() {
 
   // Force sync the select value to DOM because browser might reset it if options are not ready
   createEffect(() => {
-    const targetValue = feedStore.state.selectedTagId === null 
-      ? "untagged" 
-      : (feedStore.state.selectedTagId ?? "all");
-    
+    const targetValue =
+      feedStore.state.selectedTagId === null
+        ? "untagged"
+        : (feedStore.state.selectedTagId ?? "all");
+
     if (tagSelectRef && tagSelectRef.value !== targetValue) {
       tagSelectRef.value = targetValue;
     }
@@ -234,7 +235,9 @@ export function FeedList() {
             id="sort-by"
             aria-label="Sort by"
             value={feedStore.state.sortBy}
-            onInput={(e) => feedStore.setSortBy(e.currentTarget.value as FeedSortBy)}
+            onInput={(e) =>
+              feedStore.setSortBy(e.currentTarget.value as FeedSortBy)
+            }
             class={css({
               fontSize: "xs",
               px: "2",
@@ -256,7 +259,11 @@ export function FeedList() {
           <select
             ref={tagSelectRef}
             aria-label="Filter by tag"
-            value={feedStore.state.selectedTagId === null ? "untagged" : (feedStore.state.selectedTagId ?? "all")}
+            value={
+              feedStore.state.selectedTagId === null
+                ? "untagged"
+                : (feedStore.state.selectedTagId ?? "all")
+            }
             disabled={tagsQuery.isLoading}
             onInput={(e) => {
               const value = e.currentTarget.value;
@@ -280,7 +287,9 @@ export function FeedList() {
             })}
           >
             <Show when={tagsQuery.isLoading}>
-              <option value={feedStore.state.selectedTagId ?? "all"}>Loading...</option>
+              <option value={feedStore.state.selectedTagId ?? "all"}>
+                Loading...
+              </option>
             </Show>
             <option value="all">All</option>
             <option value="untagged">Untagged</option>
