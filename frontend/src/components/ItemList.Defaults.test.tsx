@@ -20,6 +20,10 @@ import { routeTree } from "../routeTree.gen";
 describe("ItemList Defaults", () => {
   let dispose: () => void;
 
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
   afterEach(() => {
     if (dispose) dispose();
     document.body.innerHTML = "";
