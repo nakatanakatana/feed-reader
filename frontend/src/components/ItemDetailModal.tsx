@@ -1,4 +1,4 @@
-import { eq, useLiveQuery } from "@tanstack/solid-db";
+import { useLiveQuery } from "@tanstack/solid-db";
 import {
   createMutation,
   useQuery,
@@ -16,6 +16,7 @@ import {
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
 import { itemBlockRuleInsert, urlParsingRules } from "../lib/block-db";
+import { buildItemsWithReadStateQuery } from "../lib/db";
 import { getItem, type Item } from "../lib/item-db";
 import { ITEM_STALE_TIME } from "../lib/item-query-constants";
 import { updateItemReadStatus } from "../lib/item-read-db";
@@ -24,7 +25,6 @@ import {
   formatDate,
   normalizeCategories,
 } from "../lib/item-utils";
-import { buildItemsWithReadStateQuery } from "../lib/queries/item-queries";
 import { useToast } from "../lib/toast";
 import { URLParser } from "../lib/url-parser";
 import { useSwipe } from "../lib/use-swipe";
@@ -269,13 +269,9 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   // Prioritize looking up the target item within the items collection
   const collectionItems = useLiveQuery((q) => {
     const id = props.itemId;
-    return (
-      buildItemsWithReadStateQuery(q)
-        // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
-        .where(({ item }: any) =>
-          eq(item.id, !id || id === "end-of-list" ? "__none__" : id),
-        )
-    );
+    return buildItemsWithReadStateQuery(q, {
+      itemId: !id || id === "end-of-list" ? "__none__" : id,
+    });
   });
 
   const collectionItem = () => collectionItems()[0];

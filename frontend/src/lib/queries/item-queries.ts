@@ -29,6 +29,8 @@ interface ItemsWithReadStateOptions {
   // biome-ignore lint/suspicious/noExplicitAny: TanStack DB collection types are too strict for shared builders
   feedTagCollection?: any;
   tagId?: string;
+  itemId?: string;
+  unreadOnly?: boolean;
 }
 
 interface TagUnreadCountsOptions {
@@ -53,14 +55,7 @@ export const buildItemsWithReadStateQuery = (
     // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
     .leftJoin({ read: readCollection }, ({ item, read }: any) =>
       eq(item.id, read.id),
-    )
-    // biome-ignore lint/suspicious/noExplicitAny: TanStack DB builder types are too loose here
-    .orderBy(({ item }: any) => item.publishedAt, {
-      direction: "asc",
-      nulls: "last",
-    })
-    // biome-ignore lint/suspicious/noExplicitAny: TanStack DB builder types are too loose here
-    .orderBy(({ item }: any) => item.createdAt, "asc");
+    );
 
   if (options.tagId) {
     query = query
@@ -72,6 +67,27 @@ export const buildItemsWithReadStateQuery = (
       // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
       .where(({ ft }: any) => eq(ft.tagId, options.tagId));
   }
+
+  if (options.itemId) {
+    // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
+    query = query.where(({ item }: any) => eq(item.id, options.itemId));
+  }
+
+  if (options.unreadOnly) {
+    // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
+    query = query.where(({ item, read }: any) =>
+      eq(coalesce(read?.isRead, item.isRead), false),
+    );
+  }
+
+  query = query
+    // biome-ignore lint/suspicious/noExplicitAny: TanStack DB builder types are too loose here
+    .orderBy(({ item }: any) => item.publishedAt, {
+      direction: "asc",
+      nulls: "last",
+    })
+    // biome-ignore lint/suspicious/noExplicitAny: TanStack DB builder types are too loose here
+    .orderBy(({ item }: any) => item.createdAt, "asc");
 
   // biome-ignore lint/suspicious/noExplicitAny: TanStack DB select types
   return query.select(({ item, read }: any) => ({
@@ -85,9 +101,7 @@ export const itemsWithReadStateQuery = createLiveQueryCollection((q) =>
 );
 
 export const itemsUnreadQuery = createLiveQueryCollection((q) =>
-  buildItemsWithReadStateQuery(q)
-    // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
-    .where(({ isRead }: any) => eq(isRead, false)),
+  buildItemsWithReadStateQuery(q, { unreadOnly: true }),
 );
 
 export const buildTagUnreadCountsQuery = (

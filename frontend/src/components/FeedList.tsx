@@ -7,6 +7,7 @@ import {
   buildFeedListQuery,
   exportFeeds,
   type Feed,
+  type FeedSortOption,
   feedDelete,
   feedTag,
   refreshFeeds,
@@ -33,7 +34,7 @@ export function FeedList() {
   const [selectedTagId, setSelectedTagId] = createSignal<
     string | undefined | null
   >();
-  const [sortBy, setSortBy] = createSignal<string>("title_asc");
+  const [sortBy, setSortBy] = createSignal<FeedSortOption>("title_asc");
   const [selectedFeedIds, setSelectedFeedIds] = createSignal<string[]>([]);
   const [isManageModalOpen, setIsManageModalOpen] = createSignal(false);
 
@@ -43,11 +44,7 @@ export function FeedList() {
     return buildFeedListQuery(q, {
       feedTagCollection: feedTag,
       tagId: selectedTagId(),
-      sortBy: sortBy() as
-        | "title_asc"
-        | "title_desc"
-        | "last_fetched"
-        | "next_fetch",
+      sortBy: sortBy(),
     });
   });
 
@@ -185,7 +182,7 @@ export function FeedList() {
             id="sort-by"
             aria-label="Sort by"
             value={sortBy()}
-            onInput={(e) => setSortBy(e.currentTarget.value)}
+            onInput={(e) => setSortBy(e.currentTarget.value as FeedSortOption)}
             class={css({
               fontSize: "xs",
               px: "2",
