@@ -1,20 +1,21 @@
-import { eq, isUndefined, useLiveQuery } from "@tanstack/solid-db";
+import { useLiveQuery } from "@tanstack/solid-db";
 import { useMutation } from "@tanstack/solid-query";
 import { createEffect, createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import {
+  buildFeedListQuery,
   exportFeeds,
   type Feed,
+  type FeedSortOption,
   feedDelete,
-  feeds,
   feedTag,
   refreshFeeds,
   suspendFeeds,
+  tagPickerQuery,
 } from "../lib/db";
 import { fetchingState } from "../lib/fetching-state";
 import { formatDate, formatRelativeDate } from "../lib/item-utils";
-import { tagsFeedQuery } from "../lib/tag-db";
 import { BulkActionBar } from "./BulkActionBar";
 import { ManageTagsModal } from "./ManageTagsModal";
 import { ActionButton } from "./ui/ActionButton";
@@ -33,49 +34,18 @@ export function FeedList() {
   const [selectedTagId, setSelectedTagId] = createSignal<
     string | undefined | null
   >();
-  const [sortBy, setSortBy] = createSignal<string>("title_asc");
+  const [sortBy, setSortBy] = createSignal<FeedSortOption>("title_asc");
   const [selectedFeedIds, setSelectedFeedIds] = createSignal<string[]>([]);
   const [isManageModalOpen, setIsManageModalOpen] = createSignal(false);
 
-  const tagsQuery = useLiveQuery((q) => {
-    return q.from({ tag: tagsFeedQuery }).select(({ tag }) => ({ ...tag }));
-  });
+  const tagsQuery = useLiveQuery(() => tagPickerQuery);
 
   const feedListQuery = useLiveQuery((q) => {
-    const tagId = selectedTagId();
-    const currentSort = sortBy();
-    let query = q.from({ feed: feeds });
-
-    if (tagId === null) {
-      // untagged
-      query = query
-        .leftJoin({ ft: feedTag }, ({ feed, ft }) => eq(feed.id, ft.feedId))
-        .where(({ ft }) => isUndefined(ft));
-    }
-
-    if (tagId && tagId !== null) {
-      query = query
-        .leftJoin({ ft: feedTag }, ({ feed, ft }) => eq(feed.id, ft.feedId))
-        .where(({ ft }) => eq(ft?.tagId, tagId));
-    }
-
-    if (currentSort === "title_desc") {
-      query = query.orderBy(({ feed }) => feed.title, "desc");
-    } else if (currentSort === "last_fetched") {
-      query = query
-        .orderBy(({ feed }) => feed.lastFetchedAt, "asc")
-        .orderBy(({ feed }) => feed.title, "asc");
-    } else if (currentSort === "next_fetch") {
-      query = query
-        .orderBy(({ feed }) => feed.nextFetchAt, "asc")
-        .orderBy(({ feed }) => feed.title, "asc");
-    } else {
-      query = query.orderBy(({ feed }) => feed.title, "asc");
-    }
-
-    return query.select(({ feed }) => ({
-      ...feed,
-    }));
+    return buildFeedListQuery(q, {
+      feedTagCollection: feedTag,
+      tagId: selectedTagId(),
+      sortBy: sortBy(),
+    });
   });
 
   const allVisibleSelected = () => {
@@ -212,7 +182,7 @@ export function FeedList() {
             id="sort-by"
             aria-label="Sort by"
             value={sortBy()}
-            onInput={(e) => setSortBy(e.currentTarget.value)}
+            onInput={(e) => setSortBy(e.currentTarget.value as FeedSortOption)}
             class={css({
               fontSize: "xs",
               px: "2",
@@ -301,8 +271,8 @@ export function FeedList() {
           })}
         >
           <ul class={stack({ gap: "2", width: "full" })}>
-            <For each={feedListQuery()}>
-              {(feed: Feed) => (
+            <For each={feedListQuery() as Feed[]}>
+              {(feed) => (
                 <li
                   onClick={() => toggleFeedSelection(feed.id)}
                   onKeyDown={(e) => {

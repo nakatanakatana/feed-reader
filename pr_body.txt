@@ -1,0 +1,12 @@
+This PR centralizes TanStack DB query definitions into a shared query layer and updates the OpenSpec documentation.
+
+### Changes:
+- **Frontend Refactor:**
+  - Introduced `frontend/src/lib/queries/` for domain-oriented query modules.
+  - Extracted reusable article, feed, and tag queries.
+  - Refactored `ItemList`, `ItemDetailRouteView`, and `FeedList` to use shared queries.
+  - Added `frontend/src/lib/queries/shared-queries.node.test.ts` for query-specific testing.
+- **OpenSpec Updates:**
+  - Created `frontend-query-architecture` specification.
+  - Updated `article-management` and `feed-management` specifications with new requirements and scenarios.
+  - Archived the `centralize-tanstack-db-queries` change workflow.
