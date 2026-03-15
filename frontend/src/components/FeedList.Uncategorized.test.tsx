@@ -40,7 +40,11 @@ vi.mock("@tanstack/solid-router", async (importOriginal) => {
 describe("FeedList Tag Filters", () => {
   let dispose: () => void;
 
-  afterEach(() => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  afterEach(async () => {
     if (dispose) dispose();
     document.body.innerHTML = "";
     vi.clearAllMocks();

@@ -25,6 +25,7 @@ describe("FeedList", () => {
   let dispose: () => void;
 
   beforeEach(() => {
+    localStorage.clear();
     vi.setSystemTime(new Date("2026-03-07T12:00:00Z"));
   });
 

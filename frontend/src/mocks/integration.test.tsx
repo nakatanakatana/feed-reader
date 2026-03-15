@@ -6,7 +6,7 @@ import {
   RouterProvider,
 } from "@tanstack/solid-router";
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { page } from "vitest/browser";
 import { queryClient } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
@@ -14,6 +14,10 @@ import { routeTree } from "../routeTree.gen";
 
 describe("MSW Integration", () => {
   let dispose: () => void;
+
+  beforeEach(() => {
+    localStorage.clear();
+  });
 
   afterEach(() => {
     if (dispose) dispose();

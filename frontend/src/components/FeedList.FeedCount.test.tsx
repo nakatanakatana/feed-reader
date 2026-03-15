@@ -20,7 +20,11 @@ import { routeTree } from "../routeTree.gen";
 describe("FeedList Feed Counts", () => {
   let dispose: () => void;
 
-  afterEach(() => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  afterEach(async () => {
     if (dispose) dispose();
     document.body.innerHTML = "";
     vi.clearAllMocks();

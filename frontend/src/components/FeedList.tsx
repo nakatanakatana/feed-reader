@@ -12,6 +12,7 @@ import {
   refreshFeeds,
   suspendFeeds,
 } from "../lib/db";
+import { type FeedSortBy, feedStore } from "../lib/feed-store";
 import { fetchingState } from "../lib/fetching-state";
 import { formatDate, formatRelativeDate } from "../lib/item-utils";
 import { tagsFeedQuery } from "../lib/tag-db";
@@ -30,20 +31,29 @@ export function FeedList() {
     mutationFn: (params: { ids: string[]; seconds: number }) =>
       suspendFeeds(params.ids, params.seconds),
   }));
-  const [selectedTagId, setSelectedTagId] = createSignal<
-    string | undefined | null
-  >();
-  const [sortBy, setSortBy] = createSignal<string>("title_asc");
   const [selectedFeedIds, setSelectedFeedIds] = createSignal<string[]>([]);
   const [isManageModalOpen, setIsManageModalOpen] = createSignal(false);
+  let tagSelectRef: HTMLSelectElement | undefined;
 
   const tagsQuery = useLiveQuery((q) => {
     return q.from({ tag: tagsFeedQuery }).select(({ tag }) => ({ ...tag }));
   });
 
+  // Force sync the select value to DOM because browser might reset it if options are not ready
+  createEffect(() => {
+    const targetValue =
+      feedStore.state.selectedTagId === null
+        ? "untagged"
+        : (feedStore.state.selectedTagId ?? "all");
+
+    if (tagSelectRef && tagSelectRef.value !== targetValue) {
+      tagSelectRef.value = targetValue;
+    }
+  });
+
   const feedListQuery = useLiveQuery((q) => {
-    const tagId = selectedTagId();
-    const currentSort = sortBy();
+    const tagId = feedStore.state.selectedTagId;
+    const currentSort = feedStore.state.sortBy;
     let query = q.from({ feed: feeds });
 
     if (tagId === null) {
@@ -76,6 +86,19 @@ export function FeedList() {
     return query.select(({ feed }) => ({
       ...feed,
     }));
+  });
+
+  // Ensure selectedTagId is valid once tags load
+  createEffect(() => {
+    const tags = tagsQuery();
+    const currentTagId = feedStore.state.selectedTagId;
+    if (tags.length > 0 && typeof currentTagId === "string") {
+      const exists = tags.some((t) => t.id === currentTagId);
+      if (!exists && !tagsQuery.isLoading) {
+        // Tag no longer exists, reset to all
+        feedStore.setSelectedTagId(undefined);
+      }
+    }
   });
 
   const allVisibleSelected = () => {
@@ -211,8 +234,10 @@ export function FeedList() {
           <select
             id="sort-by"
             aria-label="Sort by"
-            value={sortBy()}
-            onInput={(e) => setSortBy(e.currentTarget.value)}
+            value={feedStore.state.sortBy}
+            onInput={(e) =>
+              feedStore.setSortBy(e.currentTarget.value as FeedSortBy)
+            }
             class={css({
               fontSize: "xs",
               px: "2",
@@ -232,16 +257,22 @@ export function FeedList() {
             Filter:
           </span>
           <select
+            ref={tagSelectRef}
             aria-label="Filter by tag"
-            value={selectedTagId() ?? "all"}
+            value={
+              feedStore.state.selectedTagId === null
+                ? "untagged"
+                : (feedStore.state.selectedTagId ?? "all")
+            }
+            disabled={tagsQuery.isLoading}
             onInput={(e) => {
               const value = e.currentTarget.value;
               if (value === "all") {
-                setSelectedTagId(undefined);
+                feedStore.setSelectedTagId(undefined);
               } else if (value === "untagged") {
-                setSelectedTagId(null);
+                feedStore.setSelectedTagId(null);
               } else {
-                setSelectedTagId(value);
+                feedStore.setSelectedTagId(value);
               }
             }}
             class={css({
@@ -255,6 +286,11 @@ export function FeedList() {
               minW: "10rem",
             })}
           >
+            <Show when={tagsQuery.isLoading}>
+              <option value={feedStore.state.selectedTagId ?? "all"}>
+                Loading...
+              </option>
+            </Show>
             <option value="all">All</option>
             <option value="untagged">Untagged</option>
             <For each={tagsQuery()}>
@@ -504,6 +540,7 @@ export function FeedList() {
                           alignItems: "center",
                           flexWrap: "wrap",
                         })}
+                        data-testid="feed-timestamps"
                       >
                         <span
                           class={css({ fontSize: "xs", color: "gray.500" })}
