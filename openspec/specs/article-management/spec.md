@@ -1,7 +1,7 @@
 # article-management Specification
 
 ## Purpose
-TBD - created by archiving change setup-openspec-from-conductor. Update Purpose after archive.
+This specification defines the requirements and scenarios for article (item) management, including visibility, read-state tracking, filtering, and bulk operations. It ensures a consistent data access and manipulation experience through a shared query layer in the frontend.
 ## Requirements
 ### Requirement: Mark Articles as Read/Unread
 The system SHALL track the read/unread status of each article and allow users to toggle this state manually, and frontend article queries that expose list state SHALL consistently merge the synchronized read-state source with the base item collection.

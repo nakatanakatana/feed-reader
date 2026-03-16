@@ -44,10 +44,10 @@ vi.mock("../lib/db", () => ({
   feedTag: {
     toArray: [],
   },
-  itemsUnreadQuery: vi.fn(() => ({
+  itemsUnreadQuery: {
     toArray: [],
     isReady: vi.fn().mockReturnValue(true),
-  })),
+  },
   items: vi.fn(() => ({
     insert: vi.fn(),
     update: vi.fn(),

@@ -1,7 +1,7 @@
 # frontend-query-architecture Specification
 
 ## Purpose
-TBD - created by archiving change centralize-tanstack-db-queries. Update Purpose after archive.
+This specification defines the frontend data access layer architecture using TanStack DB. By decoupling and centralizing query definitions from UI components, it aims to improve reusability, testability, and consistency of domain logic across the application.
 ## Requirements
 ### Requirement: Shared frontend query definitions
 The frontend SHALL define reusable TanStack DB query definitions outside UI components for domain-level list composition, filtering, joins, ordering, and aggregate calculations that are consumed by multiple screens.

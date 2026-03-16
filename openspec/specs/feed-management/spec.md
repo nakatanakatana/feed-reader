@@ -1,7 +1,7 @@
 # feed-management Specification
 
 ## Purpose
-TBD - created by archiving change setup-openspec-from-conductor. Update Purpose after archive.
+This specification defines the requirements and scenarios for RSS/Atom feed management, including registration, subscription management, fetch scheduling, and manual refreshes. By leveraging shared query definitions, it ensures consistent behavior across feed-related views and management screens.
 ## Requirements
 ### Requirement: Add RSS/Atom Feeds
 The system SHALL allow users to add new RSS or Atom feeds by providing a valid URL, and frontend tag-selection and feed-related forms SHALL consume shared query definitions for reusable tag list data.
