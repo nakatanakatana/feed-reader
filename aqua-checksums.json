@@ -86,28 +86,28 @@
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/k1LoW/mo/v0.16.1/mo_v0.16.1_darwin_amd64.zip",
-      "checksum": "E1489BE9E6410CA148E305C001A040892D21EDD7977B3614DAA9475022BAC0A6",
+      "id": "github_release/github.com/k1LoW/mo/v0.18.4/mo_v0.18.4_darwin_amd64.zip",
+      "checksum": "A05FCF015CEE693B5B4E4C254A99D1E43C4AFB165B9D4256EBBB7A3903D6919A",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/k1LoW/mo/v0.16.1/mo_v0.16.1_darwin_arm64.zip",
-      "checksum": "30BFDD68B6E50F5D9E368256D3A750BCCF68C9F1303601A723E1F19695653C5D",
+      "id": "github_release/github.com/k1LoW/mo/v0.18.4/mo_v0.18.4_darwin_arm64.zip",
+      "checksum": "10DE7FA3B434F443A30295CFFC0DC3871250C8BD01A4DE0BDD110381CE318E20",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/k1LoW/mo/v0.16.1/mo_v0.16.1_linux_amd64.tar.gz",
-      "checksum": "06B016C085F584B3114E0234AA24D094F9E30961383AB3B4F848979901A01F03",
+      "id": "github_release/github.com/k1LoW/mo/v0.18.4/mo_v0.18.4_linux_amd64.tar.gz",
+      "checksum": "939A4A456317152772E6217FA0DD082B94499398C1981FEA0BD2291940C66A75",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/k1LoW/mo/v0.16.1/mo_v0.16.1_linux_arm64.tar.gz",
-      "checksum": "5A5F3539230E616DF5C5CFE7CB893D53D1B59E02DA4C2243EB6BA9CA1DD0C86A",
+      "id": "github_release/github.com/k1LoW/mo/v0.18.4/mo_v0.18.4_linux_arm64.tar.gz",
+      "checksum": "362AC54CBCD70B55D11E673766A26B38D7CD7767EB5CE9A7B224803F1134C046",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/k1LoW/mo/v0.16.1/mo_v0.16.1_windows_amd64.tar.gz",
-      "checksum": "158348C7E67D41FF134670656D5DD0ADEB92FDB67287E68A23F4C8609F692A05",
+      "id": "github_release/github.com/k1LoW/mo/v0.18.4/mo_v0.18.4_windows_amd64.tar.gz",
+      "checksum": "F81D72AFCA41FCF02FF93D4EA52B3C14A987F5C780E99EFEAD0DAD2FFEF2D448",
       "algorithm": "sha256"
     },
     {
@@ -196,8 +196,8 @@
       "algorithm": "sha256"
     },
     {
-      "id": "registries/github_content/github.com/aquaproj/aqua-registry/v4.481.0/registry.yaml",
-      "checksum": "CCF044AB4449B5DA99D075098711879C23FC712C74263357AD25D25CF80A11EF71D2BA9559F8783B182E7F217E351201555032588F04E8F35309E20B677695EF",
+      "id": "registries/github_content/github.com/aquaproj/aqua-registry/v4.485.0/registry.yaml",
+      "checksum": "09C57834BDA41FA7F96873FB0F1DF8B22A97EBDC744B4AABF932F52EFA85E1874C432A412DEF4B381DDFF872B3AA223CC7FD8DB20D7B19FB0C321A956F5B2EB6",
       "algorithm": "sha512"
     }
   ]

@@ -21,6 +21,10 @@ import { routeTree } from "../routeTree.gen";
 describe("ItemList Show Read Toggle", () => {
   let dispose: () => void;
 
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
   afterEach(() => {
     if (dispose) dispose();
     document.body.innerHTML = "";

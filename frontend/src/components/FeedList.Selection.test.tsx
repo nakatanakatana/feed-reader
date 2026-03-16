@@ -15,6 +15,10 @@ import { routeTree } from "../routeTree.gen";
 describe("FeedList Selection", () => {
   let dispose: () => void;
 
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
   afterEach(async () => {
     if (dispose) dispose();
     document.body.innerHTML = "";

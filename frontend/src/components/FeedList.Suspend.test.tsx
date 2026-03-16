@@ -31,6 +31,10 @@ vi.mock("@tanstack/solid-router", async (importOriginal) => {
 describe("FeedList Suspend", () => {
   let dispose: () => void;
 
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
   afterEach(async () => {
     if (dispose) dispose();
     document.body.innerHTML = "";

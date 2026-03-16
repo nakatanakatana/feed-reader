@@ -347,6 +347,7 @@ exports[`FeedList > displays a list of feeds 1`] = `
                       </div>
                       <div
                         class="d_flex ai_center flex-wrap_wrap gap_4"
+                        data-testid="feed-timestamps"
                       >
                         <span
                           class="fs_xs c_gray.500"
@@ -537,6 +538,7 @@ exports[`FeedList > displays a list of feeds 1`] = `
                       </div>
                       <div
                         class="d_flex ai_center flex-wrap_wrap gap_4"
+                        data-testid="feed-timestamps"
                       >
                         <span
                           class="fs_xs c_gray.500"
