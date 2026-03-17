@@ -1,12 +1,14 @@
 /// <reference types="vitest" />
 import { createRequire } from "node:module";
+import { fileURLToPath } from "node:url";
+import { dirname, resolve } from "node:path";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
-import devtools from "solid-devtools/vite";
 import { analyzer } from "vite-bundle-analyzer";
 import { VitePWA } from "vite-plugin-pwa";
 import solid from "vite-plugin-solid";
-import { defineConfig } from "vitest/config";
+import { defineConfig } from "vite-plus";
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
 let playwright;
 
@@ -20,11 +22,7 @@ if (process.env.VITEST) {
       'Failed to load "@vitest/browser-playwright". Browser tests will be skipped. ' +
       "Please ensure the package is installed and configured correctly.";
 
-    if (
-      error &&
-      (error.code === "MODULE_NOT_FOUND" ||
-        error.code === "ERR_MODULE_NOT_FOUND")
-    ) {
+    if (error && (error.code === "MODULE_NOT_FOUND" || error.code === "ERR_MODULE_NOT_FOUND")) {
       // In CI, missing @vitest/browser-playwright should be a hard failure.
       if (process.env.CI) {
         throw new Error(message);
@@ -40,15 +38,35 @@ if (process.env.VITEST) {
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  staged: {
+    "*": "vp check --fix",
+  },
+  lint: { options: { typeAware: true, typeCheck: true } },
+  fmt: {
+    singleQuote: false,
+    tabWidth: 2,
+    printWidth: 100,
+    trailingComma: "all",
+    bracketSpacing: true,
+    ignorePatterns: [
+      "conductor/**",
+      "frontend/src/routeTree.gen.ts",
+      "frontend/src/gen/**",
+      "frontend/public/mockServiceWorker.js",
+      "**/dist/**",
+      "**/*.md", // Markdownの差分を防ぐために一旦除外
+    ],
+  },
   root: "frontend",
   build: {
     emptyOutDir: false,
   },
   plugins: [
-    devtools(),
     tanstackRouter({
       target: "solid",
       autoCodeSplitting: true,
+      routesDirectory: resolve(__dirname, "frontend/src/routes"),
+      generatedRouteTree: resolve(__dirname, "frontend/src/routeTree.gen.ts"),
     }),
     solid(),
     process.env.ANALYZE === "true" && [
