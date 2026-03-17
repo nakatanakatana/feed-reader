@@ -1,6 +1,10 @@
-import { useLiveQuery } from "@tanstack/solid-db";
+import {
+  type Collection,
+  createLiveQueryCollection,
+  useLiveQuery,
+} from "@tanstack/solid-db";
 import { useMutation } from "@tanstack/solid-query";
-import { createEffect, createSignal, For, Show } from "solid-js";
+import { createEffect, createMemo, createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import {
@@ -49,13 +53,17 @@ export function FeedList() {
     }
   });
 
-  const feedListQuery = useLiveQuery((q) => {
-    return buildFeedListQuery(q, {
-      feedTagCollection: feedTag,
-      tagId: feedStore.state.selectedTagId,
-      sortBy: feedStore.state.sortBy,
-    });
-  });
+  const feedListCollection = createMemo(() =>
+    createLiveQueryCollection((q) => {
+      return buildFeedListQuery(q, {
+        feedTagCollection: feedTag,
+        tagId: feedStore.state.selectedTagId,
+        sortBy: feedStore.state.sortBy,
+      });
+    }) as Collection<Feed, string, Record<string, any>>,
+  );
+
+  const feedListQuery = useLiveQuery(() => feedListCollection());
 
   // Ensure selectedTagId is valid once tags load
   createEffect(() => {
@@ -306,7 +314,7 @@ export function FeedList() {
           })}
         >
           <ul class={stack({ gap: "2", width: "full" })}>
-            <For each={feedListQuery() as Feed[]}>
+            <For each={feedListQuery()}>
               {(feed) => (
                 <li
                   onClick={() => toggleFeedSelection(feed.id)}

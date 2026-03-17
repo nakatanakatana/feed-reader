@@ -6,14 +6,9 @@ import {
   type InitialQueryBuilder,
 } from "@tanstack/solid-db";
 import { feedTag } from "../feed-db";
-import type { ListItem } from "../item-db";
 import { items } from "../item-db";
 import { itemReadCollection } from "../item-read-db";
 import { tags } from "../tag-db";
-
-export interface ItemsWithReadState extends ListItem {
-  isRead: boolean;
-}
 
 export interface TagUnreadCount {
   id: string;
