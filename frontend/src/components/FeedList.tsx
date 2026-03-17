@@ -53,14 +53,16 @@ export function FeedList() {
     }
   });
 
-  const feedListCollection = createMemo(() =>
-    createLiveQueryCollection((q) => {
-      return buildFeedListQuery(q, {
-        feedTagCollection: feedTag,
-        tagId: feedStore.state.selectedTagId,
-        sortBy: feedStore.state.sortBy,
-      });
-    }) as Collection<Feed, string, Record<string, any>>,
+  const feedListCollection = createMemo(
+    () =>
+      createLiveQueryCollection((q) => {
+        return buildFeedListQuery(q, {
+          feedTagCollection: feedTag,
+          tagId: feedStore.state.selectedTagId,
+          sortBy: feedStore.state.sortBy,
+        });
+        // biome-ignore lint/suspicious/noExplicitAny: TanStack DB collection types are too strict for shared builders
+      }) as Collection<Feed, string, Record<string, any>>,
   );
 
   const feedListQuery = useLiveQuery(() => feedListCollection());
