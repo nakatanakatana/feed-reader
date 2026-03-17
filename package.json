@@ -3,19 +3,19 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "prepare": "panda codegen",
-    "dev": "vite --port 3000",
-    "dev:mock": "VITE_USE_MOCKS=true vite --port 3000",
-    "build": "vite build",
-    "lint": "tsc --noEmit && biome check .",
-    "format": "biome format . --write",
-    "format:check": "biome format .",
-    "check": "biome check --write .",
-    "serve": "vite preview",
-    "start": "vite",
-    "analyze": "ANALYZE=true vite build",
-    "test": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "prepare": "vp config && panda codegen",
+    "dev": "vp dev --port 3000",
+    "dev:mock": "VITE_USE_MOCKS=true vp dev --port 3000",
+    "build": "vp build",
+    "check": "vp check",
+    "serve": "vp preview",
+    "start": "vp dev",
+    "lint": "vp check",
+    "format": "vp check --fix",
+    "format:check": "vp check",
+    "analyze": "ANALYZE=true vp build",
+    "test": "vp test run",
+    "test:coverage": "vp test run --coverage"
   },
   "dependencies": {
     "@bufbuild/protobuf": "^2.2.2",
@@ -42,24 +42,27 @@
     "web-vitals": "^5.1.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.4.7",
     "@bufbuild/protoc-gen-es": "^2.2.2",
     "@pandacss/dev": "^1.7.2",
     "@types/markdown-it": "^14.1.2",
     "@types/node": "^25.2.3",
-    "@vitest/browser-playwright": "^4.0.16",
     "@vitest/coverage-v8": "^4.0.16",
     "fast-check": "^4.5.3",
     "msw": "^2.12.7",
     "playwright": "^1.57.0",
-    "solid-devtools": "^0.34.3",
     "typescript": "^5.9.2",
-    "vite": "^7.1.10",
+    "vite": "npm:@voidzero-dev/vite-plus-core@latest",
     "vite-bundle-analyzer": "^1.3.6",
     "vite-plugin-pwa": "^1.2.0",
     "vite-plugin-solid": "^2.11.9",
-    "vitest": "^4.0.16"
+    "vite-plus": "latest",
+    "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
   },
+  "overrides": {
+    "vite": "npm:@voidzero-dev/vite-plus-core@latest",
+    "vitest": "npm:@voidzero-dev/vite-plus-test@latest"
+  },
+  "packageManager": "npm@11.11.1",
   "msw": {
     "workerDirectory": [
       "public"
