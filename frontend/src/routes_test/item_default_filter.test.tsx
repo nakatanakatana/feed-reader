@@ -1,10 +1,6 @@
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { QueryClientProvider } from "@tanstack/solid-query";
-import {
-  createMemoryHistory,
-  createRouter,
-  RouterProvider,
-} from "@tanstack/solid-router";
+import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";

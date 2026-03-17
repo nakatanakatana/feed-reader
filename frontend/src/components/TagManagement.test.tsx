@@ -26,9 +26,7 @@ describe("TagManagement", () => {
   it("renders tag list and add form", async () => {
     dispose = render(() => <TestWrapper />, document.body);
 
-    await expect
-      .element(page.getByPlaceholder("New tag name"))
-      .toBeInTheDocument();
+    await expect.element(page.getByPlaceholder("New tag name")).toBeInTheDocument();
 
     // Mock tags from handlers.ts are "Tech" and "News"
     await expect.element(page.getByText("Tech")).toBeInTheDocument();

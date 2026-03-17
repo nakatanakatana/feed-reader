@@ -22,11 +22,7 @@ if (process.env.VITEST) {
       'Failed to load "@vitest/browser-playwright". Browser tests will be skipped. ' +
       "Please ensure the package is installed and configured correctly.";
 
-    if (
-      error &&
-      (error.code === "MODULE_NOT_FOUND" ||
-        error.code === "ERR_MODULE_NOT_FOUND")
-    ) {
+    if (error && (error.code === "MODULE_NOT_FOUND" || error.code === "ERR_MODULE_NOT_FOUND")) {
       // In CI, missing @vitest/browser-playwright should be a hard failure.
       if (process.env.CI) {
         throw new Error(message);

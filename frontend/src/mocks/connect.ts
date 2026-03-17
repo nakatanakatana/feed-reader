@@ -7,20 +7,12 @@ type InferMessage<T> = T extends GenMessage<infer M> ? M : never;
 // Define a type that matches the structure of methods in GenService
 // GenServiceMethods values usually have methodKind, input, output.
 type MethodDef = {
-  // biome-ignore lint/suspicious/noExplicitAny: Generic constraint for any message type
   input: GenMessage<any>;
-  // biome-ignore lint/suspicious/noExplicitAny: Generic constraint for any message type
   output: GenMessage<any>;
-  methodKind:
-    | "unary"
-    | "server_streaming"
-    | "client_streaming"
-    | "bidi_streaming";
+  methodKind: "unary" | "server_streaming" | "client_streaming" | "bidi_streaming";
 };
 
-export const parseConnectMessage = async (
-  request: Request,
-): Promise<JsonValue> => {
+export const parseConnectMessage = async (request: Request): Promise<JsonValue> => {
   if (request.method === "GET") {
     const url = new URL(request.url);
     const messageParam = url.searchParams.get("message");
@@ -41,7 +33,6 @@ export const parseConnectMessage = async (
 /**
  * Robust JSON serialization that handles BigInt and Date by converting them to strings.
  */
-// biome-ignore lint/suspicious/noExplicitAny: MSW HttpResponse requires a type argument
 export const safeJson = (data: unknown): HttpResponse<any> => {
   const replacer = (_key: string, value: unknown): unknown => {
     if (typeof value === "bigint") return value.toString();
@@ -61,9 +52,7 @@ export const safeJson = (data: unknown): HttpResponse<any> => {
       return obj.map(processDates);
     }
     if (obj !== null && typeof obj === "object") {
-      return Object.fromEntries(
-        Object.entries(obj).map(([k, v]) => [k, processDates(v)]),
-      );
+      return Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, processDates(v)]));
     }
     return obj;
   };
@@ -83,24 +72,19 @@ export const mockConnectWeb =
     handler: (req: InferMessage<T[U]["input"]>) => InferMessage<T[U]["output"]>;
   }): HttpHandler => {
     // Connect/gRPC conventions: Service/Method (PascalCase)
-    const rpcName =
-      props.method.charAt(0).toUpperCase() + props.method.slice(1);
+    const rpcName = props.method.charAt(0).toUpperCase() + props.method.slice(1);
 
     return http.all(`*/${service.typeName}/${rpcName}`, async ({ request }) => {
-      // biome-ignore lint/suspicious/noExplicitAny: service.methods can be array or object at runtime
       const methods = service.methods as any;
       let methodDef: MethodDef | undefined;
       if (Array.isArray(methods)) {
-        // biome-ignore lint/suspicious/noExplicitAny: accessing localName on dynamic method object
         methodDef = methods.find((m: any) => m.localName === props.method);
       } else {
         methodDef = methods[props.method];
       }
 
       if (!methodDef) {
-        throw new Error(
-          `Method ${props.method} not found in service ${service.typeName}`,
-        );
+        throw new Error(`Method ${props.method} not found in service ${service.typeName}`);
       }
 
       let jsonBody: JsonValue;

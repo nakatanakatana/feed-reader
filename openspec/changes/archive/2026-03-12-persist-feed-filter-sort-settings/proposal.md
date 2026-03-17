@@ -11,9 +11,11 @@ Currently, when a user changes the sort order or filter conditions on the Feeds 
 ## Capabilities
 
 ### New Capabilities
+
 - `feed-settings-persistence`: The system SHALL persist the user's last selected sort order and filter conditions for the feed management view across browser sessions.
 
 ### Modified Capabilities
+
 (None - Item List persistence was deemed unnecessary due to existing URL parameter handling)
 
 ## Impact

@@ -55,10 +55,7 @@ function FeedsComponent() {
         </div>
       </div>
       <Outlet />
-      <ImportOpmlModal
-        isOpen={isImportModalOpen()}
-        onClose={() => setIsImportModalOpen(false)}
-      />
+      <ImportOpmlModal isOpen={isImportModalOpen()} onClose={() => setIsImportModalOpen(false)} />
     </PageLayout>
   );
 }

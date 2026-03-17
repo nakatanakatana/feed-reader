@@ -33,12 +33,8 @@ describe("Query Setup", () => {
         body: {},
       };
 
-      // biome-ignore lint/suspicious/noExplicitAny: testing internal interceptor interface
-      await expect(errorInterceptor(next)(req as any)).rejects.toThrow(
-        "unavailable",
-      );
+      await expect(errorInterceptor(next)(req as any)).rejects.toThrow("unavailable");
 
-      // biome-ignore lint/suspicious/noExplicitAny: using Symbol to mark handled errors
       expect((error as any)[ERROR_TOAST_ELIGIBLE]).toBe(true);
       expect(toast.show).not.toHaveBeenCalled();
     });
@@ -53,12 +49,8 @@ describe("Query Setup", () => {
         body: {},
       };
 
-      // biome-ignore lint/suspicious/noExplicitAny: testing internal interceptor interface
-      await expect(errorInterceptor(next)(req as any)).rejects.toThrow(
-        "denied",
-      );
+      await expect(errorInterceptor(next)(req as any)).rejects.toThrow("denied");
 
-      // biome-ignore lint/suspicious/noExplicitAny: using Symbol to mark handled errors
       expect((error as any)[ERROR_TOAST_ELIGIBLE]).toBeUndefined();
     });
 
@@ -72,7 +64,6 @@ describe("Query Setup", () => {
         body: {},
       };
 
-      // biome-ignore lint/suspicious/noExplicitAny: testing internal interceptor interface
       const result = await errorInterceptor(next)(req as any);
       expect(result).toBe(res);
       expect(toast.show).not.toHaveBeenCalled();
@@ -82,63 +73,38 @@ describe("Query Setup", () => {
   it("should trigger toast on QueryCache error", () => {
     const queryCache = queryLib.queryClient.getQueryCache();
     const error = new Error("test error");
-    // biome-ignore lint/suspicious/noExplicitAny: using Symbol to mark handled errors
     (error as any)[ERROR_TOAST_ELIGIBLE] = true;
 
-    queryCache.config.onError?.(
-      error,
-      // biome-ignore lint/suspicious/noExplicitAny: testing internal interface
-      { state: { fetchStatus: "idle" } } as any,
-    );
-    expect(toast.show).toHaveBeenCalledWith(
-      "An error occurred. Please try again.",
-      "error",
-    );
+    queryCache.config.onError?.(error, {
+      state: { fetchStatus: "idle" },
+    } as any);
+    expect(toast.show).toHaveBeenCalledWith("An error occurred. Please try again.", "error");
   });
 
   it("should trigger toast on MutationCache error", () => {
     const mutationCache = queryLib.queryClient.getMutationCache();
     const error = new Error("test error");
-    // biome-ignore lint/suspicious/noExplicitAny: using Symbol to mark handled errors
     (error as any)[ERROR_TOAST_ELIGIBLE] = true;
 
-    mutationCache.config.onError?.(
-      error,
-      // biome-ignore lint/suspicious/noExplicitAny: testing internal interface
-      {} as any,
-      // biome-ignore lint/suspicious/noExplicitAny: testing internal interface
-      {} as any,
-      // biome-ignore lint/suspicious/noExplicitAny: testing internal interface
-      {} as any,
-      // biome-ignore lint/suspicious/noExplicitAny: testing internal interface
-      {} as any,
-    );
-    expect(toast.show).toHaveBeenCalledWith(
-      "An error occurred. Please try again.",
-      "error",
-    );
+    mutationCache.config.onError?.(error, {} as any, {} as any, {} as any, {} as any);
+    expect(toast.show).toHaveBeenCalledWith("An error occurred. Please try again.", "error");
   });
 
   it("should only trigger toast on terminal failure (retry deduplication)", () => {
     const queryCache = queryLib.queryClient.getQueryCache();
     const error = new Error("retry error");
-    // biome-ignore lint/suspicious/noExplicitAny: using Symbol to mark handled errors
     (error as any)[ERROR_TOAST_ELIGIBLE] = true;
 
     // Simulate first failure (retrying)
-    queryCache.config.onError?.(
-      error,
-      // biome-ignore lint/suspicious/noExplicitAny: testing internal interface
-      { state: { fetchStatus: "fetching" } } as any,
-    );
+    queryCache.config.onError?.(error, {
+      state: { fetchStatus: "fetching" },
+    } as any);
     expect(toast.show).not.toHaveBeenCalled();
 
     // Simulate final failure (terminal)
-    queryCache.config.onError?.(
-      error,
-      // biome-ignore lint/suspicious/noExplicitAny: testing internal interface
-      { state: { fetchStatus: "idle" } } as any,
-    );
+    queryCache.config.onError?.(error, {
+      state: { fetchStatus: "idle" },
+    } as any);
     expect(toast.show).toHaveBeenCalledTimes(1);
   });
 
@@ -146,11 +112,9 @@ describe("Query Setup", () => {
     const queryCache = queryLib.queryClient.getQueryCache();
     const appError = new Error("application error");
 
-    queryCache.config.onError?.(
-      appError,
-      // biome-ignore lint/suspicious/noExplicitAny: testing internal interface
-      { state: { fetchStatus: "idle" } } as any,
-    );
+    queryCache.config.onError?.(appError, {
+      state: { fetchStatus: "idle" },
+    } as any);
     expect(toast.show).not.toHaveBeenCalled();
   });
 });

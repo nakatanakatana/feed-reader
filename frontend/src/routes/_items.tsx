@@ -81,13 +81,9 @@ function ItemsLayout() {
                   itemsCollection.utils.refetch();
                   itemReadCollection().utils.refetch();
                 }}
-                disabled={
-                  (itemsCollection as unknown as { isFetching: boolean })
-                    .isFetching
-                }
+                disabled={(itemsCollection as unknown as { isFetching: boolean }).isFetching}
               >
-                {(itemsCollection as unknown as { isFetching: boolean })
-                  .isFetching
+                {(itemsCollection as unknown as { isFetching: boolean }).isFetching
                   ? "Refreshing..."
                   : "Refresh"}
               </ActionButton>

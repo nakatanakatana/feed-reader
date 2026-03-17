@@ -42,9 +42,7 @@ describe("RootComponent Navigation", () => {
     dispose = render(() => <RouterProvider router={router} />, document.body);
 
     // 4. Verify Content
-    await expect
-      .element(page.getByText("Index Page Content"))
-      .toBeInTheDocument();
+    await expect.element(page.getByText("Index Page Content")).toBeInTheDocument();
 
     // 5. Verify Navigation Links
     const homeLink = page.getByRole("link", { name: "Home" });

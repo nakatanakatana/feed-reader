@@ -10,7 +10,7 @@ description: >
   createPacedMutations. Entry point for all TanStack DB skills.
 type: core
 library: db
-library_version: '0.5.30'
+library_version: "0.5.30"
 ---
 
 # TanStack DB — Core Concepts

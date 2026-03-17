@@ -29,12 +29,10 @@ describe("prefetchItems", () => {
 
   it("skips items that are already in the cache", async () => {
     const prefetchSpy = vi.spyOn(queryClient, "prefetchQuery");
-    const getQueryDataSpy = vi
-      .spyOn(queryClient, "getQueryData")
-      .mockImplementation((key) => {
-        if (Array.isArray(key) && key[1] === "item1") return { id: "item1" };
-        return undefined;
-      });
+    const getQueryDataSpy = vi.spyOn(queryClient, "getQueryData").mockImplementation((key) => {
+      if (Array.isArray(key) && key[1] === "item1") return { id: "item1" };
+      return undefined;
+    });
 
     const itemIds = ["item1", "item2"];
 

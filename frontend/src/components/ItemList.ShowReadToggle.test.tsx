@@ -1,10 +1,6 @@
 import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
-import {
-  createMemoryHistory,
-  createRouter,
-  RouterProvider,
-} from "@tanstack/solid-router";
+import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
 import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -31,15 +27,10 @@ describe("ItemList Show Read Toggle", () => {
     vi.clearAllMocks();
   });
 
-  const setupMockData = (
-    onListItems?: (req: Record<string, unknown>) => void,
-  ) => {
+  const setupMockData = (onListItems?: (req: Record<string, unknown>) => void) => {
     worker.use(
       http.all("*/item.v1.ItemService/ListItems", async ({ request }) => {
-        const body = (await parseConnectMessage(request)) as Record<
-          string,
-          unknown
-        >;
+        const body = (await parseConnectMessage(request)) as Record<string, unknown>;
         onListItems?.(body);
         return HttpResponse.json(
           toJson(
@@ -50,18 +41,12 @@ describe("ItemList Show Read Toggle", () => {
       }),
       http.all("*/tag.v1.TagService/ListTags", () => {
         return HttpResponse.json(
-          toJson(
-            ListTagsResponseSchema,
-            create(ListTagsResponseSchema, { tags: [] }),
-          ),
+          toJson(ListTagsResponseSchema, create(ListTagsResponseSchema, { tags: [] })),
         );
       }),
       http.all("*/feed.v1.FeedService/ListFeedTags", () => {
         return HttpResponse.json(
-          toJson(
-            ListFeedTagsResponseSchema,
-            create(ListFeedTagsResponseSchema, { feedTags: [] }),
-          ),
+          toJson(ListFeedTagsResponseSchema, create(ListFeedTagsResponseSchema, { feedTags: [] })),
         );
       }),
     );

@@ -40,14 +40,10 @@ describe("ImportOpmlModal", () => {
     );
 
     // Initial state
-    await expect
-      .element(page.getByText("Select an .opml or .xml file"))
-      .toBeInTheDocument();
+    await expect.element(page.getByText("Select an .opml or .xml file")).toBeInTheDocument();
 
     // Mock file upload
-    const input = document.querySelector(
-      'input[type="file"]',
-    ) as HTMLInputElement;
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement;
     const file = new File(["<opml><body></body></opml>"], "test.opml", {
       type: "text/xml",
     });
@@ -85,9 +81,7 @@ describe("ImportOpmlModal", () => {
       document.body,
     );
 
-    const input = document.querySelector(
-      'input[type="file"]',
-    ) as HTMLInputElement;
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement;
     const file = new File(["invalid"], "test.opml", { type: "text/xml" });
 
     Object.defineProperty(input, "files", {

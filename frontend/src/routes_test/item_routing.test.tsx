@@ -1,10 +1,6 @@
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { QueryClientProvider } from "@tanstack/solid-query";
-import {
-  createMemoryHistory,
-  createRouter,
-  RouterProvider,
-} from "@tanstack/solid-router";
+import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it } from "vitest";
 import { page } from "vitest/browser";
@@ -44,9 +40,7 @@ describe("Item Routing", () => {
     );
 
     // Wait for the modal content to appear
-    await expect
-      .element(page.getByRole("heading", { name: "Item 1" }))
-      .toBeInTheDocument();
+    await expect.element(page.getByRole("heading", { name: "Item 1" })).toBeInTheDocument();
 
     // Check if the URL includes the default since=30d
     expect(history.location.search).toEqual("?since=30d");

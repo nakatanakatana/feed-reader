@@ -9,14 +9,14 @@ description: >
   loader APIs.
 type: composition
 library: db
-library_version: '0.5.30'
+library_version: "0.5.30"
 requires:
   - db-core
   - db-core/collection-setup
 sources:
-  - 'TanStack/db:examples/react/todo/src/routes/electric.tsx'
-  - 'TanStack/db:examples/react/todo/src/routes/query.tsx'
-  - 'TanStack/db:examples/react/todo/src/start.tsx'
+  - "TanStack/db:examples/react/todo/src/routes/electric.tsx"
+  - "TanStack/db:examples/react/todo/src/routes/query.tsx"
+  - "TanStack/db:examples/react/todo/src/start.tsx"
 ---
 
 This skill builds on db-core. Read it first for collection setup and query builder.
@@ -37,53 +37,53 @@ TanStack DB collections are **client-side only**. SSR is not implemented. Routes
 
 ```ts
 // start.tsx
-import { createStart } from '@tanstack/react-start'
+import { createStart } from "@tanstack/react-start";
 
 export const startInstance = createStart(() => {
   return {
     defaultSsr: false,
-  }
-})
+  };
+});
 ```
 
 ### Per-route SSR disable + preload
 
 ```tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { useLiveQuery } from '@tanstack/react-db'
+import { createFileRoute } from "@tanstack/react-router";
+import { useLiveQuery } from "@tanstack/react-db";
 
-export const Route = createFileRoute('/todos')({
+export const Route = createFileRoute("/todos")({
   ssr: false,
   loader: async () => {
-    await todoCollection.preload()
-    return null
+    await todoCollection.preload();
+    return null;
   },
   component: TodoPage,
-})
+});
 
 function TodoPage() {
-  const { data: todos } = useLiveQuery((q) => q.from({ todo: todoCollection }))
+  const { data: todos } = useLiveQuery((q) => q.from({ todo: todoCollection }));
   return (
     <ul>
       {todos.map((t) => (
         <li key={t.id}>{t.text}</li>
       ))}
     </ul>
-  )
+  );
 }
 ```
 
 ### Multiple collection preloading
 
 ```tsx
-export const Route = createFileRoute('/electric')({
+export const Route = createFileRoute("/electric")({
   ssr: false,
   loader: async () => {
-    await Promise.all([todoCollection.preload(), configCollection.preload()])
-    return null
+    await Promise.all([todoCollection.preload(), configCollection.preload()]);
+    return null;
   },
   component: ElectricPage,
-})
+});
 ```
 
 ## Next.js (App Router)
@@ -92,24 +92,22 @@ export const Route = createFileRoute('/electric')({
 
 ```tsx
 // app/todos/page.tsx
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import { useLiveQuery } from '@tanstack/react-db'
+import { useEffect, useState } from "react";
+import { useLiveQuery } from "@tanstack/react-db";
 
 export default function TodoPage() {
-  const { data: todos, isLoading } = useLiveQuery((q) =>
-    q.from({ todo: todoCollection }),
-  )
+  const { data: todos, isLoading } = useLiveQuery((q) => q.from({ todo: todoCollection }));
 
-  if (isLoading) return <div>Loading...</div>
+  if (isLoading) return <div>Loading...</div>;
   return (
     <ul>
       {todos.map((t) => (
         <li key={t.id}>{t.text}</li>
       ))}
     </ul>
-  )
+  );
 }
 ```
 
@@ -119,23 +117,23 @@ Next.js App Router components using TanStack DB must be client components (`'use
 
 ```tsx
 // app/todos/page.tsx
-'use client'
+"use client";
 
-import { useEffect } from 'react'
-import { useLiveQuery } from '@tanstack/react-db'
+import { useEffect } from "react";
+import { useLiveQuery } from "@tanstack/react-db";
 
 // Trigger preload immediately when module is loaded
-const preloadPromise = todoCollection.preload()
+const preloadPromise = todoCollection.preload();
 
 export default function TodoPage() {
-  const { data: todos } = useLiveQuery((q) => q.from({ todo: todoCollection }))
+  const { data: todos } = useLiveQuery((q) => q.from({ todo: todoCollection }));
   return (
     <ul>
       {todos.map((t) => (
         <li key={t.id}>{t.text}</li>
       ))}
     </ul>
-  )
+  );
 }
 ```
 
@@ -145,26 +143,26 @@ export default function TodoPage() {
 
 ```tsx
 // app/routes/todos.tsx
-import { useLiveQuery } from '@tanstack/react-db'
-import type { ClientLoaderFunctionArgs } from '@remix-run/react'
+import { useLiveQuery } from "@tanstack/react-db";
+import type { ClientLoaderFunctionArgs } from "@remix-run/react";
 
 export const clientLoader = async ({ request }: ClientLoaderFunctionArgs) => {
-  await todoCollection.preload()
-  return null
-}
+  await todoCollection.preload();
+  return null;
+};
 
 // Prevent server loader from running
-export const loader = () => null
+export const loader = () => null;
 
 export default function TodoPage() {
-  const { data: todos } = useLiveQuery((q) => q.from({ todo: todoCollection }))
+  const { data: todos } = useLiveQuery((q) => q.from({ todo: todoCollection }));
   return (
     <ul>
       {todos.map((t) => (
         <li key={t.id}>{t.text}</li>
       ))}
     </ul>
-  )
+  );
 }
 ```
 
@@ -175,11 +173,9 @@ export default function TodoPage() {
 ```vue
 <!-- pages/todos.vue -->
 <script setup lang="ts">
-import { useLiveQuery } from '@tanstack/vue-db'
+import { useLiveQuery } from "@tanstack/vue-db";
 
-const { data: todos, isLoading } = useLiveQuery((q) =>
-  q.from({ todo: todoCollection }),
-)
+const { data: todos, isLoading } = useLiveQuery((q) => q.from({ todo: todoCollection }));
 </script>
 
 <template>
@@ -220,7 +216,7 @@ Or disable SSR for the route:
 
 ```ts
 // src/routes/todos/+page.ts
-export const ssr = false
+export const ssr = false;
 ```
 
 ## Core Patterns
@@ -251,19 +247,19 @@ export const todoCollection = createCollection(
 
 ```tsx
 // routes/todos.tsx — loader uses the same collection instance
-import { todoCollection } from '../lib/collections'
+import { todoCollection } from "../lib/collections";
 
-export const Route = createFileRoute('/todos')({
+export const Route = createFileRoute("/todos")({
   ssr: false,
   loader: async () => {
-    await todoCollection.preload()
-    return null
+    await todoCollection.preload();
+    return null;
   },
   component: () => {
-    const { data } = useLiveQuery((q) => q.from({ todo: todoCollection }))
+    const { data } = useLiveQuery((q) => q.from({ todo: todoCollection }));
     // ...
   },
-})
+});
 ```
 
 ## Server-Side Integration
@@ -280,24 +276,24 @@ This skill covers the **client-side** read path only (preloading, live queries).
 Wrong:
 
 ```tsx
-export const Route = createFileRoute('/todos')({
+export const Route = createFileRoute("/todos")({
   loader: async () => {
-    await todoCollection.preload()
-    return null
+    await todoCollection.preload();
+    return null;
   },
-})
+});
 ```
 
 Correct:
 
 ```tsx
-export const Route = createFileRoute('/todos')({
+export const Route = createFileRoute("/todos")({
   ssr: false,
   loader: async () => {
-    await todoCollection.preload()
-    return null
+    await todoCollection.preload();
+    return null;
   },
-})
+});
 ```
 
 TanStack DB collections are client-side only. Without `ssr: false`, the route loader runs on the server where collections cannot sync, causing hangs or errors.
@@ -309,23 +305,23 @@ Source: examples/react/todo/src/start.tsx
 Wrong:
 
 ```tsx
-export const Route = createFileRoute('/todos')({
+export const Route = createFileRoute("/todos")({
   ssr: false,
   component: TodoPage,
-})
+});
 ```
 
 Correct:
 
 ```tsx
-export const Route = createFileRoute('/todos')({
+export const Route = createFileRoute("/todos")({
   ssr: false,
   loader: async () => {
-    await todoCollection.preload()
-    return null
+    await todoCollection.preload();
+    return null;
   },
   component: TodoPage,
-})
+});
 ```
 
 Without preloading, the collection starts syncing only when the component mounts, causing a loading flash. Preloading in the route loader starts sync during navigation, making data available immediately when the component renders.

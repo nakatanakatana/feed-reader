@@ -98,9 +98,7 @@ describe("ItemDetailModal Color Mode Support", () => {
     );
 
     // Wait for content to load (style tags should be present)
-    await expect
-      .poll(() => document.querySelectorAll("style").length)
-      .toBeGreaterThan(0);
+    await expect.poll(() => document.querySelectorAll("style").length).toBeGreaterThan(0);
 
     // Check if any style tag or stylesheet contains the media queries we added
     const styleTags = Array.from(document.querySelectorAll("style"));
@@ -111,41 +109,22 @@ describe("ItemDetailModal Color Mode Support", () => {
       s.innerHTML.includes("prefers-color-scheme: dark"),
     );
     let hasLightImgSelector = styleTags.some(
-      (s) =>
-        s.innerHTML.includes('href*="#gh-light-mode-only"') &&
-        s.innerHTML.includes("img"),
+      (s) => s.innerHTML.includes('href*="#gh-light-mode-only"') && s.innerHTML.includes("img"),
     );
     let hasDarkImgSelector = styleTags.some(
-      (s) =>
-        s.innerHTML.includes('href*="#gh-dark-mode-only"') &&
-        s.innerHTML.includes("img"),
+      (s) => s.innerHTML.includes('href*="#gh-dark-mode-only"') && s.innerHTML.includes("img"),
     );
 
-    if (
-      !(
-        hasLightMediaQuery &&
-        hasDarkMediaQuery &&
-        hasLightImgSelector &&
-        hasDarkImgSelector
-      )
-    ) {
+    if (!(hasLightMediaQuery && hasDarkMediaQuery && hasLightImgSelector && hasDarkImgSelector)) {
       for (const sheet of Array.from(document.styleSheets)) {
         try {
           for (const rule of Array.from(sheet.cssRules)) {
             const cssText = rule.cssText;
-            if (cssText.includes("prefers-color-scheme: light"))
-              hasLightMediaQuery = true;
-            if (cssText.includes("prefers-color-scheme: dark"))
-              hasDarkMediaQuery = true;
-            if (
-              cssText.includes("#gh-light-mode-only") &&
-              cssText.includes("img")
-            )
+            if (cssText.includes("prefers-color-scheme: light")) hasLightMediaQuery = true;
+            if (cssText.includes("prefers-color-scheme: dark")) hasDarkMediaQuery = true;
+            if (cssText.includes("#gh-light-mode-only") && cssText.includes("img"))
               hasLightImgSelector = true;
-            if (
-              cssText.includes("#gh-dark-mode-only") &&
-              cssText.includes("img")
-            )
+            if (cssText.includes("#gh-dark-mode-only") && cssText.includes("img"))
               hasDarkImgSelector = true;
           }
         } catch (_e) {

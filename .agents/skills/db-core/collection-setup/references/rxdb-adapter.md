@@ -9,14 +9,14 @@ pnpm add @tanstack/rxdb-db-collection rxdb @tanstack/react-db
 ## Required Config
 
 ```typescript
-import { createCollection } from '@tanstack/react-db'
-import { rxdbCollectionOptions } from '@tanstack/rxdb-db-collection'
+import { createCollection } from "@tanstack/react-db";
+import { rxdbCollectionOptions } from "@tanstack/rxdb-db-collection";
 
 const todosCollection = createCollection(
   rxdbCollectionOptions({
     rxCollection: db.todos,
   }),
-)
+);
 ```
 
 - `rxCollection` -- the underlying RxDB `RxCollection` instance
@@ -40,30 +40,30 @@ RxDB primary keys are always strings. The `getKey` function is derived from the 
 ## RxDB Setup (prerequisite)
 
 ```typescript
-import { createRxDatabase } from 'rxdb/plugins/core'
-import { getRxStorageLocalstorage } from 'rxdb/plugins/storage-localstorage'
+import { createRxDatabase } from "rxdb/plugins/core";
+import { getRxStorageLocalstorage } from "rxdb/plugins/storage-localstorage";
 
 const db = await createRxDatabase({
-  name: 'my-app',
+  name: "my-app",
   storage: getRxStorageLocalstorage(),
-})
+});
 
 await db.addCollections({
   todos: {
     schema: {
-      title: 'todos',
+      title: "todos",
       version: 0,
-      type: 'object',
-      primaryKey: 'id',
+      type: "object",
+      primaryKey: "id",
       properties: {
-        id: { type: 'string', maxLength: 100 },
-        text: { type: 'string' },
-        completed: { type: 'boolean' },
+        id: { type: "string", maxLength: 100 },
+        text: { type: "string" },
+        completed: { type: "boolean" },
       },
-      required: ['id', 'text', 'completed'],
+      required: ["id", "text", "completed"],
     },
   },
-})
+});
 ```
 
 ## Backend Sync (optional, RxDB-managed)
@@ -71,13 +71,13 @@ await db.addCollections({
 Replication is configured directly on the RxDB collection, independent of TanStack DB. Changes from replication flow into the TanStack DB collection via RxDB's change stream automatically.
 
 ```typescript
-import { replicateRxCollection } from 'rxdb/plugins/replication'
+import { replicateRxCollection } from "rxdb/plugins/replication";
 
 const replicationState = replicateRxCollection({
   collection: db.todos,
   pull: { handler: myPullHandler },
   push: { handler: myPushHandler },
-})
+});
 ```
 
 ## Data Flow
@@ -94,41 +94,41 @@ RxDB schema indexes do not affect TanStack DB query performance (queries run in-
 ## Complete Example
 
 ```typescript
-import { createRxDatabase } from 'rxdb/plugins/core'
-import { getRxStorageLocalstorage } from 'rxdb/plugins/storage-localstorage'
-import { createCollection } from '@tanstack/react-db'
-import { rxdbCollectionOptions } from '@tanstack/rxdb-db-collection'
-import { z } from 'zod'
+import { createRxDatabase } from "rxdb/plugins/core";
+import { getRxStorageLocalstorage } from "rxdb/plugins/storage-localstorage";
+import { createCollection } from "@tanstack/react-db";
+import { rxdbCollectionOptions } from "@tanstack/rxdb-db-collection";
+import { z } from "zod";
 
-type Todo = { id: string; text: string; completed: boolean }
+type Todo = { id: string; text: string; completed: boolean };
 
 const db = await createRxDatabase({
-  name: 'my-todos',
+  name: "my-todos",
   storage: getRxStorageLocalstorage(),
-})
+});
 
 await db.addCollections({
   todos: {
     schema: {
-      title: 'todos',
+      title: "todos",
       version: 0,
-      type: 'object',
-      primaryKey: 'id',
+      type: "object",
+      primaryKey: "id",
       properties: {
-        id: { type: 'string', maxLength: 100 },
-        text: { type: 'string' },
-        completed: { type: 'boolean' },
+        id: { type: "string", maxLength: 100 },
+        text: { type: "string" },
+        completed: { type: "boolean" },
       },
-      required: ['id', 'text', 'completed'],
+      required: ["id", "text", "completed"],
     },
   },
-})
+});
 
 const todoSchema = z.object({
   id: z.string(),
   text: z.string().min(1),
   completed: z.boolean(),
-})
+});
 
 const todosCollection = createCollection(
   rxdbCollectionOptions({
@@ -137,16 +137,16 @@ const todosCollection = createCollection(
     startSync: true,
     syncBatchSize: 500,
   }),
-)
+);
 
 // Usage
 todosCollection.insert({
   id: crypto.randomUUID(),
-  text: 'Buy milk',
+  text: "Buy milk",
   completed: false,
-})
-todosCollection.update('some-id', (draft) => {
-  draft.completed = true
-})
-todosCollection.delete('some-id')
+});
+todosCollection.update("some-id", (draft) => {
+  draft.completed = true;
+});
+todosCollection.delete("some-id");
 ```

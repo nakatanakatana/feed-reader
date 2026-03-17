@@ -66,9 +66,7 @@ describe("FeedService Mock Handlers", () => {
 
     // Verify it's deleted
     const listResponseAfter = await client.listFeeds({});
-    expect(
-      listResponseAfter.feeds.find((f) => f.id === idToDelete),
-    ).toBeUndefined();
+    expect(listResponseAfter.feeds.find((f) => f.id === idToDelete)).toBeUndefined();
     expect(listResponseAfter.feeds.length).toBe(1);
   });
 });

@@ -75,9 +75,7 @@ describe("ItemDetailModal Swipe Integration", () => {
 
     await expect.element(page.getByText("Test Item")).toBeInTheDocument();
 
-    const container = document.querySelector(
-      '[data-testid="swipe-container"]',
-    ) as HTMLElement;
+    const container = document.querySelector('[data-testid="swipe-container"]') as HTMLElement;
 
     expect(container).not.toBeNull();
 
@@ -109,9 +107,7 @@ describe("ItemDetailModal Swipe Integration", () => {
     );
 
     await expect.element(page.getByText("Test Item")).toBeInTheDocument();
-    const container = document.querySelector(
-      '[data-testid="swipe-container"]',
-    ) as HTMLElement;
+    const container = document.querySelector('[data-testid="swipe-container"]') as HTMLElement;
 
     dispatchTouch(container, "touchstart", 200, 100);
     dispatchTouch(container, "touchmove", 50, 100); // Swipe left (-150px)
@@ -138,9 +134,7 @@ describe("ItemDetailModal Swipe Integration", () => {
     );
 
     await expect.element(page.getByText("Test Item")).toBeInTheDocument();
-    const container = document.querySelector(
-      '[data-testid="swipe-container"]',
-    ) as HTMLElement;
+    const container = document.querySelector('[data-testid="swipe-container"]') as HTMLElement;
 
     dispatchTouch(container, "touchstart", 100, 100);
     dispatchTouch(container, "touchmove", 250, 100); // Swipe right (+150px)
@@ -169,9 +163,7 @@ describe("ItemDetailModal Swipe Integration", () => {
     );
 
     await expect.element(page.getByText("Test Item")).toBeInTheDocument();
-    const container = document.querySelector(
-      '[data-testid="swipe-container"]',
-    ) as HTMLElement;
+    const container = document.querySelector('[data-testid="swipe-container"]') as HTMLElement;
 
     // Swipe right
     dispatchTouch(container, "touchstart", 100, 100);
@@ -202,9 +194,7 @@ describe("ItemDetailModal Swipe Integration", () => {
     );
 
     await expect.element(page.getByText("Test Item")).toBeInTheDocument();
-    const container = document.querySelector(
-      '[data-testid="swipe-container"]',
-    ) as HTMLElement;
+    const container = document.querySelector('[data-testid="swipe-container"]') as HTMLElement;
 
     dispatchTouch(container, "touchstart", 100, 100);
     dispatchTouch(container, "touchmove", 150, 100); // 50px raw move
@@ -235,9 +225,7 @@ describe("ItemDetailModal Swipe Integration", () => {
       ),
       document.body,
     );
-    const container = document.querySelector(
-      '[data-testid="swipe-container"]',
-    ) as HTMLElement;
+    const container = document.querySelector('[data-testid="swipe-container"]') as HTMLElement;
     // Swipe right (would normally trigger onPrev)
     dispatchTouch(container, "touchstart", 100, 100);
     dispatchTouch(container, "touchmove", 250, 100);
@@ -271,9 +259,7 @@ describe("ItemDetailModal Swipe Integration", () => {
     );
 
     await expect.element(page.getByText("Test Item")).toBeInTheDocument();
-    const container = document.querySelector(
-      '[data-testid="swipe-container"]',
-    ) as HTMLElement;
+    const container = document.querySelector('[data-testid="swipe-container"]') as HTMLElement;
 
     // Perform a predominantly vertical gesture inside the swipe container.
     dispatchTouch(container, "touchstart", 150, 150);

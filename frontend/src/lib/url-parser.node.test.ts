@@ -26,9 +26,7 @@ describe("URLParser", () => {
   });
 
   it("extracts user from path correctly", () => {
-    const result = parser.extractUserInfo(
-      "https://domain.com/users/user2/post",
-    );
+    const result = parser.extractUserInfo("https://domain.com/users/user2/post");
     expect(result).toEqual({ user: "user2", domain: "domain.com" });
   });
 

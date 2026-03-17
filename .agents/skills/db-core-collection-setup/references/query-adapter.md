@@ -9,19 +9,19 @@ pnpm add @tanstack/query-db-collection @tanstack/query-core @tanstack/db
 ## Required Config
 
 ```typescript
-import { QueryClient } from '@tanstack/query-core'
-import { createCollection } from '@tanstack/db'
-import { queryCollectionOptions } from '@tanstack/query-db-collection'
+import { QueryClient } from "@tanstack/query-core";
+import { createCollection } from "@tanstack/db";
+import { queryCollectionOptions } from "@tanstack/query-db-collection";
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient();
 const collection = createCollection(
   queryCollectionOptions({
-    queryKey: ['todos'],
-    queryFn: async () => fetch('/api/todos').then((r) => r.json()),
+    queryKey: ["todos"],
+    queryFn: async () => fetch("/api/todos").then((r) => r.json()),
     queryClient,
     getKey: (item) => item.id,
   }),
-)
+);
 ```
 
 - `queryKey` -- TanStack Query cache key
@@ -74,10 +74,10 @@ Direct writes bypass optimistic updates, do NOT trigger refetches, and update TQ
 
 ```typescript
 collection.utils.writeBatch(() => {
-  collection.utils.writeInsert({ id: '1', text: 'Buy milk' })
-  collection.utils.writeUpdate({ id: '2', completed: true })
-  collection.utils.writeDelete('3')
-})
+  collection.utils.writeInsert({ id: "1", text: "Buy milk" });
+  collection.utils.writeUpdate({ id: "2", completed: true });
+  collection.utils.writeDelete("3");
+});
 ```
 
 ## Predicate Push-Down (syncMode: "on-demand")
@@ -85,15 +85,13 @@ collection.utils.writeBatch(() => {
 Query predicates (where, orderBy, limit, offset) passed to `queryFn` via `ctx.meta.loadSubsetOptions`.
 
 ```typescript
-import { parseLoadSubsetOptions } from '@tanstack/query-db-collection'
+import { parseLoadSubsetOptions } from "@tanstack/query-db-collection";
 
 queryFn: async (ctx) => {
-  const { filters, sorts, limit, offset } = parseLoadSubsetOptions(
-    ctx.meta?.loadSubsetOptions,
-  )
+  const { filters, sorts, limit, offset } = parseLoadSubsetOptions(ctx.meta?.loadSubsetOptions);
   // filters: [{ field: ['category'], operator: 'eq', value: 'electronics' }]
   // sorts: [{ field: ['price'], direction: 'asc', nulls: 'last' }]
-}
+};
 ```
 
 ### Expression Helpers (from `@tanstack/db`)
@@ -120,60 +118,48 @@ queryKey: (opts) => {
 ## Complete Example
 
 ```typescript
-import { QueryClient } from '@tanstack/query-core'
-import { createCollection } from '@tanstack/react-db'
-import {
-  queryCollectionOptions,
-  parseLoadSubsetOptions,
-} from '@tanstack/query-db-collection'
+import { QueryClient } from "@tanstack/query-core";
+import { createCollection } from "@tanstack/react-db";
+import { queryCollectionOptions, parseLoadSubsetOptions } from "@tanstack/query-db-collection";
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient();
 
 const productsCollection = createCollection(
   queryCollectionOptions({
-    id: 'products',
-    queryKey: ['products'],
+    id: "products",
+    queryKey: ["products"],
     queryClient,
     getKey: (item) => item.id,
-    syncMode: 'on-demand',
+    syncMode: "on-demand",
     queryFn: async (ctx) => {
-      const { filters, sorts, limit } = parseLoadSubsetOptions(
-        ctx.meta?.loadSubsetOptions,
-      )
-      const params = new URLSearchParams()
+      const { filters, sorts, limit } = parseLoadSubsetOptions(ctx.meta?.loadSubsetOptions);
+      const params = new URLSearchParams();
       filters.forEach(({ field, operator, value }) => {
-        params.set(`${field.join('.')}_${operator}`, String(value))
-      })
+        params.set(`${field.join(".")}_${operator}`, String(value));
+      });
       if (sorts.length > 0) {
-        params.set(
-          'sort',
-          sorts.map((s) => `${s.field.join('.')}:${s.direction}`).join(','),
-        )
+        params.set("sort", sorts.map((s) => `${s.field.join(".")}:${s.direction}`).join(","));
       }
-      if (limit) params.set('limit', String(limit))
-      return fetch(`/api/products?${params}`).then((r) => r.json())
+      if (limit) params.set("limit", String(limit));
+      return fetch(`/api/products?${params}`).then((r) => r.json());
     },
     onInsert: async ({ transaction }) => {
-      const serverItems = await api.createProducts(
-        transaction.mutations.map((m) => m.modified),
-      )
+      const serverItems = await api.createProducts(transaction.mutations.map((m) => m.modified));
       productsCollection.utils.writeBatch(() => {
-        serverItems.forEach((item) =>
-          productsCollection.utils.writeInsert(item),
-        )
-      })
-      return { refetch: false }
+        serverItems.forEach((item) => productsCollection.utils.writeInsert(item));
+      });
+      return { refetch: false };
     },
     onUpdate: async ({ transaction }) => {
       await api.updateProducts(
         transaction.mutations.map((m) => ({ id: m.key, changes: m.changes })),
-      )
+      );
     },
     onDelete: async ({ transaction }) => {
-      await api.deleteProducts(transaction.mutations.map((m) => m.key))
+      await api.deleteProducts(transaction.mutations.map((m) => m.key));
     },
   }),
-)
+);
 ```
 
 ## Key Behaviors

@@ -1,10 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  FAVICON_COLORS,
-  FaviconColor,
-  generateFaviconUri,
-  getFaviconColor,
-} from "./favicon";
+import { FAVICON_COLORS, FaviconColor, generateFaviconUri, getFaviconColor } from "./favicon";
 
 describe("getFaviconColor", () => {
   it("returns Blue for 0-199 unread items", () => {

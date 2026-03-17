@@ -1,10 +1,6 @@
 import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
-import {
-  createMemoryHistory,
-  createRouter,
-  RouterProvider,
-} from "@tanstack/solid-router";
+import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
 import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -61,33 +57,21 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
         });
         return HttpResponse.json(toJson(GetItemResponseSchema, msg));
       }),
-      http.post(
-        "*/item.v1.ItemService/UpdateItemStatus",
-        async ({ request }) => {
-          const body = await request.json();
-          updateStatusSpy(body);
-          return HttpResponse.json(
-            toJson(
-              UpdateItemStatusResponseSchema,
-              create(UpdateItemStatusResponseSchema, {}),
-            ),
-          );
-        },
-      ),
+      http.post("*/item.v1.ItemService/UpdateItemStatus", async ({ request }) => {
+        const body = await request.json();
+        updateStatusSpy(body);
+        return HttpResponse.json(
+          toJson(UpdateItemStatusResponseSchema, create(UpdateItemStatusResponseSchema, {})),
+        );
+      }),
       http.all("*/tag.v1.TagService/ListTags", () => {
         return HttpResponse.json(
-          toJson(
-            ListTagsResponseSchema,
-            create(ListTagsResponseSchema, { tags: [] }),
-          ),
+          toJson(ListTagsResponseSchema, create(ListTagsResponseSchema, { tags: [] })),
         );
       }),
       http.all("*/feed.v1.FeedService/ListFeedTags", () => {
         return HttpResponse.json(
-          toJson(
-            ListFeedTagsResponseSchema,
-            create(ListFeedTagsResponseSchema, { feedTags: [] }),
-          ),
+          toJson(ListFeedTagsResponseSchema, create(ListFeedTagsResponseSchema, { feedTags: [] })),
         );
       }),
     );
@@ -112,9 +96,7 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
     );
 
     // Wait for content
-    await expect
-      .element(page.getByRole("heading", { name: "Item 1" }))
-      .toBeInTheDocument();
+    await expect.element(page.getByRole("heading", { name: "Item 1" })).toBeInTheDocument();
 
     await userEvent.keyboard("j");
 
@@ -122,9 +104,7 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
     await expect.poll(() => history.location.pathname).toBe("/items/2");
 
     // Heading should update
-    await expect
-      .element(page.getByRole("heading", { name: "Item 2" }))
-      .toBeInTheDocument();
+    await expect.element(page.getByRole("heading", { name: "Item 2" })).toBeInTheDocument();
   });
 
   it("navigates to prev item correctly", async () => {
@@ -145,16 +125,12 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
       document.body,
     );
 
-    await expect
-      .element(page.getByRole("heading", { name: "Item 2" }))
-      .toBeInTheDocument();
+    await expect.element(page.getByRole("heading", { name: "Item 2" })).toBeInTheDocument();
 
     await userEvent.keyboard("k");
 
     await expect.poll(() => history.location.pathname).toBe("/items/1");
-    await expect
-      .element(page.getByRole("heading", { name: "Item 1" }))
-      .toBeInTheDocument();
+    await expect.element(page.getByRole("heading", { name: "Item 1" })).toBeInTheDocument();
   });
 
   it("closes the modal and preserves filters", async () => {
@@ -177,9 +153,7 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
       document.body,
     );
 
-    await expect
-      .element(page.getByRole("heading", { name: "Item 1" }))
-      .toBeInTheDocument();
+    await expect.element(page.getByRole("heading", { name: "Item 1" })).toBeInTheDocument();
 
     const moreActionsButton = page.getByRole("button", {
       name: "More actions",
@@ -190,9 +164,7 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
     await closeMenuItem.click();
 
     await expect.poll(() => history.location.pathname).toBe("/");
-    await expect
-      .poll(() => history.location.search)
-      .toContain("tagId=test-tag");
+    await expect.poll(() => history.location.search).toContain("tagId=test-tag");
     await expect.poll(() => history.location.search).toContain("since=all");
   });
 
@@ -215,23 +187,17 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
       document.body,
     );
 
-    await expect
-      .element(page.getByRole("heading", { name: "Item 2" }))
-      .toBeInTheDocument();
+    await expect.element(page.getByRole("heading", { name: "Item 2" })).toBeInTheDocument();
 
     await userEvent.keyboard("j");
 
     // Should navigate to end-of-list
-    await expect
-      .poll(() => history.location.pathname)
-      .toBe("/items/end-of-list");
+    await expect.poll(() => history.location.pathname).toBe("/items/end-of-list");
 
     // Item 2 should have been marked as read
     await expect
       .poll(() => updateStatusSpy)
-      .toHaveBeenCalledWith(
-        expect.objectContaining({ ids: ["2"], isRead: true }),
-      );
+      .toHaveBeenCalledWith(expect.objectContaining({ ids: ["2"], isRead: true }));
   });
 
   it("navigates back from end-of-list to the last real item", async () => {
@@ -254,16 +220,12 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
       document.body,
     );
 
-    await expect
-      .element(page.getByRole("heading", { name: "End of List" }))
-      .toBeInTheDocument();
+    await expect.element(page.getByRole("heading", { name: "End of List" })).toBeInTheDocument();
 
     await userEvent.keyboard("k");
 
     await expect.poll(() => history.location.pathname).toBe("/items/2");
-    await expect
-      .element(page.getByRole("heading", { name: "Item 2" }))
-      .toBeInTheDocument();
+    await expect.element(page.getByRole("heading", { name: "Item 2" })).toBeInTheDocument();
   });
 
   it("supports keyboard navigation through to the placeholder", async () => {
@@ -284,15 +246,11 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
       document.body,
     );
 
-    await expect
-      .element(page.getByRole("heading", { name: "Item 2" }))
-      .toBeInTheDocument();
+    await expect.element(page.getByRole("heading", { name: "Item 2" })).toBeInTheDocument();
 
     // Use 'j' to go forward
     await userEvent.keyboard("j");
-    await expect
-      .poll(() => history.location.pathname)
-      .toBe("/items/end-of-list");
+    await expect.poll(() => history.location.pathname).toBe("/items/end-of-list");
 
     // Use 'k' to go back
     await userEvent.keyboard("k");
@@ -302,9 +260,7 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
     // Click a non-button element to ensure focus is in the modal
     await page.getByRole("heading", { name: "Item 2" }).click();
     await userEvent.keyboard("{ArrowRight}");
-    await expect
-      .poll(() => history.location.pathname)
-      .toBe("/items/end-of-list");
+    await expect.poll(() => history.location.pathname).toBe("/items/end-of-list");
 
     await page.getByRole("heading", { name: "End of List" }).click();
     await userEvent.keyboard("{ArrowLeft}");
@@ -375,9 +331,7 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
       document.body,
     );
 
-    await expect
-      .element(page.getByRole("heading", { name: "Item 1" }))
-      .toBeInTheDocument();
+    await expect.element(page.getByRole("heading", { name: "Item 1" })).toBeInTheDocument();
 
     await userEvent.keyboard("j");
 

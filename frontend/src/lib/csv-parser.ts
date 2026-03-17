@@ -8,12 +8,7 @@ export interface ParsedBlockRule {
   error?: string;
 }
 
-const VALID_TYPES: BlockRuleType[] = [
-  "user",
-  "domain",
-  "user_domain",
-  "keyword",
-];
+const VALID_TYPES: BlockRuleType[] = ["user", "domain", "user_domain", "keyword"];
 
 /**
  * Minimal RFC4180-style CSV parser.

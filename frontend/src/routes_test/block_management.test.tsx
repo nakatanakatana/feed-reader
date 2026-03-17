@@ -1,8 +1,4 @@
-import {
-  createMemoryHistory,
-  createRouter,
-  RouterProvider,
-} from "@tanstack/solid-router";
+import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
@@ -69,20 +65,12 @@ describe("Block Management Navigation", () => {
 
     // Test navigation to URL Rules
     await urlRulesLink.click();
-    await expect
-      .element(page.getByText("Domain", { exact: true }))
-      .toBeInTheDocument();
-    await expect
-      .element(page.getByText("Pattern", { exact: true }))
-      .toBeInTheDocument();
+    await expect.element(page.getByText("Domain", { exact: true })).toBeInTheDocument();
+    await expect.element(page.getByText("Pattern", { exact: true })).toBeInTheDocument();
 
     // Test navigation to Block Rules
     await blockRulesLink.click();
-    await expect
-      .element(page.getByText("Value", { exact: true }).first())
-      .toBeInTheDocument();
-    await expect
-      .element(page.getByText("Domain (Optional)", { exact: true }))
-      .toBeInTheDocument();
+    await expect.element(page.getByText("Value", { exact: true }).first()).toBeInTheDocument();
+    await expect.element(page.getByText("Domain (Optional)", { exact: true })).toBeInTheDocument();
   });
 });

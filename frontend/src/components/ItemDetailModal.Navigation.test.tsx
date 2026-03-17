@@ -55,12 +55,7 @@ describe("ItemDetailModal Navigation", () => {
     dispose = render(
       () => (
         <Wrapper>
-          <ItemDetailModal
-            itemId="1"
-            onClose={() => {}}
-            prevItemId="0"
-            nextItemId="2"
-          />
+          <ItemDetailModal itemId="1" onClose={() => {}} prevItemId="0" nextItemId="2" />
         </Wrapper>
       ),
       document.body,
@@ -77,12 +72,7 @@ describe("ItemDetailModal Navigation", () => {
     dispose = render(
       () => (
         <Wrapper>
-          <ItemDetailModal
-            itemId="1"
-            onClose={() => {}}
-            nextItemId="2"
-            onNext={onNext}
-          />
+          <ItemDetailModal itemId="1" onClose={() => {}} nextItemId="2" onNext={onNext} />
         </Wrapper>
       ),
       document.body,
@@ -99,12 +89,7 @@ describe("ItemDetailModal Navigation", () => {
     dispose = render(
       () => (
         <Wrapper>
-          <ItemDetailModal
-            itemId="2"
-            onClose={() => {}}
-            prevItemId="1"
-            onPrev={onPrev}
-          />
+          <ItemDetailModal itemId="2" onClose={() => {}} prevItemId="1" onPrev={onPrev} />
         </Wrapper>
       ),
       document.body,

@@ -10,10 +10,10 @@ description: >
   (partial vs full). Subscription lifecycle and cleanup functions.
 type: sub-skill
 library: db
-library_version: '0.5.30'
+library_version: "0.5.30"
 sources:
-  - 'TanStack/db:docs/guides/collection-options-creator.md'
-  - 'TanStack/db:packages/db/src/collection/sync.ts'
+  - "TanStack/db:docs/guides/collection-options-creator.md"
+  - "TanStack/db:packages/db/src/collection/sync.ts"
 ---
 
 This skill builds on db-core and db-core/collection-setup. Read those first.
@@ -23,83 +23,83 @@ This skill builds on db-core and db-core/collection-setup. Read those first.
 ## Setup
 
 ```ts
-import { createCollection } from '@tanstack/db'
-import type { SyncConfig, CollectionConfig } from '@tanstack/db'
+import { createCollection } from "@tanstack/db";
+import type { SyncConfig, CollectionConfig } from "@tanstack/db";
 
 interface MyItem {
-  id: string
-  name: string
+  id: string;
+  name: string;
 }
 
 function myBackendCollectionOptions<T>(config: {
-  endpoint: string
-  getKey: (item: T) => string
+  endpoint: string;
+  getKey: (item: T) => string;
 }): CollectionConfig<T, string, {}> {
   return {
     getKey: config.getKey,
     sync: {
       sync: ({ begin, write, commit, markReady, collection }) => {
-        let isInitialSyncComplete = false
-        const bufferedEvents: Array<any> = []
+        let isInitialSyncComplete = false;
+        const bufferedEvents: Array<any> = [];
 
         // 1. Subscribe to real-time events FIRST
         const unsubscribe = myWebSocket.subscribe(config.endpoint, (event) => {
           if (!isInitialSyncComplete) {
-            bufferedEvents.push(event)
-            return
+            bufferedEvents.push(event);
+            return;
           }
-          begin()
-          write({ type: event.type, key: event.id, value: event.data })
-          commit()
-        })
+          begin();
+          write({ type: event.type, key: event.id, value: event.data });
+          commit();
+        });
 
         // 2. Fetch initial data
         fetch(config.endpoint).then(async (res) => {
-          const items = await res.json()
-          begin()
+          const items = await res.json();
+          begin();
           for (const item of items) {
-            write({ type: 'insert', value: item })
+            write({ type: "insert", value: item });
           }
-          commit()
+          commit();
 
           // 3. Process buffered events
-          isInitialSyncComplete = true
+          isInitialSyncComplete = true;
           for (const event of bufferedEvents) {
-            begin()
-            write({ type: event.type, key: event.id, value: event.data })
-            commit()
+            begin();
+            write({ type: event.type, key: event.id, value: event.data });
+            commit();
           }
 
           // 4. Signal readiness
-          markReady()
-        })
+          markReady();
+        });
 
         // 5. Return cleanup function
         return () => {
-          unsubscribe()
-        }
+          unsubscribe();
+        };
       },
-      rowUpdateMode: 'partial',
+      rowUpdateMode: "partial",
     },
     onInsert: async ({ transaction }) => {
       await fetch(config.endpoint, {
-        method: 'POST',
+        method: "POST",
         body: JSON.stringify(transaction.mutations[0].modified),
-      })
+      });
     },
     onUpdate: async ({ transaction }) => {
-      const mut = transaction.mutations[0]
+      const mut = transaction.mutations[0];
       await fetch(`${config.endpoint}/${mut.key}`, {
-        method: 'PATCH',
+        method: "PATCH",
         body: JSON.stringify(mut.changes),
-      })
+      });
     },
     onDelete: async ({ transaction }) => {
       await fetch(`${config.endpoint}/${transaction.mutations[0].key}`, {
-        method: 'DELETE',
-      })
+        method: "DELETE",
+      });
     },
-  }
+  };
 }
 ```
 
@@ -109,17 +109,17 @@ function myBackendCollectionOptions<T>(config: {
 
 ```ts
 // Insert
-write({ type: 'insert', value: item })
+write({ type: "insert", value: item });
 
 // Update (partial — only changed fields)
-write({ type: 'update', key: itemId, value: partialItem })
+write({ type: "update", key: itemId, value: partialItem });
 
 // Update (full row replacement)
-write({ type: 'update', key: itemId, value: fullItem })
+write({ type: "update", key: itemId, value: fullItem });
 // Set rowUpdateMode: "full" in sync config
 
 // Delete
-write({ type: 'delete', key: itemId, value: item })
+write({ type: "delete", key: itemId, value: item });
 ```
 
 ### On-demand sync with loadSubset
@@ -164,13 +164,13 @@ import {
   parseWhereExpression,
   parseOrderByExpression,
   extractSimpleComparisons,
-} from '@tanstack/db'
+} from "@tanstack/db";
 
 // In loadSubset or queryFn:
-const comparisons = extractSimpleComparisons(options.where)
+const comparisons = extractSimpleComparisons(options.where);
 // Returns: [{ field: ['name'], operator: 'eq', value: 'John' }]
 
-const orderBy = parseOrderByExpression(options.orderBy)
+const orderBy = parseOrderByExpression(options.orderBy);
 // Returns: [{ field: ['created_at'], direction: 'desc', nulls: 'last' }]
 ```
 
@@ -183,12 +183,12 @@ Wrong:
 ```ts
 sync: ({ begin, write, commit }) => {
   fetchData().then((items) => {
-    begin()
-    items.forEach((item) => write({ type: 'insert', value: item }))
-    commit()
+    begin();
+    items.forEach((item) => write({ type: "insert", value: item }));
+    commit();
     // forgot markReady()!
-  })
-}
+  });
+};
 ```
 
 Correct:
@@ -196,12 +196,12 @@ Correct:
 ```ts
 sync: ({ begin, write, commit, markReady }) => {
   fetchData().then((items) => {
-    begin()
-    items.forEach((item) => write({ type: 'insert', value: item }))
-    commit()
-    markReady()
-  })
-}
+    begin();
+    items.forEach((item) => write({ type: "insert", value: item }));
+    commit();
+    markReady();
+  });
+};
 ```
 
 `markReady()` transitions the collection to "ready" status. Without it, live queries never resolve and `useLiveSuspenseQuery` hangs forever in Suspense.
@@ -215,38 +215,38 @@ Wrong:
 ```ts
 sync: ({ begin, write, commit, markReady }) => {
   fetchAll().then((data) => {
-    writeAll(data)
-    subscribe(onChange) // changes during fetch are LOST
-    markReady()
-  })
-}
+    writeAll(data);
+    subscribe(onChange); // changes during fetch are LOST
+    markReady();
+  });
+};
 ```
 
 Correct:
 
 ```ts
 sync: ({ begin, write, commit, markReady }) => {
-  const buffer = []
+  const buffer = [];
   subscribe((event) => {
     if (!ready) {
-      buffer.push(event)
-      return
+      buffer.push(event);
+      return;
     }
-    begin()
-    write(event)
-    commit()
-  })
+    begin();
+    write(event);
+    commit();
+  });
   fetchAll().then((data) => {
-    writeAll(data)
-    ready = true
+    writeAll(data);
+    ready = true;
     buffer.forEach((e) => {
-      begin()
-      write(e)
-      commit()
-    })
-    markReady()
-  })
-}
+      begin();
+      write(e);
+      commit();
+    });
+    markReady();
+  });
+};
 ```
 
 Subscribe to real-time events before fetching initial data. Buffer events during the fetch, then replay them after the initial sync completes.
@@ -259,19 +259,19 @@ Wrong:
 
 ```ts
 onMessage((event) => {
-  write({ type: event.type, key: event.id, value: event.data })
-  commit()
-})
+  write({ type: event.type, key: event.id, value: event.data });
+  commit();
+});
 ```
 
 Correct:
 
 ```ts
 onMessage((event) => {
-  begin()
-  write({ type: event.type, key: event.id, value: event.data })
-  commit()
-})
+  begin();
+  write({ type: event.type, key: event.id, value: event.data });
+  commit();
+});
 ```
 
 Sync data must be written within a transaction (`begin` → `write` → `commit`). Calling `write()` without `begin()` throws `NoPendingSyncTransactionWriteError`.

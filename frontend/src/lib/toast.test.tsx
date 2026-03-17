@@ -93,20 +93,15 @@ describe("Toast Context", () => {
     expect(toast.toasts()).toHaveLength(0);
 
     const error = new Error("Network Error");
-    // biome-ignore lint/suspicious/noExplicitAny: using Symbol to mark handled errors
     (error as any)[ERROR_TOAST_ELIGIBLE] = true;
 
     const queryCache = queryClient.getQueryCache();
-    queryCache.config.onError?.(
-      error,
-      // biome-ignore lint/suspicious/noExplicitAny: testing internal interface
-      { state: { fetchStatus: "idle" } } as any,
-    );
+    queryCache.config.onError?.(error, {
+      state: { fetchStatus: "idle" },
+    } as any);
 
     expect(toast.toasts()).toHaveLength(1);
-    expect(toast.toasts()[0].message).toBe(
-      "An error occurred. Please try again.",
-    );
+    expect(toast.toasts()[0].message).toBe("An error occurred. Please try again.");
     expect(toast.toasts()[0].type).toBe("error");
   });
 });

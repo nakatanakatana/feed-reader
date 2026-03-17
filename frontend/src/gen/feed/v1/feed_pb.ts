@@ -13,8 +13,10 @@ import type { Message } from "@bufbuild/protobuf";
 /**
  * Describes the file feed/v1/feed.proto.
  */
-export const file_feed_v1_feed: GenFile = /*@__PURE__*/
-  fileDesc("ChJmZWVkL3YxL2ZlZWQucHJvdG8SB2ZlZWQudjEihQQKBEZlZWQSCgoCaWQYASABKAkSCwoDdXJsGAIgASgJEhEKBGxpbmsYAyABKAlIAIgBARINCgV0aXRsZRgEIAEoCRIYCgtkZXNjcmlwdGlvbhgFIAEoCUgBiAEBEhYKCWltYWdlX3VybBgHIAEoCUgCiAEBEjgKD2xhc3RfZmV0Y2hlZF9hdBgLIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIA4gBARIuCgpjcmVhdGVkX2F0GAwgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIuCgp1cGRhdGVkX2F0GA0gASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIZCgR0YWdzGA4gAygLMgsudGFnLnYxLlRhZxIUCgx1bnJlYWRfY291bnQYDyABKAMSNgoNbmV4dF9mZXRjaF9hdBgQIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIBIgBAUIHCgVfbGlua0IOCgxfZGVzY3JpcHRpb25CDAoKX2ltYWdlX3VybEISChBfbGFzdF9mZXRjaGVkX2F0QhAKDl9uZXh0X2ZldGNoX2F0SgQIBhAHSgQICBAJSgQICRAKSgQIChALUgRsYW5nUgljb3B5cmlnaHRSCWZlZWRfdHlwZVIMZmVlZF92ZXJzaW9uIhwKDkdldEZlZWRSZXF1ZXN0EgoKAmlkGAEgASgJIi4KD0dldEZlZWRSZXNwb25zZRIbCgRmZWVkGAEgASgLMg0uZmVlZC52MS5GZWVkIjIKEExpc3RGZWVkc1JlcXVlc3QSEwoGdGFnX2lkGAEgASgJSACIAQFCCQoHX3RhZ19pZCIxChFMaXN0RmVlZHNSZXNwb25zZRIcCgVmZWVkcxgBIAMoCzINLmZlZWQudjEuRmVlZCLTAQoRQ3JlYXRlRmVlZFJlcXVlc3QSCwoDdXJsGAEgASgJEhIKBXRpdGxlGAIgASgJSACIAQESEQoEbGluaxgDIAEoCUgBiAEBEhgKC2Rlc2NyaXB0aW9uGAQgASgJSAKIAQESFgoJaW1hZ2VfdXJsGAYgASgJSAOIAQESDwoHdGFnX2lkcxgKIAMoCUIICgZfdGl0bGVCBwoFX2xpbmtCDgoMX2Rlc2NyaXB0aW9uQgwKCl9pbWFnZV91cmxKBAgFEAZKBAgHEAhKBAgIEAlKBAgJEAoiMQoSQ3JlYXRlRmVlZFJlc3BvbnNlEhsKBGZlZWQYASABKAsyDS5mZWVkLnYxLkZlZWQi2AEKEVVwZGF0ZUZlZWRSZXF1ZXN0EgoKAmlkGAEgASgJEhIKBXRpdGxlGAMgASgJSACIAQESEQoEbGluaxgEIAEoCUgBiAEBEhgKC2Rlc2NyaXB0aW9uGAUgASgJSAKIAQESFgoJaW1hZ2VfdXJsGAcgASgJSAOIAQESDwoHdGFnX2lkcxgMIAMoCUIICgZfdGl0bGVCBwoFX2xpbmtCDgoMX2Rlc2NyaXB0aW9uQgwKCl9pbWFnZV91cmxKBAgGEAdKBAgIEAlKBAgJEApKBAgKEAtKBAgLEAwiMQoSVXBkYXRlRmVlZFJlc3BvbnNlEhsKBGZlZWQYASABKAsyDS5mZWVkLnYxLkZlZWQiHwoRRGVsZXRlRmVlZFJlcXVlc3QSCgoCaWQYASABKAkiFAoSRGVsZXRlRmVlZFJlc3BvbnNlIiIKE1JlZnJlc2hGZWVkc1JlcXVlc3QSCwoDaWRzGAEgAygJInoKD0ZlZWRGZXRjaFN0YXR1cxIPCgdmZWVkX2lkGAEgASgJEg8KB3N1Y2Nlc3MYAiABKAgSFwoPbmV3X2l0ZW1zX2NvdW50GAMgASgFEhoKDWVycm9yX21lc3NhZ2UYBCABKAlIAIgBAUIQCg5fZXJyb3JfbWVzc2FnZSJBChRSZWZyZXNoRmVlZHNSZXNwb25zZRIpCgdyZXN1bHRzGAEgAygLMhguZmVlZC52MS5GZWVkRmV0Y2hTdGF0dXMiKQoRSW1wb3J0T3BtbFJlcXVlc3QSFAoMb3BtbF9jb250ZW50GAEgASgMInYKEkltcG9ydE9wbWxSZXNwb25zZRINCgV0b3RhbBgBIAEoBRIPCgdzdWNjZXNzGAIgASgFEg8KB3NraXBwZWQYAyABKAUSLwoMZmFpbGVkX2ZlZWRzGAQgAygLMhkuZmVlZC52MS5JbXBvcnRGYWlsZWRGZWVkIjYKEEltcG9ydEZhaWxlZEZlZWQSCwoDdXJsGAEgASgJEhUKDWVycm9yX21lc3NhZ2UYAiABKAkiIAoRRXhwb3J0T3BtbFJlcXVlc3QSCwoDaWRzGAEgAygJIioKEkV4cG9ydE9wbWxSZXNwb25zZRIUCgxvcG1sX2NvbnRlbnQYASABKAwiNgoSU2V0RmVlZFRhZ3NSZXF1ZXN0Eg8KB2ZlZWRfaWQYASABKAkSDwoHdGFnX2lkcxgCIAMoCSIVChNTZXRGZWVkVGFnc1Jlc3BvbnNlIlYKFU1hbmFnZUZlZWRUYWdzUmVxdWVzdBIQCghmZWVkX2lkcxgBIAMoCRITCgthZGRfdGFnX2lkcxgCIAMoCRIWCg5yZW1vdmVfdGFnX2lkcxgDIAMoCSIYChZNYW5hZ2VGZWVkVGFnc1Jlc3BvbnNlIioKB0ZlZWRUYWcSDwoHZmVlZF9pZBgBIAEoCRIOCgZ0YWdfaWQYAiABKAkiVwoTTGlzdEZlZWRUYWdzUmVxdWVzdBIUCgdmZWVkX2lkGAEgASgJSACIAQESEwoGdGFnX2lkGAIgASgJSAGIAQFCCgoIX2ZlZWRfaWRCCQoHX3RhZ19pZCI7ChRMaXN0RmVlZFRhZ3NSZXNwb25zZRIjCglmZWVkX3RhZ3MYASADKAsyEC5mZWVkLnYxLkZlZWRUYWciOwoTU3VzcGVuZEZlZWRzUmVxdWVzdBILCgNpZHMYASADKAkSFwoPc3VzcGVuZF9zZWNvbmRzGAIgASgDIhYKFFN1c3BlbmRGZWVkc1Jlc3BvbnNlMooHCgtGZWVkU2VydmljZRJBCgdHZXRGZWVkEhcuZmVlZC52MS5HZXRGZWVkUmVxdWVzdBoYLmZlZWQudjEuR2V0RmVlZFJlc3BvbnNlIgOQAgESRwoJTGlzdEZlZWRzEhkuZmVlZC52MS5MaXN0RmVlZHNSZXF1ZXN0GhouZmVlZC52MS5MaXN0RmVlZHNSZXNwb25zZSIDkAIBEkUKCkNyZWF0ZUZlZWQSGi5mZWVkLnYxLkNyZWF0ZUZlZWRSZXF1ZXN0GhsuZmVlZC52MS5DcmVhdGVGZWVkUmVzcG9uc2USRQoKVXBkYXRlRmVlZBIaLmZlZWQudjEuVXBkYXRlRmVlZFJlcXVlc3QaGy5mZWVkLnYxLlVwZGF0ZUZlZWRSZXNwb25zZRJFCgpEZWxldGVGZWVkEhouZmVlZC52MS5EZWxldGVGZWVkUmVxdWVzdBobLmZlZWQudjEuRGVsZXRlRmVlZFJlc3BvbnNlEksKDFJlZnJlc2hGZWVkcxIcLmZlZWQudjEuUmVmcmVzaEZlZWRzUmVxdWVzdBodLmZlZWQudjEuUmVmcmVzaEZlZWRzUmVzcG9uc2USRQoKSW1wb3J0T3BtbBIaLmZlZWQudjEuSW1wb3J0T3BtbFJlcXVlc3QaGy5mZWVkLnYxLkltcG9ydE9wbWxSZXNwb25zZRJKCgpFeHBvcnRPcG1sEhouZmVlZC52MS5FeHBvcnRPcG1sUmVxdWVzdBobLmZlZWQudjEuRXhwb3J0T3BtbFJlc3BvbnNlIgOQAgESUAoMTGlzdEZlZWRUYWdzEhwuZmVlZC52MS5MaXN0RmVlZFRhZ3NSZXF1ZXN0Gh0uZmVlZC52MS5MaXN0RmVlZFRhZ3NSZXNwb25zZSIDkAIBEkgKC1NldEZlZWRUYWdzEhsuZmVlZC52MS5TZXRGZWVkVGFnc1JlcXVlc3QaHC5mZWVkLnYxLlNldEZlZWRUYWdzUmVzcG9uc2USUQoOTWFuYWdlRmVlZFRhZ3MSHi5mZWVkLnYxLk1hbmFnZUZlZWRUYWdzUmVxdWVzdBofLmZlZWQudjEuTWFuYWdlRmVlZFRhZ3NSZXNwb25zZRJLCgxTdXNwZW5kRmVlZHMSHC5mZWVkLnYxLlN1c3BlbmRGZWVkc1JlcXVlc3QaHS5mZWVkLnYxLlN1c3BlbmRGZWVkc1Jlc3BvbnNlQj1aO2dpdGh1Yi5jb20vbmFrYXRhbmFrYXRhbmEvZmVlZC1yZWFkZXIvZ2VuL2dvL2ZlZWQvdjE7ZmVlZHYxYgZwcm90bzM", [file_google_protobuf_timestamp, file_tag_v1_tag]);
+export const file_feed_v1_feed: GenFile /*@__PURE__*/ = fileDesc(
+  "ChJmZWVkL3YxL2ZlZWQucHJvdG8SB2ZlZWQudjEihQQKBEZlZWQSCgoCaWQYASABKAkSCwoDdXJsGAIgASgJEhEKBGxpbmsYAyABKAlIAIgBARINCgV0aXRsZRgEIAEoCRIYCgtkZXNjcmlwdGlvbhgFIAEoCUgBiAEBEhYKCWltYWdlX3VybBgHIAEoCUgCiAEBEjgKD2xhc3RfZmV0Y2hlZF9hdBgLIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIA4gBARIuCgpjcmVhdGVkX2F0GAwgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIuCgp1cGRhdGVkX2F0GA0gASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIZCgR0YWdzGA4gAygLMgsudGFnLnYxLlRhZxIUCgx1bnJlYWRfY291bnQYDyABKAMSNgoNbmV4dF9mZXRjaF9hdBgQIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIBIgBAUIHCgVfbGlua0IOCgxfZGVzY3JpcHRpb25CDAoKX2ltYWdlX3VybEISChBfbGFzdF9mZXRjaGVkX2F0QhAKDl9uZXh0X2ZldGNoX2F0SgQIBhAHSgQICBAJSgQICRAKSgQIChALUgRsYW5nUgljb3B5cmlnaHRSCWZlZWRfdHlwZVIMZmVlZF92ZXJzaW9uIhwKDkdldEZlZWRSZXF1ZXN0EgoKAmlkGAEgASgJIi4KD0dldEZlZWRSZXNwb25zZRIbCgRmZWVkGAEgASgLMg0uZmVlZC52MS5GZWVkIjIKEExpc3RGZWVkc1JlcXVlc3QSEwoGdGFnX2lkGAEgASgJSACIAQFCCQoHX3RhZ19pZCIxChFMaXN0RmVlZHNSZXNwb25zZRIcCgVmZWVkcxgBIAMoCzINLmZlZWQudjEuRmVlZCLTAQoRQ3JlYXRlRmVlZFJlcXVlc3QSCwoDdXJsGAEgASgJEhIKBXRpdGxlGAIgASgJSACIAQESEQoEbGluaxgDIAEoCUgBiAEBEhgKC2Rlc2NyaXB0aW9uGAQgASgJSAKIAQESFgoJaW1hZ2VfdXJsGAYgASgJSAOIAQESDwoHdGFnX2lkcxgKIAMoCUIICgZfdGl0bGVCBwoFX2xpbmtCDgoMX2Rlc2NyaXB0aW9uQgwKCl9pbWFnZV91cmxKBAgFEAZKBAgHEAhKBAgIEAlKBAgJEAoiMQoSQ3JlYXRlRmVlZFJlc3BvbnNlEhsKBGZlZWQYASABKAsyDS5mZWVkLnYxLkZlZWQi2AEKEVVwZGF0ZUZlZWRSZXF1ZXN0EgoKAmlkGAEgASgJEhIKBXRpdGxlGAMgASgJSACIAQESEQoEbGluaxgEIAEoCUgBiAEBEhgKC2Rlc2NyaXB0aW9uGAUgASgJSAKIAQESFgoJaW1hZ2VfdXJsGAcgASgJSAOIAQESDwoHdGFnX2lkcxgMIAMoCUIICgZfdGl0bGVCBwoFX2xpbmtCDgoMX2Rlc2NyaXB0aW9uQgwKCl9pbWFnZV91cmxKBAgGEAdKBAgIEAlKBAgJEApKBAgKEAtKBAgLEAwiMQoSVXBkYXRlRmVlZFJlc3BvbnNlEhsKBGZlZWQYASABKAsyDS5mZWVkLnYxLkZlZWQiHwoRRGVsZXRlRmVlZFJlcXVlc3QSCgoCaWQYASABKAkiFAoSRGVsZXRlRmVlZFJlc3BvbnNlIiIKE1JlZnJlc2hGZWVkc1JlcXVlc3QSCwoDaWRzGAEgAygJInoKD0ZlZWRGZXRjaFN0YXR1cxIPCgdmZWVkX2lkGAEgASgJEg8KB3N1Y2Nlc3MYAiABKAgSFwoPbmV3X2l0ZW1zX2NvdW50GAMgASgFEhoKDWVycm9yX21lc3NhZ2UYBCABKAlIAIgBAUIQCg5fZXJyb3JfbWVzc2FnZSJBChRSZWZyZXNoRmVlZHNSZXNwb25zZRIpCgdyZXN1bHRzGAEgAygLMhguZmVlZC52MS5GZWVkRmV0Y2hTdGF0dXMiKQoRSW1wb3J0T3BtbFJlcXVlc3QSFAoMb3BtbF9jb250ZW50GAEgASgMInYKEkltcG9ydE9wbWxSZXNwb25zZRINCgV0b3RhbBgBIAEoBRIPCgdzdWNjZXNzGAIgASgFEg8KB3NraXBwZWQYAyABKAUSLwoMZmFpbGVkX2ZlZWRzGAQgAygLMhkuZmVlZC52MS5JbXBvcnRGYWlsZWRGZWVkIjYKEEltcG9ydEZhaWxlZEZlZWQSCwoDdXJsGAEgASgJEhUKDWVycm9yX21lc3NhZ2UYAiABKAkiIAoRRXhwb3J0T3BtbFJlcXVlc3QSCwoDaWRzGAEgAygJIioKEkV4cG9ydE9wbWxSZXNwb25zZRIUCgxvcG1sX2NvbnRlbnQYASABKAwiNgoSU2V0RmVlZFRhZ3NSZXF1ZXN0Eg8KB2ZlZWRfaWQYASABKAkSDwoHdGFnX2lkcxgCIAMoCSIVChNTZXRGZWVkVGFnc1Jlc3BvbnNlIlYKFU1hbmFnZUZlZWRUYWdzUmVxdWVzdBIQCghmZWVkX2lkcxgBIAMoCRITCgthZGRfdGFnX2lkcxgCIAMoCRIWCg5yZW1vdmVfdGFnX2lkcxgDIAMoCSIYChZNYW5hZ2VGZWVkVGFnc1Jlc3BvbnNlIioKB0ZlZWRUYWcSDwoHZmVlZF9pZBgBIAEoCRIOCgZ0YWdfaWQYAiABKAkiVwoTTGlzdEZlZWRUYWdzUmVxdWVzdBIUCgdmZWVkX2lkGAEgASgJSACIAQESEwoGdGFnX2lkGAIgASgJSAGIAQFCCgoIX2ZlZWRfaWRCCQoHX3RhZ19pZCI7ChRMaXN0RmVlZFRhZ3NSZXNwb25zZRIjCglmZWVkX3RhZ3MYASADKAsyEC5mZWVkLnYxLkZlZWRUYWciOwoTU3VzcGVuZEZlZWRzUmVxdWVzdBILCgNpZHMYASADKAkSFwoPc3VzcGVuZF9zZWNvbmRzGAIgASgDIhYKFFN1c3BlbmRGZWVkc1Jlc3BvbnNlMooHCgtGZWVkU2VydmljZRJBCgdHZXRGZWVkEhcuZmVlZC52MS5HZXRGZWVkUmVxdWVzdBoYLmZlZWQudjEuR2V0RmVlZFJlc3BvbnNlIgOQAgESRwoJTGlzdEZlZWRzEhkuZmVlZC52MS5MaXN0RmVlZHNSZXF1ZXN0GhouZmVlZC52MS5MaXN0RmVlZHNSZXNwb25zZSIDkAIBEkUKCkNyZWF0ZUZlZWQSGi5mZWVkLnYxLkNyZWF0ZUZlZWRSZXF1ZXN0GhsuZmVlZC52MS5DcmVhdGVGZWVkUmVzcG9uc2USRQoKVXBkYXRlRmVlZBIaLmZlZWQudjEuVXBkYXRlRmVlZFJlcXVlc3QaGy5mZWVkLnYxLlVwZGF0ZUZlZWRSZXNwb25zZRJFCgpEZWxldGVGZWVkEhouZmVlZC52MS5EZWxldGVGZWVkUmVxdWVzdBobLmZlZWQudjEuRGVsZXRlRmVlZFJlc3BvbnNlEksKDFJlZnJlc2hGZWVkcxIcLmZlZWQudjEuUmVmcmVzaEZlZWRzUmVxdWVzdBodLmZlZWQudjEuUmVmcmVzaEZlZWRzUmVzcG9uc2USRQoKSW1wb3J0T3BtbBIaLmZlZWQudjEuSW1wb3J0T3BtbFJlcXVlc3QaGy5mZWVkLnYxLkltcG9ydE9wbWxSZXNwb25zZRJKCgpFeHBvcnRPcG1sEhouZmVlZC52MS5FeHBvcnRPcG1sUmVxdWVzdBobLmZlZWQudjEuRXhwb3J0T3BtbFJlc3BvbnNlIgOQAgESUAoMTGlzdEZlZWRUYWdzEhwuZmVlZC52MS5MaXN0RmVlZFRhZ3NSZXF1ZXN0Gh0uZmVlZC52MS5MaXN0RmVlZFRhZ3NSZXNwb25zZSIDkAIBEkgKC1NldEZlZWRUYWdzEhsuZmVlZC52MS5TZXRGZWVkVGFnc1JlcXVlc3QaHC5mZWVkLnYxLlNldEZlZWRUYWdzUmVzcG9uc2USUQoOTWFuYWdlRmVlZFRhZ3MSHi5mZWVkLnYxLk1hbmFnZUZlZWRUYWdzUmVxdWVzdBofLmZlZWQudjEuTWFuYWdlRmVlZFRhZ3NSZXNwb25zZRJLCgxTdXNwZW5kRmVlZHMSHC5mZWVkLnYxLlN1c3BlbmRGZWVkc1JlcXVlc3QaHS5mZWVkLnYxLlN1c3BlbmRGZWVkc1Jlc3BvbnNlQj1aO2dpdGh1Yi5jb20vbmFrYXRhbmFrYXRhbmEvZmVlZC1yZWFkZXIvZ2VuL2dvL2ZlZWQvdjE7ZmVlZHYxYgZwcm90bzM",
+  [file_google_protobuf_timestamp, file_tag_v1_tag],
+);
 
 /**
  * @generated from message feed.v1.Feed
@@ -85,8 +87,7 @@ export type Feed = Message<"feed.v1.Feed"> & {
  * Describes the message feed.v1.Feed.
  * Use `create(FeedSchema)` to create a new message.
  */
-export const FeedSchema: GenMessage<Feed> = /*@__PURE__*/
-  messageDesc(file_feed_v1_feed, 0);
+export const FeedSchema: GenMessage<Feed> /*@__PURE__*/ = messageDesc(file_feed_v1_feed, 0);
 
 /**
  * @generated from message feed.v1.GetFeedRequest
@@ -102,8 +103,10 @@ export type GetFeedRequest = Message<"feed.v1.GetFeedRequest"> & {
  * Describes the message feed.v1.GetFeedRequest.
  * Use `create(GetFeedRequestSchema)` to create a new message.
  */
-export const GetFeedRequestSchema: GenMessage<GetFeedRequest> = /*@__PURE__*/
-  messageDesc(file_feed_v1_feed, 1);
+export const GetFeedRequestSchema: GenMessage<GetFeedRequest> /*@__PURE__*/ = messageDesc(
+  file_feed_v1_feed,
+  1,
+);
 
 /**
  * @generated from message feed.v1.GetFeedResponse
@@ -119,8 +122,10 @@ export type GetFeedResponse = Message<"feed.v1.GetFeedResponse"> & {
  * Describes the message feed.v1.GetFeedResponse.
  * Use `create(GetFeedResponseSchema)` to create a new message.
  */
-export const GetFeedResponseSchema: GenMessage<GetFeedResponse> = /*@__PURE__*/
-  messageDesc(file_feed_v1_feed, 2);
+export const GetFeedResponseSchema: GenMessage<GetFeedResponse> /*@__PURE__*/ = messageDesc(
+  file_feed_v1_feed,
+  2,
+);
 
 /**
  * @generated from message feed.v1.ListFeedsRequest
@@ -136,8 +141,10 @@ export type ListFeedsRequest = Message<"feed.v1.ListFeedsRequest"> & {
  * Describes the message feed.v1.ListFeedsRequest.
  * Use `create(ListFeedsRequestSchema)` to create a new message.
  */
-export const ListFeedsRequestSchema: GenMessage<ListFeedsRequest> = /*@__PURE__*/
-  messageDesc(file_feed_v1_feed, 3);
+export const ListFeedsRequestSchema: GenMessage<ListFeedsRequest> /*@__PURE__*/ = messageDesc(
+  file_feed_v1_feed,
+  3,
+);
 
 /**
  * @generated from message feed.v1.ListFeedsResponse
@@ -153,8 +160,10 @@ export type ListFeedsResponse = Message<"feed.v1.ListFeedsResponse"> & {
  * Describes the message feed.v1.ListFeedsResponse.
  * Use `create(ListFeedsResponseSchema)` to create a new message.
  */
-export const ListFeedsResponseSchema: GenMessage<ListFeedsResponse> = /*@__PURE__*/
-  messageDesc(file_feed_v1_feed, 4);
+export const ListFeedsResponseSchema: GenMessage<ListFeedsResponse> /*@__PURE__*/ = messageDesc(
+  file_feed_v1_feed,
+  4,
+);
 
 /**
  * @generated from message feed.v1.CreateFeedRequest
@@ -195,8 +204,10 @@ export type CreateFeedRequest = Message<"feed.v1.CreateFeedRequest"> & {
  * Describes the message feed.v1.CreateFeedRequest.
  * Use `create(CreateFeedRequestSchema)` to create a new message.
  */
-export const CreateFeedRequestSchema: GenMessage<CreateFeedRequest> = /*@__PURE__*/
-  messageDesc(file_feed_v1_feed, 5);
+export const CreateFeedRequestSchema: GenMessage<CreateFeedRequest> /*@__PURE__*/ = messageDesc(
+  file_feed_v1_feed,
+  5,
+);
 
 /**
  * @generated from message feed.v1.CreateFeedResponse
@@ -212,8 +223,10 @@ export type CreateFeedResponse = Message<"feed.v1.CreateFeedResponse"> & {
  * Describes the message feed.v1.CreateFeedResponse.
  * Use `create(CreateFeedResponseSchema)` to create a new message.
  */
-export const CreateFeedResponseSchema: GenMessage<CreateFeedResponse> = /*@__PURE__*/
-  messageDesc(file_feed_v1_feed, 6);
+export const CreateFeedResponseSchema: GenMessage<CreateFeedResponse> /*@__PURE__*/ = messageDesc(
+  file_feed_v1_feed,
+  6,
+);
 
 /**
  * @generated from message feed.v1.UpdateFeedRequest
@@ -254,8 +267,10 @@ export type UpdateFeedRequest = Message<"feed.v1.UpdateFeedRequest"> & {
  * Describes the message feed.v1.UpdateFeedRequest.
  * Use `create(UpdateFeedRequestSchema)` to create a new message.
  */
-export const UpdateFeedRequestSchema: GenMessage<UpdateFeedRequest> = /*@__PURE__*/
-  messageDesc(file_feed_v1_feed, 7);
+export const UpdateFeedRequestSchema: GenMessage<UpdateFeedRequest> /*@__PURE__*/ = messageDesc(
+  file_feed_v1_feed,
+  7,
+);
 
 /**
  * @generated from message feed.v1.UpdateFeedResponse
@@ -271,8 +286,10 @@ export type UpdateFeedResponse = Message<"feed.v1.UpdateFeedResponse"> & {
  * Describes the message feed.v1.UpdateFeedResponse.
  * Use `create(UpdateFeedResponseSchema)` to create a new message.
  */
-export const UpdateFeedResponseSchema: GenMessage<UpdateFeedResponse> = /*@__PURE__*/
-  messageDesc(file_feed_v1_feed, 8);
+export const UpdateFeedResponseSchema: GenMessage<UpdateFeedResponse> /*@__PURE__*/ = messageDesc(
+  file_feed_v1_feed,
+  8,
+);
 
 /**
  * @generated from message feed.v1.DeleteFeedRequest
@@ -288,21 +305,24 @@ export type DeleteFeedRequest = Message<"feed.v1.DeleteFeedRequest"> & {
  * Describes the message feed.v1.DeleteFeedRequest.
  * Use `create(DeleteFeedRequestSchema)` to create a new message.
  */
-export const DeleteFeedRequestSchema: GenMessage<DeleteFeedRequest> = /*@__PURE__*/
-  messageDesc(file_feed_v1_feed, 9);
+export const DeleteFeedRequestSchema: GenMessage<DeleteFeedRequest> /*@__PURE__*/ = messageDesc(
+  file_feed_v1_feed,
+  9,
+);
 
 /**
  * @generated from message feed.v1.DeleteFeedResponse
  */
-export type DeleteFeedResponse = Message<"feed.v1.DeleteFeedResponse"> & {
-};
+export type DeleteFeedResponse = Message<"feed.v1.DeleteFeedResponse"> & {};
 
 /**
  * Describes the message feed.v1.DeleteFeedResponse.
  * Use `create(DeleteFeedResponseSchema)` to create a new message.
  */
-export const DeleteFeedResponseSchema: GenMessage<DeleteFeedResponse> = /*@__PURE__*/
-  messageDesc(file_feed_v1_feed, 10);
+export const DeleteFeedResponseSchema: GenMessage<DeleteFeedResponse> /*@__PURE__*/ = messageDesc(
+  file_feed_v1_feed,
+  10,
+);
 
 /**
  * @generated from message feed.v1.RefreshFeedsRequest
@@ -318,8 +338,10 @@ export type RefreshFeedsRequest = Message<"feed.v1.RefreshFeedsRequest"> & {
  * Describes the message feed.v1.RefreshFeedsRequest.
  * Use `create(RefreshFeedsRequestSchema)` to create a new message.
  */
-export const RefreshFeedsRequestSchema: GenMessage<RefreshFeedsRequest> = /*@__PURE__*/
-  messageDesc(file_feed_v1_feed, 11);
+export const RefreshFeedsRequestSchema: GenMessage<RefreshFeedsRequest> /*@__PURE__*/ = messageDesc(
+  file_feed_v1_feed,
+  11,
+);
 
 /**
  * @generated from message feed.v1.FeedFetchStatus
@@ -350,8 +372,10 @@ export type FeedFetchStatus = Message<"feed.v1.FeedFetchStatus"> & {
  * Describes the message feed.v1.FeedFetchStatus.
  * Use `create(FeedFetchStatusSchema)` to create a new message.
  */
-export const FeedFetchStatusSchema: GenMessage<FeedFetchStatus> = /*@__PURE__*/
-  messageDesc(file_feed_v1_feed, 12);
+export const FeedFetchStatusSchema: GenMessage<FeedFetchStatus> /*@__PURE__*/ = messageDesc(
+  file_feed_v1_feed,
+  12,
+);
 
 /**
  * @generated from message feed.v1.RefreshFeedsResponse
@@ -367,7 +391,7 @@ export type RefreshFeedsResponse = Message<"feed.v1.RefreshFeedsResponse"> & {
  * Describes the message feed.v1.RefreshFeedsResponse.
  * Use `create(RefreshFeedsResponseSchema)` to create a new message.
  */
-export const RefreshFeedsResponseSchema: GenMessage<RefreshFeedsResponse> = /*@__PURE__*/
+export const RefreshFeedsResponseSchema: GenMessage<RefreshFeedsResponse> /*@__PURE__*/ =
   messageDesc(file_feed_v1_feed, 13);
 
 /**
@@ -384,8 +408,10 @@ export type ImportOpmlRequest = Message<"feed.v1.ImportOpmlRequest"> & {
  * Describes the message feed.v1.ImportOpmlRequest.
  * Use `create(ImportOpmlRequestSchema)` to create a new message.
  */
-export const ImportOpmlRequestSchema: GenMessage<ImportOpmlRequest> = /*@__PURE__*/
-  messageDesc(file_feed_v1_feed, 14);
+export const ImportOpmlRequestSchema: GenMessage<ImportOpmlRequest> /*@__PURE__*/ = messageDesc(
+  file_feed_v1_feed,
+  14,
+);
 
 /**
  * @generated from message feed.v1.ImportOpmlResponse
@@ -416,8 +442,10 @@ export type ImportOpmlResponse = Message<"feed.v1.ImportOpmlResponse"> & {
  * Describes the message feed.v1.ImportOpmlResponse.
  * Use `create(ImportOpmlResponseSchema)` to create a new message.
  */
-export const ImportOpmlResponseSchema: GenMessage<ImportOpmlResponse> = /*@__PURE__*/
-  messageDesc(file_feed_v1_feed, 15);
+export const ImportOpmlResponseSchema: GenMessage<ImportOpmlResponse> /*@__PURE__*/ = messageDesc(
+  file_feed_v1_feed,
+  15,
+);
 
 /**
  * @generated from message feed.v1.ImportFailedFeed
@@ -438,8 +466,10 @@ export type ImportFailedFeed = Message<"feed.v1.ImportFailedFeed"> & {
  * Describes the message feed.v1.ImportFailedFeed.
  * Use `create(ImportFailedFeedSchema)` to create a new message.
  */
-export const ImportFailedFeedSchema: GenMessage<ImportFailedFeed> = /*@__PURE__*/
-  messageDesc(file_feed_v1_feed, 16);
+export const ImportFailedFeedSchema: GenMessage<ImportFailedFeed> /*@__PURE__*/ = messageDesc(
+  file_feed_v1_feed,
+  16,
+);
 
 /**
  * @generated from message feed.v1.ExportOpmlRequest
@@ -455,8 +485,10 @@ export type ExportOpmlRequest = Message<"feed.v1.ExportOpmlRequest"> & {
  * Describes the message feed.v1.ExportOpmlRequest.
  * Use `create(ExportOpmlRequestSchema)` to create a new message.
  */
-export const ExportOpmlRequestSchema: GenMessage<ExportOpmlRequest> = /*@__PURE__*/
-  messageDesc(file_feed_v1_feed, 17);
+export const ExportOpmlRequestSchema: GenMessage<ExportOpmlRequest> /*@__PURE__*/ = messageDesc(
+  file_feed_v1_feed,
+  17,
+);
 
 /**
  * @generated from message feed.v1.ExportOpmlResponse
@@ -472,8 +504,10 @@ export type ExportOpmlResponse = Message<"feed.v1.ExportOpmlResponse"> & {
  * Describes the message feed.v1.ExportOpmlResponse.
  * Use `create(ExportOpmlResponseSchema)` to create a new message.
  */
-export const ExportOpmlResponseSchema: GenMessage<ExportOpmlResponse> = /*@__PURE__*/
-  messageDesc(file_feed_v1_feed, 18);
+export const ExportOpmlResponseSchema: GenMessage<ExportOpmlResponse> /*@__PURE__*/ = messageDesc(
+  file_feed_v1_feed,
+  18,
+);
 
 /**
  * @generated from message feed.v1.SetFeedTagsRequest
@@ -494,21 +528,24 @@ export type SetFeedTagsRequest = Message<"feed.v1.SetFeedTagsRequest"> & {
  * Describes the message feed.v1.SetFeedTagsRequest.
  * Use `create(SetFeedTagsRequestSchema)` to create a new message.
  */
-export const SetFeedTagsRequestSchema: GenMessage<SetFeedTagsRequest> = /*@__PURE__*/
-  messageDesc(file_feed_v1_feed, 19);
+export const SetFeedTagsRequestSchema: GenMessage<SetFeedTagsRequest> /*@__PURE__*/ = messageDesc(
+  file_feed_v1_feed,
+  19,
+);
 
 /**
  * @generated from message feed.v1.SetFeedTagsResponse
  */
-export type SetFeedTagsResponse = Message<"feed.v1.SetFeedTagsResponse"> & {
-};
+export type SetFeedTagsResponse = Message<"feed.v1.SetFeedTagsResponse"> & {};
 
 /**
  * Describes the message feed.v1.SetFeedTagsResponse.
  * Use `create(SetFeedTagsResponseSchema)` to create a new message.
  */
-export const SetFeedTagsResponseSchema: GenMessage<SetFeedTagsResponse> = /*@__PURE__*/
-  messageDesc(file_feed_v1_feed, 20);
+export const SetFeedTagsResponseSchema: GenMessage<SetFeedTagsResponse> /*@__PURE__*/ = messageDesc(
+  file_feed_v1_feed,
+  20,
+);
 
 /**
  * @generated from message feed.v1.ManageFeedTagsRequest
@@ -534,20 +571,19 @@ export type ManageFeedTagsRequest = Message<"feed.v1.ManageFeedTagsRequest"> & {
  * Describes the message feed.v1.ManageFeedTagsRequest.
  * Use `create(ManageFeedTagsRequestSchema)` to create a new message.
  */
-export const ManageFeedTagsRequestSchema: GenMessage<ManageFeedTagsRequest> = /*@__PURE__*/
+export const ManageFeedTagsRequestSchema: GenMessage<ManageFeedTagsRequest> /*@__PURE__*/ =
   messageDesc(file_feed_v1_feed, 21);
 
 /**
  * @generated from message feed.v1.ManageFeedTagsResponse
  */
-export type ManageFeedTagsResponse = Message<"feed.v1.ManageFeedTagsResponse"> & {
-};
+export type ManageFeedTagsResponse = Message<"feed.v1.ManageFeedTagsResponse"> & {};
 
 /**
  * Describes the message feed.v1.ManageFeedTagsResponse.
  * Use `create(ManageFeedTagsResponseSchema)` to create a new message.
  */
-export const ManageFeedTagsResponseSchema: GenMessage<ManageFeedTagsResponse> = /*@__PURE__*/
+export const ManageFeedTagsResponseSchema: GenMessage<ManageFeedTagsResponse> /*@__PURE__*/ =
   messageDesc(file_feed_v1_feed, 22);
 
 /**
@@ -569,8 +605,7 @@ export type FeedTag = Message<"feed.v1.FeedTag"> & {
  * Describes the message feed.v1.FeedTag.
  * Use `create(FeedTagSchema)` to create a new message.
  */
-export const FeedTagSchema: GenMessage<FeedTag> = /*@__PURE__*/
-  messageDesc(file_feed_v1_feed, 23);
+export const FeedTagSchema: GenMessage<FeedTag> /*@__PURE__*/ = messageDesc(file_feed_v1_feed, 23);
 
 /**
  * @generated from message feed.v1.ListFeedTagsRequest
@@ -591,8 +626,10 @@ export type ListFeedTagsRequest = Message<"feed.v1.ListFeedTagsRequest"> & {
  * Describes the message feed.v1.ListFeedTagsRequest.
  * Use `create(ListFeedTagsRequestSchema)` to create a new message.
  */
-export const ListFeedTagsRequestSchema: GenMessage<ListFeedTagsRequest> = /*@__PURE__*/
-  messageDesc(file_feed_v1_feed, 24);
+export const ListFeedTagsRequestSchema: GenMessage<ListFeedTagsRequest> /*@__PURE__*/ = messageDesc(
+  file_feed_v1_feed,
+  24,
+);
 
 /**
  * @generated from message feed.v1.ListFeedTagsResponse
@@ -608,7 +645,7 @@ export type ListFeedTagsResponse = Message<"feed.v1.ListFeedTagsResponse"> & {
  * Describes the message feed.v1.ListFeedTagsResponse.
  * Use `create(ListFeedTagsResponseSchema)` to create a new message.
  */
-export const ListFeedTagsResponseSchema: GenMessage<ListFeedTagsResponse> = /*@__PURE__*/
+export const ListFeedTagsResponseSchema: GenMessage<ListFeedTagsResponse> /*@__PURE__*/ =
   messageDesc(file_feed_v1_feed, 25);
 
 /**
@@ -633,20 +670,21 @@ export type SuspendFeedsRequest = Message<"feed.v1.SuspendFeedsRequest"> & {
  * Describes the message feed.v1.SuspendFeedsRequest.
  * Use `create(SuspendFeedsRequestSchema)` to create a new message.
  */
-export const SuspendFeedsRequestSchema: GenMessage<SuspendFeedsRequest> = /*@__PURE__*/
-  messageDesc(file_feed_v1_feed, 26);
+export const SuspendFeedsRequestSchema: GenMessage<SuspendFeedsRequest> /*@__PURE__*/ = messageDesc(
+  file_feed_v1_feed,
+  26,
+);
 
 /**
  * @generated from message feed.v1.SuspendFeedsResponse
  */
-export type SuspendFeedsResponse = Message<"feed.v1.SuspendFeedsResponse"> & {
-};
+export type SuspendFeedsResponse = Message<"feed.v1.SuspendFeedsResponse"> & {};
 
 /**
  * Describes the message feed.v1.SuspendFeedsResponse.
  * Use `create(SuspendFeedsResponseSchema)` to create a new message.
  */
-export const SuspendFeedsResponseSchema: GenMessage<SuspendFeedsResponse> = /*@__PURE__*/
+export const SuspendFeedsResponseSchema: GenMessage<SuspendFeedsResponse> /*@__PURE__*/ =
   messageDesc(file_feed_v1_feed, 27);
 
 /**
@@ -660,7 +698,7 @@ export const FeedService: GenService<{
     methodKind: "unary";
     input: typeof GetFeedRequestSchema;
     output: typeof GetFeedResponseSchema;
-  },
+  };
   /**
    * @generated from rpc feed.v1.FeedService.ListFeeds
    */
@@ -668,7 +706,7 @@ export const FeedService: GenService<{
     methodKind: "unary";
     input: typeof ListFeedsRequestSchema;
     output: typeof ListFeedsResponseSchema;
-  },
+  };
   /**
    * @generated from rpc feed.v1.FeedService.CreateFeed
    */
@@ -676,7 +714,7 @@ export const FeedService: GenService<{
     methodKind: "unary";
     input: typeof CreateFeedRequestSchema;
     output: typeof CreateFeedResponseSchema;
-  },
+  };
   /**
    * @generated from rpc feed.v1.FeedService.UpdateFeed
    */
@@ -684,7 +722,7 @@ export const FeedService: GenService<{
     methodKind: "unary";
     input: typeof UpdateFeedRequestSchema;
     output: typeof UpdateFeedResponseSchema;
-  },
+  };
   /**
    * @generated from rpc feed.v1.FeedService.DeleteFeed
    */
@@ -692,7 +730,7 @@ export const FeedService: GenService<{
     methodKind: "unary";
     input: typeof DeleteFeedRequestSchema;
     output: typeof DeleteFeedResponseSchema;
-  },
+  };
   /**
    * @generated from rpc feed.v1.FeedService.RefreshFeeds
    */
@@ -700,7 +738,7 @@ export const FeedService: GenService<{
     methodKind: "unary";
     input: typeof RefreshFeedsRequestSchema;
     output: typeof RefreshFeedsResponseSchema;
-  },
+  };
   /**
    * @generated from rpc feed.v1.FeedService.ImportOpml
    */
@@ -708,7 +746,7 @@ export const FeedService: GenService<{
     methodKind: "unary";
     input: typeof ImportOpmlRequestSchema;
     output: typeof ImportOpmlResponseSchema;
-  },
+  };
   /**
    * @generated from rpc feed.v1.FeedService.ExportOpml
    */
@@ -716,7 +754,7 @@ export const FeedService: GenService<{
     methodKind: "unary";
     input: typeof ExportOpmlRequestSchema;
     output: typeof ExportOpmlResponseSchema;
-  },
+  };
   /**
    * Tag management
    *
@@ -726,7 +764,7 @@ export const FeedService: GenService<{
     methodKind: "unary";
     input: typeof ListFeedTagsRequestSchema;
     output: typeof ListFeedTagsResponseSchema;
-  },
+  };
   /**
    * @generated from rpc feed.v1.FeedService.SetFeedTags
    */
@@ -734,7 +772,7 @@ export const FeedService: GenService<{
     methodKind: "unary";
     input: typeof SetFeedTagsRequestSchema;
     output: typeof SetFeedTagsResponseSchema;
-  },
+  };
   /**
    * @generated from rpc feed.v1.FeedService.ManageFeedTags
    */
@@ -742,7 +780,7 @@ export const FeedService: GenService<{
     methodKind: "unary";
     input: typeof ManageFeedTagsRequestSchema;
     output: typeof ManageFeedTagsResponseSchema;
-  },
+  };
   /**
    * @generated from rpc feed.v1.FeedService.SuspendFeeds
    */
@@ -750,7 +788,5 @@ export const FeedService: GenService<{
     methodKind: "unary";
     input: typeof SuspendFeedsRequestSchema;
     output: typeof SuspendFeedsResponseSchema;
-  },
-}> = /*@__PURE__*/
-  serviceDesc(file_feed_v1_feed, 0);
-
+  };
+}> /*@__PURE__*/ = serviceDesc(file_feed_v1_feed, 0);

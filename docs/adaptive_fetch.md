@@ -5,6 +5,7 @@ The Feed Reader application uses an intelligent adaptive fetch system to optimiz
 ## Algorithm Overview
 
 The next fetch interval is calculated using two main components:
+
 1. **Base Interval:** Calculated from the average update frequency of recent items.
 2. **Peak Adjustment:** Reduces the interval if the next fetch falls within a known high-activity period for that feed.
 
@@ -20,10 +21,10 @@ The base interval is derived from the publication dates of the **last 10 items**
 
 To improve real-time delivery during active hours, the system analyzes the weekly update distribution of each feed.
 
-- **168-Hour Distribution:** The system aggregates all items published/discovered in the **last 14 days** into 1-hour buckets corresponding to a weekly cycle (24 hours * 7 days).
+- **168-Hour Distribution:** The system aggregates all items published/discovered in the **last 14 days** into 1-hour buckets corresponding to a weekly cycle (24 hours \* 7 days).
 - **Peak Identification:** A bucket is considered a "peak" if it meets both criteria:
-    - It contains at least **2 items**.
-    - It contains at least **50% of the items** seen in the most active bucket for that feed.
+  - It contains at least **2 items**.
+  - It contains at least **50% of the items** seen in the most active bucket for that feed.
 - **Interval Reduction:** If the next scheduled fetch (based on the Base Interval) falls into a peak bucket, the **interval is halved**. This increases the fetch frequency during periods when the feed is historically active.
 
 ## Implementation Details

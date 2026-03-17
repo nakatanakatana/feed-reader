@@ -74,9 +74,7 @@ describe("AddFeedForm", () => {
     const button = page.getByRole("button", { name: "Add Feed" });
     await button.click();
 
-    await expect
-      .element(page.getByText(/Error: .*Invalid feed URL.*/))
-      .toBeInTheDocument();
+    await expect.element(page.getByText(/Error: .*Invalid feed URL.*/)).toBeInTheDocument();
   });
 
   it("renders headerActions", async () => {
@@ -129,10 +127,7 @@ describe("AddFeedForm", () => {
       () => (
         <TestWrapper
           headerActions={
-            <ActionButton
-              icon={<span data-testid="icon">ICON</span>}
-              hideTextOnMobile
-            >
+            <ActionButton icon={<span data-testid="icon">ICON</span>} hideTextOnMobile>
               Import
             </ActionButton>
           }

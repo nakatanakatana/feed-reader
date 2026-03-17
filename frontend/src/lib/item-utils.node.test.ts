@@ -11,15 +11,11 @@ import {
 describe("item-utils", () => {
   describe("extractHostname", () => {
     it("extracts hostname from a full URL", () => {
-      expect(extractHostname("https://www.example.com/path/to/page")).toBe(
-        "example.com",
-      );
+      expect(extractHostname("https://www.example.com/path/to/page")).toBe("example.com");
     });
 
     it("extracts hostname from a URL without path", () => {
-      expect(extractHostname("http://subdomain.domain.org")).toBe(
-        "subdomain.domain.org",
-      );
+      expect(extractHostname("http://subdomain.domain.org")).toBe("subdomain.domain.org");
     });
 
     it("returns an empty string for invalid URLs", () => {
@@ -70,9 +66,7 @@ describe("item-utils", () => {
       for (const { value, expected } of tests) {
         const result = getPublishedSince(value);
         expect(result).toBeDefined();
-        expect(result?.seconds).toBe(
-          BigInt(Math.floor(expected.getTime() / 1000)),
-        );
+        expect(result?.seconds).toBe(BigInt(Math.floor(expected.getTime() / 1000)));
       }
 
       vi.useRealTimers();
@@ -100,9 +94,7 @@ describe("item-utils", () => {
               vi.setSystemTime(now);
               const result = getPublishedSince(preset.value);
               if (!result) return false;
-              const expectedSeconds = BigInt(
-                Math.floor((now.getTime() - preset.ms) / 1000),
-              );
+              const expectedSeconds = BigInt(Math.floor((now.getTime() - preset.ms) / 1000));
               return result.seconds === expectedSeconds;
             },
           ),
@@ -148,11 +140,7 @@ describe("item-utils", () => {
     });
 
     it("parses JSON arrays with mixed types", () => {
-      expect(normalizeCategories('["Tech", 42, true]')).toEqual([
-        "Tech",
-        "42",
-        "true",
-      ]);
+      expect(normalizeCategories('["Tech", 42, true]')).toEqual(["Tech", "42", "true"]);
     });
 
     it("filters out nullish and empty values from JSON arrays", () => {
@@ -160,25 +148,15 @@ describe("item-utils", () => {
     });
 
     it("falls back to CSV parsing when JSON is malformed", () => {
-      expect(normalizeCategories('["Tech","SolidJS"')).toEqual([
-        "Tech",
-        "SolidJS",
-      ]);
+      expect(normalizeCategories('["Tech","SolidJS"')).toEqual(["Tech", "SolidJS"]);
     });
 
     it("strips surrounding quotes in CSV values", () => {
-      expect(normalizeCategories('"Tech", "SolidJS"')).toEqual([
-        "Tech",
-        "SolidJS",
-      ]);
+      expect(normalizeCategories('"Tech", "SolidJS"')).toEqual(["Tech", "SolidJS"]);
     });
 
     it("preserves special characters", () => {
-      expect(normalizeCategories('["C++","Foo/Bar","R&D"]')).toEqual([
-        "C++",
-        "Foo/Bar",
-        "R&D",
-      ]);
+      expect(normalizeCategories('["C++","Foo/Bar","R&D"]')).toEqual(["C++", "Foo/Bar", "R&D"]);
     });
 
     it("matches snapshot for complex categories", () => {
@@ -208,9 +186,7 @@ describe("item-utils", () => {
           ),
           (input) => {
             const result = normalizeCategories(input);
-            return result.every(
-              (value) => value.length > 0 && value === value.trim(),
-            );
+            return result.every((value) => value.length > 0 && value === value.trim());
           },
         ),
         { numRuns: 100 },

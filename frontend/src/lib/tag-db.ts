@@ -1,11 +1,6 @@
 import { createClient } from "@connectrpc/connect";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
-import {
-  count,
-  createCollection,
-  createLiveQueryCollection,
-  eq,
-} from "@tanstack/solid-db";
+import { count, createCollection, createLiveQueryCollection, eq } from "@tanstack/solid-db";
 import { TagService } from "../gen/tag/v1/tag_pb";
 import { toDate } from "./date-utils";
 import { feedTag } from "./feed-db";

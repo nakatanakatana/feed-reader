@@ -17,30 +17,30 @@ const tx = createTransaction<T>({
 
 ```ts
 interface Transaction<T> {
-  id: string
-  state: 'pending' | 'persisting' | 'completed' | 'failed'
-  mutations: Array<PendingMutation<T>>
-  autoCommit: boolean
-  createdAt: Date
-  sequenceNumber: number
-  metadata: Record<string, unknown>
-  error?: { message: string; error: Error }
+  id: string;
+  state: "pending" | "persisting" | "completed" | "failed";
+  mutations: Array<PendingMutation<T>>;
+  autoCommit: boolean;
+  createdAt: Date;
+  sequenceNumber: number;
+  metadata: Record<string, unknown>;
+  error?: { message: string; error: Error };
 
   // Deferred promise -- resolves when mutationFn completes, rejects on failure
   isPersisted: {
-    promise: Promise<Transaction<T>>
-    resolve: (value: Transaction<T>) => void
-    reject: (reason?: any) => void
-  }
+    promise: Promise<Transaction<T>>;
+    resolve: (value: Transaction<T>) => void;
+    reject: (reason?: any) => void;
+  };
 
   // Execute collection operations inside the ambient transaction context
-  mutate(callback: () => void): Transaction<T>
+  mutate(callback: () => void): Transaction<T>;
 
   // Commit -- calls mutationFn, transitions to persisting -> completed|failed
-  commit(): Promise<Transaction<T>>
+  commit(): Promise<Transaction<T>>;
 
   // Rollback -- transitions to failed, also rolls back conflicting transactions
-  rollback(config?: { isSecondaryRollback?: boolean }): Transaction<T>
+  rollback(config?: { isSecondaryRollback?: boolean }): Transaction<T>;
 }
 ```
 
@@ -55,20 +55,20 @@ interface Transaction<T> {
 ## PendingMutation Type
 
 ```ts
-interface PendingMutation<T, TOperation = 'insert' | 'update' | 'delete'> {
-  mutationId: string // unique id for this mutation
-  original: TOperation extends 'insert' ? {} : T // state before mutation
-  modified: T // state after mutation
-  changes: Partial<T> // only the changed fields
-  key: any // collection-local key
-  globalKey: string // globally unique key (collectionId + key)
-  type: TOperation // "insert" | "update" | "delete"
-  metadata: unknown // user-provided metadata
-  syncMetadata: Record<string, unknown> // adapter-specific metadata
-  optimistic: boolean // whether applied optimistically (default true)
-  createdAt: Date
-  updatedAt: Date
-  collection: Collection // reference to the source collection
+interface PendingMutation<T, TOperation = "insert" | "update" | "delete"> {
+  mutationId: string; // unique id for this mutation
+  original: TOperation extends "insert" ? {} : T; // state before mutation
+  modified: T; // state after mutation
+  changes: Partial<T>; // only the changed fields
+  key: any; // collection-local key
+  globalKey: string; // globally unique key (collectionId + key)
+  type: TOperation; // "insert" | "update" | "delete"
+  metadata: unknown; // user-provided metadata
+  syncMetadata: Record<string, unknown>; // adapter-specific metadata
+  optimistic: boolean; // whether applied optimistically (default true)
+  createdAt: Date;
+  updatedAt: Date;
+  collection: Collection; // reference to the source collection
 }
 ```
 
@@ -92,9 +92,9 @@ prevents operations on deleted items within the same transaction.
 ## getActiveTransaction / Ambient Transaction Context
 
 ```ts
-import { getActiveTransaction } from '@tanstack/db'
+import { getActiveTransaction } from "@tanstack/db";
 
-const tx = getActiveTransaction() // Transaction | undefined
+const tx = getActiveTransaction(); // Transaction | undefined
 ```
 
 Inside `tx.mutate(() => { ... })`, the transaction is pushed onto an internal
@@ -190,13 +190,13 @@ starts. Failed transactions do not block subsequent ones.
 ## Transaction.isPersisted.promise
 
 ```ts
-const tx = collection.insert({ id: '1', text: 'Hello' })
+const tx = collection.insert({ id: "1", text: "Hello" });
 
 try {
-  await tx.isPersisted.promise // resolves with the Transaction on success
-  console.log(tx.state) // "completed"
+  await tx.isPersisted.promise; // resolves with the Transaction on success
+  console.log(tx.state); // "completed"
 } catch (error) {
-  console.log(tx.state) // "failed"
+  console.log(tx.state); // "failed"
   // optimistic state has been rolled back
 }
 ```

@@ -22,7 +22,6 @@ describe("ItemDetailModal Domain Display", () => {
     vi.clearAllMocks();
   });
 
-  // biome-ignore lint/suspicious/noExplicitAny: test mock data
   const setupMockData = (itemId: string, itemData: any) => {
     worker.use(
       http.all("*/item.v1.ItemService/GetItem", () => {

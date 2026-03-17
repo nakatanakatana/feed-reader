@@ -24,13 +24,9 @@ test("PWA infrastructure is correctly configured", async () => {
   // Flatten plugins if they are nested (some plugins return arrays)
   const flatPlugins = plugins.flat();
   const pwaPlugin = flatPlugins.find(
-    (plugin: unknown) =>
-      (plugin as { name?: string })?.name === "vite-plugin-pwa",
+    (plugin: unknown) => (plugin as { name?: string })?.name === "vite-plugin-pwa",
   );
-  expect(
-    pwaPlugin,
-    "vite-plugin-pwa not found in vite.config.js",
-  ).toBeDefined();
+  expect(pwaPlugin, "vite-plugin-pwa not found in vite.config.js").toBeDefined();
 
   // 3. Check if PWA icons exist
   const icon192 = path.join(rootDir, "frontend/public/pwa-192x192.png");

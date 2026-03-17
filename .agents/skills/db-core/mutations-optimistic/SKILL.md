@@ -9,12 +9,12 @@ description: >
   onInsert/onUpdate/onDelete handlers. PendingMutation type. Transaction.isPersisted.
 type: sub-skill
 library: db
-library_version: '0.5.30'
+library_version: "0.5.30"
 sources:
-  - 'TanStack/db:docs/guides/mutations.md'
-  - 'TanStack/db:packages/db/src/transactions.ts'
-  - 'TanStack/db:packages/db/src/optimistic-action.ts'
-  - 'TanStack/db:packages/db/src/paced-mutations.ts'
+  - "TanStack/db:docs/guides/mutations.md"
+  - "TanStack/db:packages/db/src/transactions.ts"
+  - "TanStack/db:packages/db/src/optimistic-action.ts"
+  - "TanStack/db:packages/db/src/paced-mutations.ts"
 ---
 
 # Mutations & Optimistic State
@@ -37,19 +37,19 @@ Optimistic state is applied in the current tick and dropped when the handler res
 // Single item
 todoCollection.insert({
   id: crypto.randomUUID(),
-  text: 'Buy groceries',
+  text: "Buy groceries",
   completed: false,
-})
+});
 
 // Multiple items
 todoCollection.insert([
-  { id: crypto.randomUUID(), text: 'Buy groceries', completed: false },
-  { id: crypto.randomUUID(), text: 'Walk dog', completed: false },
-])
+  { id: crypto.randomUUID(), text: "Buy groceries", completed: false },
+  { id: crypto.randomUUID(), text: "Walk dog", completed: false },
+]);
 
 // With metadata / non-optimistic
-todoCollection.insert(item, { metadata: { source: 'import' } })
-todoCollection.insert(item, { optimistic: false })
+todoCollection.insert(item, { metadata: { source: "import" } });
+todoCollection.insert(item, { optimistic: false });
 ```
 
 ### update (Immer-style draft proxy)
@@ -57,33 +57,29 @@ todoCollection.insert(item, { optimistic: false })
 ```ts
 // Single item -- mutate the draft, do NOT reassign it
 todoCollection.update(todo.id, (draft) => {
-  draft.completed = true
-  draft.completedAt = new Date()
-})
+  draft.completed = true;
+  draft.completedAt = new Date();
+});
 
 // Multiple items
 todoCollection.update([id1, id2], (drafts) => {
   drafts.forEach((d) => {
-    d.completed = true
-  })
-})
+    d.completed = true;
+  });
+});
 
 // With metadata
-todoCollection.update(
-  todo.id,
-  { metadata: { reason: 'user-edit' } },
-  (draft) => {
-    draft.text = 'Updated'
-  },
-)
+todoCollection.update(todo.id, { metadata: { reason: "user-edit" } }, (draft) => {
+  draft.text = "Updated";
+});
 ```
 
 ### delete
 
 ```ts
-todoCollection.delete(todo.id)
-todoCollection.delete([id1, id2])
-todoCollection.delete(todo.id, { metadata: { reason: 'completed' } })
+todoCollection.delete(todo.id);
+todoCollection.delete([id1, id2]);
+todoCollection.delete(todo.id, { metadata: { reason: "completed" } });
 ```
 
 All three return a `Transaction` object. Use `tx.isPersisted.promise` to await
@@ -99,109 +95,104 @@ Use when the optimistic change is a _guess_ at how the server will transform
 the data, or when you need to mutate multiple collections atomically.
 
 ```ts
-import { createOptimisticAction } from '@tanstack/db'
+import { createOptimisticAction } from "@tanstack/db";
 
 const likePost = createOptimisticAction<string>({
   // MUST be synchronous -- applied in the current tick
   onMutate: (postId) => {
     postCollection.update(postId, (draft) => {
-      draft.likeCount += 1
-      draft.likedByMe = true
-    })
+      draft.likeCount += 1;
+      draft.likedByMe = true;
+    });
   },
   mutationFn: async (postId, { transaction }) => {
-    await api.posts.like(postId)
+    await api.posts.like(postId);
     // IMPORTANT: wait for server state to sync back before returning
-    await postCollection.utils.refetch()
+    await postCollection.utils.refetch();
   },
-})
+});
 
 // Returns a Transaction
-const tx = likePost(postId)
-await tx.isPersisted.promise
+const tx = likePost(postId);
+await tx.isPersisted.promise;
 ```
 
 Multi-collection example:
 
 ```ts
-const createProject = createOptimisticAction<{ name: string; ownerId: string }>(
-  {
-    onMutate: ({ name, ownerId }) => {
-      projectCollection.insert({ id: crypto.randomUUID(), name, ownerId })
-      userCollection.update(ownerId, (d) => {
-        d.projectCount += 1
-      })
-    },
-    mutationFn: async ({ name, ownerId }) => {
-      await api.projects.create({ name, ownerId })
-      await Promise.all([
-        projectCollection.utils.refetch(),
-        userCollection.utils.refetch(),
-      ])
-    },
+const createProject = createOptimisticAction<{ name: string; ownerId: string }>({
+  onMutate: ({ name, ownerId }) => {
+    projectCollection.insert({ id: crypto.randomUUID(), name, ownerId });
+    userCollection.update(ownerId, (d) => {
+      d.projectCount += 1;
+    });
   },
-)
+  mutationFn: async ({ name, ownerId }) => {
+    await api.projects.create({ name, ownerId });
+    await Promise.all([projectCollection.utils.refetch(), userCollection.utils.refetch()]);
+  },
+});
 ```
 
 ### 2. createPacedMutations -- auto-save with debounce / throttle / queue
 
 ```ts
-import { createPacedMutations, debounceStrategy } from '@tanstack/db'
+import { createPacedMutations, debounceStrategy } from "@tanstack/db";
 
 const autoSaveNote = createPacedMutations<string>({
   onMutate: (text) => {
     noteCollection.update(noteId, (draft) => {
-      draft.body = text
-    })
+      draft.body = text;
+    });
   },
   mutationFn: async ({ transaction }) => {
-    const mutation = transaction.mutations[0]
-    await api.notes.update(mutation.key, mutation.changes)
-    await noteCollection.utils.refetch()
+    const mutation = transaction.mutations[0];
+    await api.notes.update(mutation.key, mutation.changes);
+    await noteCollection.utils.refetch();
   },
   strategy: debounceStrategy({ wait: 500 }),
-})
+});
 
 // Each call resets the debounce timer; mutations merge into one transaction
-autoSaveNote('Hello')
-autoSaveNote('Hello, world') // only this version persists
+autoSaveNote("Hello");
+autoSaveNote("Hello, world"); // only this version persists
 ```
 
 Other strategies:
 
 ```ts
-import { throttleStrategy, queueStrategy } from '@tanstack/db'
+import { throttleStrategy, queueStrategy } from "@tanstack/db";
 
 // Evenly spaced (sliders, scroll)
-throttleStrategy({ wait: 200, leading: true, trailing: true })
+throttleStrategy({ wait: 200, leading: true, trailing: true });
 
 // Sequential FIFO -- every mutation persisted in order
-queueStrategy({ wait: 0, maxSize: 100 })
+queueStrategy({ wait: 0, maxSize: 100 });
 ```
 
 ### 3. createTransaction -- manual batching
 
 ```ts
-import { createTransaction } from '@tanstack/db'
+import { createTransaction } from "@tanstack/db";
 
 const tx = createTransaction({
   autoCommit: false, // wait for explicit commit()
   mutationFn: async ({ transaction }) => {
-    await api.batchUpdate(transaction.mutations)
+    await api.batchUpdate(transaction.mutations);
   },
-})
+});
 
 tx.mutate(() => {
   todoCollection.update(id1, (d) => {
-    d.status = 'reviewed'
-  })
+    d.status = "reviewed";
+  });
   todoCollection.update(id2, (d) => {
-    d.status = 'reviewed'
-  })
-})
+    d.status = "reviewed";
+  });
+});
 
 // User reviews... then commits or rolls back
-await tx.commit()
+await tx.commit();
 // OR: tx.rollback()
 ```
 
@@ -214,30 +205,24 @@ automatically via `getActiveTransaction()`.
 ```ts
 const todoCollection = createCollection(
   queryCollectionOptions({
-    queryKey: ['todos'],
+    queryKey: ["todos"],
     queryFn: () => api.todos.getAll(),
     getKey: (t) => t.id,
     onInsert: async ({ transaction }) => {
-      await Promise.all(
-        transaction.mutations.map((m) => api.todos.create(m.modified)),
-      )
+      await Promise.all(transaction.mutations.map((m) => api.todos.create(m.modified)));
       // IMPORTANT: handler must not resolve until server state is synced back
       // QueryCollection auto-refetches after handler completes
     },
     onUpdate: async ({ transaction }) => {
       await Promise.all(
-        transaction.mutations.map((m) =>
-          api.todos.update(m.original.id, m.changes),
-        ),
-      )
+        transaction.mutations.map((m) => api.todos.update(m.original.id, m.changes)),
+      );
     },
     onDelete: async ({ transaction }) => {
-      await Promise.all(
-        transaction.mutations.map((m) => api.todos.delete(m.original.id)),
-      )
+      await Promise.all(transaction.mutations.map((m) => api.todos.delete(m.original.id)));
     },
   }),
-)
+);
 ```
 
 For ElectricCollection, return `{ txid }` instead of refetching:
@@ -246,12 +231,12 @@ For ElectricCollection, return `{ txid }` instead of refetching:
 onUpdate: async ({ transaction }) => {
   const txids = await Promise.all(
     transaction.mutations.map(async (m) => {
-      const res = await api.todos.update(m.original.id, m.changes)
-      return res.txid
+      const res = await api.todos.update(m.original.id, m.changes);
+      return res.txid;
     }),
-  )
-  return { txid: txids }
-}
+  );
+  return { txid: txids };
+};
 ```
 
 ---
@@ -262,12 +247,12 @@ onUpdate: async ({ transaction }) => {
 
 ```ts
 // WRONG -- silently fails or throws
-collection.update(id, { ...item, title: 'new' })
+collection.update(id, { ...item, title: "new" });
 
 // CORRECT -- mutate the draft proxy
 collection.update(id, (draft) => {
-  draft.title = 'new'
-})
+  draft.title = "new";
+});
 ```
 
 ### CRITICAL: Hallucinating mutation API signatures
@@ -342,15 +327,15 @@ users see a flash of missing data.
 ```ts
 // WRONG -- optimistic state dropped before new server state arrives
 onInsert: async ({ transaction }) => {
-  await api.createTodo(transaction.mutations[0].modified)
+  await api.createTodo(transaction.mutations[0].modified);
   // missing: await collection.utils.refetch()
-}
+};
 
 // CORRECT
 onInsert: async ({ transaction }) => {
-  await api.createTodo(transaction.mutations[0].modified)
-  await collection.utils.refetch()
-}
+  await api.createTodo(transaction.mutations[0].modified);
+  await collection.utils.refetch();
+};
 ```
 
 ---

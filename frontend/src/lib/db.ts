@@ -10,11 +10,7 @@ export * from "./tag-db";
 // Import for db object
 import { feeds, feedTag } from "./feed-db";
 import { itemReadCollection } from "./item-read-db";
-import {
-  setLastFetched,
-  setLastItemsSyncedAt,
-  setLastReadFetched,
-} from "./item-sync-state";
+import { setLastFetched, setLastItemsSyncedAt, setLastReadFetched } from "./item-sync-state";
 import { tags } from "./tag-db";
 
 // We still export a "db" object if we want to follow the spec's "Initialize the TanStack DB instance"

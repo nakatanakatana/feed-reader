@@ -3,7 +3,7 @@ name: Publish Docker Image
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 env:
   IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}
@@ -110,5 +110,3 @@ jobs:
       - name: Inspect image
         run: |
           docker buildx imagetools inspect ${{ env.IMAGE_PREFIX }}/${{ matrix.image }}:${{ steps.meta.outputs.version }}
-
-

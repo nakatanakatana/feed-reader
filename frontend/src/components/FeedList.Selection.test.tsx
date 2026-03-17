@@ -1,9 +1,5 @@
 import { QueryClientProvider } from "@tanstack/solid-query";
-import {
-  createMemoryHistory,
-  createRouter,
-  RouterProvider,
-} from "@tanstack/solid-router";
+import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
 import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -28,9 +24,7 @@ describe("FeedList Selection", () => {
 
   const TestWrapper = (props: { children: JSX.Element }) => (
     <TransportProvider transport={transport}>
-      <QueryClientProvider client={queryClient}>
-        {props.children}
-      </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>{props.children}</QueryClientProvider>
     </TransportProvider>
   );
 
@@ -66,9 +60,7 @@ describe("FeedList Selection", () => {
       await expect.element(checkbox).toBeChecked();
     }
 
-    await expect
-      .element(page.getByText("2 feeds selected"))
-      .toBeInTheDocument();
+    await expect.element(page.getByText("2 feeds selected")).toBeInTheDocument();
   });
 
   it("shows indeterminate state when some feeds are selected", async () => {
@@ -88,9 +80,7 @@ describe("FeedList Selection", () => {
 
     const feedCheckboxes = page.getByRole("checkbox").all();
     // Wait for feed checkboxes to appear
-    await expect
-      .poll(async () => (await feedCheckboxes).length)
-      .toBeGreaterThan(1);
+    await expect.poll(async () => (await feedCheckboxes).length).toBeGreaterThan(1);
 
     // Select the first feed checkbox (index 1, as index 0 will be "Select All")
     const firstFeedCheckbox = (await feedCheckboxes)[1];
@@ -129,9 +119,7 @@ describe("FeedList Selection", () => {
     await selectAllCheckbox.click(); // Deselect all
 
     await expect.element(selectAllCheckbox).not.toBeChecked();
-    await expect
-      .element(page.getByTestId("bulk-action-bar"))
-      .not.toBeInTheDocument();
+    await expect.element(page.getByTestId("bulk-action-bar")).not.toBeInTheDocument();
   });
 
   it("shows BulkActionBar when at least one feed is selected", async () => {
@@ -150,18 +138,14 @@ describe("FeedList Selection", () => {
     await expect.element(page.getByText("Example Feed 1")).toBeInTheDocument();
 
     const checkboxes = page.getByRole("checkbox");
-    await expect
-      .poll(async () => (await checkboxes.all()).length)
-      .toBeGreaterThan(1);
+    await expect.poll(async () => (await checkboxes.all()).length).toBeGreaterThan(1);
 
     await checkboxes.nth(1).click();
 
     // Bulk action bar should be visible
     const bulkActionBar = page.getByTestId("bulk-action-bar");
     await expect.element(bulkActionBar).toBeVisible();
-    await expect
-      .element(page.getByText("1 feeds selected"))
-      .toBeInTheDocument();
+    await expect.element(page.getByText("1 feeds selected")).toBeInTheDocument();
   });
 
   it("performs bulk tagging for multiple feeds", async () => {
@@ -190,14 +174,10 @@ describe("FeedList Selection", () => {
     const manageButton = page.getByRole("button", { name: /Manage Tags/i });
     await manageButton.click();
 
-    await expect
-      .element(page.getByText("Manage Tags for 2 feeds"))
-      .toBeInTheDocument();
+    await expect.element(page.getByText("Manage Tags for 2 feeds")).toBeInTheDocument();
 
     // Add a tag (Tech)
-    const addButton = page
-      .getByRole("button", { name: "Add", exact: true })
-      .nth(0);
+    const addButton = page.getByRole("button", { name: "Add", exact: true }).nth(0);
     await addButton.click();
 
     // Save changes
@@ -205,9 +185,7 @@ describe("FeedList Selection", () => {
     await saveButton.click();
 
     // Modal should close
-    await expect
-      .element(page.getByText("Manage Tags for 2 feeds"))
-      .not.toBeInTheDocument();
+    await expect.element(page.getByText("Manage Tags for 2 feeds")).not.toBeInTheDocument();
   });
 
   it("renders Export OPML button in BulkActionBar", async () => {
@@ -226,9 +204,7 @@ describe("FeedList Selection", () => {
     await expect.element(page.getByText("Example Feed 1")).toBeInTheDocument();
 
     const checkboxes = page.getByRole("checkbox");
-    await expect
-      .poll(async () => (await checkboxes.all()).length)
-      .toBeGreaterThan(1);
+    await expect.poll(async () => (await checkboxes.all()).length).toBeGreaterThan(1);
 
     await checkboxes.nth(1).click();
 

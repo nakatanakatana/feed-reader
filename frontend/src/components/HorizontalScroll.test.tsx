@@ -29,9 +29,7 @@ describe("HorizontalScrollList", () => {
     await expect.element(scrollContainer).toBeInTheDocument();
 
     // Check computed styles
-    const el = document.querySelector(
-      '[data-testid="horizontal-scroll-container"]',
-    );
+    const el = document.querySelector('[data-testid="horizontal-scroll-container"]');
     if (!el) throw new Error("horizontal-scroll-container not found");
     const style = window.getComputedStyle(el);
     expect(style.overflowX).toBe("auto");
@@ -43,24 +41,16 @@ describe("HorizontalScrollList", () => {
       () => (
         <div style={{ width: "100px", height: "50px" }}>
           <HorizontalScrollList>
-            <div style={{ width: "80px", height: "20px", "flex-shrink": 0 }}>
-              Item 1
-            </div>
-            <div style={{ width: "80px", height: "20px", "flex-shrink": 0 }}>
-              Item 2
-            </div>
+            <div style={{ width: "80px", height: "20px", "flex-shrink": 0 }}>Item 1</div>
+            <div style={{ width: "80px", height: "20px", "flex-shrink": 0 }}>Item 2</div>
           </HorizontalScrollList>
         </div>
       ),
       document.body,
     );
 
-    await expect
-      .element(page.getByRole("button", { name: "Scroll right" }))
-      .toBeVisible();
-    await expect
-      .element(page.getByRole("button", { name: "Scroll left" }))
-      .not.toBeInTheDocument();
+    await expect.element(page.getByRole("button", { name: "Scroll right" })).toBeVisible();
+    await expect.element(page.getByRole("button", { name: "Scroll left" })).not.toBeInTheDocument();
   });
 
   it("shows left arrow after scrolling", async () => {
@@ -68,12 +58,8 @@ describe("HorizontalScrollList", () => {
       () => (
         <div style={{ width: "100px", height: "50px" }}>
           <HorizontalScrollList>
-            <div style={{ width: "80px", height: "20px", "flex-shrink": 0 }}>
-              Item 1
-            </div>
-            <div style={{ width: "80px", height: "20px", "flex-shrink": 0 }}>
-              Item 2
-            </div>
+            <div style={{ width: "80px", height: "20px", "flex-shrink": 0 }}>Item 1</div>
+            <div style={{ width: "80px", height: "20px", "flex-shrink": 0 }}>Item 2</div>
           </HorizontalScrollList>
         </div>
       ),
@@ -88,8 +74,6 @@ describe("HorizontalScrollList", () => {
     scrollContainer.scrollLeft = 50;
     scrollContainer.dispatchEvent(new Event("scroll"));
 
-    await expect
-      .element(page.getByRole("button", { name: "Scroll left" }))
-      .toBeVisible();
+    await expect.element(page.getByRole("button", { name: "Scroll left" })).toBeVisible();
   });
 });

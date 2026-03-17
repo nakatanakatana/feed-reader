@@ -51,15 +51,9 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
       .orderBy(({ item }) => item.createdAt, "asc");
     if (props.tagId) {
       query = query
-        .innerJoin(
-          { ft: feedTag },
-          // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
-          ({ item, ft }: any) => eq(item.feedId, ft.feedId),
-        )
-        // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
+        .innerJoin({ ft: feedTag }, ({ item, ft }: any) => eq(item.feedId, ft.feedId))
         .where(({ ft }: any) => eq(ft.tagId, props.tagId));
     }
-    // biome-ignore lint/suspicious/noExplicitAny: TanStack DB select types
     return query.select(({ item }: any) => ({ ...item }));
   });
 
@@ -84,9 +78,7 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
   const nextItem = () => {
     const items = filteredItems();
     const index = currentIndexMemo();
-    return items && index >= 0 && index < items.length - 1
-      ? items[index + 1]
-      : undefined;
+    return items && index >= 0 && index < items.length - 1 ? items[index + 1] : undefined;
   };
 
   const navigateTo = (targetId: string | undefined) => {
@@ -94,7 +86,6 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
     if (linkProps) {
       navigate({
         to: linkProps.to,
-        // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
         params: linkProps.params as any,
         search: linkProps.search,
         replace: true,
@@ -129,8 +120,7 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
     markCurrentAsRead();
     if (isEndOfList()) {
       const items = filteredItems();
-      const lastItem =
-        items && items.length > 0 ? items[items.length - 1] : undefined;
+      const lastItem = items && items.length > 0 ? items[items.length - 1] : undefined;
       if (lastItem) {
         navigateTo(lastItem.id);
       }
@@ -153,21 +143,14 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
   const prevItemIdMemo = createMemo(() => {
     if (isEndOfList()) {
       const items = filteredItems();
-      return items && items.length > 0
-        ? items[items.length - 1]?.id
-        : undefined;
+      return items && items.length > 0 ? items[items.length - 1]?.id : undefined;
     }
     return prevItem()?.id;
   });
 
   const nextItemIdMemo = createMemo(() => {
     const items = filteredItems();
-    if (
-      !isEndOfList() &&
-      items &&
-      items.length > 0 &&
-      currentIndexMemo() === items.length - 1
-    ) {
+    if (!isEndOfList() && items && items.length > 0 && currentIndexMemo() === items.length - 1) {
       return "end-of-list";
     }
     return nextItem()?.id;

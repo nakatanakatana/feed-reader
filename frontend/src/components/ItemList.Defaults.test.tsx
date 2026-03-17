@@ -1,10 +1,6 @@
 import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
-import {
-  createMemoryHistory,
-  createRouter,
-  RouterProvider,
-} from "@tanstack/solid-router";
+import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
 import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -42,18 +38,12 @@ describe("ItemList Defaults", () => {
       }),
       http.all("*/tag.v1.TagService/ListTags", () => {
         return HttpResponse.json(
-          toJson(
-            ListTagsResponseSchema,
-            create(ListTagsResponseSchema, { tags: [] }),
-          ),
+          toJson(ListTagsResponseSchema, create(ListTagsResponseSchema, { tags: [] })),
         );
       }),
       http.all("*/feed.v1.FeedService/ListFeedTags", () => {
         return HttpResponse.json(
-          toJson(
-            ListFeedTagsResponseSchema,
-            create(ListFeedTagsResponseSchema, { feedTags: [] }),
-          ),
+          toJson(ListFeedTagsResponseSchema, create(ListFeedTagsResponseSchema, { feedTags: [] })),
         );
       }),
     );

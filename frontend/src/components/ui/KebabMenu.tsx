@@ -43,10 +43,7 @@ export function KebabMenu(props: KebabMenuProps) {
 
   const handleKeyDown = (e: KeyboardEvent) => {
     if (!isOpen()) {
-      if (
-        (e.key === "Enter" || e.key === " ") &&
-        buttonRef === document.activeElement
-      ) {
+      if ((e.key === "Enter" || e.key === " ") && buttonRef === document.activeElement) {
         setIsOpen(true);
         setFocusedIndex(-1);
       }
@@ -63,8 +60,7 @@ export function KebabMenu(props: KebabMenuProps) {
       itemRefs[next]?.focus();
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
-      const next =
-        (focusedIndex() - 1 + props.actions.length) % props.actions.length;
+      const next = (focusedIndex() - 1 + props.actions.length) % props.actions.length;
       setFocusedIndex(next);
       itemRefs[next]?.focus();
     } else if (e.key === "Home") {

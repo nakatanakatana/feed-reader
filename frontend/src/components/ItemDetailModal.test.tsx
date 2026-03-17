@@ -62,21 +62,15 @@ describe("ItemDetailModal", () => {
     );
 
     await expect.element(page.getByText("Test Item")).toBeInTheDocument();
-    await expect
-      .element(page.getByText(/Published:/).first())
-      .toBeInTheDocument();
-    await expect
-      .element(page.getByText(/Received:/).first())
-      .toBeInTheDocument();
+    await expect.element(page.getByText(/Published:/).first()).toBeInTheDocument();
+    await expect.element(page.getByText(/Received:/).first()).toBeInTheDocument();
     await expect.element(page.getByText("By Test Author")).toBeInTheDocument();
     await expect.element(page.getByText("Test Content")).toBeInTheDocument();
 
     // Check for title link
     const titleLink = page.getByRole("link", { name: "Test Item" });
     await expect.element(titleLink).toBeInTheDocument();
-    await expect
-      .element(titleLink)
-      .toHaveAttribute("href", "http://example.com");
+    await expect.element(titleLink).toHaveAttribute("href", "http://example.com");
 
     expect(document.body.innerHTML).toMatchSnapshot();
   });

@@ -101,9 +101,7 @@ describe("ItemDetailModal Skip Navigation", () => {
     );
 
     await expect.element(page.getByText("Test Item")).toBeInTheDocument();
-    const container = document.querySelector(
-      '[data-testid="swipe-container"]',
-    ) as HTMLElement;
+    const container = document.querySelector('[data-testid="swipe-container"]') as HTMLElement;
 
     expect(container).not.toBeNull();
 

@@ -8,7 +8,6 @@ const DEFAULT_ERROR_MESSAGE = "An error occurred. Please try again.";
 
 const markAsToastEligible = (err: unknown) => {
   if (typeof err === "object" && err !== null) {
-    // biome-ignore lint/suspicious/noExplicitAny: using Symbol to mark handled errors
     (err as any)[ERROR_TOAST_ELIGIBLE] = true;
   }
 };
@@ -72,6 +71,5 @@ export const queryClient = new QueryClient({
 });
 
 if (typeof window !== "undefined") {
-  (window as unknown as { __queryClient: QueryClient }).__queryClient =
-    queryClient;
+  (window as unknown as { __queryClient: QueryClient }).__queryClient = queryClient;
 }

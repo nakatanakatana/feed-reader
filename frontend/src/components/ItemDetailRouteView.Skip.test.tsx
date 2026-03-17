@@ -1,10 +1,6 @@
 import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
-import {
-  createMemoryHistory,
-  createRouter,
-  RouterProvider,
-} from "@tanstack/solid-router";
+import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
 import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -62,33 +58,21 @@ describe("ItemDetailRouteView Skip Navigation", () => {
         });
         return HttpResponse.json(toJson(GetItemResponseSchema, msg));
       }),
-      http.post(
-        "*/item.v1.ItemService/UpdateItemStatus",
-        async ({ request }) => {
-          const body = await request.json();
-          updateStatusSpy(body);
-          return HttpResponse.json(
-            toJson(
-              UpdateItemStatusResponseSchema,
-              create(UpdateItemStatusResponseSchema, {}),
-            ),
-          );
-        },
-      ),
+      http.post("*/item.v1.ItemService/UpdateItemStatus", async ({ request }) => {
+        const body = await request.json();
+        updateStatusSpy(body);
+        return HttpResponse.json(
+          toJson(UpdateItemStatusResponseSchema, create(UpdateItemStatusResponseSchema, {})),
+        );
+      }),
       http.all("*/tag.v1.TagService/ListTags", () => {
         return HttpResponse.json(
-          toJson(
-            ListTagsResponseSchema,
-            create(ListTagsResponseSchema, { tags: [] }),
-          ),
+          toJson(ListTagsResponseSchema, create(ListTagsResponseSchema, { tags: [] })),
         );
       }),
       http.all("*/feed.v1.FeedService/ListFeedTags", () => {
         return HttpResponse.json(
-          toJson(
-            ListFeedTagsResponseSchema,
-            create(ListFeedTagsResponseSchema, { feedTags: [] }),
-          ),
+          toJson(ListFeedTagsResponseSchema, create(ListFeedTagsResponseSchema, { feedTags: [] })),
         );
       }),
     );
@@ -113,9 +97,7 @@ describe("ItemDetailRouteView Skip Navigation", () => {
     );
 
     // Wait for content
-    await expect
-      .element(page.getByRole("heading", { name: "Item 1" }))
-      .toBeInTheDocument();
+    await expect.element(page.getByRole("heading", { name: "Item 1" })).toBeInTheDocument();
 
     // Focus the modal to ensure keyboard events are captured
     const dialog = page.getByRole("dialog");
@@ -128,9 +110,7 @@ describe("ItemDetailRouteView Skip Navigation", () => {
     await expect.poll(() => history.location.pathname).toBe("/items/2");
 
     // Heading should update to Item 2
-    await expect
-      .element(page.getByRole("heading", { name: "Item 2" }))
-      .toBeInTheDocument();
+    await expect.element(page.getByRole("heading", { name: "Item 2" })).toBeInTheDocument();
 
     // Verify markAsRead was NOT called for Item 1, even after a short delay
     await expect.poll(() => updateStatusSpy.mock.calls.length).toBe(0);

@@ -11,9 +11,7 @@ export const TagManagement = () => {
   const [newTagName, setNewTagName] = createSignal("");
 
   const tagsQuery = useLiveQuery((q) => {
-    return q
-      .from({ tag: tagsFeedQuery })
-      .orderBy(({ tag }) => tag.feedCount, "desc");
+    return q.from({ tag: tagsFeedQuery }).orderBy(({ tag }) => tag.feedCount, "desc");
   });
 
   const handleCreateTag = (e: Event) => {
@@ -33,9 +31,7 @@ export const TagManagement = () => {
 
   const handleDeleteTag = (id: string, name: string, feedCount: bigint) => {
     if (feedCount > 0n) {
-      const confirmed = confirm(
-        `Delete "${name}"? It is used by ${feedCount.toString()} feed(s).`,
-      );
+      const confirmed = confirm(`Delete "${name}"? It is used by ${feedCount.toString()} feed(s).`);
       if (!confirmed) return;
     }
 
@@ -143,9 +139,7 @@ export const TagManagement = () => {
                       _hover: { bg: "gray.50" },
                     })}
                   >
-                    <span class={css({ fontWeight: "medium" })}>
-                      {tag.name}
-                    </span>
+                    <span class={css({ fontWeight: "medium" })}>{tag.name}</span>
                     <Badge>feed: {tag.feedCount.toString()}</Badge>
                     <ActionButton
                       variant="danger"
@@ -166,10 +160,7 @@ export const TagManagement = () => {
               </For>
             </Show>
             <Show when={tagsQuery().length === 0}>
-              <EmptyState
-                title="No tags yet."
-                description="Create one to get started."
-              />
+              <EmptyState title="No tags yet." description="Create one to get started." />
             </Show>
           </div>
         </div>

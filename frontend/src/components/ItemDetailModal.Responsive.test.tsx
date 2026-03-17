@@ -201,20 +201,12 @@ describe("ItemDetailModal Responsive", () => {
     );
 
     // Labels "Published:" and "Received:" SHOULD be visible at the breakpoint
-    await expect
-      .element(page.getByText("Published:", { exact: true }).first())
-      .toBeVisible();
-    await expect
-      .element(page.getByText("Received:", { exact: true }).first())
-      .toBeVisible();
+    await expect.element(page.getByText("Published:", { exact: true }).first()).toBeVisible();
+    await expect.element(page.getByText("Received:", { exact: true }).first()).toBeVisible();
 
     // Icons with titles should NOT be visible
-    await expect
-      .element(page.getByTitle("Published", { exact: true }))
-      .not.toBeVisible();
-    await expect
-      .element(page.getByTitle("Received", { exact: true }))
-      .not.toBeVisible();
+    await expect.element(page.getByTitle("Published", { exact: true })).not.toBeVisible();
+    await expect.element(page.getByTitle("Received", { exact: true })).not.toBeVisible();
 
     dispose();
     document.body.innerHTML = "";
@@ -233,19 +225,11 @@ describe("ItemDetailModal Responsive", () => {
     );
 
     // Labels "Published:" and "Received:" SHOULD be visible
-    await expect
-      .element(page.getByText("Published:", { exact: true }).first())
-      .toBeVisible();
-    await expect
-      .element(page.getByText("Received:", { exact: true }).first())
-      .toBeVisible();
+    await expect.element(page.getByText("Published:", { exact: true }).first()).toBeVisible();
+    await expect.element(page.getByText("Received:", { exact: true }).first()).toBeVisible();
 
     // Icons with titles should NOT be visible
-    await expect
-      .element(page.getByTitle("Published", { exact: true }))
-      .not.toBeVisible();
-    await expect
-      .element(page.getByTitle("Received", { exact: true }))
-      .not.toBeVisible();
+    await expect.element(page.getByTitle("Published", { exact: true })).not.toBeVisible();
+    await expect.element(page.getByTitle("Received", { exact: true })).not.toBeVisible();
   });
 });

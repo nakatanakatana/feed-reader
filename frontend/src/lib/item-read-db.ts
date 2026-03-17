@@ -18,7 +18,6 @@ export const itemReadCollectionOptions = {
   queryClient,
   refetchInterval: 1 * 60 * 1000, // Sync every minute
   queryKey: ["item-reads"],
-  // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB context
   queryFn: async ({ queryKey }: any) => {
     // Initial sync anchor baseline
     const anchor = lastReadFetched();
@@ -29,8 +28,7 @@ export const itemReadCollectionOptions = {
       return [];
     }
 
-    const existingData =
-      (queryClient.getQueryData(queryKey) as ItemRead[]) || [];
+    const existingData = (queryClient.getQueryData(queryKey) as ItemRead[]) || [];
 
     let pageToken = "";
     const allNewReads: ItemRead[] = [];
@@ -50,14 +48,10 @@ export const itemReadCollectionOptions = {
 
         if (ir.updatedAt) {
           updatedAtDate = new Date(
-            Number(ir.updatedAt.seconds) * 1000 +
-              Math.floor(ir.updatedAt.nanos / 1000000),
+            Number(ir.updatedAt.seconds) * 1000 + Math.floor(ir.updatedAt.nanos / 1000000),
           );
 
-          if (
-            !maxServerUpdatedAt ||
-            updatedAtDate.getTime() > maxServerUpdatedAt.getTime()
-          ) {
+          if (!maxServerUpdatedAt || updatedAtDate.getTime() > maxServerUpdatedAt.getTime()) {
             maxServerUpdatedAt = updatedAtDate;
           }
         } else {
@@ -97,10 +91,7 @@ export const itemReadCollectionOptions = {
 };
 
 const collection = createRoot(() => {
-  return createCollection(
-    // biome-ignore lint/suspicious/noExplicitAny: using any for options
-    queryCollectionOptions(itemReadCollectionOptions as any),
-  );
+  return createCollection(queryCollectionOptions(itemReadCollectionOptions as any));
 });
 
 export const itemReadCollection = () => collection;
@@ -108,9 +99,7 @@ export const itemReadCollection = () => collection;
 export const updateItemReadStatus = async (ids: string[], isRead: boolean) => {
   // Save previous states for rollback if needed
   const existingData =
-    (queryClient.getQueryData(itemReadCollectionOptions.queryKey) as
-      | ItemRead[]
-      | undefined) || [];
+    (queryClient.getQueryData(itemReadCollectionOptions.queryKey) as ItemRead[] | undefined) || [];
   const previousStates = existingData.filter((d) => ids.includes(d.id));
 
   // Update local cache first (optimistic update)
@@ -142,7 +131,6 @@ export const updateItemReadStatus = async (ids: string[], isRead: boolean) => {
     // Rollback local cache to previous states
     try {
       if (previousStates.length > 0) {
-        // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB writeUpsert
         await itemReadCollection().utils.writeUpsert(previousStates as any);
       }
 

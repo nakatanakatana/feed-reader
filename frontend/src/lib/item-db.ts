@@ -1,11 +1,6 @@
 import { createClient } from "@connectrpc/connect";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
-import {
-  coalesce,
-  createCollection,
-  createLiveQueryCollection,
-  eq,
-} from "@tanstack/solid-db";
+import { coalesce, createCollection, createLiveQueryCollection, eq } from "@tanstack/solid-db";
 import { createMemo, createRoot } from "solid-js";
 import { ItemService } from "../gen/item/v1/item_pb";
 import { toDate } from "./date-utils";
@@ -18,11 +13,7 @@ import {
   setLastItemsSyncedAt,
   setLastReadFetched,
 } from "./item-sync-state";
-import {
-  type DateFilterValue,
-  dateToTimestamp,
-  getPublishedSince,
-} from "./item-utils";
+import { type DateFilterValue, dateToTimestamp, getPublishedSince } from "./item-utils";
 import { queryClient, transport } from "./query";
 
 export interface ListItem {
@@ -62,13 +53,9 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
       queryFn: async ({ queryKey }) => {
         const lastFetchedValue = lastFetched();
         const existingData =
-          lastFetchedValue === null
-            ? []
-            : (queryClient.getQueryData(queryKey) as ListItem[]) || [];
+          lastFetchedValue === null ? [] : (queryClient.getQueryData(queryKey) as ListItem[]) || [];
         const searchSince =
-          lastFetchedValue === null
-            ? sinceTimestamp
-            : dateToTimestamp(lastFetchedValue);
+          lastFetchedValue === null ? sinceTimestamp : dateToTimestamp(lastFetchedValue);
 
         let pageToken = "";
         const allNewItems: ListItem[] = [];
@@ -117,9 +104,7 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
           }
 
           if (validDates.length > 0) {
-            const currentAnchorTime = lastFetchedValue
-              ? lastFetchedValue.getTime()
-              : 0;
+            const currentAnchorTime = lastFetchedValue ? lastFetchedValue.getTime() : 0;
 
             if (maxTime > currentAnchorTime) {
               setLastFetched(new Date(maxTime));
@@ -187,25 +172,18 @@ const createItems = (showRead: boolean, since: DateFilterValue) => {
 };
 
 export const items = createRoot(() => {
-  return createMemo(() =>
-    createItems(itemStore.state.showRead, itemStore.state.since),
-  );
+  return createMemo(() => createItems(itemStore.state.showRead, itemStore.state.since));
 });
 
 export const itemsUnreadQuery = createRoot(() => {
   const collection = createLiveQueryCollection((q) =>
     q
       .from({ item: items() })
-      // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
-      .leftJoin({ read: itemReadCollection() }, ({ item, read }: any) =>
-        eq(item.id, read.id),
-      )
-      // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
+      .leftJoin({ read: itemReadCollection() }, ({ item, read }: any) => eq(item.id, read.id))
       .where(({ item, read }: any) => {
         // Prioritize delta-synced read status for unread calculations
         return eq(coalesce(read?.isRead, item.isRead), false);
       })
-      // biome-ignore lint/suspicious/noExplicitAny: TanStack DB select types
       .select(({ item, read }: any) => ({
         ...item,
         isRead: coalesce(read?.isRead, item.isRead),

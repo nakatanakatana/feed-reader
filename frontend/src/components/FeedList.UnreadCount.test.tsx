@@ -1,10 +1,6 @@
 import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
-import {
-  createMemoryHistory,
-  createRouter,
-  RouterProvider,
-} from "@tanstack/solid-router";
+import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
 import { HttpResponse, http } from "msw";
 import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
@@ -31,9 +27,7 @@ describe("FeedList Unread Counts", () => {
 
   const TestWrapper = (props: { children: JSX.Element }) => (
     <TransportProvider transport={transport}>
-      <QueryClientProvider client={queryClient}>
-        {props.children}
-      </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>{props.children}</QueryClientProvider>
     </TransportProvider>
   );
 

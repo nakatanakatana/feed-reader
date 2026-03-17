@@ -93,9 +93,7 @@ describe("ItemDetailModal Shortcuts", () => {
     await expect.poll(() => updateSpy).toHaveBeenCalled();
 
     // Verify UI updated
-    await expect
-      .element(page.getByRole("button", { name: "Mark as Unread" }))
-      .toBeInTheDocument();
+    await expect.element(page.getByRole("button", { name: "Mark as Unread" })).toBeInTheDocument();
   });
 
   it("toggles read status when 'M' is pressed", async () => {
@@ -136,9 +134,7 @@ describe("ItemDetailModal Shortcuts", () => {
     await expect.poll(() => updateSpy).toHaveBeenCalled();
 
     // Verify UI updated
-    await expect
-      .element(page.getByRole("button", { name: "Mark as Unread" }))
-      .toBeInTheDocument();
+    await expect.element(page.getByRole("button", { name: "Mark as Unread" })).toBeInTheDocument();
   });
 
   it("does NOT toggle read status when focused on an input", async () => {
@@ -181,8 +177,6 @@ describe("ItemDetailModal Shortcuts", () => {
     expect(updateSpy).not.toHaveBeenCalled();
 
     // Verify FAB is still "Mark as Read"
-    await expect
-      .element(page.getByRole("button", { name: "Mark as Read" }))
-      .toBeInTheDocument();
+    await expect.element(page.getByRole("button", { name: "Mark as Read" })).toBeInTheDocument();
   });
 });

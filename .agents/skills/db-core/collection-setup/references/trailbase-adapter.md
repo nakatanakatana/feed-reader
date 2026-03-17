@@ -9,19 +9,19 @@ pnpm add @tanstack/trailbase-db-collection @tanstack/react-db trailbase
 ## Required Config
 
 ```typescript
-import { createCollection } from '@tanstack/react-db'
-import { trailBaseCollectionOptions } from '@tanstack/trailbase-db-collection'
-import { initClient } from 'trailbase'
+import { createCollection } from "@tanstack/react-db";
+import { trailBaseCollectionOptions } from "@tanstack/trailbase-db-collection";
+import { initClient } from "trailbase";
 
-const trailBaseClient = initClient('https://your-trailbase-instance.com')
+const trailBaseClient = initClient("https://your-trailbase-instance.com");
 
 const todosCollection = createCollection(
   trailBaseCollectionOptions({
-    id: 'todos',
-    recordApi: trailBaseClient.records('todos'),
+    id: "todos",
+    recordApi: trailBaseClient.records("todos"),
     getKey: (item) => item.id,
   }),
-)
+);
 ```
 
 - `id` -- unique collection identifier
@@ -45,23 +45,23 @@ TrailBase uses different data formats (e.g. Unix timestamps). Use `parse` and `s
 
 ```typescript
 type SelectTodo = {
-  id: string
-  text: string
-  created_at: number // Unix timestamp from TrailBase
-  completed: boolean
-}
+  id: string;
+  text: string;
+  created_at: number; // Unix timestamp from TrailBase
+  completed: boolean;
+};
 
 type Todo = {
-  id: string
-  text: string
-  created_at: Date // Rich JS type for app usage
-  completed: boolean
-}
+  id: string;
+  text: string;
+  created_at: Date; // Rich JS type for app usage
+  completed: boolean;
+};
 
 const collection = createCollection<SelectTodo, Todo>(
   trailBaseCollectionOptions({
-    id: 'todos',
-    recordApi: trailBaseClient.records('todos'),
+    id: "todos",
+    recordApi: trailBaseClient.records("todos"),
     getKey: (item) => item.id,
     parse: {
       created_at: (ts) => new Date(ts * 1000),
@@ -70,7 +70,7 @@ const collection = createCollection<SelectTodo, Todo>(
       created_at: (date) => Math.floor(date.valueOf() / 1000),
     },
   }),
-)
+);
 ```
 
 ## Real-time Subscriptions
@@ -96,33 +96,33 @@ TrailBase handles persistence through the Record API automatically. Custom handl
 ## Complete Example
 
 ```typescript
-import { createCollection } from '@tanstack/react-db'
-import { trailBaseCollectionOptions } from '@tanstack/trailbase-db-collection'
-import { initClient } from 'trailbase'
-import { z } from 'zod'
+import { createCollection } from "@tanstack/react-db";
+import { trailBaseCollectionOptions } from "@tanstack/trailbase-db-collection";
+import { initClient } from "trailbase";
+import { z } from "zod";
 
-const trailBaseClient = initClient('https://your-trailbase-instance.com')
+const trailBaseClient = initClient("https://your-trailbase-instance.com");
 
 const todoSchema = z.object({
   id: z.string(),
   text: z.string(),
   completed: z.boolean(),
   created_at: z.date(),
-})
+});
 
 type SelectTodo = {
-  id: string
-  text: string
-  completed: boolean
-  created_at: number
-}
+  id: string;
+  text: string;
+  completed: boolean;
+  created_at: number;
+};
 
-type Todo = z.infer<typeof todoSchema>
+type Todo = z.infer<typeof todoSchema>;
 
 const todosCollection = createCollection<SelectTodo, Todo>(
   trailBaseCollectionOptions({
-    id: 'todos',
-    recordApi: trailBaseClient.records('todos'),
+    id: "todos",
+    recordApi: trailBaseClient.records("todos"),
     getKey: (item) => item.id,
     schema: todoSchema,
     parse: {
@@ -132,16 +132,16 @@ const todosCollection = createCollection<SelectTodo, Todo>(
       created_at: (date) => Math.floor(date.valueOf() / 1000),
     },
     onInsert: async ({ transaction }) => {
-      console.log('Created:', transaction.mutations[0].modified)
+      console.log("Created:", transaction.mutations[0].modified);
     },
   }),
-)
+);
 
 // Usage
 todosCollection.insert({
   id: crypto.randomUUID(),
-  text: 'Review PR',
+  text: "Review PR",
   completed: false,
   created_at: new Date(),
-})
+});
 ```

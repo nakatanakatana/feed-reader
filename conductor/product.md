@@ -1,15 +1,19 @@
 # Initial Concept
+
 A self-hosted, full-stack RSS/Atom feed reader application, featuring a robust backend for feed management and a modern frontend for a complete user experience.
 
 ## Product Guide
 
 ### Target Audience
+
 The primary target audience is individuals and organizations seeking control over their news consumption through a self-hosted solution.
+
 - **Self-Hosters:** Users who prefer to run their own services for privacy and data ownership.
 - **Power Users:** Individuals who need a fast, customizable interface for reading large volumes of content.
 - **Small Teams:** Groups wanting a shared, private feed aggregation tool.
 
 ### Core Value Proposition
+
 - **Privacy & Control:** Complete ownership of data and subscription lists with no third-party tracking.
 - **Unified Experience:** A seamless integration between the high-performance backend and a responsive, user-friendly frontend.
 - **Portability:** Easy to deploy and maintain as a single container or a single executable binary.
@@ -82,6 +86,7 @@ The primary target audience is individuals and organizations seeking control ove
   - **Opt-in Activation:** High-performance "No-op" default ensures zero overhead when tracing is disabled. Activating full observability is as simple as providing an OTLP collector endpoint via environment variables.
 
 ### Success Metrics
+
 - **User Engagement:** Regular usage of the application for daily reading.
 - **Deployment Ease:** Simple setup process for self-hosting (e.g., Docker Compose).
 - **Responsiveness:** Fast UI interactions and quick article loading.

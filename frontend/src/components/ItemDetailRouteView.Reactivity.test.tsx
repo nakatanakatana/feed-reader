@@ -1,10 +1,6 @@
 import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
-import {
-  createMemoryHistory,
-  createRouter,
-  RouterProvider,
-} from "@tanstack/solid-router";
+import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
 import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -38,7 +34,6 @@ describe("ItemDetailRouteView Reactivity", () => {
     vi.clearAllMocks();
   });
 
-  // biome-ignore lint/suspicious/noExplicitAny: test mock data
   const setupMockData = (itemsData: any[]) => {
     worker.use(
       http.all("*/item.v1.ItemService/ListItems", () => {
@@ -61,10 +56,7 @@ describe("ItemDetailRouteView Reactivity", () => {
       }),
       http.all("*/tag.v1.TagService/ListTags", () => {
         return HttpResponse.json(
-          toJson(
-            ListTagsResponseSchema,
-            create(ListTagsResponseSchema, { tags: [] }),
-          ),
+          toJson(ListTagsResponseSchema, create(ListTagsResponseSchema, { tags: [] })),
         );
       }),
       http.all("*/item.v1.ItemService/ListURLParsingRules", () => {
@@ -77,10 +69,7 @@ describe("ItemDetailRouteView Reactivity", () => {
       }),
       http.all("*/feed.v1.FeedService/ListFeedTags", () => {
         return HttpResponse.json(
-          toJson(
-            ListFeedTagsResponseSchema,
-            create(ListFeedTagsResponseSchema, { feedTags: [] }),
-          ),
+          toJson(ListFeedTagsResponseSchema, create(ListFeedTagsResponseSchema, { feedTags: [] })),
         );
       }),
       http.post("*/item.v1.ItemService/UpdateItemStatus", () => {
@@ -115,24 +104,18 @@ describe("ItemDetailRouteView Reactivity", () => {
     );
 
     // Initial state: Item 1 has Next (Item 2)
-    await expect
-      .element(page.getByRole("heading", { name: "Item 1" }))
-      .toBeInTheDocument();
+    await expect.element(page.getByRole("heading", { name: "Item 1" })).toBeInTheDocument();
 
     // Navigate to next item using 'j'
     await userEvent.keyboard("j");
     await expect.poll(() => history.location.pathname).toBe("/items/2");
-    await expect
-      .element(page.getByRole("heading", { name: "Item 2" }))
-      .toBeInTheDocument();
+    await expect.element(page.getByRole("heading", { name: "Item 2" })).toBeInTheDocument();
 
     // Navigate back to Item 1 using 'k'
     await userEvent.click(page.getByRole("heading", { name: "Item 2" }));
     await userEvent.keyboard("k");
     await expect.poll(() => history.location.pathname).toBe("/items/1");
-    await expect
-      .element(page.getByRole("heading", { name: "Item 1" }))
-      .toBeInTheDocument();
+    await expect.element(page.getByRole("heading", { name: "Item 1" })).toBeInTheDocument();
 
     // Update mock data to only have 1 item
     setupMockData([{ id: "1", title: "Item 1", isRead: false }]);
@@ -145,9 +128,7 @@ describe("ItemDetailRouteView Reactivity", () => {
     // In ItemDetailRouteView, this means nextItemId should become end-of-list eventually.
     await expect.poll(() => history.location.pathname).toBe("/items/1");
 
-    await expect
-      .element(page.getByRole("heading", { name: "Item 1" }))
-      .toBeInTheDocument();
+    await expect.element(page.getByRole("heading", { name: "Item 1" })).toBeInTheDocument();
 
     // Ensure focus is on the modal before pressing 'j'
     const dialog = page.getByRole("dialog");
@@ -156,12 +137,8 @@ describe("ItemDetailRouteView Reactivity", () => {
 
     // With only 1 item, 'j' should transition to the "End of List" placeholder.
     await userEvent.keyboard("j");
-    await expect
-      .poll(() => history.location.pathname)
-      .toBe("/items/end-of-list");
+    await expect.poll(() => history.location.pathname).toBe("/items/end-of-list");
 
-    await expect
-      .element(page.getByRole("heading", { name: "End of List" }))
-      .toBeInTheDocument();
+    await expect.element(page.getByRole("heading", { name: "End of List" })).toBeInTheDocument();
   });
 });

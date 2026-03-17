@@ -23,9 +23,7 @@ export function EmptyState(props: EmptyStateProps) {
       <div class={stack({ gap: "2", alignItems: "center" })}>
         <div class={css({ fontWeight: "medium" })}>{props.title}</div>
         {props.description ? (
-          <div class={css({ fontSize: "sm", color: "gray.500" })}>
-            {props.description}
-          </div>
+          <div class={css({ fontSize: "sm", color: "gray.500" })}>{props.description}</div>
         ) : null}
         {props.action}
       </div>

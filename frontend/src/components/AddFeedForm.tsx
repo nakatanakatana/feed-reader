@@ -19,9 +19,7 @@ export function AddFeedForm(props: AddFeedFormProps) {
   const [error, setError] = createSignal<Error | null>(null);
 
   const tagsQuery = useLiveQuery((q) => {
-    return q
-      .from({ tag: tagsFeedQuery })
-      .orderBy(({ tag }) => tag.feedCount, "desc");
+    return q.from({ tag: tagsFeedQuery }).orderBy(({ tag }) => tag.feedCount, "desc");
   });
 
   const handleSubmit = async (e: Event) => {

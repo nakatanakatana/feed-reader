@@ -21,7 +21,6 @@ describe("ItemDetailModal UI Updates", () => {
     vi.clearAllMocks();
   });
 
-  // biome-ignore lint/suspicious/noExplicitAny: test mock data
   const setupMockData = (itemId: string, itemData: any) => {
     worker.use(
       http.all("*/item.v1.ItemService/GetItem", () => {
@@ -64,17 +63,13 @@ describe("ItemDetailModal UI Updates", () => {
 
     const titleLink = page.getByRole("link", { name: "Link Title" });
     await expect.element(titleLink).toBeInTheDocument();
-    await expect
-      .element(titleLink)
-      .toHaveAttribute("href", "https://example.com/item1");
+    await expect.element(titleLink).toHaveAttribute("href", "https://example.com/item1");
 
     await expect.element(page.getByText("Content")).toBeInTheDocument();
 
     // Use poll with querySelector to wait for image to appear
     await expect
-      .poll(() =>
-        document.querySelector('img[src="https://example.com/image.jpg"]'),
-      )
+      .poll(() => document.querySelector('img[src="https://example.com/image.jpg"]'))
       .not.toBeNull();
 
     const image = document.querySelector(

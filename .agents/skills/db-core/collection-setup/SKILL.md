@@ -12,16 +12,16 @@ description: >
   Electric txid tracking and Query direct writes.
 type: sub-skill
 library: db
-library_version: '0.5.30'
+library_version: "0.5.30"
 sources:
-  - 'TanStack/db:docs/overview.md'
-  - 'TanStack/db:docs/guides/schemas.md'
-  - 'TanStack/db:docs/collections/query-collection.md'
-  - 'TanStack/db:docs/collections/electric-collection.md'
-  - 'TanStack/db:docs/collections/powersync-collection.md'
-  - 'TanStack/db:docs/collections/rxdb-collection.md'
-  - 'TanStack/db:docs/collections/trailbase-collection.md'
-  - 'TanStack/db:packages/db/src/collection/index.ts'
+  - "TanStack/db:docs/overview.md"
+  - "TanStack/db:docs/guides/schemas.md"
+  - "TanStack/db:docs/collections/query-collection.md"
+  - "TanStack/db:docs/collections/electric-collection.md"
+  - "TanStack/db:docs/collections/powersync-collection.md"
+  - "TanStack/db:docs/collections/rxdb-collection.md"
+  - "TanStack/db:docs/collections/trailbase-collection.md"
+  - "TanStack/db:packages/db/src/collection/index.ts"
 ---
 
 This skill builds on db-core. Read it first for the overall mental model.
@@ -31,12 +31,12 @@ This skill builds on db-core. Read it first for the overall mental model.
 ## Setup
 
 ```ts
-import { createCollection } from '@tanstack/react-db'
-import { queryCollectionOptions } from '@tanstack/query-db-collection'
-import { QueryClient } from '@tanstack/query-core'
-import { z } from 'zod'
+import { createCollection } from "@tanstack/react-db";
+import { queryCollectionOptions } from "@tanstack/query-db-collection";
+import { QueryClient } from "@tanstack/query-core";
+import { z } from "zod";
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient();
 
 const todoSchema = z.object({
   id: z.number(),
@@ -44,34 +44,34 @@ const todoSchema = z.object({
   completed: z.boolean().default(false),
   created_at: z
     .union([z.string(), z.date()])
-    .transform((val) => (typeof val === 'string' ? new Date(val) : val)),
-})
+    .transform((val) => (typeof val === "string" ? new Date(val) : val)),
+});
 
 const todoCollection = createCollection(
   queryCollectionOptions({
-    queryKey: ['todos'],
+    queryKey: ["todos"],
     queryFn: async () => {
-      const res = await fetch('/api/todos')
-      return res.json()
+      const res = await fetch("/api/todos");
+      return res.json();
     },
     queryClient,
     getKey: (item) => item.id,
     schema: todoSchema,
     onInsert: async ({ transaction }) => {
-      await api.todos.create(transaction.mutations[0].modified)
-      await todoCollection.utils.refetch()
+      await api.todos.create(transaction.mutations[0].modified);
+      await todoCollection.utils.refetch();
     },
     onUpdate: async ({ transaction }) => {
-      const mut = transaction.mutations[0]
-      await api.todos.update(mut.key, mut.changes)
-      await todoCollection.utils.refetch()
+      const mut = transaction.mutations[0];
+      await api.todos.update(mut.key, mut.changes);
+      await todoCollection.utils.refetch();
     },
     onDelete: async ({ transaction }) => {
-      await api.todos.delete(transaction.mutations[0].key)
-      await todoCollection.utils.refetch()
+      await api.todos.delete(transaction.mutations[0].key);
+      await todoCollection.utils.refetch();
     },
   }),
-)
+);
 ```
 
 ## Choosing an Adapter
@@ -92,10 +92,10 @@ If the user specifies a backend (e.g. Electric, PowerSync), use that adapter dir
 
 ```ts
 queryCollectionOptions({
-  syncMode: 'eager', // default — loads all data upfront
+  syncMode: "eager", // default — loads all data upfront
   // syncMode: "on-demand", // loads only what live queries request
   // syncMode: "progressive", // (Electric only) query subset first, full sync in background
-})
+});
 ```
 
 | Mode          | Best for                                       | Data size |
@@ -109,17 +109,14 @@ queryCollectionOptions({
 ### Local-only collection for prototyping
 
 ```ts
-import {
-  createCollection,
-  localOnlyCollectionOptions,
-} from '@tanstack/react-db'
+import { createCollection, localOnlyCollectionOptions } from "@tanstack/react-db";
 
 const todoCollection = createCollection(
   localOnlyCollectionOptions({
     getKey: (item) => item.id,
-    initialData: [{ id: 1, text: 'Learn TanStack DB', completed: false }],
+    initialData: [{ id: 1, text: "Learn TanStack DB", completed: false }],
   }),
-)
+);
 ```
 
 ### Schema with type transformations
@@ -130,9 +127,9 @@ const schema = z.object({
   title: z.string(),
   due_date: z
     .union([z.string(), z.date()])
-    .transform((val) => (typeof val === 'string' ? new Date(val) : val)),
+    .transform((val) => (typeof val === "string" ? new Date(val) : val)),
   priority: z.number().default(0),
-})
+});
 ```
 
 Use `z.union([z.string(), z.date()])` for transformed fields — this ensures `TInput` is a superset of `TOutput` so that `update()` works correctly with the draft proxy.
@@ -142,27 +139,27 @@ Use `z.union([z.string(), z.date()])` for transformed fields — this ensures `T
 Always use a schema with Electric — without one, the collection types as `Record<string, unknown>`.
 
 ```ts
-import { electricCollectionOptions } from '@tanstack/electric-db-collection'
-import { z } from 'zod'
+import { electricCollectionOptions } from "@tanstack/electric-db-collection";
+import { z } from "zod";
 
 const todoSchema = z.object({
   id: z.string(),
   text: z.string(),
   completed: z.boolean(),
   created_at: z.coerce.date(),
-})
+});
 
 const todoCollection = createCollection(
   electricCollectionOptions({
     schema: todoSchema,
-    shapeOptions: { url: '/api/electric/todos' },
+    shapeOptions: { url: "/api/electric/todos" },
     getKey: (item) => item.id,
     onInsert: async ({ transaction }) => {
-      const res = await api.todos.create(transaction.mutations[0].modified)
-      return { txid: res.txid }
+      const res = await api.todos.create(transaction.mutations[0].modified);
+      return { txid: res.txid };
     },
   }),
-)
+);
 ```
 
 The returned `txid` tells the collection to hold optimistic state until Electric streams back that transaction. See the [Electric adapter reference](references/electric-adapter.md) for the full dual-path pattern (schema + parser).
@@ -176,10 +173,10 @@ Wrong:
 ```ts
 queryCollectionOptions({
   queryFn: async () => {
-    const res = await fetch('/api/todos?status=active')
-    return res.json() // returns [] when no active todos — deletes everything
+    const res = await fetch("/api/todos?status=active");
+    return res.json(); // returns [] when no active todos — deletes everything
   },
-})
+});
 ```
 
 Correct:
@@ -187,12 +184,12 @@ Correct:
 ```ts
 queryCollectionOptions({
   queryFn: async () => {
-    const res = await fetch('/api/todos') // fetch complete state
-    return res.json()
+    const res = await fetch("/api/todos"); // fetch complete state
+    return res.json();
   },
   // Use on-demand mode + live query where() for filtering
-  syncMode: 'on-demand',
-})
+  syncMode: "on-demand",
+});
 ```
 
 `queryFn` result is treated as complete server state. Returning `[]` means "server has no items", deleting all existing collection data.
@@ -208,7 +205,7 @@ const todoCollection = createCollection(
   localOnlyCollectionOptions({
     getKey: (item) => item.id,
   }),
-)
+);
 // Manually fetching and inserting...
 ```
 
@@ -217,12 +214,12 @@ Correct:
 ```ts
 const todoCollection = createCollection(
   queryCollectionOptions({
-    queryKey: ['todos'],
-    queryFn: async () => fetch('/api/todos').then((r) => r.json()),
+    queryKey: ["todos"],
+    queryFn: async () => fetch("/api/todos").then((r) => r.json()),
     queryClient,
     getKey: (item) => item.id,
   }),
-)
+);
 ```
 
 Each backend has a dedicated adapter that handles sync, mutation handlers, and utilities. Using `localOnlyCollectionOptions` or bare `createCollection` for a real backend bypasses all of this.
@@ -235,24 +232,24 @@ Wrong:
 
 ```ts
 // Backend handler
-app.post('/api/todos', async (req, res) => {
-  const txid = await generateTxId(sql) // WRONG: separate transaction
-  await sql`INSERT INTO todos ${sql(req.body)}`
-  res.json({ txid })
-})
+app.post("/api/todos", async (req, res) => {
+  const txid = await generateTxId(sql); // WRONG: separate transaction
+  await sql`INSERT INTO todos ${sql(req.body)}`;
+  res.json({ txid });
+});
 ```
 
 Correct:
 
 ```ts
-app.post('/api/todos', async (req, res) => {
-  let txid
+app.post("/api/todos", async (req, res) => {
+  let txid;
   await sql.begin(async (tx) => {
-    txid = await generateTxId(tx) // CORRECT: same transaction
-    await tx`INSERT INTO todos ${tx(req.body)}`
-  })
-  res.json({ txid })
-})
+    txid = await generateTxId(tx); // CORRECT: same transaction
+    await tx`INSERT INTO todos ${tx(req.body)}`;
+  });
+  res.json({ txid });
+});
 ```
 
 `pg_current_xact_id()` must be queried inside the same SQL transaction as the mutation. Otherwise the txid doesn't match and `awaitTxId` stalls forever.
@@ -266,10 +263,10 @@ Wrong:
 ```ts
 queryCollectionOptions({
   queryFn: async () => {
-    const newItems = await fetch('/api/todos?since=' + lastSync)
-    return newItems.json() // only new items — everything else deleted
+    const newItems = await fetch("/api/todos?since=" + lastSync);
+    return newItems.json(); // only new items — everything else deleted
   },
-})
+});
 ```
 
 Correct:
@@ -277,13 +274,11 @@ Correct:
 ```ts
 queryCollectionOptions({
   queryFn: async (ctx) => {
-    const existing = ctx.queryClient.getQueryData(['todos']) || []
-    const newItems = await fetch('/api/todos?since=' + lastSync).then((r) =>
-      r.json(),
-    )
-    return [...existing, ...newItems]
+    const existing = ctx.queryClient.getQueryData(["todos"]) || [];
+    const newItems = await fetch("/api/todos?since=" + lastSync).then((r) => r.json());
+    return [...existing, ...newItems];
   },
-})
+});
 ```
 
 `queryFn` result replaces all collection data. For incremental fetches, merge with existing data.
@@ -297,10 +292,10 @@ Wrong:
 ```ts
 const schema = z.object({
   email: z.string().refine(async (val) => {
-    const exists = await checkEmail(val)
-    return !exists
+    const exists = await checkEmail(val);
+    return !exists;
   }),
-})
+});
 ```
 
 Correct:
@@ -308,7 +303,7 @@ Correct:
 ```ts
 const schema = z.object({
   email: z.string().email(),
-})
+});
 // Do async validation in the mutation handler instead
 ```
 
@@ -325,7 +320,7 @@ createCollection(
   queryCollectionOptions({
     getKey: (item) => item.metadata.id, // undefined if metadata missing
   }),
-)
+);
 ```
 
 Correct:
@@ -335,7 +330,7 @@ createCollection(
   queryCollectionOptions({
     getKey: (item) => item.id, // always present
   }),
-)
+);
 ```
 
 `getKey` must return a defined value for every item. Throws `UndefinedKeyError` otherwise.
@@ -349,7 +344,7 @@ Wrong:
 ```ts
 const schema = z.object({
   created_at: z.string().transform((val) => new Date(val)),
-})
+});
 // update() fails — draft.created_at is Date but schema only accepts string
 ```
 
@@ -359,8 +354,8 @@ Correct:
 const schema = z.object({
   created_at: z
     .union([z.string(), z.date()])
-    .transform((val) => (typeof val === 'string' ? new Date(val) : val)),
-})
+    .transform((val) => (typeof val === "string" ? new Date(val) : val)),
+});
 ```
 
 When a schema transforms types, `TInput` must accept both the pre-transform and post-transform types for `update()` to work with the draft proxy.
@@ -396,14 +391,14 @@ Source: docs/overview.md
 Wrong:
 
 ```ts
-todoCollection.utils.writeInsert(newItem)
+todoCollection.utils.writeInsert(newItem);
 // Next queryFn execution replaces all data, losing the direct write
 ```
 
 Correct:
 
 ```ts
-todoCollection.utils.writeInsert(newItem)
+todoCollection.utils.writeInsert(newItem);
 // Use staleTime to prevent immediate refetch
 // Or return { refetch: false } from mutation handlers
 ```

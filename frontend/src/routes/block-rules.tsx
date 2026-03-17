@@ -9,11 +9,7 @@ import { BlockRulesTable } from "../components/BlockRulesTable";
 import { BulkAddBlockRulesModal } from "../components/BulkAddBlockRulesModal";
 import { ActionButton } from "../components/ui/ActionButton";
 import { PageLayout } from "../components/ui/PageLayout";
-import {
-  itemBlockRuleDelete,
-  itemBlockRuleInsert,
-  itemBlockRules,
-} from "../lib/block-db";
+import { itemBlockRuleDelete, itemBlockRuleInsert, itemBlockRules } from "../lib/block-db";
 
 export type BlockRulesSortField = "ruleType" | "value" | "domain";
 
@@ -30,9 +26,7 @@ function BlockRulesComponent() {
   // Filter/Sort Signals
   const [typeFilter, setTypeFilter] = createSignal<string | null>(null);
   const [domainFilter, setDomainFilter] = createSignal<string | null>(null);
-  const [sortField, setSortField] = createSignal<BlockRulesSortField | null>(
-    null,
-  );
+  const [sortField, setSortField] = createSignal<BlockRulesSortField | null>(null);
   const [sortDirection, setSortDirection] = createSignal<"asc" | "desc">("asc");
 
   const rulesQuery = useLiveQuery((q) => {
@@ -45,17 +39,12 @@ function BlockRulesComponent() {
 
     const currentDomainFilter = domainFilter();
     if (currentDomainFilter) {
-      query = query.where(({ rule }) =>
-        eq(rule.domain || "", currentDomainFilter),
-      );
+      query = query.where(({ rule }) => eq(rule.domain || "", currentDomainFilter));
     }
 
     const currentSortField = sortField();
     if (currentSortField) {
-      query = query.orderBy(
-        ({ rule }) => rule[currentSortField] || "",
-        sortDirection(),
-      );
+      query = query.orderBy(({ rule }) => rule[currentSortField] || "", sortDirection());
     }
 
     return query.select(({ rule }) => ({ ...rule }));
@@ -63,9 +52,7 @@ function BlockRulesComponent() {
 
   // Separate query for unique domains to ensure the filter dropdown always shows all options
   const allRulesForDomains = useLiveQuery((q) =>
-    q
-      .from({ rule: itemBlockRules })
-      .select(({ rule }) => ({ domain: rule.domain })),
+    q.from({ rule: itemBlockRules }).select(({ rule }) => ({ domain: rule.domain })),
   );
 
   const memoizedUniqueDomains = createMemo(() => {
@@ -93,11 +80,7 @@ function BlockRulesComponent() {
   };
 
   const addMutation = createMutation(() => ({
-    mutationFn: async (newRule: {
-      ruleType: string;
-      value: string;
-      domain?: string;
-    }) => {
+    mutationFn: async (newRule: { ruleType: string; value: string; domain?: string }) => {
       await itemBlockRuleInsert([newRule]);
     },
     onSuccess: () => {
@@ -107,9 +90,7 @@ function BlockRulesComponent() {
   }));
 
   const bulkAddMutation = createMutation(() => ({
-    mutationFn: async (
-      rules: { ruleType: string; value: string; domain?: string }[],
-    ) => {
+    mutationFn: async (rules: { ruleType: string; value: string; domain?: string }[]) => {
       await itemBlockRuleInsert(rules);
     },
   }));
@@ -125,10 +106,7 @@ function BlockRulesComponent() {
     if (!value()) return;
 
     // Domain is required for user_domain and domain rule types
-    if (
-      (ruleType() === "user_domain" || ruleType() === "domain") &&
-      !domain()
-    ) {
+    if ((ruleType() === "user_domain" || ruleType() === "domain") && !domain()) {
       return;
     }
 
@@ -196,10 +174,7 @@ function BlockRulesComponent() {
             })}
           >
             <div class={stack({ gap: "1" })}>
-              <label
-                for="rule-type"
-                class={css({ fontSize: "sm", fontWeight: "medium" })}
-              >
+              <label for="rule-type" class={css({ fontSize: "sm", fontWeight: "medium" })}>
                 Type
               </label>
               <select
@@ -221,10 +196,7 @@ function BlockRulesComponent() {
               </select>
             </div>
             <div class={stack({ gap: "1", flex: "1", minWidth: "200px" })}>
-              <label
-                for="value"
-                class={css({ fontSize: "sm", fontWeight: "medium" })}
-              >
+              <label for="value" class={css({ fontSize: "sm", fontWeight: "medium" })}>
                 Value
               </label>
               <input
@@ -242,10 +214,7 @@ function BlockRulesComponent() {
               />
             </div>
             <div class={stack({ gap: "1", flex: "1", minWidth: "200px" })}>
-              <label
-                for="domain"
-                class={css({ fontSize: "sm", fontWeight: "medium" })}
-              >
+              <label for="domain" class={css({ fontSize: "sm", fontWeight: "medium" })}>
                 Domain (Optional)
               </label>
               <input

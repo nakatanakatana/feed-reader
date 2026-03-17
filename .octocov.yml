@@ -6,18 +6,18 @@ coverage:
     - octocov-backend/coverage.out
 codeToTestRatio:
   code:
-    - '**/*.go'
-    - '!**/*_test.go'
-    - '**/*.ts'
-    - '**/*.tsx'
-    - '!**/node_modules/*'
-    - '!**/*.tsx'
-    - '!**/*.test.ts'
-    - '!**/*.test.tsx'
+    - "**/*.go"
+    - "!**/*_test.go"
+    - "**/*.ts"
+    - "**/*.tsx"
+    - "!**/node_modules/*"
+    - "!**/*.tsx"
+    - "!**/*.test.ts"
+    - "!**/*.test.tsx"
   test:
-    - '**/*_test.go'
-    - '**/*.test.ts'
-    - '**/*.test.tsx'
+    - "**/*_test.go"
+    - "**/*.test.ts"
+    - "**/*.test.tsx"
 testExecutionTime:
   if: true
   steps:

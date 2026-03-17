@@ -1,20 +1,13 @@
 import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
-import {
-  createMemoryHistory,
-  createRouter,
-  RouterProvider,
-} from "@tanstack/solid-router";
+import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
 import { render } from "solid-js/web";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { routeTree } from "../routeTree.gen";
 import "../styles.css";
 import { HttpResponse, http } from "msw";
-import {
-  ItemBlockRuleSchema,
-  ListItemBlockRulesResponseSchema,
-} from "../gen/item/v1/item_pb";
+import { ItemBlockRuleSchema, ListItemBlockRulesResponseSchema } from "../gen/item/v1/item_pb";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
@@ -56,9 +49,7 @@ describe("Block Rules Final Integration", () => {
       // Mock other required requests to avoid noise
       http.all("*/item.v1.ItemService/ListItems", () => HttpResponse.json({})),
       http.all("*/tag.v1.TagService/ListTags", () => HttpResponse.json({})),
-      http.all("*/feed.v1.FeedService/ListFeedTags", () =>
-        HttpResponse.json({}),
-      ),
+      http.all("*/feed.v1.FeedService/ListFeedTags", () => HttpResponse.json({})),
     );
 
     const history = createMemoryHistory({ initialEntries: ["/block-rules"] });
@@ -83,9 +74,7 @@ describe("Block Rules Final Integration", () => {
     // 1. Change filter
     const typeSelect = page.getByLabelText("Filter:");
     await typeSelect.selectOptions("domain");
-    await expect
-      .element(page.getByText("alice").first())
-      .not.toBeInTheDocument();
+    await expect.element(page.getByText("alice").first()).not.toBeInTheDocument();
 
     // 2. Change sort
     const valueHeader = page.getByRole("button", { name: /Value/ }).first();

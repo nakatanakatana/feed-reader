@@ -14,10 +14,7 @@ export function PwaBadge(props: PwaBadgeProps) {
     // Browsers typically handle overflow, but we can be explicit here.
     const count = Math.min(props.unreadCount, 999);
 
-    if (
-      "setAppBadge" in navigator &&
-      typeof navigator.setAppBadge === "function"
-    ) {
+    if ("setAppBadge" in navigator && typeof navigator.setAppBadge === "function") {
       if (count > 0) {
         navigator.setAppBadge(count).catch((err: unknown) => {
           // Log only if it's not a common "user denied" or "not installed" error
@@ -25,10 +22,7 @@ export function PwaBadge(props: PwaBadgeProps) {
           console.warn("Failed to set app badge:", err);
         });
       } else {
-        if (
-          "clearAppBadge" in navigator &&
-          typeof navigator.clearAppBadge === "function"
-        ) {
+        if ("clearAppBadge" in navigator && typeof navigator.clearAppBadge === "function") {
           navigator.clearAppBadge().catch((err: unknown) => {
             console.warn("Failed to clear app badge:", err);
           });
@@ -38,10 +32,7 @@ export function PwaBadge(props: PwaBadgeProps) {
   });
 
   onCleanup(() => {
-    if (
-      "clearAppBadge" in navigator &&
-      typeof navigator.clearAppBadge === "function"
-    ) {
+    if ("clearAppBadge" in navigator && typeof navigator.clearAppBadge === "function") {
       navigator.clearAppBadge().catch((err: unknown) => {
         console.warn("Failed to clear app badge on cleanup:", err);
       });

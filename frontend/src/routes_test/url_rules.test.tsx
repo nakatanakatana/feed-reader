@@ -1,9 +1,5 @@
 import { create } from "@bufbuild/protobuf";
-import {
-  createMemoryHistory,
-  createRouter,
-  RouterProvider,
-} from "@tanstack/solid-router";
+import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
@@ -126,9 +122,7 @@ describe("URL Rules Page", () => {
     await addButton.click();
 
     await expect.element(page.getByText("new-domain.com")).toBeInTheDocument();
-    await expect
-      .element(page.getByRole("listitem").getByText("path"))
-      .toBeInTheDocument();
+    await expect.element(page.getByRole("listitem").getByText("path")).toBeInTheDocument();
   });
 
   it("should allow deleting a URL parsing rule", async () => {

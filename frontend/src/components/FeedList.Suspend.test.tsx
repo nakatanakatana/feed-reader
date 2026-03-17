@@ -1,9 +1,5 @@
 import { QueryClientProvider } from "@tanstack/solid-query";
-import {
-  createMemoryHistory,
-  createRouter,
-  RouterProvider,
-} from "@tanstack/solid-router";
+import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
 import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -14,13 +10,10 @@ import { routeTree } from "../routeTree.gen";
 
 // Mock Link from solid-router to avoid Context issues
 vi.mock("@tanstack/solid-router", async (importOriginal) => {
-  const actual =
-    await importOriginal<typeof import("@tanstack/solid-router")>();
+  const actual = await importOriginal<typeof import("@tanstack/solid-router")>();
   return {
     ...actual,
-    Link: (
-      props: { to: string; children: JSX.Element } & JSX.IntrinsicElements["a"],
-    ) => (
+    Link: (props: { to: string; children: JSX.Element } & JSX.IntrinsicElements["a"]) => (
       <a href={props.to} {...props}>
         {props.children}
       </a>
@@ -44,9 +37,7 @@ describe("FeedList Suspend", () => {
 
   const TestWrapper = (props: { children: JSX.Element }) => (
     <TransportProvider transport={transport}>
-      <QueryClientProvider client={queryClient}>
-        {props.children}
-      </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>{props.children}</QueryClientProvider>
     </TransportProvider>
   );
 
@@ -65,9 +56,7 @@ describe("FeedList Suspend", () => {
 
     await expect.element(page.getByText("Example Feed 1")).toBeInTheDocument();
 
-    const suspendSelect = page
-      .getByRole("combobox", { name: "Suspend fetching" })
-      .first();
+    const suspendSelect = page.getByRole("combobox", { name: "Suspend fetching" }).first();
     await expect.element(suspendSelect).toBeInTheDocument();
 
     // Select 1 Day (86400 seconds)
@@ -97,9 +86,7 @@ describe("FeedList Suspend", () => {
     // Select all visible feeds
     await checkboxes.nth(0).click();
 
-    await expect
-      .element(page.getByText("2 feeds selected"))
-      .toBeInTheDocument();
+    await expect.element(page.getByText("2 feeds selected")).toBeInTheDocument();
 
     const bulkSuspendSelect = page.getByRole("combobox", {
       name: "Suspend selected feeds",
@@ -110,8 +97,6 @@ describe("FeedList Suspend", () => {
     await bulkSuspendSelect.selectOptions("604800");
 
     // All feeds should show Next fetch
-    await expect
-      .poll(async () => (await page.getByText(/Next fetch:/).all()).length)
-      .toBe(2);
+    await expect.poll(async () => (await page.getByText(/Next fetch:/).all()).length).toBe(2);
   });
 });

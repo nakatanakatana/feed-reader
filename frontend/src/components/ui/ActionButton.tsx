@@ -28,9 +28,7 @@ export function ActionButton(props: ActionButtonProps) {
   const size = () => props.size ?? "md";
 
   const sizeStyle = () =>
-    size() === "sm"
-      ? { fontSize: "xs", py: "1.5", px: "3" }
-      : { fontSize: "sm", py: "2", px: "4" };
+    size() === "sm" ? { fontSize: "xs", py: "1.5", px: "3" } : { fontSize: "sm", py: "2", px: "4" };
 
   const variantStyle = () => {
     switch (variant()) {

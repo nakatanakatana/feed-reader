@@ -10,12 +10,12 @@ description: >
 type: framework
 library: db
 framework: solid
-library_version: '0.5.30'
+library_version: "0.5.30"
 requires:
   - db-core
 sources:
-  - 'TanStack/db:docs/framework/solid/overview.md'
-  - 'TanStack/db:packages/solid-db/src/useLiveQuery.ts'
+  - "TanStack/db:docs/framework/solid/overview.md"
+  - "TanStack/db:packages/solid-db/src/useLiveQuery.ts"
 ---
 
 This skill builds on db-core. Read it first for collection setup, query builder, and mutation patterns.
@@ -25,16 +25,16 @@ This skill builds on db-core. Read it first for collection setup, query builder,
 ## Setup
 
 ```tsx
-import { useLiveQuery, eq, not } from '@tanstack/solid-db'
-import { For, Show, Suspense } from 'solid-js'
+import { useLiveQuery, eq, not } from "@tanstack/solid-db";
+import { For, Show, Suspense } from "solid-js";
 
 function TodoList() {
   const todosQuery = useLiveQuery((q) =>
     q
       .from({ todo: todoCollection })
       .where(({ todo }) => not(todo.completed))
-      .orderBy(({ todo }) => todo.created_at, 'asc'),
-  )
+      .orderBy(({ todo }) => todo.created_at, "asc"),
+  );
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -42,7 +42,7 @@ function TodoList() {
         <For each={todosQuery()}>{(todo) => <li>{todo.text}</li>}</For>
       </ul>
     </Suspense>
-  )
+  );
 }
 ```
 
@@ -56,7 +56,7 @@ Returns an `Accessor<Array<T>>` with additional properties. Call it as a functio
 
 ```tsx
 // Query function — call result as function for data
-const query = useLiveQuery((q) => q.from({ todo: todoCollection }))
+const query = useLiveQuery((q) => q.from({ todo: todoCollection }));
 // query()        → Array<T> (data)
 // query.data     → DEPRECATED — use query() instead. Migrate any existing code.
 // query.status   → CollectionStatus
@@ -65,30 +65,26 @@ const query = useLiveQuery((q) => q.from({ todo: todoCollection }))
 // query.collection → Collection
 
 // With reactive signals — signals MUST be read INSIDE the query function
-const [minPriority, setMinPriority] = createSignal(5)
+const [minPriority, setMinPriority] = createSignal(5);
 const query = useLiveQuery((q) =>
-  q
-    .from({ todo: todoCollection })
-    .where(({ todo }) => gt(todo.priority, minPriority())),
-)
+  q.from({ todo: todoCollection }).where(({ todo }) => gt(todo.priority, minPriority())),
+);
 
 // Config object — pass as Accessor
 const query = useLiveQuery(() => ({
   query: (q) => q.from({ todo: todoCollection }),
   gcTime: 60000,
-}))
+}));
 
 // Pre-created collection — pass as Accessor
-const query = useLiveQuery(() => preloadedCollection)
+const query = useLiveQuery(() => preloadedCollection);
 
 // Conditional query
 const query = useLiveQuery((q) => {
-  const id = userId()
-  if (!id) return undefined
-  return q
-    .from({ todo: todoCollection })
-    .where(({ todo }) => eq(todo.userId, id))
-})
+  const id = userId();
+  if (!id) return undefined;
+  return q.from({ todo: todoCollection }).where(({ todo }) => eq(todo.userId, id));
+});
 ```
 
 ## Solid-Specific Patterns
@@ -97,19 +93,17 @@ const query = useLiveQuery((q) => {
 
 ```tsx
 // CORRECT — signal read tracked inside query function
-const [category, setCategory] = createSignal('work')
+const [category, setCategory] = createSignal("work");
 const query = useLiveQuery((q) =>
-  q
-    .from({ todo: todoCollection })
-    .where(({ todo }) => eq(todo.category, category())),
-)
+  q.from({ todo: todoCollection }).where(({ todo }) => eq(todo.category, category())),
+);
 // Query re-runs when category() changes
 
 // WRONG — signal read outside, not tracked
-const cat = category() // read here loses tracking
+const cat = category(); // read here loses tracking
 const query = useLiveQuery((q) =>
   q.from({ todo: todoCollection }).where(({ todo }) => eq(todo.category, cat)),
-)
+);
 ```
 
 ### Suspense integration
@@ -129,22 +123,20 @@ const query = useLiveQuery((q) =>
 Wrong:
 
 ```tsx
-const [userId] = createSignal(1)
-const id = userId()
+const [userId] = createSignal(1);
+const id = userId();
 const query = useLiveQuery((q) =>
   q.from({ todo: todoCollection }).where(({ todo }) => eq(todo.userId, id)),
-)
+);
 ```
 
 Correct:
 
 ```tsx
-const [userId] = createSignal(1)
+const [userId] = createSignal(1);
 const query = useLiveQuery((q) =>
-  q
-    .from({ todo: todoCollection })
-    .where(({ todo }) => eq(todo.userId, userId())),
-)
+  q.from({ todo: todoCollection }).where(({ todo }) => eq(todo.userId, userId())),
+);
 ```
 
 Solid's reactivity tracks signal reads inside reactive contexts. Reading outside the query function captures the value at creation time — changes won't trigger re-execution.

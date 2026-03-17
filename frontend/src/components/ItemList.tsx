@@ -42,9 +42,7 @@ interface ItemListProps {
 export function ItemList(props: ItemListProps) {
   const navigate = useNavigate();
   const location = useLocation();
-  const [selectedItemIds, setSelectedItemIds] = createSignal<Set<string>>(
-    new Set(),
-  );
+  const [selectedItemIds, setSelectedItemIds] = createSignal<Set<string>>(new Set());
   const [isBulkMarking, setIsBulkMarking] = createSignal(false);
   const [showMoreActions, setShowMoreActions] = createSignal(false);
   let moreActionsRef: HTMLDivElement | undefined;
@@ -68,10 +66,7 @@ export function ItemList(props: ItemListProps) {
   const itemQuery = useLiveQuery((q) => {
     let query = q
       .from({ item: items() })
-      // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
-      .leftJoin({ read: itemReadCollection() }, ({ item, read }: any) =>
-        eq(item.id, read.id),
-      )
+      .leftJoin({ read: itemReadCollection() }, ({ item, read }: any) => eq(item.id, read.id))
       .orderBy(({ item }) => item.publishedAt, {
         direction: "asc",
         nulls: "last",
@@ -79,15 +74,9 @@ export function ItemList(props: ItemListProps) {
       .orderBy(({ item }) => item.createdAt, "asc");
     if (props.tagId) {
       query = query
-        .innerJoin(
-          { ft: feedTag },
-          // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
-          ({ item, ft }: any) => eq(item.feedId, ft.feedId),
-        )
-        // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
+        .innerJoin({ ft: feedTag }, ({ item, ft }: any) => eq(item.feedId, ft.feedId))
         .where(({ ft }: any) => eq(ft.tagId, props.tagId));
     }
-    // biome-ignore lint/suspicious/noExplicitAny: TanStack DB select types
     return query.select(({ item, read }: any) => ({
       ...item,
       isRead: coalesce(read?.isRead, item.isRead),
@@ -95,9 +84,7 @@ export function ItemList(props: ItemListProps) {
   });
 
   const filteredItems = createMemo(() => {
-    return itemQuery().filter(
-      (item) => !itemStore.state.transientRemovedIds[item.id],
-    );
+    return itemQuery().filter((item) => !itemStore.state.transientRemovedIds[item.id]);
   });
 
   const handleClearReadItems = () => {
@@ -115,18 +102,14 @@ export function ItemList(props: ItemListProps) {
   };
 
   const totalUnread = useLiveQuery((q) =>
-    q
-      .from({ i: itemsUnreadQuery() })
-      .select(({ i }) => ({ total: count(i.id) })),
+    q.from({ i: itemsUnreadQuery() }).select(({ i }) => ({ total: count(i.id) })),
   );
 
   const tagsQuery = useLiveQuery((q) => {
     return q
       .from({ tag: tags })
       .leftJoin({ tf: feedTag }, ({ tag, tf }) => eq(tag.id, tf.tagId))
-      .leftJoin({ i: itemsUnreadQuery() }, ({ tf, i }) =>
-        eq(tf?.feedId, i.feedId),
-      )
+      .leftJoin({ i: itemsUnreadQuery() }, ({ tf, i }) => eq(tf?.feedId, i.feedId))
       .groupBy(({ tag }) => [tag.id, tag.name])
       .select(({ tag, i }) => ({
         id: tag.id,
@@ -147,8 +130,7 @@ export function ItemList(props: ItemListProps) {
   };
 
   const isAllSelected = () =>
-    filteredItems().length > 0 &&
-    selectedItemIds().size === filteredItems().length;
+    filteredItems().length > 0 && selectedItemIds().size === filteredItems().length;
 
   const handleToggleAll = (checked: boolean) => {
     if (checked) {
@@ -234,10 +216,7 @@ export function ItemList(props: ItemListProps) {
           Filter by Tag:
         </span>
         <HorizontalScrollList>
-          <TagChip
-            selected={props.tagId === undefined}
-            onClick={() => handleTagClick(undefined)}
-          >
+          <TagChip selected={props.tagId === undefined} onClick={() => handleTagClick(undefined)}>
             All
             <Show when={(totalUnread()[0]?.total ?? 0n) > 0n}>
               <Badge
@@ -250,10 +229,7 @@ export function ItemList(props: ItemListProps) {
           </TagChip>
           <For each={tagsQuery()}>
             {(tag) => (
-              <TagChip
-                selected={props.tagId === tag.id}
-                onClick={() => handleTagClick(tag.id)}
-              >
+              <TagChip selected={props.tagId === tag.id} onClick={() => handleTagClick(tag.id)}>
                 {tag.name}
                 <Show when={(tag.unreadCount ?? 0n) > 0n}>
                   <Badge
@@ -317,10 +293,7 @@ export function ItemList(props: ItemListProps) {
             >
               Clear Read Items
             </ActionButton>
-            <DateFilterSelector
-              value={itemStore.state.since}
-              onSelect={handleDateFilterSelect}
-            />
+            <DateFilterSelector value={itemStore.state.since} onSelect={handleDateFilterSelect} />
             <div class={flex({ gap: "2", alignItems: "center" })}>
               <input
                 id="show-read-toggle"
@@ -371,10 +344,7 @@ export function ItemList(props: ItemListProps) {
               alignItems: "center",
             })}
           >
-            <DateFilterSelector
-              value={itemStore.state.since}
-              onSelect={handleDateFilterSelect}
-            />
+            <DateFilterSelector value={itemStore.state.since} onSelect={handleDateFilterSelect} />
             <div class={css({ position: "relative" })} ref={moreActionsRef}>
               <ActionButton
                 size="sm"
@@ -535,18 +505,14 @@ export function ItemList(props: ItemListProps) {
               item={item}
               onClick={() => handleItemClick(item.id)}
               selected={selectedItemIds().has(item.id)}
-              onToggleSelection={(selected) =>
-                handleToggleItem(item.id, selected)
-              }
+              onToggleSelection={(selected) => handleToggleItem(item.id, selected)}
             />
           )}
         </For>
       </div>
 
       <Show when={itemQuery.isLoading}>
-        <div
-          class={css({ textAlign: "center", padding: "8", color: "gray.500" })}
-        >
+        <div class={css({ textAlign: "center", padding: "8", color: "gray.500" })}>
           Loading items...
         </div>
       </Show>

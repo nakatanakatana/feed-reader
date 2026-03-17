@@ -15,11 +15,10 @@ A self-hosted, full-stack RSS/Atom feed reader application.
 docker run ghcr.io/nakatanakatana/feed-reader:latest
 ```
 
-or 
+or
 
 ```sh
 mkdir data
 chmod 777 data
 docker run -v $PWD/data:/data -e "DB_PATH=/data/feed-reader.db" ghcr.io/nakatanakatana/feed-reader:latest
 ```
-

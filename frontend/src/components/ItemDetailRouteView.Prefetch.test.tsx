@@ -1,20 +1,12 @@
 import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
-import {
-  createMemoryHistory,
-  createRouter,
-  RouterProvider,
-} from "@tanstack/solid-router";
+import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
 import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
-import {
-  GetItemResponseSchema,
-  ItemSchema,
-  ListItemsResponseSchema,
-} from "../gen/item/v1/item_pb";
+import { GetItemResponseSchema, ItemSchema, ListItemsResponseSchema } from "../gen/item/v1/item_pb";
 import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
 import { dateToTimestamp } from "../lib/item-utils";
 import { queryClient, transport } from "../lib/query";
@@ -68,18 +60,12 @@ describe("ItemDetailRouteView Prefetching", () => {
       }),
       http.all("*/tag.v1.TagService/ListTags", () => {
         return HttpResponse.json(
-          toJson(
-            ListTagsResponseSchema,
-            create(ListTagsResponseSchema, { tags: [] }),
-          ),
+          toJson(ListTagsResponseSchema, create(ListTagsResponseSchema, { tags: [] })),
         );
       }),
       http.all("*/feed.v1.FeedService/ListFeedTags", () => {
         return HttpResponse.json(
-          toJson(
-            ListFeedTagsResponseSchema,
-            create(ListFeedTagsResponseSchema, { feedTags: [] }),
-          ),
+          toJson(ListFeedTagsResponseSchema, create(ListFeedTagsResponseSchema, { feedTags: [] })),
         );
       }),
     );
@@ -108,14 +94,10 @@ describe("ItemDetailRouteView Prefetching", () => {
     );
 
     // Wait for content
-    await expect
-      .element(page.getByRole("heading", { name: "Item item-005" }))
-      .toBeInTheDocument();
+    await expect.element(page.getByRole("heading", { name: "Item item-005" })).toBeInTheDocument();
 
     await vi.waitFor(() => {
-      const prefetchedIds = prefetchSpy.mock.calls.map(
-        (call) => call[0].queryKey?.[1],
-      );
+      const prefetchedIds = prefetchSpy.mock.calls.map((call) => call[0].queryKey?.[1]);
       // item-005 is index 5. Next 5: item-006, item-007, item-008, item-009, item-010
       expect(prefetchedIds).toContain("item-006");
       expect(prefetchedIds).toContain("item-007");
@@ -124,9 +106,7 @@ describe("ItemDetailRouteView Prefetching", () => {
       expect(prefetchedIds).toContain("item-010");
     });
 
-    const prefetchedIds = prefetchSpy.mock.calls.map(
-      (call) => call[0].queryKey?.[1],
-    );
+    const prefetchedIds = prefetchSpy.mock.calls.map((call) => call[0].queryKey?.[1]);
     expect(prefetchedIds).not.toContain("item-011");
     expect(prefetchedIds).not.toContain("item-004");
   });

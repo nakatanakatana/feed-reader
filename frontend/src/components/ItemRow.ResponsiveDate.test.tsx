@@ -29,9 +29,7 @@ describe("ItemRow Responsive Date", () => {
 
   const Wrapper = (props: { children: JSX.Element }) => (
     <TransportProvider transport={transport}>
-      <QueryClientProvider client={queryClient}>
-        {props.children}
-      </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>{props.children}</QueryClientProvider>
     </TransportProvider>
   );
 
@@ -75,20 +73,12 @@ describe("ItemRow Responsive Date", () => {
     );
 
     // Labels should NOT be visible
-    await expect
-      .element(page.getByText("Published:", { exact: false }).first())
-      .not.toBeVisible();
-    await expect
-      .element(page.getByText("Received:", { exact: false }).first())
-      .not.toBeVisible();
+    await expect.element(page.getByText("Published:", { exact: false }).first()).not.toBeVisible();
+    await expect.element(page.getByText("Received:", { exact: false }).first()).not.toBeVisible();
 
     // Icons with titles should be visible
-    await expect
-      .element(page.getByTitle("Published", { exact: true }))
-      .toBeVisible();
-    await expect
-      .element(page.getByTitle("Received", { exact: true }))
-      .toBeVisible();
+    await expect.element(page.getByTitle("Published", { exact: true })).toBeVisible();
+    await expect.element(page.getByTitle("Received", { exact: true })).toBeVisible();
 
     dispose();
     document.body.innerHTML = "";
@@ -105,19 +95,11 @@ describe("ItemRow Responsive Date", () => {
       document.body,
     );
 
-    await expect
-      .element(page.getByText("Published:", { exact: false }).first())
-      .toBeVisible();
-    await expect
-      .element(page.getByText("Received:", { exact: false }).first())
-      .toBeVisible();
+    await expect.element(page.getByText("Published:", { exact: false }).first()).toBeVisible();
+    await expect.element(page.getByText("Received:", { exact: false }).first()).toBeVisible();
 
     // Icons should NOT be visible
-    await expect
-      .element(page.getByTitle("Published", { exact: true }))
-      .not.toBeVisible();
-    await expect
-      .element(page.getByTitle("Received", { exact: true }))
-      .not.toBeVisible();
+    await expect.element(page.getByTitle("Published", { exact: true })).not.toBeVisible();
+    await expect.element(page.getByTitle("Received", { exact: true })).not.toBeVisible();
   });
 });

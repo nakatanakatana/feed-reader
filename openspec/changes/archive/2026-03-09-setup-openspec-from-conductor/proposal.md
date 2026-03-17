@@ -11,6 +11,7 @@ Initialize the OpenSpec environment by capturing the current product goals, tech
 ## Capabilities
 
 ### New Capabilities
+
 - `feed-management`: Core functionality for adding, organizing, and scheduling RSS/Atom feed fetches.
 - `article-management`: Reading interface and state management for fetched articles, including read/unread tracking and filtering.
 - `opml-integration`: High-performance bulk import and export of feed subscriptions using the OPML standard.
@@ -18,6 +19,7 @@ Initialize the OpenSpec environment by capturing the current product goals, tech
 - `observability`: System-wide tracing and performance monitoring using OpenTelemetry.
 
 ### Modified Capabilities
+
 - None (Initial setup)
 
 ## Impact

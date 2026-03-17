@@ -9,9 +9,9 @@ pnpm add @tanstack/powersync-db-collection @powersync/web @journeyapps/wa-sqlite
 ## Required Config
 
 ```typescript
-import { createCollection } from '@tanstack/react-db'
-import { powerSyncCollectionOptions } from '@tanstack/powersync-db-collection'
-import { Schema, Table, column, PowerSyncDatabase } from '@powersync/web'
+import { createCollection } from "@tanstack/react-db";
+import { powerSyncCollectionOptions } from "@tanstack/powersync-db-collection";
+import { Schema, Table, column, PowerSyncDatabase } from "@powersync/web";
 
 const APP_SCHEMA = new Schema({
   documents: new Table({
@@ -20,19 +20,19 @@ const APP_SCHEMA = new Schema({
     created_at: column.text,
     archived: column.integer,
   }),
-})
+});
 
 const db = new PowerSyncDatabase({
-  database: { dbFilename: 'app.sqlite' },
+  database: { dbFilename: "app.sqlite" },
   schema: APP_SCHEMA,
-})
+});
 
 const documentsCollection = createCollection(
   powerSyncCollectionOptions({
     database: db,
     table: APP_SCHEMA.props.documents,
   }),
-)
+);
 ```
 
 - `database` -- `PowerSyncDatabase` instance
@@ -68,7 +68,7 @@ const collection = createCollection(
     database: db,
     table: APP_SCHEMA.props.documents,
   }),
-)
+);
 // Input/Output: { id: string, name: string | null, created_at: string | null, ... }
 ```
 
@@ -81,7 +81,7 @@ const schema = z.object({
   author: z.string(),
   created_at: z.string(),
   archived: z.number(),
-})
+});
 const collection = createCollection(
   powerSyncCollectionOptions({
     database: db,
@@ -91,7 +91,7 @@ const collection = createCollection(
       /* fatal */
     },
   }),
-)
+);
 ```
 
 ### 3. Transform SQLite to Rich Output Types
@@ -108,7 +108,7 @@ const schema = z.object({
     .number()
     .nullable()
     .transform((val) => (val != null ? val > 0 : null)),
-})
+});
 const collection = createCollection(
   powerSyncCollectionOptions({
     database: db,
@@ -119,7 +119,7 @@ const collection = createCollection(
     },
     serializer: { created_at: (value) => (value ? value.toISOString() : null) },
   }),
-)
+);
 // Input:  { created_at: string | null, ... }
 // Output: { created_at: Date | null, archived: boolean | null, ... }
 ```
@@ -132,13 +132,13 @@ const schema = z.object({
   name: z.string(),
   created_at: z.date(),
   archived: z.boolean(),
-})
+});
 const deserializationSchema = z.object({
   id: z.string(),
   name: z.string(),
   created_at: z.string().transform((val) => new Date(val)),
   archived: z.number().transform((val) => val > 0),
-})
+});
 const collection = createCollection(
   powerSyncCollectionOptions({
     database: db,
@@ -149,7 +149,7 @@ const collection = createCollection(
       /* fatal */
     },
   }),
-)
+);
 // Input:  { created_at: Date, archived: boolean }
 // Output: { created_at: Date, archived: boolean }
 ```
@@ -161,12 +161,12 @@ Enable on the table, then pass metadata with operations:
 ```typescript
 const APP_SCHEMA = new Schema({
   documents: new Table({ name: column.text }, { trackMetadata: true }),
-})
+});
 
 await collection.insert(
-  { id: crypto.randomUUID(), name: 'Report' },
-  { metadata: { source: 'web-app', userId: 'user-123' } },
-).isPersisted.promise
+  { id: crypto.randomUUID(), name: "Report" },
+  { metadata: { source: "web-app", userId: "user-123" } },
+).isPersisted.promise;
 ```
 
 Metadata appears as `entry.metadata` (stringified JSON) in PowerSync `CrudEntry`.
@@ -174,35 +174,33 @@ Metadata appears as `entry.metadata` (stringified JSON) in PowerSync `CrudEntry`
 ## Advanced Transactions
 
 ```typescript
-import { createTransaction } from '@tanstack/react-db'
-import { PowerSyncTransactor } from '@tanstack/powersync-db-collection'
+import { createTransaction } from "@tanstack/react-db";
+import { PowerSyncTransactor } from "@tanstack/powersync-db-collection";
 
 const tx = createTransaction({
   autoCommit: false,
   mutationFn: async ({ transaction }) => {
-    await new PowerSyncTransactor({ database: db }).applyTransaction(
-      transaction,
-    )
+    await new PowerSyncTransactor({ database: db }).applyTransaction(transaction);
   },
-})
+});
 tx.mutate(() => {
   documentsCollection.insert({
     id: crypto.randomUUID(),
-    name: 'Doc 1',
+    name: "Doc 1",
     created_at: new Date().toISOString(),
-  })
-})
-await tx.commit()
-await tx.isPersisted.promise
+  });
+});
+await tx.commit();
+await tx.isPersisted.promise;
 ```
 
 ## Complete Example
 
 ```typescript
-import { Schema, Table, column, PowerSyncDatabase } from '@powersync/web'
-import { createCollection } from '@tanstack/react-db'
-import { powerSyncCollectionOptions } from '@tanstack/powersync-db-collection'
-import { z } from 'zod'
+import { Schema, Table, column, PowerSyncDatabase } from "@powersync/web";
+import { createCollection } from "@tanstack/react-db";
+import { powerSyncCollectionOptions } from "@tanstack/powersync-db-collection";
+import { z } from "zod";
 
 const APP_SCHEMA = new Schema({
   tasks: new Table({
@@ -210,11 +208,11 @@ const APP_SCHEMA = new Schema({
     due_date: column.text,
     completed: column.integer,
   }),
-})
+});
 const db = new PowerSyncDatabase({
-  database: { dbFilename: 'app.sqlite' },
+  database: { dbFilename: "app.sqlite" },
   schema: APP_SCHEMA,
-})
+});
 
 const taskSchema = z.object({
   id: z.string(),
@@ -227,15 +225,15 @@ const taskSchema = z.object({
     .number()
     .nullable()
     .transform((val) => (val != null ? val > 0 : null)),
-})
+});
 
 const tasksCollection = createCollection(
   powerSyncCollectionOptions({
     database: db,
     table: APP_SCHEMA.props.tasks,
     schema: taskSchema,
-    onDeserializationError: (error) => console.error('Fatal:', error),
+    onDeserializationError: (error) => console.error("Fatal:", error),
     syncBatchSize: 500,
   }),
-)
+);
 ```

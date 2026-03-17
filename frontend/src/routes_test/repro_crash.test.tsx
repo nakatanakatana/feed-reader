@@ -1,10 +1,6 @@
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { QueryClientProvider } from "@tanstack/solid-query";
-import {
-  createMemoryHistory,
-  createRouter,
-  RouterProvider,
-} from "@tanstack/solid-router";
+import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it } from "vitest";
 import { page } from "vitest/browser";
@@ -43,16 +39,12 @@ describe("Item Detail Crash Reproduction", () => {
     );
 
     // Wait for the modal content to appear
-    await expect
-      .element(page.getByRole("heading", { name: "Item 1" }))
-      .toBeInTheDocument();
+    await expect.element(page.getByRole("heading", { name: "Item 1" })).toBeInTheDocument();
 
     // Now navigate away to home
     await router.navigate({ to: "/" });
 
     // Expect no crash and we should see navigation
-    await expect
-      .element(page.getByRole("link", { name: "Home" }))
-      .toBeInTheDocument();
+    await expect.element(page.getByRole("link", { name: "Home" })).toBeInTheDocument();
   });
 });

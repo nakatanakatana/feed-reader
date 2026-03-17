@@ -7,9 +7,7 @@ export const dateToTimestamp = (d: Date): Timestamp => {
   } as Timestamp;
 };
 
-export const toDate = (
-  ts: Date | Timestamp | string | undefined,
-): Date | undefined => {
+export const toDate = (ts: Date | Timestamp | string | undefined): Date | undefined => {
   if (!ts) return undefined;
   if (ts instanceof Date) return ts;
   if (typeof ts === "string") {

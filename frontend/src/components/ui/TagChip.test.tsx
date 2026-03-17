@@ -12,10 +12,7 @@ describe("TagChip styles", () => {
   });
 
   it("selected TagChip has solid blue background", async () => {
-    dispose = render(
-      () => <TagChip selected={true}>Selected</TagChip>,
-      document.body,
-    );
+    dispose = render(() => <TagChip selected={true}>Selected</TagChip>, document.body);
     const chip = page.getByRole("button", { name: "Selected" });
     await expect.element(chip).toBeInTheDocument();
 
@@ -28,10 +25,7 @@ describe("TagChip styles", () => {
   });
 
   it("unselected TagChip has outline style", async () => {
-    dispose = render(
-      () => <TagChip selected={false}>Unselected</TagChip>,
-      document.body,
-    );
+    dispose = render(() => <TagChip selected={false}>Unselected</TagChip>, document.body);
     const chip = page.getByRole("button", { name: "Unselected" });
     await expect.element(chip).toBeInTheDocument();
 

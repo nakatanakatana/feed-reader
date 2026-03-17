@@ -50,13 +50,7 @@ describe("BulkActionBar", () => {
   it("renders Export OPML button when onExport is provided", async () => {
     const onExport = vi.fn();
     dispose = render(
-      () => (
-        <BulkActionBar
-          selectedCount={1}
-          onClear={() => {}}
-          onExport={onExport}
-        />
-      ),
+      () => <BulkActionBar selectedCount={1} onClear={() => {}} onExport={onExport} />,
       document.body,
     );
 

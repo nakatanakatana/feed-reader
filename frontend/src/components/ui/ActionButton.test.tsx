@@ -12,10 +12,7 @@ describe("ActionButton styles", () => {
   });
 
   it("primary variant has solid blue background", async () => {
-    dispose = render(
-      () => <ActionButton variant="primary">Primary</ActionButton>,
-      document.body,
-    );
+    dispose = render(() => <ActionButton variant="primary">Primary</ActionButton>, document.body);
     const button = page.getByRole("button", { name: "Primary" });
     await expect.element(button).toBeInTheDocument();
 

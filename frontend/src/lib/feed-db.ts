@@ -69,10 +69,7 @@ export const refreshFeeds = async (feedIds: string[]) => {
   }
 };
 
-export const suspendFeeds = async (
-  feedIds: string[],
-  suspendSeconds: number,
-) => {
+export const suspendFeeds = async (feedIds: string[], suspendSeconds: number) => {
   await feedClient.suspendFeeds({
     ids: feedIds,
     suspendSeconds: BigInt(suspendSeconds),

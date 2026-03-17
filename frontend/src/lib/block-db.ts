@@ -50,11 +50,7 @@ export const urlParsingRules = createCollection(
   }),
 );
 
-export const urlParsingRuleInsert = async (
-  domain: string,
-  ruleType: string,
-  pattern: string,
-) => {
+export const urlParsingRuleInsert = async (domain: string, ruleType: string, pattern: string) => {
   await itemClient.addURLParsingRule({ domain, ruleType, pattern });
   await queryClient.invalidateQueries({ queryKey: ["url-rules"] });
 };
