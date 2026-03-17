@@ -1,10 +1,6 @@
-import {
-  type Collection,
-  createLiveQueryCollection,
-  useLiveQuery,
-} from "@tanstack/solid-db";
+import { type CollectionStatus, useLiveQuery } from "@tanstack/solid-db";
 import { useMutation } from "@tanstack/solid-query";
-import { createEffect, createMemo, createSignal, For, Show } from "solid-js";
+import { type Accessor, createEffect, createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import {
@@ -53,19 +49,17 @@ export function FeedList() {
     }
   });
 
-  const feedListCollection = createMemo(
-    () =>
-      createLiveQueryCollection((q) => {
-        return buildFeedListQuery(q, {
-          feedTagCollection: feedTag,
-          tagId: feedStore.state.selectedTagId,
-          sortBy: feedStore.state.sortBy,
-        });
-        // biome-ignore lint/suspicious/noExplicitAny: TanStack DB collection types are too strict for shared builders
-      }) as Collection<Feed, string, Record<string, any>>,
-  );
-
-  const feedListQuery = useLiveQuery(() => feedListCollection());
+  const feedListQuery = useLiveQuery((q) => {
+    return buildFeedListQuery(q, {
+      feedTagCollection: feedTag,
+      tagId: feedStore.state.selectedTagId,
+      sortBy: feedStore.state.sortBy,
+    });
+  }) as unknown as Accessor<Feed[]> & {
+    isLoading: boolean;
+    isReady: boolean;
+    status: CollectionStatus;
+  };
 
   // Ensure selectedTagId is valid once tags load
   createEffect(() => {
