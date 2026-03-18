@@ -4,8 +4,9 @@ import { QueryClientProvider } from "@tanstack/solid-query";
 import { HttpResponse, http } from "msw";
 import { Show } from "solid-js";
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { page, userEvent } from "vitest/browser";
+import { afterEach, describe, expect, it, vi } from "vite-plus/test";
+import { page, userEvent } from "vite-plus/test/browser";
+
 import {
   ItemSchema,
   ListItemsResponseSchema,
@@ -52,9 +53,7 @@ describe("ItemRow", () => {
     expect(page.getByText("Test Article Title")).toBeInTheDocument();
     expect(page.getByText(/Received:/).first()).toBeInTheDocument();
     expect(
-      page.getByText(
-        "This is a test description snippet that should be displayed.",
-      ),
+      page.getByText("This is a test description snippet that should be displayed."),
     ).toBeInTheDocument();
 
     expect(document.body.innerHTML).toMatchSnapshot();
@@ -128,9 +127,7 @@ describe("ItemRow", () => {
   });
 
   it("handles middle-click by opening URL and marking as read", async () => {
-    const windowOpenSpy = vi
-      .spyOn(window, "open")
-      .mockImplementation(() => null);
+    const windowOpenSpy = vi.spyOn(window, "open").mockImplementation(() => null);
     const onClick = vi.fn();
     const mockItemWithUrl = {
       ...mockItem,
@@ -156,24 +153,18 @@ describe("ItemRow", () => {
           ),
         );
       }),
-      http.post(
-        "*/item.v1.ItemService/UpdateItemStatus",
-        async ({ request }) => {
-          const body = (await request.json()) as {
-            ids: string[];
-            isRead: boolean;
-          };
-          if (body.ids.includes("1") && body.isRead === true) {
-            updateCalled = true;
-          }
-          return HttpResponse.json(
-            toJson(
-              UpdateItemStatusResponseSchema,
-              create(UpdateItemStatusResponseSchema, {}),
-            ),
-          );
-        },
-      ),
+      http.post("*/item.v1.ItemService/UpdateItemStatus", async ({ request }) => {
+        const body = (await request.json()) as {
+          ids: string[];
+          isRead: boolean;
+        };
+        if (body.ids.includes("1") && body.isRead === true) {
+          updateCalled = true;
+        }
+        return HttpResponse.json(
+          toJson(UpdateItemStatusResponseSchema, create(UpdateItemStatusResponseSchema, {})),
+        );
+      }),
     );
 
     const TestObserved = () => {

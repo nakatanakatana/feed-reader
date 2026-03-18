@@ -1,6 +1,7 @@
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { page } from "vitest/browser";
+import { afterEach, describe, expect, it, vi } from "vite-plus/test";
+import { page } from "vite-plus/test/browser";
+
 import { BulkAddBlockRulesModal } from "./BulkAddBlockRulesModal";
 
 describe("BulkAddBlockRulesModal", () => {
@@ -27,12 +28,8 @@ describe("BulkAddBlockRulesModal", () => {
       document.body,
     );
 
-    await expect
-      .element(page.getByText("Bulk Add Block Rules"))
-      .toBeInTheDocument();
-    await expect
-      .element(page.getByPlaceholder(/user,john_doe/))
-      .toBeInTheDocument();
+    await expect.element(page.getByText("Bulk Add Block Rules")).toBeInTheDocument();
+    await expect.element(page.getByPlaceholder(/user,john_doe/)).toBeInTheDocument();
   });
 
   it("parses CSV text and shows preview", async () => {
@@ -69,9 +66,7 @@ user_domain,jane_doe,example.com`);
 
     // Check validation status
     await expect.element(page.getByText("✓ Valid").first()).toBeInTheDocument();
-    await expect
-      .element(page.getByText(/Invalid rule type/).first())
-      .toBeInTheDocument();
+    await expect.element(page.getByText(/Invalid rule type/).first()).toBeInTheDocument();
   });
 
   it("calls onRegister with valid rules only", async () => {
@@ -96,17 +91,11 @@ invalid,type`);
     });
     await registerButton.click();
 
-    expect(onRegister).toHaveBeenCalledWith([
-      { ruleType: "user", value: "john_doe" },
-    ]);
+    expect(onRegister).toHaveBeenCalledWith([{ ruleType: "user", value: "john_doe" }]);
 
     // Check success message
-    await expect
-      .element(page.getByText("Successfully registered rule!"))
-      .toBeInTheDocument();
-    await expect
-      .element(page.getByText("1 rule was registered."))
-      .toBeInTheDocument();
+    await expect.element(page.getByText("Successfully registered rule!")).toBeInTheDocument();
+    await expect.element(page.getByText("1 rule was registered.")).toBeInTheDocument();
 
     // Check Done button
     const doneButton = page.getByRole("button", { name: "Done" });
@@ -181,16 +170,10 @@ invalid,type`);
       document.body,
     );
 
-    const input = document.querySelector(
-      'input[type="file"]',
-    ) as HTMLInputElement;
-    const file = new File(
-      ["user,file_user\nkeyword,file_keyword"],
-      "rules.csv",
-      {
-        type: "text/csv",
-      },
-    );
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const file = new File(["user,file_user\nkeyword,file_keyword"], "rules.csv", {
+      type: "text/csv",
+    });
 
     Object.defineProperty(input, "files", {
       value: [file],

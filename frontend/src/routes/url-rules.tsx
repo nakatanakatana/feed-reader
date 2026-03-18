@@ -2,15 +2,12 @@ import { useLiveQuery } from "@tanstack/solid-db";
 import { createMutation } from "@tanstack/solid-query";
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal, For, Show } from "solid-js";
+
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { ActionButton } from "../components/ui/ActionButton";
 import { PageLayout } from "../components/ui/PageLayout";
-import {
-  urlParsingRuleDelete,
-  urlParsingRuleInsert,
-  urlParsingRules,
-} from "../lib/block-db";
+import { urlParsingRuleDelete, urlParsingRuleInsert, urlParsingRules } from "../lib/block-db";
 
 export const Route = createFileRoute("/url-rules")({
   component: URLRulesComponent,
@@ -26,16 +23,8 @@ function URLRulesComponent() {
   );
 
   const addMutation = createMutation(() => ({
-    mutationFn: async (newRule: {
-      domain: string;
-      ruleType: string;
-      pattern: string;
-    }) => {
-      await urlParsingRuleInsert(
-        newRule.domain,
-        newRule.ruleType,
-        newRule.pattern,
-      );
+    mutationFn: async (newRule: { domain: string; ruleType: string; pattern: string }) => {
+      await urlParsingRuleInsert(newRule.domain, newRule.ruleType, newRule.pattern);
     },
     onSuccess: () => {
       setDomain("");
@@ -97,10 +86,7 @@ function URLRulesComponent() {
             })}
           >
             <div class={stack({ gap: "1", flex: "1", minWidth: "200px" })}>
-              <label
-                for="domain"
-                class={css({ fontSize: "sm", fontWeight: "medium" })}
-              >
+              <label for="domain" class={css({ fontSize: "sm", fontWeight: "medium" })}>
                 Domain
               </label>
               <input
@@ -118,10 +104,7 @@ function URLRulesComponent() {
               />
             </div>
             <div class={stack({ gap: "1" })}>
-              <label
-                for="rule-type"
-                class={css({ fontSize: "sm", fontWeight: "medium" })}
-              >
+              <label for="rule-type" class={css({ fontSize: "sm", fontWeight: "medium" })}>
                 Type
               </label>
               <select
@@ -141,10 +124,7 @@ function URLRulesComponent() {
               </select>
             </div>
             <div class={stack({ gap: "1", flex: "1", minWidth: "200px" })}>
-              <label
-                for="pattern"
-                class={css({ fontSize: "sm", fontWeight: "medium" })}
-              >
+              <label for="pattern" class={css({ fontSize: "sm", fontWeight: "medium" })}>
                 Pattern
               </label>
               <input
@@ -203,9 +183,7 @@ function URLRulesComponent() {
                 >
                   <div class={stack({ gap: "1" })}>
                     <div class={flex({ gap: "2", alignItems: "center" })}>
-                      <span class={css({ fontWeight: "bold" })}>
-                        {rule.domain}
-                      </span>
+                      <span class={css({ fontWeight: "bold" })}>{rule.domain}</span>
                       <span
                         class={css({
                           fontSize: "xs",

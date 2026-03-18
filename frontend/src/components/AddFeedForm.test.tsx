@@ -2,8 +2,9 @@ import { QueryClientProvider } from "@tanstack/solid-query";
 import { HttpResponse, http } from "msw";
 import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { page } from "vitest/browser";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
+import { page } from "vite-plus/test/browser";
+
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
@@ -74,9 +75,7 @@ describe("AddFeedForm", () => {
     const button = page.getByRole("button", { name: "Add Feed" });
     await button.click();
 
-    await expect
-      .element(page.getByText(/Error: .*Invalid feed URL.*/))
-      .toBeInTheDocument();
+    await expect.element(page.getByText(/Error: .*Invalid feed URL.*/)).toBeInTheDocument();
   });
 
   it("renders headerActions", async () => {
@@ -129,10 +128,7 @@ describe("AddFeedForm", () => {
       () => (
         <TestWrapper
           headerActions={
-            <ActionButton
-              icon={<span data-testid="icon">ICON</span>}
-              hideTextOnMobile
-            >
+            <ActionButton icon={<span data-testid="icon">ICON</span>} hideTextOnMobile>
               Import
             </ActionButton>
           }

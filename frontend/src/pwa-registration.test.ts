@@ -1,4 +1,5 @@
-import { expect, test, vi } from "vitest";
+import { expect, test, vi } from "vite-plus/test";
+
 import { initPWA } from "./pwa";
 
 // Mock virtual:pwa-register

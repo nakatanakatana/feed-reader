@@ -7,12 +7,14 @@ import {
 } from "@tanstack/solid-router";
 import { http } from "msw";
 import { render } from "solid-js/web";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
+
 import { ListItemsResponseSchema } from "../gen/item/v1/item_pb";
 import { dateToTimestamp } from "../lib/item-utils";
 import { worker } from "../mocks/browser";
 import { safeJson } from "../mocks/connect";
 import { Route as RootRoute } from "../routes/__root";
+
 import "../styles.css";
 
 // Unmock solid-router to test component integration
@@ -82,9 +84,7 @@ describe("Root Favicon Integration", () => {
     // 4. Wait for favicon to update (color Blue for count 5)
     await vi.waitFor(
       () => {
-        const link = document.querySelector(
-          'link[rel="icon"]',
-        ) as HTMLLinkElement;
+        const link = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
         const base64 = link.href.split(",")[1];
         const svg = atob(base64);
         // Blue color is #3b82f6
@@ -116,9 +116,7 @@ describe("Root Favicon Integration", () => {
 
     await vi.waitFor(
       () => {
-        const link = document.querySelector(
-          'link[rel="icon"]',
-        ) as HTMLLinkElement;
+        const link = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
         const base64 = link.href.split(",")[1];
         const svg = atob(base64);
         // Orange color is #f97316
@@ -150,9 +148,7 @@ describe("Root Favicon Integration", () => {
 
     await vi.waitFor(
       () => {
-        const link = document.querySelector(
-          'link[rel="icon"]',
-        ) as HTMLLinkElement;
+        const link = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
         const base64 = link.href.split(",")[1];
         const svg = atob(base64);
         // Red color is #ef4444
@@ -177,9 +173,7 @@ describe("Root Favicon Integration", () => {
 
     await vi.waitFor(
       () => {
-        const link = document.querySelector(
-          'link[rel="icon"]',
-        ) as HTMLLinkElement;
+        const link = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
         const base64 = link.href.split(",")[1];
         const svg = atob(base64);
         // Blue color is #3b82f6

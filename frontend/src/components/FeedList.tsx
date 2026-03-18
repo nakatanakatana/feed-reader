@@ -1,6 +1,7 @@
 import { type CollectionStatus, useLiveQuery } from "@tanstack/solid-db";
 import { useMutation } from "@tanstack/solid-query";
 import { type Accessor, createEffect, createSignal, For, Show } from "solid-js";
+
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import {
@@ -83,9 +84,7 @@ export function FeedList() {
   const isIndeterminate = () => {
     const visibleFeeds = feedListQuery();
     if (visibleFeeds.length === 0) return false;
-    const selectedCount = visibleFeeds.filter((f) =>
-      selectedFeedIds().includes(f.id),
-    ).length;
+    const selectedCount = visibleFeeds.filter((f) => selectedFeedIds().includes(f.id)).length;
     return selectedCount > 0 && selectedCount < visibleFeeds.length;
   };
 
@@ -94,9 +93,7 @@ export function FeedList() {
     if (allVisibleSelected()) {
       // Deselect all visible
       const visibleIds = visibleFeeds.map((f) => f.id);
-      setSelectedFeedIds(
-        selectedFeedIds().filter((id) => !visibleIds.includes(id)),
-      );
+      setSelectedFeedIds(selectedFeedIds().filter((id) => !visibleIds.includes(id)));
     } else {
       // Select all visible
       const currentSelected = selectedFeedIds();
@@ -117,9 +114,7 @@ export function FeedList() {
     try {
       await feedDelete(id);
     } catch (e) {
-      setDeleteError(
-        e instanceof Error ? e : new Error("Failed to delete feed"),
-      );
+      setDeleteError(e instanceof Error ? e : new Error("Failed to delete feed"));
     }
   };
 
@@ -198,19 +193,14 @@ export function FeedList() {
               class={css({ cursor: "pointer" })}
             />
           </div>
-          <label
-            for="sort-by"
-            class={css({ fontSize: "sm", color: "gray.600" })}
-          >
+          <label for="sort-by" class={css({ fontSize: "sm", color: "gray.600" })}>
             Sort by:
           </label>
           <select
             id="sort-by"
             aria-label="Sort by"
             value={feedStore.state.sortBy}
-            onInput={(e) =>
-              feedStore.setSortBy(e.currentTarget.value as FeedSortBy)
-            }
+            onInput={(e) => feedStore.setSortBy(e.currentTarget.value as FeedSortBy)}
             class={css({
               fontSize: "xs",
               px: "2",
@@ -226,9 +216,7 @@ export function FeedList() {
             <option value="last_fetched">Last Fetched</option>
             <option value="next_fetch">Next Fetch</option>
           </select>
-          <span class={css({ fontSize: "sm", color: "gray.600", ml: "2" })}>
-            Filter:
-          </span>
+          <span class={css({ fontSize: "sm", color: "gray.600", ml: "2" })}>Filter:</span>
           <select
             ref={tagSelectRef}
             aria-label="Filter by tag"
@@ -260,9 +248,7 @@ export function FeedList() {
             })}
           >
             <Show when={tagsQuery.isLoading}>
-              <option value={feedStore.state.selectedTagId ?? "all"}>
-                Loading...
-              </option>
+              <option value={feedStore.state.selectedTagId ?? "all"}>Loading...</option>
             </Show>
             <option value="all">All</option>
             <option value="untagged">Untagged</option>
@@ -292,9 +278,7 @@ export function FeedList() {
           <p class={css({ color: "gray.500", fontSize: "sm" })}>Loading...</p>
         </Show>
         <Show when={deleteError()}>
-          <p class={css({ color: "red.500" })}>
-            Delete Error: {deleteError()?.message}
-          </p>
+          <p class={css({ color: "red.500" })}>Delete Error: {deleteError()?.message}</p>
         </Show>
         <Show when={!feedListQuery.isLoading && feedListQuery().length === 0}>
           <EmptyState title="No feeds found." />
@@ -378,19 +362,12 @@ export function FeedList() {
                           {feed.title || "Untitled Feed"}
                         </a>
                         <Show when={feed.unreadCount && feed.unreadCount > 0n}>
-                          <Badge
-                            variant="primary"
-                            class={css({ flexShrink: 0 })}
-                          >
+                          <Badge variant="primary" class={css({ flexShrink: 0 })}>
                             {feed.unreadCount?.toString()}
                           </Badge>
                         </Show>
                         <For each={feed.tags}>
-                          {(tag) => (
-                            <Badge class={css({ flexShrink: 0 })}>
-                              {tag.name}
-                            </Badge>
-                          )}
+                          {(tag) => <Badge class={css({ flexShrink: 0 })}>{tag.name}</Badge>}
                         </For>
                         <div class={flex({ gap: "2", alignItems: "center" })}>
                           <Show when={fetchingState.isFetching(feed.id)}>
@@ -467,9 +444,7 @@ export function FeedList() {
                             btn.classList.add(css({ color: "green.600!" }));
                             setTimeout(() => {
                               btn.innerHTML = originalHTML;
-                              btn.classList.remove(
-                                css({ color: "green.600!" }),
-                              );
+                              btn.classList.remove(css({ color: "green.600!" }));
                             }, 2000);
                           }}
                           title="Copy URL"
@@ -495,14 +470,7 @@ export function FeedList() {
                             stroke-linejoin="round"
                           >
                             <title>Copy URL</title>
-                            <rect
-                              width="14"
-                              height="14"
-                              x="8"
-                              y="8"
-                              rx="2"
-                              ry="2"
-                            />
+                            <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
                             <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
                           </svg>
                         </button>
@@ -515,18 +483,13 @@ export function FeedList() {
                         })}
                         data-testid="feed-timestamps"
                       >
-                        <span
-                          class={css({ fontSize: "xs", color: "gray.500" })}
-                        >
+                        <span class={css({ fontSize: "xs", color: "gray.500" })}>
                           Last fetched:{" "}
-                          {feed.lastFetchedAt
-                            ? formatDate(feed.lastFetchedAt)
-                            : "Not fetched yet"}
+                          {feed.lastFetchedAt ? formatDate(feed.lastFetchedAt) : "Not fetched yet"}
                         </span>
                         <Show when={feed.nextFetchAt}>
                           {(nextFetchAt) => {
-                            const isFuture =
-                              nextFetchAt().getTime() > Date.now();
+                            const isFuture = nextFetchAt().getTime() > Date.now();
                             return (
                               <span
                                 class={css({
@@ -535,10 +498,7 @@ export function FeedList() {
                                   fontWeight: "medium",
                                 })}
                               >
-                                Next fetch:{" "}
-                                {isFuture
-                                  ? formatRelativeDate(nextFetchAt())
-                                  : "Soon"}
+                                Next fetch: {isFuture ? formatRelativeDate(nextFetchAt()) : "Soon"}
                               </span>
                             );
                           }}
@@ -600,9 +560,7 @@ export function FeedList() {
                         }}
                         disabled={fetchingState.isFetching(feed.id)}
                       >
-                        {fetchingState.isFetching(feed.id)
-                          ? "Fetching..."
-                          : "Fetch"}
+                        {fetchingState.isFetching(feed.id) ? "Fetching..." : "Fetch"}
                       </ActionButton>
                       <ActionButton
                         size="sm"
@@ -624,9 +582,7 @@ export function FeedList() {
                         ariaLabel={`Actions for ${feed.title}`}
                         actions={[
                           {
-                            label: fetchingState.isFetching(feed.id)
-                              ? "Fetching..."
-                              : "Fetch",
+                            label: fetchingState.isFetching(feed.id) ? "Fetching..." : "Fetch",
                             onClick: () => refreshMutation.mutate([feed.id]),
                           },
                           {
@@ -719,11 +675,7 @@ export function FeedList() {
         >
           {refreshMutation.isPending ? "Fetching..." : "Fetch Selected"}
         </ActionButton>
-        <ActionButton
-          size="sm"
-          variant="primary"
-          onClick={() => setIsManageModalOpen(true)}
-        >
+        <ActionButton size="sm" variant="primary" onClick={() => setIsManageModalOpen(true)}>
           Manage Tags
         </ActionButton>
       </BulkActionBar>

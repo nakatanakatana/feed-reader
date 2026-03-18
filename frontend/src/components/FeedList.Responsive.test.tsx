@@ -1,36 +1,31 @@
+import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
-import {
-  createMemoryHistory,
-  createRouter,
-  RouterProvider,
-} from "@tanstack/solid-router";
+import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
+import { HttpResponse, http } from "msw";
 import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { page, userEvent } from "vitest/browser";
-import { queryClient, transport } from "../lib/query";
-import { TransportProvider } from "../lib/transport-context";
-import { routeTree } from "../routeTree.gen";
-import "../styles.css";
-import { create, toJson } from "@bufbuild/protobuf";
-import { HttpResponse, http } from "msw";
+import { afterEach, describe, expect, it, vi } from "vite-plus/test";
+import { page, userEvent } from "vite-plus/test/browser";
+
 import {
   FeedSchema,
   ListFeedsResponseSchema,
   ListFeedTagsResponseSchema,
 } from "../gen/feed/v1/feed_pb";
+
+import "../styles.css";
 import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
+import { queryClient, transport } from "../lib/query";
+import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
+import { routeTree } from "../routeTree.gen";
 
 // Mock Link from solid-router
 vi.mock("@tanstack/solid-router", async (importOriginal) => {
-  const actual =
-    await importOriginal<typeof import("@tanstack/solid-router")>();
+  const actual = await importOriginal<typeof import("@tanstack/solid-router")>();
   return {
     ...actual,
-    Link: (
-      props: { to: string; children: JSX.Element } & JSX.IntrinsicElements["a"],
-    ) => (
+    Link: (props: { to: string; children: JSX.Element } & JSX.IntrinsicElements["a"]) => (
       <a href={props.to} {...props}>
         {props.children}
       </a>
@@ -54,9 +49,7 @@ describe("FeedList Responsive", () => {
 
   const TestWrapper = (props: { children: JSX.Element }) => (
     <TransportProvider transport={transport}>
-      <QueryClientProvider client={queryClient}>
-        {props.children}
-      </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>{props.children}</QueryClientProvider>
     </TransportProvider>
   );
 
@@ -78,18 +71,12 @@ describe("FeedList Responsive", () => {
       }),
       http.all("*/tag.v1.TagService/ListTags", () => {
         return HttpResponse.json(
-          toJson(
-            ListTagsResponseSchema,
-            create(ListTagsResponseSchema, { tags: [] }),
-          ),
+          toJson(ListTagsResponseSchema, create(ListTagsResponseSchema, { tags: [] })),
         );
       }),
       http.all("*/feed.v1.FeedService/ListFeedTags", () => {
         return HttpResponse.json(
-          toJson(
-            ListFeedTagsResponseSchema,
-            create(ListFeedTagsResponseSchema, { feedTags: [] }),
-          ),
+          toJson(ListFeedTagsResponseSchema, create(ListFeedTagsResponseSchema, { feedTags: [] })),
         );
       }),
     );
@@ -122,9 +109,7 @@ describe("FeedList Responsive", () => {
     await expect.element(page.getByText(longTitle)).toBeVisible();
 
     // Check if Delete button is visible (Desktop)
-    await expect
-      .element(page.getByRole("button", { name: "Delete" }))
-      .toBeVisible();
+    await expect.element(page.getByRole("button", { name: "Delete" })).toBeVisible();
 
     // 2. Mobile view - Switch viewport
     await page.viewport?.(320, 568);
@@ -149,18 +134,14 @@ describe("FeedList Responsive", () => {
     // Check kebab menu (Mobile)
     // On mobile, the Delete button should be hidden (display: none)
     await expect
-      .element(
-        page.getByRole("button", { name: "Delete", includeHidden: true }),
-      )
+      .element(page.getByRole("button", { name: "Delete", includeHidden: true }))
       .not.toBeVisible();
     const kebabButton = page.getByRole("button", { name: /Actions for/i });
     await expect.element(kebabButton).toBeVisible();
 
     // Open kebab menu
     await kebabButton.click();
-    await expect
-      .element(page.getByRole("menuitem", { name: "Suspend 1 Day" }))
-      .toBeInTheDocument();
+    await expect.element(page.getByRole("menuitem", { name: "Suspend 1 Day" })).toBeInTheDocument();
     await expect
       .element(page.getByRole("menuitem", { name: "Suspend 3 Days" }))
       .toBeInTheDocument();
@@ -179,9 +160,7 @@ describe("FeedList Responsive", () => {
 
     const listContainer = document.querySelector("ul");
     if (listContainer) {
-      expect(listContainer.scrollWidth).toBeLessThanOrEqual(
-        listContainer.clientWidth,
-      );
+      expect(listContainer.scrollWidth).toBeLessThanOrEqual(listContainer.clientWidth);
     }
 
     // Verify actual truncation of title
@@ -190,8 +169,6 @@ describe("FeedList Responsive", () => {
     // Verify URL truncation (This might fail currently)
     const urlElement = page.getByText(longUrl);
     const urlHtmlElement = (await urlElement.element()) as HTMLElement;
-    expect(urlHtmlElement.scrollWidth).toBeGreaterThan(
-      urlHtmlElement.clientWidth,
-    );
+    expect(urlHtmlElement.scrollWidth).toBeGreaterThan(urlHtmlElement.clientWidth);
   });
 });

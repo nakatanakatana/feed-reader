@@ -10,6 +10,7 @@ import {
   onMount,
   Show,
 } from "solid-js";
+
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import {
@@ -41,9 +42,7 @@ interface ItemListProps {
 export function ItemList(props: ItemListProps) {
   const navigate = useNavigate();
   const location = useLocation();
-  const [selectedItemIds, setSelectedItemIds] = createSignal<Set<string>>(
-    new Set(),
-  );
+  const [selectedItemIds, setSelectedItemIds] = createSignal<Set<string>>(new Set());
   const [isBulkMarking, setIsBulkMarking] = createSignal(false);
   const [showMoreActions, setShowMoreActions] = createSignal(false);
   let moreActionsRef: HTMLDivElement | undefined;
@@ -72,9 +71,7 @@ export function ItemList(props: ItemListProps) {
   });
 
   const filteredItems = createMemo(() => {
-    return itemQuery().filter(
-      (item) => !itemStore.state.transientRemovedIds[item.id],
-    );
+    return itemQuery().filter((item) => !itemStore.state.transientRemovedIds[item.id]);
   });
 
   const handleClearReadItems = () => {
@@ -107,8 +104,7 @@ export function ItemList(props: ItemListProps) {
   };
 
   const isAllSelected = () =>
-    filteredItems().length > 0 &&
-    selectedItemIds().size === filteredItems().length;
+    filteredItems().length > 0 && selectedItemIds().size === filteredItems().length;
 
   const handleToggleAll = (checked: boolean) => {
     if (checked) {
@@ -194,10 +190,7 @@ export function ItemList(props: ItemListProps) {
           Filter by Tag:
         </span>
         <HorizontalScrollList>
-          <TagChip
-            selected={props.tagId === undefined}
-            onClick={() => handleTagClick(undefined)}
-          >
+          <TagChip selected={props.tagId === undefined} onClick={() => handleTagClick(undefined)}>
             All
             <Show when={(totalUnread()[0]?.total ?? 0n) > 0n}>
               <Badge
@@ -210,10 +203,7 @@ export function ItemList(props: ItemListProps) {
           </TagChip>
           <For each={tagsQuery()}>
             {(tag) => (
-              <TagChip
-                selected={props.tagId === tag.id}
-                onClick={() => handleTagClick(tag.id)}
-              >
+              <TagChip selected={props.tagId === tag.id} onClick={() => handleTagClick(tag.id)}>
                 {tag.name}
                 <Show when={(tag.unreadCount ?? 0n) > 0n}>
                   <Badge
@@ -277,10 +267,7 @@ export function ItemList(props: ItemListProps) {
             >
               Clear Read Items
             </ActionButton>
-            <DateFilterSelector
-              value={itemStore.state.since}
-              onSelect={handleDateFilterSelect}
-            />
+            <DateFilterSelector value={itemStore.state.since} onSelect={handleDateFilterSelect} />
             <div class={flex({ gap: "2", alignItems: "center" })}>
               <input
                 id="show-read-toggle"
@@ -331,10 +318,7 @@ export function ItemList(props: ItemListProps) {
               alignItems: "center",
             })}
           >
-            <DateFilterSelector
-              value={itemStore.state.since}
-              onSelect={handleDateFilterSelect}
-            />
+            <DateFilterSelector value={itemStore.state.since} onSelect={handleDateFilterSelect} />
             <div class={css({ position: "relative" })} ref={moreActionsRef}>
               <ActionButton
                 size="sm"
@@ -495,18 +479,14 @@ export function ItemList(props: ItemListProps) {
               item={item}
               onClick={() => handleItemClick(item.id)}
               selected={selectedItemIds().has(item.id)}
-              onToggleSelection={(selected) =>
-                handleToggleItem(item.id, selected)
-              }
+              onToggleSelection={(selected) => handleToggleItem(item.id, selected)}
             />
           )}
         </For>
       </div>
 
       <Show when={itemQuery.isLoading}>
-        <div
-          class={css({ textAlign: "center", padding: "8", color: "gray.500" })}
-        >
+        <div class={css({ textAlign: "center", padding: "8", color: "gray.500" })}>
           Loading items...
         </div>
       </Show>

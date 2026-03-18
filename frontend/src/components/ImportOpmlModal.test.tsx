@@ -1,8 +1,9 @@
 import { create } from "@bufbuild/protobuf";
 import { createRouterTransport } from "@connectrpc/connect";
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { page } from "vitest/browser";
+import { afterEach, describe, expect, it, vi } from "vite-plus/test";
+import { page } from "vite-plus/test/browser";
+
 import { FeedService, ImportOpmlResponseSchema } from "../gen/feed/v1/feed_pb";
 import { TransportProvider } from "../lib/transport-context";
 import { ImportOpmlModal } from "./ImportOpmlModal";
@@ -40,14 +41,10 @@ describe("ImportOpmlModal", () => {
     );
 
     // Initial state
-    await expect
-      .element(page.getByText("Select an .opml or .xml file"))
-      .toBeInTheDocument();
+    await expect.element(page.getByText("Select an .opml or .xml file")).toBeInTheDocument();
 
     // Mock file upload
-    const input = document.querySelector(
-      'input[type="file"]',
-    ) as HTMLInputElement;
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement;
     const file = new File(["<opml><body></body></opml>"], "test.opml", {
       type: "text/xml",
     });
@@ -85,9 +82,7 @@ describe("ImportOpmlModal", () => {
       document.body,
     );
 
-    const input = document.querySelector(
-      'input[type="file"]',
-    ) as HTMLInputElement;
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement;
     const file = new File(["invalid"], "test.opml", { type: "text/xml" });
 
     Object.defineProperty(input, "files", {

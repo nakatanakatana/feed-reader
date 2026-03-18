@@ -1,12 +1,8 @@
 import { useLiveQuery } from "@tanstack/solid-db";
 import { useNavigate } from "@tanstack/solid-router";
 import { createEffect, createMemo } from "solid-js";
-import {
-  buildItemsWithReadStateQuery,
-  feedTag,
-  type Item,
-  updateItemReadStatus,
-} from "../lib/db";
+
+import { buildItemsWithReadStateQuery, feedTag, type Item, updateItemReadStatus } from "../lib/db";
 import { getPrefetchIds, prefetchItems } from "../lib/item-prefetch";
 import { itemStore } from "../lib/item-store";
 import type { DateFilterValue } from "../lib/item-utils";
@@ -74,9 +70,7 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
   const nextItem = () => {
     const items = filteredItems();
     const index = currentIndexMemo();
-    return items && index >= 0 && index < items.length - 1
-      ? items[index + 1]
-      : undefined;
+    return items && index >= 0 && index < items.length - 1 ? items[index + 1] : undefined;
   };
 
   const navigateTo = (targetId: string | undefined) => {
@@ -119,8 +113,7 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
     markCurrentAsRead();
     if (isEndOfList()) {
       const items = filteredItems();
-      const lastItem =
-        items && items.length > 0 ? items[items.length - 1] : undefined;
+      const lastItem = items && items.length > 0 ? items[items.length - 1] : undefined;
       if (lastItem) {
         navigateTo(lastItem.id);
       }
@@ -143,21 +136,14 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
   const prevItemIdMemo = createMemo(() => {
     if (isEndOfList()) {
       const items = filteredItems();
-      return items && items.length > 0
-        ? items[items.length - 1]?.id
-        : undefined;
+      return items && items.length > 0 ? items[items.length - 1]?.id : undefined;
     }
     return prevItem()?.id;
   });
 
   const nextItemIdMemo = createMemo(() => {
     const items = filteredItems();
-    if (
-      !isEndOfList() &&
-      items &&
-      items.length > 0 &&
-      currentIndexMemo() === items.length - 1
-    ) {
+    if (!isEndOfList() && items && items.length > 0 && currentIndexMemo() === items.length - 1) {
       return "end-of-list";
     }
     return nextItem()?.id;

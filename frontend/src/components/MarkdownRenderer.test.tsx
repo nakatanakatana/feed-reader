@@ -1,5 +1,6 @@
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vite-plus/test";
+
 import { MarkdownRenderer } from "./MarkdownRenderer";
 
 describe("MarkdownRenderer", () => {
@@ -12,20 +13,14 @@ describe("MarkdownRenderer", () => {
 
   it("renders basic markdown", () => {
     const content = "# Hello World\nThis is **bold** text.";
-    dispose = render(
-      () => <MarkdownRenderer content={content} />,
-      document.body,
-    );
+    dispose = render(() => <MarkdownRenderer content={content} />, document.body);
 
     expect(document.body.innerHTML).toMatchSnapshot();
   });
 
   it("renders links correctly", () => {
     const content = "[Example](https://example.com)";
-    dispose = render(
-      () => <MarkdownRenderer content={content} />,
-      document.body,
-    );
+    dispose = render(() => <MarkdownRenderer content={content} />, document.body);
 
     expect(document.body.innerHTML).toMatchSnapshot();
   });
@@ -48,10 +43,7 @@ describe("MarkdownRenderer", () => {
 
   it("renders code blocks", () => {
     const content = "```javascript\nconst x = 1;\n```";
-    dispose = render(
-      () => <MarkdownRenderer content={content} />,
-      document.body,
-    );
+    dispose = render(() => <MarkdownRenderer content={content} />, document.body);
 
     expect(document.body.querySelector("pre")).not.toBeNull();
     expect(document.body.querySelector("code")).not.toBeNull();

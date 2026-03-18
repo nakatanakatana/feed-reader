@@ -1,18 +1,7 @@
 import { useLiveQuery } from "@tanstack/solid-db";
-import {
-  createMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/solid-query";
-import {
-  createEffect,
-  createMemo,
-  createSignal,
-  For,
-  type JSX,
-  onCleanup,
-  Show,
-} from "solid-js";
+import { createMutation, useQuery, useQueryClient } from "@tanstack/solid-query";
+import { createEffect, createMemo, createSignal, For, type JSX, onCleanup, Show } from "solid-js";
+
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
 import { itemBlockRuleInsert, urlParsingRules } from "../lib/block-db";
@@ -20,11 +9,7 @@ import { buildItemsWithReadStateQuery } from "../lib/db";
 import { getItem, type Item } from "../lib/item-db";
 import { ITEM_STALE_TIME } from "../lib/item-query-constants";
 import { updateItemReadStatus } from "../lib/item-read-db";
-import {
-  extractHostname,
-  formatDate,
-  normalizeCategories,
-} from "../lib/item-utils";
+import { extractHostname, formatDate, normalizeCategories } from "../lib/item-utils";
 import { useToast } from "../lib/toast";
 import { URLParser } from "../lib/url-parser";
 import { useSwipe } from "../lib/use-swipe";
@@ -62,8 +47,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     disposed = true;
     if (announcementTimeout !== undefined) clearTimeout(announcementTimeout);
     if (skipTimeoutId !== undefined) clearTimeout(skipTimeoutId);
-    if (skipRecoveryTimeoutId !== undefined)
-      clearTimeout(skipRecoveryTimeoutId);
+    if (skipRecoveryTimeoutId !== undefined) clearTimeout(skipRecoveryTimeoutId);
   });
 
   const { x, y, isSwiping, handlers } = useSwipe({
@@ -78,11 +62,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
       }
     },
     onSwipeUp: () => {
-      if (
-        props.onSkipNext &&
-        props.nextItemId &&
-        props.itemId !== "end-of-list"
-      ) {
+      if (props.onSkipNext && props.nextItemId && props.itemId !== "end-of-list") {
         // Only allow swipe-up if it started in the bottom 30% of the container
         if (swipeContainerRef) {
           const rect = swipeContainerRef.getBoundingClientRect();
@@ -99,9 +79,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
       if (!container) return true;
 
       const isAtBottom =
-        Math.abs(
-          container.scrollHeight - container.scrollTop - container.clientHeight,
-        ) < 5;
+        Math.abs(container.scrollHeight - container.scrollTop - container.clientHeight) < 5;
 
       if (isAtBottom) return true;
 
@@ -136,8 +114,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   };
 
   // Determine if we can navigate
-  const canSwipeLeft = () =>
-    !!(props.onNext && props.nextItemId && props.itemId !== "end-of-list");
+  const canSwipeLeft = () => !!(props.onNext && props.nextItemId && props.itemId !== "end-of-list");
   const canSwipeRight = () => !!(props.onPrev && props.prevItemId);
   const canSwipeUp = () =>
     !!(props.onSkipNext && props.nextItemId && props.itemId !== "end-of-list");
@@ -164,8 +141,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     if (animate) {
       setIsSkipping(true);
       if (skipTimeoutId !== undefined) clearTimeout(skipTimeoutId);
-      if (skipRecoveryTimeoutId !== undefined)
-        clearTimeout(skipRecoveryTimeoutId);
+      if (skipRecoveryTimeoutId !== undefined) clearTimeout(skipRecoveryTimeoutId);
 
       // Wait for animation to finish before calling onSkipNext
       skipTimeoutId = setTimeout(() => {
@@ -173,8 +149,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
 
         // Set a safety recovery timer in case navigation is blocked or no-ops.
         // Schedule it BEFORE calling onSkipNext so it can be cleared if onSkipNext causes an unmount/route change.
-        if (skipRecoveryTimeoutId !== undefined)
-          clearTimeout(skipRecoveryTimeoutId);
+        if (skipRecoveryTimeoutId !== undefined) clearTimeout(skipRecoveryTimeoutId);
         skipRecoveryTimeoutId = setTimeout(() => {
           if (!disposed) {
             setIsSkipping(false);
@@ -239,9 +214,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             updateLayout();
           } else {
             img.addEventListener("load", updateLayout, { once: true });
-            cleanupTasks.push(() =>
-              img.removeEventListener("load", updateLayout),
-            );
+            cleanupTasks.push(() => img.removeEventListener("load", updateLayout));
           }
         }
       });
@@ -295,9 +268,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   const { show } = useToast();
 
   const blockMutation = createMutation(() => ({
-    mutationFn: async (req: {
-      rules: { ruleType: string; value: string; domain?: string }[];
-    }) => {
+    mutationFn: async (req: { rules: { ruleType: string; value: string; domain?: string }[] }) => {
       await itemBlockRuleInsert(req.rules);
     },
     onSuccess: () => {
@@ -381,13 +352,10 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
 
     // Always update the individual item query cache for immediate UI feedback in the modal.
     // This handles both the collection and fallback cases.
-    queryClient.setQueryData(
-      ["item", props.itemId],
-      (old: Item | null | undefined) => {
-        if (!old) return old;
-        return { ...old, isRead: newIsRead };
-      },
-    );
+    queryClient.setQueryData(["item", props.itemId], (old: Item | null | undefined) => {
+      if (!old) return old;
+      return { ...old, isRead: newIsRead };
+    });
 
     try {
       // Use the authoritative updateItemReadStatus for delta sync and mixed state handling
@@ -403,23 +371,16 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     } catch (e) {
       console.error("Failed to update item status", e);
       // Rollback cache on error
-      queryClient.setQueryData(
-        ["item", props.itemId],
-        (old: Item | null | undefined) => {
-          if (!old) return old;
-          return { ...old, isRead: currentItem.isRead };
-        },
-      );
+      queryClient.setQueryData(["item", props.itemId], (old: Item | null | undefined) => {
+        if (!old) return old;
+        return { ...old, isRead: currentItem.isRead };
+      });
     }
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
     const target = e.target as HTMLElement;
-    if (
-      target.tagName === "INPUT" ||
-      target.tagName === "TEXTAREA" ||
-      target.isContentEditable
-    ) {
+    if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable) {
       return;
     }
     if (e.key === "Escape") {
@@ -554,12 +515,8 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             <button
               type="button"
               onClick={handleToggleRead}
-              title={
-                prioritizedItem()?.isRead ? "Mark as Unread" : "Mark as Read"
-              }
-              aria-label={
-                prioritizedItem()?.isRead ? "Mark as Unread" : "Mark as Read"
-              }
+              title={prioritizedItem()?.isRead ? "Mark as Unread" : "Mark as Read"}
+              aria-label={prioritizedItem()?.isRead ? "Mark as Unread" : "Mark as Read"}
               aria-pressed={prioritizedItem()?.isRead ?? false}
               class={css({
                 width: "14",
@@ -573,9 +530,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                 boxShadow: "lg",
                 cursor: "pointer",
                 border: "1px solid",
-                borderColor: prioritizedItem()?.isRead
-                  ? "blue.600"
-                  : "transparent",
+                borderColor: prioritizedItem()?.isRead ? "blue.600" : "transparent",
                 transition: "all 0.2s",
                 _hover: {
                   transform: "scale(1.05)",
@@ -686,9 +641,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                 ? "none"
                 : "transform 0.2s ease-out",
             "will-change":
-              canSwipeLeft() || canSwipeRight() || canSwipeUp()
-                ? "transform"
-                : undefined,
+              canSwipeLeft() || canSwipeRight() || canSwipeUp() ? "transform" : undefined,
             ...(isSkipping() && {
               opacity: 0,
             }),
@@ -767,19 +720,13 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                     })}
                   >
                     <Show when={itemData().url}>
-                      <span
-                        class={flex({ gap: "1", alignItems: "center" })}
-                        title="Source Domain"
-                      >
+                      <span class={flex({ gap: "1", alignItems: "center" })} title="Source Domain">
                         <GlobeIcon />
                         <span>{extractHostname(itemData().url || "")}</span>
                       </span>
                     </Show>
                     <Show when={!!itemData().publishedAt}>
-                      <span
-                        class={flex({ gap: "1", alignItems: "center" })}
-                        title="Published Date"
-                      >
+                      <span class={flex({ gap: "1", alignItems: "center" })} title="Published Date">
                         <span
                           class={css({
                             display: { base: "none", xs: "inline" },
@@ -813,13 +760,8 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                         {formatDate(itemData().publishedAt)}
                       </span>
                     </Show>
-                    <span
-                      class={flex({ gap: "1", alignItems: "center" })}
-                      title="Received Date"
-                    >
-                      <span
-                        class={css({ display: { base: "none", xs: "inline" } })}
-                      >
+                    <span class={flex({ gap: "1", alignItems: "center" })} title="Received Date">
+                      <span class={css({ display: { base: "none", xs: "inline" } })}>
                         Received:
                       </span>
                       <span
@@ -850,11 +792,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                     </Show>
                     <Show when={itemData().categories}>
                       <div class={flex({ gap: "1", flexWrap: "wrap" })}>
-                        <For
-                          each={normalizeCategories(
-                            itemData().categories ?? "",
-                          )}
-                        >
+                        <For each={normalizeCategories(itemData().categories ?? "")}>
                           {(cat) => (
                             <span
                               class={css({
@@ -913,13 +851,12 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                       "& p": {
                         marginBottom: "4",
                       },
-                      "& p:has(img + img), & p:has(a + a), & p:has(img + a), & p:has(a + img)":
-                        {
-                          display: "flex",
-                          flexWrap: "wrap",
-                          gap: "2",
-                          alignItems: "center",
-                        },
+                      "& p:has(img + img), & p:has(a + a), & p:has(img + a), & p:has(a + img)": {
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: "2",
+                        alignItems: "center",
+                      },
                       "& img": {
                         maxWidth: "full",
                         height: "auto",
@@ -961,10 +898,9 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                         {
                           display: "inline-block",
                         },
-                      '& a:is([href*="#gh-dark-mode-only"], [href*="%23gh-dark-mode-only"]) img':
-                        {
-                          display: "none",
-                        },
+                      '& a:is([href*="#gh-dark-mode-only"], [href*="%23gh-dark-mode-only"]) img': {
+                        display: "none",
+                      },
                       "@media (prefers-color-scheme: dark)": {
                         '& a:is([href*="#gh-light-mode-only"], [href*="%23gh-light-mode-only"]) img':
                           {
@@ -988,9 +924,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                     })}
                   >
                     <MarkdownRenderer
-                      content={
-                        itemData().content || itemData().description || ""
-                      }
+                      content={itemData().content || itemData().description || ""}
                     />
                   </div>
                 </>

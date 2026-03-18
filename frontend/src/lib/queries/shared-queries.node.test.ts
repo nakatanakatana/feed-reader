@@ -3,12 +3,10 @@ import {
   createLiveQueryCollection,
   localOnlyCollectionOptions,
 } from "@tanstack/solid-db";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
+
 import { buildFeedListQuery, buildTagPickerQuery } from "./feed-queries";
-import {
-  buildItemsWithReadStateQuery,
-  buildTagUnreadCountsQuery,
-} from "./item-queries";
+import { buildItemsWithReadStateQuery, buildTagUnreadCountsQuery } from "./item-queries";
 
 describe("shared TanStack DB query builders", () => {
   it("builds article queries with merged read state and tag filtering", async () => {
@@ -152,10 +150,7 @@ describe("shared TanStack DB query builders", () => {
       }),
     );
 
-    expect((await query.toArrayWhenReady()).map((feed) => feed.id)).toEqual([
-      "feed-2",
-      "feed-3",
-    ]);
+    expect((await query.toArrayWhenReady()).map((feed) => feed.id)).toEqual(["feed-2", "feed-3"]);
   });
 
   it("builds tag picker queries with shared ordering", async () => {
@@ -169,13 +164,8 @@ describe("shared TanStack DB query builders", () => {
       }),
     );
 
-    const query = createLiveQueryCollection((q) =>
-      buildTagPickerQuery(q, { tagsCollection }),
-    );
+    const query = createLiveQueryCollection((q) => buildTagPickerQuery(q, { tagsCollection }));
 
-    expect((await query.toArrayWhenReady()).map((tag) => tag.id)).toEqual([
-      "tag-2",
-      "tag-1",
-    ]);
+    expect((await query.toArrayWhenReady()).map((tag) => tag.id)).toEqual(["tag-2", "tag-1"]);
   });
 });

@@ -1,13 +1,13 @@
 import { HttpResponse, http } from "msw";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
+
 import { worker } from "./mocks/browser";
 import { initOTEL, resetInitialized } from "./otel";
 
 vi.mock("@opentelemetry/exporter-trace-otlp-http", () => {
   class MockExporter {
-    export = vi.fn(
-      (_spans: unknown, resultCallback: (result: { code: number }) => void) =>
-        resultCallback({ code: 0 }),
+    export = vi.fn((_spans: unknown, resultCallback: (result: { code: number }) => void) =>
+      resultCallback({ code: 0 }),
     );
     shutdown = vi.fn().mockResolvedValue(undefined);
   }

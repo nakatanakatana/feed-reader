@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/solid-router";
+
 import { ItemDetailRouteView } from "../components/ItemDetailRouteView";
 
 export const Route = createFileRoute("/_items/items/$itemId")({

@@ -1,4 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
+
 import { itemClient } from "./api/client";
 import {
   type ItemRead,
@@ -6,11 +7,7 @@ import {
   itemReadCollectionOptions,
   updateItemReadStatus,
 } from "./item-read-db";
-import {
-  lastReadFetched,
-  setLastItemsSyncedAt,
-  setLastReadFetched,
-} from "./item-sync-state";
+import { lastReadFetched, setLastItemsSyncedAt, setLastReadFetched } from "./item-sync-state";
 import { queryClient } from "./query";
 
 describe("ItemRead collection options", () => {
@@ -157,10 +154,7 @@ describe("ItemRead collection options", () => {
 
     it("should merge with existing data", async () => {
       setLastReadFetched(new Date("2026-03-01T00:00:00Z"));
-      queryClient.setQueryData(
-        ["item-reads"],
-        [{ id: "1", isRead: false, updatedAt: new Date() }],
-      );
+      queryClient.setQueryData(["item-reads"], [{ id: "1", isRead: false, updatedAt: new Date() }]);
 
       const mockItemReads = [
         {
@@ -222,9 +216,7 @@ describe("ItemRead collection options", () => {
       // Mock writeUpsert to throw SyncNotInitializedError
       const error = new Error("Sync not initialized");
       error.name = "SyncNotInitializedError";
-      vi.spyOn(itemReadCollection().utils, "writeUpsert").mockRejectedValue(
-        error,
-      );
+      vi.spyOn(itemReadCollection().utils, "writeUpsert").mockRejectedValue(error);
 
       // Should NOT throw
       await updateItemReadStatus(["1"], true);
@@ -243,13 +235,9 @@ describe("ItemRead collection options", () => {
       (itemClient.updateItemStatus as any).mockRejectedValue(error);
 
       // Attempt update for both existing and new IDs
-      await expect(updateItemReadStatus(["1", "2"], true)).rejects.toThrow(
-        "Server error",
-      );
+      await expect(updateItemReadStatus(["1", "2"], true)).rejects.toThrow("Server error");
 
-      const cache = queryClient.getQueryData(
-        itemReadCollectionOptions.queryKey,
-      ) as ItemRead[];
+      const cache = queryClient.getQueryData(itemReadCollectionOptions.queryKey) as ItemRead[];
       // id: "1" should be rolled back to false
       expect(cache.find((i) => i.id === "1")?.isRead).toBe(false);
       // id: "2" should be removed from cache

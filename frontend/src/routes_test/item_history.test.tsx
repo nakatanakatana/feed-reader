@@ -1,20 +1,13 @@
 import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
-import {
-  createMemoryHistory,
-  createRouter,
-  RouterProvider,
-} from "@tanstack/solid-router";
+import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
 import { HttpResponse, http } from "msw";
 import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { page, userEvent } from "vitest/browser";
-import {
-  GetItemResponseSchema,
-  ItemSchema,
-  ListItemsResponseSchema,
-} from "../gen/item/v1/item_pb";
+import { afterEach, describe, expect, it, vi } from "vite-plus/test";
+import { page, userEvent } from "vite-plus/test/browser";
+
+import { GetItemResponseSchema, ItemSchema, ListItemsResponseSchema } from "../gen/item/v1/item_pb";
 import { dateToTimestamp } from "../lib/item-utils";
 import { queryClient, transport } from "../lib/query";
 import { ToastProvider } from "../lib/toast";

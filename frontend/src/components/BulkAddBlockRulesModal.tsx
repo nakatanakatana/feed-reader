@@ -1,4 +1,5 @@
 import { createMemo, createSignal, For, Show } from "solid-js";
+
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { type ParsedBlockRule, parseCSVBlockRules } from "../lib/csv-parser";
@@ -8,9 +9,7 @@ import { Modal } from "./ui/Modal";
 interface BulkAddBlockRulesModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onRegister: (
-    rules: { ruleType: string; value: string; domain?: string }[],
-  ) => Promise<void>;
+  onRegister: (rules: { ruleType: string; value: string; domain?: string }[]) => Promise<void>;
   isPending: boolean;
 }
 
@@ -90,11 +89,7 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
       setParsedRules([]);
     } catch (err) {
       console.error("Bulk registration failed", err);
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Bulk registration failed. Please try again.",
-      );
+      setError(err instanceof Error ? err.message : "Bulk registration failed. Please try again.");
     }
   };
 
@@ -128,11 +123,7 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
             when={registrationResult()}
             fallback={
               <>
-                <ActionButton
-                  variant="secondary"
-                  onClick={handleClose}
-                  disabled={props.isPending}
-                >
+                <ActionButton variant="secondary" onClick={handleClose} disabled={props.isPending}>
                   Cancel
                 </ActionButton>
                 <ActionButton
@@ -142,9 +133,7 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
                 >
                   {props.isPending
                     ? "Registering..."
-                    : `Register (${validRulesCount()} rule${
-                        validRulesCount() === 1 ? "" : "s"
-                      })`}
+                    : `Register (${validRulesCount()} rule${validRulesCount() === 1 ? "" : "s"})`}
                 </ActionButton>
               </>
             }
@@ -192,8 +181,7 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
                   : "Successfully registered rules!"}
               </p>
               <p>
-                {res().success}{" "}
-                {res().success === 1 ? "rule was" : "rules were"} registered.
+                {res().success} {res().success === 1 ? "rule was" : "rules were"} registered.
                 <Show when={res().total > res().success}>
                   {" "}
                   {(() => {
@@ -207,10 +195,7 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
         </Show>
 
         <div class={stack({ gap: "2" })}>
-          <label
-            for="csv-input"
-            class={css({ fontSize: "sm", fontWeight: "medium" })}
-          >
+          <label for="csv-input" class={css({ fontSize: "sm", fontWeight: "medium" })}>
             CSV Input (rule_type, value, [domain])
           </label>
           <textarea
@@ -232,10 +217,7 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
         </div>
 
         <div class={stack({ gap: "2" })}>
-          <label
-            for="csv-file"
-            class={css({ fontSize: "sm", fontWeight: "medium" })}
-          >
+          <label for="csv-file" class={css({ fontSize: "sm", fontWeight: "medium" })}>
             Or Upload CSV File
           </label>
           <input
@@ -270,9 +252,7 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
                   tableLayout: "fixed",
                 })}
               >
-                <thead
-                  class={css({ bg: "gray.50", position: "sticky", top: 0 })}
-                >
+                <thead class={css({ bg: "gray.50", position: "sticky", top: 0 })}>
                   <tr>
                     <th
                       class={css({
@@ -329,12 +309,8 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
                           borderColor: "gray.100",
                         })}
                       >
-                        <td class={css({ p: "2", wordBreak: "break-all" })}>
-                          {rule.ruleType}
-                        </td>
-                        <td class={css({ p: "2", wordBreak: "break-all" })}>
-                          {rule.value}
-                        </td>
+                        <td class={css({ p: "2", wordBreak: "break-all" })}>{rule.ruleType}</td>
+                        <td class={css({ p: "2", wordBreak: "break-all" })}>{rule.value}</td>
                         <td class={css({ p: "2", wordBreak: "break-all" })}>
                           {rule.domain || "-"}
                         </td>
@@ -352,9 +328,7 @@ export function BulkAddBlockRulesModal(props: BulkAddBlockRulesModalProps) {
                               </span>
                             }
                           >
-                            <span class={css({ color: "green.500" })}>
-                              ✓ Valid
-                            </span>
+                            <span class={css({ color: "green.500" })}>✓ Valid</span>
                           </Show>
                         </td>
                       </tr>

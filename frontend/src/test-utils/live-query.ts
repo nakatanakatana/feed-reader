@@ -1,5 +1,5 @@
 import { createLiveQueryCollection, useLiveQuery } from "@tanstack/solid-db";
-import { vi } from "vitest";
+import { vi } from "vite-plus/test";
 
 /**
  * Sets up mocks for TanStack DB live queries.
@@ -33,9 +33,7 @@ export const setupLiveQuery = (feeds: unknown[], isLoading = false) => {
         },
         // biome-ignore lint/suspicious/noExplicitAny: mock implementation
         where: (p: any) =>
-          makeQuery(
-            rows.filter((r) => p({ item: r, feed: r, ft: r, tag: r, i: r })),
-          ),
+          makeQuery(rows.filter((r) => p({ item: r, feed: r, ft: r, tag: r, i: r }))),
         // biome-ignore lint/suspicious/noExplicitAny: mock implementation
         orderBy: (s: any, d: any) => {
           const sorted = [...rows].sort((a, b) => {
@@ -52,17 +50,13 @@ export const setupLiveQuery = (feeds: unknown[], isLoading = false) => {
               return d === "desc" ? bDate - aDate : aDate - bDate;
             }
 
-            return d === "desc"
-              ? bText.localeCompare(aText)
-              : aText.localeCompare(bText);
+            return d === "desc" ? bText.localeCompare(aText) : aText.localeCompare(bText);
           });
           return makeQuery(sorted);
         },
         // biome-ignore lint/suspicious/noExplicitAny: mock implementation
         select: (s: any) =>
-          makeQuery(
-            rows.map((r) => s({ item: r, feed: r, ft: r, tag: r, i: r })),
-          ),
+          makeQuery(rows.map((r) => s({ item: r, feed: r, ft: r, tag: r, i: r }))),
         innerJoin: () => q,
         leftJoin: () => q,
         groupBy: () => q,

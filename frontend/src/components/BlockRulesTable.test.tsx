@@ -1,6 +1,7 @@
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { page } from "vitest/browser";
+import { afterEach, describe, expect, it, vi } from "vite-plus/test";
+import { page } from "vite-plus/test/browser";
+
 import { BlockRulesTable } from "./BlockRulesTable";
 
 describe("BlockRulesTable", () => {
@@ -34,9 +35,7 @@ describe("BlockRulesTable", () => {
 
     // Use first() because it might be in both desktop and mobile views
     await expect.element(page.getByText("alice").first()).toBeInTheDocument();
-    await expect
-      .element(page.getByText("example.com").first())
-      .toBeInTheDocument();
+    await expect.element(page.getByText("example.com").first()).toBeInTheDocument();
   });
 
   it("calls onSort when clicking Type (Desktop)", async () => {

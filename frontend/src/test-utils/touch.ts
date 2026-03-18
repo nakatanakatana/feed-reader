@@ -17,10 +17,7 @@ interface TouchOptions {
 /**
  * Creates a Touch object. Fallback to a plain object if Touch constructor is not available.
  */
-export const createTouch = (
-  target: EventTarget,
-  options: TouchOptions,
-): Touch => {
+export const createTouch = (target: EventTarget, options: TouchOptions): Touch => {
   const identifier = options.id ?? ++touchIdentifier;
   if (typeof Touch !== "undefined") {
     try {

@@ -1,6 +1,7 @@
 import { createClient } from "@connectrpc/connect";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { createCollection } from "@tanstack/solid-db";
+
 import { TagService } from "../gen/tag/v1/tag_pb";
 import { toDate } from "./date-utils";
 import { queryClient, transport } from "./query";

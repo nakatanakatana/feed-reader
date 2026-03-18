@@ -1,15 +1,11 @@
 import { create } from "@bufbuild/protobuf";
-import {
-  createMemoryHistory,
-  createRouter,
-  RouterProvider,
-} from "@tanstack/solid-router";
-import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { page } from "vitest/browser";
-import { routeTree } from "../routeTree.gen";
-import "../styles.css";
 import { QueryClientProvider } from "@tanstack/solid-query";
+import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
+import { render } from "solid-js/web";
+import { afterEach, describe, expect, it, vi } from "vite-plus/test";
+import { page } from "vite-plus/test/browser";
+
+import "../styles.css";
 import {
   AddURLParsingRuleResponseSchema,
   DeleteURLParsingRuleResponseSchema,
@@ -22,6 +18,7 @@ import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
 import { mockConnectWeb } from "../mocks/connect";
+import { routeTree } from "../routeTree.gen";
 
 // Unmock solid-router to test active link logic
 vi.unmock("@tanstack/solid-router");
@@ -126,9 +123,7 @@ describe("URL Rules Page", () => {
     await addButton.click();
 
     await expect.element(page.getByText("new-domain.com")).toBeInTheDocument();
-    await expect
-      .element(page.getByRole("listitem").getByText("path"))
-      .toBeInTheDocument();
+    await expect.element(page.getByRole("listitem").getByText("path")).toBeInTheDocument();
   });
 
   it("should allow deleting a URL parsing rule", async () => {

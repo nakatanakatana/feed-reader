@@ -5,9 +5,11 @@ import {
   RouterProvider,
 } from "@tanstack/solid-router";
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { page } from "vitest/browser";
+import { afterEach, describe, expect, it, vi } from "vite-plus/test";
+import { page } from "vite-plus/test/browser";
+
 import { Route as RootRoute } from "../routes/__root";
+
 import "../styles.css";
 
 // Unmock solid-router to test active link logic
@@ -42,9 +44,7 @@ describe("RootComponent Navigation", () => {
     dispose = render(() => <RouterProvider router={router} />, document.body);
 
     // 4. Verify Content
-    await expect
-      .element(page.getByText("Index Page Content"))
-      .toBeInTheDocument();
+    await expect.element(page.getByText("Index Page Content")).toBeInTheDocument();
 
     // 5. Verify Navigation Links
     const homeLink = page.getByRole("link", { name: "Home" });

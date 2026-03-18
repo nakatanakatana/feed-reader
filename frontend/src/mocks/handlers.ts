@@ -1,4 +1,5 @@
 import { create } from "@bufbuild/protobuf";
+
 import {
   CreateFeedResponseSchema,
   DeleteFeedResponseSchema,
@@ -126,9 +127,7 @@ export const handlers = [
       let filteredFeeds = feeds;
 
       if (req.tagId) {
-        filteredFeeds = feeds.filter((f) =>
-          f.tags.some((t: Tag) => t.id === req.tagId),
-        );
+        filteredFeeds = feeds.filter((f) => f.tags.some((t: Tag) => t.id === req.tagId));
       }
       return create(ListFeedsResponseSchema, { feeds: filteredFeeds });
     },
@@ -137,9 +136,7 @@ export const handlers = [
   mockConnectWeb(FeedService)({
     method: "suspendFeeds",
     handler: (req) => {
-      const nextFetchDate = new Date(
-        Date.now() + Number(req.suspendSeconds) * 1000,
-      );
+      const nextFetchDate = new Date(Date.now() + Number(req.suspendSeconds) * 1000);
       const nextFetchAt = dateToTimestamp(nextFetchDate);
       for (const id of req.ids || []) {
         const feed = feeds.find((f) => f.id === id);
@@ -161,17 +158,13 @@ export const handlers = [
         createdAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
         updatedAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
         tags: (req.tagIds || []).map(
-          (id) =>
-            tags.find((t) => t.id === id) ||
-            create(TagSchema, { id, name: "Unknown" }),
+          (id) => tags.find((t) => t.id === id) || create(TagSchema, { id, name: "Unknown" }),
         ),
       });
       // In-memory update for the session
       feeds.push(newFeed);
       tags.forEach((t) => {
-        const count = feeds.filter((f) =>
-          f.tags.some((ft: Tag) => ft.id === t.id),
-        ).length;
+        const count = feeds.filter((f) => f.tags.some((ft: Tag) => ft.id === t.id)).length;
         t.feedCount = BigInt(count);
       });
       return create(CreateFeedResponseSchema, { feed: newFeed });
@@ -186,20 +179,14 @@ export const handlers = [
         if (req.title) feeds[index].title = req.title;
         if (req.tagIds) {
           feeds[index].tags = req.tagIds.map(
-            (id) =>
-              tags.find((t) => t.id === id) ||
-              create(TagSchema, { id, name: "Unknown" }),
+            (id) => tags.find((t) => t.id === id) || create(TagSchema, { id, name: "Unknown" }),
           );
         }
         tags.forEach((t) => {
-          const count = feeds.filter((f) =>
-            f.tags.some((ft: Tag) => ft.id === t.id),
-          ).length;
+          const count = feeds.filter((f) => f.tags.some((ft: Tag) => ft.id === t.id)).length;
           t.feedCount = BigInt(count);
         });
-        feeds[index].updatedAt = dateToTimestamp(
-          new Date("2026-03-01T00:00:00Z"),
-        );
+        feeds[index].updatedAt = dateToTimestamp(new Date("2026-03-01T00:00:00Z"));
         return create(UpdateFeedResponseSchema, { feed: feeds[index] });
       }
       throw new Error("Feed not found");
@@ -215,9 +202,7 @@ export const handlers = [
         feeds.splice(index, 1);
         console.log("MSW: feed deleted, remaining:", feeds.length);
         tags.forEach((t) => {
-          const count = feeds.filter((f) =>
-            f.tags.some((ft: Tag) => ft.id === t.id),
-          ).length;
+          const count = feeds.filter((f) => f.tags.some((ft: Tag) => ft.id === t.id)).length;
           t.feedCount = BigInt(count);
         });
       }
@@ -258,9 +243,7 @@ export const handlers = [
           f.tags = f.tags.filter((t) => t.id !== req.id);
         });
         tags.forEach((t) => {
-          const count = feeds.filter((f) =>
-            f.tags.some((ft: Tag) => ft.id === t.id),
-          ).length;
+          const count = feeds.filter((f) => f.tags.some((ft: Tag) => ft.id === t.id)).length;
           t.feedCount = BigInt(count);
         });
       }
@@ -274,14 +257,10 @@ export const handlers = [
       const feed = feeds.find((f) => f.id === req.feedId);
       if (feed) {
         feed.tags = req.tagIds.map(
-          (id) =>
-            tags.find((t) => t.id === id) ||
-            create(TagSchema, { id, name: "Unknown" }),
+          (id) => tags.find((t) => t.id === id) || create(TagSchema, { id, name: "Unknown" }),
         );
         tags.forEach((t) => {
-          const count = feeds.filter((f) =>
-            f.tags.some((ft: Tag) => ft.id === t.id),
-          ).length;
+          const count = feeds.filter((f) => f.tags.some((ft: Tag) => ft.id === t.id)).length;
           t.feedCount = BigInt(count);
         });
       }
@@ -298,9 +277,7 @@ export const handlers = [
         const feed = feeds.find((f) => f.id === feedId);
         if (feed) {
           // Remove tags
-          feed.tags = feed.tags.filter(
-            (t: Tag) => !removeTagIds.includes(t.id),
-          );
+          feed.tags = feed.tags.filter((t: Tag) => !removeTagIds.includes(t.id));
           // Add tags
           for (const tagId of addTagIds) {
             const tag = tags.find((t: Tag) => t.id === tagId);
@@ -311,9 +288,7 @@ export const handlers = [
         }
       }
       tags.forEach((t) => {
-        const count = feeds.filter((f) =>
-          f.tags.some((ft: Tag) => ft.id === t.id),
-        ).length;
+        const count = feeds.filter((f) => f.tags.some((ft: Tag) => ft.id === t.id)).length;
         t.feedCount = BigInt(count);
       });
       return create(ManageFeedTagsResponseSchema, {});
@@ -340,9 +315,7 @@ export const handlers = [
     method: "listItems",
     handler: (req) => {
       // Basic mock pagination: pageToken is the index
-      const parsedToken = req.pageToken
-        ? Number.parseInt(req.pageToken, 10)
-        : 0;
+      const parsedToken = req.pageToken ? Number.parseInt(req.pageToken, 10) : 0;
       const start = Number.isNaN(parsedToken) ? 0 : parsedToken;
       const pageSize = req.pageSize || 100;
 
@@ -360,9 +333,7 @@ export const handlers = [
 
       const paginatedResults = filteredItems.slice(start, start + pageSize);
       const nextPageToken =
-        filteredItems.length > start + pageSize
-          ? (start + pageSize).toString()
-          : "";
+        filteredItems.length > start + pageSize ? (start + pageSize).toString() : "";
 
       return create(ListItemsResponseSchema, {
         items: paginatedResults,
@@ -436,10 +407,7 @@ export const handlers = [
       const paginatedResults = results.slice(0, pageSize);
       const nextPageToken =
         results.length > pageSize
-          ? (
-              (req.pageToken ? Number.parseInt(req.pageToken, 10) : 0) +
-              pageSize
-            ).toString()
+          ? ((req.pageToken ? Number.parseInt(req.pageToken, 10) : 0) + pageSize).toString()
           : "";
 
       const itemReadsResponse = paginatedResults.map((r) => ({
@@ -466,9 +434,7 @@ export const handlers = [
     method: "addURLParsingRule",
     handler: (req) => {
       if (req.ruleType !== "subdomain" && req.ruleType !== "path") {
-        throw new Error(
-          `invalid rule_type: ${req.ruleType}. Must be 'subdomain' or 'path'`,
-        );
+        throw new Error(`invalid rule_type: ${req.ruleType}. Must be 'subdomain' or 'path'`);
       }
       return create(AddURLParsingRuleResponseSchema, {
         rule: create(URLParsingRuleSchema, {
@@ -499,9 +465,7 @@ export const handlers = [
     method: "addItemBlockRules",
     handler: (req) => {
       for (const [i, r] of req.rules.entries()) {
-        if (
-          !["user", "domain", "user_domain", "keyword"].includes(r.ruleType)
-        ) {
+        if (!["user", "domain", "user_domain", "keyword"].includes(r.ruleType)) {
           throw new Error(
             `invalid rule_type at index ${i}: ${r.ruleType}. Must be 'user', 'domain', 'user_domain', or 'keyword'`,
           );

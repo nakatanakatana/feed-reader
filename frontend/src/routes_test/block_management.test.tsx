@@ -1,15 +1,12 @@
-import {
-  createMemoryHistory,
-  createRouter,
-  RouterProvider,
-} from "@tanstack/solid-router";
-import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { page } from "vitest/browser";
-import { routeTree } from "../routeTree.gen";
-import "../styles.css";
 import { create } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
+import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
+import { render } from "solid-js/web";
+import { afterEach, describe, expect, it, vi } from "vite-plus/test";
+
+import "../styles.css";
+import { page } from "vite-plus/test/browser";
+
 import {
   ItemService,
   ListItemBlockRulesResponseSchema,
@@ -19,6 +16,7 @@ import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
 import { mockConnectWeb } from "../mocks/connect";
+import { routeTree } from "../routeTree.gen";
 
 // Unmock solid-router to test active link logic
 vi.unmock("@tanstack/solid-router");
@@ -69,20 +67,12 @@ describe("Block Management Navigation", () => {
 
     // Test navigation to URL Rules
     await urlRulesLink.click();
-    await expect
-      .element(page.getByText("Domain", { exact: true }))
-      .toBeInTheDocument();
-    await expect
-      .element(page.getByText("Pattern", { exact: true }))
-      .toBeInTheDocument();
+    await expect.element(page.getByText("Domain", { exact: true })).toBeInTheDocument();
+    await expect.element(page.getByText("Pattern", { exact: true })).toBeInTheDocument();
 
     // Test navigation to Block Rules
     await blockRulesLink.click();
-    await expect
-      .element(page.getByText("Value", { exact: true }).first())
-      .toBeInTheDocument();
-    await expect
-      .element(page.getByText("Domain (Optional)", { exact: true }))
-      .toBeInTheDocument();
+    await expect.element(page.getByText("Value", { exact: true }).first()).toBeInTheDocument();
+    await expect.element(page.getByText("Domain (Optional)", { exact: true })).toBeInTheDocument();
   });
 });

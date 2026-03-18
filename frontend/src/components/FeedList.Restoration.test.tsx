@@ -1,18 +1,12 @@
 import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
-import {
-  createMemoryHistory,
-  createRouter,
-  RouterProvider,
-} from "@tanstack/solid-router";
+import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
 import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { page } from "vitest/browser";
-import {
-  ListFeedsResponseSchema,
-  ListFeedTagsResponseSchema,
-} from "../gen/feed/v1/feed_pb";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
+import { page } from "vite-plus/test/browser";
+
+import { ListFeedsResponseSchema, ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
 import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
 import { feedStore } from "../lib/feed-store";
 import { queryClient, transport } from "../lib/query";
@@ -33,10 +27,7 @@ describe("FeedList Restoration", () => {
     worker.use(
       http.all("*/feed.v1.FeedService/ListFeeds", () => {
         return HttpResponse.json(
-          toJson(
-            ListFeedsResponseSchema,
-            create(ListFeedsResponseSchema, { feeds: [] }),
-          ),
+          toJson(ListFeedsResponseSchema, create(ListFeedsResponseSchema, { feeds: [] })),
         );
       }),
       http.all("*/tag.v1.TagService/ListTags", () => {
@@ -51,10 +42,7 @@ describe("FeedList Restoration", () => {
       }),
       http.all("*/feed.v1.FeedService/ListFeedTags", () => {
         return HttpResponse.json(
-          toJson(
-            ListFeedTagsResponseSchema,
-            create(ListFeedTagsResponseSchema, { feedTags: [] }),
-          ),
+          toJson(ListFeedTagsResponseSchema, create(ListFeedTagsResponseSchema, { feedTags: [] })),
         );
       }),
     );
@@ -68,10 +56,7 @@ describe("FeedList Restoration", () => {
 
   it("restores sortBy and selectedTagId from localStorage on mount", async () => {
     // 1. Pre-set values in localStorage
-    localStorage.setItem(
-      STORAGE_KEYS.FEED_SORT_BY,
-      JSON.stringify("last_fetched"),
-    );
+    localStorage.setItem(STORAGE_KEYS.FEED_SORT_BY, JSON.stringify("last_fetched"));
     localStorage.setItem(STORAGE_KEYS.FEED_TAG_FILTER, JSON.stringify("tag-1"));
 
     // 2. Manually trigger re-init logic or just rely on the fact that we'll set the store

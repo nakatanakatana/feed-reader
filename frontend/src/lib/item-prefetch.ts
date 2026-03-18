@@ -12,9 +12,7 @@ export async function prefetchItems(itemIds: string[]) {
   if (!itemIds || itemIds.length === 0) return;
 
   const prefetchPromises = itemIds
-    .filter(
-      (id) => id !== "end-of-list" && !queryClient.getQueryData(["item", id]),
-    )
+    .filter((id) => id !== "end-of-list" && !queryClient.getQueryData(["item", id]))
     .map((id) => {
       return queryClient.prefetchQuery({
         queryKey: ["item", id],
@@ -35,16 +33,8 @@ export async function prefetchItems(itemIds: string[]) {
  * @param allItems The full list of items in the current view.
  * @returns Array of item IDs to prefetch.
  */
-export function getPrefetchIds(
-  currentIndex: number,
-  allItems: { id: string }[],
-): string[] {
-  if (
-    currentIndex < 0 ||
-    currentIndex >= allItems.length ||
-    !allItems ||
-    allItems.length === 0
-  ) {
+export function getPrefetchIds(currentIndex: number, allItems: { id: string }[]): string[] {
+  if (currentIndex < 0 || currentIndex >= allItems.length || !allItems || allItems.length === 0) {
     return [];
   }
 

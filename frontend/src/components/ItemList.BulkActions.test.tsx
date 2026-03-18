@@ -1,14 +1,11 @@
 import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
-import {
-  createMemoryHistory,
-  createRouter,
-  RouterProvider,
-} from "@tanstack/solid-router";
+import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
 import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { page } from "vitest/browser";
+import { afterEach, describe, expect, it, vi } from "vite-plus/test";
+import { page } from "vite-plus/test/browser";
+
 import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
 import {
   ItemSchema,
@@ -42,18 +39,12 @@ describe("ItemList Bulk Actions", () => {
       }),
       http.all("*/tag.v1.TagService/ListTags", () => {
         return HttpResponse.json(
-          toJson(
-            ListTagsResponseSchema,
-            create(ListTagsResponseSchema, { tags: [] }),
-          ),
+          toJson(ListTagsResponseSchema, create(ListTagsResponseSchema, { tags: [] })),
         );
       }),
       http.all("*/feed.v1.FeedService/ListFeedTags", () => {
         return HttpResponse.json(
-          toJson(
-            ListFeedTagsResponseSchema,
-            create(ListFeedTagsResponseSchema, { feedTags: [] }),
-          ),
+          toJson(ListFeedTagsResponseSchema, create(ListFeedTagsResponseSchema, { feedTags: [] })),
         );
       }),
     );
@@ -81,24 +72,18 @@ describe("ItemList Bulk Actions", () => {
 
     let updateCount = 0;
     worker.use(
-      http.post(
-        "*/item.v1.ItemService/UpdateItemStatus",
-        async ({ request }) => {
-          const body = (await request.json()) as {
-            ids: string[];
-            isRead: boolean;
-          };
-          if (body.ids.length === 2 && body.isRead === true) {
-            updateCount++;
-          }
-          return HttpResponse.json(
-            toJson(
-              UpdateItemStatusResponseSchema,
-              create(UpdateItemStatusResponseSchema, {}),
-            ),
-          );
-        },
-      ),
+      http.post("*/item.v1.ItemService/UpdateItemStatus", async ({ request }) => {
+        const body = (await request.json()) as {
+          ids: string[];
+          isRead: boolean;
+        };
+        if (body.ids.length === 2 && body.isRead === true) {
+          updateCount++;
+        }
+        return HttpResponse.json(
+          toJson(UpdateItemStatusResponseSchema, create(UpdateItemStatusResponseSchema, {})),
+        );
+      }),
     );
 
     const history = createMemoryHistory({ initialEntries: ["/"] });
@@ -122,9 +107,7 @@ describe("ItemList Bulk Actions", () => {
 
     // The bulk bar appears when items are selected.
     // It contains a "Mark as Read" button.
-    const bulkMarkBtn = page
-      .getByRole("button", { name: "Mark as Read" })
-      .first();
+    const bulkMarkBtn = page.getByRole("button", { name: "Mark as Read" }).first();
     await expect.element(bulkMarkBtn).toBeVisible();
     await bulkMarkBtn.click();
 
@@ -150,28 +133,22 @@ describe("ItemList Bulk Actions", () => {
     let totalRequestCount = 0;
     let fullBatchRequestCount = 0;
     worker.use(
-      http.post(
-        "*/item.v1.ItemService/UpdateItemStatus",
-        async ({ request }) => {
-          totalRequestCount++;
-          const body = (await request.json()) as {
-            ids: string[];
-            isRead: boolean;
-          };
-          // Increment only if it's a valid update request that includes all selected items
-          if (body.isRead === true && body.ids.length === itemCount) {
-            fullBatchRequestCount++;
-          }
-          // Simulate some network delay so we can see "Processing..."
-          await new Promise((resolve) => setTimeout(resolve, 500));
-          return HttpResponse.json(
-            toJson(
-              UpdateItemStatusResponseSchema,
-              create(UpdateItemStatusResponseSchema, {}),
-            ),
-          );
-        },
-      ),
+      http.post("*/item.v1.ItemService/UpdateItemStatus", async ({ request }) => {
+        totalRequestCount++;
+        const body = (await request.json()) as {
+          ids: string[];
+          isRead: boolean;
+        };
+        // Increment only if it's a valid update request that includes all selected items
+        if (body.isRead === true && body.ids.length === itemCount) {
+          fullBatchRequestCount++;
+        }
+        // Simulate some network delay so we can see "Processing..."
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        return HttpResponse.json(
+          toJson(UpdateItemStatusResponseSchema, create(UpdateItemStatusResponseSchema, {})),
+        );
+      }),
     );
 
     const history = createMemoryHistory({ initialEntries: ["/"] });
@@ -193,9 +170,7 @@ describe("ItemList Bulk Actions", () => {
     const selectAll = page.getByLabelText(/Select All/i);
     await selectAll.click();
 
-    const bulkMarkBtn = page
-      .getByRole("button", { name: "Mark as Read" })
-      .first();
+    const bulkMarkBtn = page.getByRole("button", { name: "Mark as Read" }).first();
     await expect.element(bulkMarkBtn).toBeVisible();
 
     // handleBulkMarkAsRead is async and awaits the network request.
@@ -211,14 +186,10 @@ describe("ItemList Bulk Actions", () => {
     // The handler yields immediately via setTimeout(0) before doing heavy work,
     // and Solid needs a turn to render the updated isBulkMarking state.
     // We should wait for the element to appear.
-    await expect
-      .poll(() => page.getByText("Processing...").query())
-      .not.toBeNull();
+    await expect.poll(() => page.getByText("Processing...").query()).not.toBeNull();
 
     // Wait for the simulated network request to complete and UI to update
-    await expect
-      .poll(() => page.getByText("Processing...").query(), { timeout: 5000 })
-      .toBeNull();
+    await expect.poll(() => page.getByText("Processing...").query(), { timeout: 5000 }).toBeNull();
 
     // Selection should be cleared after processing finishes
     await expect.element(selectAll).not.toBeChecked();

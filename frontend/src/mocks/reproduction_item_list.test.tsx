@@ -1,13 +1,10 @@
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { QueryClientProvider } from "@tanstack/solid-query";
-import {
-  createMemoryHistory,
-  createRouter,
-  RouterProvider,
-} from "@tanstack/solid-router";
+import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it } from "vitest";
-import { page } from "vitest/browser";
+import { afterEach, describe, expect, it } from "vite-plus/test";
+import { page } from "vite-plus/test/browser";
+
 import { queryClient } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
@@ -40,8 +37,6 @@ describe("ItemList Reproduction", () => {
     );
 
     // Expect to see "Item 1" which comes from the mock handler
-    await expect
-      .element(page.getByText("Item 1", { exact: true }))
-      .toBeInTheDocument();
+    await expect.element(page.getByText("Item 1", { exact: true })).toBeInTheDocument();
   });
 });

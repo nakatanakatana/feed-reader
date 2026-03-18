@@ -4,8 +4,9 @@ import { HttpResponse, http } from "msw";
 import type { JSX } from "solid-js";
 import { createSignal } from "solid-js";
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { page, userEvent } from "vitest/browser";
+import { afterEach, describe, expect, it, vi } from "vite-plus/test";
+import { page, userEvent } from "vite-plus/test/browser";
+
 import { GetItemResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
 import { dateToTimestamp } from "../lib/item-utils";
 import { queryClient, transport } from "../lib/query";

@@ -1,6 +1,7 @@
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it } from "vitest";
-import { page } from "vitest/browser";
+import { afterEach, describe, expect, it } from "vite-plus/test";
+import { page } from "vite-plus/test/browser";
+
 import { ActionButton } from "./ActionButton";
 
 describe("ActionButton styles", () => {
@@ -12,10 +13,7 @@ describe("ActionButton styles", () => {
   });
 
   it("primary variant has solid blue background", async () => {
-    dispose = render(
-      () => <ActionButton variant="primary">Primary</ActionButton>,
-      document.body,
-    );
+    dispose = render(() => <ActionButton variant="primary">Primary</ActionButton>, document.body);
     const button = page.getByRole("button", { name: "Primary" });
     await expect.element(button).toBeInTheDocument();
 
