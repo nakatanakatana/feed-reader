@@ -37,34 +37,38 @@ vi.mock("@tanstack/solid-db", async () => {
 });
 
 // Mock db module
-vi.mock("../lib/db", () => ({
-  tags: {
-    toArray: [],
-  },
-  feedTag: {
-    toArray: [],
-  },
-  itemsUnreadQuery: vi.fn(() => ({
-    toArray: [],
-    isReady: vi.fn().mockReturnValue(true),
-  })),
-  items: vi.fn(() => ({
-    insert: vi.fn(),
-    update: vi.fn(),
-    delete: vi.fn(),
-    toArray: [],
-  })),
-  feeds: {
-    delete: vi.fn(),
-    isReady: vi.fn().mockReturnValue(true),
-    toArray: [],
-  },
-  addFeed: vi.fn(),
-  feedInsert: vi.fn(),
-  updateItemStatus: vi.fn(),
-  manageFeedTags: vi.fn(),
-  refreshFeeds: vi.fn(),
-}));
+vi.mock("../lib/db", async () => {
+  const actual = await vi.importActual<typeof import("../lib/db")>("../lib/db");
+  return {
+    ...actual,
+    tags: {
+      toArray: [],
+    },
+    feedTag: {
+      toArray: [],
+    },
+    itemsUnreadQuery: vi.fn(() => ({
+      toArray: [],
+      isReady: vi.fn().mockReturnValue(true),
+    })),
+    items: vi.fn(() => ({
+      insert: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
+      toArray: [],
+    })),
+    feeds: {
+      delete: vi.fn(),
+      isReady: vi.fn().mockReturnValue(true),
+      toArray: [],
+    },
+    addFeed: vi.fn(),
+    feedInsert: vi.fn(),
+    updateItemStatus: vi.fn(),
+    manageFeedTags: vi.fn(),
+    refreshFeeds: vi.fn(),
+  };
+});
 
 vi.mock("../lib/tag-query", () => ({
   useTags: vi.fn().mockReturnValue({ data: { tags: [] } }),

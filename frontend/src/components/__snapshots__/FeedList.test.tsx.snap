@@ -250,14 +250,14 @@ exports[`FeedList > displays a list of feeds 1`] = `
                   Untagged
                 </option>
                 <option
-                  value="tag-1"
-                >
-                  Tech (1)
-                </option>
-                <option
                   value="tag-2"
                 >
                   News (2)
+                </option>
+                <option
+                  value="tag-1"
+                >
+                  Tech (1)
                 </option>
               </select>
             </div>

@@ -22,6 +22,7 @@ describe("storage-utils", () => {
     it("should handle objects", () => {
       const key = STORAGE_KEYS.FEED_SORT_BY;
       const value = { sort: "title" };
+      // biome-ignore lint/suspicious/noExplicitAny: This test specifically verifies object handling with setStorageValue
       setStorageValue(key, value as unknown as any);
       expect(localStorage.getItem(key)).toBe('{"sort":"title"}');
     });

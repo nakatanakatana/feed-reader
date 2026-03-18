@@ -1,21 +1,21 @@
-import { eq, isUndefined, useLiveQuery } from "@tanstack/solid-db";
+import { type CollectionStatus, useLiveQuery } from "@tanstack/solid-db";
 import { useMutation } from "@tanstack/solid-query";
-import { createEffect, createSignal, For, Show } from "solid-js";
+import { type Accessor, createEffect, createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import {
+  buildFeedListQuery,
   exportFeeds,
   type Feed,
   feedDelete,
-  feeds,
   feedTag,
   refreshFeeds,
   suspendFeeds,
+  tagPickerQuery,
 } from "../lib/db";
 import { type FeedSortBy, feedStore } from "../lib/feed-store";
 import { fetchingState } from "../lib/fetching-state";
 import { formatDate, formatRelativeDate } from "../lib/item-utils";
-import { tagsFeedQuery } from "../lib/tag-db";
 import { BulkActionBar } from "./BulkActionBar";
 import { ManageTagsModal } from "./ManageTagsModal";
 import { ActionButton } from "./ui/ActionButton";
@@ -35,9 +35,7 @@ export function FeedList() {
   const [isManageModalOpen, setIsManageModalOpen] = createSignal(false);
   let tagSelectRef: HTMLSelectElement | undefined;
 
-  const tagsQuery = useLiveQuery((q) => {
-    return q.from({ tag: tagsFeedQuery }).select(({ tag }) => ({ ...tag }));
-  });
+  const tagsQuery = useLiveQuery(() => tagPickerQuery);
 
   // Force sync the select value to DOM because browser might reset it if options are not ready
   createEffect(() => {
@@ -52,41 +50,16 @@ export function FeedList() {
   });
 
   const feedListQuery = useLiveQuery((q) => {
-    const tagId = feedStore.state.selectedTagId;
-    const currentSort = feedStore.state.sortBy;
-    let query = q.from({ feed: feeds });
-
-    if (tagId === null) {
-      // untagged
-      query = query
-        .leftJoin({ ft: feedTag }, ({ feed, ft }) => eq(feed.id, ft.feedId))
-        .where(({ ft }) => isUndefined(ft));
-    }
-
-    if (tagId && tagId !== null) {
-      query = query
-        .leftJoin({ ft: feedTag }, ({ feed, ft }) => eq(feed.id, ft.feedId))
-        .where(({ ft }) => eq(ft?.tagId, tagId));
-    }
-
-    if (currentSort === "title_desc") {
-      query = query.orderBy(({ feed }) => feed.title, "desc");
-    } else if (currentSort === "last_fetched") {
-      query = query
-        .orderBy(({ feed }) => feed.lastFetchedAt, "asc")
-        .orderBy(({ feed }) => feed.title, "asc");
-    } else if (currentSort === "next_fetch") {
-      query = query
-        .orderBy(({ feed }) => feed.nextFetchAt, "asc")
-        .orderBy(({ feed }) => feed.title, "asc");
-    } else {
-      query = query.orderBy(({ feed }) => feed.title, "asc");
-    }
-
-    return query.select(({ feed }) => ({
-      ...feed,
-    }));
-  });
+    return buildFeedListQuery(q, {
+      feedTagCollection: feedTag,
+      tagId: feedStore.state.selectedTagId,
+      sortBy: feedStore.state.sortBy,
+    });
+  }) as unknown as Accessor<Feed[]> & {
+    isLoading: boolean;
+    isReady: boolean;
+    status: CollectionStatus;
+  };
 
   // Ensure selectedTagId is valid once tags load
   createEffect(() => {
@@ -338,7 +311,7 @@ export function FeedList() {
         >
           <ul class={stack({ gap: "2", width: "full" })}>
             <For each={feedListQuery()}>
-              {(feed: Feed) => (
+              {(feed) => (
                 <li
                   onClick={() => toggleFeedSelection(feed.id)}
                   onKeyDown={(e) => {

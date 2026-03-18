@@ -1,15 +1,9 @@
 import { createClient } from "@connectrpc/connect";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
-import {
-  coalesce,
-  createCollection,
-  createLiveQueryCollection,
-  eq,
-} from "@tanstack/solid-db";
+import { createCollection } from "@tanstack/solid-db";
 import { createMemo, createRoot } from "solid-js";
 import { ItemService } from "../gen/item/v1/item_pb";
 import { toDate } from "./date-utils";
-import { itemReadCollection } from "./item-read-db";
 import { itemStore } from "./item-store";
 import {
   lastFetched,
@@ -190,28 +184,6 @@ export const items = createRoot(() => {
   return createMemo(() =>
     createItems(itemStore.state.showRead, itemStore.state.since),
   );
-});
-
-export const itemsUnreadQuery = createRoot(() => {
-  const collection = createLiveQueryCollection((q) =>
-    q
-      .from({ item: items() })
-      // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
-      .leftJoin({ read: itemReadCollection() }, ({ item, read }: any) =>
-        eq(item.id, read.id),
-      )
-      // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
-      .where(({ item, read }: any) => {
-        // Prioritize delta-synced read status for unread calculations
-        return eq(coalesce(read?.isRead, item.isRead), false);
-      })
-      // biome-ignore lint/suspicious/noExplicitAny: TanStack DB select types
-      .select(({ item, read }: any) => ({
-        ...item,
-        isRead: coalesce(read?.isRead, item.isRead),
-      })),
-  );
-  return () => collection;
 });
 
 export const getItem = async (id: string): Promise<Item | null> => {

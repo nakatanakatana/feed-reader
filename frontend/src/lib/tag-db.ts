@@ -1,14 +1,8 @@
 import { createClient } from "@connectrpc/connect";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
-import {
-  count,
-  createCollection,
-  createLiveQueryCollection,
-  eq,
-} from "@tanstack/solid-db";
+import { createCollection } from "@tanstack/solid-db";
 import { TagService } from "../gen/tag/v1/tag_pb";
 import { toDate } from "./date-utils";
-import { feedTag } from "./feed-db";
 import { queryClient, transport } from "./query";
 
 export interface Tag {
@@ -54,30 +48,4 @@ export const tags = createCollection(
     },
     getKey: (tag: Tag) => tag.id,
   }),
-);
-
-export const tagsBaseQuery = createLiveQueryCollection((q) => {
-  return q.from({ tag: tags }).select(({ tag }) => ({ ...tag }));
-});
-
-export const tagsFeedQuery = createLiveQueryCollection((q) =>
-  q
-    .from({ tag: tagsBaseQuery })
-    .leftJoin({ ft: feedTag }, ({ tag, ft }) => eq(tag.id, ft.tagId))
-    .groupBy(({ tag }) => [
-      tag.id,
-      tag.name,
-      tag.unreadCount,
-      tag.feedCount,
-      tag.createdAt,
-      tag.updatedAt,
-    ])
-    .select(({ tag, ft }) => ({
-      id: tag.id,
-      name: tag.name,
-      unreadCount: tag.unreadCount,
-      feedCount: tag.feedCount ?? count(ft?.feedId),
-      createdAt: tag.createdAt,
-      updatedAt: tag.updatedAt,
-    })),
 );
