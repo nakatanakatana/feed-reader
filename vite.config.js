@@ -138,6 +138,7 @@ export default defineConfig({
           ]
         : []),
       {
+        extends: true,
         test: {
           name: "node",
           root: "frontend",
