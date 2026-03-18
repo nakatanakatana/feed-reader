@@ -1,7 +1,6 @@
-import { render } from "solid-js/web";
-import "solid-devtools";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import { createRouter, RouterProvider } from "@tanstack/solid-router";
+import { render } from "solid-js/web";
 import { initOTEL } from "./otel";
 import { initPWA } from "./pwa";
 import { routeTree } from "./routeTree.gen";

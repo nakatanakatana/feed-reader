@@ -2,7 +2,7 @@ import { Code, ConnectError } from "@connectrpc/connect";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import * as queryLib from "./query";
 import { ERROR_TOAST_ELIGIBLE, errorInterceptor } from "./query";
-import { toast } from "./toast";
+import { toast } from "./toast-store";
 
 describe("Query Setup", () => {
   beforeEach(() => {

@@ -1,7 +1,7 @@
 import { Code, ConnectError, type Interceptor } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { MutationCache, QueryCache, QueryClient } from "@tanstack/solid-query";
-import { toast } from "./toast";
+import { toast } from "./toast-store";
 
 export const ERROR_TOAST_ELIGIBLE = Symbol.for("ERROR_TOAST_ELIGIBLE");
 const DEFAULT_ERROR_MESSAGE = "An error occurred. Please try again.";
