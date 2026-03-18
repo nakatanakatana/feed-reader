@@ -1,4 +1,4 @@
-import { coalesce, count, eq, useLiveQuery } from "@tanstack/solid-db";
+import { useLiveQuery } from "@tanstack/solid-db";
 import { useLocation, useNavigate } from "@tanstack/solid-router";
 import {
   createEffect,
@@ -13,12 +13,11 @@ import {
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import {
+  buildItemsWithReadStateQuery,
   feedTag,
   type Item,
-  itemReadCollection,
-  items,
-  itemsUnreadQuery,
-  tags,
+  tagUnreadCountsQuery,
+  totalUnreadCountQuery,
   updateItemReadStatus,
 } from "../lib/db";
 import { itemStore } from "../lib/item-store";
@@ -66,32 +65,10 @@ export function ItemList(props: ItemListProps) {
   });
 
   const itemQuery = useLiveQuery((q) => {
-    let query = q
-      .from({ item: items() })
-      // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
-      .leftJoin({ read: itemReadCollection() }, ({ item, read }: any) =>
-        eq(item.id, read.id),
-      )
-      .orderBy(({ item }) => item.publishedAt, {
-        direction: "asc",
-        nulls: "last",
-      })
-      .orderBy(({ item }) => item.createdAt, "asc");
-    if (props.tagId) {
-      query = query
-        .innerJoin(
-          { ft: feedTag },
-          // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
-          ({ item, ft }: any) => eq(item.feedId, ft.feedId),
-        )
-        // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
-        .where(({ ft }: any) => eq(ft.tagId, props.tagId));
-    }
-    // biome-ignore lint/suspicious/noExplicitAny: TanStack DB select types
-    return query.select(({ item, read }: any) => ({
-      ...item,
-      isRead: coalesce(read?.isRead, item.isRead),
-    }));
+    return buildItemsWithReadStateQuery(q, {
+      feedTagCollection: feedTag,
+      tagId: props.tagId,
+    });
   });
 
   const filteredItems = createMemo(() => {
@@ -114,26 +91,9 @@ export function ItemList(props: ItemListProps) {
     });
   };
 
-  const totalUnread = useLiveQuery((q) =>
-    q
-      .from({ i: itemsUnreadQuery() })
-      .select(({ i }) => ({ total: count(i.id) })),
-  );
+  const totalUnread = useLiveQuery(() => totalUnreadCountQuery());
 
-  const tagsQuery = useLiveQuery((q) => {
-    return q
-      .from({ tag: tags })
-      .leftJoin({ tf: feedTag }, ({ tag, tf }) => eq(tag.id, tf.tagId))
-      .leftJoin({ i: itemsUnreadQuery() }, ({ tf, i }) =>
-        eq(tf?.feedId, i.feedId),
-      )
-      .groupBy(({ tag }) => [tag.id, tag.name])
-      .select(({ tag, i }) => ({
-        id: tag.id,
-        name: tag.name,
-        unreadCount: count(i?.id),
-      }));
-  });
+  const tagsQuery = useLiveQuery(() => tagUnreadCountsQuery());
 
   const handleDateFilterSelect = (value: DateFilterValue) => {
     itemStore.setDateFilter(value);
