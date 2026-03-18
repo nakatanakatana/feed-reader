@@ -1,7 +1,6 @@
 /// <reference types="vitest" />
 import { createRequire } from "node:module";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
-import devtools from "solid-devtools/vite";
 import { analyzer } from "vite-bundle-analyzer";
 import { VitePWA } from "vite-plugin-pwa";
 import solid from "vite-plugin-solid";
@@ -45,7 +44,6 @@ export default defineConfig({
     emptyOutDir: false,
   },
   plugins: [
-    devtools(),
     tanstackRouter({
       target: "solid",
       autoCodeSplitting: true,
