@@ -13,6 +13,7 @@
     {
       "groupName": "tanstack/db",
       "matchPackageNames": [
+        "@tanstack/solid-query",
         "@tanstack/solid-db",
         "@tanstack/query-db-collection"
       ]
