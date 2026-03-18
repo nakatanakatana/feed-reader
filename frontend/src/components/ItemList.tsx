@@ -91,9 +91,9 @@ export function ItemList(props: ItemListProps) {
     });
   };
 
-  const totalUnread = useLiveQuery(() => totalUnreadCountQuery);
+  const totalUnread = useLiveQuery(() => totalUnreadCountQuery());
 
-  const tagsQuery = useLiveQuery(() => tagUnreadCountsQuery);
+  const tagsQuery = useLiveQuery(() => tagUnreadCountsQuery());
 
   const handleDateFilterSelect = (value: DateFilterValue) => {
     itemStore.setDateFilter(value);

@@ -18,7 +18,7 @@ export const Route = createRootRoute({
 });
 
 function RootComponent() {
-  const unreadItems = useLiveQuery(() => itemsUnreadQuery);
+  const unreadItems = useLiveQuery(() => itemsUnreadQuery());
 
   const headerStyle = css({
     paddingX: "4",

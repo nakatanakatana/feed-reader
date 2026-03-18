@@ -5,6 +5,7 @@ import {
   eq,
   type InitialQueryBuilder,
 } from "@tanstack/solid-db";
+import { createMemo, createRoot } from "solid-js";
 import { feedTag } from "../feed-db";
 import { items } from "../item-db";
 import { itemReadCollection } from "../item-read-db";
@@ -91,13 +92,19 @@ export const buildItemsWithReadStateQuery = (
   }));
 };
 
-export const itemsWithReadStateQuery = createLiveQueryCollection((q) =>
-  buildItemsWithReadStateQuery(q),
-);
+export const itemsWithReadStateQuery = createRoot(() => {
+  return createMemo(() =>
+    createLiveQueryCollection((q) => buildItemsWithReadStateQuery(q)),
+  );
+});
 
-export const itemsUnreadQuery = createLiveQueryCollection((q) =>
-  buildItemsWithReadStateQuery(q, { unreadOnly: true }),
-);
+export const itemsUnreadQuery = createRoot(() => {
+  return createMemo(() =>
+    createLiveQueryCollection((q) =>
+      buildItemsWithReadStateQuery(q, { unreadOnly: true }),
+    ),
+  );
+});
 
 export const buildTagUnreadCountsQuery = (
   q: InitialQueryBuilder,
@@ -106,7 +113,7 @@ export const buildTagUnreadCountsQuery = (
   const tagsCollection = options.tagsCollection ?? tags;
   const feedTagCollection = options.feedTagCollection ?? feedTag;
   const unreadItemsCollection =
-    options.unreadItemsCollection ?? itemsUnreadQuery;
+    options.unreadItemsCollection ?? itemsUnreadQuery();
 
   return (
     q
@@ -130,10 +137,18 @@ export const buildTagUnreadCountsQuery = (
   );
 };
 
-export const tagUnreadCountsQuery = createLiveQueryCollection((q) =>
-  buildTagUnreadCountsQuery(q),
-);
+export const tagUnreadCountsQuery = createRoot(() => {
+  return createMemo(() =>
+    createLiveQueryCollection((q) => buildTagUnreadCountsQuery(q)),
+  );
+});
 
-export const totalUnreadCountQuery = createLiveQueryCollection((q) =>
-  q.from({ i: itemsUnreadQuery }).select(({ i }) => ({ total: count(i.id) })),
-);
+export const totalUnreadCountQuery = createRoot(() => {
+  return createMemo(() =>
+    createLiveQueryCollection((q) =>
+      q
+        .from({ i: itemsUnreadQuery() })
+        .select(({ i }) => ({ total: count(i.id) })),
+    ),
+  );
+});
