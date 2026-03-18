@@ -1,6 +1,7 @@
 import { Code, ConnectError, type Interceptor } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { MutationCache, QueryCache, QueryClient } from "@tanstack/solid-query";
+
 import { toast } from "./toast";
 
 export const ERROR_TOAST_ELIGIBLE = Symbol.for("ERROR_TOAST_ELIGIBLE");
@@ -72,6 +73,5 @@ export const queryClient = new QueryClient({
 });
 
 if (typeof window !== "undefined") {
-  (window as unknown as { __queryClient: QueryClient }).__queryClient =
-    queryClient;
+  (window as unknown as { __queryClient: QueryClient }).__queryClient = queryClient;
 }

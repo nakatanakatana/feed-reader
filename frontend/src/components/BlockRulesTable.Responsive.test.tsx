@@ -1,14 +1,13 @@
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { page } from "vitest/browser";
+import { afterEach, describe, expect, it, vi } from "vite-plus/test";
+import { page } from "vite-plus/test/browser";
+
 import { BlockRulesTable } from "./BlockRulesTable";
 
 describe("BlockRulesTable Responsive", () => {
   let dispose: () => void;
 
-  const mockRules = [
-    { id: "1", ruleType: "user", value: "alice", domain: "github.com" },
-  ];
+  const mockRules = [{ id: "1", ruleType: "user", value: "alice", domain: "github.com" }];
 
   afterEach(async () => {
     if (dispose) dispose();

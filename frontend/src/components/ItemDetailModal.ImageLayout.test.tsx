@@ -3,8 +3,9 @@ import { QueryClientProvider } from "@tanstack/solid-query";
 import { HttpResponse, http } from "msw";
 import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { page } from "vitest/browser";
+import { afterEach, describe, expect, it, vi } from "vite-plus/test";
+import { page } from "vite-plus/test/browser";
+
 import { GetItemResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
 import { dateToTimestamp } from "../lib/item-utils";
 import { queryClient, transport } from "../lib/query";
@@ -149,10 +150,7 @@ describe("ItemDetailModal Image Layout", () => {
   });
 
   it("initially hides images and shows them only after layout is determined", async () => {
-    setupMockDataWithContent(
-      "test-visibility",
-      "![loading](https://example.com/loading.png)",
-    );
+    setupMockDataWithContent("test-visibility", "![loading](https://example.com/loading.png)");
     dispose = render(
       () => (
         <Wrapper>
@@ -166,9 +164,7 @@ describe("ItemDetailModal Image Layout", () => {
     await expect.element(img).toBeInTheDocument();
 
     // Mock naturalWidth/Height IMMEDIATELY after element is in DOM
-    const imgEl = document.querySelector(
-      'img[alt="loading"]',
-    ) as HTMLImageElement;
+    const imgEl = document.querySelector('img[alt="loading"]') as HTMLImageElement;
     if (imgEl) {
       Object.defineProperty(imgEl, "naturalWidth", {
         value: 1200,
@@ -204,10 +200,7 @@ describe("ItemDetailModal Image Layout", () => {
 
   describe("Image height limits", () => {
     it("applies 30vh max-height to hero images (landscape)", async () => {
-      setupMockDataWithContent(
-        "test-hero",
-        "![hero](https://example.com/hero.png)",
-      );
+      setupMockDataWithContent("test-hero", "![hero](https://example.com/hero.png)");
       dispose = render(
         () => (
           <Wrapper>
@@ -241,20 +234,13 @@ describe("ItemDetailModal Image Layout", () => {
       }
 
       // Check for attribute first (as layout detection logic is async)
-      await expect
-        .element(page.getByAltText("hero"))
-        .toHaveAttribute("data-layout", "hero");
+      await expect.element(page.getByAltText("hero")).toHaveAttribute("data-layout", "hero");
 
-      await expect
-        .element(page.getByAltText("hero"))
-        .toHaveStyle({ maxHeight: "30vh" });
+      await expect.element(page.getByAltText("hero")).toHaveStyle({ maxHeight: "30vh" });
     });
 
     it("applies 5vh max-height to icon images (square)", async () => {
-      setupMockDataWithContent(
-        "test-icon",
-        "![icon](https://example.com/icon.png)",
-      );
+      setupMockDataWithContent("test-icon", "![icon](https://example.com/icon.png)");
       dispose = render(
         () => (
           <Wrapper>
@@ -285,20 +271,13 @@ describe("ItemDetailModal Image Layout", () => {
         img.dispatchEvent(new Event("load"));
       }
 
-      await expect
-        .element(page.getByAltText("icon"))
-        .toHaveAttribute("data-layout", "icon");
+      await expect.element(page.getByAltText("icon")).toHaveAttribute("data-layout", "icon");
 
-      await expect
-        .element(page.getByAltText("icon"))
-        .toHaveStyle({ maxHeight: "5vh" });
+      await expect.element(page.getByAltText("icon")).toHaveStyle({ maxHeight: "5vh" });
     });
 
     it("applies 10vh max-height to other images (portrait)", async () => {
-      setupMockDataWithContent(
-        "test-other",
-        "![other](https://example.com/other.png)",
-      );
+      setupMockDataWithContent("test-other", "![other](https://example.com/other.png)");
       dispose = render(
         () => (
           <Wrapper>
@@ -310,9 +289,7 @@ describe("ItemDetailModal Image Layout", () => {
 
       await expect.element(page.getByAltText("other")).toBeInTheDocument();
 
-      const img = document.querySelector(
-        'img[alt="other"]',
-      ) as HTMLImageElement;
+      const img = document.querySelector('img[alt="other"]') as HTMLImageElement;
       if (img) {
         Object.defineProperty(img, "naturalWidth", {
           value: 600,
@@ -331,13 +308,9 @@ describe("ItemDetailModal Image Layout", () => {
         img.dispatchEvent(new Event("load"));
       }
 
-      await expect
-        .element(page.getByAltText("other"))
-        .toHaveAttribute("data-layout", "other");
+      await expect.element(page.getByAltText("other")).toHaveAttribute("data-layout", "other");
 
-      await expect
-        .element(page.getByAltText("other"))
-        .toHaveStyle({ maxHeight: "10vh" });
+      await expect.element(page.getByAltText("other")).toHaveStyle({ maxHeight: "10vh" });
     });
   });
 
@@ -375,9 +348,7 @@ describe("ItemDetailModal Image Layout", () => {
       document.body,
     );
 
-    await expect
-      .element(page.getByText("Just some plain text content."))
-      .toBeInTheDocument();
+    await expect.element(page.getByText("Just some plain text content.")).toBeInTheDocument();
     const p = page.getByRole("paragraph");
 
     await expect.element(p).toHaveStyle({ display: "block" });

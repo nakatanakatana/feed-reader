@@ -2,8 +2,9 @@ import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { page } from "vitest/browser";
+import { afterEach, describe, expect, it, vi } from "vite-plus/test";
+import { page } from "vite-plus/test/browser";
+
 import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
 import { ListTagsResponseSchema, TagSchema } from "../gen/tag/v1/tag_pb";
 import { queryClient, transport } from "../lib/query";
@@ -33,10 +34,7 @@ describe("ManageTagsModal", () => {
       }),
       http.all("*/feed.v1.FeedService/ListFeedTags", () => {
         return HttpResponse.json(
-          toJson(
-            ListFeedTagsResponseSchema,
-            create(ListFeedTagsResponseSchema, { feedTags: [] }),
-          ),
+          toJson(ListFeedTagsResponseSchema, create(ListFeedTagsResponseSchema, { feedTags: [] })),
         );
       }),
     );
@@ -45,11 +43,7 @@ describe("ManageTagsModal", () => {
       () => (
         <TransportProvider transport={transport}>
           <QueryClientProvider client={queryClient}>
-            <ManageTagsModal
-              isOpen={true}
-              onClose={() => {}}
-              feedIds={["f1", "f2"]}
-            />
+            <ManageTagsModal isOpen={true} onClose={() => {}} feedIds={["f1", "f2"]} />
           </QueryClientProvider>
         </TransportProvider>
       ),
@@ -57,9 +51,7 @@ describe("ManageTagsModal", () => {
     );
 
     // Should show title with count
-    await expect
-      .element(page.getByText("Manage Tags for 2 feeds"))
-      .toBeInTheDocument();
+    await expect.element(page.getByText("Manage Tags for 2 feeds")).toBeInTheDocument();
 
     // Should show tags
     await expect.element(page.getByText("Tech")).toBeInTheDocument();

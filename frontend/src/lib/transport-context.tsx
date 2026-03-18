@@ -1,17 +1,13 @@
 import type { Transport } from "@connectrpc/connect";
 import { createContext, type JSX, useContext } from "solid-js";
+
 import { transport as defaultTransport } from "./query";
 
 const TransportContext = createContext<Transport>(defaultTransport);
 
-export function TransportProvider(props: {
-  transport: Transport;
-  children: JSX.Element;
-}) {
+export function TransportProvider(props: { transport: Transport; children: JSX.Element }) {
   return (
-    <TransportContext.Provider value={props.transport}>
-      {props.children}
-    </TransportContext.Provider>
+    <TransportContext.Provider value={props.transport}>{props.children}</TransportContext.Provider>
   );
 }
 

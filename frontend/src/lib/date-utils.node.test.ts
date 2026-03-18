@@ -1,5 +1,6 @@
 import type { Timestamp } from "@bufbuild/protobuf/wkt";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
+
 import { dateToTimestamp, toDate } from "./date-utils";
 
 describe("date-utils", () => {
@@ -26,9 +27,7 @@ describe("date-utils", () => {
   });
 
   it("parses valid ISO strings and rejects invalid strings", () => {
-    expect(toDate("2026-03-01T00:00:00Z")?.toISOString()).toBe(
-      "2026-03-01T00:00:00.000Z",
-    );
+    expect(toDate("2026-03-01T00:00:00Z")?.toISOString()).toBe("2026-03-01T00:00:00.000Z");
     expect(toDate("not-a-date")).toBeUndefined();
   });
 });

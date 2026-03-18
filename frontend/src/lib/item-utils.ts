@@ -1,4 +1,5 @@
 import type { Timestamp } from "@bufbuild/protobuf/wkt";
+
 import { dateToTimestamp, toDate } from "./date-utils";
 
 export type DateFilterValue = "all" | "24h" | "7d" | "30d" | "90d" | "365d";
@@ -14,9 +15,7 @@ export interface Item {
 
 export { dateToTimestamp, toDate };
 
-export const getPublishedSince = (
-  value: DateFilterValue,
-): Timestamp | undefined => {
+export const getPublishedSince = (value: DateFilterValue): Timestamp | undefined => {
   if (value === "all") return undefined;
   const now = new Date();
   let since: Date;
@@ -55,9 +54,7 @@ export const formatDate = (date: Date | Timestamp | string | undefined) => {
   return d.toLocaleString();
 };
 
-export const formatRelativeDate = (
-  date: Date | Timestamp | string | undefined,
-) => {
+export const formatRelativeDate = (date: Date | Timestamp | string | undefined) => {
   const d = toDate(date);
   if (!d) return "";
   const now = new Date();
@@ -97,11 +94,7 @@ export const normalizeCategories = (categories: string): string[] => {
   const trimmed = categories.trim();
   const normalizeValue = (value: string) => {
     const valueTrimmed = value.trim();
-    if (
-      valueTrimmed.length >= 2 &&
-      valueTrimmed.startsWith('"') &&
-      valueTrimmed.endsWith('"')
-    ) {
+    if (valueTrimmed.length >= 2 && valueTrimmed.startsWith('"') && valueTrimmed.endsWith('"')) {
       return valueTrimmed.slice(1, -1).trim();
     }
     return valueTrimmed;

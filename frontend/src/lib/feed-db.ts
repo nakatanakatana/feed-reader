@@ -1,6 +1,7 @@
 import { createClient } from "@connectrpc/connect";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { createCollection } from "@tanstack/solid-db";
+
 import { FeedService } from "../gen/feed/v1/feed_pb";
 import type { Tag } from "../gen/tag/v1/tag_pb";
 import { toDate } from "./date-utils";
@@ -69,10 +70,7 @@ export const refreshFeeds = async (feedIds: string[]) => {
   }
 };
 
-export const suspendFeeds = async (
-  feedIds: string[],
-  suspendSeconds: number,
-) => {
+export const suspendFeeds = async (feedIds: string[], suspendSeconds: number) => {
   await feedClient.suspendFeeds({
     ids: feedIds,
     suspendSeconds: BigInt(suspendSeconds),

@@ -3,8 +3,9 @@ import { QueryClientProvider } from "@tanstack/solid-query";
 import { HttpResponse, http } from "msw";
 import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { page } from "vitest/browser";
+import { afterEach, describe, expect, it, vi } from "vite-plus/test";
+import { page } from "vite-plus/test/browser";
+
 import { GetItemResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
 import { queryClient, transport } from "../lib/query";
 import { ToastProvider } from "../lib/toast";
@@ -64,17 +65,13 @@ describe("ItemDetailModal UI Updates", () => {
 
     const titleLink = page.getByRole("link", { name: "Link Title" });
     await expect.element(titleLink).toBeInTheDocument();
-    await expect
-      .element(titleLink)
-      .toHaveAttribute("href", "https://example.com/item1");
+    await expect.element(titleLink).toHaveAttribute("href", "https://example.com/item1");
 
     await expect.element(page.getByText("Content")).toBeInTheDocument();
 
     // Use poll with querySelector to wait for image to appear
     await expect
-      .poll(() =>
-        document.querySelector('img[src="https://example.com/image.jpg"]'),
-      )
+      .poll(() => document.querySelector('img[src="https://example.com/image.jpg"]'))
       .not.toBeNull();
 
     const image = document.querySelector(

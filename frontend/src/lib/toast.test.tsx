@@ -1,5 +1,6 @@
 import { render } from "solid-js/web";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
+
 import { ToastProvider, toast, useToast } from "./toast";
 
 describe("Toast Context", () => {
@@ -104,9 +105,7 @@ describe("Toast Context", () => {
     );
 
     expect(toast.toasts()).toHaveLength(1);
-    expect(toast.toasts()[0].message).toBe(
-      "An error occurred. Please try again.",
-    );
+    expect(toast.toasts()[0].message).toBe("An error occurred. Please try again.");
     expect(toast.toasts()[0].type).toBe("error");
   });
 });

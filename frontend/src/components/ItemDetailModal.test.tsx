@@ -3,8 +3,9 @@ import { QueryClientProvider } from "@tanstack/solid-query";
 import { HttpResponse, http } from "msw";
 import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { page } from "vitest/browser";
+import { afterEach, describe, expect, it, vi } from "vite-plus/test";
+import { page } from "vite-plus/test/browser";
+
 import { GetItemResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
 import { dateToTimestamp } from "../lib/item-utils";
 import { queryClient, transport } from "../lib/query";
@@ -62,21 +63,15 @@ describe("ItemDetailModal", () => {
     );
 
     await expect.element(page.getByText("Test Item")).toBeInTheDocument();
-    await expect
-      .element(page.getByText(/Published:/).first())
-      .toBeInTheDocument();
-    await expect
-      .element(page.getByText(/Received:/).first())
-      .toBeInTheDocument();
+    await expect.element(page.getByText(/Published:/).first()).toBeInTheDocument();
+    await expect.element(page.getByText(/Received:/).first()).toBeInTheDocument();
     await expect.element(page.getByText("By Test Author")).toBeInTheDocument();
     await expect.element(page.getByText("Test Content")).toBeInTheDocument();
 
     // Check for title link
     const titleLink = page.getByRole("link", { name: "Test Item" });
     await expect.element(titleLink).toBeInTheDocument();
-    await expect
-      .element(titleLink)
-      .toHaveAttribute("href", "http://example.com");
+    await expect.element(titleLink).toHaveAttribute("href", "http://example.com");
 
     expect(document.body.innerHTML).toMatchSnapshot();
   });

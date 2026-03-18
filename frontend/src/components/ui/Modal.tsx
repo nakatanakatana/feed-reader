@@ -1,5 +1,6 @@
 import type { JSX } from "solid-js";
 import { onMount, Show } from "solid-js";
+
 import { css } from "../../../styled-system/css";
 import { center, flex, stack } from "../../../styled-system/patterns";
 
@@ -44,9 +45,7 @@ export function Modal(props: ModalProps) {
       display: "flex",
       flexDirection: "column",
       width:
-        size() === "full"
-          ? { base: "full", md: "90vw" }
-          : { base: "96vw", md: "80vw", lg: "50vw" },
+        size() === "full" ? { base: "full", md: "90vw" } : { base: "96vw", md: "80vw", lg: "50vw" },
       height: size() === "full" ? { base: "full", md: "90vh" } : "auto",
       maxWidth: size() === "full" ? { base: "full", md: "none" } : "48rem",
       maxHeight: size() === "full" ? { base: "full", md: "90vh" } : "90vh",
@@ -68,9 +67,7 @@ export function Modal(props: ModalProps) {
     if (e.key === "Tab" && modalRef) {
       const focusableSelector =
         'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
-      const focusables = Array.from(
-        modalRef.querySelectorAll(focusableSelector),
-      ) as HTMLElement[];
+      const focusables = Array.from(modalRef.querySelectorAll(focusableSelector)) as HTMLElement[];
 
       if (focusables.length === 0) return;
 
@@ -78,10 +75,7 @@ export function Modal(props: ModalProps) {
       const last = focusables[focusables.length - 1];
 
       if (e.shiftKey) {
-        if (
-          document.activeElement === first ||
-          document.activeElement === modalRef
-        ) {
+        if (document.activeElement === first || document.activeElement === modalRef) {
           e.preventDefault();
           last.focus();
         }
@@ -136,9 +130,7 @@ export function Modal(props: ModalProps) {
             >
               <div class={flex({ gap: "3", alignItems: "center", flex: 1 })}>
                 <Show when={props.title}>
-                  <h2 class={css({ fontSize: "lg", fontWeight: "bold" })}>
-                    {props.title}
-                  </h2>
+                  <h2 class={css({ fontSize: "lg", fontWeight: "bold" })}>{props.title}</h2>
                 </Show>
                 {props.headerExtras}
               </div>

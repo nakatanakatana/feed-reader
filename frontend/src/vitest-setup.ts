@@ -1,4 +1,5 @@
-import { afterAll, afterEach, beforeAll, expect, vi } from "vitest";
+import { afterAll, afterEach, beforeAll, expect, vi } from "vite-plus/test";
+
 import "./styles.css";
 import { resetDatabase } from "./lib/db";
 import { worker } from "./mocks/browser";

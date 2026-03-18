@@ -1,4 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
+
 import { feedStore } from "./feed-store";
 import { STORAGE_KEYS } from "./storage-utils";
 
@@ -20,15 +21,11 @@ describe("feedStore Persistence", () => {
   it("should save sortBy to localStorage when changed", async () => {
     feedStore.setSortBy("last_fetched");
     await wait(); // wait for effect
-    expect(localStorage.getItem(STORAGE_KEYS.FEED_SORT_BY)).toBe(
-      '"last_fetched"',
-    );
+    expect(localStorage.getItem(STORAGE_KEYS.FEED_SORT_BY)).toBe('"last_fetched"');
 
     feedStore.setSortBy("title_desc");
     await wait(); // wait for effect
-    expect(localStorage.getItem(STORAGE_KEYS.FEED_SORT_BY)).toBe(
-      '"title_desc"',
-    );
+    expect(localStorage.getItem(STORAGE_KEYS.FEED_SORT_BY)).toBe('"title_desc"');
   });
 
   it("should save selectedTagId to localStorage when changed", async () => {

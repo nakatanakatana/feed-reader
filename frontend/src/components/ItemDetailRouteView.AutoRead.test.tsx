@@ -1,14 +1,11 @@
 import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
-import {
-  createMemoryHistory,
-  createRouter,
-  RouterProvider,
-} from "@tanstack/solid-router";
+import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
 import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { page, userEvent } from "vitest/browser";
+import { afterEach, describe, expect, it, vi } from "vite-plus/test";
+import { page, userEvent } from "vite-plus/test/browser";
+
 import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
 import {
   GetItemResponseSchema,
@@ -57,18 +54,12 @@ describe("ItemDetailRouteView Auto-Read", () => {
       }),
       http.all("*/tag.v1.TagService/ListTags", () => {
         return HttpResponse.json(
-          toJson(
-            ListTagsResponseSchema,
-            create(ListTagsResponseSchema, { tags: [] }),
-          ),
+          toJson(ListTagsResponseSchema, create(ListTagsResponseSchema, { tags: [] })),
         );
       }),
       http.all("*/feed.v1.FeedService/ListFeedTags", () => {
         return HttpResponse.json(
-          toJson(
-            ListFeedTagsResponseSchema,
-            create(ListFeedTagsResponseSchema, { feedTags: [] }),
-          ),
+          toJson(ListFeedTagsResponseSchema, create(ListFeedTagsResponseSchema, { feedTags: [] })),
         );
       }),
     );
@@ -78,24 +69,18 @@ describe("ItemDetailRouteView Auto-Read", () => {
     setupMockData();
     let updateCalledForId = "";
     worker.use(
-      http.post(
-        "*/item.v1.ItemService/UpdateItemStatus",
-        async ({ request }) => {
-          const body = (await request.json()) as {
-            ids: string[];
-            isRead: boolean;
-          };
-          if (body.isRead === true) {
-            updateCalledForId = body.ids[0];
-          }
-          return HttpResponse.json(
-            toJson(
-              UpdateItemStatusResponseSchema,
-              create(UpdateItemStatusResponseSchema, {}),
-            ),
-          );
-        },
-      ),
+      http.post("*/item.v1.ItemService/UpdateItemStatus", async ({ request }) => {
+        const body = (await request.json()) as {
+          ids: string[];
+          isRead: boolean;
+        };
+        if (body.isRead === true) {
+          updateCalledForId = body.ids[0];
+        }
+        return HttpResponse.json(
+          toJson(UpdateItemStatusResponseSchema, create(UpdateItemStatusResponseSchema, {})),
+        );
+      }),
     );
 
     const history = createMemoryHistory({ initialEntries: ["/items/1"] });
@@ -115,9 +100,7 @@ describe("ItemDetailRouteView Auto-Read", () => {
     );
 
     // Wait for content
-    await expect
-      .element(page.getByRole("heading", { name: "Item 1" }))
-      .toBeInTheDocument();
+    await expect.element(page.getByRole("heading", { name: "Item 1" })).toBeInTheDocument();
 
     await userEvent.keyboard("j");
 
@@ -128,24 +111,18 @@ describe("ItemDetailRouteView Auto-Read", () => {
     setupMockData();
     let updateCalledForId = "";
     worker.use(
-      http.post(
-        "*/item.v1.ItemService/UpdateItemStatus",
-        async ({ request }) => {
-          const body = (await request.json()) as {
-            ids: string[];
-            isRead: boolean;
-          };
-          if (body.isRead === true) {
-            updateCalledForId = body.ids[0];
-          }
-          return HttpResponse.json(
-            toJson(
-              UpdateItemStatusResponseSchema,
-              create(UpdateItemStatusResponseSchema, {}),
-            ),
-          );
-        },
-      ),
+      http.post("*/item.v1.ItemService/UpdateItemStatus", async ({ request }) => {
+        const body = (await request.json()) as {
+          ids: string[];
+          isRead: boolean;
+        };
+        if (body.isRead === true) {
+          updateCalledForId = body.ids[0];
+        }
+        return HttpResponse.json(
+          toJson(UpdateItemStatusResponseSchema, create(UpdateItemStatusResponseSchema, {})),
+        );
+      }),
     );
 
     const history = createMemoryHistory({ initialEntries: ["/items/2"] });
@@ -164,9 +141,7 @@ describe("ItemDetailRouteView Auto-Read", () => {
       document.body,
     );
 
-    await expect
-      .element(page.getByRole("heading", { name: "Item 2" }))
-      .toBeInTheDocument();
+    await expect.element(page.getByRole("heading", { name: "Item 2" })).toBeInTheDocument();
 
     await userEvent.keyboard("k");
 

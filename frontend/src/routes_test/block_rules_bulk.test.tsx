@@ -1,13 +1,10 @@
 import { create } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
-import {
-  createMemoryHistory,
-  createRouter,
-  RouterProvider,
-} from "@tanstack/solid-router";
+import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
 import { render } from "solid-js/web";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { page } from "vitest/browser";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
+import { page } from "vite-plus/test/browser";
+
 import {
   AddItemBlockRulesResponseSchema,
   ItemService,
@@ -89,9 +86,7 @@ describe("BlockRules page bulk add button", () => {
     });
     await bulkAddButton.click();
 
-    await expect
-      .element(page.getByText("Bulk Add Block Rules"))
-      .toBeInTheDocument();
+    await expect.element(page.getByText("Bulk Add Block Rules")).toBeInTheDocument();
   });
 
   it("should submit valid rules to the backend", async () => {
@@ -152,15 +147,11 @@ domain,example.com`);
     });
 
     // Verify success message and Done button
-    await expect
-      .element(page.getByText("Successfully registered rules!"))
-      .toBeInTheDocument();
+    await expect.element(page.getByText("Successfully registered rules!")).toBeInTheDocument();
     const doneButton = page.getByRole("button", { name: "Done" });
     await doneButton.click();
 
     // Verify modal is closed
-    await expect
-      .element(page.getByText("Bulk Add Block Rules"))
-      .not.toBeInTheDocument();
+    await expect.element(page.getByText("Bulk Add Block Rules")).not.toBeInTheDocument();
   });
 });

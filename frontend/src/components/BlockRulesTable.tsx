@@ -1,4 +1,5 @@
 import { For, Show } from "solid-js";
+
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { createMediaQuery } from "../lib/use-media-query";
@@ -26,9 +27,7 @@ export function BlockRulesTable(props: BlockRulesTableProps) {
 
   const SortIndicator = (params: { field: BlockRulesSortField }) => (
     <Show when={props.sortField === params.field}>
-      <span class={css({ ml: "1" })}>
-        {props.sortDirection === "asc" ? "↑" : "↓"}
-      </span>
+      <span class={css({ ml: "1" })}>{props.sortDirection === "asc" ? "↑" : "↓"}</span>
     </Show>
   );
 
@@ -136,9 +135,7 @@ export function BlockRulesTable(props: BlockRulesTableProps) {
                     Domain <SortIndicator field="domain" />
                   </button>
                 </th>
-                <th class={css({ textAlign: "right!", whiteSpace: "nowrap" })}>
-                  Actions
-                </th>
+                <th class={css({ textAlign: "right!", whiteSpace: "nowrap" })}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -205,10 +202,7 @@ export function BlockRulesTable(props: BlockRulesTableProps) {
             py: "2",
           })}
         >
-          <label
-            for="mobile-sort"
-            class={css({ fontSize: "sm", color: "gray.600" })}
-          >
+          <label for="mobile-sort" class={css({ fontSize: "sm", color: "gray.600" })}>
             Sort by:
           </label>
           <select
@@ -285,9 +279,7 @@ export function BlockRulesTable(props: BlockRulesTableProps) {
                     >
                       {rule.ruleType}
                     </span>
-                    <span class={css({ fontWeight: "bold" })}>
-                      {rule.value}
-                    </span>
+                    <span class={css({ fontWeight: "bold" })}>{rule.value}</span>
                   </div>
                   <Show when={rule.domain}>
                     <code

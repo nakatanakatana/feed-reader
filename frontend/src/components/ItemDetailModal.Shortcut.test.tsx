@@ -3,8 +3,9 @@ import { QueryClientProvider } from "@tanstack/solid-query";
 import { HttpResponse, http } from "msw";
 import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { page, userEvent } from "vitest/browser";
+import { afterEach, describe, expect, it, vi } from "vite-plus/test";
+import { page, userEvent } from "vite-plus/test/browser";
+
 import {
   GetItemResponseSchema,
   ItemSchema,
@@ -93,9 +94,7 @@ describe("ItemDetailModal Shortcuts", () => {
     await expect.poll(() => updateSpy).toHaveBeenCalled();
 
     // Verify UI updated
-    await expect
-      .element(page.getByRole("button", { name: "Mark as Unread" }))
-      .toBeInTheDocument();
+    await expect.element(page.getByRole("button", { name: "Mark as Unread" })).toBeInTheDocument();
   });
 
   it("toggles read status when 'M' is pressed", async () => {
@@ -136,9 +135,7 @@ describe("ItemDetailModal Shortcuts", () => {
     await expect.poll(() => updateSpy).toHaveBeenCalled();
 
     // Verify UI updated
-    await expect
-      .element(page.getByRole("button", { name: "Mark as Unread" }))
-      .toBeInTheDocument();
+    await expect.element(page.getByRole("button", { name: "Mark as Unread" })).toBeInTheDocument();
   });
 
   it("does NOT toggle read status when focused on an input", async () => {
@@ -181,8 +178,6 @@ describe("ItemDetailModal Shortcuts", () => {
     expect(updateSpy).not.toHaveBeenCalled();
 
     // Verify FAB is still "Mark as Read"
-    await expect
-      .element(page.getByRole("button", { name: "Mark as Read" }))
-      .toBeInTheDocument();
+    await expect.element(page.getByRole("button", { name: "Mark as Read" })).toBeInTheDocument();
   });
 });

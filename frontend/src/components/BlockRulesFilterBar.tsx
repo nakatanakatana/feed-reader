@@ -1,4 +1,5 @@
 import { For } from "solid-js";
+
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
 
@@ -28,10 +29,7 @@ export function BlockRulesFilterBar(props: BlockRulesFilterBarProps) {
       })}
     >
       <div class={flex({ gap: "2", alignItems: "center" })}>
-        <label
-          for="filter-type"
-          class={css({ fontSize: "sm", color: "gray.600" })}
-        >
+        <label for="filter-type" class={css({ fontSize: "sm", color: "gray.600" })}>
           Filter:
         </label>
         <select
@@ -61,10 +59,7 @@ export function BlockRulesFilterBar(props: BlockRulesFilterBarProps) {
       </div>
 
       <div class={flex({ gap: "2", alignItems: "center" })}>
-        <label
-          for="filter-domain"
-          class={css({ fontSize: "sm", color: "gray.600" })}
-        >
+        <label for="filter-domain" class={css({ fontSize: "sm", color: "gray.600" })}>
           Domain:
         </label>
         <select
@@ -86,9 +81,7 @@ export function BlockRulesFilterBar(props: BlockRulesFilterBarProps) {
           })}
         >
           <option value="ALL_DOMAINS">All Domains</option>
-          <For each={props.domains}>
-            {(domain) => <option value={domain}>{domain}</option>}
-          </For>
+          <For each={props.domains}>{(domain) => <option value={domain}>{domain}</option>}</For>
         </select>
       </div>
     </div>

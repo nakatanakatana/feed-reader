@@ -1,19 +1,12 @@
 import { create } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
-import {
-  createMemoryHistory,
-  createRouter,
-  RouterProvider,
-} from "@tanstack/solid-router";
+import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
 import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { page, userEvent } from "vitest/browser";
-import {
-  FeedSchema,
-  FeedService,
-  ListFeedsResponseSchema,
-} from "../gen/feed/v1/feed_pb";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
+import { page, userEvent } from "vite-plus/test/browser";
+
+import { FeedSchema, FeedService, ListFeedsResponseSchema } from "../gen/feed/v1/feed_pb";
 import { dateToTimestamp } from "../lib/item-utils";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
@@ -39,9 +32,7 @@ describe("FeedList", () => {
 
   const TestWrapper = (props: { children: JSX.Element }) => (
     <TransportProvider transport={transport}>
-      <QueryClientProvider client={queryClient}>
-        {props.children}
-      </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>{props.children}</QueryClientProvider>
     </TransportProvider>
   );
 
@@ -129,9 +120,7 @@ describe("FeedList", () => {
 
     // Bulk action bar should show selected count
 
-    await expect
-      .element(page.getByText("2 feeds selected"))
-      .toBeInTheDocument();
+    await expect.element(page.getByText("2 feeds selected")).toBeInTheDocument();
   });
 
   it("manages tags for selected feeds", async () => {
@@ -166,9 +155,7 @@ describe("FeedList", () => {
 
     // Should show modal
 
-    await expect
-      .element(page.getByText("Manage Tags for 1 feeds"))
-      .toBeInTheDocument();
+    await expect.element(page.getByText("Manage Tags for 1 feeds")).toBeInTheDocument();
   });
 
   it("displays 'Soon' when nextFetch is in the past", async () => {

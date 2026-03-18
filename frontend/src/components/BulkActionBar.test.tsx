@@ -1,6 +1,7 @@
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it } from "vitest";
-import { page } from "vitest/browser";
+import { afterEach, describe, expect, it } from "vite-plus/test";
+import { page } from "vite-plus/test/browser";
+
 import { BulkActionBar } from "./BulkActionBar";
 
 describe("BulkActionBar", () => {
@@ -50,13 +51,7 @@ describe("BulkActionBar", () => {
   it("renders Export OPML button when onExport is provided", async () => {
     const onExport = vi.fn();
     dispose = render(
-      () => (
-        <BulkActionBar
-          selectedCount={1}
-          onClear={() => {}}
-          onExport={onExport}
-        />
-      ),
+      () => <BulkActionBar selectedCount={1} onClear={() => {}} onExport={onExport} />,
       document.body,
     );
 

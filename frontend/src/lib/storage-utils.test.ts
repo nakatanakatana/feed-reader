@@ -1,9 +1,6 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  getStorageValue,
-  STORAGE_KEYS,
-  setStorageValue,
-} from "./storage-utils";
+import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
+
+import { getStorageValue, STORAGE_KEYS, setStorageValue } from "./storage-utils";
 
 describe("storage-utils", () => {
   beforeEach(() => {
@@ -35,9 +32,7 @@ describe("storage-utils", () => {
     });
 
     it("should log error on failure", () => {
-      const consoleSpy = vi
-        .spyOn(console, "error")
-        .mockImplementation(() => {});
+      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
       const originalSetItem = localStorage.setItem;
       // Manually overwrite to ensure it throws
       localStorage.setItem = () => {
@@ -83,9 +78,7 @@ describe("storage-utils", () => {
     });
 
     it("should return default value on parse error", () => {
-      const consoleSpy = vi
-        .spyOn(console, "error")
-        .mockImplementation(() => {});
+      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
       const key = STORAGE_KEYS.FEED_SORT_BY;
       localStorage.setItem(key, "invalid-json");
 

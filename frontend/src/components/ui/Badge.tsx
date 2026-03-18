@@ -1,4 +1,5 @@
 import type { JSX } from "solid-js";
+
 import { css, cx } from "../../../styled-system/css";
 
 type BadgeVariant = "neutral" | "primary";

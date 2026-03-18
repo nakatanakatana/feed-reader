@@ -5,14 +5,11 @@ import {
   type InitialQueryBuilder,
   isUndefined,
 } from "@tanstack/solid-db";
+
 import { feeds, feedTag } from "../feed-db";
 import { tags } from "../tag-db";
 
-export type FeedSortOption =
-  | "title_asc"
-  | "title_desc"
-  | "last_fetched"
-  | "next_fetch";
+export type FeedSortOption = "title_asc" | "title_desc" | "last_fetched" | "next_fetch";
 
 interface FeedListQueryOptions {
   // biome-ignore lint/suspicious/noExplicitAny: TanStack DB collection types are too strict for shared builders
@@ -46,9 +43,7 @@ export const buildTagsWithFeedCountQuery = (
     q
       .from({ tag: tagsCollection })
       // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
-      .leftJoin({ ft: feedTagCollection }, ({ tag, ft }: any) =>
-        eq(tag.id, ft.tagId),
-      )
+      .leftJoin({ ft: feedTagCollection }, ({ tag, ft }: any) => eq(tag.id, ft.tagId))
       // biome-ignore lint/suspicious/noExplicitAny: TanStack DB group types
       .groupBy(({ tag }: any) => [
         tag.id,
@@ -90,14 +85,9 @@ export const buildTagPickerQuery = (
   );
 };
 
-export const tagPickerQuery = createLiveQueryCollection((q) =>
-  buildTagPickerQuery(q),
-);
+export const tagPickerQuery = createLiveQueryCollection((q) => buildTagPickerQuery(q));
 
-export const buildFeedListQuery = (
-  q: InitialQueryBuilder,
-  options: FeedListQueryOptions = {},
-) => {
+export const buildFeedListQuery = (q: InitialQueryBuilder, options: FeedListQueryOptions = {}) => {
   const feedsCollection = options.feedsCollection ?? feeds;
   const feedTagCollection = options.feedTagCollection ?? feedTag;
   const tagId = options.tagId;
@@ -108,9 +98,7 @@ export const buildFeedListQuery = (
   if (tagId === null) {
     query = query
       // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
-      .leftJoin({ ft: feedTagCollection }, ({ feed, ft }: any) =>
-        eq(feed.id, ft.feedId),
-      )
+      .leftJoin({ ft: feedTagCollection }, ({ feed, ft }: any) => eq(feed.id, ft.feedId))
       // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
       .where(({ ft }: any) => isUndefined(ft));
   }
@@ -118,9 +106,7 @@ export const buildFeedListQuery = (
   if (tagId && tagId !== null) {
     query = query
       // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
-      .leftJoin({ ft: feedTagCollection }, ({ feed, ft }: any) =>
-        eq(feed.id, ft.feedId),
-      )
+      .leftJoin({ ft: feedTagCollection }, ({ feed, ft }: any) => eq(feed.id, ft.feedId))
       // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
       .where(({ ft }: any) => eq(ft?.tagId, tagId));
   }

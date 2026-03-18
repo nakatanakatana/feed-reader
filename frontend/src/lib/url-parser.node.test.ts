@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
+
 import type { URLParsingRule } from "../gen/item/v1/item_pb";
 import { URLParser } from "./url-parser";
 
@@ -26,9 +27,7 @@ describe("URLParser", () => {
   });
 
   it("extracts user from path correctly", () => {
-    const result = parser.extractUserInfo(
-      "https://domain.com/users/user2/post",
-    );
+    const result = parser.extractUserInfo("https://domain.com/users/user2/post");
     expect(result).toEqual({ user: "user2", domain: "domain.com" });
   });
 

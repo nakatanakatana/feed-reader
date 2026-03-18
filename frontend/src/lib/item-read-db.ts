@@ -1,6 +1,7 @@
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { createCollection } from "@tanstack/solid-db";
 import { createRoot } from "solid-js";
+
 import { itemClient } from "./api/client";
 import { lastReadFetched, setLastReadFetched } from "./item-sync-state";
 import { dateToTimestamp } from "./item-utils";
@@ -29,8 +30,7 @@ export const itemReadCollectionOptions = {
       return [];
     }
 
-    const existingData =
-      (queryClient.getQueryData(queryKey) as ItemRead[]) || [];
+    const existingData = (queryClient.getQueryData(queryKey) as ItemRead[]) || [];
 
     let pageToken = "";
     const allNewReads: ItemRead[] = [];
@@ -50,14 +50,10 @@ export const itemReadCollectionOptions = {
 
         if (ir.updatedAt) {
           updatedAtDate = new Date(
-            Number(ir.updatedAt.seconds) * 1000 +
-              Math.floor(ir.updatedAt.nanos / 1000000),
+            Number(ir.updatedAt.seconds) * 1000 + Math.floor(ir.updatedAt.nanos / 1000000),
           );
 
-          if (
-            !maxServerUpdatedAt ||
-            updatedAtDate.getTime() > maxServerUpdatedAt.getTime()
-          ) {
+          if (!maxServerUpdatedAt || updatedAtDate.getTime() > maxServerUpdatedAt.getTime()) {
             maxServerUpdatedAt = updatedAtDate;
           }
         } else {
@@ -108,9 +104,7 @@ export const itemReadCollection = () => collection;
 export const updateItemReadStatus = async (ids: string[], isRead: boolean) => {
   // Save previous states for rollback if needed
   const existingData =
-    (queryClient.getQueryData(itemReadCollectionOptions.queryKey) as
-      | ItemRead[]
-      | undefined) || [];
+    (queryClient.getQueryData(itemReadCollectionOptions.queryKey) as ItemRead[] | undefined) || [];
   const previousStates = existingData.filter((d) => ids.includes(d.id));
 
   // Update local cache first (optimistic update)

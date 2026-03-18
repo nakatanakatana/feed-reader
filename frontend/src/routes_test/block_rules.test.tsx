@@ -1,15 +1,11 @@
 import { create } from "@bufbuild/protobuf";
-import {
-  createMemoryHistory,
-  createRouter,
-  RouterProvider,
-} from "@tanstack/solid-router";
-import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { page } from "vitest/browser";
-import { routeTree } from "../routeTree.gen";
-import "../styles.css";
 import { QueryClientProvider } from "@tanstack/solid-query";
+import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
+import { render } from "solid-js/web";
+import { afterEach, describe, expect, it, vi } from "vite-plus/test";
+import { page } from "vite-plus/test/browser";
+
+import "../styles.css";
 import {
   AddItemBlockRulesResponseSchema,
   DeleteItemBlockRuleResponseSchema,
@@ -22,6 +18,7 @@ import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
 import { mockConnectWeb } from "../mocks/connect";
+import { routeTree } from "../routeTree.gen";
 
 // Unmock solid-router to test active link logic
 vi.unmock("@tanstack/solid-router");
@@ -72,19 +69,12 @@ describe("Block Rules Page", () => {
       document.body,
     );
 
-    await expect
-      .element(page.getByText("blocked-domain.com").first())
-      .toBeInTheDocument();
-    await expect
-      .element(page.getByText("spam-keyword").first())
-      .toBeInTheDocument();
+    await expect.element(page.getByText("blocked-domain.com").first()).toBeInTheDocument();
+    await expect.element(page.getByText("spam-keyword").first()).toBeInTheDocument();
 
     // Snapshot testing with document.body.innerHTML as per project convention
     // Mask random IDs generated during render
-    const html = document.body.innerHTML.replace(
-      /id="[0-9.]+"/g,
-      'id="MASKED_ID"',
-    );
+    const html = document.body.innerHTML.replace(/id="[0-9.]+"/g, 'id="MASKED_ID"');
     expect(html).toMatchSnapshot();
   });
 
@@ -135,9 +125,7 @@ describe("Block Rules Page", () => {
     await valueInput.fill("new-block-keyword");
     await addButton.click();
 
-    await expect
-      .element(page.getByText("new-block-keyword").first())
-      .toBeInTheDocument();
+    await expect.element(page.getByText("new-block-keyword").first()).toBeInTheDocument();
   });
 
   it("should allow adding a new item block rule with domain (user_domain)", async () => {
@@ -189,12 +177,8 @@ describe("Block Rules Page", () => {
     await domainInput.fill("example.com");
     await addButton.click();
 
-    await expect
-      .element(page.getByText("blocked-user").first())
-      .toBeInTheDocument();
-    await expect
-      .element(page.getByText("@example.com").first())
-      .toBeInTheDocument();
+    await expect.element(page.getByText("blocked-user").first()).toBeInTheDocument();
+    await expect.element(page.getByText("@example.com").first()).toBeInTheDocument();
   });
 
   it("should allow deleting an item block rule", async () => {
@@ -234,15 +218,11 @@ describe("Block Rules Page", () => {
       document.body,
     );
 
-    await expect
-      .element(page.getByText("to-delete.com").first())
-      .toBeInTheDocument();
+    await expect.element(page.getByText("to-delete.com").first()).toBeInTheDocument();
 
     const deleteButton = page.getByRole("button", { name: "Delete" }).first();
     await deleteButton.click();
 
-    await expect
-      .element(page.getByText("to-delete.com").first())
-      .not.toBeInTheDocument();
+    await expect.element(page.getByText("to-delete.com").first()).not.toBeInTheDocument();
   });
 });

@@ -3,7 +3,8 @@ import { QueryClientProvider } from "@tanstack/solid-query";
 import { HttpResponse, http } from "msw";
 import { createSignal } from "solid-js";
 import { render } from "solid-js/web";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
+
 import { ItemDetailModal } from "../components/ItemDetailModal";
 import { GetItemResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
 import { worker } from "../mocks/browser";

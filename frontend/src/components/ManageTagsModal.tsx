@@ -1,6 +1,7 @@
 import { useLiveQuery } from "@tanstack/solid-db";
 import { useMutation } from "@tanstack/solid-query";
 import { createSignal, For } from "solid-js";
+
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { manageFeedTags, tagPickerQuery } from "../lib/db";
@@ -66,9 +67,7 @@ export function ManageTagsModal(props: ManageTagsModalProps) {
       title={`Manage Tags for ${props.feedIds.length} feeds`}
       ariaLabel="Manage tags"
       footer={
-        <div
-          class={flex({ justifyContent: "flex-end", gap: "3", width: "full" })}
-        >
+        <div class={flex({ justifyContent: "flex-end", gap: "3", width: "full" })}>
           <ActionButton variant="secondary" onClick={props.onClose}>
             Cancel
           </ActionButton>
@@ -90,9 +89,7 @@ export function ManageTagsModal(props: ManageTagsModalProps) {
           Select tags to add to or remove from all selected feeds.
         </p>
         <div class={stack({ gap: "2" })}>
-          <h3 class={css({ fontSize: "md", fontWeight: "semibold" })}>
-            All Tags
-          </h3>
+          <h3 class={css({ fontSize: "md", fontWeight: "semibold" })}>All Tags</h3>
           <div
             class={css({
               maxHeight: "60",
@@ -118,18 +115,14 @@ export function ManageTagsModal(props: ManageTagsModalProps) {
                   <div class={flex({ gap: "2" })}>
                     <ActionButton
                       size="sm"
-                      variant={
-                        addTagIds().includes(tag.id) ? "primary" : "secondary"
-                      }
+                      variant={addTagIds().includes(tag.id) ? "primary" : "secondary"}
                       onClick={() => toggleAddTag(tag.id)}
                     >
                       Add
                     </ActionButton>
                     <ActionButton
                       size="sm"
-                      variant={
-                        removeTagIds().includes(tag.id) ? "danger" : "secondary"
-                      }
+                      variant={removeTagIds().includes(tag.id) ? "danger" : "secondary"}
                       onClick={() => toggleRemoveTag(tag.id)}
                     >
                       Remove

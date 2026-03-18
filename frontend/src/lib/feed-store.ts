@@ -1,21 +1,12 @@
 import { createEffect, createRoot } from "solid-js";
 import { createStore } from "solid-js/store";
-import {
-  getStorageValue,
-  STORAGE_KEYS,
-  setStorageValue,
-} from "./storage-utils";
 
-export type FeedSortBy =
-  | "title_asc"
-  | "title_desc"
-  | "last_fetched"
-  | "next_fetch";
+import { getStorageValue, STORAGE_KEYS, setStorageValue } from "./storage-utils";
+
+export type FeedSortBy = "title_asc" | "title_desc" | "last_fetched" | "next_fetch";
 
 const isFeedSortBy = (val: unknown): val is FeedSortBy => {
-  return ["title_asc", "title_desc", "last_fetched", "next_fetch"].includes(
-    val as string,
-  );
+  return ["title_asc", "title_desc", "last_fetched", "next_fetch"].includes(val as string);
 };
 
 const isTagFilter = (val: unknown): val is string | undefined | null => {

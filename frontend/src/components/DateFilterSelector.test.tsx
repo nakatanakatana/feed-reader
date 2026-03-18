@@ -1,6 +1,7 @@
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { page } from "vitest/browser";
+import { afterEach, describe, expect, it, vi } from "vite-plus/test";
+import { page } from "vite-plus/test/browser";
+
 import { DateFilterSelector } from "./DateFilterSelector";
 
 describe("DateFilterSelector", () => {
@@ -13,10 +14,7 @@ describe("DateFilterSelector", () => {
 
   it("renders all preset options", async () => {
     const onSelect = vi.fn();
-    dispose = render(
-      () => <DateFilterSelector value="all" onSelect={onSelect} />,
-      document.body,
-    );
+    dispose = render(() => <DateFilterSelector value="all" onSelect={onSelect} />, document.body);
 
     await expect.element(page.getByText("Date:")).toBeInTheDocument();
     const select = page.getByRole("combobox");
@@ -33,10 +31,7 @@ describe("DateFilterSelector", () => {
 
   it("calls onSelect when an option is chosen", async () => {
     const onSelect = vi.fn();
-    dispose = render(
-      () => <DateFilterSelector value="all" onSelect={onSelect} />,
-      document.body,
-    );
+    dispose = render(() => <DateFilterSelector value="all" onSelect={onSelect} />, document.body);
 
     const select = page.getByRole("combobox");
     await select.selectOptions("24h");
@@ -51,15 +46,10 @@ describe("DateFilterSelector", () => {
 
   it("reflects the current value", async () => {
     const onSelect = vi.fn();
-    dispose = render(
-      () => <DateFilterSelector value="7d" onSelect={onSelect} />,
-      document.body,
-    );
+    dispose = render(() => <DateFilterSelector value="7d" onSelect={onSelect} />, document.body);
 
     // In vitest/browser, we can check the value of the element
-    const selectEl = document.getElementById(
-      "date-filter-select",
-    ) as HTMLSelectElement;
+    const selectEl = document.getElementById("date-filter-select") as HTMLSelectElement;
     expect(selectEl.value).toBe("7d");
   });
 });

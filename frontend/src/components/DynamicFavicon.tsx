@@ -1,4 +1,5 @@
 import { createEffect, onCleanup } from "solid-js";
+
 import { generateFaviconUri, getFaviconColor } from "../lib/favicon";
 
 interface DynamicFaviconProps {

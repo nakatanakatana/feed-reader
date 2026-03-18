@@ -1,6 +1,7 @@
 import { createClient } from "@connectrpc/connect";
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
 import { createCollection } from "@tanstack/solid-db";
+
 import {
   ItemService,
   type ItemBlockRule as ProtoItemBlockRule,
@@ -50,11 +51,7 @@ export const urlParsingRules = createCollection(
   }),
 );
 
-export const urlParsingRuleInsert = async (
-  domain: string,
-  ruleType: string,
-  pattern: string,
-) => {
+export const urlParsingRuleInsert = async (domain: string, ruleType: string, pattern: string) => {
   await itemClient.addURLParsingRule({ domain, ruleType, pattern });
   await queryClient.invalidateQueries({ queryKey: ["url-rules"] });
 };

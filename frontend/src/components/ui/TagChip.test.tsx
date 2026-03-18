@@ -1,6 +1,7 @@
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it } from "vitest";
-import { page } from "vitest/browser";
+import { afterEach, describe, expect, it } from "vite-plus/test";
+import { page } from "vite-plus/test/browser";
+
 import { TagChip } from "./TagChip";
 
 describe("TagChip styles", () => {
@@ -12,10 +13,7 @@ describe("TagChip styles", () => {
   });
 
   it("selected TagChip has solid blue background", async () => {
-    dispose = render(
-      () => <TagChip selected={true}>Selected</TagChip>,
-      document.body,
-    );
+    dispose = render(() => <TagChip selected={true}>Selected</TagChip>, document.body);
     const chip = page.getByRole("button", { name: "Selected" });
     await expect.element(chip).toBeInTheDocument();
 
@@ -28,10 +26,7 @@ describe("TagChip styles", () => {
   });
 
   it("unselected TagChip has outline style", async () => {
-    dispose = render(
-      () => <TagChip selected={false}>Unselected</TagChip>,
-      document.body,
-    );
+    dispose = render(() => <TagChip selected={false}>Unselected</TagChip>, document.body);
     const chip = page.getByRole("button", { name: "Unselected" });
     await expect.element(chip).toBeInTheDocument();
 

@@ -1,4 +1,5 @@
 import { type JSX, Show } from "solid-js";
+
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
 import { ActionButton } from "./ui/ActionButton";
@@ -50,11 +51,7 @@ export function BulkActionBar(props: BulkActionBarProps) {
             Clear
           </ActionButton>
           <Show when={props.onExport}>
-            <ActionButton
-              size="sm"
-              variant="secondary"
-              onClick={() => props.onExport?.()}
-            >
+            <ActionButton size="sm" variant="secondary" onClick={() => props.onExport?.()}>
               Export OPML
             </ActionButton>
           </Show>

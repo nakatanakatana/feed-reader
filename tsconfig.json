@@ -3,15 +3,10 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "types": [
-      "vitest/globals",
-      "vite/client",
-      "vite-plugin-pwa/client",
-      "node"
-    ],
+    "types": ["vite-plus/test/globals", "vite/client", "vite-plugin-pwa/client", "node"],
 
     // General
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "jsxImportSource": "solid-js",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
 
@@ -25,5 +20,5 @@
     "skipLibCheck": true,
     "strict": true
   },
-  "include": ["frontend/src", "*.config.ts"]
+  "include": ["frontend/src", "vite.config.ts", "*.config.ts"]
 }

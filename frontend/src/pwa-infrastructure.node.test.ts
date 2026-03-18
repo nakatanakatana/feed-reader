@@ -3,7 +3,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { expect, test } from "vitest";
+
+import { expect, test } from "vite-plus/test";
 
 test("PWA infrastructure is correctly configured", async () => {
   const __filename = fileURLToPath(import.meta.url);
@@ -16,7 +17,7 @@ test("PWA infrastructure is correctly configured", async () => {
   expect(pkg.devDependencies["vite-plugin-pwa"]).toBeDefined();
 
   // 2. Check VitePWA configuration in Vite config structurally
-  const configPath = path.join(rootDir, "vite.config.js");
+  const configPath = path.join(rootDir, "vite.config.ts");
   const configModule = await import(pathToFileURL(configPath).href);
   const config = configModule.default ?? configModule;
   const plugins = Array.isArray(config?.plugins) ? config.plugins : [];
@@ -24,13 +25,9 @@ test("PWA infrastructure is correctly configured", async () => {
   // Flatten plugins if they are nested (some plugins return arrays)
   const flatPlugins = plugins.flat();
   const pwaPlugin = flatPlugins.find(
-    (plugin: unknown) =>
-      (plugin as { name?: string })?.name === "vite-plugin-pwa",
+    (plugin: unknown) => (plugin as { name?: string })?.name === "vite-plugin-pwa",
   );
-  expect(
-    pwaPlugin,
-    "vite-plugin-pwa not found in vite.config.js",
-  ).toBeDefined();
+  expect(pwaPlugin, "vite-plugin-pwa not found in vite.config.ts").toBeDefined();
 
   // 3. Check if PWA icons exist
   const icon192 = path.join(rootDir, "frontend/public/pwa-192x192.png");

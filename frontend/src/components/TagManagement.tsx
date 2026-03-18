@@ -1,5 +1,6 @@
 import { useLiveQuery } from "@tanstack/solid-db";
 import { createSignal, For, Show } from "solid-js";
+
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { tagPickerQuery, tags } from "../lib/db";
@@ -29,9 +30,7 @@ export const TagManagement = () => {
 
   const handleDeleteTag = (id: string, name: string, feedCount: bigint) => {
     if (feedCount > 0n) {
-      const confirmed = confirm(
-        `Delete "${name}"? It is used by ${feedCount.toString()} feed(s).`,
-      );
+      const confirmed = confirm(`Delete "${name}"? It is used by ${feedCount.toString()} feed(s).`);
       if (!confirmed) return;
     }
 
@@ -139,9 +138,7 @@ export const TagManagement = () => {
                       _hover: { bg: "gray.50" },
                     })}
                   >
-                    <span class={css({ fontWeight: "medium" })}>
-                      {tag.name}
-                    </span>
+                    <span class={css({ fontWeight: "medium" })}>{tag.name}</span>
                     <Badge>feed: {tag.feedCount.toString()}</Badge>
                     <ActionButton
                       variant="danger"
@@ -162,10 +159,7 @@ export const TagManagement = () => {
               </For>
             </Show>
             <Show when={tagsQuery().length === 0}>
-              <EmptyState
-                title="No tags yet."
-                description="Create one to get started."
-              />
+              <EmptyState title="No tags yet." description="Create one to get started." />
             </Show>
           </div>
         </div>

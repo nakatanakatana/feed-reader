@@ -20,9 +20,7 @@ export function LoadingState(props: LoadingStateProps) {
             animation: "spin 1s linear infinite",
           })}
         />
-        <div class={css({ color: "gray.600", fontSize: "sm" })}>
-          {props.label}
-        </div>
+        <div class={css({ color: "gray.600", fontSize: "sm" })}>{props.label}</div>
       </div>
     </div>
   );

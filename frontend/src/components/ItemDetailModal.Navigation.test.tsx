@@ -3,8 +3,9 @@ import { QueryClientProvider } from "@tanstack/solid-query";
 import { HttpResponse, http } from "msw";
 import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { page, userEvent } from "vitest/browser";
+import { afterEach, describe, expect, it, vi } from "vite-plus/test";
+import { page, userEvent } from "vite-plus/test/browser";
+
 import { GetItemResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
 import { dateToTimestamp } from "../lib/item-utils";
 import { queryClient, transport } from "../lib/query";
@@ -55,12 +56,7 @@ describe("ItemDetailModal Navigation", () => {
     dispose = render(
       () => (
         <Wrapper>
-          <ItemDetailModal
-            itemId="1"
-            onClose={() => {}}
-            prevItemId="0"
-            nextItemId="2"
-          />
+          <ItemDetailModal itemId="1" onClose={() => {}} prevItemId="0" nextItemId="2" />
         </Wrapper>
       ),
       document.body,
@@ -77,12 +73,7 @@ describe("ItemDetailModal Navigation", () => {
     dispose = render(
       () => (
         <Wrapper>
-          <ItemDetailModal
-            itemId="1"
-            onClose={() => {}}
-            nextItemId="2"
-            onNext={onNext}
-          />
+          <ItemDetailModal itemId="1" onClose={() => {}} nextItemId="2" onNext={onNext} />
         </Wrapper>
       ),
       document.body,
@@ -99,12 +90,7 @@ describe("ItemDetailModal Navigation", () => {
     dispose = render(
       () => (
         <Wrapper>
-          <ItemDetailModal
-            itemId="2"
-            onClose={() => {}}
-            prevItemId="1"
-            onPrev={onPrev}
-          />
+          <ItemDetailModal itemId="2" onClose={() => {}} prevItemId="1" onPrev={onPrev} />
         </Wrapper>
       ),
       document.body,

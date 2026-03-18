@@ -42,8 +42,7 @@ export function useSwipe(options: UseSwipeOptions = {}) {
 
     if (!direction) {
       if (Math.abs(diffX) > 2 || Math.abs(diffY) > 2) {
-        direction =
-          Math.abs(diffX) > Math.abs(diffY) ? "horizontal" : "vertical";
+        direction = Math.abs(diffX) > Math.abs(diffY) ? "horizontal" : "vertical";
       } else {
         return;
       }
@@ -85,10 +84,7 @@ export function useSwipe(options: UseSwipeOptions = {}) {
       // Only track vertical motion when pulling past the top/bottom boundary; otherwise allow normal scroll
       if ((diffY > 0 && isAtTop) || (diffY < 0 && isAtBottom)) {
         // For vertical, we only prevent default if we have a handler
-        if (
-          (diffY > 0 && options.onSwipeDown) ||
-          (diffY < 0 && options.onSwipeUp)
-        ) {
+        if ((diffY > 0 && options.onSwipeDown) || (diffY < 0 && options.onSwipeUp)) {
           e.preventDefault();
         }
         setY(diffY);

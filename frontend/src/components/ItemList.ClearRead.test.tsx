@@ -1,14 +1,11 @@
 import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
-import {
-  createMemoryHistory,
-  createRouter,
-  RouterProvider,
-} from "@tanstack/solid-router";
+import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
 import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { page } from "vitest/browser";
+import { afterEach, describe, expect, it, vi } from "vite-plus/test";
+import { page } from "vite-plus/test/browser";
+
 import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
 import {
   ItemSchema,
@@ -54,18 +51,12 @@ describe("ItemList Clear Read Items", () => {
       }),
       http.all("*/tag.v1.TagService/ListTags", () => {
         return HttpResponse.json(
-          toJson(
-            ListTagsResponseSchema,
-            create(ListTagsResponseSchema, { tags: [] }),
-          ),
+          toJson(ListTagsResponseSchema, create(ListTagsResponseSchema, { tags: [] })),
         );
       }),
       http.all("*/feed.v1.FeedService/ListFeedTags", () => {
         return HttpResponse.json(
-          toJson(
-            ListFeedTagsResponseSchema,
-            create(ListFeedTagsResponseSchema, { feedTags: [] }),
-          ),
+          toJson(ListFeedTagsResponseSchema, create(ListFeedTagsResponseSchema, { feedTags: [] })),
         );
       }),
     );
@@ -110,12 +101,8 @@ describe("ItemList Clear Read Items", () => {
     );
 
     // Initial state: both items visible
-    await expect
-      .element(page.getByText("Unread Item", { exact: true }))
-      .toBeInTheDocument();
-    await expect
-      .element(page.getByText("Read Item", { exact: true }))
-      .toBeInTheDocument();
+    await expect.element(page.getByText("Unread Item", { exact: true })).toBeInTheDocument();
+    await expect.element(page.getByText("Read Item", { exact: true })).toBeInTheDocument();
 
     // Click "Clear Read Items" button
     const clearButton = page.getByRole("button", { name: /clear read items/i });
@@ -123,12 +110,8 @@ describe("ItemList Clear Read Items", () => {
     await clearButton.click();
 
     // After clicking: Read Item should be gone, Unread Item should remain
-    await expect
-      .element(page.getByText("Unread Item", { exact: true }))
-      .toBeInTheDocument();
-    await expect
-      .element(page.getByText("Read Item", { exact: true }))
-      .not.toBeInTheDocument();
+    await expect.element(page.getByText("Unread Item", { exact: true })).toBeInTheDocument();
+    await expect.element(page.getByText("Read Item", { exact: true })).not.toBeInTheDocument();
 
     // Verify no new ListItems request was made after clicking Clear (only the initial one)
     // Initial fetch happens during render
@@ -139,9 +122,7 @@ describe("ItemList Clear Read Items", () => {
 
     // Read Item should reappear
     await vi.waitFor(async () => {
-      await expect
-        .element(page.getByText("Read Item", { exact: true }))
-        .toBeInTheDocument();
+      await expect.element(page.getByText("Read Item", { exact: true })).toBeInTheDocument();
     });
 
     // --- New check for Refresh button ---
@@ -150,9 +131,7 @@ describe("ItemList Clear Read Items", () => {
       name: /clear read items/i,
     });
     await clearButton2.click();
-    await expect
-      .element(page.getByText("Read Item", { exact: true }))
-      .not.toBeInTheDocument();
+    await expect.element(page.getByText("Read Item", { exact: true })).not.toBeInTheDocument();
 
     // Click Refresh button
     const refreshButton = page.getByRole("button", { name: /refresh/i });
@@ -160,9 +139,7 @@ describe("ItemList Clear Read Items", () => {
 
     // Read Item should NOT reappear because queryFn NO LONGER clears the transient IDs
     await vi.waitFor(async () => {
-      await expect
-        .element(page.getByText("Read Item", { exact: true }))
-        .not.toBeInTheDocument();
+      await expect.element(page.getByText("Read Item", { exact: true })).not.toBeInTheDocument();
     });
   });
 });

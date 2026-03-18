@@ -1,18 +1,20 @@
+import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
+import { HttpResponse, http } from "msw";
 import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { page } from "vitest/browser";
+import { afterEach, describe, expect, it, vi } from "vite-plus/test";
+import { page } from "vite-plus/test/browser";
+
+import { GetItemResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
 import { dateToTimestamp } from "../lib/item-utils";
 import { queryClient, transport } from "../lib/query";
+
+import "../styles.css";
 import { ToastProvider } from "../lib/toast";
 import { TransportProvider } from "../lib/transport-context";
-import { ItemDetailModal } from "./ItemDetailModal";
-import "../styles.css";
-import { create, toJson } from "@bufbuild/protobuf";
-import { HttpResponse, http } from "msw";
-import { GetItemResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
 import { worker } from "../mocks/browser";
+import { ItemDetailModal } from "./ItemDetailModal";
 
 describe("ItemDetailModal Responsive", () => {
   let dispose: () => void;
@@ -201,20 +203,12 @@ describe("ItemDetailModal Responsive", () => {
     );
 
     // Labels "Published:" and "Received:" SHOULD be visible at the breakpoint
-    await expect
-      .element(page.getByText("Published:", { exact: true }).first())
-      .toBeVisible();
-    await expect
-      .element(page.getByText("Received:", { exact: true }).first())
-      .toBeVisible();
+    await expect.element(page.getByText("Published:", { exact: true }).first()).toBeVisible();
+    await expect.element(page.getByText("Received:", { exact: true }).first()).toBeVisible();
 
     // Icons with titles should NOT be visible
-    await expect
-      .element(page.getByTitle("Published", { exact: true }))
-      .not.toBeVisible();
-    await expect
-      .element(page.getByTitle("Received", { exact: true }))
-      .not.toBeVisible();
+    await expect.element(page.getByTitle("Published", { exact: true })).not.toBeVisible();
+    await expect.element(page.getByTitle("Received", { exact: true })).not.toBeVisible();
 
     dispose();
     document.body.innerHTML = "";
@@ -233,19 +227,11 @@ describe("ItemDetailModal Responsive", () => {
     );
 
     // Labels "Published:" and "Received:" SHOULD be visible
-    await expect
-      .element(page.getByText("Published:", { exact: true }).first())
-      .toBeVisible();
-    await expect
-      .element(page.getByText("Received:", { exact: true }).first())
-      .toBeVisible();
+    await expect.element(page.getByText("Published:", { exact: true }).first()).toBeVisible();
+    await expect.element(page.getByText("Received:", { exact: true }).first()).toBeVisible();
 
     // Icons with titles should NOT be visible
-    await expect
-      .element(page.getByTitle("Published", { exact: true }))
-      .not.toBeVisible();
-    await expect
-      .element(page.getByTitle("Received", { exact: true }))
-      .not.toBeVisible();
+    await expect.element(page.getByTitle("Published", { exact: true })).not.toBeVisible();
+    await expect.element(page.getByTitle("Received", { exact: true })).not.toBeVisible();
   });
 });

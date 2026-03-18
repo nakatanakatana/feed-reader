@@ -1,5 +1,6 @@
 import { useLiveQuery } from "@tanstack/solid-db";
 import { createRootRoute, Link, Outlet } from "@tanstack/solid-router";
+
 import { css } from "../../styled-system/css";
 import { DynamicFavicon } from "../components/DynamicFavicon";
 import { PwaBadge } from "../components/PwaBadge";

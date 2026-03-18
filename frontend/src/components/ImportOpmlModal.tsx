@@ -1,5 +1,6 @@
 import { createClient } from "@connectrpc/connect";
 import { createSignal, For, Show } from "solid-js";
+
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { FeedService } from "../gen/feed/v1/feed_pb";
@@ -111,9 +112,7 @@ export function ImportOpmlModal(props: ImportOpmlModalProps) {
       </Show>
 
       <Show when={error()}>
-        <p class={css({ color: "red.500", fontSize: "sm" })}>
-          Error: {error()}
-        </p>
+        <p class={css({ color: "red.500", fontSize: "sm" })}>Error: {error()}</p>
       </Show>
 
       <Show when={result()}>

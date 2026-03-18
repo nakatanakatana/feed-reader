@@ -84,44 +84,25 @@ jobs:
           name: octocov-backend
           if-no-files-found: error
 
-  frontend-setup:
+  frontend-lint-format:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/cache@v5
-        with:
-          path: ~/.npm
-          key: npm-${{runner.os}}-${{runner.arch}}-${{hashFiles('package-lock.json')}}
-          restore-keys: npm-${{runner.os}}-${{runner.arch}}-
-      - uses: actions/setup-node@v6
+      - uses: voidzero-dev/setup-vp@v1
         with:
           node-version: "24"
-
-  frontend-lint-format:
-    needs: frontend-setup
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/cache/restore@v5
-        with:
-          path: ~/.npm
-          key: npm-${{runner.os}}-${{runner.arch}}-${{hashFiles('package-lock.json')}}
-          restore-keys: npm-${{runner.os}}-${{runner.arch}}-
-      - run: npm ci  --prefer-offline
-      - run: npm run lint
-      - run: npm run format:check
+          cache: true
+      - run: npm run check
 
   frontend-test:
-    needs: frontend-setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/cache/restore@v5
+      - uses: voidzero-dev/setup-vp@v1
         with:
-          path: ~/.npm
-          key: npm-${{runner.os}}-${{runner.arch}}-${{hashFiles('package-lock.json')}}
-          restore-keys: npm-${{runner.os}}-${{runner.arch}}-
-      - run: npm ci  --prefer-offline
+          node-version: "24"
+          cache: true
+      - run: vp install
       - run: npx playwright install
       - name: Run frontend tests
         run: npm run test:coverage

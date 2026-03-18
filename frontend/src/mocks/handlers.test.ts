@@ -1,6 +1,7 @@
 import { toJson } from "@bufbuild/protobuf";
 import { createClient } from "@connectrpc/connect";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
+
 import {
   DeleteFeedResponseSchema,
   FeedService,
@@ -66,9 +67,7 @@ describe("FeedService Mock Handlers", () => {
 
     // Verify it's deleted
     const listResponseAfter = await client.listFeeds({});
-    expect(
-      listResponseAfter.feeds.find((f) => f.id === idToDelete),
-    ).toBeUndefined();
+    expect(listResponseAfter.feeds.find((f) => f.id === idToDelete)).toBeUndefined();
     expect(listResponseAfter.feeds.length).toBe(1);
   });
 });

@@ -1,13 +1,10 @@
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
-import {
-  createMemoryHistory,
-  createRouter,
-  RouterProvider,
-} from "@tanstack/solid-router";
+import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { page } from "vitest/browser";
+import { afterEach, describe, expect, it, vi } from "vite-plus/test";
+import { page } from "vite-plus/test/browser";
+
 import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
 
@@ -20,10 +17,7 @@ vi.mock("../lib/item-query", () => ({
 
 // Mock tanstack/solid-db
 vi.mock("@tanstack/solid-db", async () => {
-  const actual =
-    await vi.importActual<typeof import("@tanstack/solid-db")>(
-      "@tanstack/solid-db",
-    );
+  const actual = await vi.importActual<typeof import("@tanstack/solid-db")>("@tanstack/solid-db");
   return {
     ...actual,
     useLiveQuery: vi.fn(() => {
@@ -102,9 +96,7 @@ describe("Item Route Defaults", () => {
       document.body,
     );
 
-    await expect
-      .element(page.getByRole("heading", { name: "All Items" }))
-      .toBeInTheDocument();
+    await expect.element(page.getByRole("heading", { name: "All Items" })).toBeInTheDocument();
 
     // Test skipped - items Collection is now static
     expect(true).toBe(true);

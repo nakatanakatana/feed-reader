@@ -11,16 +11,10 @@ type MethodDef = {
   input: GenMessage<any>;
   // biome-ignore lint/suspicious/noExplicitAny: Generic constraint for any message type
   output: GenMessage<any>;
-  methodKind:
-    | "unary"
-    | "server_streaming"
-    | "client_streaming"
-    | "bidi_streaming";
+  methodKind: "unary" | "server_streaming" | "client_streaming" | "bidi_streaming";
 };
 
-export const parseConnectMessage = async (
-  request: Request,
-): Promise<JsonValue> => {
+export const parseConnectMessage = async (request: Request): Promise<JsonValue> => {
   if (request.method === "GET") {
     const url = new URL(request.url);
     const messageParam = url.searchParams.get("message");
@@ -61,9 +55,7 @@ export const safeJson = (data: unknown): HttpResponse<any> => {
       return obj.map(processDates);
     }
     if (obj !== null && typeof obj === "object") {
-      return Object.fromEntries(
-        Object.entries(obj).map(([k, v]) => [k, processDates(v)]),
-      );
+      return Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, processDates(v)]));
     }
     return obj;
   };
@@ -83,8 +75,7 @@ export const mockConnectWeb =
     handler: (req: InferMessage<T[U]["input"]>) => InferMessage<T[U]["output"]>;
   }): HttpHandler => {
     // Connect/gRPC conventions: Service/Method (PascalCase)
-    const rpcName =
-      props.method.charAt(0).toUpperCase() + props.method.slice(1);
+    const rpcName = props.method.charAt(0).toUpperCase() + props.method.slice(1);
 
     return http.all(`*/${service.typeName}/${rpcName}`, async ({ request }) => {
       // biome-ignore lint/suspicious/noExplicitAny: service.methods can be array or object at runtime
@@ -98,9 +89,7 @@ export const mockConnectWeb =
       }
 
       if (!methodDef) {
-        throw new Error(
-          `Method ${props.method} not found in service ${service.typeName}`,
-        );
+        throw new Error(`Method ${props.method} not found in service ${service.typeName}`);
       }
 
       let jsonBody: JsonValue;

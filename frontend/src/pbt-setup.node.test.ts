@@ -1,5 +1,5 @@
 import * as fc from "fast-check";
-import { describe, it } from "vitest";
+import { describe, it } from "vite-plus/test";
 
 describe("PBT Self-check", () => {
   it("should verify addition commutativity", () => {

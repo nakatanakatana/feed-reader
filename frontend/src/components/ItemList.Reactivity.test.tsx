@@ -1,14 +1,11 @@
 import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
-import {
-  createMemoryHistory,
-  createRouter,
-  RouterProvider,
-} from "@tanstack/solid-router";
+import { createMemoryHistory, createRouter, RouterProvider } from "@tanstack/solid-router";
 import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { page } from "vitest/browser";
+import { afterEach, describe, expect, it, vi } from "vite-plus/test";
+import { page } from "vite-plus/test/browser";
+
 import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
 import { ListItemsResponseSchema } from "../gen/item/v1/item_pb";
 import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
@@ -32,15 +29,10 @@ describe("ItemList Reactivity", () => {
     vi.clearAllMocks();
   });
 
-  const setupMockData = (
-    onListItems?: (req: Record<string, unknown>) => void,
-  ) => {
+  const setupMockData = (onListItems?: (req: Record<string, unknown>) => void) => {
     worker.use(
       http.all("*/item.v1.ItemService/ListItems", async ({ request }) => {
-        const body = (await parseConnectMessage(request)) as Record<
-          string,
-          unknown
-        >;
+        const body = (await parseConnectMessage(request)) as Record<string, unknown>;
         onListItems?.(body);
         return HttpResponse.json(
           toJson(
@@ -51,18 +43,12 @@ describe("ItemList Reactivity", () => {
       }),
       http.all("*/tag.v1.TagService/ListTags", () => {
         return HttpResponse.json(
-          toJson(
-            ListTagsResponseSchema,
-            create(ListTagsResponseSchema, { tags: [] }),
-          ),
+          toJson(ListTagsResponseSchema, create(ListTagsResponseSchema, { tags: [] })),
         );
       }),
       http.all("*/feed.v1.FeedService/ListFeedTags", () => {
         return HttpResponse.json(
-          toJson(
-            ListFeedTagsResponseSchema,
-            create(ListFeedTagsResponseSchema, { feedTags: [] }),
-          ),
+          toJson(ListFeedTagsResponseSchema, create(ListFeedTagsResponseSchema, { feedTags: [] })),
         );
       }),
     );

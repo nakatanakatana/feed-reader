@@ -1,5 +1,6 @@
 import { render } from "solid-js/web";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vite-plus/test";
+
 import { FaviconColor, generateFaviconUri } from "../lib/favicon";
 import { DynamicFavicon } from "./DynamicFavicon";
 
@@ -48,10 +49,7 @@ describe("DynamicFavicon", () => {
   });
 
   it("updates favicon to red when unreadCount is 1000", async () => {
-    dispose = render(
-      () => <DynamicFavicon unreadCount={1000} />,
-      document.body,
-    );
+    dispose = render(() => <DynamicFavicon unreadCount={1000} />, document.body);
 
     const link = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
     expect(link.href).toBe(generateFaviconUri(FaviconColor.Red));

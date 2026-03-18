@@ -3,8 +3,9 @@ import { QueryClientProvider } from "@tanstack/solid-query";
 import { HttpResponse, http } from "msw";
 import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { page } from "vitest/browser";
+import { afterEach, describe, expect, it, vi } from "vite-plus/test";
+import { page } from "vite-plus/test/browser";
+
 import { GetItemResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
 import { dateToTimestamp } from "../lib/item-utils";
 import { queryClient, transport } from "../lib/query";
@@ -83,9 +84,7 @@ describe("ItemDetailModal Reproduction", () => {
     }
 
     // Wait for next animation frame to ensure layout has been updated
-    await new Promise<void>((resolve) =>
-      requestAnimationFrame(() => resolve()),
-    );
+    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
 
     const anchor = img.closest("a");
     expect(anchor).not.toBeNull();
@@ -136,9 +135,7 @@ describe("ItemDetailModal Reproduction", () => {
     }
 
     // Wait for next animation frame to ensure layout has been updated
-    await new Promise<void>((resolve) =>
-      requestAnimationFrame(() => resolve()),
-    );
+    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
 
     const anchor = img.closest("a");
     expect(anchor).not.toBeNull();

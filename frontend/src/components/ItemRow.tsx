@@ -1,4 +1,5 @@
 import { Show } from "solid-js";
+
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import type { Item } from "../lib/db";
@@ -161,11 +162,7 @@ export function ItemRow(props: ItemRowProps) {
                     class={flex({ gap: "1", alignItems: "center" })}
                     title={`Published: ${formatDate(publishedAt())}`}
                   >
-                    <span
-                      class={css({ display: { base: "none", xs: "inline" } })}
-                    >
-                      Published:
-                    </span>
+                    <span class={css({ display: { base: "none", xs: "inline" } })}>Published:</span>
                     <span
                       class={css({ display: { base: "inline", xs: "none" } })}
                       title="Published"
@@ -195,13 +192,8 @@ export function ItemRow(props: ItemRowProps) {
                 class={flex({ gap: "1", alignItems: "center" })}
                 title={`Received: ${formatDate(props.item.createdAt)}`}
               >
-                <span class={css({ display: { base: "none", xs: "inline" } })}>
-                  Received:
-                </span>
-                <span
-                  class={css({ display: { base: "inline", xs: "none" } })}
-                  title="Received"
-                >
+                <span class={css({ display: { base: "none", xs: "inline" } })}>Received:</span>
+                <span class={css({ display: { base: "inline", xs: "none" } })} title="Received">
                   <ReceivedIcon />
                   <span
                     class={css({

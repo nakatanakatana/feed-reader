@@ -1,5 +1,6 @@
 import { createFileRoute, Outlet } from "@tanstack/solid-router";
 import { onCleanup, onMount } from "solid-js";
+
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
 import { ItemList } from "../components/ItemList";
@@ -81,13 +82,9 @@ function ItemsLayout() {
                   itemsCollection.utils.refetch();
                   itemReadCollection().utils.refetch();
                 }}
-                disabled={
-                  (itemsCollection as unknown as { isFetching: boolean })
-                    .isFetching
-                }
+                disabled={(itemsCollection as unknown as { isFetching: boolean }).isFetching}
               >
-                {(itemsCollection as unknown as { isFetching: boolean })
-                  .isFetching
+                {(itemsCollection as unknown as { isFetching: boolean }).isFetching
                   ? "Refreshing..."
                   : "Refresh"}
               </ActionButton>

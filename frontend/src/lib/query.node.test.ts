@@ -1,5 +1,6 @@
 import { Code, ConnectError } from "@connectrpc/connect";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
+
 import * as queryLib from "./query";
 import { ERROR_TOAST_ELIGIBLE, errorInterceptor } from "./query";
 import { toast } from "./toast";
@@ -34,9 +35,7 @@ describe("Query Setup", () => {
       };
 
       // biome-ignore lint/suspicious/noExplicitAny: testing internal interceptor interface
-      await expect(errorInterceptor(next)(req as any)).rejects.toThrow(
-        "unavailable",
-      );
+      await expect(errorInterceptor(next)(req as any)).rejects.toThrow("unavailable");
 
       // biome-ignore lint/suspicious/noExplicitAny: using Symbol to mark handled errors
       expect((error as any)[ERROR_TOAST_ELIGIBLE]).toBe(true);
@@ -54,9 +53,7 @@ describe("Query Setup", () => {
       };
 
       // biome-ignore lint/suspicious/noExplicitAny: testing internal interceptor interface
-      await expect(errorInterceptor(next)(req as any)).rejects.toThrow(
-        "denied",
-      );
+      await expect(errorInterceptor(next)(req as any)).rejects.toThrow("denied");
 
       // biome-ignore lint/suspicious/noExplicitAny: using Symbol to mark handled errors
       expect((error as any)[ERROR_TOAST_ELIGIBLE]).toBeUndefined();
@@ -90,10 +87,7 @@ describe("Query Setup", () => {
       // biome-ignore lint/suspicious/noExplicitAny: testing internal interface
       { state: { fetchStatus: "idle" } } as any,
     );
-    expect(toast.show).toHaveBeenCalledWith(
-      "An error occurred. Please try again.",
-      "error",
-    );
+    expect(toast.show).toHaveBeenCalledWith("An error occurred. Please try again.", "error");
   });
 
   it("should trigger toast on MutationCache error", () => {
@@ -113,10 +107,7 @@ describe("Query Setup", () => {
       // biome-ignore lint/suspicious/noExplicitAny: testing internal interface
       {} as any,
     );
-    expect(toast.show).toHaveBeenCalledWith(
-      "An error occurred. Please try again.",
-      "error",
-    );
+    expect(toast.show).toHaveBeenCalledWith("An error occurred. Please try again.", "error");
   });
 
   it("should only trigger toast on terminal failure (retry deduplication)", () => {
