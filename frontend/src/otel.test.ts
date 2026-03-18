@@ -11,6 +11,7 @@ vi.mock("@opentelemetry/exporter-trace-otlp-http", () => {
     );
     shutdown = vi.fn().mockResolvedValue(undefined);
   }
+
   return {
     OTLPTraceExporter: MockExporter,
   };
@@ -24,17 +25,22 @@ vi.mock("web-vitals", () => ({
 
 import { onCLS, onFCP, onLCP } from "web-vitals";
 
-describe("Frontend OTEL Instrumentation", () => {
+describe("Frontend OTEL instrumentation", () => {
   beforeEach(async () => {
     vi.stubEnv("VITE_OTEL_EXPORTER_URL", "http://localhost:4318/v1/traces");
     await resetInitialized();
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     vi.unstubAllEnvs();
+    await resetInitialized();
   });
 
-  it("should add traceparent header to fetch requests", async () => {
+  it("initializes without throwing with 2.x-compatible setup", () => {
+    expect(() => initOTEL()).not.toThrow();
+  });
+
+  it("adds traceparent header to fetch requests", async () => {
     initOTEL();
 
     let traceparent: string | null = null;
@@ -45,19 +51,19 @@ describe("Frontend OTEL Instrumentation", () => {
       }),
     );
 
-    // Use a small delay to ensure OTEL has time to wrap fetch if it's asynchronous
     await fetch("http://localhost:3000/api/trace-test");
 
     expect(traceparent).not.toBeNull();
   });
 
-  it("should initialize web vitals reporters", async () => {
+  it("initializes web vitals reporters once", async () => {
     initOTEL();
-    // Allow for any microtasks to run
+    initOTEL();
+
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    expect(onCLS).toHaveBeenCalled();
-    expect(onLCP).toHaveBeenCalled();
-    expect(onFCP).toHaveBeenCalled();
+    expect(onCLS).toHaveBeenCalledTimes(1);
+    expect(onLCP).toHaveBeenCalledTimes(1);
+    expect(onFCP).toHaveBeenCalledTimes(1);
   });
 });
