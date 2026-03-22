@@ -33,7 +33,7 @@
     "@tanstack/query-db-collection": "1.0.30",
     "@tanstack/router-plugin": "1.166.14",
     "@tanstack/solid-db": "0.2.13",
-    "@tanstack/solid-query": "5.91.1",
+    "@tanstack/solid-query": "5.91.3",
     "@tanstack/solid-router": "1.167.5",
     "markdown-it": "14.1.1",
     "postcss": "8.5.8",
