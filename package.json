@@ -31,7 +31,7 @@
     "@opentelemetry/sdk-trace-web": "2.6.0",
     "@opentelemetry/semantic-conventions": "1.40.0",
     "@tanstack/query-db-collection": "1.0.30",
-    "@tanstack/router-plugin": "1.167.1",
+    "@tanstack/router-plugin": "1.167.2",
     "@tanstack/solid-db": "0.2.13",
     "@tanstack/solid-query": "5.91.4",
     "@tanstack/solid-router": "1.168.1",
