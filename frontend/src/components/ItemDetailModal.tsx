@@ -1,4 +1,5 @@
 import { useLiveQuery } from "@tanstack/solid-db";
+import { createHotkeys } from "@tanstack/solid-hotkeys";
 import {
   createMutation,
   useQuery,
@@ -413,43 +414,38 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     }
   };
 
-  const handleKeyDown = (e: KeyboardEvent) => {
-    const target = e.target as HTMLElement;
-    if (
-      target.tagName === "INPUT" ||
-      target.tagName === "TEXTAREA" ||
-      target.isContentEditable
-    ) {
-      return;
-    }
-    if (e.key === "Escape") {
-      props.onClose();
-    } else if (
-      e.key === "ArrowLeft" ||
-      e.key === "k" ||
-      e.key === "K" ||
-      e.key === "h" ||
-      e.key === "H"
-    ) {
-      const prevId = props.prevItemId;
-      if (props.onPrev && prevId) props.onPrev();
-    } else if (
-      e.key === "ArrowRight" ||
-      e.key === "j" ||
-      e.key === "J" ||
-      e.key === "l" ||
-      e.key === "L"
-    ) {
-      const nextId = props.nextItemId;
-      if (!isEndOfList() && props.onNext && nextId) props.onNext();
-    } else if (e.key === "m" || e.key === "M") {
-      handleToggleRead();
-    } else if (e.key === "n" || e.key === "N") {
-      if (canSwipeUp()) {
-        handleSkip(false);
-      }
-    }
-  };
+  createHotkeys(() => [
+    ...(["ArrowLeft", "k", "h"] as const).map((key) => ({
+      hotkey: key,
+      callback: () => {
+        const prevId = props.prevItemId;
+        if (props.onPrev && prevId) props.onPrev();
+      },
+      options: { enabled: !!props.itemId },
+    })),
+    ...(["ArrowRight", "j", "l"] as const).map((key) => ({
+      hotkey: key,
+      callback: () => {
+        const nextId = props.nextItemId;
+        if (!isEndOfList() && props.onNext && nextId) props.onNext();
+      },
+      options: { enabled: !!props.itemId },
+    })),
+    {
+      hotkey: "m",
+      callback: () => handleToggleRead(),
+      options: { enabled: !!props.itemId },
+    },
+    {
+      hotkey: "n",
+      callback: () => {
+        if (canSwipeUp()) {
+          handleSkip(false);
+        }
+      },
+      options: { enabled: !!props.itemId },
+    },
+  ]);
 
   const footer = () => {
     if (props.footerExtras) return props.footerExtras;
@@ -474,7 +470,6 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
         size="full"
         hideClose
         ariaLabel={isEndOfList() ? "End of list reached" : "Item details"}
-        onKeyDown={handleKeyDown}
         bodyPadding={false}
         footer={footer()}
       >

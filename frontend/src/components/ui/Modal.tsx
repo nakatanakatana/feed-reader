@@ -1,5 +1,6 @@
 import type { JSX } from "solid-js";
 import { onMount, Show } from "solid-js";
+import { createHotkey } from "@tanstack/solid-hotkeys";
 import { css } from "../../../styled-system/css";
 import { center, flex, stack } from "../../../styled-system/patterns";
 
@@ -17,7 +18,6 @@ interface ModalProps {
   disableBackdropClose?: boolean;
   ariaLabel?: string;
   bodyPadding?: boolean;
-  onKeyDown?: (e: KeyboardEvent) => void;
   ref?: (el: HTMLDivElement) => void;
 }
 
@@ -29,6 +29,53 @@ export function Modal(props: ModalProps) {
       modalRef.focus();
     }
   });
+
+  createHotkey(
+    "Escape",
+    () => props.onClose(),
+    () => ({ enabled: props.isOpen && !props.disableBackdropClose }),
+  );
+
+  const handleTabNavigation = (e: KeyboardEvent, isShift: boolean) => {
+    if (!modalRef) return;
+    const focusableSelector =
+      'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    const focusables = Array.from(
+      modalRef.querySelectorAll(focusableSelector),
+    ) as HTMLElement[];
+
+    if (focusables.length === 0) return;
+
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+
+    if (isShift) {
+      if (
+        document.activeElement === first ||
+        document.activeElement === modalRef
+      ) {
+        e.preventDefault();
+        last.focus();
+      }
+    } else {
+      if (document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  };
+
+  createHotkey(
+    "Tab",
+    (e) => handleTabNavigation(e, false),
+    () => ({ enabled: props.isOpen }),
+  );
+
+  createHotkey(
+    "Shift+Tab",
+    (e) => handleTabNavigation(e, true),
+    () => ({ enabled: props.isOpen }),
+  );
 
   const size = () => props.size ?? "standard";
 
@@ -59,41 +106,6 @@ export function Modal(props: ModalProps) {
     }
   };
 
-  const handleKeyDown = (e: KeyboardEvent) => {
-    props.onKeyDown?.(e);
-    if (e.key === "Escape" && !props.disableBackdropClose) {
-      props.onClose();
-    }
-
-    if (e.key === "Tab" && modalRef) {
-      const focusableSelector =
-        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
-      const focusables = Array.from(
-        modalRef.querySelectorAll(focusableSelector),
-      ) as HTMLElement[];
-
-      if (focusables.length === 0) return;
-
-      const first = focusables[0];
-      const last = focusables[focusables.length - 1];
-
-      if (e.shiftKey) {
-        if (
-          document.activeElement === first ||
-          document.activeElement === modalRef
-        ) {
-          e.preventDefault();
-          last.focus();
-        }
-      } else {
-        if (document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
-        }
-      }
-    }
-  };
-
   return (
     <Show when={props.isOpen}>
       {/* biome-ignore lint/a11y/noStaticElementInteractions: Backdrop click handling */}
@@ -121,7 +133,6 @@ export function Modal(props: ModalProps) {
           aria-modal="true"
           aria-label={props.ariaLabel ?? props.title}
           onClick={(e) => e.stopPropagation()}
-          onKeyDown={handleKeyDown}
           class={panelStyle()}
         >
           <Show when={props.title || !props.hideClose}>
