@@ -43,7 +43,7 @@
   "devDependencies": {
     "@biomejs/biome": "2.4.8",
     "@bufbuild/protoc-gen-es": "2.11.0",
-    "@pandacss/dev": "1.9.0",
+    "@pandacss/dev": "1.9.1",
     "@types/markdown-it": "14.1.2",
     "@types/node": "25.5.0",
     "@vitest/browser-playwright": "4.1.0",
