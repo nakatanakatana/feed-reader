@@ -415,7 +415,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   };
 
   createHotkeys(() => [
-    ...(["ArrowLeft", "k", "h"] as const).map((key) => ({
+    ...(["ArrowLeft", "K", "H"] as const).map((key) => ({
       hotkey: key,
       callback: () => {
         const prevId = props.prevItemId;
@@ -423,7 +423,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
       },
       options: { enabled: !!props.itemId },
     })),
-    ...(["ArrowRight", "j", "l"] as const).map((key) => ({
+    ...(["ArrowRight", "J", "L"] as const).map((key) => ({
       hotkey: key,
       callback: () => {
         const nextId = props.nextItemId;
@@ -432,12 +432,12 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
       options: { enabled: !!props.itemId },
     })),
     {
-      hotkey: "m",
+      hotkey: "M",
       callback: () => handleToggleRead(),
       options: { enabled: !!props.itemId },
     },
     {
-      hotkey: "n",
+      hotkey: "N",
       callback: () => {
         if (canSwipeUp()) {
           handleSkip(false);

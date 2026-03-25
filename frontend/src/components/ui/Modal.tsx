@@ -1,6 +1,6 @@
+import { createHotkey } from "@tanstack/solid-hotkeys";
 import type { JSX } from "solid-js";
 import { onMount, Show } from "solid-js";
-import { createHotkey } from "@tanstack/solid-hotkeys";
 import { css } from "../../../styled-system/css";
 import { center, flex, stack } from "../../../styled-system/patterns";
 
@@ -123,6 +123,7 @@ export function Modal(props: ModalProps) {
           padding: { base: "0", md: "4" },
         })}
       >
+        {/* biome-ignore lint/a11y/useKeyWithClickEvents: Key events handled by tanstack/hotkeys */}
         <div
           ref={(el) => {
             modalRef = el;

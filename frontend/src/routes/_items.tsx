@@ -29,13 +29,10 @@ function ItemsLayout() {
   const search = Route.useSearch();
   const itemsCollection = items();
 
-  createHotkey(
-    "r",
-    () => {
-      itemsCollection.utils.refetch();
-      itemReadCollection().utils.refetch();
-    }
-  );
+  createHotkey("R", () => {
+    itemsCollection.utils.refetch();
+    itemReadCollection().utils.refetch();
+  });
 
   return (
     <PageLayout>
