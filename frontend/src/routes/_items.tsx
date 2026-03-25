@@ -1,5 +1,5 @@
+import { createHotkey } from "@tanstack/solid-hotkeys";
 import { createFileRoute, Outlet } from "@tanstack/solid-router";
-import { onCleanup, onMount } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
 import { ItemList } from "../components/ItemList";
@@ -29,27 +29,9 @@ function ItemsLayout() {
   const search = Route.useSearch();
   const itemsCollection = items();
 
-  onMount(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Ignore if user is typing in an input field
-      if (
-        e.target instanceof HTMLInputElement ||
-        e.target instanceof HTMLTextAreaElement ||
-        e.target instanceof HTMLSelectElement
-      ) {
-        return;
-      }
-
-      // 'r' key to refresh items
-      if (e.key === "r" && !e.ctrlKey && !e.metaKey && !e.altKey) {
-        e.preventDefault();
-        itemsCollection.utils.refetch();
-        itemReadCollection().utils.refetch();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    onCleanup(() => window.removeEventListener("keydown", handleKeyDown));
+  createHotkey("R", () => {
+    itemsCollection.utils.refetch();
+    itemReadCollection().utils.refetch();
   });
 
   return (
