@@ -17,4 +17,4 @@ packages:
 - name: goreleaser/goreleaser@v2.15.2
 - name: k1LoW/mo@v1.3.0
 - name: k1LoW/octocov@v0.75.6
-- name: sqlc-dev/sqlc@v1.30.0
+- name: sqlc-dev/sqlc@v1.31.0

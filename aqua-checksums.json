@@ -141,28 +141,28 @@
       "algorithm": "sha256"
     },
     {
-      "id": "http/downloads.sqlc.dev/sqlc_1.30.0_darwin_amd64.tar.gz",
-      "checksum": "EB065CA44F02A9500F8E51CB63594A6BBD2486AF04D18C0F81EFADF7EADF5E29",
+      "id": "http/downloads.sqlc.dev/sqlc_1.31.0_darwin_amd64.tar.gz",
+      "checksum": "BC4A0F952D7260EE038D326D902E7571A03237EABF5C45D045F83F8C3D396E57",
       "algorithm": "sha256"
     },
     {
-      "id": "http/downloads.sqlc.dev/sqlc_1.30.0_darwin_arm64.tar.gz",
-      "checksum": "FF18793B97715D08DDE364446F43082A06DA87B7797B9EC79EF2B31AEB0894E5",
+      "id": "http/downloads.sqlc.dev/sqlc_1.31.0_darwin_arm64.tar.gz",
+      "checksum": "55322A83A913FCAFEF8659A0A583A79F86E9C7124A6BBC21317F3288C6004B06",
       "algorithm": "sha256"
     },
     {
-      "id": "http/downloads.sqlc.dev/sqlc_1.30.0_linux_amd64.tar.gz",
-      "checksum": "468AECEE071BFE55E97FCBCAC52EA0208EECA444F67736F3B8F0F3D6A106132E",
+      "id": "http/downloads.sqlc.dev/sqlc_1.31.0_linux_amd64.tar.gz",
+      "checksum": "E35394BA3DF5E62669E76627F45172D18C6CBB1479E4762C51B29B0EAFC16DC0",
       "algorithm": "sha256"
     },
     {
-      "id": "http/downloads.sqlc.dev/sqlc_1.30.0_linux_arm64.tar.gz",
-      "checksum": "DD9AB43B022BA3B3402054F99D7AE6E5EFEA33C949E869C3C66B214415E0C82D",
+      "id": "http/downloads.sqlc.dev/sqlc_1.31.0_linux_arm64.tar.gz",
+      "checksum": "86FF46E7B4BE67720017B55A84B948AD60F32A0C02FD8E7175D9BFA8DCF972A8",
       "algorithm": "sha256"
     },
     {
-      "id": "http/downloads.sqlc.dev/sqlc_1.30.0_windows_amd64.tar.gz",
-      "checksum": "2B4380C93B6541C46840D73B31CC88018A84EA926B49AE432F22FE48B41C8BDC",
+      "id": "http/downloads.sqlc.dev/sqlc_1.31.0_windows_amd64.tar.gz",
+      "checksum": "B7785FDA5C524BF70AF59E0F9581BC2041F699D38F0E2BE0C06EFDA547872E45",
       "algorithm": "sha256"
     },
     {
