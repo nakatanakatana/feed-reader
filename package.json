@@ -22,7 +22,7 @@
     "@connectrpc/connect": "2.1.1",
     "@connectrpc/connect-web": "2.1.1",
     "@opentelemetry/api": "1.9.1",
-    "@opentelemetry/auto-instrumentations-web": "0.59.0",
+    "@opentelemetry/auto-instrumentations-web": "0.60.0",
     "@opentelemetry/context-zone": "2.7.0",
     "@opentelemetry/exporter-trace-otlp-http": "0.215.0",
     "@opentelemetry/instrumentation": "0.215.0",
