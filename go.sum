@@ -8,8 +8,8 @@ github.com/JohannesKaufmann/html-to-markdown/v2 v2.5.0 h1:mklaPbT4f/EiDr1Q+zPrEt
 github.com/JohannesKaufmann/html-to-markdown/v2 v2.5.0/go.mod h1:D56Cl9r8M5i3UwAchE+LlLc5hPN3kJtdZNVJn06lSHU=
 github.com/PuerkitoBio/goquery v1.9.2 h1:4/wZksC3KgkQw7SQgkKotmKljk0M6V8TUvA8Wb4yPeE=
 github.com/PuerkitoBio/goquery v1.9.2/go.mod h1:GHPCaP0ODyyxqcNoFGYlAprUFH81NuRPd0GX3Zu2Mvk=
-github.com/XSAM/otelsql v0.41.0 h1:uZifjQhZhv5EDYJh+IVk1DiYxQZJBlNSen0MBFnfxB8=
-github.com/XSAM/otelsql v0.41.0/go.mod h1:NMQT0PiKoFILp9QgjQz+D5mvW+9mT0suR7OejqrtMaM=
+github.com/XSAM/otelsql v0.42.0 h1:Li0xF4eJUxG2e0x3D4rvRlys1f27yJKvjTh7ljkUP5o=
+github.com/XSAM/otelsql v0.42.0/go.mod h1:4mOrEv+cS1KmKzrvTktvJnstr5GtKSAK+QHvFR9OcpI=
 github.com/andybalholm/cascadia v1.3.3 h1:AG2YHrzJIm4BZ19iwJ/DAua6Btl3IwJX+VI4kktS1LM=
 github.com/andybalholm/cascadia v1.3.3/go.mod h1:xNd9bqTn98Ln4DwST8/nG+H0yuB8Hmgu1YHNnWw0GeA=
 github.com/caarlos0/env/v11 v11.4.0 h1:Kcb6t5kIIr4XkoQC9AF2j+8E1Jsrl3Wz/hhm1LtoGAc=
