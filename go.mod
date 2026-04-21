@@ -3,7 +3,7 @@ module github.com/nakatanakatana/feed-reader
 go 1.26
 
 require (
-	connectrpc.com/connect v1.19.1
+	connectrpc.com/connect v1.19.2
 	connectrpc.com/otelconnect v0.9.0
 	github.com/JohannesKaufmann/html-to-markdown/v2 v2.5.0
 	github.com/XSAM/otelsql v0.42.0
