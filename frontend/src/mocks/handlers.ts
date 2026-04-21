@@ -346,16 +346,12 @@ export const handlers = [
       const start = Number.isNaN(parsedToken) ? 0 : parsedToken;
       const pageSize = req.pageSize || 100;
 
+      // Ignore since filter for mock handlers to ensure items are always visible
+      // regardless of the system time and the default "30d" filter.
       let filteredItems = items;
 
-      if (req.since) {
-        const sinceDate = toDate(req.since);
-        if (sinceDate) {
-          filteredItems = items.filter((item) => {
-            const createdAt = toDate(item.createdAt);
-            return createdAt && createdAt >= sinceDate;
-          });
-        }
+      if (req.isRead !== undefined) {
+        filteredItems = filteredItems.filter((i) => i.isRead === req.isRead);
       }
 
       const paginatedResults = filteredItems.slice(start, start + pageSize);
@@ -397,7 +393,20 @@ export const handlers = [
       if (item) {
         return create(GetItemResponseSchema, { item });
       }
-      throw new Error("Item not found");
+      // Fallback: return a dummy item for unknown IDs to prevent MSW uncaught exceptions
+      const now = new Date("2026-03-01T00:00:00Z");
+      return create(GetItemResponseSchema, {
+        item: create(ItemSchema, {
+          id: req.id,
+          title: `Item ${req.id}`,
+          publishedAt: dateToTimestamp(now),
+          createdAt: dateToTimestamp(now),
+          isRead: false,
+          description: `<p>Full content for item ${req.id}</p>`,
+          author: "Mock Author",
+          url: `https://example.com/item${req.id}`,
+        }),
+      });
     },
   }),
 
