@@ -54,6 +54,7 @@ afterEach(() => {
   worker.resetHandlers();
   resetState();
   resetDatabase();
+  localStorage.clear();
   vi.useRealTimers();
   vi.clearAllMocks();
 });
