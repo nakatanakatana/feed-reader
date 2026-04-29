@@ -36,7 +36,7 @@
     "@tanstack/solid-query": "5.100.1",
     "@tanstack/solid-router": "1.168.20",
     "markdown-it": "14.1.1",
-    "postcss": "8.5.10",
+    "postcss": "8.5.12",
     "solid-js": "1.9.12",
     "web-vitals": "5.2.0"
   },
