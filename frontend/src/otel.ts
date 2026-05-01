@@ -5,7 +5,7 @@ import { W3CTraceContextPropagator } from "@opentelemetry/core";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
 import { registerInstrumentations } from "@opentelemetry/instrumentation";
 import { resourceFromAttributes } from "@opentelemetry/resources";
-import { BatchSpanProcessor } from "@opentelemetry/sdk-trace-base";
+import { SimpleSpanProcessor } from "@opentelemetry/sdk-trace-base";
 import { WebTracerProvider } from "@opentelemetry/sdk-trace-web";
 import { ATTR_SERVICE_NAME } from "@opentelemetry/semantic-conventions";
 import { type Metric, onCLS, onFCP, onLCP } from "web-vitals";
@@ -29,13 +29,15 @@ export const resetInitialized = async () => {
   propagation.disable();
 };
 
-export const initOTEL = () => {
+export const initOTEL = (config?: { exporterUrl?: string }) => {
   if (initialized) {
     return;
   }
 
-  const exporterUrl = import.meta.env.VITE_OTEL_EXPORTER_URL;
+  const exporterUrl =
+    config?.exporterUrl ?? import.meta.env.VITE_OTEL_EXPORTER_URL;
   if (!exporterUrl) {
+    console.warn("OTEL exporter URL is not set, skipping initialization");
     return;
   }
 
@@ -47,25 +49,23 @@ export const initOTEL = () => {
     resource: resourceFromAttributes({
       [ATTR_SERVICE_NAME]: "feed-reader-frontend",
     }),
-    spanProcessors: [new BatchSpanProcessor(exporter)],
+    spanProcessors: [new SimpleSpanProcessor(exporter)],
   });
 
+  const propagator = new W3CTraceContextPropagator();
   provider.register({
     contextManager: new ZoneContextManager(),
+    propagator,
   });
 
-  propagation.setGlobalPropagator(new W3CTraceContextPropagator());
+  propagation.setGlobalPropagator(propagator);
 
   unregisterInstrumentations = registerInstrumentations({
+    tracerProvider: provider,
     instrumentations: [
-      getWebAutoInstrumentations({
-        // load custom configuration for extensions
+      ...getWebAutoInstrumentations({
         "@opentelemetry/instrumentation-fetch": {
-          propagateTraceHeaderCorsUrls: [
-            /localhost:8080/,
-            /localhost:3000/,
-            window.location.origin,
-          ],
+          propagateTraceHeaderCorsUrls: [/.*/],
         },
       }),
     ],

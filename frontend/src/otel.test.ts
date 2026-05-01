@@ -1,3 +1,4 @@
+import { context, propagation, trace } from "@opentelemetry/api";
 import { HttpResponse, http } from "msw";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { worker } from "./mocks/browser";
@@ -41,12 +42,25 @@ describe("Frontend OTEL instrumentation", () => {
   });
 
   it("adds traceparent header to fetch requests", async () => {
-    initOTEL();
+    initOTEL({ exporterUrl: "http://localhost:4318/v1/traces" });
+
+    // Give some time for patches to settle
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    // Diagnostic check: verify propagator directly
+    const debugHeaders: Record<string, string> = {};
+    const span = trace.getTracer("test").startSpan("test-span");
+    context.with(trace.setSpan(context.active(), span), () => {
+      propagation.inject(context.active(), debugHeaders);
+    });
+    span.end();
+    console.log("OTEL Debug - Manual injection headers:", debugHeaders);
 
     let traceparent: string | null = null;
     worker.use(
       http.get("/api/trace-test", ({ request }) => {
         traceparent = request.headers.get("traceparent");
+        console.log("OTEL Debug - MSW captured traceparent:", traceparent);
         return new HttpResponse(null, { status: 200 });
       }),
     );
