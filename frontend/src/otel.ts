@@ -1,4 +1,4 @@
-import { propagation, trace } from "@opentelemetry/api";
+import { context, propagation, trace } from "@opentelemetry/api";
 import { getWebAutoInstrumentations } from "@opentelemetry/auto-instrumentations-web";
 import { ZoneContextManager } from "@opentelemetry/context-zone";
 import { W3CTraceContextPropagator } from "@opentelemetry/core";
@@ -12,6 +12,7 @@ import { type Metric, onCLS, onFCP, onLCP } from "web-vitals";
 
 let initialized = false;
 let provider: WebTracerProvider | null = null;
+let unregisterInstrumentations: (() => void) | null = null;
 
 export const resetInitialized = async () => {
   initialized = false;
@@ -19,6 +20,13 @@ export const resetInitialized = async () => {
     await provider.shutdown();
     provider = null;
   }
+  if (unregisterInstrumentations) {
+    unregisterInstrumentations();
+    unregisterInstrumentations = null;
+  }
+  trace.disable();
+  context.disable();
+  propagation.disable();
 };
 
 export const initOTEL = () => {
@@ -48,7 +56,7 @@ export const initOTEL = () => {
 
   propagation.setGlobalPropagator(new W3CTraceContextPropagator());
 
-  registerInstrumentations({
+  unregisterInstrumentations = registerInstrumentations({
     instrumentations: [
       getWebAutoInstrumentations({
         // load custom configuration for extensions
