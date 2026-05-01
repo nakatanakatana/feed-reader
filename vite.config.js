@@ -8,6 +8,7 @@ import { defineConfig } from "vitest/config";
 
 const require = createRequire(import.meta.url);
 let playwright;
+const wsEndpoint = process.env.PLAYWRIGHT_WS_ENDPOINT;
 
 // Only attempt to load playwright if we are in a Vitest context to avoid
 // overhead and warnings during normal vite dev/build.
@@ -104,7 +105,7 @@ export default defineConfig({
     },
     projects: [
       // Only include browser project if playwright is available
-      ...(playwright
+      ...(playwright || wsEndpoint
         ? [
             {
               extends: true,
@@ -112,8 +113,17 @@ export default defineConfig({
                 name: "browser",
                 browser: {
                   enabled: true,
-                  provider: playwright(),
+                  provider: playwright?.({
+                    ...(wsEndpoint ? { connectOptions: { wsEndpoint } } : {}),
+                  }),
                   screenshotFailures: false,
+                  api: {
+                    host: wsEndpoint ? "0.0.0.0" : "localhost",
+                    port: 63315,
+                  },
+                  ...(wsEndpoint
+                    ? { origin: "http://host.docker.internal:63315" }
+                    : {}),
                   instances: [
                     {
                       browser: "chromium",
