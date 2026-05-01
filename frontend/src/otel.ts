@@ -1,6 +1,7 @@
-import { trace } from "@opentelemetry/api";
+import { propagation, trace } from "@opentelemetry/api";
 import { getWebAutoInstrumentations } from "@opentelemetry/auto-instrumentations-web";
 import { ZoneContextManager } from "@opentelemetry/context-zone";
+import { W3CTraceContextPropagator } from "@opentelemetry/core";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
 import { registerInstrumentations } from "@opentelemetry/instrumentation";
 import { resourceFromAttributes } from "@opentelemetry/resources";
@@ -44,6 +45,8 @@ export const initOTEL = () => {
   provider.register({
     contextManager: new ZoneContextManager(),
   });
+
+  propagation.setGlobalPropagator(new W3CTraceContextPropagator());
 
   registerInstrumentations({
     instrumentations: [
