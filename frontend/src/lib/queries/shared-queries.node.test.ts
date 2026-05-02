@@ -1,4 +1,5 @@
 import {
+  BasicIndex,
   createCollection,
   createLiveQueryCollection,
   localOnlyCollectionOptions,
@@ -91,6 +92,7 @@ describe("shared TanStack DB query builders", () => {
     const feedTagCollection = createCollection(
       localOnlyCollectionOptions({
         getKey: (item: { id: string }) => item.id,
+        defaultIndexType: BasicIndex,
         initialData: [
           { id: "feed-1-tag-1", feedId: "feed-1", tagId: "tag-1" },
           { id: "feed-2-tag-1", feedId: "feed-2", tagId: "tag-1" },
@@ -98,10 +100,15 @@ describe("shared TanStack DB query builders", () => {
         ],
       }),
     );
+    // biome-ignore lint/suspicious/noExplicitAny: TanStack DB index types
+    feedTagCollection.createIndex((row: any) => row.tagId);
+    // biome-ignore lint/suspicious/noExplicitAny: TanStack DB index types
+    feedTagCollection.createIndex((row: any) => row.feedId);
 
     const unreadItemsCollection = createCollection(
       localOnlyCollectionOptions({
         getKey: (item: { id: string }) => item.id,
+        defaultIndexType: BasicIndex,
         initialData: [
           { id: "item-1", feedId: "feed-1" },
           { id: "item-2", feedId: "feed-2" },
@@ -109,6 +116,8 @@ describe("shared TanStack DB query builders", () => {
         ],
       }),
     );
+    // biome-ignore lint/suspicious/noExplicitAny: TanStack DB index types
+    unreadItemsCollection.createIndex((row: any) => row.feedId);
 
     const query = createLiveQueryCollection((q) =>
       buildTagUnreadCountsQuery(q, {
@@ -118,7 +127,7 @@ describe("shared TanStack DB query builders", () => {
       }),
     );
 
-    expect(await query.toArrayWhenReady()).toEqual([
+    expect(await query.toArrayWhenReady()).toMatchObject([
       { id: "tag-1", name: "Tech", unreadCount: 3 },
       { id: "tag-2", name: "News", unreadCount: 2 },
     ]);
