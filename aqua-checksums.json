@@ -1,33 +1,33 @@
 {
   "checksums": [
     {
-      "id": "github_release/github.com/bufbuild/buf/v1.68.3/buf-Darwin-arm64.tar.gz",
-      "checksum": "2107A18EFD4043B217470B4C322D83A77082B229EC3E9A9ADECA4FD706C382B8",
+      "id": "github_release/github.com/bufbuild/buf/v1.68.4/buf-Darwin-arm64.tar.gz",
+      "checksum": "ECC19E911E286EB7BF631F9F082FA1E2E86160608E4FA94DEB9DFF3568ADC2F2",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/bufbuild/buf/v1.68.3/buf-Darwin-x86_64.tar.gz",
-      "checksum": "B4A7CFA4C305ADD2D45E103F7B7321A91DA749308CBB324F7C07EE8BBAB7A6A7",
+      "id": "github_release/github.com/bufbuild/buf/v1.68.4/buf-Darwin-x86_64.tar.gz",
+      "checksum": "974A31E0E7F4A6C63D305F81A394C3C38A2D3ECBAB55FE8C5F6EE6DA5E2745D2",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/bufbuild/buf/v1.68.3/buf-Linux-aarch64.tar.gz",
-      "checksum": "F5CC358F347630E39406A9F27603578EAE72024052F3A65016F893912E325939",
+      "id": "github_release/github.com/bufbuild/buf/v1.68.4/buf-Linux-aarch64.tar.gz",
+      "checksum": "99E2C63CF6ED3230837C005240BD9318E8CEA47961EED7F8ED768DEB14F32F44",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/bufbuild/buf/v1.68.3/buf-Linux-x86_64.tar.gz",
-      "checksum": "7229F9CCCFCB6A250125F103C9A3481A6ACE7D9082521E0EF8B541C8800F2A2B",
+      "id": "github_release/github.com/bufbuild/buf/v1.68.4/buf-Linux-x86_64.tar.gz",
+      "checksum": "1ED9EAAB096EF2F32D4182C1E0C97DDF78CFACF209A8EABF7836E00B425A7706",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/bufbuild/buf/v1.68.3/buf-Windows-arm64.zip",
-      "checksum": "7DA4EC2124ADF52755F418A5F7730FA23A17C4EB6A1D5D31AA453E586F13DDC9",
+      "id": "github_release/github.com/bufbuild/buf/v1.68.4/buf-Windows-arm64.zip",
+      "checksum": "999468E8FBCAE9BB197195D7D93A2EBF8C6ED33B594C52813B24633BD15D22DE",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/bufbuild/buf/v1.68.3/buf-Windows-x86_64.zip",
-      "checksum": "7BABCEECE0534AB8547493E2A647D238C460B81D2B4B93C846D889A0F5FB556D",
+      "id": "github_release/github.com/bufbuild/buf/v1.68.4/buf-Windows-x86_64.zip",
+      "checksum": "36A9367D1BBA1ED0C28C60EB99B24F93D16323AED050A335D05033509BCBD322",
       "algorithm": "sha256"
     },
     {
@@ -111,33 +111,33 @@
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/k1LoW/octocov/v0.75.6/octocov_v0.75.6_darwin_amd64.zip",
-      "checksum": "5B0BD24A016C54A1DEA0639B488A31F2D116ACD850B445E87CD60F7403DFD4EF",
+      "id": "github_release/github.com/k1LoW/octocov/v0.75.7/octocov_v0.75.7_darwin_amd64.zip",
+      "checksum": "33D9ED21029EC21CC5B789F6F17DCB24CB7B28FC29AB81D84A61A0AFF9F3D464",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/k1LoW/octocov/v0.75.6/octocov_v0.75.6_darwin_arm64.zip",
-      "checksum": "939D24A80816AEC3643ED89E89C1351A7F3B4588C12D20637EE2113D41F31B56",
+      "id": "github_release/github.com/k1LoW/octocov/v0.75.7/octocov_v0.75.7_darwin_arm64.zip",
+      "checksum": "410A18515FE96FA4994C6FE45CD197A42C6E7B67FCE638F17871FB7E099A41EE",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/k1LoW/octocov/v0.75.6/octocov_v0.75.6_linux_amd64.tar.gz",
-      "checksum": "D32CC12565B25F5BD9CB7643CB8BC3B2A1844C6F402F62F68EBE3C36E3C3C326",
+      "id": "github_release/github.com/k1LoW/octocov/v0.75.7/octocov_v0.75.7_linux_amd64.tar.gz",
+      "checksum": "CA8E0E000F47DAAC1C756D74964D884A57DCB8780885D4F701089A533AFB2AFD",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/k1LoW/octocov/v0.75.6/octocov_v0.75.6_linux_arm64.tar.gz",
-      "checksum": "E27C38D2BE0922C925F0AFF93E2722FF80FE5A4B55E8534D48020988190AC360",
+      "id": "github_release/github.com/k1LoW/octocov/v0.75.7/octocov_v0.75.7_linux_arm64.tar.gz",
+      "checksum": "EB656DA98F4FC7450A9A1C4B066F86C049DBE87A2C1D720CF3051FD053021D16",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/k1LoW/octocov/v0.75.6/octocov_v0.75.6_windows_amd64.zip",
-      "checksum": "05E03CCB99A0798C597989ADCA306988698EB2E3B7516CDA922DCB199ADF2E6B",
+      "id": "github_release/github.com/k1LoW/octocov/v0.75.7/octocov_v0.75.7_windows_amd64.zip",
+      "checksum": "91A317E6985E4F38034505F93BDA05C46C9E5005A59E3C35AA70681B949242E5",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/k1LoW/octocov/v0.75.6/octocov_v0.75.6_windows_arm64.zip",
-      "checksum": "099929A96B8388CA9583FA20A5DF49529CD8E44D0A62B60970611FFF22C5060F",
+      "id": "github_release/github.com/k1LoW/octocov/v0.75.7/octocov_v0.75.7_windows_arm64.zip",
+      "checksum": "472EFE1FA96DFEFE77A0BB5BB6FFC910C153252026BC1107A27DC207DEFFC4C4",
       "algorithm": "sha256"
     },
     {
@@ -196,8 +196,8 @@
       "algorithm": "sha256"
     },
     {
-      "id": "registries/github_content/github.com/aquaproj/aqua-registry/v4.496.0/registry.yaml",
-      "checksum": "9D2AC063845EB60C0B58C6C4FF3225FA133566E15C4EE44031C3328BBB770ED3C111EACB5303E1B09C6686BF4C2AE5BFDF5F077BC5D008BCA1E6AB4C2D9169F2",
+      "id": "registries/github_content/github.com/aquaproj/aqua-registry/v4.499.0/registry.yaml",
+      "checksum": "58EA68153179D614B9D415C923D9065BDBD19294256ABB530A6480F8BA492DF65634A87CF26DCE02D14BE84906F0C93F20517DC1DF9AD3B157906F1A82FCB1EB",
       "algorithm": "sha512"
     }
   ]
