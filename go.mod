@@ -7,7 +7,7 @@ require (
 	connectrpc.com/otelconnect v0.9.0
 	github.com/JohannesKaufmann/html-to-markdown/v2 v2.5.0
 	github.com/XSAM/otelsql v0.42.0
-	github.com/caarlos0/env/v11 v11.4.0
+	github.com/caarlos0/env/v11 v11.4.1
 	github.com/google/uuid v1.6.0
 	github.com/hashicorp/go-retryablehttp v0.7.8
 	github.com/mmcdole/gofeed v1.3.0
