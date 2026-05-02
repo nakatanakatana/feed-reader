@@ -40,6 +40,9 @@ test-update-backend: sync-assets
 test-frontend:
 	npm run test
 
+test-frontend-docker:
+	docker compose run --rm frontend-test
+
 test-update-frontend:
 	npm run test -- -u
 

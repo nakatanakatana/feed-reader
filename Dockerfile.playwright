@@ -1,0 +1,4 @@
+FROM node:24-bookworm-slim
+
+# Install Chromium and its dependencies
+RUN npx playwright install --with-deps chromium
