@@ -20,7 +20,15 @@ services:
     environment:
       - CI=true
     entrypoint: ["/bin/sh", "-c"]
-    command: ["npm ci && npm run test"]
+    command:
+      - |
+        if [ ! -d "node_modules" ] || [ package-lock.json -nt node_modules ]; then
+          echo "Updating dependencies (respecting lockfile)..."
+          npm install --no-save
+        else
+          echo "Dependencies are up to date."
+        fi
+        npm run test
 
 volumes:
   frontend_node_modules:
