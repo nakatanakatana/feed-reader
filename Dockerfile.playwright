@@ -2,9 +2,3 @@ FROM node:24-bookworm-slim
 
 # Install Chromium and its dependencies
 RUN npx playwright install --with-deps chromium
-
-# Expose the Playwright server port
-EXPOSE 3000
-
-# Run Playwright server
-ENTRYPOINT ["npx", "playwright", "run-server", "--port", "3000", "--browser", "chromium"]

@@ -1,13 +1,4 @@
 services:
-  playwright-server:
-    build:
-      context: .
-      dockerfile: Dockerfile.playwright
-    ports:
-      - "3000:3000"
-    ipc: host
-    restart: unless-stopped
-
   frontend-test:
     build:
       context: .
