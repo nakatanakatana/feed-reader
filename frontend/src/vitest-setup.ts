@@ -1,6 +1,7 @@
 import { afterAll, afterEach, beforeAll, expect, vi } from "vitest";
 import "./styles.css";
 import { resetDatabase } from "./lib/db";
+import { resetQueryClient } from "./lib/query";
 import { worker } from "./mocks/browser";
 import { resetState } from "./mocks/handlers";
 
@@ -54,7 +55,9 @@ afterEach(() => {
   worker.resetHandlers();
   resetState();
   resetDatabase();
+  resetQueryClient();
   localStorage.clear();
+  sessionStorage.clear();
   vi.useRealTimers();
   vi.clearAllMocks();
 });

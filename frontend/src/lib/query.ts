@@ -71,6 +71,13 @@ export const queryClient = new QueryClient({
   }),
 });
 
+// Add a helper for tests to reset the client completely
+export const resetQueryClient = () => {
+  queryClient.clear();
+  queryClient.getQueryCache().clear();
+  queryClient.getMutationCache().clear();
+};
+
 if (typeof window !== "undefined") {
   (window as unknown as { __queryClient: QueryClient }).__queryClient =
     queryClient;
