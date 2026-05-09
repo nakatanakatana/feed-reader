@@ -19,8 +19,6 @@ import (
 	"github.com/nakatanakatana/feed-reader/gen/go/tag/v1/tagv1connect"
 	"github.com/nakatanakatana/feed-reader/sql"
 	"github.com/nakatanakatana/feed-reader/store"
-	"golang.org/x/net/http2"
-	"golang.org/x/net/http2/h2c"
 	_ "modernc.org/sqlite"
 )
 
@@ -144,9 +142,14 @@ func main() {
 
 	mux := NewMux(s, fetcher, fetchService, opmlImporter, otelInterceptor, cfg.CORSAllowedOrigins)
 
+	var protocols http.Protocols
+	protocols.SetHTTP1(true)
+	protocols.SetUnencryptedHTTP2(true)
+
 	server := &http.Server{
-		Addr:    ":" + cfg.Port,
-		Handler: h2c.NewHandler(mux, &http2.Server{}),
+		Addr:      ":" + cfg.Port,
+		Handler:   mux,
+		Protocols: &protocols,
 	}
 
 	// Run server in a goroutine
