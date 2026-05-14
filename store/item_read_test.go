@@ -35,7 +35,7 @@ func TestStore_ListItemRead(t *testing.T) {
 	createTestItemWithID := func(id, url, title, timestamp string) {
 		_, err := s.DB.ExecContext(ctx, "INSERT INTO items (id, url, title, created_at) VALUES (?, ?, ?, ?)", id, url, title, timestamp)
 		assert.NilError(t, err)
-		_, err = s.DB.ExecContext(ctx, "INSERT INTO item_reads (item_id, updated_at) VALUES (?, ?)", id, timestamp)
+		_, err = s.DB.ExecContext(ctx, "INSERT OR REPLACE INTO item_reads (item_id, updated_at) VALUES (?, ?)", id, timestamp)
 		assert.NilError(t, err)
 	}
 
