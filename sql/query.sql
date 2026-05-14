@@ -186,30 +186,25 @@ SELECT
   i.image_url,
   i.categories,
   i.created_at,
-  CAST(MIN(fi.feed_id) AS TEXT) AS feed_id,
-  CAST(COALESCE(ir.is_read, 0) AS INTEGER) AS is_read
+  CAST((SELECT fi.feed_id FROM feed_items fi WHERE fi.item_id = i.id LIMIT 1) AS TEXT) AS feed_id,
+  CAST(COALESCE((SELECT ir.is_read FROM item_reads ir WHERE ir.item_id = i.id), 0) AS INTEGER) AS is_read
 FROM
   items i
-JOIN
-  feed_items fi ON i.id = fi.item_id
-LEFT JOIN
-  item_reads ir ON i.id = ir.item_id
-LEFT JOIN
-  item_blocks ib ON i.id = ib.item_id
 WHERE
-  (sqlc.narg('feed_id') IS NULL OR fi.feed_id = sqlc.narg('feed_id')) AND
-  (sqlc.narg('is_read') IS NULL OR COALESCE(ir.is_read, 0) = sqlc.narg('is_read')) AND
+  EXISTS (SELECT 1 FROM feed_items fi WHERE fi.item_id = i.id) AND
+  (sqlc.narg('feed_id') IS NULL OR EXISTS (SELECT 1 FROM feed_items fi WHERE fi.item_id = i.id AND fi.feed_id = sqlc.narg('feed_id'))) AND
+  (sqlc.narg('is_read') IS NULL OR COALESCE((SELECT ir.is_read FROM item_reads ir WHERE ir.item_id = i.id), 0) = sqlc.narg('is_read')) AND
   (sqlc.narg('tag_id') IS NULL OR EXISTS (
-    SELECT 1 FROM feed_tags ft WHERE ft.feed_id = fi.feed_id AND ft.tag_id = sqlc.narg('tag_id')
+    SELECT 1 FROM feed_items fi 
+    JOIN feed_tags ft ON fi.feed_id = ft.feed_id 
+    WHERE fi.item_id = i.id AND ft.tag_id = sqlc.narg('tag_id')
   )) AND
   (sqlc.narg('since') IS NULL OR i.created_at >= sqlc.narg('since')) AND
-  (sqlc.narg('is_blocked') IS NULL OR (CASE WHEN ib.item_id IS NOT NULL THEN 1 ELSE 0 END = sqlc.narg('is_blocked'))) AND
+  (sqlc.narg('is_blocked') IS NULL OR (CASE WHEN EXISTS (SELECT 1 FROM item_blocks ib WHERE ib.item_id = i.id) THEN 1 ELSE 0 END = sqlc.narg('is_blocked'))) AND
   (
     (sqlc.narg('created_at_cursor') IS NULL AND sqlc.narg('id_cursor') IS NULL) OR
     (i.created_at, i.id) > (sqlc.narg('created_at_cursor'), sqlc.narg('id_cursor'))
   )
-GROUP BY
-  i.id
 ORDER BY
   i.created_at ASC,
   i.id ASC
@@ -242,11 +237,11 @@ SELECT
   fi.feed_id,
   COUNT(DISTINCT fi.item_id) AS count
 FROM
-  feed_items fi
-LEFT JOIN
-  item_reads ir ON fi.item_id = ir.item_id
+  item_reads ir
+JOIN
+  feed_items fi ON ir.item_id = fi.item_id
 WHERE
-  COALESCE(ir.is_read, 0) = 0 AND
+  ir.is_read = 0 AND
   NOT EXISTS (SELECT 1 FROM item_blocks ib WHERE ib.item_id = fi.item_id)
 GROUP BY
   fi.feed_id;
@@ -256,13 +251,13 @@ SELECT
   ft.tag_id,
   COUNT(DISTINCT fi.item_id) AS count
 FROM
-  feed_tags ft
+  item_reads ir
 JOIN
-  feed_items fi ON ft.feed_id = fi.feed_id
-LEFT JOIN
-  item_reads ir ON fi.item_id = ir.item_id
+  feed_items fi ON ir.item_id = fi.item_id
+JOIN
+  feed_tags ft ON fi.feed_id = ft.feed_id
 WHERE
-  COALESCE(ir.is_read, 0) = 0 AND
+  ir.is_read = 0 AND
   NOT EXISTS (SELECT 1 FROM item_blocks ib WHERE ib.item_id = fi.item_id)
 GROUP BY
   ft.tag_id;
@@ -280,11 +275,11 @@ GROUP BY
 SELECT
   COUNT(DISTINCT fi.item_id) AS count
 FROM
-  feed_items fi
-LEFT JOIN
-  item_reads ir ON fi.item_id = ir.item_id
+  item_reads ir
+JOIN
+  feed_items fi ON ir.item_id = fi.item_id
 WHERE
-  COALESCE(ir.is_read, 0) = 0 AND
+  ir.is_read = 0 AND
   NOT EXISTS (SELECT 1 FROM item_blocks ib WHERE ib.item_id = fi.item_id);
 
 -- name: CountItems :one

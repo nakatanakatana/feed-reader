@@ -82,7 +82,7 @@ func TestCascadeDeletion(t *testing.T) {
 		assert.NilError(t, err)
 
 		// Add related records
-		_, err = db.ExecContext(ctx, "INSERT INTO item_reads (item_id, read_at) VALUES (?, ?)", itemID, time.Now().Format(time.RFC3339))
+		_, err = db.ExecContext(ctx, "INSERT OR REPLACE INTO item_reads (item_id, read_at) VALUES (?, ?)", itemID, time.Now().Format(time.RFC3339))
 		assert.NilError(t, err)
 
 		ruleID := uuid.NewString()

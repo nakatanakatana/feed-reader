@@ -227,7 +227,7 @@ func TestItemServer_ListItemRead(t *testing.T) {
 	createItemWithUpdatedAt := func(id, url, timestamp string) {
 		_, err := db.ExecContext(ctx, "INSERT INTO items (id, url, created_at) VALUES (?, ?, ?)", id, url, timestamp)
 		assert.NilError(t, err)
-		_, err = db.ExecContext(ctx, "INSERT INTO item_reads (item_id, updated_at) VALUES (?, ?)", id, timestamp)
+		_, err = db.ExecContext(ctx, "INSERT OR REPLACE INTO item_reads (item_id, updated_at) VALUES (?, ?)", id, timestamp)
 		assert.NilError(t, err)
 	}
 
