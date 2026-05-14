@@ -1,16 +1,18 @@
-import { fromJson, type JsonValue, toJson } from "@bufbuild/protobuf";
+import {
+  fromJson,
+  type JsonValue,
+  type Message,
+  toJson,
+} from "@bufbuild/protobuf";
 import type { GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
 import { type HttpHandler, HttpResponse, http } from "msw";
 
 type InferMessage<T> = T extends GenMessage<infer M> ? M : never;
 
-// Define a type that matches the structure of methods in GenService
-// GenServiceMethods values usually have methodKind, input, output.
+// Define a type that matches the structure of methods in GenService.
 type MethodDef = {
-  // biome-ignore lint/suspicious/noExplicitAny: Generic constraint for any message type
-  input: GenMessage<any>;
-  // biome-ignore lint/suspicious/noExplicitAny: Generic constraint for any message type
-  output: GenMessage<any>;
+  input: GenMessage<Message>;
+  output: GenMessage<Message>;
   methodKind:
     | "unary"
     | "server_streaming"
@@ -41,8 +43,7 @@ export const parseConnectMessage = async (
 /**
  * Robust JSON serialization that handles BigInt and Date by converting them to strings.
  */
-// biome-ignore lint/suspicious/noExplicitAny: MSW HttpResponse requires a type argument
-export const safeJson = (data: unknown): HttpResponse<any> => {
+export const safeJson = (data: unknown): HttpResponse<string> => {
   const replacer = (_key: string, value: unknown): unknown => {
     if (typeof value === "bigint") return value.toString();
     return value;
@@ -87,15 +88,7 @@ export const mockConnectWeb =
       props.method.charAt(0).toUpperCase() + props.method.slice(1);
 
     return http.all(`*/${service.typeName}/${rpcName}`, async ({ request }) => {
-      // biome-ignore lint/suspicious/noExplicitAny: service.methods can be array or object at runtime
-      const methods = service.methods as any;
-      let methodDef: MethodDef | undefined;
-      if (Array.isArray(methods)) {
-        // biome-ignore lint/suspicious/noExplicitAny: accessing localName on dynamic method object
-        methodDef = methods.find((m: any) => m.localName === props.method);
-      } else {
-        methodDef = methods[props.method];
-      }
+      const methodDef = service.method[props.method];
 
       if (!methodDef) {
         throw new Error(
@@ -111,7 +104,9 @@ export const mockConnectWeb =
       }
 
       // Decode the JSON request into a typed Message
-      const req = fromJson(methodDef.input, jsonBody);
+      const req = fromJson(methodDef.input, jsonBody) as InferMessage<
+        T[U]["input"]
+      >;
 
       // Call the mock handler
       const resp = props.handler(req);

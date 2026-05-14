@@ -16,7 +16,7 @@ This document summarizes key rules and best practices from the Google TypeScript
 - **Type Assertions:** **Avoid type assertions (`x as SomeType`) and non-nullability assertions (`y!`)**. If you must use them, provide a clear justification.
 
 ## 2. Disallowed Features
-- **`any` Type:** **Avoid `any`**. Prefer `unknown` or a more specific type.
+- **`any` Type:** **Explicit `any` is forbidden in hand-written frontend code.** Prefer `unknown`, generated protobuf message types, `Partial<T>`, `Record<K, V>`, typed test fixtures, or a narrow local interface. If an external library boundary truly requires `any`, add a `biome-ignore lint/suspicious/noExplicitAny` comment with a concrete reason.
 - **Wrapper Objects:** Do not instantiate `String`, `Boolean`, or `Number` wrapper classes.
 - **Automatic Semicolon Insertion (ASI):** Do not rely on it. **Explicitly end all statements with a semicolon.**
 - **`const enum`:** Do not use `const enum`. Use plain `enum` instead.

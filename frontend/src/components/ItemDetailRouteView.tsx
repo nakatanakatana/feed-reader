@@ -83,9 +83,8 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
     const linkProps = getLinkProps(targetId);
     if (linkProps) {
       navigate({
-        to: linkProps.to,
-        // biome-ignore lint/suspicious/noExplicitAny: Temporary fix for router types
-        params: linkProps.params as any,
+        to: "/items/$itemId",
+        params: linkProps.params,
         search: linkProps.search,
         replace: true,
       });
