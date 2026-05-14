@@ -121,6 +121,5 @@ CREATE INDEX idx_items_created_at_id ON items(created_at, id);
 CREATE TRIGGER trg_items_insert_item_reads
 AFTER INSERT ON items
 BEGIN
-  INSERT INTO item_reads (item_id, is_read) VALUES (NEW.id, 0)
-  ON CONFLICT(item_id) DO NOTHING;
+  INSERT INTO item_reads (item_id, is_read) VALUES (NEW.id, 0);
 END;
