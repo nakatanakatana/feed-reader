@@ -14,7 +14,7 @@ packages:
 - name: bufbuild/buf@v1.69.0
 - name: golang/go@go1.26.3
 - name: golangci/golangci-lint@v2.12.2
-- name: goreleaser/goreleaser@v2.15.4
+- name: goreleaser/goreleaser@v2.16.0
 - name: k1LoW/mo@v1.5.5
 - name: k1LoW/octocov@v0.75.8
 - name: sqlc-dev/sqlc@v1.31.1
