@@ -46,3 +46,5 @@ cmd/feed-reader/dist/
 .playwright-cli/
 .opencode/
 .scion/agents/
+/docs/superpowers/plans/
+

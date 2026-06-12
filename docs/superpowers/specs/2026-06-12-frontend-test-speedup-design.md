@@ -110,11 +110,14 @@ test: {
 
 * **Compatibility with Happy DOM**: Happy DOM simulates browser APIs in Node.js. In rare cases, some advanced DOM APIs or SolidJS reactive logic might behave differently than in a real chromium browser.
   * *Mitigation*: We will carefully verify that all tests in `src/**/*.test.ts` (such as `storage-utils.test.ts`, `use-swipe.test.ts`) pass successfully in the `happy-dom` environment. If any test fails due to environment mismatch, we can either mock the missing API or revert that specific file back to the browser project using explicit exclusions.
+* **Playwright OS Support**: On newer distributions (like Ubuntu 26.04), Playwright browser installation may fail with platform errors.
+  * *Mitigation*: If `npx playwright install` fails, fallback to using `PLAYWRIGHT_HOST_PLATFORM_OVERRIDE=ubuntu24.04-x64 npx playwright install` to bypass OS checks.
 
 ## 4. Verification Plan
 
 1. **Pre-verification**:
    * Verify git status is clean.
+   * Add `/docs/superpowers/plans/` to `.gitignore` to exclude implementation plans from Git version control.
 2. **Step 1 Migration (Node)**:
    * Rename `pwa-registration.test.ts` to `pwa-registration.node.test.ts`.
    * Run `npm run test` (only node tests should run if browser mode fails, or all if browser mode passes) and ensure it passes.
@@ -124,3 +127,4 @@ test: {
    * Apply changes to `vite.config.js`.
    * Run `npm run test` and check if the new `happy-dom` project runs and executes the target tests successfully.
    * Compare execution time.
+
