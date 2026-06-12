@@ -49,6 +49,7 @@
     "@vitest/browser-playwright": "4.1.8",
     "@vitest/coverage-v8": "4.1.8",
     "fast-check": "4.8.0",
+    "happy-dom": "^15.11.0",
     "msw": "2.14.6",
     "playwright": "1.60.0",
     "typescript": "6.0.3",
