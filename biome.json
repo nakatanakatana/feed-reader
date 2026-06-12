@@ -9,7 +9,6 @@
     "ignoreUnknown": false,
     "includes": [
       "**",
-      "!**/conductor/*",
       "!**/gen/**/*.ts",
       "!**/*.gen.ts",
       "!!**/dist",
