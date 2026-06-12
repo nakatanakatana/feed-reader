@@ -41,6 +41,7 @@ coverage.out
 coverage.html
 frontend/coverage/
 .agentfs/
+.worktrees/
 cmd/feed-reader/dist/
 .playwright-cli/
 .opencode/
