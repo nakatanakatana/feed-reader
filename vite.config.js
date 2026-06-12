@@ -130,13 +130,34 @@ export default defineConfig({
                   "**/.{idea,git,cache,output,temp}/**",
                   "**/{karma,rollup,webpack,vite,vitest}.config.*",
                 ],
-                include: ["src/**/*.test.{ts,tsx}"],
+                include: ["src/**/*.test.tsx"],
                 setupFiles: ["./src/vitest-setup.ts"],
                 globals: true,
               },
             },
           ]
         : []),
+      {
+        extends: true,
+        test: {
+          name: "happy-dom",
+          root: "frontend",
+          environment: "happy-dom",
+          isolate: false,
+          restoreMocks: true,
+          mockReset: true,
+          globals: true,
+          include: ["src/**/*.test.ts"],
+          exclude: [
+            "src/**/*.node.test.{ts,tsx}",
+            "**/node_modules/**",
+            "**/dist/**",
+            "**/cypress/**",
+            "**/.{idea,git,cache,output,temp}/**",
+            "**/{karma,rollup,webpack,vite,vitest}.config.*",
+          ],
+        },
+      },
       {
         extends: true,
         test: {
