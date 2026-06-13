@@ -35,4 +35,22 @@ describe("createApiClient", () => {
       new ApiError("internal", "boom", 500),
     );
   });
+
+  it("calls onUnauthorized and throws ApiError on 401", async () => {
+    const onUnauthorized = vi.fn();
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(new Response("", { status: 401 }));
+
+    const client = createApiClient({
+      baseUrl: "/api/v2",
+      fetch: fetchMock,
+      onUnauthorized,
+    });
+
+    await expect(client.get("/tags")).rejects.toEqual(
+      new ApiError("unauthorized", "Unauthorized", 401),
+    );
+    expect(onUnauthorized).toHaveBeenCalledTimes(1);
+  });
 });

@@ -38,3 +38,45 @@ test("PWA infrastructure is correctly configured", async () => {
   expect(fs.existsSync(icon192), "192x192 icon missing").toBe(true);
   expect(fs.existsSync(icon512), "512x512 icon missing").toBe(true);
 });
+
+test("PWA workbox uses network-first navigation without precached HTML", async () => {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+  const rootDir = path.resolve(__dirname, "..", "..");
+  const configPath = path.join(rootDir, "vite.config.js");
+  const configModule = await import(pathToFileURL(configPath).href);
+  const config = configModule.default ?? configModule;
+  const plugins = Array.isArray(config?.plugins) ? config.plugins : [];
+  const flatPlugins = plugins.flat();
+
+  const pwaPlugin = flatPlugins.find(
+    (plugin: unknown) =>
+      (plugin as { name?: string })?.name === "vite-plugin-pwa",
+  );
+
+  const workbox = (
+    pwaPlugin as { api?: { config?: { workbox?: Record<string, unknown> } } }
+  )?.api?.config?.workbox;
+
+  if (workbox) {
+    expect(workbox.globIgnores).toContain("**/*.html");
+    expect(workbox.navigateFallback).toBeNull();
+
+    const runtimeCaching = workbox.runtimeCaching as Array<{
+      handler: string;
+      urlPattern: unknown;
+    }>;
+    expect(runtimeCaching).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ handler: "NetworkFirst" }),
+      ]),
+    );
+    return;
+  }
+
+  const configSource = fs.readFileSync(configPath, "utf-8");
+  expect(configSource).toMatch(/globIgnores:\s*\[[^\]]*"\*\*\/\*\.html"/);
+  expect(configSource).toMatch(/navigateFallback:\s*null/);
+  expect(configSource).toMatch(/handler:\s*"NetworkFirst"/);
+  expect(configSource).toMatch(/request\.mode\s*===\s*"navigate"/);
+});
