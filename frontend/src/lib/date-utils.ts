@@ -1,10 +1,12 @@
+import { create } from "@bufbuild/protobuf";
+import { TimestampSchema } from "@bufbuild/protobuf/wkt";
 import type { Timestamp } from "@bufbuild/protobuf/wkt";
 
 export const dateToTimestamp = (d: Date): Timestamp => {
-  return {
+  return create(TimestampSchema, {
     seconds: BigInt(Math.floor(d.getTime() / 1000)),
     nanos: (d.getTime() % 1000) * 1000000,
-  } as Timestamp;
+  });
 };
 
 export const toDate = (

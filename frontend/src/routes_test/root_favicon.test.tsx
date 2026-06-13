@@ -26,11 +26,15 @@ describe("Root Favicon Integration", () => {
 
   beforeEach(() => {
     // Ensure we have a favicon link in the head
-    let link = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
+    let link = document.querySelector('link[rel="icon"]');
     if (!link) {
-      link = document.createElement("link");
-      link.rel = "icon";
-      document.head.appendChild(link);
+      const newLink = document.createElement("link");
+      newLink.rel = "icon";
+      document.head.appendChild(newLink);
+      link = newLink;
+    }
+    if (!(link instanceof HTMLLinkElement)) {
+      throw new Error("Expected link to be an HTMLLinkElement");
     }
     link.href = "/favicon.svg";
   });
@@ -40,8 +44,11 @@ describe("Root Favicon Integration", () => {
     document.body.innerHTML = "";
     vi.clearAllMocks();
     // Reset favicon
-    const link = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
+    const link = document.querySelector('link[rel="icon"]');
     if (link) {
+      if (!(link instanceof HTMLLinkElement)) {
+        throw new Error("Expected link to be an HTMLLinkElement");
+      }
       link.href = "/favicon.svg";
     }
   });
@@ -94,9 +101,10 @@ describe("Root Favicon Integration", () => {
     // 4. Wait for favicon to update (color Blue for count 5)
     await vi.waitFor(
       () => {
-        const link = document.querySelector(
-          'link[rel="icon"]',
-        ) as HTMLLinkElement;
+        const link = document.querySelector('link[rel="icon"]');
+        if (!(link instanceof HTMLLinkElement)) {
+          throw new Error("Expected link to be an HTMLLinkElement");
+        }
         const base64 = link.href.split(",")[1];
         const svg = atob(base64);
         // Blue color is #3b82f6
@@ -128,9 +136,10 @@ describe("Root Favicon Integration", () => {
 
     await vi.waitFor(
       () => {
-        const link = document.querySelector(
-          'link[rel="icon"]',
-        ) as HTMLLinkElement;
+        const link = document.querySelector('link[rel="icon"]');
+        if (!(link instanceof HTMLLinkElement)) {
+          throw new Error("Expected link to be an HTMLLinkElement");
+        }
         const base64 = link.href.split(",")[1];
         const svg = atob(base64);
         // Orange color is #f97316
@@ -162,9 +171,10 @@ describe("Root Favicon Integration", () => {
 
     await vi.waitFor(
       () => {
-        const link = document.querySelector(
-          'link[rel="icon"]',
-        ) as HTMLLinkElement;
+        const link = document.querySelector('link[rel="icon"]');
+        if (!(link instanceof HTMLLinkElement)) {
+          throw new Error("Expected link to be an HTMLLinkElement");
+        }
         const base64 = link.href.split(",")[1];
         const svg = atob(base64);
         // Red color is #ef4444
@@ -189,9 +199,10 @@ describe("Root Favicon Integration", () => {
 
     await vi.waitFor(
       () => {
-        const link = document.querySelector(
-          'link[rel="icon"]',
-        ) as HTMLLinkElement;
+        const link = document.querySelector('link[rel="icon"]');
+        if (!(link instanceof HTMLLinkElement)) {
+          throw new Error("Expected link to be an HTMLLinkElement");
+        }
         const base64 = link.href.split(",")[1];
         const svg = atob(base64);
         // Blue color is #3b82f6

@@ -33,7 +33,9 @@ export function ItemRow(props: ItemRowProps) {
 
   const handleCheckboxClick = (e: MouseEvent) => {
     e.stopPropagation();
-    props.onToggleSelection?.((e.target as HTMLInputElement).checked);
+    if (e.target instanceof HTMLInputElement) {
+      props.onToggleSelection?.(e.target.checked);
+    }
   };
 
   const handleMouseDown = (e: MouseEvent) => {

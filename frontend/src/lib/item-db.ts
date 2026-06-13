@@ -49,7 +49,7 @@ export const getItemsQueryOptions = (
       const existingData =
         lastFetchedValue === null
           ? []
-          : (queryClient.getQueryData(queryKey) as ListItem[]) || [];
+          : queryClient.getQueryData<ListItem[]>(queryKey) || [];
       const searchSince =
         lastFetchedValue === null
           ? sinceTimestamp
@@ -147,9 +147,7 @@ export const updateItemStatus = async (
   isRead: boolean,
   queryKey: readonly unknown[],
 ) => {
-  const previousData = queryClient.getQueryData(queryKey) as
-    | ListItem[]
-    | undefined;
+  const previousData = queryClient.getQueryData<ListItem[]>(queryKey);
 
   queryClient.setQueryData(queryKey, (old: ListItem[] | undefined) => {
     if (!old) return old;

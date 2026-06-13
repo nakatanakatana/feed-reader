@@ -8,7 +8,7 @@ export interface ParsedBlockRule {
   error?: string;
 }
 
-const VALID_TYPES: BlockRuleType[] = [
+const VALID_TYPES: readonly string[] = [
   "user",
   "domain",
   "user_domain",
@@ -103,10 +103,10 @@ export function parseCSVBlockRules(csv: string): ParsedBlockRule[] {
     }
 
     // Validation
-    if (extra.length > 0 && extra.some((p) => p !== "")) {
+    if (extra.some((p) => p !== "")) {
       result.isValid = false;
       result.error = "Too many columns";
-    } else if (!VALID_TYPES.includes(ruleType as BlockRuleType)) {
+    } else if (!VALID_TYPES.includes(ruleType)) {
       result.isValid = false;
       result.error = "Invalid rule type";
     } else if (!value) {

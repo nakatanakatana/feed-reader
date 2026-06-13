@@ -1,0 +1,27 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "useTabs": false,
+  "tabWidth": 2,
+  "printWidth": 80,
+  "singleQuote": false,
+  "jsxSingleQuote": false,
+  "quoteProps": "as-needed",
+  "trailingComma": "all",
+  "semi": true,
+  "arrowParens": "always",
+  "bracketSameLine": false,
+  "bracketSpacing": true,
+  "ignorePatterns": [
+    "**/gen/**/*.ts",
+    "**/*.gen.ts",
+    "**/public/mockServiceWorker.js",
+    ".agents/**",
+    "docs/**",
+    "**/*.md",
+    "**/*.yaml",
+    "**/*.yml",
+    ".github/**",
+    "aqua.yaml",
+    "renovate.json"
+  ]
+}

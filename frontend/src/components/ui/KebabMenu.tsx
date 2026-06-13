@@ -30,12 +30,14 @@ export function KebabMenu(props: KebabMenuProps) {
   };
 
   const handleClickOutside = (e: MouseEvent) => {
+    const target = e.target;
     if (
       isOpen() &&
+      target instanceof Node &&
       buttonRef &&
-      !buttonRef.contains(e.target as Node) &&
+      !buttonRef.contains(target) &&
       menuRef &&
-      !menuRef.contains(e.target as Node)
+      !menuRef.contains(target)
     ) {
       setIsOpen(false);
     }
@@ -123,7 +125,9 @@ export function KebabMenu(props: KebabMenuProps) {
   return (
     <div class={css({ position: "relative", display: "inline-block" })}>
       <button
-        ref={buttonRef}
+        ref={(el) => {
+          buttonRef = el;
+        }}
         type="button"
         aria-label={props.ariaLabel || "More actions"}
         aria-haspopup="menu"
@@ -160,7 +164,9 @@ export function KebabMenu(props: KebabMenuProps) {
       <Show when={isOpen()}>
         <Portal>
           <div
-            ref={menuRef}
+            ref={(el) => {
+              menuRef = el;
+            }}
             role="menu"
             class={css({
               position: "absolute",

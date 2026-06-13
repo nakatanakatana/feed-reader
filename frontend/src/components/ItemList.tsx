@@ -18,7 +18,6 @@ import {
   getItemsWithReadState,
   getTagUnreadCounts,
   getTotalUnreadCount,
-  type Item,
   itemReadQueryOptions,
   tagsQueryOptions,
   updateItemReadStatus,
@@ -53,7 +52,12 @@ export function ItemList(props: ItemListProps) {
 
   onMount(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (moreActionsRef && !moreActionsRef.contains(e.target as Node)) {
+      const target = e.target;
+      if (
+        moreActionsRef &&
+        target instanceof Node &&
+        !moreActionsRef.contains(target)
+      ) {
         setShowMoreActions(false);
       }
     };
@@ -369,7 +373,12 @@ export function ItemList(props: ItemListProps) {
               value={itemStore.state.since}
               onSelect={handleDateFilterSelect}
             />
-            <div class={css({ position: "relative" })} ref={moreActionsRef}>
+            <div
+              class={css({ position: "relative" })}
+              ref={(el) => {
+                moreActionsRef = el;
+              }}
+            >
               <ActionButton
                 size="sm"
                 variant="secondary"
@@ -523,7 +532,7 @@ export function ItemList(props: ItemListProps) {
       })}
     >
       <div class={stack({ gap: "2", padding: "0" })}>
-        <For each={filteredItems() as Item[]}>
+        <For each={filteredItems()}>
           {(item) => (
             <ItemRow
               item={item}

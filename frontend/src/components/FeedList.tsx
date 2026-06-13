@@ -214,9 +214,20 @@ export function FeedList() {
             id="sort-by"
             aria-label="Sort by"
             value={feedStore.state.sortBy}
-            onInput={(e) =>
-              feedStore.setSortBy(e.currentTarget.value as FeedSortBy)
-            }
+            onInput={(e) => {
+              const val = e.currentTarget.value;
+              const isFeedSortBy = (v: string): v is FeedSortBy => {
+                return [
+                  "title_asc",
+                  "title_desc",
+                  "last_fetched",
+                  "next_fetch",
+                ].includes(v);
+              };
+              if (isFeedSortBy(val)) {
+                feedStore.setSortBy(val);
+              }
+            }}
             class={css({
               fontSize: "xs",
               px: "2",
@@ -236,7 +247,9 @@ export function FeedList() {
             Filter:
           </span>
           <select
-            ref={tagSelectRef}
+            ref={(el) => {
+              tagSelectRef = el;
+            }}
             aria-label="Filter by tag"
             value={
               feedStore.state.selectedTagId === null

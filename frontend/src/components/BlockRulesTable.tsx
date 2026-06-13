@@ -215,8 +215,17 @@ export function BlockRulesTable(props: BlockRulesTableProps) {
             id="mobile-sort"
             value={props.sortField || ""}
             onInput={(e) => {
-              const val = e.currentTarget.value as BlockRulesSortField | "";
-              props.onSort(val === "" ? null : val);
+              const val = e.currentTarget.value;
+              const isBlockRulesSortField = (
+                v: string,
+              ): v is BlockRulesSortField => {
+                return ["ruleType", "value", "domain"].includes(v);
+              };
+              if (isBlockRulesSortField(val)) {
+                props.onSort(val);
+              } else if (val === "") {
+                props.onSort(null);
+              }
             }}
             class={css({
               fontSize: "xs",

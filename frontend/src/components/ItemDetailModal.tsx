@@ -192,7 +192,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
 
   createEffect(() => {
     // Reset skipping state and clear any pending skip recovery timer when itemId changes
-    props.itemId;
+    void props.itemId;
     setIsSkipping(false);
     if (skipRecoveryTimeoutId !== undefined) {
       clearTimeout(skipRecoveryTimeoutId);
@@ -414,7 +414,8 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
-    const target = e.target as HTMLElement;
+    const target = e.target;
+    if (!(target instanceof HTMLElement)) return;
     if (
       target.tagName === "INPUT" ||
       target.tagName === "TEXTAREA" ||

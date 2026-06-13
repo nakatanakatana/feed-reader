@@ -35,7 +35,8 @@ export function ImportOpmlModal(props: ImportOpmlModalProps) {
   const [result, setResult] = createSignal<ImportResult | null>(null);
 
   const handleFileChange = async (e: Event) => {
-    const input = e.target as HTMLInputElement;
+    const input = e.target;
+    if (!(input instanceof HTMLInputElement)) return;
     const file = input.files?.[0];
     if (!file) return;
 

@@ -115,7 +115,7 @@ export const normalizeCategories = (categories: string): string[] => {
           .map((value) => normalizeValue(String(value)))
           .filter((value) => value.length > 0);
       }
-    } catch (_error) {
+    } catch {
       // Fall back to comma-splitting below.
     }
   }
@@ -141,7 +141,7 @@ export const extractHostname = (url: string): string => {
       hostname = hostname.slice(4);
     }
     return hostname;
-  } catch (_e) {
+  } catch {
     return "";
   }
 };

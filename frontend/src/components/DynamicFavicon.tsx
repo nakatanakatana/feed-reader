@@ -9,8 +9,8 @@ export const DynamicFavicon = (props: DynamicFaviconProps) => {
   let originalFavicon: string | null = null;
 
   createEffect(() => {
-    const link = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
-    if (link) {
+    const link = document.querySelector('link[rel="icon"]');
+    if (link instanceof HTMLLinkElement) {
       if (originalFavicon === null) {
         originalFavicon = link.getAttribute("href");
       }
@@ -20,8 +20,8 @@ export const DynamicFavicon = (props: DynamicFaviconProps) => {
   });
 
   onCleanup(() => {
-    const link = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
-    if (link && originalFavicon !== null) {
+    const link = document.querySelector('link[rel="icon"]');
+    if (link instanceof HTMLLinkElement && originalFavicon !== null) {
       link.href = originalFavicon;
     }
   });
