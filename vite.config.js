@@ -84,6 +84,27 @@ export default defineConfig({
           },
         ],
       },
+      workbox: {
+        globIgnores: ["**/*.html"],
+        navigateFallback: null,
+        runtimeCaching: [
+          {
+            urlPattern: ({ request }) => request.mode === "navigate",
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "pages",
+              networkTimeoutSeconds: 3,
+              cacheableResponse: {
+                statuses: [200],
+              },
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24,
+              },
+            },
+          },
+        ],
+      },
     }),
   ],
   cacheDir: "../node_modules/.vite",

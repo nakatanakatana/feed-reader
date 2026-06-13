@@ -14,6 +14,7 @@ type FetchLike = typeof fetch;
 interface ApiClientOptions {
   baseUrl: string;
   fetch?: FetchLike;
+  onUnauthorized?: () => void;
 }
 
 interface RequestOptions {
@@ -66,6 +67,12 @@ export const createApiClient = (options: ApiClientOptions) => {
       signal: requestOptions?.signal,
       ...(requestBody !== undefined ? { body: requestBody } : {}),
     });
+
+    if (response.status === 401) {
+      options.onUnauthorized?.();
+      throw new ApiError("unauthorized", "Unauthorized", 401);
+    }
+
     const json = await parseJson<T>(response);
 
     if (!response.ok) {

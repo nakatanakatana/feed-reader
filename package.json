@@ -47,6 +47,7 @@
     "@vitest/browser-playwright": "4.1.8",
     "@vitest/coverage-v8": "4.1.8",
     "fast-check": "4.8.0",
+    "jsdom": "^29.1.1",
     "msw": "2.14.6",
     "openapi-typescript": "^6.7.6",
     "oxfmt": "^0.54.0",
