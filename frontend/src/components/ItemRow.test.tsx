@@ -1,6 +1,5 @@
 import { create, toJson } from "@bufbuild/protobuf";
-import { useLiveQuery } from "@tanstack/solid-db";
-import { QueryClientProvider } from "@tanstack/solid-query";
+import { createQuery, QueryClientProvider } from "@tanstack/solid-query";
 import { HttpResponse, http } from "msw";
 import { Show } from "solid-js";
 import { render } from "solid-js/web";
@@ -11,7 +10,7 @@ import {
   ListItemsResponseSchema,
   UpdateItemStatusResponseSchema,
 } from "../gen/item/v1/item_pb";
-import { items } from "../lib/db";
+import { getItemsQueryOptions } from "../lib/db";
 import { dateToTimestamp } from "../lib/item-utils";
 import { queryClient, transport } from "../lib/query";
 import { TransportProvider } from "../lib/transport-context";
@@ -177,9 +176,9 @@ describe("ItemRow", () => {
     );
 
     const TestObserved = () => {
-      const data = useLiveQuery((q) => q.from({ item: items() }));
+      const itemsQuery = createQuery(() => getItemsQueryOptions(false, "30d"));
       return (
-        <Show when={data().length > 0}>
+        <Show when={(itemsQuery.data?.length ?? 0) > 0}>
           <ItemRow item={mockItemWithUrl} onClick={onClick} />
         </Show>
       );

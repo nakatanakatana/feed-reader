@@ -2,8 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { itemClient } from "./api/client";
 import {
   type ItemRead,
-  itemReadCollection,
-  itemReadCollectionOptions,
+  itemReadQueryOptions,
   updateItemReadStatus,
 } from "./item-read-db";
 import {
@@ -13,7 +12,7 @@ import {
 } from "./item-sync-state";
 import { queryClient } from "./query";
 
-describe("ItemRead collection options", () => {
+describe("ItemRead query options", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     queryClient.clear();
@@ -45,11 +44,7 @@ describe("ItemRead collection options", () => {
         nextPageToken: "",
       });
 
-      const data =
-        (await // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB context
-        (itemReadCollectionOptions as any).queryFn({
-          queryKey: ["item-reads"],
-        })) as ItemRead[];
+      const data = (await itemReadQueryOptions.queryFn()) as ItemRead[];
 
       expect(data).toHaveLength(2);
       expect(data[0].id).toBe("1");
@@ -80,10 +75,7 @@ describe("ItemRead collection options", () => {
         nextPageToken: "",
       });
 
-      // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB context
-      await (itemReadCollectionOptions as any).queryFn({
-        queryKey: ["item-reads"],
-      });
+      await itemReadQueryOptions.queryFn();
 
       const expectedAnchor = new Date(Number(serverTimestamp.seconds) * 1000);
       expect(lastReadFetched()).toEqual(expectedAnchor);
@@ -99,10 +91,7 @@ describe("ItemRead collection options", () => {
         nextPageToken: "",
       });
 
-      // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB context
-      await (itemReadCollectionOptions as any).queryFn({
-        queryKey: ["item-reads"],
-      });
+      await itemReadQueryOptions.queryFn();
 
       expect(lastReadFetched()).toEqual(anchorDate);
     });
@@ -134,10 +123,7 @@ describe("ItemRead collection options", () => {
           nextPageToken: "",
         });
 
-      // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB context
-      await (itemReadCollectionOptions as any).queryFn({
-        queryKey: ["item-reads"],
-      });
+      await itemReadQueryOptions.queryFn();
 
       expect(itemClient.listItemRead).toHaveBeenCalledTimes(2);
 
@@ -175,11 +161,7 @@ describe("ItemRead collection options", () => {
         itemReads: mockItemReads,
       });
 
-      const data =
-        (await // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB context
-        (itemReadCollectionOptions as any).queryFn({
-          queryKey: ["item-reads"],
-        })) as ItemRead[];
+      const data = (await itemReadQueryOptions.queryFn()) as ItemRead[];
 
       expect(data).toHaveLength(2);
       expect(data.find((d: ItemRead) => d.id === "1")?.isRead).toBe(false);
@@ -192,10 +174,7 @@ describe("ItemRead collection options", () => {
       const existingData = [{ id: "1", isRead: false, updatedAt: new Date() }];
       queryClient.setQueryData(["item-reads"], existingData);
 
-      // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB context
-      const data = await (itemReadCollectionOptions as any).queryFn({
-        queryKey: ["item-reads"],
-      });
+      const data = await itemReadQueryOptions.queryFn();
 
       expect(itemClient.listItemRead).not.toHaveBeenCalled();
       expect(data).toEqual([]);
@@ -203,7 +182,7 @@ describe("ItemRead collection options", () => {
   });
 
   describe("updateItemReadStatus", () => {
-    it("should call updateItemStatus and writeUpsert", async () => {
+    it("should call updateItemStatus", async () => {
       // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
       (itemClient.updateItemStatus as any).mockResolvedValue({});
 
@@ -215,27 +194,10 @@ describe("ItemRead collection options", () => {
       });
     });
 
-    it("should ignore SyncNotInitializedError during optimistic update", async () => {
-      // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
-      (itemClient.updateItemStatus as any).mockResolvedValue({});
-
-      // Mock writeUpsert to throw SyncNotInitializedError
-      const error = new Error("Sync not initialized");
-      error.name = "SyncNotInitializedError";
-      vi.spyOn(itemReadCollection().utils, "writeUpsert").mockRejectedValue(
-        error,
-      );
-
-      // Should NOT throw
-      await updateItemReadStatus(["1"], true);
-
-      expect(itemClient.updateItemStatus).toHaveBeenCalled();
-    });
-
     it("should perform optimistic update and rollback on server failure, cleaning up new records", async () => {
       // Setup initial state: id: "1" exists, "2" is new
       const initialData = [{ id: "1", isRead: false, updatedAt: new Date() }];
-      queryClient.setQueryData(itemReadCollectionOptions.queryKey, initialData);
+      queryClient.setQueryData(itemReadQueryOptions.queryKey, initialData);
 
       // Mock server to fail
       const error = new Error("Server error");
@@ -248,7 +210,7 @@ describe("ItemRead collection options", () => {
       );
 
       const cache = queryClient.getQueryData(
-        itemReadCollectionOptions.queryKey,
+        itemReadQueryOptions.queryKey,
       ) as ItemRead[];
       // id: "1" should be rolled back to false
       expect(cache.find((i) => i.id === "1")?.isRead).toBe(false);
@@ -286,11 +248,7 @@ describe("ItemRead collection options", () => {
         itemReads: mockItemReads,
       });
 
-      const data =
-        (await // biome-ignore lint/suspicious/noExplicitAny: using any for TanStack DB context
-        (itemReadCollectionOptions as any).queryFn({
-          queryKey: ["item-reads"],
-        })) as ItemRead[];
+      const data = (await itemReadQueryOptions.queryFn()) as ItemRead[];
 
       expect(data).toHaveLength(1);
       expect(data[0].id).toBe("1");

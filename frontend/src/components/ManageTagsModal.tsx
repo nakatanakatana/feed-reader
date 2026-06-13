@@ -1,9 +1,14 @@
-import { useLiveQuery } from "@tanstack/solid-db";
-import { useMutation } from "@tanstack/solid-query";
-import { createSignal, For } from "solid-js";
+import { createQuery, useMutation } from "@tanstack/solid-query";
+import { createMemo, createSignal, For } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
-import { manageFeedTags, tagPickerQuery } from "../lib/db";
+import {
+  feedTagsQueryOptions,
+  getTagPicker,
+  getTagsWithFeedCount,
+  manageFeedTags,
+  tagsQueryOptions,
+} from "../lib/db";
 import { ActionButton } from "./ui/ActionButton";
 import { Modal } from "./ui/Modal";
 
@@ -14,7 +19,20 @@ interface ManageTagsModalProps {
 }
 
 export function ManageTagsModal(props: ManageTagsModalProps) {
-  const tagsQuery = useLiveQuery(() => tagPickerQuery);
+  const rawTagsQuery = createQuery(() => tagsQueryOptions);
+  const feedTagsQuery = createQuery(() => feedTagsQueryOptions);
+
+  const tagsWithFeedCount = createMemo(() => {
+    return getTagsWithFeedCount(
+      rawTagsQuery.data ?? [],
+      feedTagsQuery.data ?? [],
+    );
+  });
+
+  const tagsSorted = createMemo(() => {
+    return getTagPicker(tagsWithFeedCount());
+  });
+
   const manageTagsMutation = useMutation(() => ({
     mutationFn: manageFeedTags,
   }));
@@ -102,7 +120,7 @@ export function ManageTagsModal(props: ManageTagsModalProps) {
               rounded: "md",
             })}
           >
-            <For each={tagsQuery()}>
+            <For each={tagsSorted()}>
               {(tag) => (
                 <div
                   class={flex({

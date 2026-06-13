@@ -1,17 +1,18 @@
-import { type CollectionStatus, useLiveQuery } from "@tanstack/solid-db";
-import { useMutation } from "@tanstack/solid-query";
-import { type Accessor, createEffect, createSignal, For, Show } from "solid-js";
+import { createQuery, useMutation } from "@tanstack/solid-query";
+import { createEffect, createMemo, createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import {
-  buildFeedListQuery,
   exportFeeds,
-  type Feed,
   feedDelete,
-  feedTag,
+  feedsQueryOptions,
+  feedTagsQueryOptions,
+  getFeedList,
+  getTagPicker,
+  getTagsWithFeedCount,
   refreshFeeds,
   suspendFeeds,
-  tagPickerQuery,
+  tagsQueryOptions,
 } from "../lib/db";
 import { type FeedSortBy, feedStore } from "../lib/feed-store";
 import { fetchingState } from "../lib/fetching-state";
@@ -35,7 +36,24 @@ export function FeedList() {
   const [isManageModalOpen, setIsManageModalOpen] = createSignal(false);
   let tagSelectRef: HTMLSelectElement | undefined;
 
-  const tagsQuery = useLiveQuery(() => tagPickerQuery);
+  const feedsQuery = createQuery(() => feedsQueryOptions);
+  const tagsQuery = createQuery(() => tagsQueryOptions);
+  const feedTagsQuery = createQuery(() => feedTagsQueryOptions);
+
+  const tagsWithFeedCount = createMemo(() => {
+    return getTagsWithFeedCount(tagsQuery.data ?? [], feedTagsQuery.data ?? []);
+  });
+
+  const tagsSorted = createMemo(() => {
+    return getTagPicker(tagsWithFeedCount());
+  });
+
+  const feedList = createMemo(() => {
+    return getFeedList(feedsQuery.data ?? [], feedTagsQuery.data ?? [], {
+      tagId: feedStore.state.selectedTagId,
+      sortBy: feedStore.state.sortBy,
+    });
+  });
 
   // Force sync the select value to DOM because browser might reset it if options are not ready
   createEffect(() => {
@@ -49,21 +67,9 @@ export function FeedList() {
     }
   });
 
-  const feedListQuery = useLiveQuery((q) => {
-    return buildFeedListQuery(q, {
-      feedTagCollection: feedTag,
-      tagId: feedStore.state.selectedTagId,
-      sortBy: feedStore.state.sortBy,
-    });
-  }) as unknown as Accessor<Feed[]> & {
-    isLoading: boolean;
-    isReady: boolean;
-    status: CollectionStatus;
-  };
-
   // Ensure selectedTagId is valid once tags load
   createEffect(() => {
-    const tags = tagsQuery();
+    const tags = tagsSorted();
     const currentTagId = feedStore.state.selectedTagId;
     if (tags.length > 0 && typeof currentTagId === "string") {
       const exists = tags.some((t) => t.id === currentTagId);
@@ -75,13 +81,13 @@ export function FeedList() {
   });
 
   const allVisibleSelected = () => {
-    const visibleFeeds = feedListQuery();
+    const visibleFeeds = feedList();
     if (visibleFeeds.length === 0) return false;
     return visibleFeeds.every((f) => selectedFeedIds().includes(f.id));
   };
 
   const isIndeterminate = () => {
-    const visibleFeeds = feedListQuery();
+    const visibleFeeds = feedList();
     if (visibleFeeds.length === 0) return false;
     const selectedCount = visibleFeeds.filter((f) =>
       selectedFeedIds().includes(f.id),
@@ -90,7 +96,7 @@ export function FeedList() {
   };
 
   const toggleSelectAll = () => {
-    const visibleFeeds = feedListQuery();
+    const visibleFeeds = feedList();
     if (allVisibleSelected()) {
       // Deselect all visible
       const visibleIds = visibleFeeds.map((f) => f.id);
@@ -266,7 +272,7 @@ export function FeedList() {
             </Show>
             <option value="all">All</option>
             <option value="untagged">Untagged</option>
-            <For each={tagsQuery()}>
+            <For each={tagsSorted()}>
               {(tag) => (
                 <option value={tag.id}>
                   {tag.name}
@@ -288,7 +294,7 @@ export function FeedList() {
           backgroundColor: "white",
         })}
       >
-        <Show when={feedListQuery.isLoading}>
+        <Show when={feedsQuery.isLoading}>
           <p class={css({ color: "gray.500", fontSize: "sm" })}>Loading...</p>
         </Show>
         <Show when={deleteError()}>
@@ -296,7 +302,7 @@ export function FeedList() {
             Delete Error: {deleteError()?.message}
           </p>
         </Show>
-        <Show when={!feedListQuery.isLoading && feedListQuery().length === 0}>
+        <Show when={!feedsQuery.isLoading && feedList().length === 0}>
           <EmptyState title="No feeds found." />
         </Show>
         <div
@@ -310,7 +316,7 @@ export function FeedList() {
           })}
         >
           <ul class={stack({ gap: "2", width: "full" })}>
-            <For each={feedListQuery()}>
+            <For each={feedList()}>
               {(feed) => (
                 <li
                   onClick={() => toggleFeedSelection(feed.id)}

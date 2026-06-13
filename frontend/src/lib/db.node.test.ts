@@ -1,18 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { db, feeds, tags } from "./db";
+import { feedsQueryOptions, tagsQueryOptions } from "./db";
 
-describe("db", () => {
-  it("should be defined", () => {
-    expect(db).toBeDefined();
+describe("db query options", () => {
+  it("should have feeds query options", () => {
+    expect(feedsQueryOptions).toBeDefined();
+    expect(feedsQueryOptions.queryKey).toEqual(["feeds"]);
   });
 
-  it("should have feeds collection", () => {
-    expect(db.feeds).toBeDefined();
-    expect(feeds).toBeDefined();
-  });
-
-  it("should have tags collection", () => {
-    expect(db.tags).toBeDefined();
-    expect(tags).toBeDefined();
+  it("should have tags query options", () => {
+    expect(tagsQueryOptions).toBeDefined();
+    expect(tagsQueryOptions.queryKey).toEqual(["tags"]);
   });
 });

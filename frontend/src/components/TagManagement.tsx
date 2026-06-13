@@ -1,8 +1,15 @@
-import { useLiveQuery } from "@tanstack/solid-db";
-import { createSignal, For, Show } from "solid-js";
+import { createQuery } from "@tanstack/solid-query";
+import { createMemo, createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
-import { tagPickerQuery, tags } from "../lib/db";
+import {
+  feedTagsQueryOptions,
+  getTagPicker,
+  getTagsWithFeedCount,
+  tagDelete,
+  tagInsert,
+  tagsQueryOptions,
+} from "../lib/db";
 import { ActionButton } from "./ui/ActionButton";
 import { Badge } from "./ui/Badge";
 import { EmptyState } from "./ui/EmptyState";
@@ -10,24 +17,37 @@ import { EmptyState } from "./ui/EmptyState";
 export const TagManagement = () => {
   const [newTagName, setNewTagName] = createSignal("");
 
-  const tagsQuery = useLiveQuery(() => tagPickerQuery);
+  const rawTagsQuery = createQuery(() => tagsQueryOptions);
+  const feedTagsQuery = createQuery(() => feedTagsQueryOptions);
 
-  const handleCreateTag = (e: Event) => {
+  const tagsWithFeedCount = createMemo(() => {
+    return getTagsWithFeedCount(
+      rawTagsQuery.data ?? [],
+      feedTagsQuery.data ?? [],
+    );
+  });
+
+  const tagsSorted = createMemo(() => {
+    return getTagPicker(tagsWithFeedCount());
+  });
+
+  const handleCreateTag = async (e: Event) => {
     e.preventDefault();
     if (!newTagName()) return;
 
-    tags.insert({
-      id: "dummy",
-      name: newTagName(),
-      unreadCount: 0n,
-      feedCount: 0n,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-    setNewTagName("");
+    try {
+      await tagInsert(newTagName());
+      setNewTagName("");
+    } catch (err) {
+      console.error("Failed to insert tag:", err);
+    }
   };
 
-  const handleDeleteTag = (id: string, name: string, feedCount: bigint) => {
+  const handleDeleteTag = async (
+    id: string,
+    name: string,
+    feedCount: bigint,
+  ) => {
     if (feedCount > 0n) {
       const confirmed = confirm(
         `Delete "${name}"? It is used by ${feedCount.toString()} feed(s).`,
@@ -35,7 +55,11 @@ export const TagManagement = () => {
       if (!confirmed) return;
     }
 
-    tags.delete(id);
+    try {
+      await tagDelete(id);
+    } catch (err) {
+      console.error("Failed to delete tag:", err);
+    }
   };
 
   return (
@@ -95,7 +119,7 @@ export const TagManagement = () => {
         <span>Tag</span>
         <span>Feeds</span>
         <span class={css({ textAlign: "right", fontWeight: "semibold" })}>
-          {tagsQuery().length} tags
+          {tagsSorted().length} tags
         </span>
       </div>
 
@@ -122,8 +146,8 @@ export const TagManagement = () => {
               paddingRight: "1",
             })}
           >
-            <Show when={tagsQuery().length > 0}>
-              <For each={tagsQuery()}>
+            <Show when={tagsSorted().length > 0}>
+              <For each={tagsSorted()}>
                 {(tag) => (
                   <div
                     class={css({
@@ -161,7 +185,7 @@ export const TagManagement = () => {
                 )}
               </For>
             </Show>
-            <Show when={tagsQuery().length === 0}>
+            <Show when={tagsSorted().length === 0}>
               <EmptyState
                 title="No tags yet."
                 description="Create one to get started."

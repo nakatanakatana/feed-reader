@@ -1,6 +1,4 @@
 import { createClient } from "@connectrpc/connect";
-import { queryCollectionOptions } from "@tanstack/query-db-collection";
-import { createCollection } from "@tanstack/solid-db";
 import { FeedService } from "../gen/feed/v1/feed_pb";
 import type { Tag } from "../gen/tag/v1/tag_pb";
 import { toDate } from "./date-utils";
@@ -34,7 +32,6 @@ export const manageFeedTags = async (params: {
   removeTagIds: string[];
 }) => {
   await feedClient.manageFeedTags(params);
-  // Invalidate feeds, tags, and feed-tags as associations changed
   queryClient.invalidateQueries({ queryKey: ["feeds"] });
   queryClient.invalidateQueries({ queryKey: ["tags"] });
   queryClient.invalidateQueries({ queryKey: ["feed-tags"] });
@@ -51,7 +48,6 @@ export const refreshFeeds = async (feedIds: string[]) => {
         errorMessage: r.errorMessage,
       })),
     );
-    // Invalidate feeds, items, and tags as counts might have changed
     queryClient.invalidateQueries({ queryKey: ["feeds"] });
     queryClient.invalidateQueries({ queryKey: ["items"] });
     queryClient.invalidateQueries({ queryKey: ["tags"] });
@@ -95,37 +91,24 @@ export const exportFeeds = async (feedIds: string[]) => {
   setTimeout(() => URL.revokeObjectURL(url), 100);
 };
 
-export const feeds = createCollection(
-  queryCollectionOptions({
-    id: "feeds",
-    queryClient,
-    queryKey: ["feeds"],
-    gcTime: 5 * 1000,
-    queryFn: async () => {
-      const response = await feedClient.listFeeds({});
-      return response.feeds.map((feed) => ({
-        id: feed.id,
-        url: feed.url,
-        link: feed.link,
-        title: feed.title,
-        unreadCount: feed.unreadCount,
-        lastFetchedAt: toDate(feed.lastFetchedAt),
-        nextFetchAt: toDate(feed.nextFetchAt),
-        createdAt: toDate(feed.createdAt),
-        updatedAt: toDate(feed.updatedAt),
-        tags: feed.tags,
-      }));
-    },
-    getKey: (feed: Feed) => feed.id,
-    onDelete: async ({ transaction }) => {
-      for (const mutation of transaction.mutations) {
-        if (mutation.type === "delete") {
-          await feedClient.deleteFeed({ id: mutation.key as string });
-        }
-      }
-    },
-  }),
-);
+export const feedsQueryOptions = {
+  queryKey: ["feeds"] as const,
+  queryFn: async () => {
+    const response = await feedClient.listFeeds({});
+    return response.feeds.map((feed) => ({
+      id: feed.id,
+      url: feed.url,
+      link: feed.link,
+      title: feed.title,
+      unreadCount: feed.unreadCount,
+      lastFetchedAt: toDate(feed.lastFetchedAt),
+      nextFetchAt: toDate(feed.nextFetchAt),
+      createdAt: toDate(feed.createdAt),
+      updatedAt: toDate(feed.updatedAt),
+      tags: feed.tags,
+    }));
+  },
+};
 
 export const feedInsert = async (url: string, tags: Tag[]) => {
   const tagIds = tags.map((t) => t.id);
@@ -140,19 +123,14 @@ export const feedDelete = async (id: string) => {
   await queryClient.invalidateQueries({ queryKey: ["feed-tags"] });
 };
 
-export const feedTag = createCollection(
-  queryCollectionOptions({
-    id: "feed-tags",
-    queryClient,
-    queryKey: ["feed-tags"],
-    queryFn: async () => {
-      const response = await feedClient.listFeedTags({});
-      return response.feedTags.map((ft) => ({
-        id: `${ft.feedId}-${ft.tagId}`,
-        feedId: ft.feedId,
-        tagId: ft.tagId,
-      }));
-    },
-    getKey: (feedTag: FeedTag) => feedTag.id,
-  }),
-);
+export const feedTagsQueryOptions = {
+  queryKey: ["feed-tags"] as const,
+  queryFn: async () => {
+    const response = await feedClient.listFeedTags({});
+    return response.feedTags.map((ft) => ({
+      id: `${ft.feedId}-${ft.tagId}`,
+      feedId: ft.feedId,
+      tagId: ft.tagId,
+    }));
+  },
+};

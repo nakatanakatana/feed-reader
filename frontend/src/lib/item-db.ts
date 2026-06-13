@@ -1,14 +1,9 @@
-import { createClient } from "@connectrpc/connect";
-import { queryCollectionOptions } from "@tanstack/query-db-collection";
-import { createCollection } from "@tanstack/solid-db";
-import { createMemo, createRoot } from "solid-js";
-import { ItemService } from "../gen/item/v1/item_pb";
+import { itemClient } from "./api/client";
 import { toDate } from "./date-utils";
-import { itemStore } from "./item-store";
 import {
-  lastFetched,
+  lastFetchedMap,
   lastReadFetched,
-  setLastFetched,
+  setLastFetchedMap,
   setLastItemsSyncedAt,
   setLastReadFetched,
 } from "./item-sync-state";
@@ -17,7 +12,7 @@ import {
   dateToTimestamp,
   getPublishedSince,
 } from "./item-utils";
-import { queryClient, transport } from "./query";
+import { queryClient } from "./query";
 
 export interface ListItem {
   id: string;
@@ -37,154 +32,149 @@ export interface Item extends ListItem {
   content?: string;
 }
 
-const itemClient = createClient(ItemService, transport);
-
-const createItems = (showRead: boolean, since: DateFilterValue) => {
-  setLastFetched(null);
+export const getItemsQueryOptions = (
+  showRead: boolean,
+  since: DateFilterValue,
+) => {
   const isReadParam = showRead ? {} : { isRead: false };
   const sinceTimestamp = since !== "all" ? getPublishedSince(since) : undefined;
   const queryKey = ["items", { since, showRead }] as const;
+  const cacheKey = `${showRead}-${since}`;
 
-  return createCollection(
-    queryCollectionOptions<ListItem>({
-      id: "items",
-      gcTime: 5 * 1000,
-      queryClient,
+  return {
+    queryKey,
+    refetchInterval: 1 * 60 * 1000,
+    queryFn: async () => {
+      const lastFetchedValue = lastFetchedMap()[cacheKey] ?? null;
+      const existingData =
+        lastFetchedValue === null
+          ? []
+          : (queryClient.getQueryData(queryKey) as ListItem[]) || [];
+      const searchSince =
+        lastFetchedValue === null
+          ? sinceTimestamp
+          : dateToTimestamp(lastFetchedValue);
 
-      refetchInterval: 1 * 60 * 1000,
-      queryKey,
-      queryFn: async ({ queryKey }) => {
-        const lastFetchedValue = lastFetched();
-        const existingData =
-          lastFetchedValue === null
-            ? []
-            : (queryClient.getQueryData(queryKey) as ListItem[]) || [];
-        const searchSince =
-          lastFetchedValue === null
-            ? sinceTimestamp
-            : dateToTimestamp(lastFetchedValue);
+      let pageToken = "";
+      const allNewItems: ListItem[] = [];
 
-        let pageToken = "";
-        const allNewItems: ListItem[] = [];
-
-        do {
-          const response = await itemClient.listItems({
-            since: searchSince,
-            pageSize: 1000,
-            pageToken: pageToken,
-            ...isReadParam,
-          });
-
-          if (response.items && response.items.length > 0) {
-            allNewItems.push(
-              ...response.items.map((item) => ({
-                id: item.id,
-                title: item.title,
-                description: item.description,
-                publishedAt: toDate(item.publishedAt),
-                isRead: item.isRead,
-                createdAt: toDate(item.createdAt),
-                feedId: item.feedId,
-                url: item.url,
-              })),
-            );
-          }
-
-          pageToken = response.nextPageToken;
-        } while (pageToken);
-
-        const syncTime = new Date();
-        setLastItemsSyncedAt(syncTime);
-
-        if (allNewItems.length > 0) {
-          const validDates = allNewItems
-            .map((item) => item.createdAt?.getTime())
-            .filter((t): t is number => t !== undefined && !Number.isNaN(t));
-
-          const maxTime = validDates.length > 0 ? Math.max(...validDates) : 0;
-
-          // Initialize the read-state anchor if it hasn't been set yet.
-          if (!lastReadFetched() && maxTime > 0) {
-            const overlapMs = 5 * 1000; // 5 seconds overlap
-            const initialReadAnchor = new Date(maxTime - overlapMs);
-            setLastReadFetched(initialReadAnchor);
-          }
-
-          if (validDates.length > 0) {
-            const currentAnchorTime = lastFetchedValue
-              ? lastFetchedValue.getTime()
-              : 0;
-
-            if (maxTime > currentAnchorTime) {
-              setLastFetched(new Date(maxTime));
-            } else if (lastFetchedValue !== null) {
-              setLastFetched(lastFetchedValue);
-            }
-          } else if (lastFetchedValue !== null) {
-            setLastFetched(lastFetchedValue);
-          }
-        } else if (lastFetchedValue !== null) {
-          setLastFetched(lastFetchedValue);
-        }
-
-        const itemMap = new Map<string, ListItem>();
-        for (const item of existingData) {
-          itemMap.set(item.id, item);
-        }
-        for (const item of allNewItems) {
-          itemMap.set(item.id, item);
-        }
-
-        return Array.from(itemMap.values());
-      },
-      getKey: (item: ListItem) => item.id,
-      onUpdate: async ({ transaction }) => {
-        const idsByIsRead = new Map<boolean, string[]>();
-
-        for (const m of transaction.mutations) {
-          const id = m.modified.id;
-          const isRead = m.modified.isRead;
-          let group = idsByIsRead.get(isRead);
-          if (!group) {
-            group = [];
-            idsByIsRead.set(isRead, group);
-          }
-          group.push(id);
-        }
-
-        // Update the query cache for each group
-        queryClient.setQueryData(queryKey, (old: ListItem[] | undefined) => {
-          if (!old) return old;
-          const updated = [...old];
-          for (const [isRead, ids] of idsByIsRead.entries()) {
-            const idSet = new Set(ids);
-            for (let i = 0; i < updated.length; i++) {
-              if (idSet.has(updated[i].id)) {
-                updated[i] = { ...updated[i], isRead };
-              }
-            }
-          }
-          return updated;
+      do {
+        const response = await itemClient.listItems({
+          since: searchSince,
+          pageSize: 1000,
+          pageToken: pageToken,
+          ...isReadParam,
         });
 
-        for (const [isRead, ids] of idsByIsRead.entries()) {
-          await itemClient.updateItemStatus({
-            ids: ids,
-            isRead: isRead,
-          });
+        if (response.items && response.items.length > 0) {
+          allNewItems.push(
+            ...response.items.map((item) => ({
+              id: item.id,
+              title: item.title,
+              description: item.description,
+              publishedAt: toDate(item.publishedAt),
+              isRead: item.isRead,
+              createdAt: toDate(item.createdAt),
+              feedId: item.feedId,
+              url: item.url,
+            })),
+          );
         }
 
-        return { refetch: false };
-      },
-    }),
-  );
+        pageToken = response.nextPageToken;
+      } while (pageToken);
+
+      const syncTime = new Date();
+      setLastItemsSyncedAt(syncTime);
+
+      if (allNewItems.length > 0) {
+        const validDates = allNewItems
+          .map((item) => item.createdAt?.getTime())
+          .filter((t): t is number => t !== undefined && !Number.isNaN(t));
+
+        const maxTime = validDates.length > 0 ? Math.max(...validDates) : 0;
+
+        if (!lastReadFetched() && maxTime > 0) {
+          const overlapMs = 5 * 1000;
+          const initialReadAnchor = new Date(maxTime - overlapMs);
+          setLastReadFetched(initialReadAnchor);
+        }
+
+        if (validDates.length > 0) {
+          const currentAnchorTime = lastFetchedValue
+            ? lastFetchedValue.getTime()
+            : 0;
+
+          if (maxTime > currentAnchorTime) {
+            setLastFetchedMap((prev) => ({
+              ...prev,
+              [cacheKey]: new Date(maxTime),
+            }));
+          } else if (lastFetchedValue !== null) {
+            setLastFetchedMap((prev) => ({
+              ...prev,
+              [cacheKey]: lastFetchedValue,
+            }));
+          }
+        } else if (lastFetchedValue !== null) {
+          setLastFetchedMap((prev) => ({
+            ...prev,
+            [cacheKey]: lastFetchedValue,
+          }));
+        }
+      } else if (lastFetchedValue !== null) {
+        setLastFetchedMap((prev) => ({
+          ...prev,
+          [cacheKey]: lastFetchedValue,
+        }));
+      }
+
+      const itemMap = new Map<string, ListItem>();
+      for (const item of existingData) {
+        itemMap.set(item.id, item);
+      }
+      for (const item of allNewItems) {
+        itemMap.set(item.id, item);
+      }
+
+      return Array.from(itemMap.values());
+    },
+  };
 };
 
-export const items = createRoot(() => {
-  return createMemo(() =>
-    createItems(itemStore.state.showRead, itemStore.state.since),
-  );
-});
+export const updateItemStatus = async (
+  ids: string[],
+  isRead: boolean,
+  queryKey: readonly unknown[],
+) => {
+  const previousData = queryClient.getQueryData(queryKey) as
+    | ListItem[]
+    | undefined;
+
+  queryClient.setQueryData(queryKey, (old: ListItem[] | undefined) => {
+    if (!old) return old;
+    const updated = [...old];
+    const idSet = new Set(ids);
+    for (let i = 0; i < updated.length; i++) {
+      if (idSet.has(updated[i].id)) {
+        updated[i] = { ...updated[i], isRead };
+      }
+    }
+    return updated;
+  });
+
+  try {
+    await itemClient.updateItemStatus({
+      ids: ids,
+      isRead: isRead,
+    });
+  } catch (e) {
+    if (previousData) {
+      queryClient.setQueryData(queryKey, previousData);
+    }
+    throw e;
+  }
+};
 
 export const getItem = async (id: string): Promise<Item | null> => {
   const response = await itemClient.getItem({ id });

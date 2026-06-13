@@ -1,4 +1,4 @@
-import { useLiveQuery } from "@tanstack/solid-db";
+import { createQuery } from "@tanstack/solid-query";
 import { useLocation, useNavigate } from "@tanstack/solid-router";
 import {
   createEffect,
@@ -13,11 +13,14 @@ import {
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import {
-  buildItemsWithReadStateQuery,
-  feedTag,
+  feedTagsQueryOptions,
+  getItemsQueryOptions,
+  getItemsWithReadState,
+  getTagUnreadCounts,
+  getTotalUnreadCount,
   type Item,
-  tagUnreadCountsQuery,
-  totalUnreadCountQuery,
+  itemReadQueryOptions,
+  tagsQueryOptions,
   updateItemReadStatus,
 } from "../lib/db";
 import { itemStore } from "../lib/item-store";
@@ -64,15 +67,26 @@ export function ItemList(props: ItemListProps) {
     }
   });
 
-  const itemQuery = useLiveQuery((q) => {
-    return buildItemsWithReadStateQuery(q, {
-      feedTagCollection: feedTag,
-      tagId: props.tagId,
-    });
+  const itemsQuery = createQuery(() =>
+    getItemsQueryOptions(itemStore.state.showRead, itemStore.state.since),
+  );
+  const readsQuery = createQuery(() => itemReadQueryOptions);
+  const feedTagsQuery = createQuery(() => feedTagsQueryOptions);
+  const tagsQuery = createQuery(() => tagsQueryOptions);
+
+  const itemsWithReadState = createMemo(() => {
+    return getItemsWithReadState(
+      itemsQuery.data ?? [],
+      readsQuery.data ?? [],
+      feedTagsQuery.data ?? [],
+      {
+        tagId: props.tagId,
+      },
+    );
   });
 
   const filteredItems = createMemo(() => {
-    return itemQuery().filter(
+    return itemsWithReadState().filter(
       (item) => !itemStore.state.transientRemovedIds[item.id],
     );
   });
@@ -91,9 +105,29 @@ export function ItemList(props: ItemListProps) {
     });
   };
 
-  const totalUnread = useLiveQuery(() => totalUnreadCountQuery());
+  const totalUnread = createMemo(() => {
+    const unreadList = getItemsWithReadState(
+      itemsQuery.data ?? [],
+      readsQuery.data ?? [],
+      feedTagsQuery.data ?? [],
+      { unreadOnly: true },
+    );
+    return getTotalUnreadCount(unreadList);
+  });
 
-  const tagsQuery = useLiveQuery(() => tagUnreadCountsQuery());
+  const tagUnreadCounts = createMemo(() => {
+    const unreadList = getItemsWithReadState(
+      itemsQuery.data ?? [],
+      readsQuery.data ?? [],
+      feedTagsQuery.data ?? [],
+      { unreadOnly: true },
+    );
+    return getTagUnreadCounts(
+      tagsQuery.data ?? [],
+      feedTagsQuery.data ?? [],
+      unreadList,
+    );
+  });
 
   const handleDateFilterSelect = (value: DateFilterValue) => {
     itemStore.setDateFilter(value);
@@ -199,16 +233,16 @@ export function ItemList(props: ItemListProps) {
             onClick={() => handleTagClick(undefined)}
           >
             All
-            <Show when={(totalUnread()[0]?.total ?? 0n) > 0n}>
+            <Show when={totalUnread() > 0n}>
               <Badge
                 variant={props.tagId === undefined ? "primary" : "neutral"}
                 class={css({ ml: "1.5", fontSize: "10px", minWidth: "1.5rem" })}
               >
-                {formatUnreadCount(Number(totalUnread()[0].total))}
+                {formatUnreadCount(Number(totalUnread()))}
               </Badge>
             </Show>
           </TagChip>
-          <For each={tagsQuery()}>
+          <For each={tagUnreadCounts()}>
             {(tag) => (
               <TagChip
                 selected={props.tagId === tag.id}
@@ -503,7 +537,7 @@ export function ItemList(props: ItemListProps) {
         </For>
       </div>
 
-      <Show when={itemQuery.isLoading}>
+      <Show when={itemsQuery.isLoading}>
         <div
           class={css({ textAlign: "center", padding: "8", color: "gray.500" })}
         >
@@ -511,7 +545,7 @@ export function ItemList(props: ItemListProps) {
         </div>
       </Show>
 
-      <Show when={!itemQuery.isLoading && filteredItems().length === 0}>
+      <Show when={!itemsQuery.isLoading && filteredItems().length === 0}>
         <EmptyState title="No items found." />
       </Show>
     </div>

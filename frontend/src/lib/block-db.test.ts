@@ -2,10 +2,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   itemBlockRuleDelete,
   itemBlockRuleInsert,
-  itemBlockRules,
+  itemBlockRulesQueryOptions,
   urlParsingRuleDelete,
   urlParsingRuleInsert,
-  urlParsingRules,
+  urlParsingRulesQueryOptions,
 } from "./block-db";
 import { queryClient } from "./query";
 
@@ -18,13 +18,15 @@ describe("block-db", () => {
     vi.restoreAllMocks();
   });
 
-  describe("collections", () => {
-    it("urlParsingRules collection should be defined", () => {
-      expect(urlParsingRules).toBeDefined();
+  describe("query options", () => {
+    it("urlParsingRulesQueryOptions should be defined", () => {
+      expect(urlParsingRulesQueryOptions).toBeDefined();
+      expect(urlParsingRulesQueryOptions.queryKey).toEqual(["url-rules"]);
     });
 
-    it("itemBlockRules collection should be defined", () => {
-      expect(itemBlockRules).toBeDefined();
+    it("itemBlockRulesQueryOptions should be defined", () => {
+      expect(itemBlockRulesQueryOptions).toBeDefined();
+      expect(itemBlockRulesQueryOptions.queryKey).toEqual(["block-rules"]);
     });
   });
 

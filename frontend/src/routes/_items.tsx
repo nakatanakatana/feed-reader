@@ -1,3 +1,4 @@
+import { useIsFetching } from "@tanstack/solid-query";
 import { createFileRoute, Outlet } from "@tanstack/solid-router";
 import { onCleanup, onMount } from "solid-js";
 import { css } from "../../styled-system/css";
@@ -5,7 +6,7 @@ import { flex } from "../../styled-system/patterns";
 import { ItemList } from "../components/ItemList";
 import { ActionButton } from "../components/ui/ActionButton";
 import { PageLayout } from "../components/ui/PageLayout";
-import { itemReadCollection, items, lastItemsSyncedAt } from "../lib/db";
+import { lastItemsSyncedAt, queryClient } from "../lib/db";
 import type { DateFilterValue } from "../lib/item-utils";
 
 interface ItemsSearch {
@@ -27,7 +28,9 @@ export const Route = createFileRoute("/_items")({
 
 function ItemsLayout() {
   const search = Route.useSearch();
-  const itemsCollection = items();
+  const isFetchingItems = useIsFetching(() => ({ queryKey: ["items"] }));
+  const isFetchingReads = useIsFetching(() => ({ queryKey: ["item-reads"] }));
+  const isFetching = () => isFetchingItems() > 0 || isFetchingReads() > 0;
 
   onMount(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -43,8 +46,8 @@ function ItemsLayout() {
       // 'r' key to refresh items
       if (e.key === "r" && !e.ctrlKey && !e.metaKey && !e.altKey) {
         e.preventDefault();
-        itemsCollection.utils.refetch();
-        itemReadCollection().utils.refetch();
+        queryClient.invalidateQueries({ queryKey: ["items"] });
+        queryClient.invalidateQueries({ queryKey: ["item-reads"] });
       }
     };
 
@@ -78,18 +81,12 @@ function ItemsLayout() {
                 size="sm"
                 variant="secondary"
                 onClick={() => {
-                  itemsCollection.utils.refetch();
-                  itemReadCollection().utils.refetch();
+                  queryClient.invalidateQueries({ queryKey: ["items"] });
+                  queryClient.invalidateQueries({ queryKey: ["item-reads"] });
                 }}
-                disabled={
-                  (itemsCollection as unknown as { isFetching: boolean })
-                    .isFetching
-                }
+                disabled={isFetching()}
               >
-                {(itemsCollection as unknown as { isFetching: boolean })
-                  .isFetching
-                  ? "Refreshing..."
-                  : "Refresh"}
+                {isFetching() ? "Refreshing..." : "Refresh"}
               </ActionButton>
             </div>
           }

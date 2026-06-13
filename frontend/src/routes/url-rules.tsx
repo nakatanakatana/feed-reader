@@ -1,5 +1,4 @@
-import { useLiveQuery } from "@tanstack/solid-db";
-import { createMutation } from "@tanstack/solid-query";
+import { createMutation, createQuery } from "@tanstack/solid-query";
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
@@ -9,7 +8,7 @@ import { PageLayout } from "../components/ui/PageLayout";
 import {
   urlParsingRuleDelete,
   urlParsingRuleInsert,
-  urlParsingRules,
+  urlParsingRulesQueryOptions,
 } from "../lib/block-db";
 
 export const Route = createFileRoute("/url-rules")({
@@ -21,9 +20,7 @@ function URLRulesComponent() {
   const [ruleType, setRuleType] = createSignal("subdomain");
   const [pattern, setPattern] = createSignal("");
 
-  const rulesQuery = useLiveQuery((q) =>
-    q.from({ rule: urlParsingRules }).select(({ rule }) => ({ ...rule })),
-  );
+  const rulesQuery = createQuery(() => urlParsingRulesQueryOptions);
 
   const addMutation = createMutation(() => ({
     mutationFn: async (newRule: {
@@ -189,7 +186,7 @@ function URLRulesComponent() {
             <p>Loading rules...</p>
           </Show>
           <ul class={stack({ gap: "3" })}>
-            <For each={rulesQuery()}>
+            <For each={rulesQuery.data}>
               {(rule) => (
                 <li
                   class={flex({
