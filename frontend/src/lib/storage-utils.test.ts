@@ -38,17 +38,17 @@ describe("storage-utils", () => {
       const consoleSpy = vi
         .spyOn(console, "error")
         .mockImplementation(() => {});
-      const originalSetItem = localStorage.setItem;
-      // Manually overwrite to ensure it throws
-      localStorage.setItem = () => {
-        throw new Error("Storage full");
-      };
+      const setItemSpy = vi
+        .spyOn(localStorage, "setItem")
+        .mockImplementation(() => {
+          throw new Error("Storage full");
+        });
 
       try {
         setStorageValue(STORAGE_KEYS.FEED_SORT_BY, "title_asc");
         expect(consoleSpy).toHaveBeenCalled();
       } finally {
-        localStorage.setItem = originalSetItem;
+        setItemSpy.mockRestore();
       }
     });
   });
