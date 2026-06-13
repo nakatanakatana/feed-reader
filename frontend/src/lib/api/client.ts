@@ -1,5 +1,3 @@
-import { createClient } from "@connectrpc/connect";
-import { ItemService } from "../../gen/item/v1/item_pb";
-import { transport } from "../query";
+import { createApiClient } from "./json-client";
 
-export const itemClient = createClient(ItemService, transport);
+export const apiClient = createApiClient({ baseUrl: "/api/v2" });

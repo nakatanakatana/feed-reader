@@ -1,4 +1,3 @@
-import type { Timestamp } from "@bufbuild/protobuf/wkt";
 import { describe, expect, it } from "vitest";
 import { dateToTimestamp, toDate } from "./date-utils";
 
@@ -9,13 +8,15 @@ describe("date-utils", () => {
 
     expect(ts.seconds).toBe(BigInt(1772368496));
     expect(ts.nanos).toBe(789000000);
+    expect(ts.$typeName).toBe("google.protobuf.Timestamp");
   });
 
   it("converts Timestamp to Date", () => {
     const d = toDate({
+      $typeName: "google.protobuf.Timestamp",
       seconds: BigInt(1772368496),
       nanos: 789000000,
-    } as Timestamp);
+    });
 
     expect(d?.toISOString()).toBe("2026-03-01T12:34:56.789Z");
   });

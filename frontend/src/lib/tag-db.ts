@@ -1,7 +1,7 @@
-import { createClient } from "@connectrpc/connect";
-import { TagService } from "../gen/tag/v1/tag_pb";
-import { toDate } from "./date-utils";
-import { queryClient, transport } from "./query";
+import { apiClient } from "./api/client";
+import type { components } from "./api/types";
+import { type TimestampLike, toDate } from "./date-utils";
+import { queryClient } from "./query";
 
 export interface Tag {
   id: string;
@@ -12,29 +12,52 @@ export interface Tag {
   updatedAt?: Date;
 }
 
-const tagClient = createClient(TagService, transport);
+type OpenAPITag = components["schemas"]["Tag"];
+type ListTagsResponse = components["schemas"]["ListTagsResponse"];
+type CreateTagResponse = components["schemas"]["CreateTagResponse"];
+type EmptyResponse = Record<string, never>;
+
+export interface ConnectTagShape {
+  id: string;
+  name: string;
+  unreadCount: bigint;
+  feedCount: bigint;
+  createdAt?: Date | TimestampLike | string;
+  updatedAt?: Date | TimestampLike | string;
+}
+
+export const mapConnectTag = (tag: ConnectTagShape): Tag => ({
+  id: tag.id,
+  name: tag.name,
+  unreadCount: tag.unreadCount,
+  feedCount: tag.feedCount,
+  createdAt: toDate(tag.createdAt),
+  updatedAt: toDate(tag.updatedAt),
+});
+
+export const mapOpenAPITag = (tag: OpenAPITag): Tag => ({
+  id: tag.id,
+  name: tag.name,
+  unreadCount: BigInt(tag.unreadCount),
+  feedCount: BigInt(tag.feedCount),
+  createdAt: toDate(tag.createdAt),
+  updatedAt: toDate(tag.updatedAt),
+});
 
 export const tagsQueryOptions = {
   queryKey: ["tags"] as const,
   queryFn: async () => {
-    const response = await tagClient.listTags({});
-    return response.tags.map((tag) => ({
-      id: tag.id,
-      name: tag.name,
-      unreadCount: tag.unreadCount,
-      feedCount: tag.feedCount,
-      createdAt: toDate(tag.createdAt),
-      updatedAt: toDate(tag.updatedAt),
-    }));
+    const response = await apiClient.get<ListTagsResponse>("/tags");
+    return response.tags.map(mapOpenAPITag);
   },
 };
 
 export const tagInsert = async (name: string) => {
-  await tagClient.createTag({ name });
+  await apiClient.post<CreateTagResponse>("/tags", { name });
   await queryClient.invalidateQueries({ queryKey: ["tags"] });
 };
 
 export const tagDelete = async (id: string) => {
-  await tagClient.deleteTag({ id });
+  await apiClient.delete<EmptyResponse>(`/tags/${id}`);
   await queryClient.invalidateQueries({ queryKey: ["tags"] });
 };

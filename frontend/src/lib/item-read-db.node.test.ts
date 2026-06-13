@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { itemClient } from "./api/client";
+import { apiClient } from "./api/client";
 import {
   type ItemRead,
   itemReadQueryOptions,
@@ -18,8 +18,8 @@ describe("ItemRead query options", () => {
     queryClient.clear();
     setLastReadFetched(null);
     setLastItemsSyncedAt(null);
-    vi.spyOn(itemClient, "listItemRead");
-    vi.spyOn(itemClient, "updateItemStatus");
+    vi.spyOn(apiClient, "get");
+    vi.spyOn(apiClient, "post");
   });
 
   describe("queryFn", () => {
@@ -29,17 +29,17 @@ describe("ItemRead query options", () => {
         {
           itemId: "1",
           isRead: true,
-          updatedAt: { seconds: BigInt(1000), nanos: 0 },
+          updatedAt: "1970-01-01T00:16:40.000Z",
         },
         {
           itemId: "2",
           isRead: false,
-          updatedAt: { seconds: BigInt(1001), nanos: 0 },
+          updatedAt: "1970-01-01T00:16:41.000Z",
         },
       ];
 
       // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
-      (itemClient.listItemRead as any).mockResolvedValue({
+      (apiClient.get as any).mockResolvedValue({
         itemReads: mockItemReads,
         nextPageToken: "",
       });
@@ -57,10 +57,9 @@ describe("ItemRead query options", () => {
       const anchorDate = new Date("2026-03-07T12:00:00Z");
       setLastReadFetched(anchorDate);
 
-      const serverTimestamp = {
-        seconds: BigInt(Math.floor(anchorDate.getTime() / 1000) + 10),
-        nanos: 0,
-      };
+      const serverTimestamp = new Date(
+        anchorDate.getTime() + 10_000,
+      ).toISOString();
       const mockItemReads = [
         {
           itemId: "1",
@@ -70,14 +69,14 @@ describe("ItemRead query options", () => {
       ];
 
       // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
-      (itemClient.listItemRead as any).mockResolvedValue({
+      (apiClient.get as any).mockResolvedValue({
         itemReads: mockItemReads,
         nextPageToken: "",
       });
 
       await itemReadQueryOptions.queryFn();
 
-      const expectedAnchor = new Date(Number(serverTimestamp.seconds) * 1000);
+      const expectedAnchor = new Date(serverTimestamp);
       expect(lastReadFetched()).toEqual(expectedAnchor);
     });
 
@@ -86,7 +85,7 @@ describe("ItemRead query options", () => {
       setLastReadFetched(anchorDate);
 
       // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
-      (itemClient.listItemRead as any).mockResolvedValue({
+      (apiClient.get as any).mockResolvedValue({
         itemReads: [],
         nextPageToken: "",
       });
@@ -101,13 +100,13 @@ describe("ItemRead query options", () => {
       setLastReadFetched(anchorDate);
 
       // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
-      (itemClient.listItemRead as any)
+      (apiClient.get as any)
         .mockResolvedValueOnce({
           itemReads: [
             {
               itemId: "1",
               isRead: true,
-              updatedAt: { seconds: BigInt(1), nanos: 0 },
+              updatedAt: "1970-01-01T00:00:01.000Z",
             },
           ],
           nextPageToken: "token-1",
@@ -117,7 +116,7 @@ describe("ItemRead query options", () => {
             {
               itemId: "2",
               isRead: false,
-              updatedAt: { seconds: BigInt(2), nanos: 0 },
+              updatedAt: "1970-01-01T00:00:02.000Z",
             },
           ],
           nextPageToken: "",
@@ -125,20 +124,20 @@ describe("ItemRead query options", () => {
 
       await itemReadQueryOptions.queryFn();
 
-      expect(itemClient.listItemRead).toHaveBeenCalledTimes(2);
+      expect(apiClient.get).toHaveBeenCalledTimes(2);
 
       // biome-ignore lint/suspicious/noExplicitAny: asserting mock calls
-      const firstCallArgs = (itemClient.listItemRead as any).mock.calls[0][0];
+      const firstCallArgs = (apiClient.get as any).mock.calls[0][0] as string;
       // biome-ignore lint/suspicious/noExplicitAny: asserting mock calls
-      const secondCallArgs = (itemClient.listItemRead as any).mock.calls[1][0];
+      const secondCallArgs = (apiClient.get as any).mock.calls[1][0] as string;
 
       // First page should include since
-      expect(firstCallArgs).toHaveProperty("since");
-      expect(firstCallArgs.pageToken).toBe("");
+      expect(firstCallArgs).toContain("since=2026-03-07T14%3A00%3A00.000Z");
+      expect(firstCallArgs).not.toContain("pageToken=");
 
       // Second page should include pageToken and OMIT since
-      expect(secondCallArgs.pageToken).toBe("token-1");
-      expect(secondCallArgs.since).toBeUndefined();
+      expect(secondCallArgs).toContain("pageToken=token-1");
+      expect(secondCallArgs).not.toContain("since=");
     });
 
     it("should merge with existing data", async () => {
@@ -152,12 +151,12 @@ describe("ItemRead query options", () => {
         {
           itemId: "2",
           isRead: true,
-          updatedAt: { seconds: BigInt(1002), nanos: 0 },
+          updatedAt: "1970-01-01T00:16:42.000Z",
         },
       ];
 
       // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
-      (itemClient.listItemRead as any).mockResolvedValue({
+      (apiClient.get as any).mockResolvedValue({
         itemReads: mockItemReads,
       });
 
@@ -176,7 +175,7 @@ describe("ItemRead query options", () => {
 
       const data = await itemReadQueryOptions.queryFn();
 
-      expect(itemClient.listItemRead).not.toHaveBeenCalled();
+      expect(apiClient.get).not.toHaveBeenCalled();
       expect(data).toEqual([]);
     });
   });
@@ -184,11 +183,11 @@ describe("ItemRead query options", () => {
   describe("updateItemReadStatus", () => {
     it("should call updateItemStatus", async () => {
       // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
-      (itemClient.updateItemStatus as any).mockResolvedValue({});
+      (apiClient.post as any).mockResolvedValue({});
 
       await updateItemReadStatus(["1", "2"], true);
 
-      expect(itemClient.updateItemStatus).toHaveBeenCalledWith({
+      expect(apiClient.post).toHaveBeenCalledWith("/items/status", {
         ids: ["1", "2"],
         isRead: true,
       });
@@ -202,7 +201,7 @@ describe("ItemRead query options", () => {
       // Mock server to fail
       const error = new Error("Server error");
       // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
-      (itemClient.updateItemStatus as any).mockRejectedValue(error);
+      (apiClient.post as any).mockRejectedValue(error);
 
       // Attempt update for both existing and new IDs
       await expect(updateItemReadStatus(["1", "2"], true)).rejects.toThrow(
@@ -239,12 +238,12 @@ describe("ItemRead query options", () => {
         {
           itemId: "1",
           isRead: false,
-          updatedAt: { seconds: BigInt(2000), nanos: 0 },
+          updatedAt: "1970-01-01T00:33:20.000Z",
         },
       ];
 
       // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
-      (itemClient.listItemRead as any).mockResolvedValue({
+      (apiClient.get as any).mockResolvedValue({
         itemReads: mockItemReads,
       });
 

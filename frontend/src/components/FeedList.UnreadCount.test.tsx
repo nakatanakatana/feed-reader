@@ -1,4 +1,3 @@
-import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
@@ -10,11 +9,15 @@ import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { FeedSchema, ListFeedsResponseSchema } from "../gen/feed/v1/feed_pb";
-import { queryClient, transport } from "../lib/query";
-import { TransportProvider } from "../lib/transport-context";
+import { queryClient } from "../lib/query";
 import { worker } from "../mocks/browser";
 import { routeTree } from "../routeTree.gen";
+import {
+  create,
+  FeedSchema,
+  ListFeedsResponseSchema,
+  toJson,
+} from "../test-utils/json-identity";
 
 describe("FeedList Unread Counts", () => {
   let dispose: () => void;
@@ -30,16 +33,14 @@ describe("FeedList Unread Counts", () => {
   });
 
   const TestWrapper = (props: { children: JSX.Element }) => (
-    <TransportProvider transport={transport}>
-      <QueryClientProvider client={queryClient}>
-        {props.children}
-      </QueryClientProvider>
-    </TransportProvider>
+    <QueryClientProvider client={queryClient}>
+      {props.children}
+    </QueryClientProvider>
   );
 
   it("displays unread count for each feed", async () => {
     worker.use(
-      http.all("*/feed.v1.FeedService/ListFeeds", () => {
+      http.all("*/api/v2/feeds", () => {
         const msg = create(ListFeedsResponseSchema, {
           feeds: [
             create(FeedSchema, {

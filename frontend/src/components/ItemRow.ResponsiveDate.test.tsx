@@ -3,8 +3,7 @@ import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { queryClient, transport } from "../lib/query";
-import { TransportProvider } from "../lib/transport-context";
+import { queryClient } from "../lib/query";
 import { ItemRow } from "./ItemRow";
 import "../styles.css";
 
@@ -28,11 +27,9 @@ describe("ItemRow Responsive Date", () => {
   };
 
   const Wrapper = (props: { children: JSX.Element }) => (
-    <TransportProvider transport={transport}>
-      <QueryClientProvider client={queryClient}>
-        {props.children}
-      </QueryClientProvider>
-    </TransportProvider>
+    <QueryClientProvider client={queryClient}>
+      {props.children}
+    </QueryClientProvider>
   );
 
   it("should display Published date BEFORE Received date", async () => {

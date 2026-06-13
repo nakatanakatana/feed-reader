@@ -1,4 +1,3 @@
-import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
@@ -9,15 +8,15 @@ import { render } from "solid-js/web";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { routeTree } from "../routeTree.gen";
+import { create, toJson } from "../test-utils/json-identity";
 import "../styles.css";
 import { HttpResponse, http } from "msw";
+import { queryClient } from "../lib/query";
+import { worker } from "../mocks/browser";
 import {
   ItemBlockRuleSchema,
   ListItemBlockRulesResponseSchema,
-} from "../gen/item/v1/item_pb";
-import { queryClient, transport } from "../lib/query";
-import { TransportProvider } from "../lib/transport-context";
-import { worker } from "../mocks/browser";
+} from "../test-utils/json-identity";
 
 describe("Block Rules Final Integration", () => {
   let dispose: () => void;
@@ -48,17 +47,15 @@ describe("Block Rules Final Integration", () => {
     ];
 
     worker.use(
-      http.all("*/item.v1.ItemService/ListItemBlockRules", () => {
+      http.all("*/api/v2/block-rules", () => {
         requestCount++;
         const msg = create(ListItemBlockRulesResponseSchema, { rules });
         return HttpResponse.json(toJson(ListItemBlockRulesResponseSchema, msg));
       }),
       // Mock other required requests to avoid noise
-      http.all("*/item.v1.ItemService/ListItems", () => HttpResponse.json({})),
-      http.all("*/tag.v1.TagService/ListTags", () => HttpResponse.json({})),
-      http.all("*/feed.v1.FeedService/ListFeedTags", () =>
-        HttpResponse.json({}),
-      ),
+      http.all("*/api/v2/items", () => HttpResponse.json({})),
+      http.all("*/api/v2/tags", () => HttpResponse.json({})),
+      http.all("*/api/v2/feed-tags", () => HttpResponse.json({})),
     );
 
     const history = createMemoryHistory({ initialEntries: ["/block-rules"] });
@@ -66,11 +63,9 @@ describe("Block Rules Final Integration", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
       ),
       document.body,
     );

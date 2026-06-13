@@ -4,15 +4,18 @@ import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { dateToTimestamp } from "../lib/item-utils";
-import { queryClient, transport } from "../lib/query";
+import { queryClient } from "../lib/query";
 import { ToastProvider } from "../lib/toast";
-import { TransportProvider } from "../lib/transport-context";
 import { ItemDetailModal } from "./ItemDetailModal";
 import "../styles.css";
-import { create, toJson } from "@bufbuild/protobuf";
 import { HttpResponse, http } from "msw";
-import { GetItemResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
 import { worker } from "../mocks/browser";
+import {
+  create,
+  GetItemResponseSchema,
+  ItemSchema,
+  toJson,
+} from "../test-utils/json-identity";
 
 describe("ItemDetailModal Responsive", () => {
   let dispose: () => void;
@@ -25,7 +28,7 @@ describe("ItemDetailModal Responsive", () => {
 
   const setupMockData = (itemId: string) => {
     worker.use(
-      http.all("*/item.v1.ItemService/GetItem", () => {
+      http.all("*/api/v2/items/:id", () => {
         const msg = create(GetItemResponseSchema, {
           item: create(ItemSchema, {
             id: itemId,
@@ -44,11 +47,9 @@ describe("ItemDetailModal Responsive", () => {
   };
 
   const Wrapper = (props: { children: JSX.Element }) => (
-    <TransportProvider transport={transport}>
-      <QueryClientProvider client={queryClient}>
-        <ToastProvider>{props.children}</ToastProvider>
-      </QueryClientProvider>
-    </TransportProvider>
+    <QueryClientProvider client={queryClient}>
+      <ToastProvider>{props.children}</ToastProvider>
+    </QueryClientProvider>
   );
 
   it("should be fullscreen on mobile viewports", async () => {

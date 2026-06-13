@@ -1,32 +1,21 @@
-import { create } from "@bufbuild/protobuf";
 import {
   createMemoryHistory,
   createRouter,
   RouterProvider,
 } from "@tanstack/solid-router";
+import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { routeTree } from "../routeTree.gen";
 import "../styles.css";
 import { QueryClientProvider } from "@tanstack/solid-query";
-import {
-  AddItemBlockRulesResponseSchema,
-  DeleteItemBlockRuleResponseSchema,
-  type ItemBlockRule,
-  ItemBlockRuleSchema,
-  ItemService,
-  ListItemBlockRulesResponseSchema,
-} from "../gen/item/v1/item_pb";
-import { queryClient, transport } from "../lib/query";
-import { TransportProvider } from "../lib/transport-context";
+import type { ItemBlockRule } from "../lib/block-db";
+import { queryClient } from "../lib/query";
 import { worker } from "../mocks/browser";
-import { mockConnectWeb } from "../mocks/connect";
 
 // Unmock solid-router to test active link logic
 vi.unmock("@tanstack/solid-router");
-
-const mockItemService = mockConnectWeb(ItemService);
 
 describe("Block Rules Page", () => {
   let dispose: () => void;
@@ -39,23 +28,20 @@ describe("Block Rules Page", () => {
 
   it("should fetch and display item block rules", async () => {
     const rules = [
-      create(ItemBlockRuleSchema, {
+      {
         id: "1",
         ruleType: "domain",
         value: "blocked-domain.com",
-      }),
-      create(ItemBlockRuleSchema, {
+      },
+      {
         id: "2",
         ruleType: "keyword",
         value: "spam-keyword",
-      }),
+      },
     ];
 
     worker.use(
-      mockItemService({
-        method: "listItemBlockRules",
-        handler: () => create(ListItemBlockRulesResponseSchema, { rules }),
-      }),
+      http.get("*/api/v2/block-rules", () => HttpResponse.json({ rules })),
     );
 
     const history = createMemoryHistory({ initialEntries: ["/block-rules"] });
@@ -63,11 +49,9 @@ describe("Block Rules Page", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
       ),
       document.body,
     );
@@ -92,24 +76,19 @@ describe("Block Rules Page", () => {
     const rules: ItemBlockRule[] = [];
 
     worker.use(
-      mockItemService({
-        method: "listItemBlockRules",
-        handler: () => create(ListItemBlockRulesResponseSchema, { rules }),
-      }),
-      mockItemService({
-        method: "addItemBlockRules",
-        handler: (req) => {
-          for (const r of req.rules) {
-            const newRule = create(ItemBlockRuleSchema, {
-              id: Math.random().toString(),
-              ruleType: r.ruleType,
-              value: r.value,
-              domain: r.domain,
-            });
-            rules.push(newRule);
-          }
-          return create(AddItemBlockRulesResponseSchema, {});
-        },
+      http.get("*/api/v2/block-rules", () => HttpResponse.json({ rules })),
+      http.post("*/api/v2/block-rules", async ({ request }) => {
+        const req = (await request.json()) as { rules: ItemBlockRule[] };
+        for (const r of req.rules) {
+          const newRule = {
+            id: Math.random().toString(),
+            ruleType: r.ruleType,
+            value: r.value,
+            domain: r.domain,
+          };
+          rules.push(newRule);
+        }
+        return HttpResponse.json({});
       }),
     );
 
@@ -118,11 +97,9 @@ describe("Block Rules Page", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
       ),
       document.body,
     );
@@ -144,24 +121,19 @@ describe("Block Rules Page", () => {
     const rules: ItemBlockRule[] = [];
 
     worker.use(
-      mockItemService({
-        method: "listItemBlockRules",
-        handler: () => create(ListItemBlockRulesResponseSchema, { rules }),
-      }),
-      mockItemService({
-        method: "addItemBlockRules",
-        handler: (req) => {
-          for (const r of req.rules) {
-            const newRule = create(ItemBlockRuleSchema, {
-              id: Math.random().toString(),
-              ruleType: r.ruleType,
-              value: r.value,
-              domain: r.domain,
-            });
-            rules.push(newRule);
-          }
-          return create(AddItemBlockRulesResponseSchema, {});
-        },
+      http.get("*/api/v2/block-rules", () => HttpResponse.json({ rules })),
+      http.post("*/api/v2/block-rules", async ({ request }) => {
+        const req = (await request.json()) as { rules: ItemBlockRule[] };
+        for (const r of req.rules) {
+          const newRule = {
+            id: Math.random().toString(),
+            ruleType: r.ruleType,
+            value: r.value,
+            domain: r.domain,
+          };
+          rules.push(newRule);
+        }
+        return HttpResponse.json({});
       }),
     );
 
@@ -170,11 +142,9 @@ describe("Block Rules Page", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
       ),
       document.body,
     );
@@ -199,24 +169,18 @@ describe("Block Rules Page", () => {
 
   it("should allow deleting an item block rule", async () => {
     let rules = [
-      create(ItemBlockRuleSchema, {
+      {
         id: "1",
         ruleType: "domain",
         value: "to-delete.com",
-      }),
+      },
     ];
 
     worker.use(
-      mockItemService({
-        method: "listItemBlockRules",
-        handler: () => create(ListItemBlockRulesResponseSchema, { rules }),
-      }),
-      mockItemService({
-        method: "deleteItemBlockRule",
-        handler: (req) => {
-          rules = rules.filter((r) => r.id !== req.id);
-          return create(DeleteItemBlockRuleResponseSchema, {});
-        },
+      http.get("*/api/v2/block-rules", () => HttpResponse.json({ rules })),
+      http.delete("*/api/v2/block-rules/:id", ({ params }) => {
+        rules = rules.filter((r) => r.id !== params.id);
+        return HttpResponse.json({});
       }),
     );
 
@@ -225,11 +189,9 @@ describe("Block Rules Page", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
       ),
       document.body,
     );

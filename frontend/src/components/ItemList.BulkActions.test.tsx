@@ -1,4 +1,3 @@
-import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
@@ -9,18 +8,19 @@ import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
-import {
-  ItemSchema,
-  ListItemsResponseSchema,
-  UpdateItemStatusResponseSchema,
-} from "../gen/item/v1/item_pb";
-import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
 import { dateToTimestamp } from "../lib/item-utils";
-import { queryClient, transport } from "../lib/query";
-import { TransportProvider } from "../lib/transport-context";
+import { queryClient } from "../lib/query";
 import { worker } from "../mocks/browser";
 import { routeTree } from "../routeTree.gen";
+import {
+  create,
+  ItemSchema,
+  ListFeedTagsResponseSchema,
+  ListItemsResponseSchema,
+  ListTagsResponseSchema,
+  toJson,
+  UpdateItemStatusResponseSchema,
+} from "../test-utils/json-identity";
 
 describe("ItemList Bulk Actions", () => {
   let dispose: () => void;
@@ -33,14 +33,14 @@ describe("ItemList Bulk Actions", () => {
 
   const setupMockData = (items: Record<string, unknown>[] = []) => {
     worker.use(
-      http.all("*/item.v1.ItemService/ListItems", () => {
+      http.all("*/api/v2/items", () => {
         const msg = create(ListItemsResponseSchema, {
           // biome-ignore lint/suspicious/noExplicitAny: mock data
           items: items.map((i) => create(ItemSchema, i as any)),
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),
-      http.all("*/tag.v1.TagService/ListTags", () => {
+      http.all("*/api/v2/tags", () => {
         return HttpResponse.json(
           toJson(
             ListTagsResponseSchema,
@@ -48,7 +48,7 @@ describe("ItemList Bulk Actions", () => {
           ),
         );
       }),
-      http.all("*/feed.v1.FeedService/ListFeedTags", () => {
+      http.all("*/api/v2/feed-tags", () => {
         return HttpResponse.json(
           toJson(
             ListFeedTagsResponseSchema,
@@ -81,24 +81,21 @@ describe("ItemList Bulk Actions", () => {
 
     let updateCount = 0;
     worker.use(
-      http.post(
-        "*/item.v1.ItemService/UpdateItemStatus",
-        async ({ request }) => {
-          const body = (await request.json()) as {
-            ids: string[];
-            isRead: boolean;
-          };
-          if (body.ids.length === 2 && body.isRead === true) {
-            updateCount++;
-          }
-          return HttpResponse.json(
-            toJson(
-              UpdateItemStatusResponseSchema,
-              create(UpdateItemStatusResponseSchema, {}),
-            ),
-          );
-        },
-      ),
+      http.post("*/api/v2/items/status", async ({ request }) => {
+        const body = (await request.json()) as {
+          ids: string[];
+          isRead: boolean;
+        };
+        if (body.ids.length === 2 && body.isRead === true) {
+          updateCount++;
+        }
+        return HttpResponse.json(
+          toJson(
+            UpdateItemStatusResponseSchema,
+            create(UpdateItemStatusResponseSchema, {}),
+          ),
+        );
+      }),
     );
 
     const history = createMemoryHistory({ initialEntries: ["/"] });
@@ -106,11 +103,9 @@ describe("ItemList Bulk Actions", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
       ),
       document.body,
     );
@@ -150,28 +145,25 @@ describe("ItemList Bulk Actions", () => {
     let totalRequestCount = 0;
     let fullBatchRequestCount = 0;
     worker.use(
-      http.post(
-        "*/item.v1.ItemService/UpdateItemStatus",
-        async ({ request }) => {
-          totalRequestCount++;
-          const body = (await request.json()) as {
-            ids: string[];
-            isRead: boolean;
-          };
-          // Increment only if it's a valid update request that includes all selected items
-          if (body.isRead === true && body.ids.length === itemCount) {
-            fullBatchRequestCount++;
-          }
-          // Simulate some network delay so we can see "Processing..."
-          await new Promise((resolve) => setTimeout(resolve, 500));
-          return HttpResponse.json(
-            toJson(
-              UpdateItemStatusResponseSchema,
-              create(UpdateItemStatusResponseSchema, {}),
-            ),
-          );
-        },
-      ),
+      http.post("*/api/v2/items/status", async ({ request }) => {
+        totalRequestCount++;
+        const body = (await request.json()) as {
+          ids: string[];
+          isRead: boolean;
+        };
+        // Increment only if it's a valid update request that includes all selected items
+        if (body.isRead === true && body.ids.length === itemCount) {
+          fullBatchRequestCount++;
+        }
+        // Simulate some network delay so we can see "Processing..."
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        return HttpResponse.json(
+          toJson(
+            UpdateItemStatusResponseSchema,
+            create(UpdateItemStatusResponseSchema, {}),
+          ),
+        );
+      }),
     );
 
     const history = createMemoryHistory({ initialEntries: ["/"] });
@@ -179,11 +171,9 @@ describe("ItemList Bulk Actions", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
       ),
       document.body,
     );

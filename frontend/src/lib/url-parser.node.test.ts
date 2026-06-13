@@ -1,21 +1,16 @@
 import { describe, expect, it } from "vitest";
-import type { URLParsingRule } from "../gen/item/v1/item_pb";
-import { URLParser } from "./url-parser";
+import { URLParser, type URLParsingRuleMinimal } from "./url-parser";
 
 describe("URLParser", () => {
-  const rules: URLParsingRule[] = [
+  const rules: URLParsingRuleMinimal[] = [
     {
-      id: "1",
-      domain: "example.com",
       ruleType: "subdomain",
       pattern: "example.com",
-    } as URLParsingRule,
+    },
     {
-      id: "2",
-      domain: "domain.com",
       ruleType: "path",
       pattern: "domain.com/users",
-    } as URLParsingRule,
+    },
   ];
 
   const parser = new URLParser(rules);

@@ -1,73 +1,77 @@
-import { toJson } from "@bufbuild/protobuf";
-import { createClient } from "@connectrpc/connect";
 import { describe, expect, it } from "vitest";
-import {
-  DeleteFeedResponseSchema,
-  FeedService,
-  ListFeedsResponseSchema,
-} from "../gen/feed/v1/feed_pb";
-import { transport } from "../lib/query";
 import { resetState } from "./handlers";
 
-describe("FeedService Mock Handlers", () => {
-  it("should mock ListFeeds", async () => {
-    const client = createClient(FeedService, transport);
-    const response = await client.listFeeds({});
+const apiFetch = async <T>(path: string, init?: RequestInit): Promise<T> => {
+  const response = await fetch(`http://localhost/api/v2${path}`, {
+    ...init,
+    headers: {
+      "Content-Type": "application/json",
+      ...init?.headers,
+    },
+  });
+  expect(response.ok).toBe(true);
+  return (await response.json()) as T;
+};
 
-    const data = toJson(ListFeedsResponseSchema, response);
-    expect(data).toHaveProperty("feeds");
+describe("JSON API mock handlers", () => {
+  it("mocks ListFeeds", async () => {
+    const response = await apiFetch<{ feeds: Array<{ id: string }> }>("/feeds");
+
+    expect(response).toHaveProperty("feeds");
     expect(Array.isArray(response.feeds)).toBe(true);
-    expect(response.feeds.length).toBe(2); // Initial state has 2 feeds
+    expect(response.feeds.length).toBe(2);
   });
 
-  it("should mock CreateFeed", async () => {
+  it("mocks CreateFeed", async () => {
     const feedData = {
       url: "https://example.com/new-feed.xml",
       title: "New Example Feed",
     };
 
-    const client = createClient(FeedService, transport);
-    const response = await client.createFeed(feedData);
+    const response = await apiFetch<{ feed: { url: string } }>("/feeds", {
+      method: "POST",
+      body: JSON.stringify(feedData),
+    });
 
-    expect(response.feed?.url).toBe(feedData.url);
+    expect(response.feed.url).toBe(feedData.url);
 
-    const listResponse = await client.listFeeds({});
-    expect(listResponse.feeds.length).toBe(3); // 2 initial + 1 new
+    const listResponse = await apiFetch<{ feeds: Array<{ id: string }> }>(
+      "/feeds",
+    );
+    expect(listResponse.feeds.length).toBe(3);
   });
 
-  it("should have reset state after the previous test (via vitest-setup.ts or manual call)", async () => {
-    // In this test file, vitest-setup.ts should have called resetState() after the previous 'it' block.
-    const client = createClient(FeedService, transport);
-    const response = await client.listFeeds({});
-    expect(response.feeds.length).toBe(2); // Should be back to 2
+  it("has reset state after the previous test", async () => {
+    const response = await apiFetch<{ feeds: Array<{ id: string }> }>("/feeds");
+    expect(response.feeds.length).toBe(2);
   });
 
-  it("should manually reset state", async () => {
-    const client = createClient(FeedService, transport);
-    await client.createFeed({ url: "https://test.com" });
-    let list = await client.listFeeds({});
+  it("manually resets state", async () => {
+    await apiFetch("/feeds", {
+      method: "POST",
+      body: JSON.stringify({ url: "https://test.com" }),
+    });
+    let list = await apiFetch<{ feeds: Array<{ id: string }> }>("/feeds");
     expect(list.feeds.length).toBe(3);
 
     resetState();
-    list = await client.listFeeds({});
+    list = await apiFetch<{ feeds: Array<{ id: string }> }>("/feeds");
     expect(list.feeds.length).toBe(2);
   });
 
-  it("should mock DeleteFeed", async () => {
-    // Get current feeds first
-    const client = createClient(FeedService, transport);
-    const listResponse = await client.listFeeds({});
+  it("mocks DeleteFeed", async () => {
+    const listResponse = await apiFetch<{ feeds: Array<{ id: string }> }>(
+      "/feeds",
+    );
     const idToDelete = listResponse.feeds[0].id;
 
-    const response = await client.deleteFeed({ id: idToDelete });
+    await apiFetch(`/feeds/${idToDelete}`, { method: "DELETE" });
 
-    const data = toJson(DeleteFeedResponseSchema, response);
-    expect(data).toEqual({});
-
-    // Verify it's deleted
-    const listResponseAfter = await client.listFeeds({});
+    const listResponseAfter = await apiFetch<{
+      feeds: Array<{ id: string }>;
+    }>("/feeds");
     expect(
-      listResponseAfter.feeds.find((f) => f.id === idToDelete),
+      listResponseAfter.feeds.find((feed) => feed.id === idToDelete),
     ).toBeUndefined();
     expect(listResponseAfter.feeds.length).toBe(1);
   });

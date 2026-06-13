@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { itemClient } from "./api/client";
+import { apiClient } from "./api/client";
 import { type ListItem, updateItemStatus } from "./item-db";
 import { queryClient } from "./query";
 
@@ -7,7 +7,7 @@ describe("itemDb", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     queryClient.clear();
-    vi.spyOn(itemClient, "updateItemStatus");
+    vi.spyOn(apiClient, "post");
   });
 
   describe("updateItemStatus", () => {
@@ -23,7 +23,7 @@ describe("itemDb", () => {
       // Mock client to fail
       const error = new Error("Failed to update status");
       // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
-      (itemClient.updateItemStatus as any).mockRejectedValue(error);
+      (apiClient.post as any).mockRejectedValue(error);
 
       // Attempt updating item 1 to isRead: true
       await expect(updateItemStatus(["1"], true, queryKey)).rejects.toThrow(
@@ -46,7 +46,7 @@ describe("itemDb", () => {
 
       // Mock client to succeed
       // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
-      (itemClient.updateItemStatus as any).mockResolvedValue({});
+      (apiClient.post as any).mockResolvedValue({});
 
       await updateItemStatus(["1"], true, queryKey);
 

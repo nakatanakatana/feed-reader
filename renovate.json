@@ -7,10 +7,6 @@
   ],
   "packageRules": [
     {
-      "groupName": "buf",
-      "matchPackageNames": ["/@connectrpc//", "/@bufbuild//"]
-    },
-    {
       "groupName": "tanstack/db",
       "matchPackageNames": [
         "@tanstack/solid-query",

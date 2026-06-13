@@ -44,7 +44,6 @@ export function AddFeedForm(props: AddFeedFormProps) {
 
     try {
       const tags = tagsSorted().filter((t) => selectedTagIds().includes(t.id));
-      // @ts-expect-error
       await feedInsert(url(), tags);
 
       setUrl("");

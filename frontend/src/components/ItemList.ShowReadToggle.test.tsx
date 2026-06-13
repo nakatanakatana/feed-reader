@@ -1,4 +1,3 @@
-import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
@@ -9,14 +8,17 @@ import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
-import { ListItemsResponseSchema } from "../gen/item/v1/item_pb";
-import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
-import { queryClient, transport } from "../lib/query";
-import { TransportProvider } from "../lib/transport-context";
+import { queryClient } from "../lib/query";
 import { worker } from "../mocks/browser";
-import { parseConnectMessage } from "../mocks/connect";
+import { parseRequestMessage } from "../mocks/http";
 import { routeTree } from "../routeTree.gen";
+import {
+  create,
+  ListFeedTagsResponseSchema,
+  ListItemsResponseSchema,
+  ListTagsResponseSchema,
+  toJson,
+} from "../test-utils/json-identity";
 
 describe("ItemList Show Read Toggle", () => {
   let dispose: () => void;
@@ -35,8 +37,8 @@ describe("ItemList Show Read Toggle", () => {
     onListItems?: (req: Record<string, unknown>) => void,
   ) => {
     worker.use(
-      http.all("*/item.v1.ItemService/ListItems", async ({ request }) => {
-        const body = (await parseConnectMessage(request)) as Record<
+      http.all("*/api/v2/items", async ({ request }) => {
+        const body = (await parseRequestMessage(request)) as Record<
           string,
           unknown
         >;
@@ -48,7 +50,7 @@ describe("ItemList Show Read Toggle", () => {
           ),
         );
       }),
-      http.all("*/tag.v1.TagService/ListTags", () => {
+      http.all("*/api/v2/tags", () => {
         return HttpResponse.json(
           toJson(
             ListTagsResponseSchema,
@@ -56,7 +58,7 @@ describe("ItemList Show Read Toggle", () => {
           ),
         );
       }),
-      http.all("*/feed.v1.FeedService/ListFeedTags", () => {
+      http.all("*/api/v2/feed-tags", () => {
         return HttpResponse.json(
           toJson(
             ListFeedTagsResponseSchema,
@@ -74,11 +76,9 @@ describe("ItemList Show Read Toggle", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
       ),
       document.body,
     );
@@ -98,11 +98,9 @@ describe("ItemList Show Read Toggle", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
       ),
       document.body,
     );

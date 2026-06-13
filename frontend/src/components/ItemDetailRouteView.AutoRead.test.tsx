@@ -1,4 +1,3 @@
-import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
@@ -9,20 +8,21 @@ import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page, userEvent } from "vitest/browser";
-import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
+import { queryClient } from "../lib/query";
+import { ToastProvider } from "../lib/toast";
+import { worker } from "../mocks/browser";
+import { parseRequestMessage } from "../mocks/http";
+import { routeTree } from "../routeTree.gen";
 import {
+  create,
   GetItemResponseSchema,
   ItemSchema,
+  ListFeedTagsResponseSchema,
   ListItemsResponseSchema,
+  ListTagsResponseSchema,
+  toJson,
   UpdateItemStatusResponseSchema,
-} from "../gen/item/v1/item_pb";
-import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
-import { queryClient, transport } from "../lib/query";
-import { ToastProvider } from "../lib/toast";
-import { TransportProvider } from "../lib/transport-context";
-import { worker } from "../mocks/browser";
-import { parseConnectMessage } from "../mocks/connect";
-import { routeTree } from "../routeTree.gen";
+} from "../test-utils/json-identity";
 
 describe("ItemDetailRouteView Auto-Read", () => {
   let dispose: () => void;
@@ -35,7 +35,7 @@ describe("ItemDetailRouteView Auto-Read", () => {
 
   const setupMockData = () => {
     worker.use(
-      http.all("*/item.v1.ItemService/ListItems", () => {
+      http.all("*/api/v2/items", () => {
         const msg = create(ListItemsResponseSchema, {
           items: [
             create(ItemSchema, { id: "1", title: "Item 1", isRead: false }),
@@ -44,8 +44,8 @@ describe("ItemDetailRouteView Auto-Read", () => {
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),
-      http.all("*/item.v1.ItemService/GetItem", async ({ request }) => {
-        const body = (await parseConnectMessage(request)) as { id: string };
+      http.all("*/api/v2/items/:id", async ({ request }) => {
+        const body = (await parseRequestMessage(request)) as { id: string };
         const msg = create(GetItemResponseSchema, {
           item: create(ItemSchema, {
             id: body.id,
@@ -55,7 +55,7 @@ describe("ItemDetailRouteView Auto-Read", () => {
         });
         return HttpResponse.json(toJson(GetItemResponseSchema, msg));
       }),
-      http.all("*/tag.v1.TagService/ListTags", () => {
+      http.all("*/api/v2/tags", () => {
         return HttpResponse.json(
           toJson(
             ListTagsResponseSchema,
@@ -63,7 +63,7 @@ describe("ItemDetailRouteView Auto-Read", () => {
           ),
         );
       }),
-      http.all("*/feed.v1.FeedService/ListFeedTags", () => {
+      http.all("*/api/v2/feed-tags", () => {
         return HttpResponse.json(
           toJson(
             ListFeedTagsResponseSchema,
@@ -78,24 +78,21 @@ describe("ItemDetailRouteView Auto-Read", () => {
     setupMockData();
     let updateCalledForId = "";
     worker.use(
-      http.post(
-        "*/item.v1.ItemService/UpdateItemStatus",
-        async ({ request }) => {
-          const body = (await request.json()) as {
-            ids: string[];
-            isRead: boolean;
-          };
-          if (body.isRead === true) {
-            updateCalledForId = body.ids[0];
-          }
-          return HttpResponse.json(
-            toJson(
-              UpdateItemStatusResponseSchema,
-              create(UpdateItemStatusResponseSchema, {}),
-            ),
-          );
-        },
-      ),
+      http.post("*/api/v2/items/status", async ({ request }) => {
+        const body = (await request.json()) as {
+          ids: string[];
+          isRead: boolean;
+        };
+        if (body.isRead === true) {
+          updateCalledForId = body.ids[0];
+        }
+        return HttpResponse.json(
+          toJson(
+            UpdateItemStatusResponseSchema,
+            create(UpdateItemStatusResponseSchema, {}),
+          ),
+        );
+      }),
     );
 
     const history = createMemoryHistory({ initialEntries: ["/items/1"] });
@@ -103,13 +100,11 @@ describe("ItemDetailRouteView Auto-Read", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ToastProvider>
-              <RouterProvider router={router} />
-            </ToastProvider>
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <ToastProvider>
+            <RouterProvider router={router} />
+          </ToastProvider>
+        </QueryClientProvider>
       ),
       document.body,
     );
@@ -128,24 +123,21 @@ describe("ItemDetailRouteView Auto-Read", () => {
     setupMockData();
     let updateCalledForId = "";
     worker.use(
-      http.post(
-        "*/item.v1.ItemService/UpdateItemStatus",
-        async ({ request }) => {
-          const body = (await request.json()) as {
-            ids: string[];
-            isRead: boolean;
-          };
-          if (body.isRead === true) {
-            updateCalledForId = body.ids[0];
-          }
-          return HttpResponse.json(
-            toJson(
-              UpdateItemStatusResponseSchema,
-              create(UpdateItemStatusResponseSchema, {}),
-            ),
-          );
-        },
-      ),
+      http.post("*/api/v2/items/status", async ({ request }) => {
+        const body = (await request.json()) as {
+          ids: string[];
+          isRead: boolean;
+        };
+        if (body.isRead === true) {
+          updateCalledForId = body.ids[0];
+        }
+        return HttpResponse.json(
+          toJson(
+            UpdateItemStatusResponseSchema,
+            create(UpdateItemStatusResponseSchema, {}),
+          ),
+        );
+      }),
     );
 
     const history = createMemoryHistory({ initialEntries: ["/items/2"] });
@@ -153,13 +145,11 @@ describe("ItemDetailRouteView Auto-Read", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ToastProvider>
-              <RouterProvider router={router} />
-            </ToastProvider>
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <ToastProvider>
+            <RouterProvider router={router} />
+          </ToastProvider>
+        </QueryClientProvider>
       ),
       document.body,
     );

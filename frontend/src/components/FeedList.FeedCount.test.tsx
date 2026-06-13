@@ -1,4 +1,3 @@
-import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
@@ -10,12 +9,17 @@ import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { FeedSchema, ListFeedsResponseSchema } from "../gen/feed/v1/feed_pb";
-import { ListTagsResponseSchema, TagSchema } from "../gen/tag/v1/tag_pb";
-import { queryClient, transport } from "../lib/query";
-import { TransportProvider } from "../lib/transport-context";
+import { queryClient } from "../lib/query";
 import { worker } from "../mocks/browser";
 import { routeTree } from "../routeTree.gen";
+import {
+  create,
+  FeedSchema,
+  ListFeedsResponseSchema,
+  ListTagsResponseSchema,
+  TagSchema,
+  toJson,
+} from "../test-utils/json-identity";
 
 describe("FeedList Feed Counts", () => {
   let dispose: () => void;
@@ -31,16 +35,14 @@ describe("FeedList Feed Counts", () => {
   });
 
   const TestWrapper = (props: { children: JSX.Element }) => (
-    <TransportProvider transport={transport}>
-      <QueryClientProvider client={queryClient}>
-        {props.children}
-      </QueryClientProvider>
-    </TransportProvider>
+    <QueryClientProvider client={queryClient}>
+      {props.children}
+    </QueryClientProvider>
   );
 
   it("displays feed counts for tags in filter bar", async () => {
     worker.use(
-      http.all("*/tag.v1.TagService/ListTags", () => {
+      http.all("*/api/v2/tags", () => {
         const msg = create(ListTagsResponseSchema, {
           tags: [
             create(TagSchema, {
@@ -59,7 +61,7 @@ describe("FeedList Feed Counts", () => {
         });
         return HttpResponse.json(toJson(ListTagsResponseSchema, msg));
       }),
-      http.all("*/feed.v1.FeedService/ListFeeds", () => {
+      http.all("*/api/v2/feeds", () => {
         const msg = create(ListFeedsResponseSchema, {
           feeds: [
             create(FeedSchema, {
@@ -99,7 +101,7 @@ describe("FeedList Feed Counts", () => {
 
   it("displays feed counts correctly regardless of unread counts", async () => {
     worker.use(
-      http.all("*/tag.v1.TagService/ListTags", () => {
+      http.all("*/api/v2/tags", () => {
         const msg = create(ListTagsResponseSchema, {
           tags: [
             create(TagSchema, {

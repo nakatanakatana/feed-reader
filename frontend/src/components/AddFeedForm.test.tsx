@@ -4,8 +4,7 @@ import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { queryClient, transport } from "../lib/query";
-import { TransportProvider } from "../lib/transport-context";
+import { queryClient } from "../lib/query";
 import { worker } from "../mocks/browser";
 import { AddFeedForm } from "./AddFeedForm";
 import { ActionButton } from "./ui/ActionButton";
@@ -24,11 +23,9 @@ describe("AddFeedForm", () => {
   });
 
   const TestWrapper = (props: { headerActions?: JSX.Element }) => (
-    <TransportProvider transport={transport}>
-      <QueryClientProvider client={queryClient}>
-        <AddFeedForm headerActions={props.headerActions} />
-      </QueryClientProvider>
-    </TransportProvider>
+    <QueryClientProvider client={queryClient}>
+      <AddFeedForm headerActions={props.headerActions} />
+    </QueryClientProvider>
   );
 
   it("creates a new feed", async () => {
@@ -50,7 +47,7 @@ describe("AddFeedForm", () => {
   it("displays an error message when createFeed fails", async () => {
     // Override handler for this specific test
     worker.use(
-      http.post("*/feed.v1.FeedService/CreateFeed", () => {
+      http.post("*/api/v2/feeds", () => {
         return new HttpResponse(
           JSON.stringify({
             code: "invalid_argument",

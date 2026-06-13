@@ -1,4 +1,3 @@
-import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
@@ -9,14 +8,18 @@ import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
-import { ItemSchema, ListItemsResponseSchema } from "../gen/item/v1/item_pb";
-import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
 import { dateToTimestamp } from "../lib/item-utils";
-import { queryClient, transport } from "../lib/query";
-import { TransportProvider } from "../lib/transport-context";
+import { queryClient } from "../lib/query";
 import { worker } from "../mocks/browser";
 import { routeTree } from "../routeTree.gen";
+import {
+  create,
+  ItemSchema,
+  ListFeedTagsResponseSchema,
+  ListItemsResponseSchema,
+  ListTagsResponseSchema,
+  toJson,
+} from "../test-utils/json-identity";
 
 describe("ItemList Selection", () => {
   let dispose: () => void;
@@ -29,13 +32,13 @@ describe("ItemList Selection", () => {
 
   const setupMockData = (items: Record<string, unknown>[] = []) => {
     worker.use(
-      http.all("*/item.v1.ItemService/ListItems", () => {
+      http.all("*/api/v2/items", () => {
         const msg = create(ListItemsResponseSchema, {
           items: items.map((i) => create(ItemSchema, i)),
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),
-      http.all("*/tag.v1.TagService/ListTags", () => {
+      http.all("*/api/v2/tags", () => {
         return HttpResponse.json(
           toJson(
             ListTagsResponseSchema,
@@ -43,7 +46,7 @@ describe("ItemList Selection", () => {
           ),
         );
       }),
-      http.all("*/feed.v1.FeedService/ListFeedTags", () => {
+      http.all("*/api/v2/feed-tags", () => {
         return HttpResponse.json(
           toJson(
             ListFeedTagsResponseSchema,
@@ -79,11 +82,9 @@ describe("ItemList Selection", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
       ),
       document.body,
     );
@@ -142,11 +143,9 @@ describe("ItemList Selection", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
       ),
       document.body,
     );

@@ -1,4 +1,3 @@
-import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
@@ -9,20 +8,21 @@ import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
-import {
-  ItemSchema,
-  ListItemsResponseSchema,
-  type Item as ProtoItem,
-} from "../gen/item/v1/item_pb";
-import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
 import { itemStore } from "../lib/item-store";
 import { setLastFetched } from "../lib/item-sync-state";
 import { dateToTimestamp } from "../lib/item-utils";
-import { queryClient, transport } from "../lib/query";
-import { TransportProvider } from "../lib/transport-context";
+import { queryClient } from "../lib/query";
 import { worker } from "../mocks/browser";
 import { routeTree } from "../routeTree.gen";
+import {
+  create,
+  ItemSchema,
+  ListFeedTagsResponseSchema,
+  ListItemsResponseSchema,
+  ListTagsResponseSchema,
+  type Item as ProtoItem,
+  toJson,
+} from "../test-utils/json-identity";
 
 describe("ItemList Clear Read Items", () => {
   let dispose: () => void;
@@ -43,7 +43,7 @@ describe("ItemList Clear Read Items", () => {
   const setupMockData = (items: Partial<ProtoItem>[] = []) => {
     listItemsCount = 0;
     worker.use(
-      http.all("*/item.v1.ItemService/ListItems", () => {
+      http.all("*/api/v2/items", () => {
         listItemsCount++;
         const msg = create(ListItemsResponseSchema, {
           // biome-ignore lint/suspicious/noExplicitAny: create() requires a complex message shape that's easier to mock with any
@@ -52,7 +52,7 @@ describe("ItemList Clear Read Items", () => {
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),
-      http.all("*/tag.v1.TagService/ListTags", () => {
+      http.all("*/api/v2/tags", () => {
         return HttpResponse.json(
           toJson(
             ListTagsResponseSchema,
@@ -60,7 +60,7 @@ describe("ItemList Clear Read Items", () => {
           ),
         );
       }),
-      http.all("*/feed.v1.FeedService/ListFeedTags", () => {
+      http.all("*/api/v2/feed-tags", () => {
         return HttpResponse.json(
           toJson(
             ListFeedTagsResponseSchema,
@@ -100,11 +100,9 @@ describe("ItemList Clear Read Items", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
       ),
       document.body,
     );

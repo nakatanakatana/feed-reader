@@ -1,4 +1,3 @@
-import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
@@ -9,13 +8,16 @@ import {
 import { http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { ListItemsResponseSchema } from "../gen/item/v1/item_pb";
 import { dateToTimestamp } from "../lib/item-utils";
-import { queryClient, transport } from "../lib/query";
-import { TransportProvider } from "../lib/transport-context";
+import { queryClient } from "../lib/query";
 import { worker } from "../mocks/browser";
-import { safeJson } from "../mocks/connect";
+import { safeJson } from "../mocks/http";
 import { Route as RootRoute } from "../routes/__root";
+import {
+  create,
+  ListItemsResponseSchema,
+  toJson,
+} from "../test-utils/json-identity";
 import "../styles.css";
 
 // Unmock solid-router to test component integration
@@ -56,7 +58,7 @@ describe("Root PWA Badge Integration", () => {
 
     // 2. Mock API to return 5 unread items
     worker.use(
-      http.all("*/item.v1.ItemService/ListItems", () => {
+      http.all("*/api/v2/items", () => {
         const msg = create(ListItemsResponseSchema, {
           items: Array.from({ length: 5 }, (_, i) => ({
             id: `item-${i}`,
@@ -75,11 +77,9 @@ describe("Root PWA Badge Integration", () => {
     // 3. Render
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
       ),
       document.body,
     );
@@ -89,7 +89,7 @@ describe("Root PWA Badge Integration", () => {
 
     // 5. Mock API to return 0 unread items
     worker.use(
-      http.all("*/item.v1.ItemService/ListItems", () => {
+      http.all("*/api/v2/items", () => {
         const msg = create(ListItemsResponseSchema, {
           items: [],
           nextPageToken: "",

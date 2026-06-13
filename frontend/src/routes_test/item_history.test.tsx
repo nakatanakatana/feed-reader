@@ -1,4 +1,3 @@
-import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
@@ -10,18 +9,19 @@ import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page, userEvent } from "vitest/browser";
+import { dateToTimestamp } from "../lib/item-utils";
+import { queryClient } from "../lib/query";
+import { ToastProvider } from "../lib/toast";
+import { worker } from "../mocks/browser";
+import { parseRequestMessage } from "../mocks/http";
+import { routeTree } from "../routeTree.gen";
 import {
+  create,
   GetItemResponseSchema,
   ItemSchema,
   ListItemsResponseSchema,
-} from "../gen/item/v1/item_pb";
-import { dateToTimestamp } from "../lib/item-utils";
-import { queryClient, transport } from "../lib/query";
-import { ToastProvider } from "../lib/toast";
-import { TransportProvider } from "../lib/transport-context";
-import { worker } from "../mocks/browser";
-import { parseConnectMessage } from "../mocks/connect";
-import { routeTree } from "../routeTree.gen";
+  toJson,
+} from "../test-utils/json-identity";
 
 describe("Item History Navigation", () => {
   let dispose: () => void;
@@ -33,11 +33,9 @@ describe("Item History Navigation", () => {
   });
 
   const TestWrapper = (props: { children: JSX.Element }) => (
-    <TransportProvider transport={transport}>
-      <QueryClientProvider client={queryClient}>
-        <ToastProvider>{props.children}</ToastProvider>
-      </QueryClientProvider>
-    </TransportProvider>
+    <QueryClientProvider client={queryClient}>
+      <ToastProvider>{props.children}</ToastProvider>
+    </QueryClientProvider>
   );
 
   const items = [
@@ -61,15 +59,15 @@ describe("Item History Navigation", () => {
 
   it("should use replace when navigating from list to item detail", async () => {
     worker.use(
-      http.all("*/item.v1.ItemService/ListItems", () => {
+      http.all("*/api/v2/items", () => {
         const msg = create(ListItemsResponseSchema, {
           items: items.map((i) => create(ItemSchema, i)),
           nextPageToken: "",
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),
-      http.all("*/item.v1.ItemService/GetItem", async ({ request }) => {
-        const { id } = (await parseConnectMessage(request)) as { id: string };
+      http.all("*/api/v2/items/:id", async ({ request }) => {
+        const { id } = (await parseRequestMessage(request)) as { id: string };
         const item = items.find((i) => i.id === id);
         const msg = create(GetItemResponseSchema, {
           item: item ? create(ItemSchema, item) : undefined,
@@ -101,15 +99,15 @@ describe("Item History Navigation", () => {
 
   it("should use replace when navigating between items in modal", async () => {
     worker.use(
-      http.all("*/item.v1.ItemService/ListItems", () => {
+      http.all("*/api/v2/items", () => {
         const msg = create(ListItemsResponseSchema, {
           items: items.map((i) => create(ItemSchema, i)),
           nextPageToken: "",
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),
-      http.all("*/item.v1.ItemService/GetItem", async ({ request }) => {
-        const { id } = (await parseConnectMessage(request)) as { id: string };
+      http.all("*/api/v2/items/:id", async ({ request }) => {
+        const { id } = (await parseRequestMessage(request)) as { id: string };
         const item = items.find((i) => i.id === id);
         const msg = create(GetItemResponseSchema, {
           item: item ? create(ItemSchema, item) : undefined,
@@ -145,15 +143,15 @@ describe("Item History Navigation", () => {
 
   it("should return to list view when back button is pressed", async () => {
     worker.use(
-      http.all("*/item.v1.ItemService/ListItems", () => {
+      http.all("*/api/v2/items", () => {
         const msg = create(ListItemsResponseSchema, {
           items: items.map((i) => create(ItemSchema, i)),
           nextPageToken: "",
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),
-      http.all("*/item.v1.ItemService/GetItem", async ({ request }) => {
-        const { id } = (await parseConnectMessage(request)) as { id: string };
+      http.all("*/api/v2/items/:id", async ({ request }) => {
+        const { id } = (await parseRequestMessage(request)) as { id: string };
         const item = items.find((i) => i.id === id);
         const msg = create(GetItemResponseSchema, {
           item: item ? create(ItemSchema, item) : undefined,

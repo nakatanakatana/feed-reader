@@ -1,4 +1,3 @@
-import { createConnectTransport } from "@connectrpc/connect-web";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
@@ -9,7 +8,6 @@ import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { queryClient } from "../lib/query";
-import { TransportProvider } from "../lib/transport-context";
 import { Route } from "../routes/_items";
 import { routeTree } from "../routeTree.gen";
 
@@ -33,10 +31,6 @@ describe("Item Search Params", () => {
   });
 
   it("should validate and include since in search parameters", async () => {
-    const transport = createConnectTransport({
-      baseUrl: "http://localhost:3000",
-    });
-
     const history = createMemoryHistory({
       initialEntries: ["/?since=30d"],
     });
@@ -44,11 +38,9 @@ describe("Item Search Params", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
       ),
       document.body,
     );

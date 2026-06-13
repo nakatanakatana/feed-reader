@@ -1,6 +1,6 @@
-import { itemClient } from "./api/client";
+import { apiClient } from "./api/client";
+import type { components } from "./api/types";
 import { lastReadFetched, setLastReadFetched } from "./item-sync-state";
-import { dateToTimestamp } from "./item-utils";
 import { queryClient } from "./query";
 
 export interface ItemRead {
@@ -8,6 +8,9 @@ export interface ItemRead {
   isRead: boolean;
   updatedAt: Date;
 }
+
+type ListItemReadResponse = components["schemas"]["ListItemReadResponse"];
+type EmptyResponse = Record<string, never>;
 
 export const itemReadQueryOptions = {
   queryKey: ["item-reads"] as const,
@@ -26,29 +29,28 @@ export const itemReadQueryOptions = {
     let maxServerUpdatedAt: Date | undefined;
 
     do {
-      const response = await itemClient.listItemRead({
-        since: !pageToken && anchor ? dateToTimestamp(anchor) : undefined,
-        pageToken: pageToken,
-        pageSize: 1000,
-      });
+      const params = new URLSearchParams();
+      params.set("pageSize", "1000");
+      if (pageToken) {
+        params.set("pageToken", pageToken);
+      } else if (anchor) {
+        params.set("since", anchor.toISOString());
+      }
+      const response = await apiClient.get<ListItemReadResponse>(
+        `/item-reads?${params.toString()}`,
+      );
 
       for (const ir of response.itemReads || []) {
-        let updatedAtDate: Date;
+        const parsedUpdatedAt = new Date(ir.updatedAt);
+        const updatedAtDate = Number.isNaN(parsedUpdatedAt.getTime())
+          ? (anchor ?? new Date(0))
+          : parsedUpdatedAt;
 
-        if (ir.updatedAt) {
-          updatedAtDate = new Date(
-            Number(ir.updatedAt.seconds) * 1000 +
-              Math.floor(ir.updatedAt.nanos / 1000000),
-          );
-
-          if (
-            !maxServerUpdatedAt ||
-            updatedAtDate.getTime() > maxServerUpdatedAt.getTime()
-          ) {
-            maxServerUpdatedAt = updatedAtDate;
-          }
-        } else {
-          updatedAtDate = anchor ?? new Date(0);
+        if (
+          !maxServerUpdatedAt ||
+          updatedAtDate.getTime() > maxServerUpdatedAt.getTime()
+        ) {
+          maxServerUpdatedAt = updatedAtDate;
         }
 
         allNewReads.push({
@@ -84,7 +86,6 @@ export const updateItemReadStatus = async (ids: string[], isRead: boolean) => {
   const existingData = queryClient.getQueryData<ItemRead[]>(queryKey) || [];
   const previousStates = existingData.filter((d) => ids.includes(d.id));
 
-  // Optimistic update
   queryClient.setQueryData(queryKey, (old: ItemRead[] | undefined) => {
     const readMap = new Map<string, ItemRead>();
     for (const read of old || []) {
@@ -97,14 +98,13 @@ export const updateItemReadStatus = async (ids: string[], isRead: boolean) => {
   });
 
   try {
-    await itemClient.updateItemStatus({
-      ids: ids,
-      isRead: isRead,
+    await apiClient.post<EmptyResponse>("/items/status", {
+      ids,
+      isRead,
     });
   } catch (e) {
     console.warn("Failed to update item status on server, rolling back", e);
 
-    // Rollback
     queryClient.setQueryData(queryKey, (old: ItemRead[] | undefined) => {
       const readMap = new Map<string, ItemRead>();
       for (const read of old || []) {

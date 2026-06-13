@@ -1,0 +1,961 @@
+openapi: 3.0.0
+info:
+  title: Feed Reader API
+  version: 0.0.0
+tags: []
+paths:
+  /block-rules:
+    get:
+      operationId: BlockRules_list
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListItemBlockRulesResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+    post:
+      operationId: BlockRules_add
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddItemBlockRulesRequest'
+  /block-rules/{id}:
+    delete:
+      operationId: BlockRules_delete
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /feed-tags:
+    get:
+      operationId: FeedTags_list
+      parameters:
+        - name: feedId
+          in: query
+          required: false
+          schema:
+            type: string
+          explode: false
+        - name: tagId
+          in: query
+          required: false
+          schema:
+            type: string
+          explode: false
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListFeedTagsResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /feed-tags/manage:
+    post:
+      operationId: FeedTags_manage
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ManageFeedTagsRequest'
+  /feeds:
+    get:
+      operationId: Feeds_list
+      parameters:
+        - name: tagId
+          in: query
+          required: false
+          schema:
+            type: string
+          explode: false
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListFeedsResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+    post:
+      operationId: Feeds_create
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateFeedResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFeedRequest'
+  /feeds/export-opml:
+    post:
+      operationId: Feeds_exportOpml
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExportOpmlResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExportOpmlRequest'
+  /feeds/import-opml:
+    post:
+      operationId: Feeds_importOpml
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportOpmlResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImportOpmlRequest'
+  /feeds/refresh:
+    post:
+      operationId: Feeds_refresh
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefreshFeedsResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshFeedsRequest'
+  /feeds/suspend:
+    post:
+      operationId: Feeds_suspend
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SuspendFeedsRequest'
+  /feeds/{id}:
+    delete:
+      operationId: Feeds_delete
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /item-reads:
+    get:
+      operationId: ItemReads_list
+      parameters:
+        - name: since
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+          explode: false
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+          explode: false
+        - name: pageToken
+          in: query
+          required: false
+          schema:
+            type: string
+          explode: false
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListItemReadResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /items:
+    get:
+      operationId: Items_list
+      parameters:
+        - name: feedId
+          in: query
+          required: false
+          schema:
+            type: string
+          explode: false
+        - name: isRead
+          in: query
+          required: false
+          schema:
+            type: boolean
+          explode: false
+        - name: tagId
+          in: query
+          required: false
+          schema:
+            type: string
+          explode: false
+        - name: since
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+          explode: false
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+          explode: false
+        - name: pageToken
+          in: query
+          required: false
+          schema:
+            type: string
+          explode: false
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListItemsResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /items/status:
+    post:
+      operationId: Items_updateStatus
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateItemStatusRequest'
+  /items/{id}:
+    get:
+      operationId: Items_get
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetItemResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /tags:
+    get:
+      operationId: Tags_list
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListTagsResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+    post:
+      operationId: Tags_create
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateTagResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTagRequest'
+  /tags/{id}:
+    delete:
+      operationId: Tags_delete
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /url-rules:
+    get:
+      operationId: URLRules_list
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListURLParsingRulesResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+    post:
+      operationId: URLRules_add
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddURLParsingRuleResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddURLParsingRuleRequest'
+  /url-rules/{id}:
+    delete:
+      operationId: URLRules_delete
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+components:
+  schemas:
+    AddItemBlockRuleInput:
+      type: object
+      required:
+        - ruleType
+        - value
+      properties:
+        ruleType:
+          type: string
+        value:
+          type: string
+        domain:
+          type: string
+    AddItemBlockRulesRequest:
+      type: object
+      required:
+        - rules
+      properties:
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/AddItemBlockRuleInput'
+    AddURLParsingRuleRequest:
+      type: object
+      required:
+        - domain
+        - ruleType
+        - pattern
+      properties:
+        domain:
+          type: string
+        ruleType:
+          type: string
+        pattern:
+          type: string
+    AddURLParsingRuleResponse:
+      type: object
+      required:
+        - rule
+      properties:
+        rule:
+          $ref: '#/components/schemas/URLParsingRule'
+    ApiError:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+    CreateFeedRequest:
+      type: object
+      required:
+        - url
+        - tagIds
+      properties:
+        url:
+          type: string
+        tagIds:
+          type: array
+          items:
+            type: string
+    CreateFeedResponse:
+      type: object
+      required:
+        - feed
+      properties:
+        feed:
+          $ref: '#/components/schemas/Feed'
+    CreateTagRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+    CreateTagResponse:
+      type: object
+      required:
+        - tag
+      properties:
+        tag:
+          $ref: '#/components/schemas/Tag'
+    ExportOpmlRequest:
+      type: object
+      required:
+        - ids
+      properties:
+        ids:
+          type: array
+          items:
+            type: string
+    ExportOpmlResponse:
+      type: object
+      required:
+        - opmlContent
+      properties:
+        opmlContent:
+          type: string
+          format: byte
+    Feed:
+      type: object
+      required:
+        - id
+        - url
+        - title
+        - createdAt
+        - updatedAt
+        - tags
+        - unreadCount
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+        link:
+          type: string
+        title:
+          type: string
+        lastFetchedAt:
+          type: string
+          format: date-time
+        nextFetchAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+        unreadCount:
+          type: string
+    FeedFetchStatus:
+      type: object
+      required:
+        - feedId
+        - success
+        - newItemsCount
+      properties:
+        feedId:
+          type: string
+        success:
+          type: boolean
+        newItemsCount:
+          type: integer
+          format: int32
+        errorMessage:
+          type: string
+    FeedTag:
+      type: object
+      required:
+        - feedId
+        - tagId
+      properties:
+        feedId:
+          type: string
+        tagId:
+          type: string
+    GetItemResponse:
+      type: object
+      properties:
+        item:
+          $ref: '#/components/schemas/Item'
+    ImportFailedFeed:
+      type: object
+      required:
+        - url
+        - errorMessage
+      properties:
+        url:
+          type: string
+        errorMessage:
+          type: string
+    ImportOpmlRequest:
+      type: object
+      required:
+        - opmlContent
+      properties:
+        opmlContent:
+          type: string
+          format: byte
+    ImportOpmlResponse:
+      type: object
+      required:
+        - total
+        - success
+        - skipped
+        - failedFeeds
+      properties:
+        total:
+          type: integer
+          format: int32
+        success:
+          type: integer
+          format: int32
+        skipped:
+          type: integer
+          format: int32
+        failedFeeds:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImportFailedFeed'
+    Item:
+      type: object
+      required:
+        - id
+        - url
+        - title
+        - description
+        - publishedAt
+        - feedId
+        - isRead
+        - author
+        - content
+        - imageUrl
+        - categories
+        - createdAt
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        publishedAt:
+          type: string
+          format: date-time
+        feedId:
+          type: string
+        isRead:
+          type: boolean
+        author:
+          type: string
+        content:
+          type: string
+        imageUrl:
+          type: string
+        categories:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+    ItemBlockRule:
+      type: object
+      required:
+        - id
+        - ruleType
+        - value
+      properties:
+        id:
+          type: string
+        ruleType:
+          type: string
+        value:
+          type: string
+        domain:
+          type: string
+    ItemRead:
+      type: object
+      required:
+        - itemId
+        - isRead
+        - updatedAt
+      properties:
+        itemId:
+          type: string
+        isRead:
+          type: boolean
+        updatedAt:
+          type: string
+          format: date-time
+    ListFeedTagsResponse:
+      type: object
+      required:
+        - feedTags
+      properties:
+        feedTags:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeedTag'
+    ListFeedsResponse:
+      type: object
+      required:
+        - feeds
+      properties:
+        feeds:
+          type: array
+          items:
+            $ref: '#/components/schemas/Feed'
+    ListItemBlockRulesResponse:
+      type: object
+      required:
+        - rules
+      properties:
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemBlockRule'
+    ListItemReadResponse:
+      type: object
+      required:
+        - itemReads
+        - nextPageToken
+      properties:
+        itemReads:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemRead'
+        nextPageToken:
+          type: string
+    ListItemsResponse:
+      type: object
+      required:
+        - items
+        - nextPageToken
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Item'
+        nextPageToken:
+          type: string
+    ListTagsResponse:
+      type: object
+      required:
+        - tags
+        - totalUnreadCount
+      properties:
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+        totalUnreadCount:
+          type: string
+    ListURLParsingRulesResponse:
+      type: object
+      required:
+        - rules
+      properties:
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/URLParsingRule'
+    ManageFeedTagsRequest:
+      type: object
+      required:
+        - feedIds
+        - addTagIds
+        - removeTagIds
+      properties:
+        feedIds:
+          type: array
+          items:
+            type: string
+        addTagIds:
+          type: array
+          items:
+            type: string
+        removeTagIds:
+          type: array
+          items:
+            type: string
+    RefreshFeedsRequest:
+      type: object
+      required:
+        - ids
+      properties:
+        ids:
+          type: array
+          items:
+            type: string
+    RefreshFeedsResponse:
+      type: object
+      required:
+        - results
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeedFetchStatus'
+    SuspendFeedsRequest:
+      type: object
+      required:
+        - ids
+        - suspendSeconds
+      properties:
+        ids:
+          type: array
+          items:
+            type: string
+        suspendSeconds:
+          type: string
+    Tag:
+      type: object
+      required:
+        - id
+        - name
+        - createdAt
+        - updatedAt
+        - unreadCount
+        - feedCount
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        unreadCount:
+          type: string
+        feedCount:
+          type: string
+    URLParsingRule:
+      type: object
+      required:
+        - id
+        - domain
+        - ruleType
+        - pattern
+      properties:
+        id:
+          type: string
+        domain:
+          type: string
+        ruleType:
+          type: string
+        pattern:
+          type: string
+    UpdateItemStatusRequest:
+      type: object
+      required:
+        - ids
+      properties:
+        ids:
+          type: array
+          items:
+            type: string
+        isRead:
+          type: boolean
+servers:
+  - url: /api/v2
+    variables: {}

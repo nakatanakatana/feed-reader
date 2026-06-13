@@ -8,8 +8,7 @@ import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { queryClient, transport } from "../lib/query";
-import { TransportProvider } from "../lib/transport-context";
+import { queryClient } from "../lib/query";
 import { routeTree } from "../routeTree.gen";
 
 describe("FeedList Selection", () => {
@@ -27,11 +26,9 @@ describe("FeedList Selection", () => {
   });
 
   const TestWrapper = (props: { children: JSX.Element }) => (
-    <TransportProvider transport={transport}>
-      <QueryClientProvider client={queryClient}>
-        {props.children}
-      </QueryClientProvider>
-    </TransportProvider>
+    <QueryClientProvider client={queryClient}>
+      {props.children}
+    </QueryClientProvider>
   );
 
   it("selects all visible feeds when 'Select All' is clicked", async () => {

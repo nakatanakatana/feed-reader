@@ -8,19 +8,19 @@ import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page, userEvent } from "vitest/browser";
-import { queryClient, transport } from "../lib/query";
-import { TransportProvider } from "../lib/transport-context";
+import { queryClient } from "../lib/query";
 import { routeTree } from "../routeTree.gen";
 import "../styles.css";
-import { create, toJson } from "@bufbuild/protobuf";
 import { HttpResponse, http } from "msw";
+import { worker } from "../mocks/browser";
 import {
+  create,
   FeedSchema,
   ListFeedsResponseSchema,
   ListFeedTagsResponseSchema,
-} from "../gen/feed/v1/feed_pb";
-import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
-import { worker } from "../mocks/browser";
+  ListTagsResponseSchema,
+  toJson,
+} from "../test-utils/json-identity";
 
 // Mock Link from solid-router
 vi.mock("@tanstack/solid-router", async (importOriginal) => {
@@ -53,16 +53,14 @@ describe("FeedList Responsive", () => {
   });
 
   const TestWrapper = (props: { children: JSX.Element }) => (
-    <TransportProvider transport={transport}>
-      <QueryClientProvider client={queryClient}>
-        {props.children}
-      </QueryClientProvider>
-    </TransportProvider>
+    <QueryClientProvider client={queryClient}>
+      {props.children}
+    </QueryClientProvider>
   );
 
   const setupMockData = (title = "Feed 1", unreadCount = 0n, url = "url1") => {
     worker.use(
-      http.all("*/feed.v1.FeedService/ListFeeds", () => {
+      http.all("*/api/v2/feeds", () => {
         const msg = create(ListFeedsResponseSchema, {
           feeds: [
             create(FeedSchema, {
@@ -76,7 +74,7 @@ describe("FeedList Responsive", () => {
         });
         return HttpResponse.json(toJson(ListFeedsResponseSchema, msg));
       }),
-      http.all("*/tag.v1.TagService/ListTags", () => {
+      http.all("*/api/v2/tags", () => {
         return HttpResponse.json(
           toJson(
             ListTagsResponseSchema,
@@ -84,7 +82,7 @@ describe("FeedList Responsive", () => {
           ),
         );
       }),
-      http.all("*/feed.v1.FeedService/ListFeedTags", () => {
+      http.all("*/api/v2/feed-tags", () => {
         return HttpResponse.json(
           toJson(
             ListFeedTagsResponseSchema,

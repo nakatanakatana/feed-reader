@@ -464,6 +464,21 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     }
   };
 
+  createEffect(() => {
+    if (!props.itemId) return;
+
+    const handleDocumentKeyDown = (e: KeyboardEvent) => {
+      const target = e.target;
+      if (target instanceof Node && modalRef?.contains(target)) return;
+      handleKeyDown(e);
+    };
+
+    document.addEventListener("keydown", handleDocumentKeyDown);
+    onCleanup(() => {
+      document.removeEventListener("keydown", handleDocumentKeyDown);
+    });
+  });
+
   const footer = () => {
     if (props.footerExtras) return props.footerExtras;
     if (isEndOfList()) {

@@ -1,25 +1,16 @@
-import { create } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
   createRouter,
   RouterProvider,
 } from "@tanstack/solid-router";
+import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import {
-  AddItemBlockRulesResponseSchema,
-  ItemService,
-  ListItemBlockRulesResponseSchema,
-} from "../gen/item/v1/item_pb";
-import { queryClient, transport } from "../lib/query";
-import { TransportProvider } from "../lib/transport-context";
+import { queryClient } from "../lib/query";
 import { worker } from "../mocks/browser";
-import { mockConnectWeb } from "../mocks/connect";
 import { routeTree } from "../routeTree.gen";
-
-const mockItemService = mockConnectWeb(ItemService);
 
 describe("BlockRules page bulk add button", () => {
   let dispose: () => void;
@@ -36,10 +27,7 @@ describe("BlockRules page bulk add button", () => {
 
   it("should have Bulk Add button", async () => {
     worker.use(
-      mockItemService({
-        method: "listItemBlockRules",
-        handler: () => create(ListItemBlockRulesResponseSchema, { rules: [] }),
-      }),
+      http.get("*/api/v2/block-rules", () => HttpResponse.json({ rules: [] })),
     );
 
     const history = createMemoryHistory({ initialEntries: ["/block-rules"] });
@@ -47,11 +35,9 @@ describe("BlockRules page bulk add button", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
       ),
       document.body,
     );
@@ -63,10 +49,7 @@ describe("BlockRules page bulk add button", () => {
 
   it("should open modal when Bulk Add button is clicked", async () => {
     worker.use(
-      mockItemService({
-        method: "listItemBlockRules",
-        handler: () => create(ListItemBlockRulesResponseSchema, { rules: [] }),
-      }),
+      http.get("*/api/v2/block-rules", () => HttpResponse.json({ rules: [] })),
     );
 
     const history = createMemoryHistory({ initialEntries: ["/block-rules"] });
@@ -74,11 +57,9 @@ describe("BlockRules page bulk add button", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
       ),
       document.body,
     );
@@ -95,18 +76,14 @@ describe("BlockRules page bulk add button", () => {
   });
 
   it("should submit valid rules to the backend", async () => {
-    const addItemBlockRulesSpy = vi
-      .fn()
-      .mockReturnValue(create(AddItemBlockRulesResponseSchema, {}));
+    const addItemBlockRulesSpy = vi.fn();
 
     worker.use(
-      mockItemService({
-        method: "listItemBlockRules",
-        handler: () => create(ListItemBlockRulesResponseSchema, { rules: [] }),
-      }),
-      mockItemService({
-        method: "addItemBlockRules",
-        handler: addItemBlockRulesSpy,
+      http.get("*/api/v2/block-rules", () => HttpResponse.json({ rules: [] })),
+      http.post("*/api/v2/block-rules", async ({ request }) => {
+        const body = await request.json();
+        addItemBlockRulesSpy(body);
+        return HttpResponse.json({});
       }),
     );
 
@@ -115,11 +92,9 @@ describe("BlockRules page bulk add button", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
       ),
       document.body,
     );

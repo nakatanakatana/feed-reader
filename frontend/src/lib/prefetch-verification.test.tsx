@@ -1,16 +1,19 @@
-import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import { HttpResponse, http } from "msw";
 import { createSignal } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ItemDetailModal } from "../components/ItemDetailModal";
-import { GetItemResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
 import { worker } from "../mocks/browser";
+import {
+  create,
+  GetItemResponseSchema,
+  ItemSchema,
+  toJson,
+} from "../test-utils/json-identity";
 import { prefetchItems } from "./item-prefetch";
-import { queryClient, transport } from "./query";
+import { queryClient } from "./query";
 import { ToastProvider } from "./toast";
-import { TransportProvider } from "./transport-context";
 
 describe("Prefetch Verification", () => {
   let dispose: () => void;
@@ -22,7 +25,7 @@ describe("Prefetch Verification", () => {
 
     // Setup MSW to count GetItem requests
     worker.use(
-      http.all("*/item.v1.ItemService/GetItem", () => {
+      http.all("*/api/v2/items/:id", () => {
         fetchCount++;
         const msg = create(GetItemResponseSchema, {
           item: create(ItemSchema, {
@@ -55,13 +58,11 @@ describe("Prefetch Verification", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ToastProvider>
-              <ItemDetailModal itemId={itemId()} onClose={() => {}} />
-            </ToastProvider>
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <ToastProvider>
+            <ItemDetailModal itemId={itemId()} onClose={() => {}} />
+          </ToastProvider>
+        </QueryClientProvider>
       ),
       document.body,
     );

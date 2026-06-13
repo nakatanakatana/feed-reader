@@ -1,5 +1,7 @@
-import { itemClient } from "./api/client";
-import { toDate } from "./date-utils";
+import { apiClient } from "./api/client";
+import { mapUpdateItemStatusRequest } from "./api/mutation-mappers";
+import type { components } from "./api/types";
+import { type TimestampLike, toDate } from "./date-utils";
 import {
   lastFetchedMap,
   lastReadFetched,
@@ -32,6 +34,60 @@ export interface Item extends ListItem {
   content?: string;
 }
 
+type OpenAPIItem = components["schemas"]["Item"];
+type ListItemsResponse = components["schemas"]["ListItemsResponse"];
+type GetItemResponse = components["schemas"]["GetItemResponse"];
+type EmptyResponse = Record<string, never>;
+
+export interface ConnectItemShape {
+  id: string;
+  title: string;
+  description: string;
+  publishedAt?: Date | TimestampLike | string;
+  isRead: boolean;
+  createdAt?: Date | TimestampLike | string;
+  feedId: string;
+  url: string;
+  author: string;
+  categories: string;
+  imageUrl: string;
+  content: string;
+}
+
+export const mapConnectItem = (item: ConnectItemShape): Item => ({
+  id: item.id,
+  title: item.title,
+  description: item.description,
+  publishedAt: toDate(item.publishedAt),
+  isRead: item.isRead,
+  createdAt: toDate(item.createdAt),
+  feedId: item.feedId,
+  url: item.url,
+  author: item.author,
+  categories: item.categories,
+  imageUrl: item.imageUrl,
+  content: item.content,
+});
+
+export const mapOpenAPIItem = (item: OpenAPIItem): Item => ({
+  id: item.id,
+  title: item.title,
+  description: item.description,
+  publishedAt: toDate(item.publishedAt),
+  isRead: item.isRead,
+  createdAt: toDate(item.createdAt),
+  feedId: item.feedId,
+  url: item.url,
+  author: item.author,
+  categories: item.categories,
+  imageUrl: item.imageUrl,
+  content: item.content,
+});
+
+const timestampToISOString = (
+  value: ReturnType<typeof dateToTimestamp> | undefined,
+) => toDate(value)?.toISOString();
+
 export const getItemsQueryOptions = (
   showRead: boolean,
   since: DateFilterValue,
@@ -59,26 +115,21 @@ export const getItemsQueryOptions = (
       const allNewItems: ListItem[] = [];
 
       do {
-        const response = await itemClient.listItems({
-          since: searchSince,
-          pageSize: 1000,
-          pageToken: pageToken,
-          ...isReadParam,
-        });
+        const params = new URLSearchParams();
+        const sinceValue = timestampToISOString(searchSince);
+        if (sinceValue) params.set("since", sinceValue);
+        params.set("pageSize", "1000");
+        if (pageToken) params.set("pageToken", pageToken);
+        if (isReadParam.isRead !== undefined) {
+          params.set("isRead", String(isReadParam.isRead));
+        }
+
+        const response = await apiClient.get<ListItemsResponse>(
+          `/items?${params.toString()}`,
+        );
 
         if (response.items && response.items.length > 0) {
-          allNewItems.push(
-            ...response.items.map((item) => ({
-              id: item.id,
-              title: item.title,
-              description: item.description,
-              publishedAt: toDate(item.publishedAt),
-              isRead: item.isRead,
-              createdAt: toDate(item.createdAt),
-              feedId: item.feedId,
-              url: item.url,
-            })),
-          );
+          allNewItems.push(...response.items.map(mapOpenAPIItem));
         }
 
         pageToken = response.nextPageToken;
@@ -162,10 +213,10 @@ export const updateItemStatus = async (
   });
 
   try {
-    await itemClient.updateItemStatus({
-      ids: ids,
-      isRead: isRead,
-    });
+    await apiClient.post<EmptyResponse>(
+      "/items/status",
+      mapUpdateItemStatusRequest(ids, isRead),
+    );
   } catch (e) {
     if (previousData) {
       queryClient.setQueryData(queryKey, previousData);
@@ -175,20 +226,7 @@ export const updateItemStatus = async (
 };
 
 export const getItem = async (id: string): Promise<Item | null> => {
-  const response = await itemClient.getItem({ id });
+  const response = await apiClient.get<GetItemResponse>(`/items/${id}`);
   if (!response.item) return null;
-  return {
-    id: response.item.id,
-    title: response.item.title,
-    description: response.item.description,
-    publishedAt: toDate(response.item.publishedAt),
-    isRead: response.item.isRead,
-    createdAt: toDate(response.item.createdAt),
-    feedId: response.item.feedId,
-    url: response.item.url,
-    author: response.item.author,
-    categories: response.item.categories,
-    imageUrl: response.item.imageUrl,
-    content: response.item.content,
-  };
+  return mapOpenAPIItem(response.item);
 };

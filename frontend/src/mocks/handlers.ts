@@ -1,529 +1,510 @@
-import { create } from "@bufbuild/protobuf";
-import {
-  CreateFeedResponseSchema,
-  DeleteFeedResponseSchema,
-  type Feed,
-  FeedSchema,
-  FeedService,
-  ListFeedsResponseSchema,
-  ListFeedTagsResponseSchema,
-  ManageFeedTagsResponseSchema,
-  SetFeedTagsResponseSchema,
-  SuspendFeedsResponseSchema,
-  UpdateFeedResponseSchema,
-} from "../gen/feed/v1/feed_pb";
-import {
-  AddItemBlockRulesResponseSchema,
-  AddURLParsingRuleResponseSchema,
-  DeleteItemBlockRuleResponseSchema,
-  DeleteURLParsingRuleResponseSchema,
-  GetItemResponseSchema,
-  type Item,
-  ItemSchema,
-  ItemService,
-  ListItemBlockRulesResponseSchema,
-  ListItemReadResponseSchema,
-  ListItemsResponseSchema,
-  ListURLParsingRulesResponseSchema,
-  UpdateItemStatusResponseSchema,
-  URLParsingRuleSchema,
-} from "../gen/item/v1/item_pb";
-import {
-  CreateTagResponseSchema,
-  DeleteTagResponseSchema,
-  ListTagsResponseSchema,
-  type Tag,
-  TagSchema,
-  TagService,
-} from "../gen/tag/v1/tag_pb";
-import { dateToTimestamp, toDate } from "../lib/date-utils";
-import { mockConnectWeb } from "./connect";
+import { HttpResponse, http } from "msw";
 
-const tags: Tag[] = [];
-const feeds: Feed[] = [];
-const items: Item[] = [];
+type TagJSON = {
+  id: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+  unreadCount: string;
+  feedCount: string;
+};
+
+type FeedJSON = {
+  id: string;
+  url: string;
+  link?: string;
+  title: string;
+  lastFetchedAt?: string;
+  nextFetchAt?: string;
+  createdAt: string;
+  updatedAt: string;
+  tags: TagJSON[];
+  unreadCount: string;
+};
+
+type ItemJSON = {
+  id: string;
+  url?: string;
+  title: string;
+  description?: string;
+  publishedAt: string;
+  feedId?: string;
+  isRead: boolean;
+  author?: string;
+  content?: string;
+  imageUrl?: string;
+  categories?: string[];
+  createdAt: string;
+};
+
+type ItemReadJSON = {
+  itemId: string;
+  isRead: boolean;
+  updatedAt: string;
+};
+
+type URLRuleJSON = {
+  id: string;
+  domain: string;
+  ruleType: string;
+  pattern: string;
+};
+
+type BlockRuleJSON = {
+  id: string;
+  ruleType: string;
+  value: string;
+  domain?: string;
+};
+
+const tags: TagJSON[] = [];
+const feeds: FeedJSON[] = [];
+const items: ItemJSON[] = [];
 const itemReads = new Map<string, { isRead: boolean; updatedAt: Date }>();
+const urlRules: URLRuleJSON[] = [];
+const blockRules: BlockRuleJSON[] = [];
+
+const iso = (date: Date | string) =>
+  typeof date === "string" ? date : date.toISOString();
+
+const recalculateFeedCounts = () => {
+  for (const tag of tags) {
+    tag.feedCount = feeds
+      .filter((feed) => feed.tags.some((feedTag) => feedTag.id === tag.id))
+      .length.toString();
+  }
+};
+
+const findOrUnknownTag = (id: string): TagJSON =>
+  tags.find((tag) => tag.id === id) ?? {
+    id,
+    name: "Unknown",
+    createdAt: "2026-03-01T00:00:00.000Z",
+    updatedAt: "2026-03-01T00:00:00.000Z",
+    unreadCount: "0",
+    feedCount: "0",
+  };
 
 export const resetState = () => {
   console.log("MSW: resetState called");
   tags.length = 0;
+  feeds.length = 0;
+  items.length = 0;
+  urlRules.length = 0;
+  blockRules.length = 0;
   itemReads.clear();
-  const now = new Date("2026-03-01T00:00:00Z");
+
+  const now = "2026-03-01T00:00:00.000Z";
+
   tags.push(
-    create(TagSchema, {
+    {
       id: "tag-1",
       name: "Tech",
-      createdAt: dateToTimestamp(now),
-      updatedAt: dateToTimestamp(now),
-      unreadCount: 5n,
-      feedCount: 1n,
-    }),
-    create(TagSchema, {
+      createdAt: now,
+      updatedAt: now,
+      unreadCount: "5",
+      feedCount: "1",
+    },
+    {
       id: "tag-2",
       name: "News",
-      createdAt: dateToTimestamp(now),
-      updatedAt: dateToTimestamp(now),
-      unreadCount: 3n,
-      feedCount: 2n,
-    }),
+      createdAt: now,
+      updatedAt: now,
+      unreadCount: "3",
+      feedCount: "2",
+    },
   );
 
-  feeds.length = 0;
   feeds.push(
-    create(FeedSchema, {
+    {
       id: "1",
       url: "https://example.com/feed1.xml",
       link: "https://example.com/",
       title: "Example Feed 1",
-      lastFetchedAt: dateToTimestamp(now),
-      createdAt: dateToTimestamp(now),
-      updatedAt: dateToTimestamp(now),
+      lastFetchedAt: now,
+      createdAt: now,
+      updatedAt: now,
       tags: [tags[0]],
-    }),
-    create(FeedSchema, {
+      unreadCount: "0",
+    },
+    {
       id: "2",
       url: "https://example.com/feed2.xml",
       link: "https://example.com/news",
       title: "Example Feed 2",
-      lastFetchedAt: dateToTimestamp(now),
-      createdAt: dateToTimestamp(now),
-      updatedAt: dateToTimestamp(now),
+      lastFetchedAt: now,
+      createdAt: now,
+      updatedAt: now,
       tags: [tags[1]],
-    }),
+      unreadCount: "0",
+    },
   );
 
-  items.length = 0;
+  const base = new Date(now);
   for (let i = 0; i < 40; i++) {
     const id = (i + 1).toString();
-    const date = new Date(now);
+    const date = new Date(base);
     if (i < 10) date.setHours(date.getHours() - i);
     else if (i < 20) date.setDate(date.getDate() - 2);
     else if (i < 30) date.setDate(date.getDate() - 10);
     else date.setDate(date.getDate() - 40);
 
-    items.push(
-      create(ItemSchema, {
-        id,
-        title: `Item ${id}`,
-        publishedAt: dateToTimestamp(date),
-        createdAt: dateToTimestamp(date),
-        isRead: false,
-        description: `<p>Full content for item ${id}</p>`,
-        author: "Mock Author",
-        url: `https://example.com/item${id}`,
-      }),
-    );
+    items.push({
+      id,
+      title: `Item ${id}`,
+      publishedAt: iso(date),
+      createdAt: iso(date),
+      isRead: false,
+      description: `<p>Full content for item ${id}</p>`,
+      author: "Mock Author",
+      url: `https://example.com/item${id}`,
+    });
   }
 };
 
 // Initial state
 resetState();
 
+const listFeedTags = () =>
+  feeds.flatMap((feed) =>
+    feed.tags.map((tag) => ({
+      feedId: feed.id,
+      tagId: tag.id,
+    })),
+  );
+
 export const handlers = [
-  mockConnectWeb(FeedService)({
-    method: "listFeeds",
-    handler: (req) => {
-      let filteredFeeds = feeds;
-
-      if (req.tagId) {
-        filteredFeeds = feeds.filter((f) =>
-          f.tags.some((t: Tag) => t.id === req.tagId),
-        );
-      }
-      return create(ListFeedsResponseSchema, { feeds: filteredFeeds });
-    },
+  http.get("*/api/v2/tags", () => {
+    return HttpResponse.json({
+      tags,
+      totalUnreadCount: tags
+        .reduce((total, tag) => total + BigInt(tag.unreadCount), 0n)
+        .toString(),
+    });
   }),
 
-  mockConnectWeb(FeedService)({
-    method: "suspendFeeds",
-    handler: (req) => {
-      const nextFetchDate = new Date(
-        Date.now() + Number(req.suspendSeconds) * 1000,
-      );
-      const nextFetchAt = dateToTimestamp(nextFetchDate);
-      for (const id of req.ids || []) {
-        const feed = feeds.find((f) => f.id === id);
-        if (feed) {
-          feed.nextFetchAt = nextFetchAt;
-        }
-      }
-      return create(SuspendFeedsResponseSchema, {});
-    },
+  http.post("*/api/v2/tags", async ({ request }) => {
+    const body = (await request.json()) as { name: string };
+    const now = "2026-03-01T00:00:00.000Z";
+    const tag: TagJSON = {
+      id: crypto.randomUUID(),
+      name: body.name,
+      createdAt: now,
+      updatedAt: now,
+      unreadCount: "0",
+      feedCount: "0",
+    };
+    tags.push(tag);
+    return HttpResponse.json({ tag });
   }),
 
-  mockConnectWeb(FeedService)({
-    method: "createFeed",
-    handler: (req) => {
-      const newFeed = create(FeedSchema, {
-        id: crypto.randomUUID(),
-        url: req.url,
-        title: req.title || "New Feed",
-        createdAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
-        updatedAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
-        tags: (req.tagIds || []).map(
-          (id) =>
-            tags.find((t) => t.id === id) ||
-            create(TagSchema, { id, name: "Unknown" }),
-        ),
-      });
-      // In-memory update for the session
-      feeds.push(newFeed);
-      tags.forEach((t) => {
-        const count = feeds.filter((f) =>
-          f.tags.some((ft: Tag) => ft.id === t.id),
-        ).length;
-        t.feedCount = BigInt(count);
-      });
-      return create(CreateFeedResponseSchema, { feed: newFeed });
-    },
-  }),
-
-  mockConnectWeb(FeedService)({
-    method: "updateFeed",
-    handler: (req) => {
-      const index = feeds.findIndex((f) => f.id === req.id);
-      if (index !== -1) {
-        if (req.title) feeds[index].title = req.title;
-        if (req.tagIds) {
-          feeds[index].tags = req.tagIds.map(
-            (id) =>
-              tags.find((t) => t.id === id) ||
-              create(TagSchema, { id, name: "Unknown" }),
-          );
-        }
-        tags.forEach((t) => {
-          const count = feeds.filter((f) =>
-            f.tags.some((ft: Tag) => ft.id === t.id),
-          ).length;
-          t.feedCount = BigInt(count);
-        });
-        feeds[index].updatedAt = dateToTimestamp(
-          new Date("2026-03-01T00:00:00Z"),
-        );
-        return create(UpdateFeedResponseSchema, { feed: feeds[index] });
-      }
-      throw new Error("Feed not found");
-    },
-  }),
-
-  mockConnectWeb(FeedService)({
-    method: "deleteFeed",
-    handler: (req) => {
-      console.log("MSW: deleteFeed called for id:", req.id);
-      const index = feeds.findIndex((f) => f.id === req.id);
-      if (index !== -1) {
-        feeds.splice(index, 1);
-        console.log("MSW: feed deleted, remaining:", feeds.length);
-        tags.forEach((t) => {
-          const count = feeds.filter((f) =>
-            f.tags.some((ft: Tag) => ft.id === t.id),
-          ).length;
-          t.feedCount = BigInt(count);
-        });
-      }
-      return create(DeleteFeedResponseSchema, {});
-    },
-  }),
-
-  mockConnectWeb(TagService)({
-    method: "listTags",
-    handler: () => {
-      return create(ListTagsResponseSchema, { tags });
-    },
-  }),
-
-  mockConnectWeb(TagService)({
-    method: "createTag",
-    handler: (req) => {
-      const newTag = create(TagSchema, {
-        id: crypto.randomUUID(),
-        name: req.name,
-        createdAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
-        updatedAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
-        feedCount: 0n,
-      });
-      tags.push(newTag);
-      return create(CreateTagResponseSchema, { tag: newTag });
-    },
-  }),
-
-  mockConnectWeb(TagService)({
-    method: "deleteTag",
-    handler: (req) => {
-      const index = tags.findIndex((t) => t.id === req.id);
-      if (index !== -1) {
-        tags.splice(index, 1);
-        // Also remove from feeds
-        feeds.forEach((f) => {
-          f.tags = f.tags.filter((t) => t.id !== req.id);
-        });
-        tags.forEach((t) => {
-          const count = feeds.filter((f) =>
-            f.tags.some((ft: Tag) => ft.id === t.id),
-          ).length;
-          t.feedCount = BigInt(count);
-        });
-      }
-      return create(DeleteTagResponseSchema, {});
-    },
-  }),
-
-  mockConnectWeb(FeedService)({
-    method: "setFeedTags",
-    handler: (req) => {
-      const feed = feeds.find((f) => f.id === req.feedId);
-      if (feed) {
-        feed.tags = req.tagIds.map(
-          (id) =>
-            tags.find((t) => t.id === id) ||
-            create(TagSchema, { id, name: "Unknown" }),
-        );
-        tags.forEach((t) => {
-          const count = feeds.filter((f) =>
-            f.tags.some((ft: Tag) => ft.id === t.id),
-          ).length;
-          t.feedCount = BigInt(count);
-        });
-      }
-      return create(SetFeedTagsResponseSchema, {});
-    },
-  }),
-
-  mockConnectWeb(FeedService)({
-    method: "manageFeedTags",
-    handler: (req) => {
-      const addTagIds = req.addTagIds || [];
-      const removeTagIds = req.removeTagIds || [];
-      for (const feedId of req.feedIds || []) {
-        const feed = feeds.find((f) => f.id === feedId);
-        if (feed) {
-          // Remove tags
-          feed.tags = feed.tags.filter(
-            (t: Tag) => !removeTagIds.includes(t.id),
-          );
-          // Add tags
-          for (const tagId of addTagIds) {
-            const tag = tags.find((t: Tag) => t.id === tagId);
-            if (tag && !feed.tags.some((ft: Tag) => ft.id === tagId)) {
-              feed.tags.push(tag);
-            }
-          }
-        }
-      }
-      tags.forEach((t) => {
-        const count = feeds.filter((f) =>
-          f.tags.some((ft: Tag) => ft.id === t.id),
-        ).length;
-        t.feedCount = BigInt(count);
-      });
-      return create(ManageFeedTagsResponseSchema, {});
-    },
-  }),
-
-  mockConnectWeb(FeedService)({
-    method: "listFeedTags",
-    handler: () => {
-      const feedTags: { feedId: string; tagId: string }[] = [];
+  http.delete("*/api/v2/tags/:id", ({ params }) => {
+    const id = String(params.id);
+    const index = tags.findIndex((tag) => tag.id === id);
+    if (index !== -1) {
+      tags.splice(index, 1);
       for (const feed of feeds) {
-        for (const tag of feed.tags) {
-          feedTags.push({
-            feedId: feed.id,
-            tagId: tag.id,
-          });
+        feed.tags = feed.tags.filter((tag) => tag.id !== id);
+      }
+      recalculateFeedCounts();
+    }
+    return HttpResponse.json({});
+  }),
+
+  http.get("*/api/v2/feeds", ({ request }) => {
+    const url = new URL(request.url);
+    const tagId = url.searchParams.get("tagId");
+    const filteredFeeds = tagId
+      ? feeds.filter((feed) => feed.tags.some((tag) => tag.id === tagId))
+      : feeds;
+
+    return HttpResponse.json({ feeds: filteredFeeds });
+  }),
+
+  http.post("*/api/v2/feeds", async ({ request }) => {
+    const body = (await request.json()) as {
+      url: string;
+      title?: string;
+      tagIds?: string[];
+    };
+    const now = "2026-03-01T00:00:00.000Z";
+    const feed: FeedJSON = {
+      id: crypto.randomUUID(),
+      url: body.url,
+      title: body.title || "New Feed",
+      createdAt: now,
+      updatedAt: now,
+      tags: (body.tagIds || []).map(findOrUnknownTag),
+      unreadCount: "0",
+    };
+    feeds.push(feed);
+    recalculateFeedCounts();
+    return HttpResponse.json({ feed });
+  }),
+
+  http.delete("*/api/v2/feeds/:id", ({ params }) => {
+    const id = String(params.id);
+    const index = feeds.findIndex((feed) => feed.id === id);
+    if (index !== -1) {
+      feeds.splice(index, 1);
+      recalculateFeedCounts();
+    }
+
+    return HttpResponse.json({});
+  }),
+
+  http.post("*/api/v2/feeds/refresh", async ({ request }) => {
+    const body = (await request.json()) as { ids?: string[] };
+
+    return HttpResponse.json({
+      results: (body.ids || []).map((id) => ({
+        feedId: id,
+        success: true,
+        newItemsCount: 0,
+      })),
+    });
+  }),
+
+  http.post("*/api/v2/feeds/import-opml", () => {
+    return HttpResponse.json({
+      total: 0,
+      success: 0,
+      skipped: 0,
+      failedFeeds: [],
+    });
+  }),
+
+  http.post("*/api/v2/feeds/export-opml", () => {
+    const opml = `<?xml version="1.0" encoding="UTF-8"?><opml version="2.0"><body>${feeds
+      .map((feed) => `<outline text="${feed.title}" xmlUrl="${feed.url}" />`)
+      .join("")}</body></opml>`;
+    return HttpResponse.json({ opmlContent: btoa(opml) });
+  }),
+
+  http.post("*/api/v2/feeds/suspend", async ({ request }) => {
+    const body = (await request.json()) as {
+      ids?: string[];
+      suspendSeconds?: string;
+    };
+    const nextFetchAt = new Date(
+      Date.now() + Number(body.suspendSeconds || "0") * 1000,
+    ).toISOString();
+    for (const id of body.ids || []) {
+      const feed = feeds.find((candidate) => candidate.id === id);
+      if (feed) feed.nextFetchAt = nextFetchAt;
+    }
+    return HttpResponse.json({});
+  }),
+
+  http.get("*/api/v2/feed-tags", ({ request }) => {
+    const url = new URL(request.url);
+    const feedId = url.searchParams.get("feedId");
+    const tagId = url.searchParams.get("tagId");
+    const feedTags = listFeedTags().filter(
+      (feedTag) =>
+        (feedId === null || feedTag.feedId === feedId) &&
+        (tagId === null || feedTag.tagId === tagId),
+    );
+
+    return HttpResponse.json({ feedTags });
+  }),
+
+  http.post("*/api/v2/feed-tags/manage", async ({ request }) => {
+    const body = (await request.json()) as {
+      feedIds?: string[];
+      addTagIds?: string[];
+      removeTagIds?: string[];
+    };
+    const addTagIds = body.addTagIds || [];
+    const removeTagIds = body.removeTagIds || [];
+    for (const feedId of body.feedIds || []) {
+      const feed = feeds.find((candidate) => candidate.id === feedId);
+      if (!feed) continue;
+      feed.tags = feed.tags.filter((tag) => !removeTagIds.includes(tag.id));
+      for (const tagId of addTagIds) {
+        if (!feed.tags.some((tag) => tag.id === tagId)) {
+          feed.tags.push(findOrUnknownTag(tagId));
         }
       }
-      return create(ListFeedTagsResponseSchema, { feedTags });
-    },
+    }
+    recalculateFeedCounts();
+    return HttpResponse.json({});
   }),
 
-  mockConnectWeb(ItemService)({
-    method: "listItems",
-    handler: (req) => {
-      // Basic mock pagination: pageToken is the index
-      const parsedToken = req.pageToken
-        ? Number.parseInt(req.pageToken, 10)
-        : 0;
-      const start = Number.isNaN(parsedToken) ? 0 : parsedToken;
-      const pageSize = req.pageSize || 100;
+  http.get("*/api/v2/items", ({ request }) => {
+    const url = new URL(request.url);
+    const parsedPageToken = url.searchParams.get("pageToken")
+      ? Number.parseInt(url.searchParams.get("pageToken") ?? "0", 10)
+      : 0;
+    const start = Number.isNaN(parsedPageToken) ? 0 : parsedPageToken;
+    const pageSize = Number.parseInt(
+      url.searchParams.get("pageSize") ?? "100",
+      10,
+    );
+    const isRead = url.searchParams.get("isRead");
+    const filteredItems =
+      isRead === null
+        ? items
+        : items.filter((item) => item.isRead === (isRead === "true"));
+    const paginatedItems = filteredItems.slice(start, start + pageSize);
+    const nextPageToken =
+      filteredItems.length > start + pageSize
+        ? (start + pageSize).toString()
+        : "";
 
-      // Ignore since filter for mock handlers to ensure items are always visible
-      // regardless of the system time and the default "30d" filter.
-      let filteredItems = items;
+    return HttpResponse.json({
+      items: paginatedItems,
+      nextPageToken,
+    });
+  }),
 
-      if (req.isRead !== undefined) {
-        filteredItems = filteredItems.filter((i) => i.isRead === req.isRead);
+  http.get("*/api/v2/items/:id", ({ params }) => {
+    const id = String(params.id);
+    const item = items.find((candidate) => candidate.id === id);
+    if (item) return HttpResponse.json({ item });
+
+    const now = "2026-03-01T00:00:00.000Z";
+    return HttpResponse.json({
+      item: {
+        id,
+        title: `Item ${id}`,
+        publishedAt: now,
+        createdAt: now,
+        isRead: false,
+        description: `<p>Full content for item ${id}</p>`,
+        author: "Mock Author",
+        url: `https://example.com/item${id}`,
+      },
+    });
+  }),
+
+  http.post("*/api/v2/items/status", async ({ request }) => {
+    const body = (await request.json()) as {
+      ids?: string[];
+      isRead?: boolean;
+    };
+    const updatedAt = new Date("2026-03-01T00:00:00Z");
+    for (const id of body.ids || []) {
+      const item = items.find((candidate) => candidate.id === id);
+      if (item && body.isRead !== undefined) item.isRead = body.isRead;
+      if (body.isRead !== undefined) {
+        itemReads.set(id, { isRead: body.isRead, updatedAt });
       }
+    }
 
-      const paginatedResults = filteredItems.slice(start, start + pageSize);
-      const nextPageToken =
-        filteredItems.length > start + pageSize
-          ? (start + pageSize).toString()
-          : "";
-
-      return create(ListItemsResponseSchema, {
-        items: paginatedResults,
-        nextPageToken,
-      });
-    },
+    return HttpResponse.json({});
   }),
 
-  mockConnectWeb(ItemService)({
-    method: "updateItemStatus",
-    handler: (req) => {
-      const updatedAt = new Date("2026-03-01T00:00:00Z");
-      for (const id of req.ids || []) {
-        const item = items.find((i) => i.id === id);
-        if (item) {
-          if (req.isRead !== undefined) {
-            item.isRead = req.isRead;
-          }
-        }
-        if (req.isRead !== undefined) {
-          itemReads.set(id, { isRead: req.isRead, updatedAt });
-        }
-      }
-      return create(UpdateItemStatusResponseSchema, {});
-    },
-  }),
+  http.get("*/api/v2/item-reads", ({ request }) => {
+    const url = new URL(request.url);
+    const since = url.searchParams.get("since");
+    const pageToken = url.searchParams.get("pageToken");
+    const pageSize = Number.parseInt(
+      url.searchParams.get("pageSize") ?? "1000",
+      10,
+    );
+    const start = pageToken ? Number.parseInt(pageToken, 10) : 0;
 
-  mockConnectWeb(ItemService)({
-    method: "getItem",
-    handler: (req) => {
-      const item = items.find((i) => i.id === req.id);
-      if (item) {
-        return create(GetItemResponseSchema, { item });
-      }
-      // Fallback: return a dummy item for unknown IDs to prevent MSW uncaught exceptions
-      const now = new Date("2026-03-01T00:00:00Z");
-      return create(GetItemResponseSchema, {
-        item: create(ItemSchema, {
-          id: req.id,
-          title: `Item ${req.id}`,
-          publishedAt: dateToTimestamp(now),
-          createdAt: dateToTimestamp(now),
-          isRead: false,
-          description: `<p>Full content for item ${req.id}</p>`,
-          author: "Mock Author",
-          url: `https://example.com/item${req.id}`,
-        }),
-      });
-    },
-  }),
-
-  mockConnectWeb(ItemService)({
-    method: "listItemRead",
-    handler: (req) => {
-      let results = Array.from(itemReads.entries()).map(([id, state]) => ({
-        itemId: id,
+    let results: ItemReadJSON[] = Array.from(itemReads.entries()).map(
+      ([itemId, state]) => ({
+        itemId,
         isRead: state.isRead,
-        updatedAt: state.updatedAt,
-      }));
+        updatedAt: state.updatedAt.toISOString(),
+      }),
+    );
 
-      // Sort by updatedAt then itemId for consistent pagination
-      results.sort((a, b) => {
-        const timeDiff = a.updatedAt.getTime() - b.updatedAt.getTime();
-        if (timeDiff !== 0) {
-          return timeDiff;
-        }
-        return a.itemId.localeCompare(b.itemId);
-      });
+    results.sort((a, b) => {
+      const timeDiff =
+        new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime();
+      return timeDiff === 0 ? a.itemId.localeCompare(b.itemId) : timeDiff;
+    });
 
-      if (req.pageToken) {
-        // Simple mock pagination: the token is the index of the first item to return
-        const parsedToken = Number.parseInt(req.pageToken, 10);
-        const start = Number.isNaN(parsedToken) ? 0 : parsedToken;
-        results = results.slice(start);
-      } else if (req.since) {
-        const sinceDate = toDate(req.since);
-        if (sinceDate) {
-          // Use strict ">" cursor to avoid repeatedly returning the last row.
-          results = results.filter((r) => r.updatedAt > sinceDate);
-        }
-      }
-
-      const pageSize = req.pageSize || 1000;
-      const paginatedResults = results.slice(0, pageSize);
-      const nextPageToken =
-        results.length > pageSize
-          ? (
-              (req.pageToken ? Number.parseInt(req.pageToken, 10) : 0) +
-              pageSize
-            ).toString()
-          : "";
-
-      const itemReadsResponse = paginatedResults.map((r) => ({
-        itemId: r.itemId,
-        isRead: r.isRead,
-        updatedAt: dateToTimestamp(r.updatedAt),
-      }));
-
-      return create(ListItemReadResponseSchema, {
-        itemReads: itemReadsResponse,
-        nextPageToken,
-      });
-    },
-  }),
-
-  mockConnectWeb(ItemService)({
-    method: "listURLParsingRules",
-    handler: () => {
-      return create(ListURLParsingRulesResponseSchema, { rules: [] });
-    },
-  }),
-
-  mockConnectWeb(ItemService)({
-    method: "addURLParsingRule",
-    handler: (req) => {
-      if (req.ruleType !== "subdomain" && req.ruleType !== "path") {
-        throw new Error(
-          `invalid rule_type: ${req.ruleType}. Must be 'subdomain' or 'path'`,
+    if (pageToken) {
+      results = results.slice(Number.isNaN(start) ? 0 : start);
+    } else if (since) {
+      const sinceDate = new Date(since);
+      if (!Number.isNaN(sinceDate.getTime())) {
+        results = results.filter(
+          (itemRead) => new Date(itemRead.updatedAt) > sinceDate,
         );
       }
-      return create(AddURLParsingRuleResponseSchema, {
-        rule: create(URLParsingRuleSchema, {
-          id: Math.random().toString(36).substring(7),
-          domain: req.domain,
-          ruleType: req.ruleType,
-          pattern: req.pattern,
-        }),
-      });
-    },
+    }
+
+    const paginatedResults = results.slice(0, pageSize);
+    const nextPageToken =
+      results.length > pageSize
+        ? ((Number.isNaN(start) ? 0 : start) + pageSize).toString()
+        : "";
+
+    return HttpResponse.json({
+      itemReads: paginatedResults,
+      nextPageToken,
+    });
   }),
 
-  mockConnectWeb(ItemService)({
-    method: "deleteURLParsingRule",
-    handler: () => {
-      return create(DeleteURLParsingRuleResponseSchema, {});
-    },
+  http.get("*/api/v2/url-rules", () => {
+    return HttpResponse.json({ rules: urlRules });
   }),
 
-  mockConnectWeb(ItemService)({
-    method: "listItemBlockRules",
-    handler: () => {
-      return create(ListItemBlockRulesResponseSchema, { rules: [] });
-    },
+  http.post("*/api/v2/url-rules", async ({ request }) => {
+    const body = (await request.json()) as {
+      domain: string;
+      ruleType: string;
+      pattern: string;
+    };
+    if (body.ruleType !== "subdomain" && body.ruleType !== "path") {
+      return HttpResponse.json({ error: "invalid ruleType" }, { status: 400 });
+    }
+    const rule: URLRuleJSON = {
+      id: Math.random().toString(36).substring(7),
+      domain: body.domain,
+      ruleType: body.ruleType,
+      pattern: body.pattern,
+    };
+    urlRules.push(rule);
+    return HttpResponse.json({ rule });
   }),
 
-  mockConnectWeb(ItemService)({
-    method: "addItemBlockRules",
-    handler: (req) => {
-      for (const [i, r] of req.rules.entries()) {
-        if (
-          !["user", "domain", "user_domain", "keyword"].includes(r.ruleType)
-        ) {
-          throw new Error(
-            `invalid rule_type at index ${i}: ${r.ruleType}. Must be 'user', 'domain', 'user_domain', or 'keyword'`,
-          );
-        }
+  http.delete("*/api/v2/url-rules/:id", ({ params }) => {
+    const id = String(params.id);
+    const index = urlRules.findIndex((rule) => rule.id === id);
+    if (index !== -1) urlRules.splice(index, 1);
+    return HttpResponse.json({});
+  }),
+
+  http.get("*/api/v2/block-rules", () => {
+    return HttpResponse.json({ rules: blockRules });
+  }),
+
+  http.post("*/api/v2/block-rules", async ({ request }) => {
+    const body = (await request.json()) as {
+      rules?: Array<{ ruleType: string; value: string; domain?: string }>;
+    };
+    for (const [i, rule] of (body.rules || []).entries()) {
+      if (
+        !["user", "domain", "user_domain", "keyword"].includes(rule.ruleType)
+      ) {
+        return HttpResponse.json(
+          { error: `invalid ruleType at index ${i}` },
+          { status: 400 },
+        );
       }
-      return create(AddItemBlockRulesResponseSchema, {});
-    },
+    }
+    for (const rule of body.rules || []) {
+      blockRules.push({
+        id: Math.random().toString(36).substring(7),
+        ruleType: rule.ruleType,
+        value: rule.value,
+        domain: rule.domain,
+      });
+    }
+    return HttpResponse.json({});
   }),
 
-  mockConnectWeb(ItemService)({
-    method: "deleteItemBlockRule",
-    handler: () => {
-      return create(DeleteItemBlockRuleResponseSchema, {});
-    },
+  http.delete("*/api/v2/block-rules/:id", ({ params }) => {
+    const id = String(params.id);
+    const index = blockRules.findIndex((rule) => rule.id === id);
+    if (index !== -1) blockRules.splice(index, 1);
+    return HttpResponse.json({});
   }),
 ];

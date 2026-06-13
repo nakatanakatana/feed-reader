@@ -1,10 +1,10 @@
-import { createClient } from "@connectrpc/connect";
 import { createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
-import { FeedService } from "../gen/feed/v1/feed_pb";
+import { apiClient } from "../lib/api/client";
+import { mapImportOpmlRequest } from "../lib/api/mutation-mappers";
+import type { components } from "../lib/api/types";
 import { queryClient } from "../lib/query";
-import { useTransport } from "../lib/transport-context";
 import { ActionButton } from "./ui/ActionButton";
 import { LoadingState } from "./ui/LoadingState";
 import { Modal } from "./ui/Modal";
@@ -26,10 +26,9 @@ interface ImportResult {
   failedFeeds: ImportFailedFeed[];
 }
 
-export function ImportOpmlModal(props: ImportOpmlModalProps) {
-  const transport = useTransport();
-  const client = createClient(FeedService, transport);
+type ImportOpmlResponse = components["schemas"]["ImportOpmlResponse"];
 
+export function ImportOpmlModal(props: ImportOpmlModalProps) {
   const [isPending, setIsPending] = createSignal(false);
   const [error, setError] = createSignal<string | null>(null);
   const [result, setResult] = createSignal<ImportResult | null>(null);
@@ -58,9 +57,10 @@ export function ImportOpmlModal(props: ImportOpmlModalProps) {
         reader.readAsArrayBuffer(file);
       });
 
-      const res = await client.importOpml({
-        opmlContent: content,
-      });
+      const res = await apiClient.post<ImportOpmlResponse>(
+        "/feeds/import-opml",
+        mapImportOpmlRequest(content),
+      );
       setResult({
         total: res.total,
         success: res.success,
