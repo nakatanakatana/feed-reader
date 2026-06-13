@@ -8,22 +8,13 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { routeTree } from "../routeTree.gen";
 import "../styles.css";
-import { create } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
-import {
-  ItemService,
-  ListItemBlockRulesResponseSchema,
-  ListURLParsingRulesResponseSchema,
-} from "../gen/item/v1/item_pb";
-import { queryClient, transport } from "../lib/query";
-import { TransportProvider } from "../lib/transport-context";
+import { HttpResponse, http } from "msw";
+import { queryClient } from "../lib/query";
 import { worker } from "../mocks/browser";
-import { mockConnectWeb } from "../mocks/connect";
 
 // Unmock solid-router to test active link logic
 vi.unmock("@tanstack/solid-router");
-
-const mockItemService = mockConnectWeb(ItemService);
 
 describe("Block Management Navigation", () => {
   let dispose: () => void;
@@ -37,14 +28,8 @@ describe("Block Management Navigation", () => {
 
   it("should have navigation links for URL Rules and Block Rules", async () => {
     worker.use(
-      mockItemService({
-        method: "listURLParsingRules",
-        handler: () => create(ListURLParsingRulesResponseSchema, { rules: [] }),
-      }),
-      mockItemService({
-        method: "listItemBlockRules",
-        handler: () => create(ListItemBlockRulesResponseSchema, { rules: [] }),
-      }),
+      http.get("*/api/v2/url-rules", () => HttpResponse.json({ rules: [] })),
+      http.get("*/api/v2/block-rules", () => HttpResponse.json({ rules: [] })),
     );
 
     const history = createMemoryHistory({ initialEntries: ["/"] });
@@ -52,11 +37,9 @@ describe("Block Management Navigation", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
       ),
       document.body,
     );

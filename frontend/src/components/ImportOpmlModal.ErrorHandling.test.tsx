@@ -1,10 +1,8 @@
-import { create } from "@bufbuild/protobuf";
-import { createRouterTransport } from "@connectrpc/connect";
+import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { FeedService, ImportOpmlResponseSchema } from "../gen/feed/v1/feed_pb";
-import { TransportProvider } from "../lib/transport-context";
+import { worker } from "../mocks/browser";
 import { ImportOpmlModal } from "./ImportOpmlModal";
 
 describe("ImportOpmlModal Error Handling", () => {
@@ -17,31 +15,28 @@ describe("ImportOpmlModal Error Handling", () => {
   });
 
   it("renders a list of failed feeds with error messages", async () => {
-    const transport = createRouterTransport(({ service }) => {
-      service(FeedService, {
-        async importOpml() {
-          return create(ImportOpmlResponseSchema, {
-            total: 3,
-            success: 1,
-            skipped: 0,
-            failedFeeds: [
-              { url: "https://example.com/fail1", errorMessage: "Invalid URL" },
-              {
-                url: "https://example.com/fail2",
-                errorMessage: "Network timeout",
-              },
-            ],
-          });
-        },
-      });
-    });
+    worker.use(
+      http.post("*/api/v2/feeds/import-opml", () =>
+        HttpResponse.json({
+          total: 3,
+          success: 1,
+          skipped: 0,
+          failedFeeds: [
+            {
+              url: "https://example.com/fail1",
+              errorMessage: "Invalid URL",
+            },
+            {
+              url: "https://example.com/fail2",
+              errorMessage: "Network timeout",
+            },
+          ],
+        }),
+      ),
+    );
 
     dispose = render(
-      () => (
-        <TransportProvider transport={transport}>
-          <ImportOpmlModal isOpen={true} onClose={() => {}} />
-        </TransportProvider>
-      ),
+      () => <ImportOpmlModal isOpen={true} onClose={() => {}} />,
       document.body,
     );
 

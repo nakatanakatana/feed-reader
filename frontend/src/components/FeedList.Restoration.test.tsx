@@ -1,4 +1,3 @@
-import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
@@ -9,17 +8,19 @@ import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import {
-  ListFeedsResponseSchema,
-  ListFeedTagsResponseSchema,
-} from "../gen/feed/v1/feed_pb";
-import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
 import { feedStore } from "../lib/feed-store";
-import { queryClient, transport } from "../lib/query";
+import { queryClient } from "../lib/query";
 import { STORAGE_KEYS } from "../lib/storage-utils";
-import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
 import { routeTree } from "../routeTree.gen";
+import {
+  create,
+  ListFeedsResponseSchema,
+  ListFeedTagsResponseSchema,
+  ListTagsResponseSchema,
+  TagSchema,
+  toJson,
+} from "../test-utils/json-identity";
 
 describe("FeedList Restoration", () => {
   let dispose: () => void;
@@ -31,7 +32,7 @@ describe("FeedList Restoration", () => {
     feedStore.setSelectedTagId(undefined);
 
     worker.use(
-      http.all("*/feed.v1.FeedService/ListFeeds", () => {
+      http.all("*/api/v2/feeds", () => {
         return HttpResponse.json(
           toJson(
             ListFeedsResponseSchema,
@@ -39,17 +40,17 @@ describe("FeedList Restoration", () => {
           ),
         );
       }),
-      http.all("*/tag.v1.TagService/ListTags", () => {
+      http.all("*/api/v2/tags", () => {
         return HttpResponse.json(
           toJson(
             ListTagsResponseSchema,
             create(ListTagsResponseSchema, {
-              tags: [{ id: "tag-1", name: "News" }],
+              tags: [create(TagSchema, { id: "tag-1", name: "News" })],
             }),
           ),
         );
       }),
-      http.all("*/feed.v1.FeedService/ListFeedTags", () => {
+      http.all("*/api/v2/feed-tags", () => {
         return HttpResponse.json(
           toJson(
             ListFeedTagsResponseSchema,
@@ -84,11 +85,9 @@ describe("FeedList Restoration", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
       ),
       document.body,
     );

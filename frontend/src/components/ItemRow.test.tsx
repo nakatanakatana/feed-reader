@@ -1,20 +1,20 @@
-import { create, toJson } from "@bufbuild/protobuf";
 import { createQuery, QueryClientProvider } from "@tanstack/solid-query";
 import { HttpResponse, http } from "msw";
 import { Show } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page, userEvent } from "vitest/browser";
-import {
-  ItemSchema,
-  ListItemsResponseSchema,
-  UpdateItemStatusResponseSchema,
-} from "../gen/item/v1/item_pb";
 import { getItemsQueryOptions } from "../lib/db";
 import { dateToTimestamp } from "../lib/item-utils";
-import { queryClient, transport } from "../lib/query";
-import { TransportProvider } from "../lib/transport-context";
+import { queryClient } from "../lib/query";
 import { worker } from "../mocks/browser";
+import {
+  create,
+  ItemSchema,
+  ListItemsResponseSchema,
+  toJson,
+  UpdateItemStatusResponseSchema,
+} from "../test-utils/json-identity";
 import { ItemRow } from "./ItemRow";
 
 describe("ItemRow", () => {
@@ -39,11 +39,9 @@ describe("ItemRow", () => {
   it("renders item title, description and metadata", () => {
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ItemRow item={mockItem} onClick={() => {}} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <ItemRow item={mockItem} onClick={() => {}} />
+        </QueryClientProvider>
       ),
       document.body,
     );
@@ -64,11 +62,9 @@ describe("ItemRow", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ItemRow item={readItem} onClick={() => {}} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <ItemRow item={readItem} onClick={() => {}} />
+        </QueryClientProvider>
       ),
       document.body,
     );
@@ -80,11 +76,9 @@ describe("ItemRow", () => {
     const onClick = vi.fn();
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ItemRow item={mockItem} onClick={onClick} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <ItemRow item={mockItem} onClick={onClick} />
+        </QueryClientProvider>
       ),
       document.body,
     );
@@ -100,11 +94,9 @@ describe("ItemRow", () => {
     const onClick = vi.fn();
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ItemRow item={mockItem} onClick={onClick} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <ItemRow item={mockItem} onClick={onClick} />
+        </QueryClientProvider>
       ),
       document.body,
     );
@@ -138,7 +130,7 @@ describe("ItemRow", () => {
 
     let updateCalled = false;
     worker.use(
-      http.all("*/item.v1.ItemService/ListItems", () => {
+      http.all("*/api/v2/items", () => {
         return HttpResponse.json(
           toJson(
             ListItemsResponseSchema,
@@ -155,24 +147,21 @@ describe("ItemRow", () => {
           ),
         );
       }),
-      http.post(
-        "*/item.v1.ItemService/UpdateItemStatus",
-        async ({ request }) => {
-          const body = (await request.json()) as {
-            ids: string[];
-            isRead: boolean;
-          };
-          if (body.ids.includes("1") && body.isRead === true) {
-            updateCalled = true;
-          }
-          return HttpResponse.json(
-            toJson(
-              UpdateItemStatusResponseSchema,
-              create(UpdateItemStatusResponseSchema, {}),
-            ),
-          );
-        },
-      ),
+      http.post("*/api/v2/items/status", async ({ request }) => {
+        const body = (await request.json()) as {
+          ids: string[];
+          isRead: boolean;
+        };
+        if (body.ids.includes("1") && body.isRead === true) {
+          updateCalled = true;
+        }
+        return HttpResponse.json(
+          toJson(
+            UpdateItemStatusResponseSchema,
+            create(UpdateItemStatusResponseSchema, {}),
+          ),
+        );
+      }),
     );
 
     const TestObserved = () => {
@@ -186,11 +175,9 @@ describe("ItemRow", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <TestObserved />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <TestObserved />
+        </QueryClientProvider>
       ),
       document.body,
     );

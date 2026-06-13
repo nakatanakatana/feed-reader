@@ -1,4 +1,3 @@
-import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
@@ -10,17 +9,18 @@ import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
+import { dateToTimestamp } from "../lib/item-utils";
+import { queryClient } from "../lib/query";
+import { worker } from "../mocks/browser";
+import { routeTree } from "../routeTree.gen";
 import {
+  create,
   FeedSchema,
   ListFeedsResponseSchema,
   ListFeedTagsResponseSchema,
-} from "../gen/feed/v1/feed_pb";
-import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
-import { dateToTimestamp } from "../lib/item-utils";
-import { queryClient, transport } from "../lib/query";
-import { TransportProvider } from "../lib/transport-context";
-import { worker } from "../mocks/browser";
-import { routeTree } from "../routeTree.gen";
+  ListTagsResponseSchema,
+  toJson,
+} from "../test-utils/json-identity";
 
 // Mock Link from solid-router
 
@@ -38,16 +38,14 @@ describe("FeedList Sorting", () => {
   });
 
   const TestWrapper = (props: { children: JSX.Element }) => (
-    <TransportProvider transport={transport}>
-      <QueryClientProvider client={queryClient}>
-        {props.children}
-      </QueryClientProvider>
-    </TransportProvider>
+    <QueryClientProvider client={queryClient}>
+      {props.children}
+    </QueryClientProvider>
   );
 
   it("sorts feeds correctly by title", async () => {
     worker.use(
-      http.all("*/feed.v1.FeedService/ListFeeds", () => {
+      http.all("*/api/v2/feeds", () => {
         const msg = create(ListFeedsResponseSchema, {
           feeds: [
             create(FeedSchema, {
@@ -72,7 +70,7 @@ describe("FeedList Sorting", () => {
         });
         return HttpResponse.json(toJson(ListFeedsResponseSchema, msg));
       }),
-      http.all("*/tag.v1.TagService/ListTags", () => {
+      http.all("*/api/v2/tags", () => {
         return HttpResponse.json(
           toJson(
             ListTagsResponseSchema,
@@ -80,7 +78,7 @@ describe("FeedList Sorting", () => {
           ),
         );
       }),
-      http.all("*/feed.v1.FeedService/ListFeedTags", () => {
+      http.all("*/api/v2/feed-tags", () => {
         return HttpResponse.json(
           toJson(
             ListFeedTagsResponseSchema,
@@ -151,7 +149,7 @@ describe("FeedList Sorting", () => {
 
   it("sorts feeds correctly by last fetched", async () => {
     worker.use(
-      http.all("*/feed.v1.FeedService/ListFeeds", () => {
+      http.all("*/api/v2/feeds", () => {
         const msg = create(ListFeedsResponseSchema, {
           feeds: [
             create(FeedSchema, {
@@ -191,7 +189,7 @@ describe("FeedList Sorting", () => {
         });
         return HttpResponse.json(toJson(ListFeedsResponseSchema, msg));
       }),
-      http.all("*/tag.v1.TagService/ListTags", () => {
+      http.all("*/api/v2/tags", () => {
         return HttpResponse.json(
           toJson(
             ListTagsResponseSchema,
@@ -199,7 +197,7 @@ describe("FeedList Sorting", () => {
           ),
         );
       }),
-      http.all("*/feed.v1.FeedService/ListFeedTags", () => {
+      http.all("*/api/v2/feed-tags", () => {
         return HttpResponse.json(
           toJson(
             ListFeedTagsResponseSchema,

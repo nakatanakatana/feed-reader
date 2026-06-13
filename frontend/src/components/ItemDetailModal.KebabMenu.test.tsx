@@ -1,21 +1,21 @@
-import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import { HttpResponse, http } from "msw";
 import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
+import { queryClient } from "../lib/query";
+import { ToastProvider } from "../lib/toast";
+import { worker } from "../mocks/browser";
 import {
   AddItemBlockRulesResponseSchema,
+  create,
   GetItemResponseSchema,
   ItemSchema,
   ListURLParsingRulesResponseSchema,
+  toJson,
   URLParsingRuleSchema,
-} from "../gen/item/v1/item_pb";
-import { queryClient, transport } from "../lib/query";
-import { ToastProvider } from "../lib/toast";
-import { TransportProvider } from "../lib/transport-context";
-import { worker } from "../mocks/browser";
+} from "../test-utils/json-identity";
 import { ItemDetailModal } from "./ItemDetailModal";
 
 describe("ItemDetailModal KebabMenu", () => {
@@ -32,7 +32,7 @@ describe("ItemDetailModal KebabMenu", () => {
     url = "https://example.com/article",
   ) => {
     worker.use(
-      http.all("*/item.v1.ItemService/GetItem", () => {
+      http.all("*/api/v2/items/:id", () => {
         const msg = create(GetItemResponseSchema, {
           item: create(ItemSchema, {
             id: itemId,
@@ -42,7 +42,7 @@ describe("ItemDetailModal KebabMenu", () => {
         });
         return HttpResponse.json(toJson(GetItemResponseSchema, msg));
       }),
-      http.all("*/item.v1.ItemService/ListURLParsingRules", () => {
+      http.all("*/api/v2/url-rules", () => {
         const msg = create(ListURLParsingRulesResponseSchema, {
           rules: [
             create(URLParsingRuleSchema, {
@@ -63,27 +63,20 @@ describe("ItemDetailModal KebabMenu", () => {
   const setupMutationMock = () => {
     const addItemBlockRulesMock = vi.fn();
     worker.use(
-      http.all(
-        "*/item.v1.ItemService/AddItemBlockRules",
-        async ({ request }) => {
-          const body = await request.json();
-          addItemBlockRulesMock(body);
-          const msg = create(AddItemBlockRulesResponseSchema, {});
-          return HttpResponse.json(
-            toJson(AddItemBlockRulesResponseSchema, msg),
-          );
-        },
-      ),
+      http.all("*/api/v2/block-rules", async ({ request }) => {
+        const body = await request.json();
+        addItemBlockRulesMock(body);
+        const msg = create(AddItemBlockRulesResponseSchema, {});
+        return HttpResponse.json(toJson(AddItemBlockRulesResponseSchema, msg));
+      }),
     );
     return addItemBlockRulesMock;
   };
 
   const Wrapper = (props: { children: JSX.Element }) => (
-    <TransportProvider transport={transport}>
-      <QueryClientProvider client={queryClient}>
-        <ToastProvider>{props.children}</ToastProvider>
-      </QueryClientProvider>
-    </TransportProvider>
+    <QueryClientProvider client={queryClient}>
+      <ToastProvider>{props.children}</ToastProvider>
+    </QueryClientProvider>
   );
 
   it("renders the kebab menu in the header", async () => {

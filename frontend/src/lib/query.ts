@@ -1,5 +1,3 @@
-import { Code, ConnectError, type Interceptor } from "@connectrpc/connect";
-import { createConnectTransport } from "@connectrpc/connect-web";
 import { MutationCache, QueryCache, QueryClient } from "@tanstack/solid-query";
 import { toast } from "./toast-store";
 
@@ -20,37 +18,35 @@ const isToastEligible = (err: unknown): boolean => {
   );
 };
 
-export const errorInterceptor: Interceptor = (next) => async (req) => {
+export type RequestMiddleware = (
+  next: (req: unknown) => Promise<unknown>,
+) => (req: unknown) => Promise<unknown>;
+
+export const errorInterceptor: RequestMiddleware = (next) => async (req) => {
   try {
     return await next(req);
   } catch (err) {
-    // Only mark genuine transport/network failures or server unavailability for the global toast.
+    // Only mark genuine network failures or server unavailability for the global toast.
     // Application-level errors (like permission or validation) should be handled locally.
-    const connectErr = ConnectError.from(err);
     const isNetworkError =
       err instanceof TypeError ||
       (typeof DOMException !== "undefined" && err instanceof DOMException);
+    const code =
+      typeof err === "object" && err !== null && "code" in err
+        ? String(Reflect.get(err, "code"))
+        : "";
 
-    if (
-      connectErr.code === Code.Unavailable ||
-      (connectErr.code === Code.Unknown && isNetworkError)
-    ) {
+    if (code === "unavailable" || isNetworkError) {
       markAsToastEligible(err);
     }
     throw err;
   }
 };
 
-export const transport = createConnectTransport({
-  baseUrl: "/api",
-  useHttpGet: true,
-  interceptors: [errorInterceptor],
-});
-
 export const queryClient = new QueryClient({
   queryCache: new QueryCache({
     onError: (err, query) => {
-      // Only show toast for errors marked by the interceptor (transport errors).
+      // Only show toast for errors marked by the interceptor.
       if (!isToastEligible(err)) return;
 
       // TanStack Query v5 QueryCache.onError fires for every failed attempt.
@@ -63,7 +59,7 @@ export const queryClient = new QueryClient({
   mutationCache: new MutationCache({
     onError: (err) => {
       // Mutations usually don't retry by default or behave differently,
-      // but we still check the marker to ensure it's a transport error.
+      // but we still check the marker to ensure it's a network-level error.
       if (!isToastEligible(err)) return;
       toast.show(DEFAULT_ERROR_MESSAGE, "error");
     },

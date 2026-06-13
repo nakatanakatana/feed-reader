@@ -1,4 +1,3 @@
-import { Code, ConnectError } from "@connectrpc/connect";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import * as queryLib from "./query";
 import { ERROR_TOAST_ELIGIBLE, errorInterceptor } from "./query";
@@ -18,13 +17,11 @@ describe("Query Setup", () => {
     expect(queryLib.queryClient).toBeDefined();
   });
 
-  it("should export a configured transport", () => {
-    expect(queryLib.transport).toBeDefined();
-  });
-
   describe("errorInterceptor", () => {
-    it("should mark transport errors with ERROR_TOAST_ELIGIBLE and not call toast.show directly", async () => {
-      const error = new ConnectError("unavailable", Code.Unavailable);
+    it("should mark network errors with ERROR_TOAST_ELIGIBLE and not call toast.show directly", async () => {
+      const error = Object.assign(new Error("unavailable"), {
+        code: "unavailable",
+      });
       const next = vi.fn().mockRejectedValue(error);
       const req = {
         url: "/test",
@@ -44,7 +41,9 @@ describe("Query Setup", () => {
     });
 
     it("should NOT mark application errors (e.g. PermissionDenied)", async () => {
-      const error = new ConnectError("denied", Code.PermissionDenied);
+      const error = Object.assign(new Error("denied"), {
+        code: "permission_denied",
+      });
       const next = vi.fn().mockRejectedValue(error);
       const req = {
         url: "/test",
@@ -142,7 +141,7 @@ describe("Query Setup", () => {
     expect(toast.show).toHaveBeenCalledTimes(1);
   });
 
-  it("should not trigger toast for non-transport errors", () => {
+  it("should not trigger toast for application errors", () => {
     const queryCache = queryLib.queryClient.getQueryCache();
     const appError = new Error("application error");
 

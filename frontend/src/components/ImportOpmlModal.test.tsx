@@ -1,10 +1,8 @@
-import { create } from "@bufbuild/protobuf";
-import { createRouterTransport } from "@connectrpc/connect";
+import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { FeedService, ImportOpmlResponseSchema } from "../gen/feed/v1/feed_pb";
-import { TransportProvider } from "../lib/transport-context";
+import { worker } from "../mocks/browser";
 import { ImportOpmlModal } from "./ImportOpmlModal";
 
 describe("ImportOpmlModal", () => {
@@ -17,25 +15,21 @@ describe("ImportOpmlModal", () => {
   });
 
   it("handles successful OPML import", async () => {
-    const transport = createRouterTransport(({ service }) => {
-      service(FeedService, {
-        async importOpml() {
-          return create(ImportOpmlResponseSchema, {
-            total: 10,
-            success: 8,
-            skipped: 2,
-            failedFeeds: [],
-          });
-        },
-      });
-    });
+    const importSpy = vi.fn();
+    worker.use(
+      http.post("*/api/v2/feeds/import-opml", async ({ request }) => {
+        importSpy(await request.json());
+        return HttpResponse.json({
+          total: 10,
+          success: 8,
+          skipped: 2,
+          failedFeeds: [],
+        });
+      }),
+    );
 
     dispose = render(
-      () => (
-        <TransportProvider transport={transport}>
-          <ImportOpmlModal isOpen={true} onClose={() => {}} />
-        </TransportProvider>
-      ),
+      () => <ImportOpmlModal isOpen={true} onClose={() => {}} />,
       document.body,
     );
 
@@ -65,23 +59,26 @@ describe("ImportOpmlModal", () => {
     await expect.element(page.getByText("Total: 10")).toBeInTheDocument();
     await expect.element(page.getByText("Success: 8")).toBeInTheDocument();
     await expect.element(page.getByText("Skipped: 2")).toBeInTheDocument();
+    expect(importSpy).toHaveBeenCalledWith({
+      opmlContent: "PG9wbWw+PGJvZHk+PC9ib2R5Pjwvb3BtbD4=",
+    });
   });
 
   it("handles import error", async () => {
-    const transport = createRouterTransport(({ service }) => {
-      service(FeedService, {
-        async importOpml() {
-          throw new Error("Invalid OPML format");
-        },
-      });
-    });
+    worker.use(
+      http.post("*/api/v2/feeds/import-opml", () =>
+        HttpResponse.json(
+          {
+            code: "internal",
+            message: "Invalid OPML format",
+          },
+          { status: 500 },
+        ),
+      ),
+    );
 
     dispose = render(
-      () => (
-        <TransportProvider transport={transport}>
-          <ImportOpmlModal isOpen={true} onClose={() => {}} />
-        </TransportProvider>
-      ),
+      () => <ImportOpmlModal isOpen={true} onClose={() => {}} />,
       document.body,
     );
 
@@ -96,7 +93,7 @@ describe("ImportOpmlModal", () => {
     input.dispatchEvent(new Event("change", { bubbles: true }));
 
     await expect
-      .element(page.getByText(/Error: .*(Invalid OPML format|internal error)/))
+      .element(page.getByText("Error: Invalid OPML format"))
       .toBeInTheDocument();
   });
 });

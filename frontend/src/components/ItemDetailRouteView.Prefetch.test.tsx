@@ -1,4 +1,3 @@
-import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
@@ -9,20 +8,21 @@ import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
+import { dateToTimestamp } from "../lib/item-utils";
+import { queryClient } from "../lib/query";
+import { ToastProvider } from "../lib/toast";
+import { worker } from "../mocks/browser";
+import { parseRequestMessage } from "../mocks/http";
+import { routeTree } from "../routeTree.gen";
 import {
+  create,
   GetItemResponseSchema,
   ItemSchema,
+  ListFeedTagsResponseSchema,
   ListItemsResponseSchema,
-} from "../gen/item/v1/item_pb";
-import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
-import { dateToTimestamp } from "../lib/item-utils";
-import { queryClient, transport } from "../lib/query";
-import { ToastProvider } from "../lib/toast";
-import { TransportProvider } from "../lib/transport-context";
-import { worker } from "../mocks/browser";
-import { parseConnectMessage } from "../mocks/connect";
-import { routeTree } from "../routeTree.gen";
+  ListTagsResponseSchema,
+  toJson,
+} from "../test-utils/json-identity";
 
 describe("ItemDetailRouteView Prefetching", () => {
   let dispose: () => void;
@@ -49,14 +49,14 @@ describe("ItemDetailRouteView Prefetching", () => {
     );
 
     worker.use(
-      http.all("*/item.v1.ItemService/ListItems", () => {
+      http.all("*/api/v2/items", () => {
         const msg = create(ListItemsResponseSchema, {
           items: mockItems,
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),
-      http.all("*/item.v1.ItemService/GetItem", async ({ request }) => {
-        const body = (await parseConnectMessage(request)) as { id: string };
+      http.all("*/api/v2/items/:id", async ({ request }) => {
+        const body = (await parseRequestMessage(request)) as { id: string };
         const msg = create(GetItemResponseSchema, {
           item: create(ItemSchema, {
             id: body.id,
@@ -66,7 +66,7 @@ describe("ItemDetailRouteView Prefetching", () => {
         });
         return HttpResponse.json(toJson(GetItemResponseSchema, msg));
       }),
-      http.all("*/tag.v1.TagService/ListTags", () => {
+      http.all("*/api/v2/tags", () => {
         return HttpResponse.json(
           toJson(
             ListTagsResponseSchema,
@@ -74,7 +74,7 @@ describe("ItemDetailRouteView Prefetching", () => {
           ),
         );
       }),
-      http.all("*/feed.v1.FeedService/ListFeedTags", () => {
+      http.all("*/api/v2/feed-tags", () => {
         return HttpResponse.json(
           toJson(
             ListFeedTagsResponseSchema,
@@ -96,13 +96,11 @@ describe("ItemDetailRouteView Prefetching", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ToastProvider>
-              <RouterProvider router={router} />
-            </ToastProvider>
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <ToastProvider>
+            <RouterProvider router={router} />
+          </ToastProvider>
+        </QueryClientProvider>
       ),
       document.body,
     );

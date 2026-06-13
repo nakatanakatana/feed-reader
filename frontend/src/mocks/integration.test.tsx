@@ -1,4 +1,3 @@
-import { createConnectTransport } from "@connectrpc/connect-web";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
@@ -9,7 +8,6 @@ import { render } from "solid-js/web";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { page } from "vitest/browser";
 import { queryClient } from "../lib/query";
-import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
 
 describe("MSW Integration", () => {
@@ -26,20 +24,14 @@ describe("MSW Integration", () => {
 
   it("intercepts Connect RPC requests via MSW in a component", async () => {
     // 実際のネットワークを使うトランスポートを作成（MSWがこれをインターセプトする）
-    const transport = createConnectTransport({
-      baseUrl: "http://localhost:3000",
-    });
-
     const history = createMemoryHistory({ initialEntries: ["/feeds"] });
     const router = createRouter({ routeTree, history });
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
       ),
       document.body,
     );

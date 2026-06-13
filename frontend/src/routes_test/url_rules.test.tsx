@@ -1,32 +1,21 @@
-import { create } from "@bufbuild/protobuf";
 import {
   createMemoryHistory,
   createRouter,
   RouterProvider,
 } from "@tanstack/solid-router";
+import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { routeTree } from "../routeTree.gen";
 import "../styles.css";
 import { QueryClientProvider } from "@tanstack/solid-query";
-import {
-  AddURLParsingRuleResponseSchema,
-  DeleteURLParsingRuleResponseSchema,
-  ItemService,
-  ListURLParsingRulesResponseSchema,
-  type URLParsingRule,
-  URLParsingRuleSchema,
-} from "../gen/item/v1/item_pb";
-import { queryClient, transport } from "../lib/query";
-import { TransportProvider } from "../lib/transport-context";
+import type { URLParsingRule } from "../lib/block-db";
+import { queryClient } from "../lib/query";
 import { worker } from "../mocks/browser";
-import { mockConnectWeb } from "../mocks/connect";
 
 // Unmock solid-router to test active link logic
 vi.unmock("@tanstack/solid-router");
-
-const mockItemService = mockConnectWeb(ItemService);
 
 describe("URL Rules Page", () => {
   let dispose: () => void;
@@ -39,25 +28,22 @@ describe("URL Rules Page", () => {
 
   it("should fetch and display URL parsing rules", async () => {
     const rules = [
-      create(URLParsingRuleSchema, {
+      {
         id: "1",
         domain: "example.com",
         ruleType: "subdomain",
         pattern: "test",
-      }),
-      create(URLParsingRuleSchema, {
+      },
+      {
         id: "2",
         domain: "test.com",
         ruleType: "path",
         pattern: "/abc",
-      }),
+      },
     ];
 
     worker.use(
-      mockItemService({
-        method: "listURLParsingRules",
-        handler: () => create(ListURLParsingRulesResponseSchema, { rules }),
-      }),
+      http.get("*/api/v2/url-rules", () => HttpResponse.json({ rules })),
     );
 
     const history = createMemoryHistory({ initialEntries: ["/url-rules"] });
@@ -65,11 +51,9 @@ describe("URL Rules Page", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
       ),
       document.body,
     );
@@ -82,22 +66,17 @@ describe("URL Rules Page", () => {
     const rules: URLParsingRule[] = [];
 
     worker.use(
-      mockItemService({
-        method: "listURLParsingRules",
-        handler: () => create(ListURLParsingRulesResponseSchema, { rules }),
-      }),
-      mockItemService({
-        method: "addURLParsingRule",
-        handler: (req) => {
-          const newRule = create(URLParsingRuleSchema, {
-            id: "3",
-            domain: req.domain,
-            ruleType: req.ruleType,
-            pattern: req.pattern,
-          });
-          rules.push(newRule);
-          return create(AddURLParsingRuleResponseSchema, { rule: newRule });
-        },
+      http.get("*/api/v2/url-rules", () => HttpResponse.json({ rules })),
+      http.post("*/api/v2/url-rules", async ({ request }) => {
+        const req = (await request.json()) as Omit<URLParsingRule, "id">;
+        const newRule = {
+          id: "3",
+          domain: req.domain,
+          ruleType: req.ruleType,
+          pattern: req.pattern,
+        };
+        rules.push(newRule);
+        return HttpResponse.json({ rule: newRule });
       }),
     );
 
@@ -106,11 +85,9 @@ describe("URL Rules Page", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
       ),
       document.body,
     );
@@ -133,25 +110,19 @@ describe("URL Rules Page", () => {
 
   it("should allow deleting a URL parsing rule", async () => {
     let rules = [
-      create(URLParsingRuleSchema, {
+      {
         id: "1",
         domain: "example.com",
         ruleType: "subdomain",
         pattern: "test",
-      }),
+      },
     ];
 
     worker.use(
-      mockItemService({
-        method: "listURLParsingRules",
-        handler: () => create(ListURLParsingRulesResponseSchema, { rules }),
-      }),
-      mockItemService({
-        method: "deleteURLParsingRule",
-        handler: (req) => {
-          rules = rules.filter((r) => r.id !== req.id);
-          return create(DeleteURLParsingRuleResponseSchema, {});
-        },
+      http.get("*/api/v2/url-rules", () => HttpResponse.json({ rules })),
+      http.delete("*/api/v2/url-rules/:id", ({ params }) => {
+        rules = rules.filter((r) => r.id !== params.id);
+        return HttpResponse.json({});
       }),
     );
 
@@ -160,11 +131,9 @@ describe("URL Rules Page", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
       ),
       document.body,
     );

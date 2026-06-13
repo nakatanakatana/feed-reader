@@ -1,4 +1,3 @@
-import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
@@ -9,20 +8,22 @@ import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page, userEvent } from "vitest/browser";
-import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
+import { apiClient } from "../lib/api/client";
+import { queryClient } from "../lib/query";
+import { ToastProvider } from "../lib/toast";
+import { worker } from "../mocks/browser";
+import { parseRequestMessage } from "../mocks/http";
+import { routeTree } from "../routeTree.gen";
 import {
+  create,
   GetItemResponseSchema,
   ItemSchema,
+  ListFeedTagsResponseSchema,
   ListItemsResponseSchema,
+  ListTagsResponseSchema,
+  toJson,
   UpdateItemStatusResponseSchema,
-} from "../gen/item/v1/item_pb";
-import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
-import { queryClient, transport } from "../lib/query";
-import { ToastProvider } from "../lib/toast";
-import { TransportProvider } from "../lib/transport-context";
-import { worker } from "../mocks/browser";
-import { parseConnectMessage } from "../mocks/connect";
-import { routeTree } from "../routeTree.gen";
+} from "../test-utils/json-identity";
 
 describe("ItemDetailRouteView Seamless Navigation", () => {
   let dispose: () => void;
@@ -34,6 +35,7 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
   });
 
   const updateStatusSpy = vi.fn();
+  const apiPostSpy = vi.spyOn(apiClient, "post");
 
   const setupMockData = (
     mockItems = [
@@ -42,8 +44,8 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
     ],
   ) => {
     worker.use(
-      http.all("*/item.v1.ItemService/ListItems", async ({ request }) => {
-        const body = (await parseConnectMessage(request)) as {
+      http.all("*/api/v2/items", async ({ request }) => {
+        const body = (await parseRequestMessage(request)) as {
           isRead?: boolean;
         };
         let items = mockItems;
@@ -55,8 +57,8 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),
-      http.all("*/item.v1.ItemService/GetItem", async ({ request }) => {
-        const body = (await parseConnectMessage(request)) as { id: string };
+      http.all("*/api/v2/items/:id", async ({ request }) => {
+        const body = (await parseRequestMessage(request)) as { id: string };
         const id = body.id;
         const found = mockItems.find((i) => i.id === id);
         const msg = create(GetItemResponseSchema, {
@@ -68,20 +70,16 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
         });
         return HttpResponse.json(toJson(GetItemResponseSchema, msg));
       }),
-      http.post(
-        "*/item.v1.ItemService/UpdateItemStatus",
-        async ({ request }) => {
-          const body = await request.json();
-          updateStatusSpy(body);
-          return HttpResponse.json(
-            toJson(
-              UpdateItemStatusResponseSchema,
-              create(UpdateItemStatusResponseSchema, {}),
-            ),
-          );
-        },
-      ),
-      http.all("*/tag.v1.TagService/ListTags", () => {
+      http.all("*/api/v2/items/status", async ({ request }) => {
+        updateStatusSpy(await request.json());
+        return HttpResponse.json(
+          toJson(
+            UpdateItemStatusResponseSchema,
+            create(UpdateItemStatusResponseSchema, {}),
+          ),
+        );
+      }),
+      http.all("*/api/v2/tags", () => {
         return HttpResponse.json(
           toJson(
             ListTagsResponseSchema,
@@ -89,7 +87,7 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
           ),
         );
       }),
-      http.all("*/feed.v1.FeedService/ListFeedTags", () => {
+      http.all("*/api/v2/feed-tags", () => {
         return HttpResponse.json(
           toJson(
             ListFeedTagsResponseSchema,
@@ -107,28 +105,23 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ToastProvider>
-              <RouterProvider router={router} />
-            </ToastProvider>
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <ToastProvider>
+            <RouterProvider router={router} />
+          </ToastProvider>
+        </QueryClientProvider>
       ),
       document.body,
     );
 
-    // Wait for content
     await expect
       .element(page.getByRole("heading", { name: "Item 1" }))
       .toBeInTheDocument();
 
     await userEvent.keyboard("j");
 
-    // URL should update
     await expect.poll(() => history.location.pathname).toBe("/items/2");
 
-    // Heading should update
     await expect
       .element(page.getByRole("heading", { name: "Item 2" }))
       .toBeInTheDocument();
@@ -141,13 +134,11 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ToastProvider>
-              <RouterProvider router={router} />
-            </ToastProvider>
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <ToastProvider>
+            <RouterProvider router={router} />
+          </ToastProvider>
+        </QueryClientProvider>
       ),
       document.body,
     );
@@ -173,13 +164,11 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ToastProvider>
-              <RouterProvider router={router} />
-            </ToastProvider>
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <ToastProvider>
+            <RouterProvider router={router} />
+          </ToastProvider>
+        </QueryClientProvider>
       ),
       document.body,
     );
@@ -205,13 +194,11 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ToastProvider>
-              <RouterProvider router={router} />
-            </ToastProvider>
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <ToastProvider>
+            <RouterProvider router={router} />
+          </ToastProvider>
+        </QueryClientProvider>
       ),
       document.body,
     );
@@ -237,19 +224,16 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
 
   it("navigates to end-of-list placeholder from last item and marks it read", async () => {
     setupMockData();
-    // Start at last item (Item 2)
     const history = createMemoryHistory({ initialEntries: ["/items/2"] });
     const router = createRouter({ routeTree, history });
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ToastProvider>
-              <RouterProvider router={router} />
-            </ToastProvider>
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <ToastProvider>
+            <RouterProvider router={router} />
+          </ToastProvider>
+        </QueryClientProvider>
       ),
       document.body,
     );
@@ -260,17 +244,13 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
 
     await userEvent.keyboard("j");
 
-    // Should navigate to end-of-list
     await expect
       .poll(() => history.location.pathname)
       .toBe("/items/end-of-list");
 
-    // Item 2 should have been marked as read
     await expect
-      .poll(() => updateStatusSpy)
-      .toHaveBeenCalledWith(
-        expect.objectContaining({ ids: ["2"], isRead: true }),
-      );
+      .poll(() => apiPostSpy)
+      .toHaveBeenCalledWith("/items/status", { ids: ["2"], isRead: true });
   });
 
   it("navigates back from end-of-list to the last real item", async () => {
@@ -282,13 +262,11 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ToastProvider>
-              <RouterProvider router={router} />
-            </ToastProvider>
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <ToastProvider>
+            <RouterProvider router={router} />
+          </ToastProvider>
+        </QueryClientProvider>
       ),
       document.body,
     );
@@ -312,13 +290,11 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ToastProvider>
-              <RouterProvider router={router} />
-            </ToastProvider>
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <ToastProvider>
+            <RouterProvider router={router} />
+          </ToastProvider>
+        </QueryClientProvider>
       ),
       document.body,
     );
@@ -327,7 +303,6 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
       .element(page.getByRole("heading", { name: "Item 2" }))
       .toBeInTheDocument();
 
-    // Use 'j' to go forward
     await userEvent.keyboard("j");
     await expect
       .poll(() => history.location.pathname)
@@ -337,12 +312,9 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
       .toBeInTheDocument();
     await page.getByRole("heading", { name: "End of List" }).click();
 
-    // Use 'k' to go back
     await userEvent.keyboard("k");
     await expect.poll(() => history.location.pathname).toBe("/items/2");
 
-    // Use Arrows
-    // Click a non-button element to ensure focus is in the modal
     await page.getByRole("heading", { name: "Item 2" }).click();
     await userEvent.keyboard("{ArrowRight}");
     await expect
@@ -355,7 +327,6 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
   });
 
   it("reaches end-of-list correctly when filtered by tag and read status", async () => {
-    // Item 1 is unread, Item 2 is read. With showRead false the API omits read items.
     const mockItems = [
       create(ItemSchema, {
         id: "1",
@@ -372,9 +343,8 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
     ];
     setupMockData(mockItems);
 
-    // Mock tag relation
     worker.use(
-      http.all("*/tag.v1.TagService/ListTags", () => {
+      http.all("*/api/v2/tags", () => {
         return HttpResponse.json(
           toJson(
             ListTagsResponseSchema,
@@ -384,7 +354,7 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
           ),
         );
       }),
-      http.all("*/feed.v1.FeedService/ListFeedTags", () => {
+      http.all("*/api/v2/feed-tags", () => {
         return HttpResponse.json(
           toJson(
             ListFeedTagsResponseSchema,
@@ -396,7 +366,6 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
       }),
     );
 
-    // Initial state: showRead is false (default). ListItems returns unread items only.
     const history = createMemoryHistory({
       initialEntries: ["/items/1?tagId=tag-1"],
     });
@@ -404,13 +373,11 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ToastProvider>
-              <RouterProvider router={router} />
-            </ToastProvider>
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <ToastProvider>
+            <RouterProvider router={router} />
+          </ToastProvider>
+        </QueryClientProvider>
       ),
       document.body,
     );
@@ -421,7 +388,6 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
 
     await userEvent.keyboard("j");
 
-    // Item 2 is read and omitted from the unread list query, so next is end-of-list.
     await expect
       .poll(() => history.location.pathname)
       .toBe("/items/end-of-list");

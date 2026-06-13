@@ -2,8 +2,7 @@ import { QueryClientProvider } from "@tanstack/solid-query";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { queryClient, transport } from "../lib/query";
-import { TransportProvider } from "../lib/transport-context";
+import { queryClient } from "../lib/query";
 import { TagManagement } from "./TagManagement";
 
 describe("TagManagement", () => {
@@ -16,11 +15,9 @@ describe("TagManagement", () => {
   });
 
   const TestWrapper = () => (
-    <TransportProvider transport={transport}>
-      <QueryClientProvider client={queryClient}>
-        <TagManagement />
-      </QueryClientProvider>
-    </TransportProvider>
+    <QueryClientProvider client={queryClient}>
+      <TagManagement />
+    </QueryClientProvider>
   );
 
   it("renders tag list and add form", async () => {

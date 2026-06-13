@@ -2,8 +2,7 @@ import { QueryClientProvider } from "@tanstack/solid-query";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it } from "vitest";
 import { page } from "vitest/browser";
-import { queryClient, transport } from "../lib/query";
-import { TransportProvider } from "../lib/transport-context";
+import { queryClient } from "../lib/query";
 import { ItemRow } from "./ItemRow";
 
 describe("ItemRow Density", () => {
@@ -28,11 +27,9 @@ describe("ItemRow Density", () => {
   it("has reduced vertical padding", async () => {
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ItemRow item={mockItem} onClick={() => {}} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <ItemRow item={mockItem} onClick={() => {}} />
+        </QueryClientProvider>
       ),
       document.body,
     );

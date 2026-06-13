@@ -1,4 +1,3 @@
-import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
@@ -9,21 +8,22 @@ import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page, userEvent } from "vitest/browser";
-import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
+import { itemStore } from "../lib/item-store";
+import { queryClient } from "../lib/query";
+import { ToastProvider } from "../lib/toast";
+import { worker } from "../mocks/browser";
+import { parseRequestMessage } from "../mocks/http";
+import { routeTree } from "../routeTree.gen";
 import {
+  create,
   GetItemResponseSchema,
   ItemSchema,
+  ListFeedTagsResponseSchema,
   ListItemsResponseSchema,
+  ListTagsResponseSchema,
   ListURLParsingRulesResponseSchema,
-} from "../gen/item/v1/item_pb";
-import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
-import { itemStore } from "../lib/item-store";
-import { queryClient, transport } from "../lib/query";
-import { ToastProvider } from "../lib/toast";
-import { TransportProvider } from "../lib/transport-context";
-import { worker } from "../mocks/browser";
-import { parseConnectMessage } from "../mocks/connect";
-import { routeTree } from "../routeTree.gen";
+  toJson,
+} from "../test-utils/json-identity";
 
 describe("ItemDetailRouteView Reactivity", () => {
   let dispose: () => void;
@@ -41,14 +41,14 @@ describe("ItemDetailRouteView Reactivity", () => {
   // biome-ignore lint/suspicious/noExplicitAny: test mock data
   const setupMockData = (itemsData: any[]) => {
     worker.use(
-      http.all("*/item.v1.ItemService/ListItems", () => {
+      http.all("*/api/v2/items", () => {
         const msg = create(ListItemsResponseSchema, {
           items: itemsData.map((i) => create(ItemSchema, i)),
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),
-      http.all("*/item.v1.ItemService/GetItem", async ({ request }) => {
-        const body = (await parseConnectMessage(request)) as { id: string };
+      http.all("*/api/v2/items/:id", async ({ request }) => {
+        const body = (await parseRequestMessage(request)) as { id: string };
         const found = itemsData.find((i) => i.id === body.id);
         const msg = create(GetItemResponseSchema, {
           item: create(ItemSchema, {
@@ -59,7 +59,7 @@ describe("ItemDetailRouteView Reactivity", () => {
         });
         return HttpResponse.json(toJson(GetItemResponseSchema, msg));
       }),
-      http.all("*/tag.v1.TagService/ListTags", () => {
+      http.all("*/api/v2/tags", () => {
         return HttpResponse.json(
           toJson(
             ListTagsResponseSchema,
@@ -67,7 +67,7 @@ describe("ItemDetailRouteView Reactivity", () => {
           ),
         );
       }),
-      http.all("*/item.v1.ItemService/ListURLParsingRules", () => {
+      http.all("*/api/v2/url-rules", () => {
         return HttpResponse.json(
           toJson(
             ListURLParsingRulesResponseSchema,
@@ -75,7 +75,7 @@ describe("ItemDetailRouteView Reactivity", () => {
           ),
         );
       }),
-      http.all("*/feed.v1.FeedService/ListFeedTags", () => {
+      http.all("*/api/v2/feed-tags", () => {
         return HttpResponse.json(
           toJson(
             ListFeedTagsResponseSchema,
@@ -83,7 +83,7 @@ describe("ItemDetailRouteView Reactivity", () => {
           ),
         );
       }),
-      http.post("*/item.v1.ItemService/UpdateItemStatus", () => {
+      http.post("*/api/v2/items/status", () => {
         return HttpResponse.json({});
       }),
     );
@@ -103,13 +103,11 @@ describe("ItemDetailRouteView Reactivity", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ToastProvider>
-              <RouterProvider router={router} />
-            </ToastProvider>
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <ToastProvider>
+            <RouterProvider router={router} />
+          </ToastProvider>
+        </QueryClientProvider>
       ),
       document.body,
     );

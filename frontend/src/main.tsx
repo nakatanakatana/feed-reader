@@ -6,9 +6,8 @@ import { initPWA } from "./pwa";
 import { routeTree } from "./routeTree.gen";
 import "./styles.css";
 import { config } from "./config";
-import { queryClient, transport } from "./lib/query";
+import { queryClient } from "./lib/query";
 import { ToastProvider } from "./lib/toast";
-import { TransportProvider } from "./lib/transport-context";
 import { initMocks } from "./mocks/init";
 
 // Set up OTEL
@@ -40,13 +39,11 @@ if (rootElement && !rootElement.innerHTML) {
   initMocks(config).then(() => {
     render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ToastProvider>
-              <RouterProvider router={router} />
-            </ToastProvider>
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <ToastProvider>
+            <RouterProvider router={router} />
+          </ToastProvider>
+        </QueryClientProvider>
       ),
       rootElement,
     );

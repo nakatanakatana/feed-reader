@@ -1,16 +1,19 @@
-import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import { HttpResponse, http } from "msw";
 import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { GetItemResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
 import { dateToTimestamp } from "../lib/item-utils";
-import { queryClient, transport } from "../lib/query";
+import { queryClient } from "../lib/query";
 import { ToastProvider } from "../lib/toast";
-import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
+import {
+  create,
+  GetItemResponseSchema,
+  ItemSchema,
+  toJson,
+} from "../test-utils/json-identity";
 import { ItemDetailModal } from "./ItemDetailModal";
 
 describe("ItemDetailModal Image Layout", () => {
@@ -20,16 +23,30 @@ describe("ItemDetailModal Image Layout", () => {
    * Waits for the next animation frame to ensure effects and layout are settled.
    */
   const nextFrame = () => new Promise((r) => requestAnimationFrame(r));
+  const setImageDimensions = (width: number, height: number) => {
+    Object.defineProperty(HTMLImageElement.prototype, "naturalWidth", {
+      value: width,
+      configurable: true,
+    });
+    Object.defineProperty(HTMLImageElement.prototype, "naturalHeight", {
+      value: height,
+      configurable: true,
+    });
+  };
 
   afterEach(() => {
     if (dispose) dispose();
     document.body.innerHTML = "";
+    delete (HTMLImageElement.prototype as { naturalWidth?: unknown })
+      .naturalWidth;
+    delete (HTMLImageElement.prototype as { naturalHeight?: unknown })
+      .naturalHeight;
     vi.clearAllMocks();
   });
 
   const setupMockDataWithContent = (itemId: string, content: string) => {
     worker.use(
-      http.all("*/item.v1.ItemService/GetItem", () => {
+      http.all("*/api/v2/items/:id", () => {
         const msg = create(GetItemResponseSchema, {
           item: create(ItemSchema, {
             id: itemId,
@@ -48,11 +65,9 @@ describe("ItemDetailModal Image Layout", () => {
   };
 
   const Wrapper = (props: { children: JSX.Element }) => (
-    <TransportProvider transport={transport}>
-      <QueryClientProvider client={queryClient}>
-        <ToastProvider>{props.children}</ToastProvider>
-      </QueryClientProvider>
-    </TransportProvider>
+    <QueryClientProvider client={queryClient}>
+      <ToastProvider>{props.children}</ToastProvider>
+    </QueryClientProvider>
   );
 
   it("applies flex layout to paragraphs with multiple images", async () => {
@@ -149,6 +164,7 @@ describe("ItemDetailModal Image Layout", () => {
   });
 
   it("initially hides images and shows them only after layout is determined", async () => {
+    setImageDimensions(1200, 600);
     setupMockDataWithContent(
       "test-visibility",
       "![loading](https://example.com/loading.png)",
@@ -165,20 +181,9 @@ describe("ItemDetailModal Image Layout", () => {
     const img = page.getByAltText("loading");
     await expect.element(img).toBeInTheDocument();
 
-    // Mock naturalWidth/Height IMMEDIATELY after element is in DOM
     const imgEl = document.querySelector(
       'img[alt="loading"]',
     ) as HTMLImageElement;
-    if (imgEl) {
-      Object.defineProperty(imgEl, "naturalWidth", {
-        value: 1200,
-        configurable: true,
-      });
-      Object.defineProperty(imgEl, "naturalHeight", {
-        value: 600,
-        configurable: true,
-      });
-    }
 
     // Initially should be transparent and have default maxHeight
     await expect.element(img).toHaveStyle({
@@ -204,6 +209,7 @@ describe("ItemDetailModal Image Layout", () => {
 
   describe("Image height limits", () => {
     it("applies 30vh max-height to hero images (landscape)", async () => {
+      setImageDimensions(1200, 600);
       setupMockDataWithContent(
         "test-hero",
         "![hero](https://example.com/hero.png)",
@@ -219,18 +225,7 @@ describe("ItemDetailModal Image Layout", () => {
 
       await expect.element(page.getByAltText("hero")).toBeInTheDocument();
 
-      // Stub dimensions before nextFrame
       const img = document.querySelector('img[alt="hero"]') as HTMLImageElement;
-      if (img) {
-        Object.defineProperty(img, "naturalWidth", {
-          value: 1200,
-          configurable: true,
-        });
-        Object.defineProperty(img, "naturalHeight", {
-          value: 600,
-          configurable: true,
-        });
-      }
 
       // Ensure the initial createEffect's requestAnimationFrame has fired
       await nextFrame();
@@ -251,6 +246,7 @@ describe("ItemDetailModal Image Layout", () => {
     });
 
     it("applies 5vh max-height to icon images (square)", async () => {
+      setImageDimensions(32, 32);
       setupMockDataWithContent(
         "test-icon",
         "![icon](https://example.com/icon.png)",
@@ -267,16 +263,6 @@ describe("ItemDetailModal Image Layout", () => {
       await expect.element(page.getByAltText("icon")).toBeInTheDocument();
 
       const img = document.querySelector('img[alt="icon"]') as HTMLImageElement;
-      if (img) {
-        Object.defineProperty(img, "naturalWidth", {
-          value: 32,
-          configurable: true,
-        });
-        Object.defineProperty(img, "naturalHeight", {
-          value: 32,
-          configurable: true,
-        });
-      }
 
       // Ensure the initial createEffect's requestAnimationFrame has fired
       await nextFrame();
@@ -295,6 +281,7 @@ describe("ItemDetailModal Image Layout", () => {
     });
 
     it("applies 10vh max-height to other images (portrait)", async () => {
+      setImageDimensions(600, 1200);
       setupMockDataWithContent(
         "test-other",
         "![other](https://example.com/other.png)",
@@ -313,16 +300,6 @@ describe("ItemDetailModal Image Layout", () => {
       const img = document.querySelector(
         'img[alt="other"]',
       ) as HTMLImageElement;
-      if (img) {
-        Object.defineProperty(img, "naturalWidth", {
-          value: 600,
-          configurable: true,
-        });
-        Object.defineProperty(img, "naturalHeight", {
-          value: 1200,
-          configurable: true,
-        });
-      }
 
       // Ensure the initial createEffect's requestAnimationFrame has fired
       await nextFrame();

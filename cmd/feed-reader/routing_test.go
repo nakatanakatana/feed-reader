@@ -3,54 +3,21 @@ package main
 import (
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"testing"
 
-	"github.com/nakatanakatana/feed-reader/gen/go/feed/v1/feedv1connect"
+	"github.com/nakatanakatana/feed-reader/store"
 	"gotest.tools/v3/assert"
 )
 
-func TestRouting(t *testing.T) {
-	// Setup dependencies using helpers from handler_test.go
+func TestMuxDoesNotServeConnectV1Routes(t *testing.T) {
 	_, db := setupTestDB(t)
-	fetcher := &mockFetcher{}
-	itemFetcher := &mockItemFetcher{}
+	s := store.NewStore(db)
+	handler := NewMux(s, nil, nil, nil, nil)
 
-	// Create the server
-	server := setupServer(t, db, nil, fetcher, itemFetcher)
+	req := httptest.NewRequest(http.MethodPost, "/api/feed.v1.FeedService/ListFeeds", nil)
+	rec := httptest.NewRecorder()
 
-	// Create the handler
-	path, handler := feedv1connect.NewFeedServiceHandler(server)
+	handler.ServeHTTP(rec, req)
 
-	// Setup the mux (simulating main.go)
-	mux := http.NewServeMux()
-	mux.Handle("/api"+path, http.StripPrefix("/api", handler))
-
-	// Create a test server
-	ts := httptest.NewServer(mux)
-	defer ts.Close()
-
-	t.Run("Root path routing", func(t *testing.T) {
-		// ListFeeds is "/feed.v1.FeedService/ListFeeds"
-		url := ts.URL + feedv1connect.FeedServiceListFeedsProcedure
-
-		resp, err := http.Post(url, "application/json", strings.NewReader("{}"))
-		assert.NilError(t, err, "Failed to make request")
-		defer func() { _ = resp.Body.Close() }()
-
-		// Should fail (404 NotFound) on root path after update
-		assert.Equal(t, resp.StatusCode, http.StatusNotFound, "Expected status NotFound on root path %s, got %v", url, resp.Status)
-	})
-
-	t.Run("API prefix routing", func(t *testing.T) {
-		// Should work on /api after update
-		url := ts.URL + "/api" + feedv1connect.FeedServiceListFeedsProcedure
-
-		resp, err := http.Post(url, "application/json", strings.NewReader("{}"))
-		assert.NilError(t, err, "Failed to make request")
-		defer func() { _ = resp.Body.Close() }()
-
-		// Should succeed (200 OK) on /api path
-		assert.Equal(t, resp.StatusCode, http.StatusOK, "Expected status OK on /api path %s, got %v", url, resp.Status)
-	})
+	assert.Equal(t, rec.Code, http.StatusNotFound)
 }

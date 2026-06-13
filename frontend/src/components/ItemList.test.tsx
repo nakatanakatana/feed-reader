@@ -1,4 +1,3 @@
-import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
@@ -9,20 +8,21 @@ import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { ListFeedTagsResponseSchema } from "../gen/feed/v1/feed_pb";
-import {
-  ItemSchema,
-  ListItemReadResponseSchema,
-  ListItemsResponseSchema,
-  type Item as ProtoItem,
-} from "../gen/item/v1/item_pb";
-import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
 import { setLastFetched } from "../lib/item-sync-state";
 import { dateToTimestamp } from "../lib/item-utils";
-import { queryClient, transport } from "../lib/query";
-import { TransportProvider } from "../lib/transport-context";
+import { queryClient } from "../lib/query";
 import { worker } from "../mocks/browser";
 import { routeTree } from "../routeTree.gen";
+import {
+  create,
+  ItemSchema,
+  ListFeedTagsResponseSchema,
+  ListItemReadResponseSchema,
+  ListItemsResponseSchema,
+  ListTagsResponseSchema,
+  type Item as ProtoItem,
+  toJson,
+} from "../test-utils/json-identity";
 
 describe("ItemList", () => {
   let dispose: () => void;
@@ -51,7 +51,7 @@ describe("ItemList", () => {
     itemReads: { itemId: string; isRead: boolean }[] = [],
   ) => {
     worker.use(
-      http.all("*/item.v1.ItemService/ListItems", () => {
+      http.all("*/api/v2/items", () => {
         const msg = create(ListItemsResponseSchema, {
           // biome-ignore lint/suspicious/noExplicitAny: mocking message shapes is more efficient with any here
           items: items.map((i) => create(ItemSchema, i as any)),
@@ -59,7 +59,7 @@ describe("ItemList", () => {
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),
-      http.all("*/item.v1.ItemService/ListItemRead", () => {
+      http.all("*/api/v2/item-reads", () => {
         const msg = create(ListItemReadResponseSchema, {
           itemReads: itemReads.map((ir) => ({
             itemId: ir.itemId,
@@ -70,7 +70,7 @@ describe("ItemList", () => {
         });
         return HttpResponse.json(toJson(ListItemReadResponseSchema, msg));
       }),
-      http.all("*/tag.v1.TagService/ListTags", () => {
+      http.all("*/api/v2/tags", () => {
         return HttpResponse.json(
           toJson(
             ListTagsResponseSchema,
@@ -78,7 +78,7 @@ describe("ItemList", () => {
           ),
         );
       }),
-      http.all("*/feed.v1.FeedService/ListFeedTags", () => {
+      http.all("*/api/v2/feed-tags", () => {
         return HttpResponse.json(
           toJson(
             ListFeedTagsResponseSchema,
@@ -97,11 +97,9 @@ describe("ItemList", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
       ),
       document.body,
     );
@@ -139,11 +137,9 @@ describe("ItemList", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
       ),
       document.body,
     );
@@ -179,11 +175,9 @@ describe("ItemList", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
       ),
       document.body,
     );
@@ -221,11 +215,9 @@ describe("ItemList", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
       ),
       document.body,
     );

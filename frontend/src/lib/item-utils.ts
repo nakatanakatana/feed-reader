@@ -1,5 +1,4 @@
-import type { Timestamp } from "@bufbuild/protobuf/wkt";
-import { dateToTimestamp, toDate } from "./date-utils";
+import { dateToTimestamp, type TimestampLike, toDate } from "./date-utils";
 
 export type DateFilterValue = "all" | "24h" | "7d" | "30d" | "90d" | "365d";
 
@@ -16,7 +15,7 @@ export { dateToTimestamp, toDate };
 
 export const getPublishedSince = (
   value: DateFilterValue,
-): Timestamp | undefined => {
+): TimestampLike | undefined => {
   if (value === "all") return undefined;
   const now = new Date();
   let since: Date;
@@ -49,14 +48,14 @@ export const formatUnreadCount = (count: number): string => {
   return count.toString();
 };
 
-export const formatDate = (date: Date | Timestamp | string | undefined) => {
+export const formatDate = (date: Date | TimestampLike | string | undefined) => {
   const d = toDate(date);
   if (!d) return "";
   return d.toLocaleString();
 };
 
 export const formatRelativeDate = (
-  date: Date | Timestamp | string | undefined,
+  date: Date | TimestampLike | string | undefined,
 ) => {
   const d = toDate(date);
   if (!d) return "";

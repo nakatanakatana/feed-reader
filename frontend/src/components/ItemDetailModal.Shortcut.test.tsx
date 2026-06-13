@@ -1,20 +1,20 @@
-import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import { HttpResponse, http } from "msw";
 import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page, userEvent } from "vitest/browser";
+import { dateToTimestamp } from "../lib/item-utils";
+import { queryClient } from "../lib/query";
+import { ToastProvider } from "../lib/toast";
+import { worker } from "../mocks/browser";
 import {
+  create,
   GetItemResponseSchema,
   ItemSchema,
+  toJson,
   UpdateItemStatusResponseSchema,
-} from "../gen/item/v1/item_pb";
-import { dateToTimestamp } from "../lib/item-utils";
-import { queryClient, transport } from "../lib/query";
-import { ToastProvider } from "../lib/toast";
-import { TransportProvider } from "../lib/transport-context";
-import { worker } from "../mocks/browser";
+} from "../test-utils/json-identity";
 import { ItemDetailModal } from "./ItemDetailModal";
 
 describe("ItemDetailModal Shortcuts", () => {
@@ -29,7 +29,7 @@ describe("ItemDetailModal Shortcuts", () => {
 
   const setupMockData = (itemId: string, isRead = false) => {
     worker.use(
-      http.all("*/item.v1.ItemService/GetItem", () => {
+      http.all("*/api/v2/items/:id", () => {
         const msg = create(GetItemResponseSchema, {
           item: create(ItemSchema, {
             id: itemId,
@@ -48,11 +48,9 @@ describe("ItemDetailModal Shortcuts", () => {
   };
 
   const Wrapper = (props: { children: JSX.Element }) => (
-    <TransportProvider transport={transport}>
-      <QueryClientProvider client={queryClient}>
-        <ToastProvider>{props.children}</ToastProvider>
-      </QueryClientProvider>
-    </TransportProvider>
+    <QueryClientProvider client={queryClient}>
+      <ToastProvider>{props.children}</ToastProvider>
+    </QueryClientProvider>
   );
 
   it("toggles read status when 'm' is pressed", async () => {
@@ -60,7 +58,7 @@ describe("ItemDetailModal Shortcuts", () => {
 
     const updateSpy = vi.fn();
     worker.use(
-      http.all("*/item.v1.ItemService/UpdateItemStatus", async () => {
+      http.all("*/api/v2/items/status", async () => {
         updateSpy();
         const msg = create(UpdateItemStatusResponseSchema, {});
         return HttpResponse.json(toJson(UpdateItemStatusResponseSchema, msg));
@@ -103,7 +101,7 @@ describe("ItemDetailModal Shortcuts", () => {
 
     const updateSpy = vi.fn();
     worker.use(
-      http.all("*/item.v1.ItemService/UpdateItemStatus", async () => {
+      http.all("*/api/v2/items/status", async () => {
         updateSpy();
         const msg = create(UpdateItemStatusResponseSchema, {});
         return HttpResponse.json(toJson(UpdateItemStatusResponseSchema, msg));
@@ -146,7 +144,7 @@ describe("ItemDetailModal Shortcuts", () => {
 
     const updateSpy = vi.fn();
     worker.use(
-      http.all("*/item.v1.ItemService/UpdateItemStatus", async () => {
+      http.all("*/api/v2/items/status", async () => {
         updateSpy();
         const msg = create(UpdateItemStatusResponseSchema, {});
         return HttpResponse.json(toJson(UpdateItemStatusResponseSchema, msg));

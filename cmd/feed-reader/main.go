@@ -10,13 +10,9 @@ import (
 	"syscall"
 	"time"
 
-	"connectrpc.com/connect"
-	"connectrpc.com/otelconnect"
 	"github.com/caarlos0/env/v11"
 	"github.com/nakatanakatana/feed-reader/frontend"
-	"github.com/nakatanakatana/feed-reader/gen/go/feed/v1/feedv1connect"
-	"github.com/nakatanakatana/feed-reader/gen/go/item/v1/itemv1connect"
-	"github.com/nakatanakatana/feed-reader/gen/go/tag/v1/tagv1connect"
+	"github.com/nakatanakatana/feed-reader/gen/openapi"
 	"github.com/nakatanakatana/feed-reader/sql"
 	"github.com/nakatanakatana/feed-reader/store"
 	_ "modernc.org/sqlite"
@@ -37,20 +33,19 @@ type config struct {
 	CORSAllowedOrigins []string `env:"CORS_ALLOWED_ORIGINS" envSeparator:","`
 }
 
-func NewMux(s *store.Store, fetcher FeedFetcher, fetchService ItemFetcher, opmlImporter *OPMLImporter, otelInterceptor *otelconnect.Interceptor, allowedOrigins []string) http.Handler {
-	feedServer := NewFeedServer(s, nil, fetcher, fetchService, opmlImporter)
-	feedPath, feedHandler := feedv1connect.NewFeedServiceHandler(feedServer, connect.WithInterceptors(otelInterceptor))
-
-	itemServer := NewItemServer(s, nil)
-	itemPath, itemHandler := itemv1connect.NewItemServiceHandler(itemServer, connect.WithInterceptors(otelInterceptor))
-
-	tagServer := NewTagServer(s, nil)
-	tagPath, tagHandler := tagv1connect.NewTagServiceHandler(tagServer, connect.WithInterceptors(otelInterceptor))
-
+func NewMux(s *store.Store, fetcher FeedFetcher, fetchService ItemFetcher, opmlImporter *OPMLImporter, allowedOrigins []string) http.Handler {
 	mux := http.NewServeMux()
-	mux.Handle("/api"+feedPath, http.StripPrefix("/api", feedHandler))
-	mux.Handle("/api"+itemPath, http.StripPrefix("/api", itemHandler))
-	mux.Handle("/api"+tagPath, http.StripPrefix("/api", tagHandler))
+	openapi.HandlerFromMuxWithBaseURL(
+		openapi.NewStrictHandler(NewOpenAPIHandler(
+			s,
+			WithOpenAPIFetcher(fetcher),
+			WithOpenAPIItemFetcher(fetchService),
+			WithOpenAPIOPMLImporter(opmlImporter),
+		), nil),
+		mux,
+		"/api/v2",
+	)
+	mux.Handle("/api/", http.NotFoundHandler())
 
 	// Mount static assets at root
 	mux.Handle("/", NewAssetsHandler(frontend.Assets))
@@ -130,17 +125,7 @@ func main() {
 	go scheduler.Start(ctx)
 
 	// 5. Initialize API Server
-	// Note: WithTrustRemote() is enabled to support distributed tracing from the frontend.
-	// This means the server trusts incoming traceparent headers. In a production environment
-	// exposed directly to the internet, this should be gated behind a trusted proxy check
-	// to avoid trace injection from unauthorized clients.
-	otelInterceptor, err := otelconnect.NewInterceptor(otelconnect.WithTrustRemote())
-	if err != nil {
-		logger.ErrorContext(ctx, "failed to create OTEL interceptor", "error", err)
-		os.Exit(1)
-	}
-
-	mux := NewMux(s, fetcher, fetchService, opmlImporter, otelInterceptor, cfg.CORSAllowedOrigins)
+	mux := NewMux(s, fetcher, fetchService, opmlImporter, cfg.CORSAllowedOrigins)
 
 	var protocols http.Protocols
 	protocols.SetHTTP1(true)

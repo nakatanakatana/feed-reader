@@ -1,4 +1,3 @@
-import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
@@ -10,16 +9,17 @@ import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
+import { queryClient } from "../lib/query";
+import { worker } from "../mocks/browser";
+import { routeTree } from "../routeTree.gen";
 import {
+  create,
   FeedSchema,
   ListFeedsResponseSchema,
   ListFeedTagsResponseSchema,
-} from "../gen/feed/v1/feed_pb";
-import { ListTagsResponseSchema } from "../gen/tag/v1/tag_pb";
-import { queryClient, transport } from "../lib/query";
-import { TransportProvider } from "../lib/transport-context";
-import { worker } from "../mocks/browser";
-import { routeTree } from "../routeTree.gen";
+  ListTagsResponseSchema,
+  toJson,
+} from "../test-utils/json-identity";
 
 // Mock Link from solid-router
 vi.mock("@tanstack/solid-router", async (importOriginal) => {
@@ -51,16 +51,14 @@ describe("FeedList Card Click Selection", () => {
   });
 
   const TestWrapper = (props: { children: JSX.Element }) => (
-    <TransportProvider transport={transport}>
-      <QueryClientProvider client={queryClient}>
-        {props.children}
-      </QueryClientProvider>
-    </TransportProvider>
+    <QueryClientProvider client={queryClient}>
+      {props.children}
+    </QueryClientProvider>
   );
 
   it("toggles selection when clicking the card background", async () => {
     worker.use(
-      http.all("*/feed.v1.FeedService/ListFeeds", () => {
+      http.all("*/api/v2/feeds", () => {
         const msg = create(ListFeedsResponseSchema, {
           feeds: [
             create(FeedSchema, {
@@ -73,7 +71,7 @@ describe("FeedList Card Click Selection", () => {
         });
         return HttpResponse.json(toJson(ListFeedsResponseSchema, msg));
       }),
-      http.all("*/tag.v1.TagService/ListTags", () => {
+      http.all("*/api/v2/tags", () => {
         return HttpResponse.json(
           toJson(
             ListTagsResponseSchema,
@@ -81,7 +79,7 @@ describe("FeedList Card Click Selection", () => {
           ),
         );
       }),
-      http.all("*/feed.v1.FeedService/ListFeedTags", () => {
+      http.all("*/api/v2/feed-tags", () => {
         return HttpResponse.json(
           toJson(
             ListFeedTagsResponseSchema,

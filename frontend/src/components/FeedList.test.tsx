@@ -1,24 +1,16 @@
-import { create } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
   createRouter,
   RouterProvider,
 } from "@tanstack/solid-router";
+import { HttpResponse, http } from "msw";
 import type { JSX } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { page, userEvent } from "vitest/browser";
-import {
-  FeedSchema,
-  FeedService,
-  ListFeedsResponseSchema,
-} from "../gen/feed/v1/feed_pb";
-import { dateToTimestamp } from "../lib/item-utils";
-import { queryClient, transport } from "../lib/query";
-import { TransportProvider } from "../lib/transport-context";
+import { queryClient } from "../lib/query";
 import { worker } from "../mocks/browser";
-import { mockConnectWeb } from "../mocks/connect";
 import { routeTree } from "../routeTree.gen";
 
 describe("FeedList", () => {
@@ -38,11 +30,9 @@ describe("FeedList", () => {
   });
 
   const TestWrapper = (props: { children: JSX.Element }) => (
-    <TransportProvider transport={transport}>
-      <QueryClientProvider client={queryClient}>
-        {props.children}
-      </QueryClientProvider>
-    </TransportProvider>
+    <QueryClientProvider client={queryClient}>
+      {props.children}
+    </QueryClientProvider>
   );
 
   it("displays a list of feeds", async () => {
@@ -177,26 +167,31 @@ describe("FeedList", () => {
     const futureDate = new Date("2026-03-07T12:05:00Z");
 
     worker.use(
-      mockConnectWeb(FeedService)({
-        method: "listFeeds",
-        handler: () => {
-          return create(ListFeedsResponseSchema, {
-            feeds: [
-              create(FeedSchema, {
-                id: "past-feed",
-                url: "https://example.com/past.xml",
-                title: "Past Feed",
-                nextFetchAt: dateToTimestamp(pastDate),
-              }),
-              create(FeedSchema, {
-                id: "future-feed",
-                url: "https://example.com/future.xml",
-                title: "Future Feed",
-                nextFetchAt: dateToTimestamp(futureDate),
-              }),
-            ],
-          });
-        },
+      http.get("*/api/v2/feeds", () => {
+        return HttpResponse.json({
+          feeds: [
+            {
+              id: "past-feed",
+              url: "https://example.com/past.xml",
+              title: "Past Feed",
+              nextFetchAt: pastDate.toISOString(),
+              createdAt: "2026-03-01T00:00:00.000Z",
+              updatedAt: "2026-03-01T00:00:00.000Z",
+              tags: [],
+              unreadCount: "0",
+            },
+            {
+              id: "future-feed",
+              url: "https://example.com/future.xml",
+              title: "Future Feed",
+              nextFetchAt: futureDate.toISOString(),
+              createdAt: "2026-03-01T00:00:00.000Z",
+              updatedAt: "2026-03-01T00:00:00.000Z",
+              tags: [],
+              unreadCount: "0",
+            },
+          ],
+        });
       }),
     );
 

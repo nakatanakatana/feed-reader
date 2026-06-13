@@ -1,4 +1,3 @@
-import { createConnectTransport } from "@connectrpc/connect-web";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
@@ -9,7 +8,6 @@ import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { queryClient } from "../lib/query";
-import { TransportProvider } from "../lib/transport-context";
 import { Route } from "../routes/_items";
 import { routeTree } from "../routeTree.gen";
 
@@ -33,10 +31,6 @@ describe("Item Default Filter", () => {
   });
 
   it("should default since to '30d' when missing in search parameters", async () => {
-    const transport = createConnectTransport({
-      baseUrl: "http://localhost:3000",
-    });
-
     // Navigate to root without params.
     // This assumes _items layout is active at /.
     // If not, we might need to check how routes are defined, but assuming item_search.test.tsx worked with /, this should too.
@@ -47,11 +41,9 @@ describe("Item Default Filter", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
       ),
       document.body,
     );
@@ -65,10 +57,6 @@ describe("Item Default Filter", () => {
   });
 
   it("should default since to 'all' (undefined) when tagId is present", async () => {
-    const transport = createConnectTransport({
-      baseUrl: "http://localhost:3000",
-    });
-
     const history = createMemoryHistory({
       initialEntries: ["/?tagId=tag-123"],
     });
@@ -76,11 +64,9 @@ describe("Item Default Filter", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
       ),
       document.body,
     );
@@ -94,10 +80,6 @@ describe("Item Default Filter", () => {
   });
 
   it("should sync UI filter state with browser back/forward navigation", async () => {
-    const transport = createConnectTransport({
-      baseUrl: "http://localhost:3000",
-    });
-
     const history = createMemoryHistory({
       initialEntries: ["/"],
     });
@@ -105,11 +87,9 @@ describe("Item Default Filter", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
       ),
       document.body,
     );

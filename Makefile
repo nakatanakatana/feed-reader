@@ -1,4 +1,4 @@
-.PHONY: setup gen dev frontend test lint build
+.PHONY: setup gen gen-api dev frontend test lint build
 
 setup-aqua:
 	aqua install -l
@@ -8,13 +8,15 @@ setup-npm:
 
 setup: setup-aqua setup-npm
 
-gen-buf:
-	buf generate
-
 gen-sqlc:
 	sqlc generate
 
-gen: gen-buf gen-sqlc
+gen-api:
+	npm run gen:openapi
+	go run github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.7.1 -generate types,std-http,strict-server -package openapi -o gen/openapi/server.gen.go api/openapi.yaml
+	npm run gen:api-types
+
+gen: gen-sqlc gen-api
 
 dev-backend:
 	go run ./cmd/feed-reader

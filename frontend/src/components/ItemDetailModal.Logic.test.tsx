@@ -1,15 +1,18 @@
-import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page, userEvent } from "vitest/browser";
-import { GetItemResponseSchema, ItemSchema } from "../gen/item/v1/item_pb";
 import { dateToTimestamp } from "../lib/item-utils";
-import { queryClient, transport } from "../lib/query";
+import { queryClient } from "../lib/query";
 import { ToastProvider } from "../lib/toast";
-import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
+import {
+  create,
+  GetItemResponseSchema,
+  ItemSchema,
+  toJson,
+} from "../test-utils/json-identity";
 import { ItemDetailModal } from "./ItemDetailModal";
 
 describe("ItemDetailModal Navigation Logic", () => {
@@ -24,7 +27,7 @@ describe("ItemDetailModal Navigation Logic", () => {
 
   const setupMockData = (itemId: string) => {
     worker.use(
-      http.all("*/item.v1.ItemService/GetItem", () => {
+      http.all("*/api/v2/items/:id", () => {
         const msg = create(GetItemResponseSchema, {
           item: create(ItemSchema, {
             id: itemId,
@@ -49,20 +52,18 @@ describe("ItemDetailModal Navigation Logic", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ToastProvider>
-              <ItemDetailModal
-                itemId="2"
-                onClose={() => {}}
-                prevItemId="1"
-                nextItemId="3"
-                onPrev={onPrev}
-                onNext={onNext}
-              />
-            </ToastProvider>
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <ToastProvider>
+            <ItemDetailModal
+              itemId="2"
+              onClose={() => {}}
+              prevItemId="1"
+              nextItemId="3"
+              onPrev={onPrev}
+              onNext={onNext}
+            />
+          </ToastProvider>
+        </QueryClientProvider>
       ),
       document.body,
     );
@@ -88,13 +89,11 @@ describe("ItemDetailModal Navigation Logic", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <ToastProvider>
-              <ItemDetailModal itemId="10" onClose={() => {}} />
-            </ToastProvider>
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <ToastProvider>
+            <ItemDetailModal itemId="10" onClose={() => {}} />
+          </ToastProvider>
+        </QueryClientProvider>
       ),
       document.body,
     );

@@ -1,16 +1,19 @@
-import { create } from "@bufbuild/protobuf";
-import { TimestampSchema } from "@bufbuild/protobuf/wkt";
-import type { Timestamp } from "@bufbuild/protobuf/wkt";
+export interface TimestampLike {
+  readonly $typeName: "google.protobuf.Timestamp";
+  seconds: bigint;
+  nanos: number;
+}
 
-export const dateToTimestamp = (d: Date): Timestamp => {
-  return create(TimestampSchema, {
+export const dateToTimestamp = (d: Date): TimestampLike => {
+  return {
+    $typeName: "google.protobuf.Timestamp",
     seconds: BigInt(Math.floor(d.getTime() / 1000)),
     nanos: (d.getTime() % 1000) * 1000000,
-  });
+  };
 };
 
 export const toDate = (
-  ts: Date | Timestamp | string | undefined,
+  ts: Date | TimestampLike | string | undefined,
 ): Date | undefined => {
   if (!ts) return undefined;
   if (ts instanceof Date) return ts;

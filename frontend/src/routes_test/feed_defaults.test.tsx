@@ -1,4 +1,3 @@
-import { createConnectTransport } from "@connectrpc/connect-web";
 import { QueryClient, QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
@@ -8,7 +7,6 @@ import {
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
-import { TransportProvider } from "../lib/transport-context";
 import { routeTree } from "../routeTree.gen";
 
 // Mock hooks
@@ -61,8 +59,6 @@ vi.mock("../lib/tag-query", () => ({
 describe("Item Route Defaults", () => {
   let dispose: () => void;
   const queryClient = new QueryClient();
-  const transport = createConnectTransport({ baseUrl: "http://localhost" });
-
   afterEach(() => {
     if (dispose) dispose();
     document.body.innerHTML = "";
@@ -75,11 +71,9 @@ describe("Item Route Defaults", () => {
 
     dispose = render(
       () => (
-        <TransportProvider transport={transport}>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-          </QueryClientProvider>
-        </TransportProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
       ),
       document.body,
     );
