@@ -91,7 +91,9 @@ export function HorizontalScrollList(props: HorizontalScrollListProps) {
       </Show>
 
       <section
-        ref={scrollContainer}
+        ref={(el) => {
+          scrollContainer = el;
+        }}
         onMouseEnter={checkScroll}
         data-testid="horizontal-scroll-container"
         aria-label="Scrollable content"

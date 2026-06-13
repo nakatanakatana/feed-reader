@@ -13,8 +13,9 @@ export type FeedSortBy =
   | "next_fetch";
 
 const isFeedSortBy = (val: unknown): val is FeedSortBy => {
-  return ["title_asc", "title_desc", "last_fetched", "next_fetch"].includes(
-    val as string,
+  return (
+    typeof val === "string" &&
+    ["title_asc", "title_desc", "last_fetched", "next_fetch"].includes(val)
   );
 };
 

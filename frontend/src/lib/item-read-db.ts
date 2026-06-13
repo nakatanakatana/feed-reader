@@ -19,7 +19,7 @@ export const itemReadQueryOptions = {
     }
 
     const existingData =
-      (queryClient.getQueryData(["item-reads"]) as ItemRead[]) || [];
+      queryClient.getQueryData<ItemRead[]>(["item-reads"]) || [];
 
     let pageToken = "";
     const allNewReads: ItemRead[] = [];
@@ -81,8 +81,7 @@ export const itemReadQueryOptions = {
 
 export const updateItemReadStatus = async (ids: string[], isRead: boolean) => {
   const queryKey = ["item-reads"] as const;
-  const existingData =
-    (queryClient.getQueryData(queryKey) as ItemRead[] | undefined) || [];
+  const existingData = queryClient.getQueryData<ItemRead[]>(queryKey) || [];
   const previousStates = existingData.filter((d) => ids.includes(d.id));
 
   // Optimistic update

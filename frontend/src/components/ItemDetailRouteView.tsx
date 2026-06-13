@@ -5,7 +5,6 @@ import {
   feedTagsQueryOptions,
   getItemsQueryOptions,
   getItemsWithReadState,
-  type Item,
   itemReadQueryOptions,
   updateItemReadStatus,
 } from "../lib/db";
@@ -66,7 +65,7 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
   });
 
   const filteredItems = createMemo(() => {
-    return itemsWithReadState() as Item[];
+    return itemsWithReadState();
   });
 
   const currentIndexMemo = createMemo(() => {

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/main/npm/oxlint/configuration_schema.json",
+  "ignorePatterns": [
+    "frontend/src/routeTree.gen.ts",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "frontend/src/test-utils/**",
+    "frontend/src/mocks/**",
+    "frontend/src/vitest-setup.ts"
+  ],
+  "rules": {
+    "typescript/consistent-type-assertions": [
+      "error",
+      {
+        "assertionStyle": "never"
+      }
+    ]
+  }
+}

@@ -23,9 +23,15 @@ export function DateFilterSelector(props: DateFilterSelectorProps) {
       <select
         id="date-filter-select"
         value={props.value}
-        onChange={(e) =>
-          props.onSelect(e.currentTarget.value as DateFilterValue)
-        }
+        onChange={(e) => {
+          const val = e.currentTarget.value;
+          const isDateFilterValue = (v: string): v is DateFilterValue => {
+            return ["all", "24h", "7d", "30d", "90d", "365d"].includes(v);
+          };
+          if (isDateFilterValue(val)) {
+            props.onSelect(val);
+          }
+        }}
         class={css({
           padding: "1",
           paddingInline: "2",

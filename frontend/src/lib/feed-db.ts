@@ -78,7 +78,8 @@ export const suspendFeeds = async (
 
 export const exportFeeds = async (feedIds: string[]) => {
   const res = await feedClient.exportOpml({ ids: feedIds });
-  const blob = new Blob([res.opmlContent as BlobPart], {
+  const opmlString = new TextDecoder().decode(res.opmlContent);
+  const blob = new Blob([opmlString], {
     type: "application/xml",
   });
   const url = URL.createObjectURL(blob);

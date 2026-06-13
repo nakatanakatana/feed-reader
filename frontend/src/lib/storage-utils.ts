@@ -49,7 +49,8 @@ export function getStorageValue<T>(
       return defaultValue;
     }
 
-    return parsed as T;
+    const result: T = parsed;
+    return result;
   } catch (error) {
     console.error(`Error reading from localStorage for key "${key}":`, error);
     return defaultValue;

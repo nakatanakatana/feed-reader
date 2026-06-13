@@ -16,8 +16,14 @@ interface ItemsSearch {
 
 export const Route = createFileRoute("/_items")({
   validateSearch: (search: Record<string, unknown>): ItemsSearch => {
-    const since = search.since as DateFilterValue | undefined;
-    const tagId = search.tagId as string | undefined;
+    const isValidDateFilter = (val: unknown): val is DateFilterValue => {
+      return (
+        typeof val === "string" &&
+        ["all", "24h", "7d", "30d", "90d", "365d"].includes(val)
+      );
+    };
+    const tagId = typeof search.tagId === "string" ? search.tagId : undefined;
+    const since = isValidDateFilter(search.since) ? search.since : undefined;
     return {
       tagId,
       since: since ?? (tagId ? undefined : "30d"),

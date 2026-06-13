@@ -8,7 +8,7 @@ const DEFAULT_ERROR_MESSAGE = "An error occurred. Please try again.";
 
 const markAsToastEligible = (err: unknown) => {
   if (typeof err === "object" && err !== null) {
-    (err as Record<symbol, unknown>)[ERROR_TOAST_ELIGIBLE] = true;
+    Reflect.set(err, ERROR_TOAST_ELIGIBLE, true);
   }
 };
 
@@ -16,7 +16,7 @@ const isToastEligible = (err: unknown): boolean => {
   return (
     typeof err === "object" &&
     err !== null &&
-    !!(err as Record<symbol, unknown>)[ERROR_TOAST_ELIGIBLE]
+    !!Reflect.get(err, ERROR_TOAST_ELIGIBLE)
   );
 };
 
@@ -71,6 +71,5 @@ export const queryClient = new QueryClient({
 });
 
 if (typeof window !== "undefined") {
-  (window as unknown as { __queryClient: QueryClient }).__queryClient =
-    queryClient;
+  window.__queryClient = queryClient;
 }

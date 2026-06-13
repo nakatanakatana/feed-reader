@@ -47,7 +47,7 @@ export class URLParser {
           }
         }
       }
-    } catch (_e) {
+    } catch {
       return null;
     }
     return null;

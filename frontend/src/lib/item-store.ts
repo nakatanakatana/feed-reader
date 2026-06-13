@@ -3,11 +3,17 @@ import { createStore, reconcile } from "solid-js/store";
 import { itemsDateFilter, itemsShowReadFilter } from "./default";
 import type { DateFilterValue } from "./item-utils";
 
+interface ItemStoreState {
+  showRead: boolean;
+  since: DateFilterValue;
+  transientRemovedIds: Record<string, boolean>;
+}
+
 function createItemStore() {
-  const [state, setState] = createStore({
+  const [state, setState] = createStore<ItemStoreState>({
     showRead: itemsShowReadFilter,
-    since: itemsDateFilter as DateFilterValue,
-    transientRemovedIds: {} as Record<string, boolean>,
+    since: itemsDateFilter,
+    transientRemovedIds: {},
   });
 
   const setShowRead = (showRead: boolean) => {
