@@ -37,12 +37,14 @@ Thumbs.db
 styled-system
 styled-system-studio
 
-coverage.out
-coverage.html
-frontend/coverage/
 .agentfs/
+.opencode/
+.playwright-cli/
+.scion/agents/
 .worktrees/
 cmd/feed-reader/dist/
-.playwright-cli/
-.opencode/
-.scion/agents/
+coverage.html
+coverage.out
+frontend/coverage/
+
+docs/superpowers/plans/
