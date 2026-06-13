@@ -46,7 +46,7 @@ interface ItemDetailModalProps {
 }
 
 export function ItemDetailModal(props: ItemDetailModalProps) {
-  let modalRef: HTMLDivElement | undefined;
+  let modalRef: HTMLDialogElement | undefined;
   let swipeContainerRef: HTMLDivElement | undefined;
   const queryClient = useQueryClient();
   const [announcement, setAnnouncement] = createSignal("");
@@ -208,12 +208,18 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
 
     if (id && !loading && (itemData || id === "end-of-list") && modalRef) {
       const currentModalRef = modalRef;
+      if (!currentModalRef.matches(":modal")) {
+        if (currentModalRef.open) {
+          currentModalRef.close();
+        }
+        currentModalRef.showModal();
+      }
       const cleanupTasks: (() => void)[] = [];
 
       const timerId = setTimeout(() => {
-        if (currentModalRef) {
-          currentModalRef.focus();
-        }
+        const panel =
+          currentModalRef.querySelector<HTMLElement>('[tabindex="-1"]');
+        panel?.focus();
 
         // Detect image layout and set data-layout attribute
         const imgs = currentModalRef.querySelectorAll("img");
@@ -423,9 +429,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     ) {
       return;
     }
-    if (e.key === "Escape") {
-      props.onClose();
-    } else if (
+    if (
       e.key === "ArrowLeft" ||
       e.key === "k" ||
       e.key === "K" ||
@@ -433,7 +437,10 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
       e.key === "H"
     ) {
       const prevId = props.prevItemId;
-      if (props.onPrev && prevId) props.onPrev();
+      if (props.onPrev && prevId) {
+        e.preventDefault();
+        props.onPrev();
+      }
     } else if (
       e.key === "ArrowRight" ||
       e.key === "j" ||
@@ -442,11 +449,16 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
       e.key === "L"
     ) {
       const nextId = props.nextItemId;
-      if (!isEndOfList() && props.onNext && nextId) props.onNext();
+      if (!isEndOfList() && props.onNext && nextId) {
+        e.preventDefault();
+        props.onNext();
+      }
     } else if (e.key === "m" || e.key === "M") {
+      e.preventDefault();
       handleToggleRead();
     } else if (e.key === "n" || e.key === "N") {
       if (canSwipeUp()) {
+        e.preventDefault();
         handleSkip(false);
       }
     }
@@ -465,7 +477,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   };
 
   return (
-    <Show when={props.itemId}>
+    <Show when={!!props.itemId}>
       <Modal
         ref={(el) => {
           modalRef = el;
@@ -522,7 +534,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             </Show>
           </h2>
           <div class={flex({ gap: "2", alignItems: "center" })}>
-            <KebabMenu actions={menuActions()} />
+            <KebabMenu actions={menuActions()} portalMount={() => modalRef} />
           </div>
         </div>
 

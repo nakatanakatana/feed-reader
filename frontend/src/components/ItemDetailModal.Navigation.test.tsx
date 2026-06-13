@@ -2,6 +2,7 @@ import { create, toJson } from "@bufbuild/protobuf";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import { HttpResponse, http } from "msw";
 import type { JSX } from "solid-js";
+import { createSignal } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page, userEvent } from "vitest/browser";
@@ -113,5 +114,34 @@ describe("ItemDetailModal Navigation", () => {
     await expect.element(page.getByText("Test Item 2")).toBeInTheDocument();
     await userEvent.keyboard("k");
     expect(onPrev).toHaveBeenCalled();
+  });
+
+  it("keeps dialog in modal mode after navigating to next item", async () => {
+    setupMockData("1");
+    const [itemId, setItemId] = createSignal("1");
+
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal
+            itemId={itemId()}
+            onClose={() => {}}
+            nextItemId="2"
+            onNext={() => {
+              setupMockData("2");
+              setItemId("2");
+            }}
+          />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    await expect.element(page.getByText("Test Item 1")).toBeInTheDocument();
+    expect(document.querySelector("dialog:modal")).toBeTruthy();
+
+    await userEvent.keyboard("j");
+    await expect.element(page.getByText("Test Item 2")).toBeInTheDocument();
+    expect(document.querySelector("dialog:modal")).toBeTruthy();
   });
 });

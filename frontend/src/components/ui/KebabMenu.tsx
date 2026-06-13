@@ -11,6 +11,8 @@ interface KebabMenuAction {
 interface KebabMenuProps {
   actions: KebabMenuAction[];
   ariaLabel?: string;
+  /** Portal mount target (e.g. native dialog). Required for menus inside showModal dialogs. */
+  portalMount?: () => HTMLElement | undefined;
 }
 
 export function KebabMenu(props: KebabMenuProps) {
@@ -90,6 +92,8 @@ export function KebabMenu(props: KebabMenuProps) {
     document.removeEventListener("keydown", handleKeyDown);
   });
 
+  const usesFixedPosition = () => !!props.portalMount;
+
   const getMenuPosition = () => {
     if (!buttonRef) return { top: "0px", left: "0px" };
     const rect = buttonRef.getBoundingClientRect();
@@ -101,19 +105,25 @@ export function KebabMenu(props: KebabMenuProps) {
     const menuWidth = 160; // Initial assumed width
     const menuHeight = menuRef?.offsetHeight ?? 0;
 
-    let top = rect.bottom + scrollY + 4;
-    let left = rect.right + scrollX - menuWidth;
+    let top = usesFixedPosition() ? rect.bottom + 4 : rect.bottom + scrollY + 4;
+    let left = usesFixedPosition()
+      ? rect.right - menuWidth
+      : rect.right + scrollX - menuWidth;
 
     const margin = 4;
 
     // Clamp horizontally
-    const minLeft = scrollX + margin;
-    const maxLeft = scrollX + viewportWidth - menuWidth - margin;
+    const minLeft = usesFixedPosition() ? margin : scrollX + margin;
+    const maxLeft = usesFixedPosition()
+      ? viewportWidth - menuWidth - margin
+      : scrollX + viewportWidth - menuWidth - margin;
     if (left < minLeft) left = minLeft;
     if (left > maxLeft) left = maxLeft;
 
     // Clamp vertically
-    const maxTop = scrollY + viewportHeight - menuHeight - margin;
+    const maxTop = usesFixedPosition()
+      ? viewportHeight - menuHeight - margin
+      : scrollY + viewportHeight - menuHeight - margin;
     if (top > maxTop) top = maxTop;
 
     return {
@@ -162,14 +172,14 @@ export function KebabMenu(props: KebabMenuProps) {
       </button>
 
       <Show when={isOpen()}>
-        <Portal>
+        <Portal mount={props.portalMount?.()}>
           <div
             ref={(el) => {
               menuRef = el;
             }}
             role="menu"
             class={css({
-              position: "absolute",
+              position: usesFixedPosition() ? "fixed" : "absolute",
               zIndex: 2000,
               bg: "white",
               border: "1px solid",

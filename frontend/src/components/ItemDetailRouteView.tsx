@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/solid-router";
 import { createEffect, createMemo } from "solid-js";
 import {
   feedTagsQueryOptions,
+  filterVisibleListItems,
   getItemsQueryOptions,
   getItemsWithReadState,
   itemReadQueryOptions,
@@ -48,7 +49,7 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
   const isEndOfList = () => props.itemId === "end-of-list";
 
   const itemsQuery = createQuery(() =>
-    getItemsQueryOptions(true, itemStore.state.since),
+    getItemsQueryOptions(itemStore.state.showRead, itemStore.state.since),
   );
   const readsQuery = createQuery(() => itemReadQueryOptions);
   const feedTagsQuery = createQuery(() => feedTagsQueryOptions);
@@ -64,9 +65,12 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
     );
   });
 
-  const filteredItems = createMemo(() => {
-    return itemsWithReadState();
-  });
+  const filteredItems = createMemo(() =>
+    filterVisibleListItems(
+      itemsWithReadState(),
+      itemStore.state.transientRemovedIds,
+    ),
+  );
 
   const currentIndexMemo = createMemo(() => {
     const items = filteredItems();
