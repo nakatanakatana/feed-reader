@@ -1,9 +1,15 @@
-import { useLiveQuery } from "@tanstack/solid-db";
+import { createQuery } from "@tanstack/solid-query";
 import { createRootRoute, Link, Outlet } from "@tanstack/solid-router";
+import { createMemo } from "solid-js";
 import { css } from "../../styled-system/css";
 import { DynamicFavicon } from "../components/DynamicFavicon";
 import { PwaBadge } from "../components/PwaBadge";
-import { itemsUnreadQuery } from "../lib/db";
+import {
+  feedTagsQueryOptions,
+  getItemsQueryOptions,
+  getItemsWithReadState,
+  itemReadQueryOptions,
+} from "../lib/db";
 
 export const Route = createRootRoute({
   component: RootComponent,
@@ -18,7 +24,19 @@ export const Route = createRootRoute({
 });
 
 function RootComponent() {
-  const unreadItems = useLiveQuery(() => itemsUnreadQuery());
+  const itemsQuery = createQuery(() => getItemsQueryOptions(false, "30d"));
+  const readsQuery = createQuery(() => itemReadQueryOptions);
+  const feedTagsQuery = createQuery(() => feedTagsQueryOptions);
+
+  const unreadItemsCount = createMemo(() => {
+    const unreadList = getItemsWithReadState(
+      itemsQuery.data ?? [],
+      readsQuery.data ?? [],
+      feedTagsQuery.data ?? [],
+      { unreadOnly: true },
+    );
+    return unreadList.length;
+  });
 
   const headerStyle = css({
     paddingX: "4",
@@ -69,8 +87,8 @@ function RootComponent() {
 
   return (
     <>
-      <DynamicFavicon unreadCount={unreadItems().length} />
-      <PwaBadge unreadCount={unreadItems().length} />
+      <DynamicFavicon unreadCount={unreadItemsCount()} />
+      <PwaBadge unreadCount={unreadItemsCount()} />
       <header class={headerStyle}>
         <Link
           to="/"

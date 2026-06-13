@@ -1,3 +1,4 @@
+import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
   createRoute,
@@ -7,6 +8,8 @@ import {
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
+import { queryClient, transport } from "../lib/query";
+import { TransportProvider } from "../lib/transport-context";
 import { Route as RootRoute } from "../routes/__root";
 import "../styles.css";
 
@@ -39,7 +42,16 @@ describe("RootComponent Navigation", () => {
     const router = createRouter({ routeTree, history });
 
     // 3. Render
-    dispose = render(() => <RouterProvider router={router} />, document.body);
+    dispose = render(
+      () => (
+        <TransportProvider transport={transport}>
+          <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} />
+          </QueryClientProvider>
+        </TransportProvider>
+      ),
+      document.body,
+    );
 
     // 4. Verify Content
     await expect

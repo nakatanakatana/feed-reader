@@ -1,6 +1,6 @@
-import { useLiveQuery } from "@tanstack/solid-db";
 import {
   createMutation,
+  createQuery,
   useQuery,
   useQueryClient,
 } from "@tanstack/solid-query";
@@ -15,8 +15,8 @@ import {
 } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
-import { itemBlockRuleInsert, urlParsingRules } from "../lib/block-db";
-import { buildItemsWithReadStateQuery } from "../lib/db";
+import { itemBlockRuleInsert } from "../lib/block-db";
+import { itemReadQueryOptions, urlParsingRulesQueryOptions } from "../lib/db";
 import { getItem, type Item } from "../lib/item-db";
 import { ITEM_STALE_TIME } from "../lib/item-query-constants";
 import { updateItemReadStatus } from "../lib/item-read-db";
@@ -204,13 +204,13 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     // Track itemId and item data to trigger re-focus when content changes
     const id = props.itemId;
     const itemData = item();
-    const loading = isLoading();
+    const loading = id === "end-of-list" ? false : isLoading();
 
-    if (id && !loading && itemData && modalRef) {
+    if (id && !loading && (itemData || id === "end-of-list") && modalRef) {
       const currentModalRef = modalRef;
       const cleanupTasks: (() => void)[] = [];
 
-      requestAnimationFrame(() => {
+      const timerId = setTimeout(() => {
         if (currentModalRef) {
           currentModalRef.focus();
         }
@@ -244,9 +244,10 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             );
           }
         }
-      });
+      }, 0);
 
       onCleanup(() => {
+        clearTimeout(timerId);
         for (const task of cleanupTasks) task();
       });
     }
@@ -266,24 +267,23 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   const isLoading = () => itemQuery.isPending;
   const isEndOfList = () => props.itemId === "end-of-list";
 
-  // Prioritize looking up the target item within the items collection
-  const collectionItems = useLiveQuery((q) => {
-    const id = props.itemId;
-    return buildItemsWithReadStateQuery(q, {
-      itemId: !id || id === "end-of-list" ? "__none__" : id,
-    });
+  const readsQuery = createQuery(() => itemReadQueryOptions);
+
+  const prioritizedItem = createMemo<Item | null>(() => {
+    const data = item();
+    if (!data) return null;
+    const reads = readsQuery.data ?? [];
+    const readState = reads.find((r) => r.id === data.id);
+    return {
+      ...data,
+      isRead: readState ? readState.isRead : data.isRead,
+    };
   });
 
-  const collectionItem = () => collectionItems()[0];
-
-  const prioritizedItem = () => collectionItem() || item();
-
   // URL Parsing and Blocking Logic
-  const rulesQuery = useLiveQuery((q) =>
-    q.from({ rule: urlParsingRules }).select(({ rule }) => ({ ...rule })),
-  );
+  const rulesQuery = createQuery(() => urlParsingRulesQueryOptions);
 
-  const parser = createMemo(() => new URLParser(rulesQuery() ?? []));
+  const parser = createMemo(() => new URLParser(rulesQuery.data ?? []));
 
   const extractedInfo = createMemo(() => {
     const data = item();

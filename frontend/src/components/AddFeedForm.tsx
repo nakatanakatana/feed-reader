@@ -1,8 +1,14 @@
-import { useLiveQuery } from "@tanstack/solid-db";
-import { createSignal, For, type JSX, Show } from "solid-js";
+import { createQuery } from "@tanstack/solid-query";
+import { createMemo, createSignal, For, type JSX, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
-import { feedInsert, tagPickerQuery } from "../lib/db";
+import {
+  feedInsert,
+  feedTagsQueryOptions,
+  getTagPicker,
+  getTagsWithFeedCount,
+  tagsQueryOptions,
+} from "../lib/db";
 import { ActionButton } from "./ui/ActionButton";
 import { HorizontalScrollList } from "./ui/HorizontalScrollList";
 import { TagChip } from "./ui/TagChip";
@@ -17,7 +23,19 @@ export function AddFeedForm(props: AddFeedFormProps) {
   const [isPending, setIsPending] = createSignal(false);
   const [error, setError] = createSignal<Error | null>(null);
 
-  const tagsQuery = useLiveQuery(() => tagPickerQuery);
+  const rawTagsQuery = createQuery(() => tagsQueryOptions);
+  const feedTagsQuery = createQuery(() => feedTagsQueryOptions);
+
+  const tagsWithFeedCount = createMemo(() => {
+    return getTagsWithFeedCount(
+      rawTagsQuery.data ?? [],
+      feedTagsQuery.data ?? [],
+    );
+  });
+
+  const tagsSorted = createMemo(() => {
+    return getTagPicker(tagsWithFeedCount());
+  });
 
   const handleSubmit = async (e: Event) => {
     e.preventDefault();
@@ -25,7 +43,7 @@ export function AddFeedForm(props: AddFeedFormProps) {
     setError(null);
 
     try {
-      const tags = tagsQuery().filter((t) => selectedTagIds().includes(t.id));
+      const tags = tagsSorted().filter((t) => selectedTagIds().includes(t.id));
       // @ts-expect-error
       await feedInsert(url(), tags);
 
@@ -136,7 +154,7 @@ export function AddFeedForm(props: AddFeedFormProps) {
             Tags:
           </span>
           <HorizontalScrollList>
-            <For each={tagsQuery()}>
+            <For each={tagsSorted()}>
               {(tag) => (
                 <TagChip
                   selected={selectedTagIds().includes(tag.id)}

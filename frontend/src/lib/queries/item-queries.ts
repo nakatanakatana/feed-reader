@@ -1,15 +1,11 @@
-import {
-  coalesce,
-  count,
-  createLiveQueryCollection,
-  eq,
-  type InitialQueryBuilder,
-} from "@tanstack/solid-db";
-import { createMemo, createRoot } from "solid-js";
-import { feedTag } from "../feed-db";
-import { items } from "../item-db";
-import { itemReadCollection } from "../item-read-db";
-import { tags } from "../tag-db";
+import type { FeedTag } from "../feed-db";
+import type { ListItem } from "../item-db";
+import type { ItemRead } from "../item-read-db";
+import type { Tag } from "../tag-db";
+
+export interface MergedItem extends ListItem {
+  isRead: boolean;
+}
 
 export interface TagUnreadCount {
   id: string;
@@ -17,138 +13,81 @@ export interface TagUnreadCount {
   unreadCount: bigint;
 }
 
-interface ItemsWithReadStateOptions {
-  // biome-ignore lint/suspicious/noExplicitAny: TanStack DB collection types are too strict for shared builders
-  itemCollection?: any;
-  // biome-ignore lint/suspicious/noExplicitAny: TanStack DB collection types are too strict for shared builders
-  readCollection?: any;
-  // biome-ignore lint/suspicious/noExplicitAny: TanStack DB collection types are too strict for shared builders
-  feedTagCollection?: any;
-  tagId?: string;
-  itemId?: string;
-  unreadOnly?: boolean;
-}
-
-interface TagUnreadCountsOptions {
-  // biome-ignore lint/suspicious/noExplicitAny: TanStack DB collection types are too strict for shared builders
-  tagsCollection?: any;
-  // biome-ignore lint/suspicious/noExplicitAny: TanStack DB collection types are too strict for shared builders
-  feedTagCollection?: any;
-  // biome-ignore lint/suspicious/noExplicitAny: TanStack DB collection types are too strict for shared builders
-  unreadItemsCollection?: any;
-}
-
-export const buildItemsWithReadStateQuery = (
-  q: InitialQueryBuilder,
-  options: ItemsWithReadStateOptions = {},
-) => {
-  const itemCollection = options.itemCollection ?? items();
-  const readCollection = options.readCollection ?? itemReadCollection();
-  const feedTagCollection = options.feedTagCollection ?? feedTag;
-
-  let query = q
-    .from({ item: itemCollection })
-    // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
-    .leftJoin({ read: readCollection }, ({ item, read }: any) =>
-      eq(item.id, read.id),
-    );
-
-  if (options.tagId) {
-    query = query
-      .innerJoin(
-        { ft: feedTagCollection },
-        // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
-        ({ item, ft }: any) => eq(item.feedId, ft.feedId),
-      )
-      // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
-      .where(({ ft }: any) => eq(ft.tagId, options.tagId));
+export const getItemsWithReadState = (
+  itemsList: ListItem[],
+  readsList: ItemRead[],
+  feedTagsList: FeedTag[],
+  options: { tagId?: string; itemId?: string; unreadOnly?: boolean } = {},
+): MergedItem[] => {
+  const readMap = new Map<string, boolean>();
+  for (const r of readsList) {
+    readMap.set(r.id, r.isRead);
   }
 
+  let result: MergedItem[] = itemsList.map((item) => ({
+    ...item,
+    isRead: readMap.get(item.id) ?? item.isRead,
+  }));
+
   if (options.itemId) {
-    // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
-    query = query.where(({ item }: any) => eq(item.id, options.itemId));
+    result = result.filter((item) => item.id === options.itemId);
+  }
+
+  if (options.tagId) {
+    const feedIdsWithTag = new Set(
+      feedTagsList
+        .filter((ft) => ft.tagId === options.tagId)
+        .map((ft) => ft.feedId),
+    );
+    result = result.filter((item) => feedIdsWithTag.has(item.feedId));
   }
 
   if (options.unreadOnly) {
-    // biome-ignore lint/suspicious/noExplicitAny: TanStack DB where types
-    query = query.where(({ item, read }: any) =>
-      eq(coalesce(read?.isRead, item.isRead), false),
+    result = result.filter((item) => !item.isRead);
+  }
+
+  result.sort((a, b) => {
+    const timeA = a.publishedAt?.getTime() ?? Number.MAX_SAFE_INTEGER;
+    const timeB = b.publishedAt?.getTime() ?? Number.MAX_SAFE_INTEGER;
+    if (timeA !== timeB) return timeA - timeB;
+
+    const createA = a.createdAt?.getTime() ?? 0;
+    const createB = b.createdAt?.getTime() ?? 0;
+    return createA - createB;
+  });
+
+  return result;
+};
+
+export const getTagUnreadCounts = (
+  tagsList: Tag[],
+  feedTagsList: FeedTag[],
+  unreadItemsList: { feedId: string }[],
+): TagUnreadCount[] => {
+  const unreadCountByFeed = new Map<string, number>();
+  for (const item of unreadItemsList) {
+    unreadCountByFeed.set(
+      item.feedId,
+      (unreadCountByFeed.get(item.feedId) ?? 0) + 1,
     );
   }
 
-  query = query
-    // biome-ignore lint/suspicious/noExplicitAny: TanStack DB builder types are too loose here
-    .orderBy(({ item }: any) => item.publishedAt, {
-      direction: "asc",
-      nulls: "last",
-    })
-    // biome-ignore lint/suspicious/noExplicitAny: TanStack DB builder types are too loose here
-    .orderBy(({ item }: any) => item.createdAt, "asc");
-
-  // biome-ignore lint/suspicious/noExplicitAny: TanStack DB select types
-  return query.select(({ item, read }: any) => ({
-    ...item,
-    isRead: coalesce(read?.isRead, item.isRead),
-  }));
+  return tagsList.map((tag) => {
+    const matchedFeedIds = feedTagsList
+      .filter((ft) => ft.tagId === tag.id)
+      .map((ft) => ft.feedId);
+    let countVal = 0n;
+    for (const feedId of matchedFeedIds) {
+      countVal += BigInt(unreadCountByFeed.get(feedId) ?? 0);
+    }
+    return {
+      id: tag.id,
+      name: tag.name,
+      unreadCount: countVal,
+    };
+  });
 };
 
-export const itemsWithReadStateQuery = createRoot(() => {
-  return createMemo(() =>
-    createLiveQueryCollection((q) => buildItemsWithReadStateQuery(q)),
-  );
-});
-
-export const itemsUnreadQuery = createRoot(() => {
-  return createMemo(() =>
-    createLiveQueryCollection((q) =>
-      buildItemsWithReadStateQuery(q, { unreadOnly: true }),
-    ),
-  );
-});
-
-export const buildTagUnreadCountsQuery = (
-  q: InitialQueryBuilder,
-  options: TagUnreadCountsOptions = {},
-) => {
-  const tagsCollection = options.tagsCollection ?? tags;
-  const feedTagCollection = options.feedTagCollection ?? feedTag;
-  const unreadItemsCollection =
-    options.unreadItemsCollection ?? itemsUnreadQuery();
-
-  return (
-    q
-      .from({ tag: tagsCollection })
-      // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
-      .leftJoin({ tf: feedTagCollection }, ({ tag, tf }: any) =>
-        eq(tag.id, tf.tagId),
-      )
-      // biome-ignore lint/suspicious/noExplicitAny: TanStack DB join types
-      .leftJoin({ i: unreadItemsCollection }, ({ tf, i }: any) =>
-        eq(tf?.feedId, i.feedId),
-      )
-      // biome-ignore lint/suspicious/noExplicitAny: TanStack DB group/select types
-      .groupBy(({ tag }: any) => [tag.id, tag.name])
-      // biome-ignore lint/suspicious/noExplicitAny: TanStack DB select types
-      .select(({ tag, i }: any) => ({
-        id: tag.id,
-        name: tag.name,
-        unreadCount: count(i?.id),
-      }))
-  );
+export const getTotalUnreadCount = (unreadItemsList: MergedItem[]): bigint => {
+  return BigInt(unreadItemsList.length);
 };
-
-export const tagUnreadCountsQuery = createRoot(() => {
-  return createMemo(() =>
-    createLiveQueryCollection((q) => buildTagUnreadCountsQuery(q)),
-  );
-});
-
-export const totalUnreadCountQuery = createRoot(() => {
-  return createMemo(() =>
-    createLiveQueryCollection((q) =>
-      q
-        .from({ i: itemsUnreadQuery() })
-        .select(({ i }) => ({ total: count(i.id) })),
-    ),
-  );
-});

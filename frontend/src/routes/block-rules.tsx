@@ -1,5 +1,4 @@
-import { eq, useLiveQuery } from "@tanstack/solid-db";
-import { createMutation } from "@tanstack/solid-query";
+import { createMutation, createQuery } from "@tanstack/solid-query";
 import { createFileRoute } from "@tanstack/solid-router";
 import { createMemo, createSignal, Show } from "solid-js";
 import { css } from "../../styled-system/css";
@@ -12,7 +11,7 @@ import { PageLayout } from "../components/ui/PageLayout";
 import {
   itemBlockRuleDelete,
   itemBlockRuleInsert,
-  itemBlockRules,
+  itemBlockRulesQueryOptions,
 } from "../lib/block-db";
 
 export type BlockRulesSortField = "ruleType" | "value" | "domain";
@@ -35,41 +34,36 @@ function BlockRulesComponent() {
   );
   const [sortDirection, setSortDirection] = createSignal<"asc" | "desc">("asc");
 
-  const rulesQuery = useLiveQuery((q) => {
-    let query = q.from({ rule: itemBlockRules });
+  const rulesDataQuery = createQuery(() => itemBlockRulesQueryOptions);
+
+  const rulesQuery = createMemo(() => {
+    let list = [...(rulesDataQuery.data || [])];
 
     const currentTypeFilter = typeFilter();
     if (currentTypeFilter) {
-      query = query.where(({ rule }) => eq(rule.ruleType, currentTypeFilter));
+      list = list.filter((r) => r.ruleType === currentTypeFilter);
     }
 
     const currentDomainFilter = domainFilter();
     if (currentDomainFilter) {
-      query = query.where(({ rule }) =>
-        eq(rule.domain || "", currentDomainFilter),
-      );
+      list = list.filter((r) => r.domain === currentDomainFilter);
     }
 
     const currentSortField = sortField();
     if (currentSortField) {
-      query = query.orderBy(
-        ({ rule }) => rule[currentSortField] || "",
-        sortDirection(),
-      );
+      const dir = sortDirection() === "asc" ? 1 : -1;
+      list.sort((a, b) => {
+        const valA = a[currentSortField] || "";
+        const valB = b[currentSortField] || "";
+        return valA.localeCompare(valB) * dir;
+      });
     }
 
-    return query.select(({ rule }) => ({ ...rule }));
+    return list;
   });
 
-  // Separate query for unique domains to ensure the filter dropdown always shows all options
-  const allRulesForDomains = useLiveQuery((q) =>
-    q
-      .from({ rule: itemBlockRules })
-      .select(({ rule }) => ({ domain: rule.domain })),
-  );
-
   const memoizedUniqueDomains = createMemo(() => {
-    const rules = allRulesForDomains() || [];
+    const rules = rulesDataQuery.data || [];
     const domains = new Set<string>();
     for (const rule of rules) {
       if (rule.domain) domains.add(rule.domain);
@@ -304,7 +298,7 @@ function BlockRulesComponent() {
             borderColor: "gray.200",
           })}
         >
-          <Show when={rulesQuery.isLoading}>
+          <Show when={rulesDataQuery.isLoading}>
             <p>Loading rules...</p>
           </Show>
           <BlockRulesFilterBar

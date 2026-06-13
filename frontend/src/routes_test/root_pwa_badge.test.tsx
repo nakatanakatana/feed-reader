@@ -1,4 +1,5 @@
 import { create, toJson } from "@bufbuild/protobuf";
+import { QueryClientProvider } from "@tanstack/solid-query";
 import {
   createMemoryHistory,
   createRoute,
@@ -10,6 +11,8 @@ import { render } from "solid-js/web";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ListItemsResponseSchema } from "../gen/item/v1/item_pb";
 import { dateToTimestamp } from "../lib/item-utils";
+import { queryClient, transport } from "../lib/query";
+import { TransportProvider } from "../lib/transport-context";
 import { worker } from "../mocks/browser";
 import { safeJson } from "../mocks/connect";
 import { Route as RootRoute } from "../routes/__root";
@@ -70,7 +73,16 @@ describe("Root PWA Badge Integration", () => {
     );
 
     // 3. Render
-    dispose = render(() => <RouterProvider router={router} />, document.body);
+    dispose = render(
+      () => (
+        <TransportProvider transport={transport}>
+          <QueryClientProvider client={queryClient}>
+            <RouterProvider router={router} />
+          </QueryClientProvider>
+        </TransportProvider>
+      ),
+      document.body,
+    );
 
     // 4. Wait for PWA badge to update
     await expect.poll(() => navigator.setAppBadge).toHaveBeenCalledWith(5);

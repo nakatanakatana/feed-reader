@@ -1,10 +1,12 @@
-import { useLiveQuery } from "@tanstack/solid-db";
+import { createQuery } from "@tanstack/solid-query";
 import { useNavigate } from "@tanstack/solid-router";
 import { createEffect, createMemo } from "solid-js";
 import {
-  buildItemsWithReadStateQuery,
-  feedTag,
+  feedTagsQueryOptions,
+  getItemsQueryOptions,
+  getItemsWithReadState,
   type Item,
+  itemReadQueryOptions,
   updateItemReadStatus,
 } from "../lib/db";
 import { getPrefetchIds, prefetchItems } from "../lib/item-prefetch";
@@ -46,17 +48,25 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
 
   const isEndOfList = () => props.itemId === "end-of-list";
 
-  const itemsQuery = useLiveQuery((q) => {
-    return buildItemsWithReadStateQuery(q, {
-      feedTagCollection: feedTag,
-      tagId: props.tagId,
-    });
+  const itemsQuery = createQuery(() =>
+    getItemsQueryOptions(true, itemStore.state.since),
+  );
+  const readsQuery = createQuery(() => itemReadQueryOptions);
+  const feedTagsQuery = createQuery(() => feedTagsQueryOptions);
+
+  const itemsWithReadState = createMemo(() => {
+    return getItemsWithReadState(
+      itemsQuery.data ?? [],
+      readsQuery.data ?? [],
+      feedTagsQuery.data ?? [],
+      {
+        tagId: props.tagId,
+      },
+    );
   });
 
   const filteredItems = createMemo(() => {
-    const all = itemsQuery();
-    if (!all) return [];
-    return all as Item[];
+    return itemsWithReadState() as Item[];
   });
 
   const currentIndexMemo = createMemo(() => {

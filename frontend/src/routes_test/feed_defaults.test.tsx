@@ -18,24 +18,6 @@ vi.mock("../lib/item-query", () => ({
   useItems: vi.fn(),
 }));
 
-// Mock tanstack/solid-db
-vi.mock("@tanstack/solid-db", async () => {
-  const actual =
-    await vi.importActual<typeof import("@tanstack/solid-db")>(
-      "@tanstack/solid-db",
-    );
-  return {
-    ...actual,
-    useLiveQuery: vi.fn(() => {
-      const result = () => [];
-      (result as { isLoading?: boolean }).isLoading = false;
-      return result;
-    }),
-    eq: actual.eq,
-    isUndefined: actual.isUndefined,
-  };
-});
-
 // Mock db module
 vi.mock("../lib/db", async () => {
   const actual = await vi.importActual<typeof import("../lib/db")>("../lib/db");
