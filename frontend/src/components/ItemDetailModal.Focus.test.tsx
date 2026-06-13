@@ -52,6 +52,14 @@ describe("ItemDetailModal Focus", () => {
     </TransportProvider>
   );
 
+  const expectFocusWithinDialog = async () => {
+    await vi.waitFor(() => {
+      const dialog = document.querySelector("dialog");
+      expect(dialog).toBeTruthy();
+      expect(dialog?.contains(document.activeElement)).toBe(true);
+    });
+  };
+
   it("retains focus on modal container after navigating to next item", async () => {
     // Setup initial data
     setupMockData("1");
@@ -79,24 +87,17 @@ describe("ItemDetailModal Focus", () => {
     // Initial check: Wait for modal to appear and focus to be set
     await expect.element(page.getByRole("dialog")).toBeInTheDocument();
 
-    // In the current implementation (Modal.tsx), focus is set onMount.
-    // So initially, the dialog should be focused.
-    await expect.element(page.getByRole("dialog")).toHaveFocus();
+    // Focus is kept inside the modal panel within the native dialog.
+    await expectFocusWithinDialog();
 
     // Navigate to next item using keyboard shortcut 'j'
     await userEvent.keyboard("j");
 
-    // After navigation, itemId changes to "2".
-    // We expect the focus to be returned to the modal container (dialog)
-    // or at least stay inside the modal (e.g., on the Next button if it's still there).
-    // However, the requirement is: "Automatically return focus to the modal's main container after the itemId changes."
-
     // Wait for the new item to load (optional, but good for realism)
     await expect.element(page.getByText("Test Item 2")).toBeInTheDocument();
 
-    // ASSERT: Focus should be on the dialog (modal container)
-    // This is expected to FAIL currently because there is no logic to re-focus the container on itemId change.
-    await expect.element(page.getByRole("dialog")).toHaveFocus();
+    // ASSERT: Focus should remain inside the modal after navigation
+    await expectFocusWithinDialog();
   });
 
   it("traps focus within the modal when pressing Tab", async () => {
@@ -112,30 +113,18 @@ describe("ItemDetailModal Focus", () => {
 
     await expect.element(page.getByText("Test Item 1")).toBeInTheDocument();
 
-    // The DOM focus order:
-    // 1. Header Title Link: <a ...>Test Item 1</a>
-    // 2. Header More Actions Button
-    // 3. Footer Mark as Read (Prev/Next are disabled in this test case so skipped)
-
-    // Initial focus is on the dialog container (index -1)
-
-    // Tab 1: Should go to Title Link
     await userEvent.keyboard("{Tab}");
     const titleLink = page.getByRole("link", { name: "Test Item 1" });
     await expect.element(titleLink).toHaveFocus();
 
-    // Tab 2: Should go to More actions Button
     await userEvent.keyboard("{Tab}");
     const kebabMenu = page.getByRole("button", { name: "More actions" });
     await expect.element(kebabMenu).toHaveFocus();
 
-    // Tab 3: Should go to Mark as Read Button
     await userEvent.keyboard("{Tab}");
     const markAsReadButton = page.getByRole("button", { name: "Mark as Read" });
     await expect.element(markAsReadButton).toHaveFocus();
 
-    // Tab 4: Should WRAP AROUND to Title Link (Focus Trap)
-    // This assertion fails if trap is missing.
     await userEvent.keyboard("{Tab}");
     await expect.element(titleLink).toHaveFocus();
   });
@@ -183,25 +172,17 @@ describe("ItemDetailModal Focus", () => {
 
     // 1. Initial Item 1
     await expect.element(page.getByText("Test Item 1")).toBeInTheDocument();
-    await expect.element(page.getByRole("dialog")).toHaveFocus();
+    await expectFocusWithinDialog();
 
     // 2. Navigate to Item 2 using 'j'
     await userEvent.keyboard("j");
     await expect.element(page.getByText("Test Item 2")).toBeInTheDocument();
-
-    // Wait for animation frame and check focus
-    await vi.waitFor(async () => {
-      await expect.element(page.getByRole("dialog")).toHaveFocus();
-    });
+    await expectFocusWithinDialog();
 
     // 3. Navigate back to Item 1 (Cached) using 'k'
     await userEvent.keyboard("k");
     await expect.element(page.getByText("Test Item 1")).toBeInTheDocument();
-
-    // ASSERT: Focus should still be on the dialog
-    await vi.waitFor(async () => {
-      await expect.element(page.getByRole("dialog")).toHaveFocus();
-    });
+    await expectFocusWithinDialog();
   });
 
   it("calls onClose when backdrop is clicked", async () => {
@@ -219,10 +200,9 @@ describe("ItemDetailModal Focus", () => {
     const dialog = page.getByRole("dialog");
     await expect.element(dialog).toBeVisible();
 
-    // The backdrop is the first child of document.body in our Modal implementation
-    const backdrop = document.body.firstElementChild;
-    if (!backdrop) throw new Error("Backdrop not found");
-    backdrop.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    // Native backdrop clicks target the dialog element itself
+    const dialogEl = await page.getByRole("dialog").element();
+    dialogEl.dispatchEvent(new MouseEvent("click", { bubbles: true }));
 
     expect(onClose).toHaveBeenCalled();
   });

@@ -75,8 +75,10 @@ describe("ItemDetailModal Dismissal", () => {
     await expect.element(page.getByText("Test Item")).toBeInTheDocument();
 
     const dialog = page.getByRole("dialog");
-    const backdrop = (await dialog.element()).parentElement;
-    await backdrop?.click();
+    await expect.element(dialog).toBeVisible();
+
+    const dialogEl = await dialog.element();
+    dialogEl.dispatchEvent(new MouseEvent("click", { bubbles: true }));
 
     expect(onClose).toHaveBeenCalled();
   });

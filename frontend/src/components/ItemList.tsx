@@ -17,6 +17,7 @@ import {
   getItemsQueryOptions,
   getItemsWithReadState,
   getTagUnreadCounts,
+  filterVisibleListItems,
   getTotalUnreadCount,
   itemReadQueryOptions,
   tagsQueryOptions,
@@ -89,11 +90,12 @@ export function ItemList(props: ItemListProps) {
     );
   });
 
-  const filteredItems = createMemo(() => {
-    return itemsWithReadState().filter(
-      (item) => !itemStore.state.transientRemovedIds[item.id],
-    );
-  });
+  const filteredItems = createMemo(() =>
+    filterVisibleListItems(
+      itemsWithReadState(),
+      itemStore.state.transientRemovedIds,
+    ),
+  );
 
   const handleClearReadItems = () => {
     const readItemIds = filteredItems()

@@ -59,6 +59,12 @@ export const getItemsWithReadState = (
   return result;
 };
 
+/** Items visible in ItemList and eligible for modal prev/next navigation. */
+export const filterVisibleListItems = (
+  items: MergedItem[],
+  transientRemovedIds: Record<string, boolean>,
+): MergedItem[] => items.filter((item) => !transientRemovedIds[item.id]);
+
 export const getTagUnreadCounts = (
   tagsList: Tag[],
   feedTagsList: FeedTag[],

@@ -42,9 +42,16 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
     ],
   ) => {
     worker.use(
-      http.all("*/item.v1.ItemService/ListItems", () => {
+      http.all("*/item.v1.ItemService/ListItems", async ({ request }) => {
+        const body = (await parseConnectMessage(request)) as {
+          isRead?: boolean;
+        };
+        let items = mockItems;
+        if (body.isRead !== undefined) {
+          items = mockItems.filter((item) => item.isRead === body.isRead);
+        }
         const msg = create(ListItemsResponseSchema, {
-          items: mockItems,
+          items,
         });
         return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
       }),
@@ -124,6 +131,38 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
     // Heading should update
     await expect
       .element(page.getByRole("heading", { name: "Item 2" }))
+      .toBeInTheDocument();
+  });
+
+  it("navigates back to a read item that remains visible in ItemList", async () => {
+    setupMockData();
+    const history = createMemoryHistory({ initialEntries: ["/items/1"] });
+    const router = createRouter({ routeTree, history });
+
+    dispose = render(
+      () => (
+        <TransportProvider transport={transport}>
+          <QueryClientProvider client={queryClient}>
+            <ToastProvider>
+              <RouterProvider router={router} />
+            </ToastProvider>
+          </QueryClientProvider>
+        </TransportProvider>
+      ),
+      document.body,
+    );
+
+    await expect
+      .element(page.getByRole("heading", { name: "Item 1" }))
+      .toBeInTheDocument();
+
+    await userEvent.keyboard("j");
+    await expect.poll(() => history.location.pathname).toBe("/items/2");
+
+    await userEvent.keyboard("k");
+    await expect.poll(() => history.location.pathname).toBe("/items/1");
+    await expect
+      .element(page.getByRole("heading", { name: "Item 1" }))
       .toBeInTheDocument();
   });
 
@@ -293,6 +332,10 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
     await expect
       .poll(() => history.location.pathname)
       .toBe("/items/end-of-list");
+    await expect
+      .element(page.getByRole("heading", { name: "End of List" }))
+      .toBeInTheDocument();
+    await page.getByRole("heading", { name: "End of List" }).click();
 
     // Use 'k' to go back
     await userEvent.keyboard("k");
@@ -312,8 +355,7 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
   });
 
   it("reaches end-of-list correctly when filtered by tag and read status", async () => {
-    // Item 1 is unread, Item 2 is read.
-    // If showRead is false, only Item 1 is visible.
+    // Item 1 is unread, Item 2 is read. With showRead false the API omits read items.
     const mockItems = [
       create(ItemSchema, {
         id: "1",
@@ -354,9 +396,7 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
       }),
     );
 
-    // Initial state: showRead is false (default)
-    // Even if showRead is false, we expect Item 2 to be in the navigation sequence
-    // because it is present in the collection, matching ItemList visibility.
+    // Initial state: showRead is false (default). ListItems returns unread items only.
     const history = createMemoryHistory({
       initialEntries: ["/items/1?tagId=tag-1"],
     });
@@ -381,9 +421,9 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
 
     await userEvent.keyboard("j");
 
-    // NEW BEHAVIOR:
-    // It should navigate to Item 2 because it's in the collection,
-    // even if it's already read, to match ItemList visibility.
-    await expect.poll(() => history.location.pathname).toBe("/items/2");
+    // Item 2 is read and omitted from the unread list query, so next is end-of-list.
+    await expect
+      .poll(() => history.location.pathname)
+      .toBe("/items/end-of-list");
   });
 });

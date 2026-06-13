@@ -1,7 +1,8 @@
 import type { JSX } from "solid-js";
-import { onMount, Show } from "solid-js";
+import { onCleanup, Show } from "solid-js";
+import { Portal } from "solid-js/web";
 import { css } from "../../../styled-system/css";
-import { center, flex, stack } from "../../../styled-system/patterns";
+import { flex, stack } from "../../../styled-system/patterns";
 
 type ModalSize = "standard" | "full";
 
@@ -18,17 +19,25 @@ interface ModalProps {
   ariaLabel?: string;
   bodyPadding?: boolean;
   onKeyDown?: (e: KeyboardEvent) => void;
-  ref?: (el: HTMLDivElement) => void;
+  ref?: (el: HTMLDialogElement) => void;
 }
 
 export function Modal(props: ModalProps) {
-  let modalRef: HTMLDivElement | undefined;
+  let dialogRef: HTMLDialogElement | undefined;
+  let panelRef: HTMLDivElement | undefined;
 
-  onMount(() => {
-    if (modalRef) {
-      modalRef.focus();
-    }
-  });
+  const openDialog = (el: HTMLDialogElement) => {
+    queueMicrotask(() => {
+      if (!el.isConnected) return;
+      if (!el.matches(":modal")) {
+        if (el.open) {
+          el.close();
+        }
+        el.showModal();
+      }
+      panelRef?.focus();
+    });
+  };
 
   const size = () => props.size ?? "standard";
 
@@ -52,24 +61,28 @@ export function Modal(props: ModalProps) {
       maxHeight: size() === "full" ? { base: "full", md: "90vh" } : "90vh",
     });
 
+  const handleCancel = (e: Event) => {
+    e.preventDefault();
+    if (!props.disableBackdropClose) {
+      props.onClose();
+    }
+  };
+
   const handleBackdropClick = (e: MouseEvent) => {
     if (props.disableBackdropClose) return;
-    if (e.target === e.currentTarget) {
+    if (e.target === dialogRef) {
       props.onClose();
     }
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
     props.onKeyDown?.(e);
-    if (e.key === "Escape" && !props.disableBackdropClose) {
-      props.onClose();
-    }
 
-    if (e.key === "Tab" && modalRef) {
+    if (e.key === "Tab" && dialogRef) {
       const focusableSelector =
         'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
       const focusables = Array.from(
-        modalRef.querySelectorAll<HTMLElement>(focusableSelector),
+        dialogRef.querySelectorAll<HTMLElement>(focusableSelector),
       );
 
       if (focusables.length === 0) return;
@@ -80,112 +93,123 @@ export function Modal(props: ModalProps) {
       if (e.shiftKey) {
         if (
           document.activeElement === first ||
-          document.activeElement === modalRef
+          document.activeElement === panelRef ||
+          document.activeElement === dialogRef
         ) {
           e.preventDefault();
           last.focus();
         }
-      } else {
-        if (document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
-        }
+      } else if (
+        document.activeElement === last ||
+        document.activeElement === panelRef ||
+        document.activeElement === dialogRef
+      ) {
+        e.preventDefault();
+        first.focus();
       }
     }
   };
 
   return (
     <Show when={props.isOpen}>
-      {/* biome-ignore lint/a11y/noStaticElementInteractions: Backdrop click handling */}
-      {/* biome-ignore lint/a11y/useKeyWithClickEvents: Key events handled by modal container */}
-      <div
-        onClick={handleBackdropClick}
-        class={center({
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "screen",
-          height: "screen",
-          backgroundColor: "rgba(0, 0, 0, 0.5)",
-          zIndex: 1000,
-          padding: { base: "0", md: "4" },
-        })}
-      >
-        <div
+      <Portal mount={document.body}>
+        <dialog
           ref={(el) => {
-            modalRef = el;
+            dialogRef = el;
             props.ref?.(el);
+            openDialog(el);
+            onCleanup(() => {
+              el.close();
+            });
           }}
-          tabindex="-1"
-          role="dialog"
-          aria-modal="true"
           aria-label={props.ariaLabel ?? props.title}
-          onClick={(e) => e.stopPropagation()}
+          onCancel={handleCancel}
+          onClick={handleBackdropClick}
           onKeyDown={handleKeyDown}
-          class={panelStyle()}
+          class={css({
+            background: "transparent",
+            border: "none",
+            padding: { base: "0", md: "4" },
+            margin: "auto",
+            outline: "none",
+            maxWidth: "100vw",
+            maxHeight: "100vh",
+            _backdrop: {
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+            },
+          })}
         >
-          <Show when={props.title || !props.hideClose}>
-            <div
-              class={flex({
-                justifyContent: "space-between",
-                alignItems: "center",
-                padding: "4",
-                borderBottom: "1px solid",
-                borderColor: "gray.100",
-              })}
-            >
-              <div class={flex({ gap: "3", alignItems: "center", flex: 1 })}>
-                <Show when={props.title}>
-                  <h2 class={css({ fontSize: "lg", fontWeight: "bold" })}>
-                    {props.title}
-                  </h2>
-                </Show>
-                {props.headerExtras}
-              </div>
-              <Show when={!props.hideClose}>
-                <button
-                  type="button"
-                  onClick={props.onClose}
-                  class={css({
-                    padding: "2",
-                    cursor: "pointer",
-                    color: "gray.500",
-                    _hover: { color: "gray.700" },
-                  })}
-                  aria-label="Close"
-                >
-                  ✕
-                </button>
-              </Show>
-            </div>
-          </Show>
           <div
-            class={stack({
-              padding: props.bodyPadding === false ? "0" : "6",
-              gap: "4",
-              overflowY: "auto",
-              flex: 1,
-              minHeight: 0,
-            })}
+            ref={(el) => {
+              panelRef = el;
+            }}
+            onClick={(e) => e.stopPropagation()}
+            class={panelStyle()}
+            tabindex="-1"
           >
-            {props.children}
-          </div>
-          <Show when={props.footer}>
+            <Show when={props.title || !props.hideClose}>
+              <div
+                class={flex({
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  padding: "4",
+                  borderBottom: "1px solid",
+                  borderColor: "gray.100",
+                })}
+              >
+                <div class={flex({ gap: "3", alignItems: "center", flex: 1 })}>
+                  <Show when={props.title}>
+                    <h2 class={css({ fontSize: "lg", fontWeight: "bold" })}>
+                      {props.title}
+                    </h2>
+                  </Show>
+                  {props.headerExtras}
+                </div>
+                <Show when={!props.hideClose}>
+                  <button
+                    type="button"
+                    onClick={props.onClose}
+                    class={css({
+                      padding: "2",
+                      cursor: "pointer",
+                      color: "gray.500",
+                      _hover: { color: "gray.700" },
+                    })}
+                    aria-label="Close"
+                  >
+                    ✕
+                  </button>
+                </Show>
+              </div>
+            </Show>
             <div
-              class={flex({
-                justifyContent: "space-between",
-                alignItems: "center",
-                padding: "4",
-                borderTop: "1px solid",
-                borderColor: "gray.100",
-                backgroundColor: "gray.50",
+              class={stack({
+                padding: props.bodyPadding === false ? "0" : "6",
+                gap: "4",
+                overflowY: "auto",
+                flex: 1,
+                minHeight: 0,
               })}
             >
-              {props.footer}
+              {props.children}
             </div>
-          </Show>
-        </div>
-      </div>
+            <Show when={props.footer}>
+              <div
+                class={flex({
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  padding: "4",
+                  borderTop: "1px solid",
+                  borderColor: "gray.100",
+                  backgroundColor: "gray.50",
+                })}
+              >
+                {props.footer}
+              </div>
+            </Show>
+          </div>
+        </dialog>
+      </Portal>
     </Show>
   );
 }
