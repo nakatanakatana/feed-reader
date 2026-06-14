@@ -61,6 +61,29 @@ export function Modal(props: ModalProps) {
       maxHeight: size() === "full" ? { base: "full", md: "90vh" } : "90vh",
     });
 
+  const dialogStyle = () => {
+    const isFull = size() === "full";
+    return css({
+      background: "transparent",
+      border: "none",
+      padding: { base: "0", md: "4" },
+      margin: isFull ? { base: "0" } : "auto",
+      outline: "none",
+      ...(isFull && {
+        width: "100vw",
+        height: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }),
+      maxWidth: "100vw",
+      maxHeight: "100vh",
+      _backdrop: {
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+      },
+    });
+  };
+
   const handleCancel = (e: Event) => {
     e.preventDefault();
     if (!props.disableBackdropClose) {
@@ -126,18 +149,7 @@ export function Modal(props: ModalProps) {
           onCancel={handleCancel}
           onClick={handleBackdropClick}
           onKeyDown={handleKeyDown}
-          class={css({
-            background: "transparent",
-            border: "none",
-            padding: { base: "0", md: "4" },
-            margin: "auto",
-            outline: "none",
-            maxWidth: "100vw",
-            maxHeight: "100vh",
-            _backdrop: {
-              backgroundColor: "rgba(0, 0, 0, 0.5)",
-            },
-          })}
+          class={dialogStyle()}
         >
           <div
             ref={(el) => {
