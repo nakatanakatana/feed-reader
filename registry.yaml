@@ -1,0 +1,56 @@
+---
+packages:
+  - type: github_release
+    name: cccc-es
+    repo_owner: moznion
+    repo_name: cccc
+    asset: 'cccc-es-{{.Version}}-{{.Arch}}-{{.OS}}.tar.gz'
+    supported_envs:
+      - darwin
+      - linux
+    overrides:
+      - goos: darwin
+        goarch: amd64
+        replacements: { darwin: apple-darwin, amd64: x86_64 }
+      - goos: darwin
+        goarch: arm64
+        replacements: { darwin: apple-darwin, arm64: aarch64 }
+      - goos: linux
+        goarch: amd64
+        replacements: { linux: unknown-linux-musl, amd64: x86_64 }
+      - goos: linux
+        goarch: arm64
+        replacements: { linux: unknown-linux-musl, arm64: aarch64 }
+    files:
+      - name: cccc-es
+    checksum:
+      type: github_release
+      asset: cccc-es-{{.Version}}-{{.Arch}}-{{.OS}}.sha256
+      algorithm: sha256
+  - type: github_release
+    name: cccc-go
+    repo_owner: moznion
+    repo_name: cccc
+    asset: 'cccc-go-{{.Version}}-{{.Arch}}-{{.OS}}.tar.gz'
+    supported_envs:
+      - darwin
+      - linux
+    overrides:
+      - goos: darwin
+        goarch: amd64
+        replacements: { darwin: apple-darwin, amd64: x86_64 }
+      - goos: darwin
+        goarch: arm64
+        replacements: { darwin: apple-darwin, arm64: aarch64 }
+      - goos: linux
+        goarch: amd64
+        replacements: { linux: unknown-linux-musl, amd64: x86_64 }
+      - goos: linux
+        goarch: arm64
+        replacements: { linux: unknown-linux-musl, arm64: aarch64 }
+    files:
+      - name: cccc-go
+    checksum:
+      type: github_release
+      asset: cccc-go-{{.Version}}-{{.Arch}}-{{.OS}}.sha256
+      algorithm: sha256
