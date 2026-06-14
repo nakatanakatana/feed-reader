@@ -26,4 +26,27 @@ describe("Vite 8 migration", () => {
     expect(config.esbuild).toBeUndefined();
     expect(config.build?.rollupOptions).toBeUndefined();
   });
+
+  test("moves browser-independent frontend tests out of the browser project", async () => {
+    const configPath = path.join(rootDir, "vite.config.js");
+    const configSource = fs.readFileSync(configPath, "utf-8");
+    const jsdomUnitTests = [
+      "src/components/DynamicFavicon.test.tsx",
+      "src/components/MarkdownRenderer.test.tsx",
+      "src/components/PwaBadge.test.tsx",
+      "src/lib/feed-store-persistence.test.ts",
+      "src/lib/item-db.test.ts",
+      "src/lib/storage-utils.test.ts",
+      "src/lib/toast.test.tsx",
+      "src/lib/use-swipe.test.ts",
+      "src/pwa-registration.test.ts",
+    ];
+
+    expect(configSource).toContain('name: "jsdom"');
+    expect(configSource).toContain('environment: "jsdom"');
+
+    for (const testPath of jsdomUnitTests) {
+      expect(configSource).toContain(`"${testPath}"`);
+    }
+  });
 });
