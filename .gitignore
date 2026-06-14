@@ -49,4 +49,9 @@ bundle-size.json
 cccc-metrics.json
 frontend/coverage/
 
+# Kubb generated artifacts (not used by the app)
+frontend/src/lib/api/index.ts
+frontend/src/lib/api/schemas/
+frontend/src/lib/api/.kubb/
+
 docs/superpowers/plans

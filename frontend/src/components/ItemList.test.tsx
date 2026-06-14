@@ -8,21 +8,18 @@ import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
+import type { Item } from "../lib/api/types-generated";
 import { setLastFetched } from "../lib/item-sync-state";
-import { dateToTimestamp } from "../lib/item-utils";
 import { queryClient } from "../lib/query";
 import { worker } from "../mocks/browser";
 import { routeTree } from "../routeTree.gen";
 import {
-  create,
-  ItemSchema,
-  ListFeedTagsResponseSchema,
-  ListItemReadResponseSchema,
-  ListItemsResponseSchema,
-  ListTagsResponseSchema,
-  type Item as ProtoItem,
-  toJson,
-} from "../test-utils/json-identity";
+  buildItem,
+  buildListFeedTagsResponse,
+  buildListItemReadResponse,
+  buildListItemsResponse,
+  buildListTagsResponse,
+} from "../test-utils/openapi-fixtures";
 
 describe("ItemList", () => {
   let dispose: () => void;
@@ -47,44 +44,41 @@ describe("ItemList", () => {
   });
 
   const setupMockData = (
-    items: Partial<ProtoItem>[] = [],
+    items: Partial<Item>[] = [],
     itemReads: { itemId: string; isRead: boolean }[] = [],
   ) => {
+    const fixedDate = "2026-03-01T00:00:00.000Z";
     worker.use(
       http.all("*/api/v2/items", () => {
-        const msg = create(ListItemsResponseSchema, {
-          // biome-ignore lint/suspicious/noExplicitAny: mocking message shapes is more efficient with any here
-          items: items.map((i) => create(ItemSchema, i as any)),
-          nextPageToken: "",
-        });
-        return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
+        return HttpResponse.json(
+          buildListItemsResponse(
+            items.map((item) =>
+              buildItem({
+                publishedAt: fixedDate,
+                createdAt: fixedDate,
+                ...item,
+                id: item.id ?? "unknown",
+              }),
+            ),
+          ),
+        );
       }),
       http.all("*/api/v2/item-reads", () => {
-        const msg = create(ListItemReadResponseSchema, {
-          itemReads: itemReads.map((ir) => ({
-            itemId: ir.itemId,
-            isRead: ir.isRead,
-            updatedAt: dateToTimestamp(new Date()),
-          })),
-          nextPageToken: "",
-        });
-        return HttpResponse.json(toJson(ListItemReadResponseSchema, msg));
+        return HttpResponse.json(
+          buildListItemReadResponse(
+            itemReads.map((itemRead) => ({
+              itemId: itemRead.itemId,
+              isRead: itemRead.isRead,
+              updatedAt: new Date().toISOString(),
+            })),
+          ),
+        );
       }),
       http.all("*/api/v2/tags", () => {
-        return HttpResponse.json(
-          toJson(
-            ListTagsResponseSchema,
-            create(ListTagsResponseSchema, { tags: [] }),
-          ),
-        );
+        return HttpResponse.json(buildListTagsResponse([]));
       }),
       http.all("*/api/v2/feed-tags", () => {
-        return HttpResponse.json(
-          toJson(
-            ListFeedTagsResponseSchema,
-            create(ListFeedTagsResponseSchema, { feedTags: [] }),
-          ),
-        );
+        return HttpResponse.json(buildListFeedTagsResponse());
       }),
     );
   };
@@ -111,22 +105,22 @@ describe("ItemList", () => {
   });
 
   it("displays a list of items", async () => {
-    const fixedDate = new Date("2026-03-01T00:00:00Z");
-    setLastFetched(fixedDate);
+    const fixedDate = "2026-03-01T00:00:00.000Z";
+    setLastFetched(new Date(fixedDate));
     setupMockData([
       {
         id: "1",
         title: "Item 1",
-        publishedAt: dateToTimestamp(fixedDate),
-        createdAt: dateToTimestamp(fixedDate),
+        publishedAt: fixedDate,
+        createdAt: fixedDate,
         isRead: false,
         feedId: "feed-1",
       },
       {
         id: "2",
         title: "Item 2",
-        publishedAt: dateToTimestamp(fixedDate),
-        createdAt: dateToTimestamp(fixedDate),
+        publishedAt: fixedDate,
+        createdAt: fixedDate,
         isRead: true,
         feedId: "feed-1",
       },
@@ -151,15 +145,15 @@ describe("ItemList", () => {
   });
 
   it("updates item read status via delta sync", async () => {
-    const fixedDate = new Date("2026-03-01T00:00:00Z");
-    setLastFetched(fixedDate);
+    const fixedDate = "2026-03-01T00:00:00.000Z";
+    setLastFetched(new Date(fixedDate));
 
-    const items: Partial<ProtoItem>[] = [
+    const items: Partial<Item>[] = [
       {
         id: "1",
         title: "Item 1",
-        publishedAt: dateToTimestamp(fixedDate),
-        createdAt: dateToTimestamp(fixedDate),
+        publishedAt: fixedDate,
+        createdAt: fixedDate,
         isRead: false,
         feedId: "feed-1",
       },

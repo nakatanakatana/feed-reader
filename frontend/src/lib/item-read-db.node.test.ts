@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { apiClient } from "./api/client";
+import * as itemReadsListClient from "./api/generated/client/itemReadsList";
+import * as itemsUpdateStatusClient from "./api/generated/client/itemsUpdateStatus";
 import {
   type ItemRead,
   itemReadQueryOptions,
@@ -18,8 +19,8 @@ describe("ItemRead query options", () => {
     queryClient.clear();
     setLastReadFetched(null);
     setLastItemsSyncedAt(null);
-    vi.spyOn(apiClient, "get");
-    vi.spyOn(apiClient, "post");
+    vi.spyOn(itemReadsListClient, "itemReadsList");
+    vi.spyOn(itemsUpdateStatusClient, "itemsUpdateStatus");
   });
 
   describe("queryFn", () => {
@@ -38,8 +39,7 @@ describe("ItemRead query options", () => {
         },
       ];
 
-      // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
-      (apiClient.get as any).mockResolvedValue({
+      vi.mocked(itemReadsListClient.itemReadsList).mockResolvedValue({
         itemReads: mockItemReads,
         nextPageToken: "",
       });
@@ -68,8 +68,7 @@ describe("ItemRead query options", () => {
         },
       ];
 
-      // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
-      (apiClient.get as any).mockResolvedValue({
+      vi.mocked(itemReadsListClient.itemReadsList).mockResolvedValue({
         itemReads: mockItemReads,
         nextPageToken: "",
       });
@@ -84,8 +83,7 @@ describe("ItemRead query options", () => {
       const anchorDate = new Date("2026-03-07T13:00:00Z");
       setLastReadFetched(anchorDate);
 
-      // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
-      (apiClient.get as any).mockResolvedValue({
+      vi.mocked(itemReadsListClient.itemReadsList).mockResolvedValue({
         itemReads: [],
         nextPageToken: "",
       });
@@ -99,8 +97,7 @@ describe("ItemRead query options", () => {
       const anchorDate = new Date("2026-03-07T14:00:00Z");
       setLastReadFetched(anchorDate);
 
-      // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
-      (apiClient.get as any)
+      vi.mocked(itemReadsListClient.itemReadsList)
         .mockResolvedValueOnce({
           itemReads: [
             {
@@ -124,20 +121,15 @@ describe("ItemRead query options", () => {
 
       await itemReadQueryOptions.queryFn();
 
-      expect(apiClient.get).toHaveBeenCalledTimes(2);
-
-      // biome-ignore lint/suspicious/noExplicitAny: asserting mock calls
-      const firstCallArgs = (apiClient.get as any).mock.calls[0][0] as string;
-      // biome-ignore lint/suspicious/noExplicitAny: asserting mock calls
-      const secondCallArgs = (apiClient.get as any).mock.calls[1][0] as string;
-
-      // First page should include since
-      expect(firstCallArgs).toContain("since=2026-03-07T14%3A00%3A00.000Z");
-      expect(firstCallArgs).not.toContain("pageToken=");
-
-      // Second page should include pageToken and OMIT since
-      expect(secondCallArgs).toContain("pageToken=token-1");
-      expect(secondCallArgs).not.toContain("since=");
+      expect(itemReadsListClient.itemReadsList).toHaveBeenCalledTimes(2);
+      expect(itemReadsListClient.itemReadsList).toHaveBeenNthCalledWith(1, {
+        pageSize: 1000,
+        since: anchorDate.toISOString(),
+      });
+      expect(itemReadsListClient.itemReadsList).toHaveBeenNthCalledWith(2, {
+        pageSize: 1000,
+        pageToken: "token-1",
+      });
     });
 
     it("should merge with existing data", async () => {
@@ -155,9 +147,9 @@ describe("ItemRead query options", () => {
         },
       ];
 
-      // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
-      (apiClient.get as any).mockResolvedValue({
+      vi.mocked(itemReadsListClient.itemReadsList).mockResolvedValue({
         itemReads: mockItemReads,
+        nextPageToken: "",
       });
 
       const data = (await itemReadQueryOptions.queryFn()) as ItemRead[];
@@ -175,35 +167,34 @@ describe("ItemRead query options", () => {
 
       const data = await itemReadQueryOptions.queryFn();
 
-      expect(apiClient.get).not.toHaveBeenCalled();
+      expect(itemReadsListClient.itemReadsList).not.toHaveBeenCalled();
       expect(data).toEqual([]);
     });
   });
 
   describe("updateItemReadStatus", () => {
     it("should call updateItemStatus", async () => {
-      // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
-      (apiClient.post as any).mockResolvedValue({});
+      vi.mocked(itemsUpdateStatusClient.itemsUpdateStatus).mockResolvedValue(
+        {},
+      );
 
       await updateItemReadStatus(["1", "2"], true);
 
-      expect(apiClient.post).toHaveBeenCalledWith("/items/status", {
+      expect(itemsUpdateStatusClient.itemsUpdateStatus).toHaveBeenCalledWith({
         ids: ["1", "2"],
         isRead: true,
       });
     });
 
     it("should perform optimistic update and rollback on server failure, cleaning up new records", async () => {
-      // Setup initial state: id: "1" exists, "2" is new
       const initialData = [{ id: "1", isRead: false, updatedAt: new Date() }];
       queryClient.setQueryData(itemReadQueryOptions.queryKey, initialData);
 
-      // Mock server to fail
       const error = new Error("Server error");
-      // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
-      (apiClient.post as any).mockRejectedValue(error);
+      vi.mocked(itemsUpdateStatusClient.itemsUpdateStatus).mockRejectedValue(
+        error,
+      );
 
-      // Attempt update for both existing and new IDs
       await expect(updateItemReadStatus(["1", "2"], true)).rejects.toThrow(
         "Server error",
       );
@@ -211,9 +202,7 @@ describe("ItemRead query options", () => {
       const cache = queryClient.getQueryData(
         itemReadQueryOptions.queryKey,
       ) as ItemRead[];
-      // id: "1" should be rolled back to false
       expect(cache.find((i) => i.id === "1")?.isRead).toBe(false);
-      // id: "2" should be removed from cache
       expect(cache.find((i) => i.id === "2")).toBeUndefined();
     });
   });
@@ -221,7 +210,6 @@ describe("ItemRead query options", () => {
   describe("Conflict Resolution", () => {
     it("should allow server data to overwrite local data (Server Wins)", async () => {
       setLastReadFetched(new Date("2026-03-01T00:00:00Z"));
-      // Local data has id: "1" as isRead: true (optimistic update)
       queryClient.setQueryData(
         ["item-reads"],
         [
@@ -233,7 +221,6 @@ describe("ItemRead query options", () => {
         ],
       );
 
-      // Server returns id: "1" as isRead: false (e.g. changed on another device)
       const mockItemReads = [
         {
           itemId: "1",
@@ -242,16 +229,16 @@ describe("ItemRead query options", () => {
         },
       ];
 
-      // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
-      (apiClient.get as any).mockResolvedValue({
+      vi.mocked(itemReadsListClient.itemReadsList).mockResolvedValue({
         itemReads: mockItemReads,
+        nextPageToken: "",
       });
 
       const data = (await itemReadQueryOptions.queryFn()) as ItemRead[];
 
       expect(data).toHaveLength(1);
       expect(data[0].id).toBe("1");
-      expect(data[0].isRead).toBe(false); // Server value wins
+      expect(data[0].isRead).toBe(false);
     });
   });
 });

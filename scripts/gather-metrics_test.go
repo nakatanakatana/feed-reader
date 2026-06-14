@@ -60,6 +60,23 @@ func TestCalculateBundleSize(t *testing.T) {
 	}
 }
 
+func TestTSCCCCExcludes(t *testing.T) {
+	want := []string{
+		"**/*.gen.ts",
+		"frontend/src/lib/api/types-generated.ts",
+		"frontend/src/lib/api/generated/**",
+		"frontend/src/mocks/generated/**",
+	}
+	if len(tsCCCCExcludes) != len(want) {
+		t.Fatalf("expected %d excludes, got %d", len(want), len(tsCCCCExcludes))
+	}
+	for i := range want {
+		if tsCCCCExcludes[i] != want[i] {
+			t.Errorf("exclude[%d]: expected %q, got %q", i, want[i], tsCCCCExcludes[i])
+		}
+	}
+}
+
 func TestBuildCCCCArgs(t *testing.T) {
 	got := buildCCCCArgs([]string{"gen/**", "store/db.go"}, "cmd", "api", "store")
 	want := []string{

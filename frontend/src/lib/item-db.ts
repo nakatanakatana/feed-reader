@@ -1,4 +1,6 @@
-import { apiClient } from "./api/client";
+import { itemsGet } from "./api/generated/client/itemsGet";
+import { itemsList } from "./api/generated/client/itemsList";
+import { itemsUpdateStatus } from "./api/generated/client/itemsUpdateStatus";
 import { mapUpdateItemStatusRequest } from "./api/mutation-mappers";
 import type { components } from "./api/types";
 import { type TimestampLike, toDate } from "./date-utils";
@@ -35,10 +37,6 @@ export interface Item extends ListItem {
 }
 
 type OpenAPIItem = components["schemas"]["Item"];
-type ListItemsResponse = components["schemas"]["ListItemsResponse"];
-type GetItemResponse = components["schemas"]["GetItemResponse"];
-type EmptyResponse = Record<string, never>;
-
 export interface ConnectItemShape {
   id: string;
   title: string;
@@ -115,24 +113,21 @@ export const getItemsQueryOptions = (
       const allNewItems: ListItem[] = [];
 
       do {
-        const params = new URLSearchParams();
         const sinceValue = timestampToISOString(searchSince);
-        if (sinceValue) params.set("since", sinceValue);
-        params.set("pageSize", "1000");
-        if (pageToken) params.set("pageToken", pageToken);
-        if (isReadParam.isRead !== undefined) {
-          params.set("isRead", String(isReadParam.isRead));
-        }
-
-        const response = await apiClient.get<ListItemsResponse>(
-          `/items?${params.toString()}`,
-        );
+        const response = await itemsList({
+          ...(sinceValue ? { since: sinceValue } : {}),
+          pageSize: 1000,
+          ...(pageToken ? { pageToken } : {}),
+          ...(isReadParam.isRead !== undefined
+            ? { isRead: isReadParam.isRead }
+            : {}),
+        });
 
         if (response.items && response.items.length > 0) {
           allNewItems.push(...response.items.map(mapOpenAPIItem));
         }
 
-        pageToken = response.nextPageToken;
+        pageToken = response.nextPageToken ?? "";
       } while (pageToken);
 
       const syncTime = new Date();
@@ -213,10 +208,7 @@ export const updateItemStatus = async (
   });
 
   try {
-    await apiClient.post<EmptyResponse>(
-      "/items/status",
-      mapUpdateItemStatusRequest(ids, isRead),
-    );
+    await itemsUpdateStatus(mapUpdateItemStatusRequest(ids, isRead));
   } catch (e) {
     if (previousData) {
       queryClient.setQueryData(queryKey, previousData);
@@ -226,7 +218,7 @@ export const updateItemStatus = async (
 };
 
 export const getItem = async (id: string): Promise<Item | null> => {
-  const response = await apiClient.get<GetItemResponse>(`/items/${id}`);
+  const response = await itemsGet(id);
   if (!response.item) return null;
   return mapOpenAPIItem(response.item);
 };

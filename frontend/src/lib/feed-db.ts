@@ -1,5 +1,12 @@
 import { base64ToBytes } from "./api/base64";
-import { apiClient } from "./api/client";
+import { feedTagsList } from "./api/generated/client/feedTagsList";
+import { feedTagsManage } from "./api/generated/client/feedTagsManage";
+import { feedsCreate } from "./api/generated/client/feedsCreate";
+import { feedsDelete } from "./api/generated/client/feedsDelete";
+import { feedsExportOpml } from "./api/generated/client/feedsExportOpml";
+import { feedsList } from "./api/generated/client/feedsList";
+import { feedsRefresh } from "./api/generated/client/feedsRefresh";
+import { feedsSuspend } from "./api/generated/client/feedsSuspend";
 import { mapRefreshFeedsRequest } from "./api/mutation-mappers";
 import type { components } from "./api/types";
 import { type TimestampLike, toDate } from "./date-utils";
@@ -32,12 +39,6 @@ export interface FeedTag {
 }
 
 type OpenAPIFeed = components["schemas"]["Feed"];
-type ListFeedsResponse = components["schemas"]["ListFeedsResponse"];
-type CreateFeedResponse = components["schemas"]["CreateFeedResponse"];
-type RefreshFeedsResponse = components["schemas"]["RefreshFeedsResponse"];
-type ExportOpmlResponse = components["schemas"]["ExportOpmlResponse"];
-type ListFeedTagsResponse = components["schemas"]["ListFeedTagsResponse"];
-type EmptyResponse = Record<string, never>;
 
 export interface ConnectFeedShape {
   id: string;
@@ -83,7 +84,7 @@ export const manageFeedTags = async (params: {
   addTagIds: string[];
   removeTagIds: string[];
 }) => {
-  await apiClient.post<EmptyResponse>("/feed-tags/manage", params);
+  await feedTagsManage(params);
   queryClient.invalidateQueries({ queryKey: ["feeds"] });
   queryClient.invalidateQueries({ queryKey: ["tags"] });
   queryClient.invalidateQueries({ queryKey: ["feed-tags"] });
@@ -92,10 +93,7 @@ export const manageFeedTags = async (params: {
 export const refreshFeeds = async (feedIds: string[]) => {
   fetchingState.startFetching(feedIds);
   try {
-    const res = await apiClient.post<RefreshFeedsResponse>(
-      "/feeds/refresh",
-      mapRefreshFeedsRequest(feedIds),
-    );
+    const res = await feedsRefresh(mapRefreshFeedsRequest(feedIds));
     fetchingState.finishFetching(
       feedIds,
       res.results.map((r) => ({
@@ -124,7 +122,7 @@ export const suspendFeeds = async (
   feedIds: string[],
   suspendSeconds: number,
 ) => {
-  await apiClient.post<EmptyResponse>("/feeds/suspend", {
+  await feedsSuspend({
     ids: feedIds,
     suspendSeconds: String(suspendSeconds),
   });
@@ -132,7 +130,7 @@ export const suspendFeeds = async (
 };
 
 export const exportFeeds = async (feedIds: string[]) => {
-  const res = await apiClient.post<ExportOpmlResponse>("/feeds/export-opml", {
+  const res = await feedsExportOpml({
     ids: feedIds,
   });
   const opmlContent = base64ToBytes(res.opmlContent);
@@ -154,19 +152,19 @@ export const exportFeeds = async (feedIds: string[]) => {
 export const feedsQueryOptions = {
   queryKey: ["feeds"] as const,
   queryFn: async () => {
-    const response = await apiClient.get<ListFeedsResponse>("/feeds");
+    const response = await feedsList();
     return response.feeds.map(mapOpenAPIFeed);
   },
 };
 
 export const feedInsert = async (url: string, tags: Tag[]) => {
   const tagIds = tags.map((t) => t.id);
-  await apiClient.post<CreateFeedResponse>("/feeds", { url, tagIds });
+  await feedsCreate({ url, tagIds });
   await queryClient.invalidateQueries({ queryKey: ["feeds"] });
 };
 
 export const feedDelete = async (id: string) => {
-  await apiClient.delete<EmptyResponse>(`/feeds/${id}`);
+  await feedsDelete(id);
   await queryClient.invalidateQueries({ queryKey: ["feeds"] });
   await queryClient.invalidateQueries({ queryKey: ["tags"] });
   await queryClient.invalidateQueries({ queryKey: ["feed-tags"] });
@@ -175,7 +173,7 @@ export const feedDelete = async (id: string) => {
 export const feedTagsQueryOptions = {
   queryKey: ["feed-tags"] as const,
   queryFn: async () => {
-    const response = await apiClient.get<ListFeedTagsResponse>("/feed-tags");
+    const response = await feedTagsList();
     return response.feedTags.map((ft) => ({
       id: `${ft.feedId}-${ft.tagId}`,
       feedId: ft.feedId,

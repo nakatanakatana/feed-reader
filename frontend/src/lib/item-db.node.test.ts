@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { apiClient } from "./api/client";
+import * as itemsUpdateStatusClient from "./api/generated/client/itemsUpdateStatus";
 import { type ListItem, updateItemStatus } from "./item-db";
 import { queryClient } from "./query";
 
@@ -7,7 +7,7 @@ describe("itemDb", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     queryClient.clear();
-    vi.spyOn(apiClient, "post");
+    vi.spyOn(itemsUpdateStatusClient, "itemsUpdateStatus");
   });
 
   describe("updateItemStatus", () => {
@@ -20,17 +20,15 @@ describe("itemDb", () => {
 
       queryClient.setQueryData(queryKey, initialData);
 
-      // Mock client to fail
       const error = new Error("Failed to update status");
-      // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
-      (apiClient.post as any).mockRejectedValue(error);
+      vi.mocked(itemsUpdateStatusClient.itemsUpdateStatus).mockRejectedValue(
+        error,
+      );
 
-      // Attempt updating item 1 to isRead: true
       await expect(updateItemStatus(["1"], true, queryKey)).rejects.toThrow(
         "Failed to update status",
       );
 
-      // Verify rollback occurred
       const cache = queryClient.getQueryData(queryKey) as ListItem[];
       expect(cache.find((item) => item.id === "1")?.isRead).toBe(false);
     });
@@ -44,13 +42,12 @@ describe("itemDb", () => {
 
       queryClient.setQueryData(queryKey, initialData);
 
-      // Mock client to succeed
-      // biome-ignore lint/suspicious/noExplicitAny: mocking internal method
-      (apiClient.post as any).mockResolvedValue({});
+      vi.mocked(itemsUpdateStatusClient.itemsUpdateStatus).mockResolvedValue(
+        {},
+      );
 
       await updateItemStatus(["1"], true, queryKey);
 
-      // Verify update occurred
       const cache = queryClient.getQueryData(queryKey) as ListItem[];
       expect(cache.find((item) => item.id === "1")?.isRead).toBe(true);
     });
