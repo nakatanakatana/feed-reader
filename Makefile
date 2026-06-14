@@ -75,5 +75,8 @@ build-frontend:
 build: build-frontend
 	go build -o dist/ ./cmd/...
 
+metrics: build-frontend
+	go run scripts/gather-metrics.go
+
 clean:
 	rm -rf frontend/dist dist/ cmd/feed-reader/dist/

@@ -23,6 +23,7 @@ jobs:
       - uses: aquaproj/aqua-installer@v4.0.4
         with:
           aqua_version: v2.60.0
+          policy_allow: "true"
 
   backend-lint:
     needs: backend-setup
@@ -38,6 +39,7 @@ jobs:
       - uses: aquaproj/aqua-installer@v4.0.4
         with:
           aqua_version: v2.60.0
+          policy_allow: "true"
       - run: golangci-lint run
 
   backend-build:
@@ -54,6 +56,7 @@ jobs:
       - uses: aquaproj/aqua-installer@v4.0.4
         with:
           aqua_version: v2.60.0
+          policy_allow: "true"
       - run: go build -o dist/ ./cmd/...
 
   backend-test:
@@ -70,6 +73,7 @@ jobs:
       - uses: aquaproj/aqua-installer@v4.0.4
         with:
           aqua_version: v2.60.0
+          policy_allow: "true"
       # NOTE: workground https://github.com/golang/go/issues/75031
       - id: parse-go-version
         run: echo "GO_VERSION=$(cat aqua.yaml | grep "golang/go" | cut -f2 -d'@')" >> $GITHUB_OUTPUT
@@ -131,10 +135,29 @@ jobs:
           name: octocov-frontend
           if-no-files-found: error
 
+  frontend-build:
+    needs: frontend-setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/cache/restore@v5
+        with:
+          path: ~/.npm
+          key: npm-${{runner.os}}-${{runner.arch}}-${{hashFiles('package-lock.json')}}
+          restore-keys: npm-${{runner.os}}-${{runner.arch}}-
+      - run: npm ci --prefer-offline
+      - run: npm run build
+      - uses: actions/upload-artifact@v7
+        with:
+          path: frontend/dist
+          name: frontend-dist
+          if-no-files-found: error
+
   coverage-aggregation:
     needs:
       - backend-test
       - frontend-test
+      - frontend-build
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -142,7 +165,25 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v6
+      - uses: actions/cache/restore@v5
+        with:
+          path: ~/.local/share/aquaproj-aqua
+          key: v2-aqua-installer-${{runner.os}}-${{runner.arch}}-${{hashFiles('aqua.yaml', 'aqua-checksums.json')}}
+          restore-keys: |
+            v2-aqua-installer-${{runner.os}}-${{runner.arch}}-
+      - uses: aquaproj/aqua-installer@v4.0.4
+        with:
+          aqua_version: v2.60.0
+          policy_allow: "true"
       - uses: actions/download-artifact@v8
         with:
           pattern: octocov-*
+      - uses: actions/download-artifact@v8
+        with:
+          name: frontend-dist
+          path: frontend/dist
+      - run: go run scripts/gather-metrics.go
       - uses: k1LoW/octocov-action@v1
+        env:
+          OCTOCOV_CUSTOM_METRICS_BUNDLE: bundle-size.json
+          OCTOCOV_CUSTOM_METRICS_CCCC: cccc-metrics.json

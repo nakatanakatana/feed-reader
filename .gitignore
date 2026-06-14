@@ -45,6 +45,8 @@ styled-system-studio
 cmd/feed-reader/dist/
 coverage.html
 coverage.out
+bundle-size.json
+cccc-metrics.json
 frontend/coverage/
 
 docs/superpowers/plans
