@@ -74,6 +74,7 @@ export default defineConfig({
       }),
     ],
     VitePWA({
+      disable: !!process.env.VITEST,
       registerType: "autoUpdate",
       manifest: {
         name: "Feed Reader",
@@ -119,6 +120,15 @@ export default defineConfig({
       },
     }),
   ],
+  optimizeDeps: {
+    include: [
+      "solid-js",
+      "solid-js/web",
+      "msw",
+      "@tanstack/solid-router",
+      "@tanstack/solid-query",
+    ],
+  },
   cacheDir: "../node_modules/.vite",
   server: {
     proxy: {
@@ -131,6 +141,9 @@ export default defineConfig({
   test: {
     environment: "node",
     silent: "passed-only",
+    experimental: {
+      fsModuleCache: true,
+    },
     coverage: {
       provider: "v8",
       reporter: ["lcov"],
@@ -145,7 +158,15 @@ export default defineConfig({
                 name: "browser",
                 browser: {
                   enabled: true,
-                  provider: playwright(),
+                  provider: playwright({
+                    launch: {
+                      args: [
+                        "--disable-gpu",
+                        "--no-sandbox",
+                        "--disable-dev-shm-usage",
+                      ],
+                    },
+                  }),
                   screenshotFailures: false,
                   instances: [
                     {
