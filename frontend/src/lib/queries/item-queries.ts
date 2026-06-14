@@ -13,6 +13,11 @@ export interface TagUnreadCount {
   unreadCount: bigint;
 }
 
+const mergedItemCache = new WeakMap<
+  ListItem,
+  { isRead: boolean; merged: MergedItem }
+>();
+
 export const getItemsWithReadState = (
   itemsList: ListItem[],
   readsList: ItemRead[],
@@ -24,10 +29,16 @@ export const getItemsWithReadState = (
     readMap.set(r.id, r.isRead);
   }
 
-  let result: MergedItem[] = itemsList.map((item) => ({
-    ...item,
-    isRead: readMap.get(item.id) ?? item.isRead,
-  }));
+  let result: MergedItem[] = itemsList.map((item) => {
+    const isRead = readMap.get(item.id) ?? item.isRead;
+    const cached = mergedItemCache.get(item);
+    if (cached && cached.isRead === isRead) {
+      return cached.merged;
+    }
+    const merged = { ...item, isRead };
+    mergedItemCache.set(item, { isRead, merged });
+    return merged;
+  });
 
   if (options.itemId) {
     result = result.filter((item) => item.id === options.itemId);
