@@ -1,4 +1,6 @@
-import { apiClient } from "./api/client";
+import { tagsCreate } from "./api/generated/client/tagsCreate.ts";
+import { tagsDelete } from "./api/generated/client/tagsDelete.ts";
+import { tagsList } from "./api/generated/client/tagsList.ts";
 import type { components } from "./api/types";
 import { type TimestampLike, toDate } from "./date-utils";
 import { queryClient } from "./query";
@@ -13,9 +15,6 @@ export interface Tag {
 }
 
 type OpenAPITag = components["schemas"]["Tag"];
-type ListTagsResponse = components["schemas"]["ListTagsResponse"];
-type CreateTagResponse = components["schemas"]["CreateTagResponse"];
-type EmptyResponse = Record<string, never>;
 
 export interface ConnectTagShape {
   id: string;
@@ -47,17 +46,17 @@ export const mapOpenAPITag = (tag: OpenAPITag): Tag => ({
 export const tagsQueryOptions = {
   queryKey: ["tags"] as const,
   queryFn: async () => {
-    const response = await apiClient.get<ListTagsResponse>("/tags");
+    const response = await tagsList();
     return response.tags.map(mapOpenAPITag);
   },
 };
 
 export const tagInsert = async (name: string) => {
-  await apiClient.post<CreateTagResponse>("/tags", { name });
+  await tagsCreate({ name });
   await queryClient.invalidateQueries({ queryKey: ["tags"] });
 };
 
 export const tagDelete = async (id: string) => {
-  await apiClient.delete<EmptyResponse>(`/tags/${id}`);
+  await tagsDelete(id);
   await queryClient.invalidateQueries({ queryKey: ["tags"] });
 };

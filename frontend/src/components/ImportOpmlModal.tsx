@@ -1,9 +1,8 @@
 import { createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
-import { apiClient } from "../lib/api/client";
+import { feedsImportOpml } from "../lib/api/generated/client/feedsImportOpml";
 import { mapImportOpmlRequest } from "../lib/api/mutation-mappers";
-import type { components } from "../lib/api/types";
 import { queryClient } from "../lib/query";
 import { ActionButton } from "./ui/ActionButton";
 import { LoadingState } from "./ui/LoadingState";
@@ -25,8 +24,6 @@ interface ImportResult {
   skipped: number;
   failedFeeds: ImportFailedFeed[];
 }
-
-type ImportOpmlResponse = components["schemas"]["ImportOpmlResponse"];
 
 export function ImportOpmlModal(props: ImportOpmlModalProps) {
   const [isPending, setIsPending] = createSignal(false);
@@ -57,10 +54,7 @@ export function ImportOpmlModal(props: ImportOpmlModalProps) {
         reader.readAsArrayBuffer(file);
       });
 
-      const res = await apiClient.post<ImportOpmlResponse>(
-        "/feeds/import-opml",
-        mapImportOpmlRequest(content),
-      );
+      const res = await feedsImportOpml(mapImportOpmlRequest(content));
       setResult({
         total: res.total,
         success: res.success,

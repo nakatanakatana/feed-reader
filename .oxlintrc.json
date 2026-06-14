@@ -2,6 +2,8 @@
   "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/main/npm/oxlint/configuration_schema.json",
   "ignorePatterns": [
     "frontend/src/routeTree.gen.ts",
+    "frontend/src/lib/api/generated/**",
+    "frontend/src/lib/api/types-generated.ts",
     "**/*.test.ts",
     "**/*.test.tsx",
     "frontend/src/test-utils/**",

@@ -8,7 +8,6 @@ import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page, userEvent } from "vitest/browser";
-import { apiClient } from "../lib/api/client";
 import { queryClient } from "../lib/query";
 import { ToastProvider } from "../lib/toast";
 import { worker } from "../mocks/browser";
@@ -33,9 +32,6 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
     document.body.innerHTML = "";
     vi.clearAllMocks();
   });
-
-  const updateStatusSpy = vi.fn();
-  const apiPostSpy = vi.spyOn(apiClient, "post");
 
   const setupMockData = (
     mockItems = [
@@ -69,15 +65,6 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
           }),
         });
         return HttpResponse.json(toJson(GetItemResponseSchema, msg));
-      }),
-      http.all("*/api/v2/items/status", async ({ request }) => {
-        updateStatusSpy(await request.json());
-        return HttpResponse.json(
-          toJson(
-            UpdateItemStatusResponseSchema,
-            create(UpdateItemStatusResponseSchema, {}),
-          ),
-        );
       }),
       http.all("*/api/v2/tags", () => {
         return HttpResponse.json(
@@ -224,6 +211,24 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
 
   it("navigates to end-of-list placeholder from last item and marks it read", async () => {
     setupMockData();
+    let updateCalledForId = "";
+    worker.use(
+      http.post("*/api/v2/items/status", async ({ request }) => {
+        const body = (await request.json()) as {
+          ids: string[];
+          isRead: boolean;
+        };
+        if (body.isRead === true) {
+          updateCalledForId = body.ids[0];
+        }
+        return HttpResponse.json(
+          toJson(
+            UpdateItemStatusResponseSchema,
+            create(UpdateItemStatusResponseSchema, {}),
+          ),
+        );
+      }),
+    );
     const history = createMemoryHistory({ initialEntries: ["/items/2"] });
     const router = createRouter({ routeTree, history });
 
@@ -248,9 +253,7 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
       .poll(() => history.location.pathname)
       .toBe("/items/end-of-list");
 
-    await expect
-      .poll(() => apiPostSpy)
-      .toHaveBeenCalledWith("/items/status", { ids: ["2"], isRead: true });
+    await expect.poll(() => updateCalledForId).toBe("2");
   });
 
   it("navigates back from end-of-list to the last real item", async () => {

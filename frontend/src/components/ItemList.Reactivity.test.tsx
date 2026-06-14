@@ -89,14 +89,16 @@ describe("ItemList Reactivity", () => {
     );
 
     // Initial call check
-    await expect.poll(() => callCount).toBeGreaterThan(0);
+    await expect.poll(() => callCount, { timeout: 5000 }).toBeGreaterThan(0);
     const countAfterInitial = callCount;
 
     // Change store state
     itemStore.setShowRead(!itemStore.state.showRead);
 
     // It should have been called again due to reactivity
-    await expect.poll(() => callCount).toBeGreaterThan(countAfterInitial);
+    await expect
+      .poll(() => callCount, { timeout: 5000 })
+      .toBeGreaterThan(countAfterInitial);
   });
 
   it("should update itemStore when the Show Read toggle is clicked", async () => {

@@ -1,4 +1,5 @@
-import { apiClient } from "./api/client";
+import { itemReadsList } from "./api/generated/client/itemReadsList";
+import { itemsUpdateStatus } from "./api/generated/client/itemsUpdateStatus";
 import type { components } from "./api/types";
 import { lastReadFetched, setLastReadFetched } from "./item-sync-state";
 import { queryClient } from "./query";
@@ -10,7 +11,6 @@ export interface ItemRead {
 }
 
 type ListItemReadResponse = components["schemas"]["ListItemReadResponse"];
-type EmptyResponse = Record<string, never>;
 
 export const itemReadQueryOptions = {
   queryKey: ["item-reads"] as const,
@@ -29,16 +29,11 @@ export const itemReadQueryOptions = {
     let maxServerUpdatedAt: Date | undefined;
 
     do {
-      const params = new URLSearchParams();
-      params.set("pageSize", "1000");
-      if (pageToken) {
-        params.set("pageToken", pageToken);
-      } else if (anchor) {
-        params.set("since", anchor.toISOString());
-      }
-      const response = await apiClient.get<ListItemReadResponse>(
-        `/item-reads?${params.toString()}`,
-      );
+      const response: ListItemReadResponse = await itemReadsList({
+        pageSize: 1000,
+        ...(pageToken ? { pageToken } : {}),
+        ...(!pageToken && anchor ? { since: anchor.toISOString() } : {}),
+      });
 
       for (const ir of response.itemReads || []) {
         const parsedUpdatedAt = new Date(ir.updatedAt);
@@ -60,7 +55,7 @@ export const itemReadQueryOptions = {
         });
       }
 
-      pageToken = response.nextPageToken;
+      pageToken = response.nextPageToken ?? "";
     } while (pageToken);
 
     if (maxServerUpdatedAt) {
@@ -98,10 +93,7 @@ export const updateItemReadStatus = async (ids: string[], isRead: boolean) => {
   });
 
   try {
-    await apiClient.post<EmptyResponse>("/items/status", {
-      ids,
-      isRead,
-    });
+    await itemsUpdateStatus({ ids, isRead });
   } catch (e) {
     console.warn("Failed to update item status on server, rolling back", e);
 

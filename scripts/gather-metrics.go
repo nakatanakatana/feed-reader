@@ -101,7 +101,9 @@ var goCCCCExcludes = []string{
 
 var tsCCCCExcludes = []string{
 	"**/*.gen.ts",
-	"frontend/src/lib/api/types.ts",
+	"frontend/src/lib/api/types-generated.ts",
+	"frontend/src/lib/api/generated/**",
+	"frontend/src/mocks/generated/**",
 }
 
 func buildCCCCArgs(excludes []string, paths ...string) []string {

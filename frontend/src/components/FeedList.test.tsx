@@ -12,6 +12,10 @@ import { page, userEvent } from "vitest/browser";
 import { queryClient } from "../lib/query";
 import { worker } from "../mocks/browser";
 import { routeTree } from "../routeTree.gen";
+import {
+  buildFeed,
+  buildListFeedsResponse,
+} from "../test-utils/openapi-fixtures";
 
 describe("FeedList", () => {
   let dispose: () => void;
@@ -168,30 +172,22 @@ describe("FeedList", () => {
 
     worker.use(
       http.get("*/api/v2/feeds", () => {
-        return HttpResponse.json({
-          feeds: [
-            {
+        return HttpResponse.json(
+          buildListFeedsResponse([
+            buildFeed({
               id: "past-feed",
               url: "https://example.com/past.xml",
               title: "Past Feed",
               nextFetchAt: pastDate.toISOString(),
-              createdAt: "2026-03-01T00:00:00.000Z",
-              updatedAt: "2026-03-01T00:00:00.000Z",
-              tags: [],
-              unreadCount: "0",
-            },
-            {
+            }),
+            buildFeed({
               id: "future-feed",
               url: "https://example.com/future.xml",
               title: "Future Feed",
               nextFetchAt: futureDate.toISOString(),
-              createdAt: "2026-03-01T00:00:00.000Z",
-              updatedAt: "2026-03-01T00:00:00.000Z",
-              tags: [],
-              unreadCount: "0",
-            },
-          ],
-        });
+            }),
+          ]),
+        );
       }),
     );
 

@@ -1,12 +1,48 @@
 import { QueryClientProvider } from "@tanstack/solid-query";
+import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
+import type { Tag } from "../lib/api/types-generated";
 import { queryClient } from "../lib/query";
+import { worker } from "../mocks/browser";
+import {
+  buildListTagsResponse,
+  buildTag,
+} from "../test-utils/openapi-fixtures";
 import { TagManagement } from "./TagManagement";
+
+const createInitialTags = (): Tag[] => [
+  buildTag({ id: "tag-1", name: "Tech", unreadCount: "5", feedCount: "1" }),
+  buildTag({ id: "tag-2", name: "News", unreadCount: "3", feedCount: "2" }),
+];
 
 describe("TagManagement", () => {
   let dispose: () => void;
+  let tags: Tag[];
+
+  beforeEach(() => {
+    tags = createInitialTags();
+    worker.use(
+      http.get("*/api/v2/tags", () => {
+        return HttpResponse.json(buildListTagsResponse(tags));
+      }),
+      http.post("*/api/v2/tags", async ({ request }) => {
+        const body = (await request.json()) as { name: string };
+        const tag = buildTag({
+          id: crypto.randomUUID(),
+          name: body.name,
+        });
+        tags = [...tags, tag];
+        return HttpResponse.json({ tag });
+      }),
+      http.delete("*/api/v2/tags/:id", ({ params }) => {
+        const id = String(params.id);
+        tags = tags.filter((tag) => tag.id !== id);
+        return HttpResponse.json({});
+      }),
+    );
+  });
 
   afterEach(() => {
     if (dispose) dispose();
@@ -27,7 +63,6 @@ describe("TagManagement", () => {
       .element(page.getByPlaceholder("New tag name"))
       .toBeInTheDocument();
 
-    // Mock tags from handlers.ts are "Tech" and "News"
     await expect.element(page.getByText("Tech")).toBeInTheDocument();
     await expect.element(page.getByText("News")).toBeInTheDocument();
   });

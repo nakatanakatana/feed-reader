@@ -1,4 +1,4 @@
-import { afterAll, afterEach, beforeAll, expect, vi } from "vitest";
+import { afterAll, afterEach, beforeAll, beforeEach, expect, vi } from "vitest";
 import "./styles.css";
 import { resetDatabase } from "./lib/db";
 import { worker } from "./mocks/browser";
@@ -50,9 +50,12 @@ beforeAll(async () => {
   await worker.start({ onUnhandledRequest: "bypass", quiet: true });
 });
 
+beforeEach(() => {
+  resetState();
+});
+
 afterEach(() => {
   worker.resetHandlers();
-  resetState();
   resetDatabase();
   localStorage.clear();
   vi.useRealTimers();

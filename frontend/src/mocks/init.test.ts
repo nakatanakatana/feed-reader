@@ -1,14 +1,18 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { initMocks } from "./init";
 
 describe("initMocks", () => {
-  it("should start the worker if useMocks is true", async () => {
-    // Dynamically import the worker to mirror application behavior
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("should start the worker if useMocks is true in dev", async () => {
+    vi.stubEnv("DEV", true);
+
     const { worker } = await import("./browser");
     const startSpy = vi.spyOn(worker, "start").mockResolvedValue(undefined);
 
-    const config = { useMocks: true };
-    await initMocks(config);
+    await initMocks({ useMocks: true });
 
     expect(startSpy).toHaveBeenCalledWith({
       onUnhandledRequest: "bypass",
@@ -18,10 +22,26 @@ describe("initMocks", () => {
   });
 
   it("should NOT start the worker if useMocks is false", async () => {
-    const config = { useMocks: false };
-    await initMocks(config);
-    // When useMocks is false, the dynamic import of ./browser should not be triggered.
-    // In this environment, we verify that the function completes without error.
-    expect(true).toBe(true);
+    vi.stubEnv("DEV", true);
+
+    const { worker } = await import("./browser");
+    const startSpy = vi.spyOn(worker, "start").mockResolvedValue(undefined);
+
+    await initMocks({ useMocks: false });
+
+    expect(startSpy).not.toHaveBeenCalled();
+    startSpy.mockRestore();
+  });
+
+  it("should NOT start the worker if useMocks is true outside dev", async () => {
+    vi.stubEnv("DEV", false);
+
+    const { worker } = await import("./browser");
+    const startSpy = vi.spyOn(worker, "start").mockResolvedValue(undefined);
+
+    await initMocks({ useMocks: true });
+
+    expect(startSpy).not.toHaveBeenCalled();
+    startSpy.mockRestore();
   });
 });
