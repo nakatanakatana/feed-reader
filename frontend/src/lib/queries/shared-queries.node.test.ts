@@ -69,6 +69,55 @@ describe("shared pure TypeScript query selectors", () => {
     ]);
   });
 
+  it("maintains object references for unmodified items to optimize rendering performance", () => {
+    const mockItems = [
+      {
+        id: "item-1",
+        title: "Alpha",
+        feedId: "feed-1",
+        isRead: false,
+        publishedAt: new Date("2026-03-01T00:00:00Z"),
+        createdAt: new Date("2026-03-01T00:00:00Z"),
+      },
+      {
+        id: "item-2",
+        title: "Beta",
+        feedId: "feed-2",
+        isRead: false,
+        publishedAt: new Date("2026-03-02T00:00:00Z"),
+        createdAt: new Date("2026-03-02T00:00:00Z"),
+      },
+    ];
+
+    const mockReads1 = [
+      {
+        id: "item-1",
+        isRead: false,
+        updatedAt: new Date("2026-03-03T00:00:00Z"),
+      },
+    ];
+
+    const mockFeedTags: any[] = [];
+
+    const result1 = getItemsWithReadState(mockItems, mockReads1, mockFeedTags);
+
+    const mockReads2 = [
+      {
+        id: "item-1",
+        isRead: true,
+        updatedAt: new Date("2026-03-04T00:00:00Z"),
+      },
+    ];
+    const result2 = getItemsWithReadState(mockItems, mockReads2, mockFeedTags);
+
+    expect(result1.find((i) => i.id === "item-2")).toBe(
+      result2.find((i) => i.id === "item-2"),
+    );
+    expect(result1.find((i) => i.id === "item-1")).not.toBe(
+      result2.find((i) => i.id === "item-1"),
+    );
+  });
+
   it("builds tag unread counts from shared sources", () => {
     const mockTags = [
       { id: "tag-1", name: "Tech" },
