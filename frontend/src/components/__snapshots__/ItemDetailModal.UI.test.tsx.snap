@@ -5,7 +5,7 @@ exports[`ItemDetailModal UI Updates > falls back to CSV parsing when JSON is mal
   <div>
     <dialog
       aria-label="Item details"
-      class="bg_transparent bd_none p_0 md:p_4 m_auto ring_none max-w_100vw max-h_100vh backdrop:bg-c_rgba(0,_0,_0,_0.5)"
+      class="bg_transparent bd_none p_0 md:p_4 m_0 ring_none w_100vw h_100vh d_flex ai_center jc_center max-w_100vw max-h_100vh backdrop:bg-c_rgba(0,_0,_0,_0.5)"
       open=""
     >
       <div
@@ -238,7 +238,7 @@ exports[`ItemDetailModal UI Updates > renders comma-separated categories when JS
   <div>
     <dialog
       aria-label="Item details"
-      class="bg_transparent bd_none p_0 md:p_4 m_auto ring_none max-w_100vw max-h_100vh backdrop:bg-c_rgba(0,_0,_0,_0.5)"
+      class="bg_transparent bd_none p_0 md:p_4 m_0 ring_none w_100vw h_100vh d_flex ai_center jc_center max-w_100vw max-h_100vh backdrop:bg-c_rgba(0,_0,_0,_0.5)"
       open=""
     >
       <div
@@ -471,7 +471,7 @@ exports[`ItemDetailModal UI Updates > renders title as a link and displays conte
   <div>
     <dialog
       aria-label="Item details"
-      class="bg_transparent bd_none p_0 md:p_4 m_auto ring_none max-w_100vw max-h_100vh backdrop:bg-c_rgba(0,_0,_0,_0.5)"
+      class="bg_transparent bd_none p_0 md:p_4 m_0 ring_none w_100vw h_100vh d_flex ai_center jc_center max-w_100vw max-h_100vh backdrop:bg-c_rgba(0,_0,_0,_0.5)"
       open=""
     >
       <div

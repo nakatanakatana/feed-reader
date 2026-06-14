@@ -71,9 +71,16 @@ describe("ItemDetailModal Responsive", () => {
     const dialog = page.getByRole("dialog");
     await expect.element(dialog).toBeInTheDocument();
 
-    const el = await dialog.element();
-    const rect = el.getBoundingClientRect();
-    expect(rect.width).toBe(375);
+    const dialogEl = await dialog.element();
+    const dialogRect = dialogEl.getBoundingClientRect();
+    expect(dialogRect.width).toBe(375);
+    expect(dialogRect.height).toBe(667);
+
+    const panel = dialogEl.querySelector<HTMLElement>('[tabindex="-1"]');
+    expect(panel).not.toBeNull();
+    const panelRect = panel!.getBoundingClientRect();
+    expect(panelRect.width).toBe(375);
+    expect(panelRect.height).toBe(667);
   });
 
   it("should be large (80-90%) on desktop viewports", async () => {
@@ -100,6 +107,20 @@ describe("ItemDetailModal Responsive", () => {
     // Desktop: 80-90% width (1920 * 0.8 = 1536)
     // The implementation might have changed or uses different units
     expect(rect.width).toBeGreaterThan(1500);
+
+    const panel = el.querySelector<HTMLElement>('[tabindex="-1"]');
+    expect(panel).not.toBeNull();
+    const panelRect = panel!.getBoundingClientRect();
+    const viewportWidth = 1920;
+    const viewportHeight = 1080;
+    expect(panelRect.left).toBeCloseTo(
+      (viewportWidth - panelRect.width) / 2,
+      0,
+    );
+    expect(panelRect.top).toBeCloseTo(
+      (viewportHeight - panelRect.height) / 2,
+      0,
+    );
   });
 
   it("should display the FAB correctly on both mobile and desktop", async () => {
