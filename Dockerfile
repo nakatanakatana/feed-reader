@@ -1,5 +1,5 @@
 # Stage 1: Frontend Builder
-FROM node:24-alpine@sha256:fb71d01345f11b708a3553c66e7c74074f2d506400ea81973343d915cb64eef0 AS frontend-builder
+FROM node:24-alpine@sha256:21f403ab171f2dc89bad4dd69d7721bfd15f084ccb46cdd225f31f2bc59b5c9a AS frontend-builder
 WORKDIR /app
 COPY package.json package-lock.json panda.config.ts postcss.config.cjs ./
 RUN npm ci
