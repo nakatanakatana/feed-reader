@@ -66,6 +66,7 @@ export const urlParsingRulesQueryOptions = {
     const response = await URLRulesList();
     return response.rules.map(mapOpenAPIURLParsingRule);
   },
+  staleTime: Infinity,
 };
 
 export const urlParsingRuleInsert = async (

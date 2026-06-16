@@ -395,4 +395,58 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
       .poll(() => history.location.pathname)
       .toBe("/items/end-of-list");
   });
+
+  it("does not refetch feed-tags and url-rules when navigating between items", async () => {
+    setupMockData();
+    let feedTagsFetchCount = 0;
+    let urlRulesFetchCount = 0;
+
+    worker.use(
+      http.all("*/api/v2/feed-tags", () => {
+        feedTagsFetchCount++;
+        return HttpResponse.json(
+          toJson(
+            ListFeedTagsResponseSchema,
+            create(ListFeedTagsResponseSchema, { feedTags: [] }),
+          ),
+        );
+      }),
+      http.all("*/api/v2/url-rules", () => {
+        urlRulesFetchCount++;
+        return HttpResponse.json({ rules: [] });
+      }),
+    );
+
+    const history = createMemoryHistory({ initialEntries: ["/items/1"] });
+    const router = createRouter({ routeTree, history });
+
+    queryClient.clear();
+
+    dispose = render(
+      () => (
+        <QueryClientProvider client={queryClient}>
+          <ToastProvider>
+            <RouterProvider router={router} />
+          </ToastProvider>
+        </QueryClientProvider>
+      ),
+      document.body,
+    );
+
+    await expect
+      .element(page.getByRole("heading", { name: "Item 1" }))
+      .toBeInTheDocument();
+
+    await expect.poll(() => feedTagsFetchCount).toBe(1);
+    await expect.poll(() => urlRulesFetchCount).toBe(1);
+
+    await userEvent.keyboard("j");
+    await expect.poll(() => history.location.pathname).toBe("/items/2");
+    await expect
+      .element(page.getByRole("heading", { name: "Item 2" }))
+      .toBeInTheDocument();
+
+    expect(feedTagsFetchCount).toBe(1);
+    expect(urlRulesFetchCount).toBe(1);
+  });
 });
