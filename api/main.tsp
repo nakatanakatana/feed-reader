@@ -47,7 +47,7 @@ model Item {
   url: string;
   title: string;
   description: string;
-  publishedAt: DateTime;
+  publishedAt?: DateTime;
   feedId: string;
   isRead: boolean;
   author: string;

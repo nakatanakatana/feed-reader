@@ -327,3 +327,54 @@ func TestOpenAPIAddAndDeleteItemBlockRules(t *testing.T) {
 
 	assert.Equal(t, deleteRec.Code, http.StatusOK)
 }
+
+func TestOpenAPIGetItem_NullPublishedAt(t *testing.T) {
+	ctx := context.Background()
+	_, db := setupTestDB(t)
+	s := store.NewStore(db)
+
+	_, err := s.CreateFeed(ctx, store.CreateFeedParams{
+		ID:  "feed-1",
+		Url: "https://example.com/feed.xml",
+	})
+	assert.NilError(t, err)
+
+	_, err = s.CreateItem(ctx, store.CreateItemParams{
+		ID:          "item-1",
+		Url:         "https://example.com/item1.html",
+		Title:       nil,
+		Description: nil,
+		PublishedAt: nil,
+		Author:      nil,
+		Guid:        nil,
+		Content:     nil,
+		ImageUrl:    nil,
+		Categories:  nil,
+	})
+	assert.NilError(t, err)
+
+	// feed_items also needs to be populated since ListItems or GetItem might join or require it
+	err = s.CreateFeedItem(ctx, store.CreateFeedItemParams{
+		FeedID:      "feed-1",
+		ItemID:      "item-1",
+		PublishedAt: nil,
+	})
+	assert.NilError(t, err)
+
+	handler := openapi.HandlerFromMuxWithBaseURL(
+		openapi.NewStrictHandler(NewOpenAPIHandler(s), nil),
+		http.NewServeMux(),
+		"/api/v2",
+	)
+
+	req := httptest.NewRequest(http.MethodGet, "/api/v2/items/item-1", nil)
+	rec := httptest.NewRecorder()
+
+	handler.ServeHTTP(rec, req)
+
+	assert.Equal(t, rec.Code, http.StatusOK)
+
+	bodyStr := rec.Body.String()
+	assert.Assert(t, !strings.Contains(bodyStr, "0001-01-01"), "response body should not contain zero date 0001-01-01 but got: %s", bodyStr)
+}
+
