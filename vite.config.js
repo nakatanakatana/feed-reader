@@ -159,15 +159,18 @@ export default defineConfig({
                 browser: {
                   enabled: true,
                   provider: playwright({
-                    launch: {
+                    launchOptions: {
                       args: [
                         "--disable-gpu",
                         "--no-sandbox",
                         "--disable-dev-shm-usage",
+                        "--disable-extensions",
+                        "--disable-default-apps",
+                        "--js-flags=--max-semi-space-size=1024 --max-old-space-size=2048",
                       ],
                     },
                   }),
-                  screenshotFailures: false,
+                  screenshotFailures: true,
                   instances: [
                     {
                       browser: "chromium",
@@ -175,6 +178,20 @@ export default defineConfig({
                   ],
                   viewport: { width: 1280, height: 720 },
                   headless: true,
+                },
+                server: {
+                  deps: {
+                    optimizer: {
+                      enabled: true,
+                      include: [
+                        "solid-js",
+                        "solid-js/web",
+                        "msw",
+                        "@tanstack/solid-router",
+                        "@tanstack/solid-query",
+                      ],
+                    },
+                  },
                 },
                 exclude: [
                   "src/**/*.node.test.{ts,tsx}",

@@ -18,7 +18,8 @@
     "gen:api": "kubb generate && oxfmt --write frontend/src/lib/api/types-generated.ts frontend/src/lib/api/generated frontend/src/mocks/generated",
     "gen:api-types": "npm run gen:api",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "test:related": "vitest run --related"
   },
   "dependencies": {
     "@opentelemetry/api": "1.9.1",
