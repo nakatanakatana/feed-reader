@@ -14,7 +14,7 @@ registries:
   type: local
   path: registry.yaml
 packages:
-- name: bufbuild/buf@v1.70.0
+- name: bufbuild/buf@v1.71.0
 - name: golang/go@go1.26.4
 - name: golangci/golangci-lint@v2.12.2
 - name: goreleaser/goreleaser@v2.16.0
