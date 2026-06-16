@@ -791,7 +791,7 @@ func getItemRowToOpenAPI(item store.GetItemRow) (openapi.Item, error) {
 		Url:         item.Url,
 		Title:       stringValue(item.Title),
 		Description: stringValue(item.Description),
-		PublishedAt: timeValue(publishedAt),
+		PublishedAt: publishedAt,
 		FeedId:      item.FeedID,
 		IsRead:      item.IsRead == 1,
 		Author:      stringValue(item.Author),
@@ -959,13 +959,6 @@ func parseOptionalOpenAPITime(value *string) (*time.Time, error) {
 		return nil, err
 	}
 	return &parsed, nil
-}
-
-func timeValue(value *time.Time) time.Time {
-	if value == nil {
-		return time.Time{}
-	}
-	return *value
 }
 
 func stringValue(value *string) string {

@@ -720,7 +720,6 @@ components:
         - url
         - title
         - description
-        - publishedAt
         - feedId
         - isRead
         - author

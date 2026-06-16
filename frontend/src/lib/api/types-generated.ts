@@ -241,9 +241,9 @@ export type Item = {
    */
   description: string;
   /**
-   * @type string, date-time
+   * @type string | undefined, date-time
    */
-  publishedAt: string;
+  publishedAt?: string;
   /**
    * @type string
    */
