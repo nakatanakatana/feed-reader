@@ -180,4 +180,5 @@ export const feedTagsQueryOptions = {
       tagId: ft.tagId,
     }));
   },
+  staleTime: Infinity,
 };
