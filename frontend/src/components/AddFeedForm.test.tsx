@@ -44,6 +44,48 @@ describe("AddFeedForm", () => {
     await expect.poll(() => input).toHaveValue("");
   });
 
+  it("creates a new feed with selected tags", async () => {
+    let createRequest: { url: string; tagIds: string[] } | undefined;
+
+    worker.use(
+      http.post("*/api/v2/feeds", async ({ request }) => {
+        createRequest = (await request.json()) as {
+          url: string;
+          tagIds: string[];
+        };
+
+        return HttpResponse.json({
+          feed: {
+            id: "new-feed",
+            url: createRequest.url,
+            link: "",
+            title: "New Feed",
+            lastFetchedAt: "2026-03-01T00:00:00.000Z",
+            createdAt: "2026-03-01T00:00:00.000Z",
+            updatedAt: "2026-03-01T00:00:00.000Z",
+            tags: [],
+            unreadCount: "0",
+          },
+        });
+      }),
+    );
+
+    dispose = render(() => <TestWrapper />, document.body);
+
+    await page.getByText("Tech").click();
+    await page
+      .getByPlaceholder("Feed URL")
+      .fill("http://example.com/tagged.xml");
+    await page.getByRole("button", { name: "Add Feed" }).click();
+
+    await expect
+      .poll(() => createRequest)
+      .toEqual({
+        url: "http://example.com/tagged.xml",
+        tagIds: ["tag-1"],
+      });
+  });
+
   it("displays an error message when createFeed fails", async () => {
     // Override handler for this specific test
     worker.use(

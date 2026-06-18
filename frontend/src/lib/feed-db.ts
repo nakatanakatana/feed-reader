@@ -161,6 +161,8 @@ export const feedInsert = async (url: string, tags: Tag[]) => {
   const tagIds = tags.map((t) => t.id);
   await feedsCreate({ url, tagIds });
   await queryClient.invalidateQueries({ queryKey: ["feeds"] });
+  await queryClient.invalidateQueries({ queryKey: ["tags"] });
+  await queryClient.invalidateQueries({ queryKey: ["feed-tags"] });
 };
 
 export const feedDelete = async (id: string) => {
