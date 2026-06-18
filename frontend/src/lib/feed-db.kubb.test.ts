@@ -22,7 +22,7 @@ describe("feed-db kubb CRUD migration", () => {
     );
   });
 
-  it("feedInsert uses feedsCreate and invalidates feeds", async () => {
+  it("feedInsert uses feedsCreate and invalidates feed and tag queries", async () => {
     const { feedInsert } = await import("./feed-db");
     const tags: Tag[] = [
       {
@@ -39,6 +39,12 @@ describe("feed-db kubb CRUD migration", () => {
 
     expect(queryClient.invalidateQueries).toHaveBeenCalledWith({
       queryKey: ["feeds"],
+    });
+    expect(queryClient.invalidateQueries).toHaveBeenCalledWith({
+      queryKey: ["tags"],
+    });
+    expect(queryClient.invalidateQueries).toHaveBeenCalledWith({
+      queryKey: ["feed-tags"],
     });
   });
 
