@@ -33,7 +33,7 @@
     "@opentelemetry/semantic-conventions": "1.41.1",
     "@tanstack/router-plugin": "1.168.18",
     "@tanstack/solid-query": "5.101.0",
-    "@tanstack/solid-router": "1.170.15",
+    "@tanstack/solid-router": "1.170.16",
     "markdown-it": "14.2.0",
     "postcss": "8.5.15",
     "solid-js": "1.9.13",
