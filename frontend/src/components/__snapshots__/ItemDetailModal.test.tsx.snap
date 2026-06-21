@@ -5,7 +5,7 @@ exports[`ItemDetailModal > renders item content when itemId is provided 1`] = `
   <div>
     <dialog
       aria-label="Item details"
-      class="bg_transparent bd_none p_0 md:p_4 m_0 ring_none w_100vw h_100vh d_flex ai_center jc_center max-w_100vw max-h_100vh backdrop:bg-c_rgba(0,_0,_0,_0.5)"
+      class="bg_transparent bd_none p_0 m_0 ring_none w_100vw h_100vh max-w_100vw max-h_100vh d_flex ai_center jc_center backdrop:bg-c_rgba(0,_0,_0,_0.5)"
       open=""
     >
       <div
