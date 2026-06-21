@@ -1,5 +1,5 @@
 import type { JSX } from "solid-js";
-import { onCleanup, Show } from "solid-js";
+import { createEffect, onCleanup, Show } from "solid-js";
 import { Portal } from "solid-js/web";
 import { css } from "../../../styled-system/css";
 import { flex, stack } from "../../../styled-system/patterns";
@@ -20,11 +20,19 @@ interface ModalProps {
   bodyPadding?: boolean;
   onKeyDown?: (e: KeyboardEvent) => void;
   ref?: (el: HTMLDialogElement) => void;
+  focusKey?: unknown;
 }
 
 export function Modal(props: ModalProps) {
   let dialogRef: HTMLDialogElement | undefined;
   let panelRef: HTMLDivElement | undefined;
+
+  const focusPanel = () => {
+    queueMicrotask(() => {
+      if (!dialogRef?.isConnected || !dialogRef.matches(":modal")) return;
+      panelRef?.focus();
+    });
+  };
 
   const openDialog = (el: HTMLDialogElement) => {
     queueMicrotask(() => {
@@ -35,11 +43,17 @@ export function Modal(props: ModalProps) {
         }
         el.showModal();
       }
-      panelRef?.focus();
+      focusPanel();
     });
   };
 
   const size = () => props.size ?? "standard";
+
+  createEffect(() => {
+    if (!props.isOpen) return;
+    void props.focusKey;
+    focusPanel();
+  });
 
   const panelStyle = () =>
     css({
@@ -66,18 +80,16 @@ export function Modal(props: ModalProps) {
     return css({
       background: "transparent",
       border: "none",
-      padding: { base: "0", md: "4" },
-      margin: isFull ? { base: "0" } : "auto",
+      padding: isFull ? "0" : { base: "0", md: "4" },
+      margin: "0",
       outline: "none",
-      ...(isFull && {
-        width: "100vw",
-        height: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }),
+      width: "100vw",
+      height: "100vh",
       maxWidth: "100vw",
       maxHeight: "100vh",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
       _backdrop: {
         backgroundColor: "rgba(0, 0, 0, 0.5)",
       },

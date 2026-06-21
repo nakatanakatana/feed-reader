@@ -208,19 +208,9 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
 
     if (id && !loading && (itemData || id === "end-of-list") && modalRef) {
       const currentModalRef = modalRef;
-      if (!currentModalRef.matches(":modal")) {
-        if (currentModalRef.open) {
-          currentModalRef.close();
-        }
-        currentModalRef.showModal();
-      }
       const cleanupTasks: (() => void)[] = [];
 
       const timerId = setTimeout(() => {
-        const panel =
-          currentModalRef.querySelector<HTMLElement>('[tabindex="-1"]');
-        panel?.focus();
-
         // Detect image layout and set data-layout attribute
         const imgs = currentModalRef.querySelectorAll("img");
         for (const img of imgs) {
@@ -272,6 +262,14 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   const item = () => itemQuery.data ?? null;
   const isLoading = () => itemQuery.isPending;
   const isEndOfList = () => props.itemId === "end-of-list";
+
+  const modalFocusKey = () => {
+    const id = props.itemId;
+    if (!id) return undefined;
+    if (id === "end-of-list") return id;
+    if (isLoading() || !item()) return undefined;
+    return id;
+  };
 
   const readsQuery = createQuery(() => itemReadQueryOptions);
 
@@ -505,6 +503,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
         onKeyDown={handleKeyDown}
         bodyPadding={false}
         footer={footer()}
+        focusKey={modalFocusKey()}
       >
         <div
           class={flex({

@@ -53,11 +53,13 @@ describe("ItemDetailModal Focus", () => {
     </QueryClientProvider>
   );
 
-  const expectFocusWithinDialog = async () => {
+  const expectPanelFocus = async () => {
     await vi.waitFor(() => {
       const dialog = document.querySelector("dialog");
       expect(dialog).toBeTruthy();
-      expect(dialog?.contains(document.activeElement)).toBe(true);
+      const panel = dialog?.querySelector<HTMLElement>('[tabindex="-1"]');
+      expect(panel).toBeTruthy();
+      expect(document.activeElement).toBe(panel);
     });
   };
 
@@ -89,7 +91,7 @@ describe("ItemDetailModal Focus", () => {
     await expect.element(page.getByRole("dialog")).toBeInTheDocument();
 
     // Focus is kept inside the modal panel within the native dialog.
-    await expectFocusWithinDialog();
+    await expectPanelFocus();
 
     // Navigate to next item using keyboard shortcut 'j'
     await userEvent.keyboard("j");
@@ -98,7 +100,7 @@ describe("ItemDetailModal Focus", () => {
     await expect.element(page.getByText("Test Item 2")).toBeInTheDocument();
 
     // ASSERT: Focus should remain inside the modal after navigation
-    await expectFocusWithinDialog();
+    await expectPanelFocus();
   });
 
   it("traps focus within the modal when pressing Tab", async () => {
@@ -173,17 +175,17 @@ describe("ItemDetailModal Focus", () => {
 
     // 1. Initial Item 1
     await expect.element(page.getByText("Test Item 1")).toBeInTheDocument();
-    await expectFocusWithinDialog();
+    await expectPanelFocus();
 
     // 2. Navigate to Item 2 using 'j'
     await userEvent.keyboard("j");
     await expect.element(page.getByText("Test Item 2")).toBeInTheDocument();
-    await expectFocusWithinDialog();
+    await expectPanelFocus();
 
     // 3. Navigate back to Item 1 (Cached) using 'k'
     await userEvent.keyboard("k");
     await expect.element(page.getByText("Test Item 1")).toBeInTheDocument();
-    await expectFocusWithinDialog();
+    await expectPanelFocus();
   });
 
   it("calls onClose when backdrop is clicked", async () => {

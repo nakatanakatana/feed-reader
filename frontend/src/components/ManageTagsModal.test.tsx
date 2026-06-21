@@ -81,4 +81,55 @@ describe("ManageTagsModal", () => {
     await expect.element(page.getByText("Tech")).toBeInTheDocument();
     await expect.element(page.getByText("News")).toBeInTheDocument();
   });
+
+  it("centers the modal panel in the viewport", async () => {
+    await page.viewport(1280, 720);
+
+    worker.use(
+      http.all("*/api/v2/tags", () => {
+        const msg = create(ListTagsResponseSchema, {
+          tags: [
+            create(TagSchema, {
+              id: "t1",
+              name: "Tech",
+              createdAt: now,
+              updatedAt: now,
+              unreadCount: 0n,
+              feedCount: 1n,
+            }),
+          ],
+        });
+        return HttpResponse.json(toJson(ListTagsResponseSchema, msg));
+      }),
+      http.all("*/api/v2/feed-tags", () => {
+        return HttpResponse.json(
+          toJson(
+            ListFeedTagsResponseSchema,
+            create(ListFeedTagsResponseSchema, { feedTags: [] }),
+          ),
+        );
+      }),
+    );
+
+    dispose = render(
+      () => (
+        <QueryClientProvider client={queryClient}>
+          <ManageTagsModal isOpen={true} onClose={() => {}} feedIds={["f1"]} />
+        </QueryClientProvider>
+      ),
+      document.body,
+    );
+
+    await expect
+      .element(page.getByText("Manage Tags for 1 feeds"))
+      .toBeInTheDocument();
+
+    const dialog = await page.getByRole("dialog").element();
+    const panel = dialog.querySelector<HTMLElement>('[tabindex="-1"]');
+    expect(panel).not.toBeNull();
+
+    const rect = panel!.getBoundingClientRect();
+    expect(rect.left).toBeCloseTo((1280 - rect.width) / 2, 0);
+    expect(rect.top).toBeCloseTo((720 - rect.height) / 2, 0);
+  });
 });
