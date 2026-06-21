@@ -19,7 +19,7 @@
     "gen:api-types": "npm run gen:api",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "test:related": "vitest run --related"
+    "test:related": "vitest related"
   },
   "dependencies": {
     "@opentelemetry/api": "1.9.1",
