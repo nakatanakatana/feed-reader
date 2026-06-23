@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7.0.0
-      - uses: actions/cache@v5
+      - uses: actions/cache@v6
         with:
           path: ~/.local/share/aquaproj-aqua
           key: v2-aqua-installer-${{runner.os}}-${{runner.arch}}-${{hashFiles('aqua.yaml', 'aqua-checksums.json')}}
@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7.0.0
-      - uses: actions/cache/restore@v5
+      - uses: actions/cache/restore@v6
         with:
           path: ~/.local/share/aquaproj-aqua
           key: v2-aqua-installer-${{runner.os}}-${{runner.arch}}-${{hashFiles('aqua.yaml', 'aqua-checksums.json')}}
@@ -47,7 +47,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7.0.0
-      - uses: actions/cache/restore@v5
+      - uses: actions/cache/restore@v6
         with:
           path: ~/.local/share/aquaproj-aqua
           key: v2-aqua-installer-${{runner.os}}-${{runner.arch}}-${{hashFiles('aqua.yaml', 'aqua-checksums.json')}}
@@ -64,7 +64,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7.0.0
-      - uses: actions/cache/restore@v5
+      - uses: actions/cache/restore@v6
         with:
           path: ~/.local/share/aquaproj-aqua
           key: v2-aqua-installer-${{runner.os}}-${{runner.arch}}-${{hashFiles('aqua.yaml', 'aqua-checksums.json')}}
@@ -92,7 +92,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7.0.0
-      - uses: actions/cache@v5
+      - uses: actions/cache@v6
         with:
           path: ~/.npm
           key: npm-${{runner.os}}-${{runner.arch}}-${{hashFiles('package-lock.json')}}
@@ -106,7 +106,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7.0.0
-      - uses: actions/cache/restore@v5
+      - uses: actions/cache/restore@v6
         with:
           path: ~/.npm
           key: npm-${{runner.os}}-${{runner.arch}}-${{hashFiles('package-lock.json')}}
@@ -120,7 +120,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7.0.0
-      - uses: actions/cache/restore@v5
+      - uses: actions/cache/restore@v6
         with:
           path: ~/.npm
           key: npm-${{runner.os}}-${{runner.arch}}-${{hashFiles('package-lock.json')}}
@@ -140,7 +140,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7.0.0
-      - uses: actions/cache/restore@v5
+      - uses: actions/cache/restore@v6
         with:
           path: ~/.npm
           key: npm-${{runner.os}}-${{runner.arch}}-${{hashFiles('package-lock.json')}}
@@ -165,7 +165,7 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v7.0.0
-      - uses: actions/cache/restore@v5
+      - uses: actions/cache/restore@v6
         with:
           path: ~/.local/share/aquaproj-aqua
           key: v2-aqua-installer-${{runner.os}}-${{runner.arch}}-${{hashFiles('aqua.yaml', 'aqua-checksums.json')}}
