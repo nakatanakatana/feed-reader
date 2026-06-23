@@ -20,7 +20,7 @@ jobs:
           key: v2-aqua-installer-${{runner.os}}-${{runner.arch}}-${{hashFiles('aqua.yaml', 'aqua-checksums.json')}}
           restore-keys: |
             v2-aqua-installer-${{runner.os}}-${{runner.arch}}-
-      - uses: aquaproj/aqua-installer@v4.0.4
+      - uses: aquaproj/aqua-installer@v4.0.5
         with:
           aqua_version: v2.60.1
           policy_allow: "true"
@@ -36,7 +36,7 @@ jobs:
           key: v2-aqua-installer-${{runner.os}}-${{runner.arch}}-${{hashFiles('aqua.yaml', 'aqua-checksums.json')}}
           restore-keys: |
             v2-aqua-installer-${{runner.os}}-${{runner.arch}}-
-      - uses: aquaproj/aqua-installer@v4.0.4
+      - uses: aquaproj/aqua-installer@v4.0.5
         with:
           aqua_version: v2.60.1
           policy_allow: "true"
@@ -53,7 +53,7 @@ jobs:
           key: v2-aqua-installer-${{runner.os}}-${{runner.arch}}-${{hashFiles('aqua.yaml', 'aqua-checksums.json')}}
           restore-keys: |
             v2-aqua-installer-${{runner.os}}-${{runner.arch}}-
-      - uses: aquaproj/aqua-installer@v4.0.4
+      - uses: aquaproj/aqua-installer@v4.0.5
         with:
           aqua_version: v2.60.1
           policy_allow: "true"
@@ -70,7 +70,7 @@ jobs:
           key: v2-aqua-installer-${{runner.os}}-${{runner.arch}}-${{hashFiles('aqua.yaml', 'aqua-checksums.json')}}
           restore-keys: |
             v2-aqua-installer-${{runner.os}}-${{runner.arch}}-
-      - uses: aquaproj/aqua-installer@v4.0.4
+      - uses: aquaproj/aqua-installer@v4.0.5
         with:
           aqua_version: v2.60.1
           policy_allow: "true"
@@ -171,7 +171,7 @@ jobs:
           key: v2-aqua-installer-${{runner.os}}-${{runner.arch}}-${{hashFiles('aqua.yaml', 'aqua-checksums.json')}}
           restore-keys: |
             v2-aqua-installer-${{runner.os}}-${{runner.arch}}-
-      - uses: aquaproj/aqua-installer@v4.0.4
+      - uses: aquaproj/aqua-installer@v4.0.5
         with:
           aqua_version: v2.60.1
           policy_allow: "true"
