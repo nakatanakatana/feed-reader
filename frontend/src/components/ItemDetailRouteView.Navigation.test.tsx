@@ -449,4 +449,52 @@ describe("ItemDetailRouteView Seamless Navigation", () => {
     expect(feedTagsFetchCount).toBe(1);
     expect(urlRulesFetchCount).toBe(1);
   });
+
+  it("does not refetch items when navigating between items", async () => {
+    setupMockData();
+    let itemsFetchCount = 0;
+
+    worker.use(
+      http.all("*/api/v2/items", async ({ request }) => {
+        itemsFetchCount++;
+        const msg = create(ListItemsResponseSchema, {
+          items: [
+            create(ItemSchema, { id: "1", title: "Item 1", isRead: false }),
+            create(ItemSchema, { id: "2", title: "Item 2", isRead: false }),
+          ],
+        });
+        return HttpResponse.json(toJson(ListItemsResponseSchema, msg));
+      }),
+    );
+
+    const history = createMemoryHistory({ initialEntries: ["/items/1"] });
+    const router = createRouter({ routeTree, history });
+
+    queryClient.clear();
+
+    dispose = render(
+      () => (
+        <QueryClientProvider client={queryClient}>
+          <ToastProvider>
+            <RouterProvider router={router} />
+          </ToastProvider>
+        </QueryClientProvider>
+      ),
+      document.body,
+    );
+
+    await expect
+      .element(page.getByRole("heading", { name: "Item 1" }))
+      .toBeInTheDocument();
+
+    await expect.poll(() => itemsFetchCount).toBe(1);
+
+    await userEvent.keyboard("j");
+    await expect.poll(() => history.location.pathname).toBe("/items/2");
+    await expect
+      .element(page.getByRole("heading", { name: "Item 2" }))
+      .toBeInTheDocument();
+
+    expect(itemsFetchCount).toBe(1);
+  });
 });

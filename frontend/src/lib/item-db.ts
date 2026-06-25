@@ -16,6 +16,7 @@ import {
   dateToTimestamp,
   getPublishedSince,
 } from "./item-utils";
+import { ITEM_STALE_TIME } from "./item-query-constants";
 import { queryClient } from "./query";
 
 export interface ListItem {
@@ -97,6 +98,7 @@ export const getItemsQueryOptions = (
 
   return {
     queryKey,
+    staleTime: ITEM_STALE_TIME,
     refetchInterval: 1 * 60 * 1000,
     queryFn: async () => {
       const lastFetchedValue = lastFetchedMap()[cacheKey] ?? null;
