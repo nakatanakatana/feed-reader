@@ -129,3 +129,45 @@ func TestStore_ItemDeduplication_PBT(t *testing.T) {
 		assert.Equal(t, count, int64(len(uniqueURLs)))
 	})
 }
+
+func TestStore_ItemDeduplication_WithTrackingParams(t *testing.T) {
+	s := setupStore(t)
+	ctx := context.Background()
+
+	feedID := uuid.NewString()
+	_, err := s.CreateFeed(ctx, store.CreateFeedParams{
+		ID:  feedID,
+		Url: "http://example.com/feed.xml",
+	})
+	assert.NilError(t, err)
+
+	// Save item with tracking parameter
+	itemURL1 := "http://example.com/item1?utm_source=rss&utm_medium=feed&non_tracking=1"
+	itemTitle1 := "Duplicate Item With Tracking 1"
+	err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
+		FeedID: feedID,
+		Url:    itemURL1,
+		Title:  &itemTitle1,
+	})
+	assert.NilError(t, err)
+
+	// Save same item with different tracking parameter
+	itemURL2 := "http://example.com/item1?utm_source=twitter&utm_medium=social&non_tracking=1"
+	itemTitle2 := "Duplicate Item With Tracking 2"
+	err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
+		FeedID: feedID,
+		Url:    itemURL2,
+		Title:  &itemTitle2,
+	})
+	assert.NilError(t, err)
+
+	// Verify they are deduplicated (should result in 1 item in total)
+	items, err := s.ListItems(ctx, store.StoreListItemsParams{
+		Limit:     10,
+		IsBlocked: false,
+	})
+	assert.NilError(t, err)
+
+	assert.Equal(t, len(items), 1, "Should return only 1 item even if URLs have different tracking parameters")
+	assert.Equal(t, items[0].Url, "http://example.com/item1?non_tracking=1", "The stored URL should be cleaned")
+}

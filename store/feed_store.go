@@ -214,6 +214,10 @@ type SaveFetchedItemParams struct {
 // SaveFetchedItem saves an item, links it to the feed, and initializes read status.
 // It handles deduplication and ensures atomicity.
 func (s *Store) SaveFetchedItem(ctx context.Context, params SaveFetchedItemParams) error {
+	cleanedURL, err := CleanURL(params.Url)
+	if err == nil {
+		params.Url = cleanedURL
+	}
 	return s.WithTransaction(ctx, func(qtx *Queries) error {
 		// 1. Upsert Item
 		newID := uuid.NewString()
