@@ -53,6 +53,7 @@ exports[`ItemRow > renders item title, description and metadata 1`] = `
               >
                 <svg
                   aria-hidden="true"
+                  data-icon="calendar"
                   fill="none"
                   height="14"
                   stroke="currentColor"
@@ -63,11 +64,21 @@ exports[`ItemRow > renders item title, description and metadata 1`] = `
                   width="14"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  <path
-                    d="m22 2-7 20-4-9-9-4Z"
+                  <rect
+                    height="18"
+                    rx="2"
+                    width="18"
+                    x="3"
+                    y="4"
                   />
                   <path
-                    d="M22 2 11 13"
+                    d="M16 2v4"
+                  />
+                  <path
+                    d="M8 2v4"
+                  />
+                  <path
+                    d="M3 10h18"
                   />
                 </svg>
                 <span
@@ -93,6 +104,7 @@ exports[`ItemRow > renders item title, description and metadata 1`] = `
               >
                 <svg
                   aria-hidden="true"
+                  data-icon="download"
                   fill="none"
                   height="14"
                   stroke="currentColor"
@@ -103,13 +115,14 @@ exports[`ItemRow > renders item title, description and metadata 1`] = `
                   width="14"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  <circle
-                    cx="12"
-                    cy="12"
-                    r="10"
+                  <path
+                    d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
                   />
-                  <polyline
-                    points="12 6 12 12 16 14"
+                  <path
+                    d="M7 10l5 5 5-5"
+                  />
+                  <path
+                    d="M12 15V3"
                   />
                 </svg>
                 <span

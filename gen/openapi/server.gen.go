@@ -132,18 +132,19 @@ type ImportOpmlResponse struct {
 
 // Item defines model for Item.
 type Item struct {
-	Author      string     `json:"author"`
-	Categories  string     `json:"categories"`
-	Content     string     `json:"content"`
-	CreatedAt   time.Time  `json:"createdAt"`
-	Description string     `json:"description"`
-	FeedId      string     `json:"feedId"`
-	Id          string     `json:"id"`
-	ImageUrl    string     `json:"imageUrl"`
-	IsRead      bool       `json:"isRead"`
-	PublishedAt *time.Time `json:"publishedAt,omitempty"`
-	Title       string     `json:"title"`
-	Url         string     `json:"url"`
+	Author      string      `json:"author"`
+	Categories  string      `json:"categories"`
+	Content     string      `json:"content"`
+	CreatedAt   time.Time   `json:"createdAt"`
+	Description string      `json:"description"`
+	FeedId      string      `json:"feedId"`
+	Feeds       *[]ItemFeed `json:"feeds,omitempty"`
+	Id          string      `json:"id"`
+	ImageUrl    string      `json:"imageUrl"`
+	IsRead      bool        `json:"isRead"`
+	PublishedAt *time.Time  `json:"publishedAt,omitempty"`
+	Title       string      `json:"title"`
+	Url         string      `json:"url"`
 }
 
 // ItemBlockRule defines model for ItemBlockRule.
@@ -152,6 +153,12 @@ type ItemBlockRule struct {
 	Id       string  `json:"id"`
 	RuleType string  `json:"ruleType"`
 	Value    string  `json:"value"`
+}
+
+// ItemFeed defines model for ItemFeed.
+type ItemFeed struct {
+	Id    string `json:"id"`
+	Title string `json:"title"`
 }
 
 // ItemRead defines model for ItemRead.

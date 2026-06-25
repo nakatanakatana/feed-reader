@@ -111,7 +111,8 @@ export const normalizeCategories = (categories: string): string[] => {
       if (Array.isArray(parsed)) {
         return parsed
           .filter((value) => value != null)
-          .map((value) => normalizeValue(String(value)))
+          .flatMap((value) => String(value).split(","))
+          .map((value) => normalizeValue(value))
           .filter((value) => value.length > 0);
       }
     } catch {

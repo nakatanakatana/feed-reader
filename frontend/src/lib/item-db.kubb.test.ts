@@ -64,6 +64,10 @@ describe("item-db kubb integration", () => {
             categories: "cat",
             imageUrl: "https://example.com/image.png",
             content: "content",
+            feeds: [
+              { id: "feed-1", title: "Primary Feed" },
+              { id: "feed-2", title: "Secondary Feed" },
+            ],
           },
         }),
       ),
@@ -73,6 +77,10 @@ describe("item-db kubb integration", () => {
     const result = await getItem("item-1");
 
     expect(result?.id).toBe("item-1");
+    expect(result?.feeds).toEqual([
+      { id: "feed-1", title: "Primary Feed" },
+      { id: "feed-2", title: "Secondary Feed" },
+    ]);
   });
 
   it("updateItemStatus sends mutation through itemsUpdateStatus", async () => {

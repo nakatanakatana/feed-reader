@@ -1323,6 +1323,9 @@ JOIN
   feeds f ON fi.feed_id = f.id
 WHERE
   fi.item_id = ?
+ORDER BY
+  fi.created_at ASC,
+  fi.feed_id ASC
 `
 
 type ListItemFeedsRow struct {

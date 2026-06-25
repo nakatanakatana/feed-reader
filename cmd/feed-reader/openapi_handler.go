@@ -357,6 +357,12 @@ func (h *OpenAPIHandler) ItemsGet(ctx context.Context, request openapi.ItemsGetR
 	if err != nil {
 		return openapi.ItemsGet500JSONResponse{Code: "internal", Message: err.Error()}, nil
 	}
+	feeds, err := h.store.ListItemFeeds(ctx, request.Id)
+	if err != nil {
+		return openapi.ItemsGet500JSONResponse{Code: "internal", Message: err.Error()}, nil
+	}
+	itemFeeds := itemFeedsToOpenAPI(feeds)
+	item.Feeds = &itemFeeds
 	return openapi.ItemsGet200JSONResponse(openapi.GetItemResponse{Item: &item}), nil
 }
 
@@ -800,6 +806,17 @@ func getItemRowToOpenAPI(item store.GetItemRow) (openapi.Item, error) {
 		Categories:  stringValue(item.Categories),
 		CreatedAt:   createdAt,
 	}, nil
+}
+
+func itemFeedsToOpenAPI(feeds []store.ListItemFeedsRow) []openapi.ItemFeed {
+	result := make([]openapi.ItemFeed, 0, len(feeds))
+	for _, feed := range feeds {
+		result = append(result, openapi.ItemFeed{
+			Id:    feed.FeedID,
+			Title: stringValue(feed.FeedTitle),
+		})
+	}
+	return result
 }
 
 func listItemsRowToOpenAPI(row store.ListItemsRow) (openapi.Item, error) {

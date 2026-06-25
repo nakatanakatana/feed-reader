@@ -223,6 +223,17 @@ export type FeedTag = {
   tagId: string;
 };
 
+export type ItemFeed = {
+  /**
+   * @type string
+   */
+  id: string;
+  /**
+   * @type string
+   */
+  title: string;
+};
+
 export type Item = {
   /**
    * @type string
@@ -268,6 +279,10 @@ export type Item = {
    * @type string
    */
   categories: string;
+  /**
+   * @type array | undefined
+   */
+  feeds?: ItemFeed[];
   /**
    * @type string, date-time
    */
