@@ -181,6 +181,14 @@ describe("item-utils", () => {
       ]);
     });
 
+    it("splits comma-separated values inside JSON array elements", () => {
+      expect(normalizeCategories('["マンガ,漫画,コミック"]')).toEqual([
+        "マンガ",
+        "漫画",
+        "コミック",
+      ]);
+    });
+
     it("matches snapshot for complex categories", () => {
       const complexInputs = [
         '["Tech", "SolidJS", "Vitest"]',

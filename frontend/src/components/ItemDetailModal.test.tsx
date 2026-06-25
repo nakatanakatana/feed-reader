@@ -69,7 +69,7 @@ describe("ItemDetailModal", () => {
     await expect
       .element(page.getByText(/Received:/).first())
       .toBeInTheDocument();
-    await expect.element(page.getByText("By Test Author")).toBeInTheDocument();
+    await expect.element(page.getByText("Test Author")).toBeInTheDocument();
     await expect.element(page.getByText("Test Content")).toBeInTheDocument();
 
     // Check for title link
@@ -80,6 +80,167 @@ describe("ItemDetailModal", () => {
       .toHaveAttribute("href", "http://example.com");
 
     expect(document.body.innerHTML).toMatchSnapshot();
+  });
+
+  it("shows source metadata in domain, author, feed, published, received order", async () => {
+    worker.use(
+      http.all("*/api/v2/items/:id", () => {
+        const msg = create(GetItemResponseSchema, {
+          item: create(ItemSchema, {
+            id: "metadata-id",
+            title: "Metadata Item",
+            description: "Metadata Content",
+            publishedAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
+            createdAt: dateToTimestamp(new Date("2026-03-02T00:00:00Z")),
+            author: "Test Author",
+            url: "https://www.example.com/articles/1",
+            isRead: false,
+            categories: '["Security"]',
+            feeds: [
+              { id: "feed-1", title: "Primary Feed" },
+              { id: "feed-2", title: "Secondary Feed" },
+            ],
+          }),
+        });
+        return HttpResponse.json(toJson(GetItemResponseSchema, msg));
+      }),
+    );
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal itemId="metadata-id" onClose={() => {}} />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    await expect.element(page.getByText("Metadata Item")).toBeInTheDocument();
+    await expect.element(page.getByText("Primary Feed")).toBeInTheDocument();
+    await expect.element(page.getByText("+1")).toBeInTheDocument();
+    await expect
+      .element(page.getByTitle("Author", { exact: true }))
+      .toBeInTheDocument();
+    await expect
+      .element(page.getByTitle("Feed", { exact: true }))
+      .toBeInTheDocument();
+    await expect
+      .element(page.getByTitle("Published Date", { exact: true }))
+      .toBeInTheDocument();
+    await expect
+      .element(page.getByTitle("Received Date", { exact: true }))
+      .toBeInTheDocument();
+    await expect
+      .element(page.getByTitle("Labels", { exact: true }))
+      .toBeInTheDocument();
+    await expect.element(page.getByText("Security")).toBeInTheDocument();
+
+    const metadata = document.querySelector('[data-testid="item-metadata"]');
+    expect(metadata?.querySelector('[data-icon="calendar"]')).not.toBeNull();
+    expect(metadata?.querySelector('[data-icon="download"]')).not.toBeNull();
+    expect(metadata?.querySelector('[data-icon="tag"]')).not.toBeNull();
+    expect(metadata?.textContent).toMatch(
+      /example\.com\s*Test Author\s*Primary Feed\s*\+1\s*Published:.*Received:.*Security/,
+    );
+    expect(metadata?.textContent).not.toContain("By Test Author");
+    expect(metadata?.textContent).not.toContain("Secondary Feed");
+  });
+
+  it("clamps the item title link to two lines", async () => {
+    setupMockData("title-clamp-id");
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal itemId="title-clamp-id" onClose={() => {}} />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    const titleLink = page.getByRole("link", { name: "Test Item" });
+    await expect.element(titleLink).toBeInTheDocument();
+
+    const titleLinkEl = await titleLink.element();
+    const style = window.getComputedStyle(titleLinkEl);
+    expect(titleLinkEl.className).toContain("wb_normal");
+    expect(titleLinkEl.className).toContain("line-break_auto");
+    expect(style.webkitLineClamp).toBe("2");
+    expect(style.webkitBoxOrient).toBe("vertical");
+    expect(style.overflow).toBe("hidden");
+    expect(style.wordBreak).toBe("normal");
+    expect(style.lineBreak).toBe("auto");
+  });
+
+  it("adds a break opportunity after hyphens in the item title", async () => {
+    worker.use(
+      http.all("*/api/v2/items/:id", () => {
+        const msg = create(GetItemResponseSchema, {
+          item: create(ItemSchema, {
+            id: "hyphen-title-id",
+            title: "日本語-タイトル-テスト",
+            description: "Test Content",
+            publishedAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
+            createdAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
+            author: "Test Author",
+            url: "http://example.com",
+            isRead: false,
+          }),
+        });
+        return HttpResponse.json(toJson(GetItemResponseSchema, msg));
+      }),
+    );
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal itemId="hyphen-title-id" onClose={() => {}} />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    const titleLink = page.getByRole("link", {
+      name: "日本語-タイトル-テスト",
+    });
+    await expect.element(titleLink).toBeInTheDocument();
+    const titleLinkEl = await titleLink.element();
+    expect(titleLinkEl.textContent).toContain("-\u200B");
+  });
+
+  it("adds break opportunities around opening and closing brackets in the item title", async () => {
+    worker.use(
+      http.all("*/api/v2/items/:id", () => {
+        const msg = create(GetItemResponseSchema, {
+          item: create(ItemSchema, {
+            id: "bracket-title-id",
+            title: "日本語(タイトル[テスト])",
+            description: "Test Content",
+            publishedAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
+            createdAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
+            author: "Test Author",
+            url: "http://example.com",
+            isRead: false,
+          }),
+        });
+        return HttpResponse.json(toJson(GetItemResponseSchema, msg));
+      }),
+    );
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal itemId="bracket-title-id" onClose={() => {}} />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    const titleLink = page.getByRole("link", {
+      name: "日本語(タイトル[テスト])",
+    });
+    await expect.element(titleLink).toBeInTheDocument();
+    const titleLinkEl = await titleLink.element();
+    expect(titleLinkEl.textContent).toContain("\u200B(");
+    expect(titleLinkEl.textContent).toContain("\u200B[");
+    expect(titleLinkEl.textContent).toContain("]\u200B");
+    expect(titleLinkEl.textContent).toContain(")\u200B");
   });
 
   it("does NOT render a close button (✕)", async () => {

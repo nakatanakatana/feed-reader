@@ -42,6 +42,11 @@ model Feed {
   unreadCount: Int64String;
 }
 
+model ItemFeed {
+  id: string;
+  title: string;
+}
+
 model Item {
   id: string;
   url: string;
@@ -54,6 +59,7 @@ model Item {
   content: string;
   imageUrl: string;
   categories: string;
+  feeds?: ItemFeed[];
   createdAt: DateTime;
 }
 

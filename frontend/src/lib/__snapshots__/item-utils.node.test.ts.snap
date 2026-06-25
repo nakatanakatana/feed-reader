@@ -18,7 +18,8 @@ exports[`item-utils > normalizeCategories > matches snapshot for complex categor
   ],
   [
     "Array",
-    "Mixed, CSV",
+    "Mixed",
+    "CSV",
   ],
   [
     "Malformed JSON",

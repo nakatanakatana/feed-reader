@@ -34,6 +34,12 @@ export interface Item extends ListItem {
   categories?: string;
   imageUrl?: string;
   content?: string;
+  feeds?: ItemFeed[];
+}
+
+export interface ItemFeed {
+  id: string;
+  title: string;
 }
 
 type OpenAPIItem = components["schemas"]["Item"];
@@ -50,6 +56,7 @@ export interface ConnectItemShape {
   categories: string;
   imageUrl: string;
   content: string;
+  feeds?: ItemFeed[];
 }
 
 export const mapConnectItem = (item: ConnectItemShape): Item => ({
@@ -65,6 +72,7 @@ export const mapConnectItem = (item: ConnectItemShape): Item => ({
   categories: item.categories,
   imageUrl: item.imageUrl,
   content: item.content,
+  feeds: item.feeds,
 });
 
 export const mapOpenAPIItem = (item: OpenAPIItem): Item => ({
@@ -80,6 +88,7 @@ export const mapOpenAPIItem = (item: OpenAPIItem): Item => ({
   categories: item.categories,
   imageUrl: item.imageUrl,
   content: item.content,
+  feeds: item.feeds,
 });
 
 const timestampToISOString = (

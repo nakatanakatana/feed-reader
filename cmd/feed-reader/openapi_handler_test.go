@@ -212,6 +212,51 @@ func TestOpenAPIUpdateItemStatusReturnsOK(t *testing.T) {
 	assert.Equal(t, row.IsRead, int64(1))
 }
 
+func TestOpenAPIGetItemReturnsLinkedFeeds(t *testing.T) {
+	ctx := context.Background()
+	_, db := setupTestDB(t)
+	s := store.NewStore(db)
+
+	firstTitle := "Primary Feed"
+	secondTitle := "Backup Feed"
+	_, err := s.CreateFeed(ctx, store.CreateFeedParams{ID: "feed-1", Url: "https://example.com/primary.xml", Title: &firstTitle})
+	assert.NilError(t, err)
+	_, err = s.CreateFeed(ctx, store.CreateFeedParams{ID: "feed-2", Url: "https://example.com/backup.xml", Title: &secondTitle})
+	assert.NilError(t, err)
+	itemTitle := "Shared Item"
+	_, err = s.CreateItem(ctx, store.CreateItemParams{ID: "item-1", Url: "https://example.com/item", Title: &itemTitle})
+	assert.NilError(t, err)
+	err = s.CreateFeedItem(ctx, store.CreateFeedItemParams{FeedID: "feed-1", ItemID: "item-1"})
+	assert.NilError(t, err)
+	err = s.CreateFeedItem(ctx, store.CreateFeedItemParams{FeedID: "feed-2", ItemID: "item-1"})
+	assert.NilError(t, err)
+
+	handler := openapi.HandlerFromMuxWithBaseURL(
+		openapi.NewStrictHandler(NewOpenAPIHandler(s), nil),
+		http.NewServeMux(),
+		"/api/v2",
+	)
+	req := httptest.NewRequest(http.MethodGet, "/api/v2/items/item-1", nil)
+	rec := httptest.NewRecorder()
+
+	handler.ServeHTTP(rec, req)
+
+	assert.Equal(t, rec.Code, http.StatusOK, rec.Body.String())
+	var body map[string]any
+	err = json.Unmarshal(rec.Body.Bytes(), &body)
+	assert.NilError(t, err)
+	item := body["item"].(map[string]any)
+	feeds, ok := item["feeds"].([]any)
+	assert.Assert(t, ok, "expected item.feeds to be an array: %s", rec.Body.String())
+	assert.Equal(t, len(feeds), 2)
+	firstFeed := feeds[0].(map[string]any)
+	secondFeed := feeds[1].(map[string]any)
+	assert.Equal(t, firstFeed["id"], "feed-1")
+	assert.Equal(t, firstFeed["title"], "Primary Feed")
+	assert.Equal(t, secondFeed["id"], "feed-2")
+	assert.Equal(t, secondFeed["title"], "Backup Feed")
+}
+
 func TestOpenAPIImportOpmlReturnsSummary(t *testing.T) {
 	ctx := context.Background()
 	_, db := setupTestDB(t)
@@ -377,4 +422,3 @@ func TestOpenAPIGetItem_NullPublishedAt(t *testing.T) {
 	bodyStr := rec.Body.String()
 	assert.Assert(t, !strings.Contains(bodyStr, "0001-01-01"), "response body should not contain zero date 0001-01-01 but got: %s", bodyStr)
 }
-

@@ -751,6 +751,10 @@ components:
           type: string
         categories:
           type: string
+        feeds:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemFeed'
         createdAt:
           type: string
           format: date-time
@@ -768,6 +772,16 @@ components:
         value:
           type: string
         domain:
+          type: string
+    ItemFeed:
+      type: object
+      required:
+        - id
+        - title
+      properties:
+        id:
+          type: string
+        title:
           type: string
     ItemRead:
       type: object

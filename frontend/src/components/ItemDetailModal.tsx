@@ -30,9 +30,34 @@ import { URLParser } from "../lib/url-parser";
 import { useSwipe } from "../lib/use-swipe";
 import { MarkdownRenderer } from "./MarkdownRenderer";
 import { ActionButton } from "./ui/ActionButton";
-import { GlobeIcon, PublishedIcon, ReceivedIcon } from "./ui/Icons";
+import {
+  FeedIcon,
+  GlobeIcon,
+  PublishedIcon,
+  ReceivedIcon,
+  TagIcon,
+  UserIcon,
+} from "./ui/Icons";
 import { KebabMenu } from "./ui/KebabMenu";
 import { Modal } from "./ui/Modal";
+
+function makeTitleBreakFriendly(title: string) {
+  const openingBreakChars = new Set(["(", "[", "{", "（", "［", "｛"]);
+  const closingBreakChars = new Set([")", "]", "}", "）", "］", "｝"]);
+  const chars = Array.from(title);
+
+  return chars
+    .map((char, index) => {
+      const before = openingBreakChars.has(char) ? "\u200B" : "";
+      const after =
+        closingBreakChars.has(char) ||
+        (char === "-" && chars[index + 1] && /\S/.test(chars[index + 1]))
+          ? "\u200B"
+          : "";
+      return `${before}${char}${after}`;
+    })
+    .join("");
+}
 
 interface ItemDetailModalProps {
   itemId: string | undefined;
@@ -518,8 +543,8 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             class={css({
               fontSize: "md",
               fontWeight: "bold",
-              truncate: true,
               flex: 1,
+              minWidth: 0,
             })}
           >
             <Show when={isEndOfList()}>
@@ -535,13 +560,18 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                     class={css({
                       color: "inherit",
                       textDecoration: "none",
+                      display: "-webkit-box",
+                      overflow: "hidden",
+                      lineClamp: 2,
+                      wordBreak: "normal",
+                      lineBreak: "auto",
                       _hover: {
                         textDecoration: "underline",
                         color: "blue.600",
                       },
                     })}
                   >
-                    {itemData().title}
+                    {makeTitleBreakFriendly(itemData().title)}
                   </a>
                 )}
               </Show>
@@ -786,12 +816,14 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                 <>
                   <div
                     class={flex({
-                      gap: "4",
+                      columnGap: "4",
+                      rowGap: "2",
                       fontSize: "sm",
                       color: "gray.500",
                       flexWrap: "wrap",
                       alignItems: "center",
                     })}
+                    data-testid="item-metadata"
                   >
                     <Show when={itemData().url}>
                       <span
@@ -802,40 +834,62 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                         <span>{extractHostname(itemData().url || "")}</span>
                       </span>
                     </Show>
+                    <Show when={itemData().author}>
+                      <span
+                        class={flex({ gap: "1", alignItems: "center" })}
+                        title="Author"
+                      >
+                        <UserIcon />
+                        <span>{itemData().author}</span>
+                      </span>
+                    </Show>
+                    <Show
+                      when={(() => {
+                        const feedTitles = (itemData().feeds ?? [])
+                          .map((feed) => feed.title)
+                          .filter(Boolean);
+                        return feedTitles.length > 0 ? feedTitles : undefined;
+                      })()}
+                    >
+                      {(feedTitles) => (
+                        <span
+                          class={flex({ gap: "1", alignItems: "center" })}
+                          title="Feed"
+                        >
+                          <FeedIcon />
+                          <span>{feedTitles()[0]}</span>
+                          <Show when={feedTitles().length > 1}>
+                            <span
+                              class={css({
+                                px: "1.5",
+                                py: "0.5",
+                                bg: "gray.100",
+                                rounded: "full",
+                                fontSize: "10px",
+                                color: "gray.600",
+                                lineHeight: "1",
+                              })}
+                              title={feedTitles().join(", ")}
+                              aria-label={`${feedTitles().length - 1} more feeds`}
+                            >
+                              +{feedTitles().length - 1}
+                            </span>
+                          </Show>
+                        </span>
+                      )}
+                    </Show>
                     <Show when={!!itemData().publishedAt}>
                       <span
                         class={flex({ gap: "1", alignItems: "center" })}
                         title="Published Date"
                       >
+                        <PublishedIcon />
                         <span
                           class={css({
-                            display: { base: "none", xs: "inline" },
+                            display: "none",
                           })}
                         >
                           Published:
-                        </span>
-                        <span
-                          class={css({
-                            display: { base: "inline", xs: "none" },
-                          })}
-                          title="Published"
-                        >
-                          <PublishedIcon />
-                          <span
-                            class={css({
-                              position: "absolute",
-                              width: "1px",
-                              height: "1px",
-                              padding: "0",
-                              margin: "-1px",
-                              overflow: "hidden",
-                              clip: "rect(0, 0, 0, 0)",
-                              whiteSpace: "nowrap",
-                              borderWidth: "0",
-                            })}
-                          >
-                            Published:
-                          </span>
                         </span>
                         {formatDate(itemData().publishedAt)}
                       </span>
@@ -845,38 +899,25 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                       title="Received Date"
                     >
                       <span
-                        class={css({ display: { base: "none", xs: "inline" } })}
+                        class={css({
+                          display: "none",
+                        })}
                       >
                         Received:
                       </span>
-                      <span
-                        class={css({ display: { base: "inline", xs: "none" } })}
-                        title="Received"
-                      >
-                        <ReceivedIcon />
-                        <span
-                          class={css({
-                            position: "absolute",
-                            width: "1px",
-                            height: "1px",
-                            padding: "0",
-                            margin: "-1px",
-                            overflow: "hidden",
-                            clip: "rect(0, 0, 0, 0)",
-                            whiteSpace: "nowrap",
-                            borderWidth: "0",
-                          })}
-                        >
-                          Received:
-                        </span>
-                      </span>
+                      <ReceivedIcon />
                       {formatDate(itemData().createdAt)}
                     </span>
-                    <Show when={itemData().author}>
-                      <span>By {itemData().author}</span>
-                    </Show>
                     <Show when={itemData().categories}>
-                      <div class={flex({ gap: "1", flexWrap: "wrap" })}>
+                      <div
+                        class={flex({
+                          gap: "1",
+                          flexWrap: "wrap",
+                          alignItems: "center",
+                        })}
+                        title="Labels"
+                      >
+                        <TagIcon />
                         <For
                           each={normalizeCategories(
                             itemData().categories ?? "",
