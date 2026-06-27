@@ -197,6 +197,31 @@ func TestStore_SaveFetchedItem(t *testing.T) {
 	})
 }
 
+func TestStore_SaveFetchedItemRejectsInvalidPublishedAt(t *testing.T) {
+	s := setupStore(t)
+	ctx := context.Background()
+
+	feedID := uuid.NewString()
+	_, err := s.CreateFeed(ctx, store.CreateFeedParams{
+		ID:  feedID,
+		Url: "http://example.com/feed.xml",
+	})
+	assert.NilError(t, err)
+
+	invalidPublishedAt := "enewal negotiations."
+	err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
+		FeedID:      feedID,
+		Url:         "http://example.com/article/invalid-date",
+		PublishedAt: &invalidPublishedAt,
+	})
+	assert.ErrorContains(t, err, "published_at must be RFC3339")
+
+	var count int
+	err = s.DB.QueryRowContext(ctx, "SELECT count(*) FROM items WHERE url = ?", "http://example.com/article/invalid-date").Scan(&count)
+	assert.NilError(t, err)
+	assert.Equal(t, count, 0)
+}
+
 func TestStore_ListFeeds_Sorting(t *testing.T) {
 	s := setupStore(t)
 	ctx := context.Background()
@@ -305,4 +330,3 @@ func TestStore_GetFeedUpdateDistribution(t *testing.T) {
 	assert.Assert(t, found1, "t1 bucket should exist")
 	assert.Assert(t, found2, "t2 bucket should exist")
 }
-

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log/slog"
+	"strings"
 	"testing"
 	"time"
 
@@ -116,3 +117,37 @@ func TestWriteQueueServiceIntegration(t *testing.T) {
 	}
 }
 
+func TestSaveItemsJobRejectsInvalidPublishedAt(t *testing.T) {
+	st := setupTestStore(t)
+	ctx := t.Context()
+
+	feed, err := st.CreateFeed(ctx, store.CreateFeedParams{ID: "f-invalid-date", Url: "feed-invalid-date"})
+	if err != nil {
+		t.Fatalf("failed to create feed: %v", err)
+	}
+
+	invalidPublishedAt := "enewal negotiations."
+	job := &SaveItemsJob{
+		Items: []store.SaveFetchedItemParams{
+			{
+				FeedID:      feed.ID,
+				Url:         "item-invalid-date",
+				PublishedAt: &invalidPublishedAt,
+			},
+		},
+	}
+
+	err = job.Execute(ctx, st.Queries)
+	if err == nil || !strings.Contains(err.Error(), "published_at must be RFC3339") {
+		t.Fatalf("expected invalid published_at error, got %v", err)
+	}
+
+	var count int
+	err = st.DB.QueryRowContext(ctx, "SELECT count(*) FROM items WHERE url = ?", "item-invalid-date").Scan(&count)
+	if err != nil {
+		t.Fatalf("failed to count items: %v", err)
+	}
+	if count != 0 {
+		t.Fatalf("expected invalid item not to be saved, got %d rows", count)
+	}
+}
