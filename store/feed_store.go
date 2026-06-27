@@ -211,9 +211,21 @@ type SaveFetchedItemParams struct {
 	Categories  *string
 }
 
+func ValidateSaveFetchedItemParams(params SaveFetchedItemParams) error {
+	if params.PublishedAt != nil {
+		if _, err := time.Parse(time.RFC3339, *params.PublishedAt); err != nil {
+			return fmt.Errorf("published_at must be RFC3339: %w", err)
+		}
+	}
+	return nil
+}
+
 // SaveFetchedItem saves an item, links it to the feed, and initializes read status.
 // It handles deduplication and ensures atomicity.
 func (s *Store) SaveFetchedItem(ctx context.Context, params SaveFetchedItemParams) error {
+	if err := ValidateSaveFetchedItemParams(params); err != nil {
+		return err
+	}
 	cleanedURL, err := CleanURL(params.Url)
 	if err == nil {
 		params.Url = cleanedURL
@@ -254,7 +266,7 @@ func (s *Store) SaveFetchedItem(ctx context.Context, params SaveFetchedItemParam
 		}
 
 		// 4. Check for blocking rules
-		// We fetch rules inside the transaction for consistency, 
+		// We fetch rules inside the transaction for consistency,
 		// but for performance with many items we might want to cache these outside.
 		blockRules, err := qtx.ListItemBlockRules(ctx)
 		if err != nil {
@@ -270,7 +282,7 @@ func (s *Store) SaveFetchedItem(ctx context.Context, params SaveFetchedItemParam
 			// TODO: Deduplicate URL parsing by moving shared logic out of the main package
 			// into a reusable package that can be used here instead of extractUserInfoLocally.
 			extractedUser, extractedDomain := extractUserInfoLocally(item.Url, urlRules)
-			
+
 			fullItem := FullItem{
 				ID:      item.ID,
 				Url:     item.Url,
@@ -315,7 +327,7 @@ func extractUserInfoLocally(urlStr string, rules []UrlParsingRule) (*string, *st
 			// Expected pattern: <rule.Pattern>/<user>
 			// Example: rule.Pattern = "domain.com/users", urlPath = "/users/user1/post"
 			if strings.HasPrefix(u.Hostname(), rule.Pattern) || strings.HasPrefix(u.Hostname()+u.Path, rule.Pattern) {
-				// Simplistic check for path-based. 
+				// Simplistic check for path-based.
 				// Pattern might include host like "github.com/user"
 				fullPath := u.Hostname() + u.Path
 				if strings.HasPrefix(fullPath, rule.Pattern+"/") {

@@ -145,6 +145,14 @@ func (j *SaveItemsJob) Execute(ctx context.Context, q *store.Queries) error {
 
 	var newItems int32
 	for _, params := range j.Items {
+		if err := store.ValidateSaveFetchedItemParams(params); err != nil {
+			err = fmt.Errorf("invalid item params: %w", err)
+			if j.ResultChan != nil {
+				j.ResultChan <- SaveItemsResult{Error: err}
+			}
+			return err
+		}
+
 		// 1. Upsert Item
 		newID := uuid.NewString()
 		item, err := q.CreateItem(ctx, store.CreateItemParams{
