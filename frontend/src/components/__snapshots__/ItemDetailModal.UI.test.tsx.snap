@@ -22,7 +22,7 @@ exports[`ItemDetailModal UI Updates > falls back to CSV parsing when JSON is mal
               class="fs_md fw_bold flex_1 min-w_0"
             >
               <a
-                class="c_inherit td_none d_-webkit-box ov_hidden lc_2 wb_normal line-break_auto hover:td_underline hover:c_blue.600"
+                class="c_inherit td_none d_-webkit-box ov_hidden lc_2 wb_normal line-break_auto tw_wrap hover:td_underline hover:c_blue.600"
                 href="https://example.com/item3"
                 rel="noopener noreferrer"
                 target="_blank"
@@ -271,7 +271,7 @@ exports[`ItemDetailModal UI Updates > renders comma-separated categories when JS
               class="fs_md fw_bold flex_1 min-w_0"
             >
               <a
-                class="c_inherit td_none d_-webkit-box ov_hidden lc_2 wb_normal line-break_auto hover:td_underline hover:c_blue.600"
+                class="c_inherit td_none d_-webkit-box ov_hidden lc_2 wb_normal line-break_auto tw_wrap hover:td_underline hover:c_blue.600"
                 href="https://example.com/item2"
                 rel="noopener noreferrer"
                 target="_blank"
@@ -520,7 +520,7 @@ exports[`ItemDetailModal UI Updates > renders title as a link and displays conte
               class="fs_md fw_bold flex_1 min-w_0"
             >
               <a
-                class="c_inherit td_none d_-webkit-box ov_hidden lc_2 wb_normal line-break_auto hover:td_underline hover:c_blue.600"
+                class="c_inherit td_none d_-webkit-box ov_hidden lc_2 wb_normal line-break_auto tw_wrap hover:td_underline hover:c_blue.600"
                 href="https://example.com/item1"
                 rel="noopener noreferrer"
                 target="_blank"

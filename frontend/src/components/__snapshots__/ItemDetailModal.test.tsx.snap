@@ -22,7 +22,7 @@ exports[`ItemDetailModal > renders item content when itemId is provided 1`] = `
               class="fs_md fw_bold flex_1 min-w_0"
             >
               <a
-                class="c_inherit td_none d_-webkit-box ov_hidden lc_2 wb_normal line-break_auto hover:td_underline hover:c_blue.600"
+                class="c_inherit td_none d_-webkit-box ov_hidden lc_2 wb_normal line-break_auto tw_wrap hover:td_underline hover:c_blue.600"
                 href="http://example.com"
                 rel="noopener noreferrer"
                 target="_blank"

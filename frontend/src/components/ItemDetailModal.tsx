@@ -565,6 +565,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                       lineClamp: 2,
                       wordBreak: "normal",
                       lineBreak: "auto",
+                      textWrap: "wrap",
                       _hover: {
                         textDecoration: "underline",
                         color: "blue.600",
