@@ -168,6 +168,7 @@ describe("ItemDetailModal", () => {
     expect(style.overflow).toBe("hidden");
     expect(style.wordBreak).toBe("normal");
     expect(style.lineBreak).toBe("auto");
+    expect(style.textWrap).toBe("wrap");
   });
 
   it("adds a break opportunity after hyphens in the item title", async () => {
