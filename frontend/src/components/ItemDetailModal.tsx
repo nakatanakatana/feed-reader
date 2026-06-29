@@ -25,7 +25,7 @@ import {
   formatDate,
   normalizeCategories,
 } from "../lib/item-utils";
-import { useToast } from "../lib/toast";
+import { ToastViewport, useToast } from "../lib/toast";
 import { URLParser } from "../lib/url-parser";
 import { useSwipe } from "../lib/use-swipe";
 import { MarkdownRenderer } from "./MarkdownRenderer";
@@ -68,6 +68,32 @@ interface ItemDetailModalProps {
   onNext?: () => void;
   onSkipNext?: () => void;
   footerExtras?: JSX.Element;
+}
+
+type BlockRuleInput = {
+  ruleType: string;
+  value: string;
+  domain?: string;
+};
+
+type BlockRuleMutationRequest = {
+  rules: BlockRuleInput[];
+};
+
+function formatBlockRuleSuccessMessage(req: BlockRuleMutationRequest) {
+  const rule = req.rules[0];
+  if (!rule) return "Block rule added successfully";
+
+  switch (rule.ruleType) {
+    case "domain":
+      return `Blocked domain: ${rule.value}`;
+    case "user_domain":
+      return `Blocked user @ domain: ${rule.value}@${rule.domain ?? ""}`;
+    case "user":
+      return `Blocked user: ${rule.value}`;
+    default:
+      return "Block rule added successfully";
+  }
 }
 
 export function ItemDetailModal(props: ItemDetailModalProps) {
@@ -324,13 +350,11 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   const { show } = useToast();
 
   const blockMutation = createMutation(() => ({
-    mutationFn: async (req: {
-      rules: { ruleType: string; value: string; domain?: string }[];
-    }) => {
+    mutationFn: async (req: BlockRuleMutationRequest) => {
       await itemBlockRuleInsert(req.rules);
     },
-    onSuccess: () => {
-      show("Block rule added successfully", "success");
+    onSuccess: (_data, variables) => {
+      show(formatBlockRuleSuccessMessage(variables), "success");
     },
     onError: () => {
       show("Failed to add block rule", "error");
@@ -530,6 +554,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
         footer={footer()}
         focusKey={modalFocusKey()}
       >
+        <ToastViewport />
         <div
           class={flex({
             justifyContent: "space-between",

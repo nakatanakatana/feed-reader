@@ -16,6 +16,9 @@ exports[`ItemDetailModal > renders item content when itemId is provided 1`] = `
           class="d_flex flex-d_column gap_4 p_0 ov-y_auto flex_1 min-h_0"
         >
           <div
+            class="pos_fixed bottom_4 right_4 z_9999 d_flex flex-d_column gap_2"
+          />
+          <div
             class="d_flex ai_center jc_space-between p_2 bd-b_1px_solid bd-c_gray.100"
           >
             <h2

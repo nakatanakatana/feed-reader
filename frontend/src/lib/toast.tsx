@@ -22,6 +22,18 @@ interface ToastContextValue {
 
 const ToastContext = createContext<ToastContextValue>();
 
+function toastViewportClass() {
+  return css({
+    position: "fixed",
+    bottom: "4",
+    right: "4",
+    zIndex: 9999,
+    display: "flex",
+    flexDirection: "column",
+    gap: "2",
+  });
+}
+
 function ToastItem(props: { toast: Toast; onDismiss: (id: string) => void }) {
   let timer: number | undefined;
 
@@ -88,6 +100,16 @@ function ToastItem(props: { toast: Toast; onDismiss: (id: string) => void }) {
   );
 }
 
+export function ToastViewport() {
+  return (
+    <div class={toastViewportClass()}>
+      <For each={toast.toasts()}>
+        {(t) => <ToastItem toast={t} onDismiss={toast.dismiss} />}
+      </For>
+    </div>
+  );
+}
+
 export function ToastProvider(props: { children: JSX.Element }) {
   return (
     <ToastContext.Provider
@@ -100,21 +122,7 @@ export function ToastProvider(props: { children: JSX.Element }) {
     >
       {props.children}
       <Portal>
-        <div
-          class={css({
-            position: "fixed",
-            bottom: "4",
-            right: "4",
-            zIndex: 9999,
-            display: "flex",
-            flexDirection: "column",
-            gap: "2",
-          })}
-        >
-          <For each={toast.toasts()}>
-            {(t) => <ToastItem toast={t} onDismiss={toast.dismiss} />}
-          </For>
-        </div>
+        <ToastViewport />
       </Portal>
     </ToastContext.Provider>
   );
