@@ -165,9 +165,44 @@ describe("ItemDetailModal KebabMenu", () => {
       ],
     });
 
-    // Verify success toast
+    // Verify success toast is rendered inside the native dialog top layer.
     await expect
-      .element(page.getByText("Block rule added successfully"))
-      .toBeInTheDocument();
+      .poll(
+        () =>
+          document
+            .querySelector('dialog [role="status"]')
+            ?.textContent?.includes("Blocked user: user1") ?? false,
+      )
+      .toBe(true);
+  });
+
+  it("shows the blocked rule details in the success toast", async () => {
+    setupMockData("4", "https://user1.example.com/post");
+    setupMutationMock();
+
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal itemId="4" onClose={() => {}} />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    await expect.element(page.getByText("Test Item")).toBeInTheDocument();
+
+    const kebabMenu = page.getByRole("button", { name: "More actions" });
+    await kebabMenu.click();
+
+    await page.getByText("Block User (user1)").click();
+
+    await expect
+      .poll(
+        () =>
+          document
+            .querySelector('dialog [role="status"]')
+            ?.textContent?.includes("Blocked user: user1") ?? false,
+      )
+      .toBe(true);
   });
 });
