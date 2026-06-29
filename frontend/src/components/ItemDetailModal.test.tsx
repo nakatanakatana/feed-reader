@@ -171,13 +171,14 @@ describe("ItemDetailModal", () => {
     expect(style.textWrap).toBe("wrap");
   });
 
-  it("adds a break opportunity after hyphens in the item title", async () => {
+  it("preserves item title text without injected break characters", async () => {
     worker.use(
       http.all("*/api/v2/items/:id", () => {
+        const title = "日本語-タイトル(テスト[詳細])";
         const msg = create(GetItemResponseSchema, {
           item: create(ItemSchema, {
-            id: "hyphen-title-id",
-            title: "日本語-タイトル-テスト",
+            id: "raw-title-id",
+            title,
             description: "Test Content",
             publishedAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
             createdAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
@@ -192,56 +193,19 @@ describe("ItemDetailModal", () => {
     dispose = render(
       () => (
         <Wrapper>
-          <ItemDetailModal itemId="hyphen-title-id" onClose={() => {}} />
+          <ItemDetailModal itemId="raw-title-id" onClose={() => {}} />
         </Wrapper>
       ),
       document.body,
     );
 
     const titleLink = page.getByRole("link", {
-      name: "日本語-タイトル-テスト",
+      name: "日本語-タイトル(テスト[詳細])",
     });
     await expect.element(titleLink).toBeInTheDocument();
     const titleLinkEl = await titleLink.element();
-    expect(titleLinkEl.textContent).toContain("-\u200B");
-  });
-
-  it("adds break opportunities around opening and closing brackets in the item title", async () => {
-    worker.use(
-      http.all("*/api/v2/items/:id", () => {
-        const msg = create(GetItemResponseSchema, {
-          item: create(ItemSchema, {
-            id: "bracket-title-id",
-            title: "日本語(タイトル[テスト])",
-            description: "Test Content",
-            publishedAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
-            createdAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
-            author: "Test Author",
-            url: "http://example.com",
-            isRead: false,
-          }),
-        });
-        return HttpResponse.json(toJson(GetItemResponseSchema, msg));
-      }),
-    );
-    dispose = render(
-      () => (
-        <Wrapper>
-          <ItemDetailModal itemId="bracket-title-id" onClose={() => {}} />
-        </Wrapper>
-      ),
-      document.body,
-    );
-
-    const titleLink = page.getByRole("link", {
-      name: "日本語(タイトル[テスト])",
-    });
-    await expect.element(titleLink).toBeInTheDocument();
-    const titleLinkEl = await titleLink.element();
-    expect(titleLinkEl.textContent).toContain("\u200B(");
-    expect(titleLinkEl.textContent).toContain("\u200B[");
-    expect(titleLinkEl.textContent).toContain("]\u200B");
-    expect(titleLinkEl.textContent).toContain(")\u200B");
+    expect(titleLinkEl.textContent).toBe("日本語-タイトル(テスト[詳細])");
+    expect(titleLinkEl.textContent).not.toContain("\u200B");
   });
 
   it("does NOT render a close button (✕)", async () => {
