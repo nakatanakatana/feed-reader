@@ -41,24 +41,6 @@ import {
 import { KebabMenu } from "./ui/KebabMenu";
 import { Modal } from "./ui/Modal";
 
-function makeTitleBreakFriendly(title: string) {
-  const openingBreakChars = new Set(["(", "[", "{", "（", "［", "｛"]);
-  const closingBreakChars = new Set([")", "]", "}", "）", "］", "｝"]);
-  const chars = Array.from(title);
-
-  return chars
-    .map((char, index) => {
-      const before = openingBreakChars.has(char) ? "\u200B" : "";
-      const after =
-        closingBreakChars.has(char) ||
-        (char === "-" && chars[index + 1] && /\S/.test(chars[index + 1]))
-          ? "\u200B"
-          : "";
-      return `${before}${char}${after}`;
-    })
-    .join("");
-}
-
 interface ItemDetailModalProps {
   itemId: string | undefined;
   onClose: () => void;
@@ -572,7 +554,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                       },
                     })}
                   >
-                    {makeTitleBreakFriendly(itemData().title)}
+                    {itemData().title}
                   </a>
                 )}
               </Show>
