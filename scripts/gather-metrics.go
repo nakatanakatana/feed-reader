@@ -106,8 +106,9 @@ var tsCCCCExcludes = []string{
 	"frontend/src/mocks/generated/**",
 }
 
-func buildCCCCArgs(excludes []string, paths ...string) []string {
-	args := make([]string, 0, len(excludes)*2+len(paths))
+func buildCCCCArgs(lang string, excludes []string, paths ...string) []string {
+	args := make([]string, 0, len(excludes)*2+len(paths)+2)
+	args = append(args, "--lang", lang)
 	for _, exclude := range excludes {
 		args = append(args, "--exclude", exclude)
 	}
@@ -147,10 +148,10 @@ func main() {
 	// 2. Code Complexity via cccc
 	var metrics []OctocovMetric
 
-	// Run cccc-go
-	goRes, err := runCCCC("cccc-go", buildCCCCArgs(goCCCCExcludes, "cmd", "api", "store")...)
+	// Run cccc for Go
+	goRes, err := runCCCC("cccc", buildCCCCArgs("go", goCCCCExcludes, "cmd", "api", "store")...)
 	if err != nil {
-		fmt.Printf("Warning: cccc-go failed: %v\n", err)
+		fmt.Printf("Warning: cccc --lang go failed: %v\n", err)
 	} else {
 		metrics = append(metrics, []OctocovMetric{
 			{Key: "go_cognitive_sum", Name: "Go Cognitive Complexity (Sum)", Value: goRes.Summary.Cognitive.Sum},
@@ -163,10 +164,10 @@ func main() {
 		}...)
 	}
 
-	// Run cccc-es
-	esRes, err := runCCCC("cccc-es", buildCCCCArgs(tsCCCCExcludes, "frontend/src")...)
+	// Run cccc for TypeScript/JavaScript
+	esRes, err := runCCCC("cccc", buildCCCCArgs("es", tsCCCCExcludes, "frontend/src")...)
 	if err != nil {
-		fmt.Printf("Warning: cccc-es failed: %v\n", err)
+		fmt.Printf("Warning: cccc --lang es failed: %v\n", err)
 	} else {
 		metrics = append(metrics, []OctocovMetric{
 			{Key: "ts_cognitive_sum", Name: "TS Cognitive Complexity (Sum)", Value: esRes.Summary.Cognitive.Sum},
