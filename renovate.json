@@ -2,22 +2,9 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended",
+    "customManagers:githubActionsVersions",
     "github>aquaproj/aqua-renovate-config#2.13.0",
     "github>nakatanakatana/renovate-config#0.0.3"
-  ],
-  "customManagers": [
-    {
-      "customType": "regex",
-      "datasourceTemplate": "github-releases",
-      "depNameTemplate": "moznion/cccc",
-      "packageNameTemplate": "moznion/cccc",
-      "managerFilePatterns": [
-        "/^aqua\\.ya?ml$/"
-      ],
-      "matchStrings": [
-        "- name: cccc@(?<currentValue>[^\\s]+)\\n\\s+registry: local"
-      ]
-    }
   ],
   "packageRules": [
     {

@@ -10,9 +10,6 @@ checksum:
 registries:
 - type: standard
   ref: v4.530.0 # renovate: depName=aquaproj/aqua-registry
-- name: local
-  type: local
-  path: registry.yaml
 packages:
 - name: bufbuild/buf@v1.71.0
 - name: golang/go@go1.26.4
@@ -21,5 +18,3 @@ packages:
 - name: k1LoW/mo@v1.6.3
 - name: k1LoW/octocov@v0.75.8
 - name: sqlc-dev/sqlc@v1.31.1
-- name: cccc@v1.0.0
-  registry: local
