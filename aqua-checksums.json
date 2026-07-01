@@ -141,23 +141,23 @@
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/moznion/cccc/v1.0.0/cccc-v1.0.0-aarch64-apple-darwin.tar.gz",
-      "checksum": "DABA6D3273A29C3EFB7B5B33879398A84AA498DD770E56410BD1635012D94DB9",
+      "id": "github_release/github.com/moznion/cccc/v1.1.0/cccc-v1.1.0-aarch64-apple-darwin.tar.gz",
+      "checksum": "D1406D23322CE0068B22BC904ACF1EB42295F132C7D5129D04A1AA9346C950F2",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/moznion/cccc/v1.0.0/cccc-v1.0.0-aarch64-unknown-linux-musl.tar.gz",
-      "checksum": "068CD8EF9BBD149529F36594061E5827864063FE2B5B4B09395B2F8DDBA087D9",
+      "id": "github_release/github.com/moznion/cccc/v1.1.0/cccc-v1.1.0-aarch64-unknown-linux-musl.tar.gz",
+      "checksum": "7892EFFBD0348A346780B7582B1BA286594C99D0699E9C4A6432735E176ADA1B",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/moznion/cccc/v1.0.0/cccc-v1.0.0-x86_64-apple-darwin.tar.gz",
-      "checksum": "1AE896CB7B899478B24CA41F911D952817FA620D0B41C2F5F1FBFF1C84A77AA1",
+      "id": "github_release/github.com/moznion/cccc/v1.1.0/cccc-v1.1.0-x86_64-apple-darwin.tar.gz",
+      "checksum": "B796717F18CA7B60C2373A6EA3CE73C7D9AE1EA2CD5D37A826AA0EBE2676185E",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/moznion/cccc/v1.0.0/cccc-v1.0.0-x86_64-unknown-linux-musl.tar.gz",
-      "checksum": "7DCB251BE9FCA05807E526FCCABD047E27503D24430D16949991391A26AD43E9",
+      "id": "github_release/github.com/moznion/cccc/v1.1.0/cccc-v1.1.0-x86_64-unknown-linux-musl.tar.gz",
+      "checksum": "FB88642DC53D49759472894F2D7E69910B99EB5302E8E2A423783AEB172635FA",
       "algorithm": "sha256"
     },
     {
