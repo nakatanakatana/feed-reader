@@ -21,5 +21,5 @@ packages:
 - name: k1LoW/mo@v1.6.3
 - name: k1LoW/octocov@v0.75.8
 - name: sqlc-dev/sqlc@v1.31.1
-- name: cccc@v1.0.0
+- name: cccc@v1.1.0
   registry: local
