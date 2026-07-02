@@ -141,26 +141,6 @@
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/moznion/cccc/v1.0.0/cccc-v1.0.0-aarch64-apple-darwin.tar.gz",
-      "checksum": "DABA6D3273A29C3EFB7B5B33879398A84AA498DD770E56410BD1635012D94DB9",
-      "algorithm": "sha256"
-    },
-    {
-      "id": "github_release/github.com/moznion/cccc/v1.0.0/cccc-v1.0.0-aarch64-unknown-linux-musl.tar.gz",
-      "checksum": "068CD8EF9BBD149529F36594061E5827864063FE2B5B4B09395B2F8DDBA087D9",
-      "algorithm": "sha256"
-    },
-    {
-      "id": "github_release/github.com/moznion/cccc/v1.0.0/cccc-v1.0.0-x86_64-apple-darwin.tar.gz",
-      "checksum": "1AE896CB7B899478B24CA41F911D952817FA620D0B41C2F5F1FBFF1C84A77AA1",
-      "algorithm": "sha256"
-    },
-    {
-      "id": "github_release/github.com/moznion/cccc/v1.0.0/cccc-v1.0.0-x86_64-unknown-linux-musl.tar.gz",
-      "checksum": "7DCB251BE9FCA05807E526FCCABD047E27503D24430D16949991391A26AD43E9",
-      "algorithm": "sha256"
-    },
-    {
       "id": "http/downloads.sqlc.dev/sqlc_1.31.1_darwin_amd64.tar.gz",
       "checksum": "C5AF76772E3785D21663A62697056B383F07629979B1BD25B93872E73DBD519B",
       "algorithm": "sha256"

@@ -15,23 +15,7 @@ type aquaConfig struct {
 }
 
 type aquaPackage struct {
-	Name     string `yaml:"name"`
-	Registry string `yaml:"registry"`
-}
-
-type aquaRegistry struct {
-	Packages []aquaRegistryPackage `yaml:"packages"`
-}
-
-type aquaRegistryPackage struct {
-	Name  string `yaml:"name"`
-	Asset string `yaml:"asset"`
-	Files []struct {
-		Name string `yaml:"name"`
-	} `yaml:"files"`
-	Checksum struct {
-		Asset string `yaml:"asset"`
-	} `yaml:"checksum"`
+	Name string `yaml:"name"`
 }
 
 type aquaChecksums struct {
@@ -41,6 +25,7 @@ type aquaChecksums struct {
 }
 
 type renovateConfig struct {
+	Extends        []string                `json:"extends"`
 	CustomManagers []renovateCustomManager `json:"customManagers"`
 }
 
@@ -51,6 +36,18 @@ type renovateCustomManager struct {
 	PackageNameTemplate string   `json:"packageNameTemplate"`
 	ManagerFilePatterns []string `json:"managerFilePatterns"`
 	MatchStrings        []string `json:"matchStrings"`
+}
+
+type ciWorkflow struct {
+	Env  map[string]string `yaml:"env"`
+	Jobs map[string]struct {
+		Steps []ciStep `yaml:"steps"`
+	} `yaml:"jobs"`
+}
+
+type ciStep struct {
+	Uses string            `yaml:"uses"`
+	With map[string]string `yaml:"with"`
 }
 
 func TestCalculateBundleSize(t *testing.T) {
@@ -142,7 +139,40 @@ func TestBuildCCCCArgs(t *testing.T) {
 	}
 }
 
-func TestCCCCAquaPackageTracksV1ReleaseLayout(t *testing.T) {
+func TestCCCCIsInstalledByGitHubActionInCoverageAggregation(t *testing.T) {
+	workflowData, err := os.ReadFile("../.github/workflows/ci.yaml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var workflow ciWorkflow
+	if err := yaml.Unmarshal(workflowData, &workflow); err != nil {
+		t.Fatal(err)
+	}
+
+	if workflow.Env["CCCC_VERSION"] == "" {
+		t.Fatal("expected CI workflow to define CCCC_VERSION for Renovate")
+	}
+	if !strings.HasPrefix(workflow.Env["CCCC_VERSION"], "v1.") {
+		t.Fatalf("expected CCCC_VERSION to track v1 releases, got %q", workflow.Env["CCCC_VERSION"])
+	}
+
+	job, ok := workflow.Jobs["coverage-aggregation"]
+	if !ok {
+		t.Fatal("expected coverage-aggregation job")
+	}
+	for _, step := range job.Steps {
+		if step.Uses != "moznion/cccc-action@v1" {
+			continue
+		}
+		if step.With["version"] != "${{ env.CCCC_VERSION }}" {
+			t.Fatalf("expected cccc-action version to use CCCC_VERSION env, got %q", step.With["version"])
+		}
+		return
+	}
+	t.Fatal("expected coverage-aggregation to install cccc with moznion/cccc-action@v1")
+}
+
+func TestCCCCIsNotInstalledByAqua(t *testing.T) {
 	aquaData, err := os.ReadFile("../aqua.yaml")
 	if err != nil {
 		t.Fatal(err)
@@ -152,36 +182,10 @@ func TestCCCCAquaPackageTracksV1ReleaseLayout(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	registryData, err := os.ReadFile("../registry.yaml")
-	if err != nil {
-		t.Fatal(err)
-	}
-	var registry aquaRegistry
-	if err := yaml.Unmarshal(registryData, &registry); err != nil {
-		t.Fatal(err)
-	}
-
-	pkg := findAquaPackage(t, aqua.Packages, "cccc")
-	if pkg.Registry != "local" {
-		t.Fatalf("expected cccc to use local registry, got %q", pkg.Registry)
-	}
-	ccccVersion, ok := strings.CutPrefix(pkg.Name, "cccc@")
-	if !ok {
-		t.Fatalf("expected cccc package name with version, got %q", pkg.Name)
-	}
-	if !strings.HasPrefix(ccccVersion, "v1.") {
-		t.Fatalf("expected cccc to track v1 release layout, got %q", pkg.Name)
-	}
-
-	registryPkg := findRegistryPackage(t, registry.Packages, "cccc")
-	if registryPkg.Asset != "cccc-{{.Version}}-{{.Arch}}-{{.OS}}.tar.gz" {
-		t.Errorf("asset: expected unified cccc archive, got %q", registryPkg.Asset)
-	}
-	if registryPkg.Checksum.Asset != "cccc-{{.Version}}-{{.Arch}}-{{.OS}}.sha256" {
-		t.Errorf("checksum asset: expected unified cccc checksum, got %q", registryPkg.Checksum.Asset)
-	}
-	if len(registryPkg.Files) != 1 || registryPkg.Files[0].Name != "cccc" {
-		t.Fatalf("expected registry file to install cccc, got %#v", registryPkg.Files)
+	for _, pkg := range aqua.Packages {
+		if strings.HasPrefix(pkg.Name, "cccc@") {
+			t.Fatalf("expected cccc to be installed by cccc-action, got aqua package %q", pkg.Name)
+		}
 	}
 
 	checksumsData, err := os.ReadFile("../aqua-checksums.json")
@@ -193,22 +197,14 @@ func TestCCCCAquaPackageTracksV1ReleaseLayout(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var ccccChecksumCount int
 	for _, checksum := range checksums.Checksums {
 		if strings.Contains(checksum.ID, "github.com/moznion/cccc/") {
-			ccccChecksumCount++
-			expectedChecksumIDPart := "/" + ccccVersion + "/cccc-" + ccccVersion + "-"
-			if !strings.Contains(checksum.ID, expectedChecksumIDPart) {
-				t.Fatalf("unexpected stale cccc checksum id %q", checksum.ID)
-			}
+			t.Fatalf("expected aqua checksums not to include cccc, got %q", checksum.ID)
 		}
-	}
-	if ccccChecksumCount != 4 {
-		t.Fatalf("expected 4 cccc v1.0.0 checksum entries, got %d", ccccChecksumCount)
 	}
 }
 
-func TestRenovateTracksLocalCCCCPackageAsGitHubRelease(t *testing.T) {
+func TestRenovateTracksCCCCVersionWithGitHubActionsVersionPreset(t *testing.T) {
 	data, err := os.ReadFile("../renovate.json")
 	if err != nil {
 		t.Fatal(err)
@@ -218,52 +214,15 @@ func TestRenovateTracksLocalCCCCPackageAsGitHubRelease(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	if !containsString(config.Extends, "customManagers:githubActionsVersions") {
+		t.Fatalf("expected Renovate to extend customManagers:githubActionsVersions, got %#v", config.Extends)
+	}
 	for _, manager := range config.CustomManagers {
 		if manager.DepNameTemplate != "moznion/cccc" {
 			continue
 		}
-		if manager.CustomType != "regex" {
-			t.Fatalf("expected cccc custom manager type regex, got %q", manager.CustomType)
-		}
-		if manager.DatasourceTemplate != "github-releases" {
-			t.Fatalf("expected cccc datasource github-releases, got %q", manager.DatasourceTemplate)
-		}
-		if manager.PackageNameTemplate != "moznion/cccc" {
-			t.Fatalf("expected cccc packageNameTemplate moznion/cccc, got %q", manager.PackageNameTemplate)
-		}
-		if !containsString(manager.ManagerFilePatterns, "/^aqua\\.ya?ml$/") {
-			t.Fatalf("expected cccc manager to target aqua.yaml, got %#v", manager.ManagerFilePatterns)
-		}
-		for _, matchString := range manager.MatchStrings {
-			if strings.Contains(matchString, "cccc@(?<currentValue>") && strings.Contains(matchString, "registry: local") {
-				return
-			}
-		}
-		t.Fatalf("expected cccc manager to match local cccc package, got %#v", manager.MatchStrings)
+		t.Fatalf("expected Renovate cccc version tracking to use preset instead of repository custom manager")
 	}
-	t.Fatal("expected Renovate custom manager for local cccc package")
-}
-
-func findAquaPackage(t *testing.T, packages []aquaPackage, prefix string) aquaPackage {
-	t.Helper()
-	for _, pkg := range packages {
-		if len(pkg.Name) >= len(prefix) && pkg.Name[:len(prefix)] == prefix {
-			return pkg
-		}
-	}
-	t.Fatalf("package %s not found", prefix)
-	return aquaPackage{}
-}
-
-func findRegistryPackage(t *testing.T, packages []aquaRegistryPackage, name string) aquaRegistryPackage {
-	t.Helper()
-	for _, pkg := range packages {
-		if pkg.Name == name {
-			return pkg
-		}
-	}
-	t.Fatalf("registry package %s not found", name)
-	return aquaRegistryPackage{}
 }
 
 func containsString(values []string, want string) bool {
