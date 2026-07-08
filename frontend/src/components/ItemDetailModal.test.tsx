@@ -145,6 +145,41 @@ describe("ItemDetailModal", () => {
     expect(metadata?.textContent).not.toContain("Secondary Feed");
   });
 
+  it("renders text content from XML-like author metadata", async () => {
+    worker.use(
+      http.all("*/api/v2/items/:id", () => {
+        const msg = create(GetItemResponseSchema, {
+          item: create(ItemSchema, {
+            id: "xml-author-id",
+            title: "XML Author Item",
+            description: "Metadata Content",
+            publishedAt: dateToTimestamp(new Date("2026-03-01T00:00:00Z")),
+            createdAt: dateToTimestamp(new Date("2026-03-02T00:00:00Z")),
+            author:
+              "<name>Shir Meir Lador</name><title>Head of AI Engineering, Google Cloud Developer Relations</title><department></department><company></company>",
+            url: "https://www.example.com/articles/1",
+            isRead: false,
+          }),
+        });
+        return HttpResponse.json(toJson(GetItemResponseSchema, msg));
+      }),
+    );
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal itemId="xml-author-id" onClose={() => {}} />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    const author = page.getByText(
+      "Shir Meir Lador Head of AI Engineering, Google Cloud Developer Relations",
+    );
+    await expect.element(author).toBeInTheDocument();
+    await expect.element(page.getByText(/<name>/)).not.toBeInTheDocument();
+  });
+
   it("clamps the item title link to two lines", async () => {
     setupMockData("title-clamp-id");
     dispose = render(
