@@ -25,11 +25,17 @@ When verifying changes, AI agents should optimize their feedback loop by using t
 
 1. **Run Related Tests Only**:
     - Avoid running the entire test suite (380+ cases) during active development.
-    - Run only the tests related to the modified files using:
+    - Run only the tests related to the modified files using paths relative to the Vitest root (`frontend`):
       ```bash
-      npm run test:related -- <modified-file-path>
+      npm run test:related -- <frontend-relative-modified-file-path> --run
       ```
-      (e.g., `npm run test:related -- frontend/src/components/ActionButton.tsx`)
+      (e.g., `npm run test:related -- src/components/ActionButton.tsx --run`)
+    - Do not pass repository-root paths such as `frontend/src/components/ActionButton.tsx`; `vitest related` resolves file arguments from the configured Vitest root.
+    - You may narrow a run to a specific Vitest project when useful:
+      ```bash
+      npm run test:related -- src/components/ActionButton.tsx --project browser --run
+      npm run test:related -- src/lib/item-utils.ts --project jsdom --run
+      ```
 2. **Visual Debugging via Screenshots**:
     - Browser tests have `screenshotFailures: true` enabled.
     - If a browser test fails, a screenshot of the failure state is automatically captured.

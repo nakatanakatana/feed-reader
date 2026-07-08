@@ -78,6 +78,33 @@ function formatBlockRuleSuccessMessage(req: BlockRuleMutationRequest) {
   }
 }
 
+function formatAuthorText(author: string): string {
+  const trimmedAuthor = author.trim();
+  if (!trimmedAuthor.includes("<") || !trimmedAuthor.includes(">")) {
+    return author;
+  }
+
+  const parser = new DOMParser();
+  const document = parser.parseFromString(
+    `<author>${trimmedAuthor}</author>`,
+    "application/xml",
+  );
+
+  if (document.querySelector("parsererror")) {
+    return author;
+  }
+
+  const root = document.documentElement;
+  const text = Array.from(root.childNodes)
+    .map((node) => node.textContent?.trim() ?? "")
+    .filter(Boolean)
+    .join(" ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return text || author;
+}
+
 export function ItemDetailModal(props: ItemDetailModalProps) {
   let modalRef: HTMLDialogElement | undefined;
   let swipeContainerRef: HTMLDivElement | undefined;
@@ -843,13 +870,15 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                       </span>
                     </Show>
                     <Show when={itemData().author}>
-                      <span
-                        class={flex({ gap: "1", alignItems: "center" })}
-                        title="Author"
-                      >
-                        <UserIcon />
-                        <span>{itemData().author}</span>
-                      </span>
+                      {(author) => (
+                        <span
+                          class={flex({ gap: "1", alignItems: "center" })}
+                          title="Author"
+                        >
+                          <UserIcon />
+                          <span>{formatAuthorText(author())}</span>
+                        </span>
+                      )}
                     </Show>
                     <Show
                       when={(() => {
