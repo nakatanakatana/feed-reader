@@ -7,7 +7,7 @@ COPY . .
 RUN npm run build -- --emptyOutDir true
 
 # Stage 2: Backend Builder
-FROM golang:1.26-alpine@sha256:3ad57304ad93bbec8548a0437ad9e06a455660655d9af011d58b993f6f615648 AS backend-builder
+FROM golang:1.26-alpine@sha256:9097beb5536220f7857bdcb65c1b4b340630dd7a70b85f03d5af29640b06693d AS backend-builder
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
