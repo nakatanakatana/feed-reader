@@ -151,3 +151,35 @@ func TestSaveItemsJobRejectsInvalidPublishedAt(t *testing.T) {
 		t.Fatalf("expected invalid item not to be saved, got %d rows", count)
 	}
 }
+
+func TestSaveItemsJobCleansTrackingParametersBeforeDeduplication(t *testing.T) {
+	st := setupTestStore(t)
+	ctx := t.Context()
+
+	feed, err := st.CreateFeed(ctx, store.CreateFeedParams{ID: "f-tracking", Url: "https://example.com/feed.xml"})
+	if err != nil {
+		t.Fatalf("failed to create feed: %v", err)
+	}
+
+	job := &SaveItemsJob{
+		Items: []store.SaveFetchedItemParams{
+			{FeedID: feed.ID, Url: "https://example.com/article?id=123&utm_source=rss", Title: new("RSS")},
+			{FeedID: feed.ID, Url: "https://example.com/article?utm_source=social&id=123", Title: new("Social")},
+		},
+	}
+
+	if err := job.Execute(ctx, st.Queries); err != nil {
+		t.Fatalf("failed to save items: %v", err)
+	}
+
+	items, err := st.ListItems(ctx, store.StoreListItemsParams{FeedID: feed.ID, Limit: 10, IsBlocked: false})
+	if err != nil {
+		t.Fatalf("failed to list items: %v", err)
+	}
+	if len(items) != 1 {
+		t.Fatalf("expected one deduplicated item, got %d", len(items))
+	}
+	if items[0].Url != "https://example.com/article?id=123" {
+		t.Errorf("stored URL = %q, want cleaned URL", items[0].Url)
+	}
+}

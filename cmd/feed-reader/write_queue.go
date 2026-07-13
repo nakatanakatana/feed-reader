@@ -152,6 +152,9 @@ func (j *SaveItemsJob) Execute(ctx context.Context, q *store.Queries) error {
 			}
 			return err
 		}
+		if cleanedURL, err := store.CleanURL(params.Url); err == nil {
+			params.Url = cleanedURL
+		}
 
 		// 1. Upsert Item
 		newID := uuid.NewString()
