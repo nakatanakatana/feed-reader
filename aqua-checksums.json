@@ -86,28 +86,28 @@
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/k1LoW/mo/v1.6.3/mo_v1.6.3_darwin_amd64.zip",
-      "checksum": "114F6E625D336DD8FCE828C633E06BB5ECE24625A74DA30BBD4E0BC0078700B7",
+      "id": "github_release/github.com/k1LoW/mo/v1.6.4/mo_v1.6.4_darwin_amd64.zip",
+      "checksum": "A71B7E33CE8DE4287999EDFE4199F90819F8B8546E2C7925CCB106C1270DFC43",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/k1LoW/mo/v1.6.3/mo_v1.6.3_darwin_arm64.zip",
-      "checksum": "8F7FAADA9898F97264CD4BDDB6E2DFCBCA41B38C9E4AB73E4FE45A72CD8AB743",
+      "id": "github_release/github.com/k1LoW/mo/v1.6.4/mo_v1.6.4_darwin_arm64.zip",
+      "checksum": "4E996990BDB54FEE23D9A247B12889B65D8D50EF7CEC2F00CAB7EB699ADB55C4",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/k1LoW/mo/v1.6.3/mo_v1.6.3_linux_amd64.tar.gz",
-      "checksum": "B286EA74149E2C8F73CDB8E38A82BD6223A786962801BDE9AB6A7509C25C8DF0",
+      "id": "github_release/github.com/k1LoW/mo/v1.6.4/mo_v1.6.4_linux_amd64.tar.gz",
+      "checksum": "9E508F83B1412001D56DCDB32C5ED53AB06E31DB8A4830753344FD32CE02CB4B",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/k1LoW/mo/v1.6.3/mo_v1.6.3_linux_arm64.tar.gz",
-      "checksum": "2DFFCBD871B44EC524216F35551D6C12ECC793D6A6A15E8C4FFD8AB09D45E34C",
+      "id": "github_release/github.com/k1LoW/mo/v1.6.4/mo_v1.6.4_linux_arm64.tar.gz",
+      "checksum": "B23F9CF5E6C1F302EFA97F9998DBA86F5C18A73537AF2102B1B1E71E5075862E",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/k1LoW/mo/v1.6.3/mo_v1.6.3_windows_amd64.tar.gz",
-      "checksum": "25220C9B4793385B73425CA3D03C9300CC58BFC7C6D193FB9AD506A6829E429D",
+      "id": "github_release/github.com/k1LoW/mo/v1.6.4/mo_v1.6.4_windows_amd64.tar.gz",
+      "checksum": "9BF61182934C5B6E2B93EF38D5236D918246509159A01AF6D04820B94811F542",
       "algorithm": "sha256"
     },
     {
@@ -196,8 +196,8 @@
       "algorithm": "sha256"
     },
     {
-      "id": "registries/github_content/github.com/aquaproj/aqua-registry/v4.536.1/registry.yaml",
-      "checksum": "149100F507AD8C4E75D9C5CA5DB050FB88817005DDD72E76A40C92379233C170",
+      "id": "registries/github_content/github.com/aquaproj/aqua-registry/v4.537.0/registry.yaml",
+      "checksum": "5B49A8A16B763F7E510B2DD49D0CFCC595CDC1ACCF3BED890EDD649FC891FF83",
       "algorithm": "sha256"
     }
   ]
