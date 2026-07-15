@@ -26,6 +26,8 @@ export const getItemsWithReadState = (
   feedTagsList: FeedTag[],
   options: { tagId?: string; itemId?: string; unreadOnly?: boolean } = {},
 ): MergedItem[] => {
+  if (itemsList.length === 0) return [];
+
   let sortedItems = sortedItemsCache.get(itemsList);
   if (!sortedItems) {
     sortedItems = [...itemsList].sort((a, b) => {
