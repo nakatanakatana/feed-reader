@@ -29,6 +29,17 @@ jobs:
           aqua_version: v2.61.0
           policy_allow: "true"
 
+  aqua-checksum:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.0
+      - uses: aquaproj/aqua-installer@v4.0.5
+        with:
+          aqua_version: v2.61.0
+          policy_allow: "true"
+      - run: aqua upc -prune
+      - run: git diff --exit-code -- aqua-checksums.json
+
   backend-lint:
     needs: backend-setup
     runs-on: ubuntu-latest
