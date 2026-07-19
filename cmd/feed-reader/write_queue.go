@@ -61,24 +61,21 @@ func (s *WriteQueueService) Start(ctx context.Context) {
 
 	for {
 		select {
-		case <-ctx.Done():
-			// We continue to run even if ctx is canceled to allow Stop() to be called
-			// and jobs to be drained. We only stop when the jobs channel is closed.
 		case job, ok := <-s.jobs:
 			if !ok {
-				s.logger.InfoContext(ctx, "shutting down write queue service, flushing remaining jobs", "count", len(batch))
+				s.logger.InfoContext(context.Background(), "shutting down write queue service, flushing remaining jobs", "count", len(batch))
 				s.flush(context.Background(), batch)
 				return
 			}
 			batch = append(batch, job)
 			if len(batch) >= s.config.MaxBatchSize {
-				s.flush(ctx, batch)
+				s.flush(context.Background(), batch)
 				batch = make([]WriteQueueJob, 0, s.config.MaxBatchSize)
 				ticker.Reset(s.config.FlushInterval)
 			}
 		case <-ticker.C:
 			if len(batch) > 0 {
-				s.flush(ctx, batch)
+				s.flush(context.Background(), batch)
 				batch = make([]WriteQueueJob, 0, s.config.MaxBatchSize)
 			}
 		}
