@@ -1,10 +1,13 @@
 package store_test
 
 import (
+	"bytes"
 	"context"
 	"database/sql"
 	"fmt"
+	"log/slog"
 	"path/filepath"
+	"strings"
 	"sync"
 	"testing"
 
@@ -106,30 +109,53 @@ func TestDBConnForeignKeysAfterCancel(t *testing.T) {
 	assert.Assert(t, err != nil, "Insert with invalid FK should fail")
 }
 
-func TestDBConnForeignKeyCheck(t *testing.T) {
-	// 1. Create a database and insert invalid FK data with foreign_keys = OFF
+func TestDBConnForeignKeyCheckRecoversOrphanedRecord(t *testing.T) {
 	tmpDir := t.TempDir()
 	dbPath := filepath.Join(tmpDir, "test_fk_check.db")
 
 	rawDB, err := sql.Open("sqlite", dbPath)
 	assert.NilError(t, err)
-
 	_, err = rawDB.Exec(`
 		PRAGMA foreign_keys = OFF;
 		CREATE TABLE parents (id TEXT PRIMARY KEY);
 		CREATE TABLE children (
 			id TEXT PRIMARY KEY,
 			parent_id TEXT,
+			payload TEXT,
 			FOREIGN KEY (parent_id) REFERENCES parents(id) ON DELETE CASCADE
 		);
-		-- Insert orphan child
-		INSERT INTO children (id, parent_id) VALUES ('c1', 'non-existent');
+		INSERT INTO parents (id) VALUES ('p1');
+		INSERT INTO children (id, parent_id, payload) VALUES
+			('valid-child', 'p1', 'keep-payload'),
+			('orphan-child', 'missing-parent', 'secret-payload');
 	`)
 	assert.NilError(t, err)
-	_ = rawDB.Close()
+	assert.NilError(t, rawDB.Close())
 
-	// 2. Try to open the database via store.OpenDB, it should fail due to FK violations
-	_, err = store.OpenDB(dbPath)
-	assert.Assert(t, err != nil, "OpenDB should fail when there are FK violations")
-	assert.ErrorContains(t, err, "foreign key violation")
+	var logOutput bytes.Buffer
+	originalLogger := slog.Default()
+	slog.SetDefault(slog.New(slog.NewTextHandler(&logOutput, nil)))
+	t.Cleanup(func() { slog.SetDefault(originalLogger) })
+
+	db, err := store.OpenDB(dbPath)
+	assert.NilError(t, err)
+	defer func() { _ = db.Close() }()
+
+	var count int
+	err = db.QueryRow(`SELECT count(*) FROM children WHERE id = 'orphan-child'`).Scan(&count)
+	assert.NilError(t, err)
+	assert.Equal(t, count, 0)
+	err = db.QueryRow(`SELECT count(*) FROM children WHERE id = 'valid-child'`).Scan(&count)
+	assert.NilError(t, err)
+	assert.Equal(t, count, 1)
+
+	rows, err := db.Query("PRAGMA foreign_key_check")
+	assert.NilError(t, err)
+	defer func() { _ = rows.Close() }()
+	assert.Assert(t, !rows.Next(), "foreign key violations should be repaired")
+
+	logText := logOutput.String()
+	assert.Assert(t, strings.Contains(logText, "orphan-child"))
+	assert.Assert(t, strings.Contains(logText, "missing-parent"))
+	assert.Assert(t, !strings.Contains(logText, "secret-payload"))
 }
