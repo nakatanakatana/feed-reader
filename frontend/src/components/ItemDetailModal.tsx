@@ -25,7 +25,7 @@ import {
   formatDate,
   normalizeCategories,
 } from "../lib/item-utils";
-import { ToastViewport, useToast } from "../lib/toast";
+import { ToastViewport, useToast, toast } from "../lib/toast";
 import { URLParser } from "../lib/url-parser";
 import { useSwipe } from "../lib/use-swipe";
 import { MarkdownRenderer } from "./MarkdownRenderer";
@@ -258,6 +258,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
       clearTimeout(skipRecoveryTimeoutId);
       skipRecoveryTimeoutId = undefined;
     }
+    toast.clear();
   });
 
   createEffect(() => {

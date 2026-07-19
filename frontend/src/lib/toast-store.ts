@@ -26,6 +26,10 @@ export const toast = {
 
     setGlobalToasts((prev) => [...prev, { id, message, type, expiresAt }]);
 
+    setTimeout(() => {
+      toast.dismiss(id);
+    }, 5000);
+
     return id;
   },
   dismiss: (id: string) => {

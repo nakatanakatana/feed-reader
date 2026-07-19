@@ -109,4 +109,28 @@ describe("Toast Context", () => {
     );
     expect(toast.toasts()[0].type).toBe("error");
   });
+
+  it("dismisses the toast even if ToastViewport is unmounted", () => {
+    dispose = render(
+      () => (
+        <ToastProvider>
+          <div>Test</div>
+        </ToastProvider>
+      ),
+      document.body,
+    );
+
+    toast.show("Unmount test");
+    expect(toast.toasts()).toHaveLength(1);
+
+    // Unmount ToastViewport
+    dispose();
+    dispose = undefined;
+
+    // Fast forward 5 seconds
+    vi.advanceTimersByTime(5000);
+
+    // Toast should be dismissed from global state
+    expect(toast.toasts()).toHaveLength(0);
+  });
 });

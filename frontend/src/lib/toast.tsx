@@ -3,8 +3,6 @@ import {
   createContext,
   For,
   type JSX,
-  onCleanup,
-  onMount,
   useContext,
 } from "solid-js";
 import { Portal } from "solid-js/web";
@@ -35,19 +33,6 @@ function toastViewportClass() {
 }
 
 function ToastItem(props: { toast: Toast; onDismiss: (id: string) => void }) {
-  let timer: number | undefined;
-
-  onMount(() => {
-    const remaining = Math.max(0, props.toast.expiresAt - Date.now());
-    timer = window.setTimeout(() => {
-      props.onDismiss(props.toast.id);
-    }, remaining);
-  });
-
-  onCleanup(() => {
-    if (timer) window.clearTimeout(timer);
-  });
-
   return (
     <div
       role={props.toast.type === "error" ? "alert" : "status"}
