@@ -72,5 +72,47 @@ func OpenDB(dsn string) (*sql.DB, error) {
 		return nil, fmt.Errorf("foreign_keys pragma is not enabled via DSN")
 	}
 
+	// Perform foreign key integrity check.
+	// PRAGMA foreign_key_check returns rows if there are FK violations.
+	rows, err := db.Query("PRAGMA foreign_key_check")
+	if err != nil {
+		_ = db.Close()
+		return nil, fmt.Errorf("failed to run foreign_key_check: %w", err)
+	}
+	defer func() { _ = rows.Close() }()
+
+	violations, err := collectForeignKeyViolations(rows)
+	if err != nil {
+		_ = db.Close()
+		return nil, err
+	}
+	if len(violations) > 0 {
+		_ = db.Close()
+		return nil, fmt.Errorf("foreign key violation: database has unaligned records: %s", strings.Join(violations, "; "))
+	}
+
 	return db, nil
+}
+
+type foreignKeyCheckRows interface {
+	Next() bool
+	Scan(...any) error
+	Err() error
+}
+
+func collectForeignKeyViolations(rows foreignKeyCheckRows) ([]string, error) {
+	var violations []string
+	for rows.Next() {
+		var table, parentTable string
+		var rowid int64
+		var fkid int
+		if err := rows.Scan(&table, &rowid, &parentTable, &fkid); err != nil {
+			return nil, fmt.Errorf("failed to scan foreign_key_check result: %w", err)
+		}
+		violations = append(violations, fmt.Sprintf("table: %s, rowid: %d, parent: %s, fkid: %d", table, rowid, parentTable, fkid))
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("failed to iterate foreign_key_check result: %w", err)
+	}
+	return violations, nil
 }
