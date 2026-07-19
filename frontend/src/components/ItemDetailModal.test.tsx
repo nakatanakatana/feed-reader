@@ -1,12 +1,12 @@
 import { QueryClientProvider } from "@tanstack/solid-query";
 import { HttpResponse, http } from "msw";
-import type { JSX } from "solid-js";
+import { createSignal, type JSX } from "solid-js";
 import { render } from "solid-js/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { dateToTimestamp } from "../lib/item-utils";
 import { queryClient } from "../lib/query";
-import { ToastProvider } from "../lib/toast";
+import { ToastProvider, toast } from "../lib/toast";
 import { worker } from "../mocks/browser";
 import {
   create,
@@ -270,5 +270,34 @@ describe("ItemDetailModal", () => {
     );
     const dialog = page.getByRole("dialog");
     await expect.element(dialog).not.toBeInTheDocument();
+  });
+
+  it("clears toasts when itemId changes", async () => {
+    setupMockData("test-id-1");
+    setupMockData("test-id-2");
+
+    const [itemId, setItemId] = createSignal<string | undefined>("test-id-1");
+
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal itemId={itemId()} onClose={() => {}} />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    // Show a toast
+    toast.show("Persistent message");
+    expect(toast.toasts()).toHaveLength(1);
+
+    // Change itemId to simulate navigation
+    setItemId("test-id-2");
+
+    // Wait for the effect to run
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    // Toast should be cleared automatically
+    expect(toast.toasts()).toHaveLength(0);
   });
 });
