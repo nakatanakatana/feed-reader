@@ -17,7 +17,7 @@ jobs:
   backend-setup:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7.0.0
+      - uses: actions/checkout@v7.0.1
       - uses: actions/cache@v6
         with:
           path: ~/.local/share/aquaproj-aqua
@@ -32,7 +32,7 @@ jobs:
   aqua-checksum:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7.0.0
+      - uses: actions/checkout@v7.0.1
       - uses: aquaproj/aqua-installer@v4.0.5
         with:
           aqua_version: v2.62.0
@@ -44,7 +44,7 @@ jobs:
     needs: backend-setup
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7.0.0
+      - uses: actions/checkout@v7.0.1
       - uses: actions/cache/restore@v6
         with:
           path: ~/.local/share/aquaproj-aqua
@@ -61,7 +61,7 @@ jobs:
     needs: backend-setup
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7.0.0
+      - uses: actions/checkout@v7.0.1
       - uses: actions/cache/restore@v6
         with:
           path: ~/.local/share/aquaproj-aqua
@@ -78,7 +78,7 @@ jobs:
     needs: backend-setup
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7.0.0
+      - uses: actions/checkout@v7.0.1
       - uses: actions/cache/restore@v6
         with:
           path: ~/.local/share/aquaproj-aqua
@@ -106,7 +106,7 @@ jobs:
   frontend-setup:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7.0.0
+      - uses: actions/checkout@v7.0.1
       - uses: actions/cache@v6
         with:
           path: ~/.npm
@@ -120,7 +120,7 @@ jobs:
     needs: frontend-setup
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7.0.0
+      - uses: actions/checkout@v7.0.1
       - uses: actions/cache/restore@v6
         with:
           path: ~/.npm
@@ -134,7 +134,7 @@ jobs:
     needs: frontend-setup
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7.0.0
+      - uses: actions/checkout@v7.0.1
       - uses: actions/cache/restore@v6
         with:
           path: ~/.npm
@@ -154,7 +154,7 @@ jobs:
     needs: frontend-setup
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7.0.0
+      - uses: actions/checkout@v7.0.1
       - uses: actions/cache/restore@v6
         with:
           path: ~/.npm
@@ -179,7 +179,7 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: actions/checkout@v7.0.0
+      - uses: actions/checkout@v7.0.1
       - uses: actions/cache/restore@v6
         with:
           path: ~/.local/share/aquaproj-aqua

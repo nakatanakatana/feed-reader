@@ -31,7 +31,7 @@ jobs:
           platform=${{ matrix.platform.arch }}
           echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
       - name: Check out the repo
-        uses: actions/checkout@v7.0.0
+        uses: actions/checkout@v7.0.1
         with:
           submodules: recursive
       - name: Docker meta
