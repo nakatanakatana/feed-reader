@@ -70,8 +70,8 @@ github.com/sebdah/goldie/v2 v2.8.0/go.mod h1:oZ9fp0+se1eapSRjfYbsV/0Hqhbuu3bJVvK
 github.com/sergi/go-diff v1.4.0 h1:n/SP9D5ad1fORl+llWyN+D6qoUETXNZARKjyY2/KVCw=
 github.com/sergi/go-diff v1.4.0/go.mod h1:A0bzQcvG0E7Rwjx0REVgAGH58e96+X0MeOfepqsbeW4=
 github.com/spkg/bom v0.0.0-20160624110644-59b7046e48ad/go.mod h1:qLr4V1qq6nMqFKkMo8ZTx3f+BZEkzsRUY10Xsm2mwU0=
-github.com/sqldef/sqldef/v3 v3.11.15 h1:OnqOTE55MhdGSU60c9CjyFAU7klmZBgCuHiEzD8FY0s=
-github.com/sqldef/sqldef/v3 v3.11.15/go.mod h1:IHtgebifqA2EcWiecJVZ0v1/y0DFlyGkw2xfXmMDJG4=
+github.com/sqldef/sqldef/v3 v3.11.16 h1:Qmif594xtE9VpAkhh8npdajRB9GNeiVHFuXN/u1mCEA=
+github.com/sqldef/sqldef/v3 v3.11.16/go.mod h1:IHtgebifqA2EcWiecJVZ0v1/y0DFlyGkw2xfXmMDJG4=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI=
 github.com/stretchr/testify v1.11.1 h1:7s2iGBzp5EwR7/aIZr8ao5+dra3wiQyKjjFuvgVKu7U=
