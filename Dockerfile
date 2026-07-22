@@ -17,7 +17,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -trimpath -ldflags "-w -s" -v -o feed-read
 RUN mkdir /data && chown 65532:65532 /data
 
 # Stage 3: Final Image
-FROM gcr.io/distroless/static-debian12@sha256:61b7ccecebc7c474a531717de80a94709d20547cdcdaf740c25876f2a8e38b44
+FROM gcr.io/distroless/static-debian12@sha256:a9fcaedd4c9b59e12dd65d954f0b5044f19b0647a8a3712e77205df9e7b102cd
 WORKDIR /
 COPY --from=backend-builder /app/feed-reader /feed-reader
 COPY --from=backend-builder --chown=nonroot:nonroot /data /data
