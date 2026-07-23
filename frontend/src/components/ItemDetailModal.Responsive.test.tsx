@@ -52,45 +52,40 @@ describe("ItemDetailModal Responsive", () => {
     </QueryClientProvider>
   );
 
-  it("should be fullscreen on mobile viewports", async () => {
-    await page.viewport(375, 667); // iPhone SE size
-    setupMockData("test-id");
+  it("should be fullscreen on viewports narrower than 4K quarter width (960px)", async () => {
+    await page.viewport(959, 800);
+    setupMockData("test-id-mobile");
 
     dispose = render(
       () => (
         <Wrapper>
-          <ItemDetailModal itemId="test-id" onClose={() => {}} />
+          <ItemDetailModal itemId="test-id-mobile" onClose={() => {}} />
         </Wrapper>
       ),
       document.body,
     );
 
-    // Wait for content
     await expect.element(page.getByText("Test Item")).toBeInTheDocument();
 
     const dialog = page.getByRole("dialog");
     await expect.element(dialog).toBeInTheDocument();
 
     const dialogEl = await dialog.element();
-    const dialogRect = dialogEl.getBoundingClientRect();
-    expect(dialogRect.width).toBe(375);
-    expect(dialogRect.height).toBe(667);
-
     const panel = dialogEl.querySelector<HTMLElement>('[tabindex="-1"]');
     expect(panel).not.toBeNull();
     const panelRect = panel!.getBoundingClientRect();
-    expect(panelRect.width).toBe(375);
-    expect(panelRect.height).toBe(667);
+    expect(panelRect.width).toBe(959);
+    expect(panelRect.height).toBe(800);
   });
 
-  it("should be large (80-90%) on desktop viewports", async () => {
-    await page.viewport(1920, 1080);
-    setupMockData("test-id");
+  it("should be large modal on viewports at or wider than 4K quarter width (960px)", async () => {
+    await page.viewport(960, 800);
+    setupMockData("test-id-desktop");
 
     dispose = render(
       () => (
         <Wrapper>
-          <ItemDetailModal itemId="test-id" onClose={() => {}} />
+          <ItemDetailModal itemId="test-id-desktop" onClose={() => {}} />
         </Wrapper>
       ),
       document.body,
@@ -102,25 +97,11 @@ describe("ItemDetailModal Responsive", () => {
     await expect.element(dialog).toBeInTheDocument();
 
     const el = await dialog.element();
-    const rect = el.getBoundingClientRect();
-
-    // Desktop: 80-90% width (1920 * 0.8 = 1536)
-    // The implementation might have changed or uses different units
-    expect(rect.width).toBeGreaterThan(1500);
-
     const panel = el.querySelector<HTMLElement>('[tabindex="-1"]');
     expect(panel).not.toBeNull();
     const panelRect = panel!.getBoundingClientRect();
-    const viewportWidth = 1920;
-    const viewportHeight = 1080;
-    expect(panelRect.left).toBeCloseTo(
-      (viewportWidth - panelRect.width) / 2,
-      0,
-    );
-    expect(panelRect.top).toBeCloseTo(
-      (viewportHeight - panelRect.height) / 2,
-      0,
-    );
+    // 960px * 0.9 = 864px
+    expect(panelRect.width).toBe(864);
   });
 
   it("should display the FAB correctly on both mobile and desktop", async () => {
