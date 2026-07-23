@@ -18,6 +18,7 @@ export default defineConfig({
     extend: {
       breakpoints: {
         xs: "480px",
+        itemDetailModal: "960px",
       },
     },
   },

@@ -9,7 +9,7 @@ exports[`ItemDetailModal > renders item content when itemId is provided 1`] = `
       open=""
     >
       <div
-        class="bg-c_white bdr_none md:bdr_lg bx-sh_xl ov_hidden pos_relative ta_left ring_none d_flex flex-d_column w_full md:w_90vw h_full md:h_90vh max-w_full md:max-w_none max-h_full md:max-h_90vh"
+        class="bg-c_white bdr_none itemDetailModal:bdr_lg bx-sh_xl ov_hidden pos_relative ta_left ring_none d_flex flex-d_column w_full itemDetailModal:w_90vw h_full itemDetailModal:h_90vh max-w_full itemDetailModal:max-w_none max-h_full itemDetailModal:max-h_90vh"
         tabindex="-1"
       >
         <div

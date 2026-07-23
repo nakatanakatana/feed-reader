@@ -58,7 +58,7 @@ export function Modal(props: ModalProps) {
   const panelStyle = () =>
     css({
       backgroundColor: "white",
-      borderRadius: { base: "none", md: "lg" },
+      borderRadius: { base: "none", itemDetailModal: "lg" },
       boxShadow: "xl",
       overflow: "hidden",
       position: "relative",
@@ -68,11 +68,14 @@ export function Modal(props: ModalProps) {
       flexDirection: "column",
       width:
         size() === "full"
-          ? { base: "full", md: "90vw" }
-          : { base: "96vw", md: "80vw", lg: "50vw" },
-      height: size() === "full" ? { base: "full", md: "90vh" } : "auto",
-      maxWidth: size() === "full" ? { base: "full", md: "none" } : "48rem",
-      maxHeight: size() === "full" ? { base: "full", md: "90vh" } : "90vh",
+          ? { base: "full", itemDetailModal: "90vw" }
+          : { base: "96vw", itemDetailModal: "80vw", lg: "50vw" },
+      height:
+        size() === "full" ? { base: "full", itemDetailModal: "90vh" } : "auto",
+      maxWidth:
+        size() === "full" ? { base: "full", itemDetailModal: "none" } : "48rem",
+      maxHeight:
+        size() === "full" ? { base: "full", itemDetailModal: "90vh" } : "90vh",
     });
 
   const dialogStyle = () => {
@@ -80,7 +83,7 @@ export function Modal(props: ModalProps) {
     return css({
       background: "transparent",
       border: "none",
-      padding: isFull ? "0" : { base: "0", md: "4" },
+      padding: isFull ? "0" : { base: "0", itemDetailModal: "4" },
       margin: "0",
       outline: "none",
       width: "100vw",
