@@ -75,9 +75,7 @@ export function Modal(props: ModalProps) {
       maxWidth:
         size() === "full" ? { base: "full", itemDetailModal: "none" } : "48rem",
       maxHeight:
-        size() === "full"
-          ? { base: "full", itemDetailModal: "90vh" }
-          : "90vh",
+        size() === "full" ? { base: "full", itemDetailModal: "90vh" } : "90vh",
     });
 
   const dialogStyle = () => {
