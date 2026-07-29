@@ -18,7 +18,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.44.0
 	golang.org/x/sync v0.22.0
 	gotest.tools/v3 v3.5.2
-	modernc.org/sqlite v1.54.0
+	modernc.org/sqlite v1.55.0
 	pgregory.net/rapid v1.3.0
 )
 
