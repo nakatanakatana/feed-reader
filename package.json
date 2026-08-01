@@ -48,7 +48,7 @@
     "@kubb/plugin-solid-query": "^4.0.0",
     "@kubb/plugin-ts": "^4.0.0",
     "@msw/data": "^1.1.6",
-    "@pandacss/dev": "1.11.5",
+    "@pandacss/dev": "1.12.0",
     "@types/markdown-it": "14.1.2",
     "@types/node": "25.9.5",
     "@typespec/compiler": "^1.12.0",
