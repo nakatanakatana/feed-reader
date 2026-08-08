@@ -6,7 +6,8 @@ import (
 )
 
 // NewCORSMiddleware returns a middleware that adds CORS headers to responses.
-func NewCORSMiddleware(allowedOrigins []string) func(http.Handler) http.Handler {
+// allowedMethods is written to Access-Control-Allow-Methods when the origin is allowed.
+func NewCORSMiddleware(allowedOrigins []string, allowedMethods string) func(http.Handler) http.Handler {
 	// Normalize origins once
 	var normalized []string
 	for _, o := range allowedOrigins {
@@ -40,7 +41,7 @@ func NewCORSMiddleware(allowedOrigins []string) func(http.Handler) http.Handler 
 			w.Header().Set("Access-Control-Allow-Origin", origin)
 			w.Header().Add("Vary", "Origin")
 			w.Header().Set("Access-Control-Allow-Headers", "Connect-Protocol-Version, Content-Type, Authorization")
-			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
+			w.Header().Set("Access-Control-Allow-Methods", allowedMethods)
 
 			if r.Method == http.MethodOptions {
 				w.WriteHeader(http.StatusNoContent)

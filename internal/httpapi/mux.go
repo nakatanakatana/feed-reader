@@ -17,6 +17,8 @@ func NewStrictHandler(deps Dependencies) openapi.StrictServerInterface {
 	}
 }
 
+const primaryCORSMethods = "GET, POST, OPTIONS, PUT, DELETE"
+
 // NewMux assembles the HTTP handler for OpenAPI routes, assets, and CORS.
 func NewMux(deps Dependencies) http.Handler {
 	mux := http.NewServeMux()
@@ -27,5 +29,9 @@ func NewMux(deps Dependencies) http.Handler {
 	)
 	mux.Handle("/api/", http.NotFoundHandler())
 	mux.Handle("/", NewAssetsHandler(deps.Assets))
-	return NewCORSMiddleware(deps.AllowedOrigins)(mux)
+	methods := deps.AllowedMethods
+	if methods == "" {
+		methods = primaryCORSMethods
+	}
+	return NewCORSMiddleware(deps.AllowedOrigins, methods)(mux)
 }

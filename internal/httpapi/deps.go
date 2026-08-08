@@ -18,6 +18,9 @@ type Dependencies struct {
 	OPMLImporter   OPMLImporter
 	Assets         fs.FS
 	AllowedOrigins []string
+	// AllowedMethods is written to Access-Control-Allow-Methods.
+	// Empty defaults to primary methods: GET, POST, OPTIONS, PUT, DELETE.
+	AllowedMethods string
 }
 
 // FeedFetcher fetches RSS/Atom feeds.

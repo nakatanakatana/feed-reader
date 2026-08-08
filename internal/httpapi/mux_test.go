@@ -45,3 +45,41 @@ func TestNewMux(t *testing.T) {
 
 	assert.Equal(t, rec.Code, http.StatusOK, rec.Body.String())
 }
+
+func TestNewMux_CORSAllowedMethods(t *testing.T) {
+	testStore := setupTestDB(t)
+	const origin = "http://localhost:3000"
+
+	t.Run("defaults to primary methods when AllowedMethods is empty", func(t *testing.T) {
+		handler := httpapi.NewMux(httpapi.Dependencies{
+			Store:          testStore,
+			Assets:         testAssets(),
+			AllowedOrigins: []string{origin},
+		})
+
+		req := httptest.NewRequest(http.MethodOptions, "/api/v2/feeds", nil)
+		req.Header.Set("Origin", origin)
+		rec := httptest.NewRecorder()
+		handler.ServeHTTP(rec, req)
+
+		assert.Equal(t, rec.Code, http.StatusNoContent)
+		assert.Equal(t, rec.Header().Get("Access-Control-Allow-Methods"), "GET, POST, OPTIONS, PUT, DELETE")
+	})
+
+	t.Run("uses AllowedMethods when set for readonly", func(t *testing.T) {
+		handler := httpapi.NewMux(httpapi.Dependencies{
+			Store:          testStore,
+			Assets:         testAssets(),
+			AllowedOrigins: []string{origin},
+			AllowedMethods: "GET, HEAD, OPTIONS",
+		})
+
+		req := httptest.NewRequest(http.MethodOptions, "/api/v2/feeds", nil)
+		req.Header.Set("Origin", origin)
+		rec := httptest.NewRecorder()
+		handler.ServeHTTP(rec, req)
+
+		assert.Equal(t, rec.Code, http.StatusNoContent)
+		assert.Equal(t, rec.Header().Get("Access-Control-Allow-Methods"), "GET, HEAD, OPTIONS")
+	})
+}
