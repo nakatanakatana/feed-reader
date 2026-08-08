@@ -12,7 +12,7 @@ import (
 
 	"github.com/caarlos0/env/v11"
 	"github.com/nakatanakatana/feed-reader/frontend"
-	"github.com/nakatanakatana/feed-reader/gen/openapi"
+	"github.com/nakatanakatana/feed-reader/internal/httpapi"
 	"github.com/nakatanakatana/feed-reader/sql"
 	"github.com/nakatanakatana/feed-reader/store"
 	_ "modernc.org/sqlite"
@@ -31,26 +31,6 @@ type config struct {
 
 	// CORS settings
 	CORSAllowedOrigins []string `env:"CORS_ALLOWED_ORIGINS" envSeparator:","`
-}
-
-func NewMux(s *store.Store, fetcher FeedFetcher, fetchService ItemFetcher, opmlImporter *OPMLImporter, allowedOrigins []string) http.Handler {
-	mux := http.NewServeMux()
-	openapi.HandlerFromMuxWithBaseURL(
-		openapi.NewStrictHandler(NewOpenAPIHandler(
-			s,
-			WithOpenAPIFetcher(fetcher),
-			WithOpenAPIItemFetcher(fetchService),
-			WithOpenAPIOPMLImporter(opmlImporter),
-		), nil),
-		mux,
-		"/api/v2",
-	)
-	mux.Handle("/api/", http.NotFoundHandler())
-
-	// Mount static assets at root
-	mux.Handle("/", NewAssetsHandler(frontend.Assets))
-
-	return NewCORSMiddleware(allowedOrigins)(mux)
 }
 
 func main() {
@@ -125,7 +105,14 @@ func main() {
 	go scheduler.Start(ctx)
 
 	// 5. Initialize API Server
-	mux := NewMux(s, fetcher, fetchService, opmlImporter, cfg.CORSAllowedOrigins)
+	mux := httpapi.NewMux(httpapi.Dependencies{
+		Store:          s,
+		Fetcher:        fetcher,
+		ItemFetcher:    fetchService,
+		OPMLImporter:   opmlImporter,
+		Assets:         frontend.Assets,
+		AllowedOrigins: cfg.CORSAllowedOrigins,
+	})
 
 	var protocols http.Protocols
 	protocols.SetHTTP1(true)

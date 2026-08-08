@@ -9,21 +9,13 @@ import (
 	"sync"
 
 	"github.com/mmcdole/gofeed"
+	"github.com/nakatanakatana/feed-reader/internal/httpapi"
 	"github.com/nakatanakatana/feed-reader/store"
 	"golang.org/x/sync/errgroup"
 )
 
-type ImportFailedFeed struct {
-	URL          string
-	ErrorMessage string
-}
-
-type ImportResults struct {
-	Total       int32
-	Success     int32
-	Skipped     int32
-	FailedFeeds []ImportFailedFeed
-}
+type ImportFailedFeed = httpapi.ImportFailedFeed
+type ImportResults = httpapi.ImportResults
 
 func (i *OPMLImporter) ImportSync(ctx context.Context, opmlContent []byte) (*ImportResults, error) {
 	opmlFeeds, err := ParseOPML(opmlContent)
