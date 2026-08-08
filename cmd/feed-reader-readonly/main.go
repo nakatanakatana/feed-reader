@@ -15,18 +15,19 @@ import (
 	"github.com/nakatanakatana/feed-reader/frontend"
 	"github.com/nakatanakatana/feed-reader/internal/httpapi"
 	"github.com/nakatanakatana/feed-reader/internal/readonly"
+	"github.com/nakatanakatana/feed-reader/internal/readonlydb"
 	"github.com/nakatanakatana/feed-reader/store"
 )
 
 const readonlyCORSMethods = "GET, HEAD, OPTIONS"
 
 var (
-	osExit         = os.Exit
-	createLogger   = func() *slog.Logger {
+	osExit       = os.Exit
+	createLogger = func() *slog.Logger {
 		return slog.New(slog.NewJSONHandler(os.Stdout, nil))
 	}
 	registerVFS    = readonly.RegisterVFS
-	openReadOnlyDB = store.OpenReadOnlyDB
+	openReadOnlyDB = readonlydb.OpenReadOnlyDB
 	mainCtx        = context.Background()
 )
 

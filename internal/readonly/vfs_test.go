@@ -13,7 +13,7 @@ import (
 
 	"github.com/benbjohnson/litestream/file"
 	"github.com/nakatanakatana/feed-reader/internal/readonly"
-	"github.com/nakatanakatana/feed-reader/store"
+	"github.com/nakatanakatana/feed-reader/internal/readonlydb"
 	ncrucesvfs "github.com/ncruces/go-sqlite3/vfs"
 	"github.com/stretchr/testify/require"
 	"github.com/superfly/ltx"
@@ -21,11 +21,11 @@ import (
 )
 
 const (
-	vfsName       = "feed-reader-litestream"
-	testPageSize  = 4096
-	seededTitle   = "Seed Feed"
-	updatedTitle  = "Updated Feed"
-	databaseName  = "feeds.db"
+	vfsName      = "feed-reader-litestream"
+	testPageSize = 4096
+	seededTitle  = "Seed Feed"
+	updatedTitle = "Updated Feed"
+	databaseName = "feeds.db"
 )
 
 func TestVFSConfig(t *testing.T) {
@@ -70,6 +70,16 @@ func TestVFSConfig(t *testing.T) {
 			wantErr: "database name",
 		},
 		{
+			name: "zero poll interval",
+			cfg: readonly.VFSConfig{
+				ReplicaURL:     "file://" + tempReplica,
+				DatabaseName:   databaseName,
+				PollInterval:   0,
+				CacheSizeBytes: 1024 * 1024,
+			},
+			wantErr: "poll interval",
+		},
+		{
 			name: "negative poll interval",
 			cfg: readonly.VFSConfig{
 				ReplicaURL:     "file://" + tempReplica,
@@ -78,6 +88,36 @@ func TestVFSConfig(t *testing.T) {
 				CacheSizeBytes: 1024 * 1024,
 			},
 			wantErr: "poll interval",
+		},
+		{
+			name: "database name with question mark",
+			cfg: readonly.VFSConfig{
+				ReplicaURL:     "file://" + tempReplica,
+				DatabaseName:   "feeds.db?vfs=override",
+				PollInterval:   time.Second,
+				CacheSizeBytes: 1024 * 1024,
+			},
+			wantErr: "database name contains unsafe characters",
+		},
+		{
+			name: "database name with ampersand",
+			cfg: readonly.VFSConfig{
+				ReplicaURL:     "file://" + tempReplica,
+				DatabaseName:   "feeds.db&mode=rw",
+				PollInterval:   time.Second,
+				CacheSizeBytes: 1024 * 1024,
+			},
+			wantErr: "database name contains unsafe characters",
+		},
+		{
+			name: "database name with hash",
+			cfg: readonly.VFSConfig{
+				ReplicaURL:     "file://" + tempReplica,
+				DatabaseName:   "feeds.db#fragment",
+				PollInterval:   time.Second,
+				CacheSizeBytes: 1024 * 1024,
+			},
+			wantErr: "database name contains unsafe characters",
 		},
 		{
 			name: "non-positive cache size",
@@ -158,7 +198,7 @@ func TestRegisterVFS(t *testing.T) {
 	require.Equal(t, "file:feeds.db?vfs=feed-reader-litestream&mode=ro", dsn)
 	require.NotNil(t, ncrucesvfs.Find(vfsName))
 
-	db, err := store.OpenReadOnlyDB(dsn, 1)
+	db, err := readonlydb.OpenReadOnlyDB(dsn, 1)
 	require.NoError(t, err)
 
 	var title string
@@ -191,7 +231,7 @@ func TestVFSFollowsLatest(t *testing.T) {
 	require.NoError(t, err)
 	defer unregister()
 
-	db, err := store.OpenReadOnlyDB(dsn, 1)
+	db, err := readonlydb.OpenReadOnlyDB(dsn, 1)
 	require.NoError(t, err)
 
 	var title string

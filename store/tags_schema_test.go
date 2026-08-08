@@ -4,14 +4,13 @@ import (
 	"context"
 	"testing"
 
+	"github.com/nakatanakatana/feed-reader/internal/primarydb"
 	schema "github.com/nakatanakatana/feed-reader/sql"
-	"github.com/nakatanakatana/feed-reader/store"
 	"gotest.tools/v3/assert"
-	_ "modernc.org/sqlite"
 )
 
 func TestTagsSchema(t *testing.T) {
-	db, err := store.OpenDB(":memory:")
+	db, err := primarydb.OpenDB(":memory:")
 	assert.NilError(t, err)
 	defer func() {
 		_ = db.Close()

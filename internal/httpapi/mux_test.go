@@ -8,6 +8,7 @@ import (
 	"testing/fstest"
 
 	"github.com/nakatanakatana/feed-reader/internal/httpapi"
+	"github.com/nakatanakatana/feed-reader/internal/primarydb"
 	schema "github.com/nakatanakatana/feed-reader/sql"
 	"github.com/nakatanakatana/feed-reader/store"
 	"gotest.tools/v3/assert"
@@ -15,7 +16,7 @@ import (
 
 func setupTestDB(t *testing.T) *store.Store {
 	t.Helper()
-	db, err := store.OpenDB(":memory:")
+	db, err := primarydb.OpenDB(":memory:")
 	assert.NilError(t, err, "failed to open db")
 	db.SetMaxOpenConns(1)
 	_, err = db.Exec(schema.Schema)

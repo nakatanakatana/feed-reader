@@ -10,15 +10,15 @@ import (
 	"testing"
 
 	"github.com/mmcdole/gofeed"
+	"github.com/nakatanakatana/feed-reader/internal/primarydb"
 	schema "github.com/nakatanakatana/feed-reader/sql"
 	"github.com/nakatanakatana/feed-reader/store"
 	"gotest.tools/v3/assert"
-	_ "modernc.org/sqlite"
 )
 
 func TestGofeedFetcher_Fetch(t *testing.T) {
 	// Setup store for testing
-	db, err := store.OpenDB(":memory:")
+	db, err := primarydb.OpenDB(":memory:")
 	assert.NilError(t, err)
 	defer func() { _ = db.Close() }()
 	_, err = db.Exec(schema.Schema)
@@ -104,7 +104,7 @@ func TestGofeedFetcher_Fetch(t *testing.T) {
 }
 
 func TestGofeedFetcher_ConditionalFetch(t *testing.T) {
-	db, err := store.OpenDB(":memory:")
+	db, err := primarydb.OpenDB(":memory:")
 	assert.NilError(t, err)
 	defer func() { _ = db.Close() }()
 	_, err = db.Exec(schema.Schema)
@@ -188,7 +188,7 @@ func TestGofeedFetcher_ConditionalFetch(t *testing.T) {
 }
 
 func TestGofeedFetcher_UserAgent(t *testing.T) {
-	db, err := store.OpenDB(":memory:")
+	db, err := primarydb.OpenDB(":memory:")
 	assert.NilError(t, err)
 	defer func() { _ = db.Close() }()
 	_, err = db.Exec(schema.Schema)

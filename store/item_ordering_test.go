@@ -6,11 +6,11 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/nakatanakatana/feed-reader/internal/primarydb"
 	"github.com/nakatanakatana/feed-reader/sql"
 	"github.com/nakatanakatana/feed-reader/store"
 	"gotest.tools/v3/assert"
 	"gotest.tools/v3/assert/cmp"
-	_ "modernc.org/sqlite"
 	"pgregory.net/rapid"
 )
 
@@ -185,7 +185,7 @@ func TestStore_ItemOrdering_PBT(t *testing.T) {
 }
 
 func setupStoreForRapid(t *rapid.T) *store.Store {
-	db, err := store.OpenDB(":memory:")
+	db, err := primarydb.OpenDB(":memory:")
 	if err != nil {
 		t.Fatalf("failed to open sqlite db: %v", err)
 	}

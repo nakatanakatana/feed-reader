@@ -1,11 +1,11 @@
-package store_test
+package readonlydb_test
 
 import (
 	"database/sql"
 	"path/filepath"
 	"testing"
 
-	"github.com/nakatanakatana/feed-reader/store"
+	"github.com/nakatanakatana/feed-reader/internal/readonlydb"
 	_ "github.com/ncruces/go-sqlite3/driver"
 	"gotest.tools/v3/assert"
 	_ "modernc.org/sqlite"
@@ -17,7 +17,7 @@ func TestOpenReadOnlyDB(t *testing.T) {
 
 	const maxOpen = 3
 	dsn := "file:" + dbPath + "?mode=ro"
-	db, err := store.OpenReadOnlyDB(dsn, maxOpen)
+	db, err := readonlydb.OpenReadOnlyDB(dsn, maxOpen)
 	assert.NilError(t, err)
 	defer func() { _ = db.Close() }()
 
@@ -40,7 +40,7 @@ func TestVerifyReadOnlyDB(t *testing.T) {
 	assert.NilError(t, err)
 	defer func() { _ = db.Close() }()
 
-	err = store.VerifyReadOnlyDB(db)
+	err = readonlydb.VerifyReadOnlyDB(db)
 	assert.NilError(t, err)
 }
 

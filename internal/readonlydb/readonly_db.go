@@ -1,4 +1,4 @@
-package store
+package readonlydb
 
 import (
 	"database/sql"

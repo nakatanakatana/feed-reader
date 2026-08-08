@@ -53,8 +53,8 @@ bash scripts/verify-readonly-replica.sh
 | Variable | Required | Default | Description |
 | --- | --- | --- | --- |
 | `LITESTREAM_REPLICA_URL` | yes | — | Replica URL. Production: `s3://…` (S3-compatible endpoints via URL query params such as `endpoint`, `region`, `forcePathStyle`). `file://` is for local tests. |
-| `LITESTREAM_DATABASE_NAME` | yes | — | Logical database name used in the ncruces DSN (`file:<name>?vfs=…&mode=ro`). |
-| `LITESTREAM_POLL_INTERVAL` | no | `1s` | How often each open SQLite connection's VFS wrapper polls for new LTX files. |
+| `LITESTREAM_DATABASE_NAME` | yes | — | Logical database name used in the ncruces DSN (`file:<name>?vfs=…&mode=ro`). Must not contain characters that can alter the SQLite URI syntax (specifically `?`, `&`, `#`, `=`, `%`, `;`, or null bytes). |
+| `LITESTREAM_POLL_INTERVAL` | no | `1s` | How often each open SQLite connection's VFS wrapper polls for new LTX files. Must be a positive duration (zero or negative intervals are rejected). |
 | `LITESTREAM_CACHE_SIZE_BYTES` | no | `10485760` | Per-connection page cache size for the VFS wrapper. |
 | `LITESTREAM_MAX_OPEN_CONNECTIONS` | no | `4` | Max open SQL connections. **Each open connection starts one replica poller**, so keep this bounded. |
 | `PORT` | no | `8080` | HTTP listen port. |

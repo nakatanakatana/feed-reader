@@ -6,15 +6,15 @@ import (
 	"testing"
 	"time"
 
+	"github.com/nakatanakatana/feed-reader/internal/primarydb"
 	"github.com/nakatanakatana/feed-reader/sql"
 	"github.com/nakatanakatana/feed-reader/store"
 	"gotest.tools/v3/assert"
 	"gotest.tools/v3/golden"
-	_ "modernc.org/sqlite"
 )
 
 func setupDB(t *testing.T) (*store.Queries, *store.Store) {
-	db, err := store.OpenDB(":memory:")
+	db, err := primarydb.OpenDB(":memory:")
 	assert.NilError(t, err)
 
 	_, err = db.ExecContext(context.Background(), schema.Schema)
@@ -174,4 +174,3 @@ func TestQueries_CreateItemRead(t *testing.T) {
 		assert.NilError(t, err)
 	})
 }
-

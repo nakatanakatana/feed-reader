@@ -13,9 +13,9 @@ import (
 	"github.com/caarlos0/env/v11"
 	"github.com/nakatanakatana/feed-reader/frontend"
 	"github.com/nakatanakatana/feed-reader/internal/httpapi"
+	"github.com/nakatanakatana/feed-reader/internal/primarydb"
 	"github.com/nakatanakatana/feed-reader/sql"
 	"github.com/nakatanakatana/feed-reader/store"
-	_ "modernc.org/sqlite"
 )
 
 type config struct {
@@ -64,7 +64,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	db, err := store.OpenDB(cfg.DBPath)
+	db, err := primarydb.OpenDB(cfg.DBPath)
 	if err != nil {
 		logger.ErrorContext(ctx, "failed to open database", "error", err)
 		os.Exit(1)

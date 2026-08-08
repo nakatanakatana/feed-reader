@@ -17,12 +17,12 @@ import (
 	"time"
 
 	"github.com/caarlos0/env/v11"
+	"github.com/nakatanakatana/feed-reader/internal/primarydb"
 	"github.com/nakatanakatana/feed-reader/internal/readonly"
+	"github.com/nakatanakatana/feed-reader/internal/readonlydb"
 	schema "github.com/nakatanakatana/feed-reader/sql"
-	"github.com/nakatanakatana/feed-reader/store"
 	"gotest.tools/v3/assert"
 	"gotest.tools/v3/assert/cmp"
-	_ "modernc.org/sqlite"
 )
 
 func TestConfig_Parse(t *testing.T) {
@@ -160,7 +160,7 @@ func assertNewMuxSignature(_ func(*sql.DB, fs.FS, []string) http.Handler) {}
 
 func setupQueryableDB(t *testing.T) *sql.DB {
 	t.Helper()
-	db, err := store.OpenDB(":memory:")
+	db, err := primarydb.OpenDB(":memory:")
 	assert.NilError(t, err)
 	db.SetMaxOpenConns(1)
 	_, err = db.Exec(schema.Schema)
@@ -209,7 +209,7 @@ func TestMain_OrderlyCleanupOnServerError(t *testing.T) {
 
 	var targetDB *sql.DB
 	openReadOnlyDB = func(dsn string, maxOpenConns int) (*sql.DB, error) {
-		db, err := store.OpenDB(":memory:")
+		db, err := primarydb.OpenDB(":memory:")
 		if err != nil {
 			return nil, err
 		}
@@ -222,7 +222,7 @@ func TestMain_OrderlyCleanupOnServerError(t *testing.T) {
 		return db, nil
 	}
 	defer func() {
-		openReadOnlyDB = store.OpenReadOnlyDB
+		openReadOnlyDB = readonlydb.OpenReadOnlyDB
 	}()
 
 	// 3. osExit をモックする
@@ -289,13 +289,13 @@ waitLoop:
 	assert.Assert(t, exitCalled, "expected osExit to be called")
 	assert.Assert(t, !exitCalledBeforeCleanup, "expected cleanup to occur before osExit is called")
 	assert.Assert(t, unregisterCalled, "expected unregister to be called")
-	
+
 	// DBがクローズされていることを検証
 	if targetDB != nil {
 		err := targetDB.Ping()
 		assert.Assert(t, err != nil, "expected DB to be closed, but Ping succeeded")
 	}
-	
+
 	// クリーンアップが行われたことを示すログが出力されているか？
 	logOutput := logBuf.String()
 	assert.Assert(t, strings.Contains(logOutput, "shutdown complete"), "expected 'shutdown complete' log in output: %s", logOutput)

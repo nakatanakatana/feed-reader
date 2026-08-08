@@ -4,8 +4,11 @@ import (
 	"context"
 	"errors"
 	"time"
+)
 
-	sqlite3 "modernc.org/sqlite/lib"
+const (
+	sqliteBusy   = 5
+	sqliteLocked = 6
 )
 
 const (
@@ -21,7 +24,7 @@ func IsBusyError(err error) bool {
 	}
 	var sqliteErr coder
 	if errors.As(err, &sqliteErr) {
-		return sqliteErr.Code() == sqlite3.SQLITE_BUSY || sqliteErr.Code() == sqlite3.SQLITE_LOCKED
+		return sqliteErr.Code() == sqliteBusy || sqliteErr.Code() == sqliteLocked
 	}
 	return false
 }

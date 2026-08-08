@@ -7,7 +7,12 @@ import (
 
 	"github.com/nakatanakatana/feed-reader/store"
 	"gotest.tools/v3/assert"
-	sqlite3 "modernc.org/sqlite/lib"
+)
+
+const (
+	sqliteBusy       = 5
+	sqliteLocked     = 6
+	sqliteConstraint = 19
 )
 
 type mockSqliteError struct {
@@ -26,20 +31,20 @@ func TestIsBusyError(t *testing.T) {
 		{
 			name: "SQLITE_BUSY",
 			err: mockSqliteError{
-				code: sqlite3.SQLITE_BUSY,
+				code: sqliteBusy,
 			},
 			expected: true,
 		},
 		{
 			name: "SQLITE_LOCKED",
 			err: mockSqliteError{
-				code: sqlite3.SQLITE_LOCKED,
+				code: sqliteLocked,
 			},
 			expected: true,
 		},
 		{
 			name:     "Other SQLite error",
-			err:      mockSqliteError{code: sqlite3.SQLITE_CONSTRAINT},
+			err:      mockSqliteError{code: sqliteConstraint},
 			expected: false,
 		},
 		{
@@ -77,7 +82,7 @@ func TestWithRetry(t *testing.T) {
 		err := store.WithRetry(context.Background(), func() error {
 			count++
 			if count < 3 {
-				return mockSqliteError{code: sqlite3.SQLITE_BUSY}
+				return mockSqliteError{code: sqliteBusy}
 			}
 			return nil
 		})
@@ -87,7 +92,7 @@ func TestWithRetry(t *testing.T) {
 
 	t.Run("fail after max attempts", func(t *testing.T) {
 		count := 0
-		busyErr := mockSqliteError{code: sqlite3.SQLITE_BUSY}
+		busyErr := mockSqliteError{code: sqliteBusy}
 		err := store.WithRetry(context.Background(), func() error {
 			count++
 			return busyErr
@@ -111,7 +116,7 @@ func TestWithRetry(t *testing.T) {
 		ctx, cancel := context.WithCancel(context.Background())
 		cancel()
 		err := store.WithRetry(ctx, func() error {
-			return mockSqliteError{code: sqlite3.SQLITE_BUSY}
+			return mockSqliteError{code: sqliteBusy}
 		})
 		assert.ErrorIs(t, err, context.Canceled)
 	})

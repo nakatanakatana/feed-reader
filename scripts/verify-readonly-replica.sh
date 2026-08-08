@@ -23,6 +23,7 @@ require_cmd() {
 require_cmd litestream
 require_cmd python3
 require_cmd curl
+require_cmd go
 
 # Fail fast when Docker targets are not declared (Task 7 contract).
 grep -Eq '^FROM .+ AS primary$' Dockerfile \
@@ -33,6 +34,29 @@ grep -Eq 'VITE_READONLY=true' Dockerfile \
   || die "Dockerfile must build readonly frontend with VITE_READONLY=true"
 grep -Eq 'feed-reader-readonly' Dockerfile \
   || die "Dockerfile must build feed-reader-readonly"
+
+assert_dependency_absent() {
+  local target="$1"
+  local forbidden="$2"
+  local dependencies
+  dependencies="$(go list -buildvcs=false -deps "$target")" \
+    || die "failed to inspect dependencies for $target"
+  if grep -Fq "$forbidden" <<<"$dependencies"; then
+    die "$target must not depend on $forbidden"
+  fi
+}
+
+assert_dependency_absent ./cmd/feed-reader github.com/ncruces/go-sqlite3
+assert_dependency_absent ./cmd/feed-reader github.com/mattn/go-sqlite3
+assert_dependency_absent ./cmd/feed-reader github.com/psanford/sqlite3vfs
+assert_dependency_absent ./cmd/feed-reader-readonly github.com/mattn/go-sqlite3
+assert_dependency_absent ./cmd/feed-reader-readonly github.com/psanford/sqlite3vfs
+
+readonly_direct_imports="$(go list -buildvcs=false -f '{{join .Imports " "}}' ./cmd/feed-reader-readonly)" \
+  || die "failed to inspect direct imports for ./cmd/feed-reader-readonly"
+if grep -Fq "modernc.org/sqlite" <<<"$readonly_direct_imports"; then
+  die "./cmd/feed-reader-readonly must not directly import modernc.org/sqlite"
+fi
 
 WORKDIR="$(mktemp -d "${TMPDIR:-/tmp}/feed-reader-readonly-verify.XXXXXX")"
 DIST_STUB_CREATED=0
@@ -190,5 +214,15 @@ status="$(curl -sS -o /dev/null -w '%{http_code}' \
   -d '{"url":"https://example.com/other.xml","tagIds":[]}')"
 [[ "$status" == "405" ]] || die "expected POST /api/v2/feeds => 405, got $status"
 log "POST 405 ok"
+
+head_status="$(curl -sS -o /dev/null -w '%{http_code}' \
+  -X HEAD "http://127.0.0.1:${READONLY_PORT}/api/v2/feeds")"
+[[ "$head_status" == "200" ]] || die "expected HEAD /api/v2/feeds => 200, got $head_status"
+log "HEAD 200 ok"
+
+options_status="$(curl -sS -o /dev/null -w '%{http_code}' \
+  -X OPTIONS "http://127.0.0.1:${READONLY_PORT}/api/v2/feeds")"
+[[ "$options_status" == "200" || "$options_status" == "204" ]] || die "expected OPTIONS /api/v2/feeds => 200 or 204, got $options_status"
+log "OPTIONS accepted ok"
 
 log "PASS"

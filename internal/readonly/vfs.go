@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/url"
+	"strings"
 	"sync"
 	"time"
 
@@ -79,8 +80,11 @@ func validateVFSConfig(cfg VFSConfig) error {
 	if cfg.DatabaseName == "" {
 		return fmt.Errorf("database name is required")
 	}
-	if cfg.PollInterval < 0 {
-		return fmt.Errorf("poll interval must not be negative")
+	if strings.ContainsAny(cfg.DatabaseName, "?&#%=;\x00") {
+		return fmt.Errorf("database name contains unsafe characters")
+	}
+	if cfg.PollInterval <= 0 {
+		return fmt.Errorf("poll interval must be positive")
 	}
 	if cfg.CacheSizeBytes <= 0 {
 		return fmt.Errorf("cache size must be positive")

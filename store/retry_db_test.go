@@ -8,7 +8,6 @@ import (
 
 	"github.com/nakatanakatana/feed-reader/store"
 	"gotest.tools/v3/assert"
-	sqlite3 "modernc.org/sqlite/lib"
 )
 
 type mockDBTX struct {
@@ -37,7 +36,7 @@ func (m *mockDBTX) QueryRowContext(ctx context.Context, query string, args ...an
 func TestRetryingDB_ExecContext(t *testing.T) {
 	t.Run("retry on busy error", func(t *testing.T) {
 		calls := 0
-		busyErr := mockSqliteError{code: sqlite3.SQLITE_BUSY}
+		busyErr := mockSqliteError{code: sqliteBusy}
 		mockResult := new(mockResult)
 		m := &mockDBTX{
 			execContext: func(ctx context.Context, query string, args ...any) (sql.Result, error) {
@@ -75,7 +74,7 @@ func TestRetryingDB_ExecContext(t *testing.T) {
 
 func TestRetryingDB_PrepareContext(t *testing.T) {
 	calls := 0
-	busyErr := mockSqliteError{code: sqlite3.SQLITE_BUSY}
+	busyErr := mockSqliteError{code: sqliteBusy}
 	stmt := &sql.Stmt{}
 	m := &mockDBTX{
 		prepareContext: func(ctx context.Context, query string) (*sql.Stmt, error) {
