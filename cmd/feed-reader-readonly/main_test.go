@@ -171,6 +171,31 @@ func setupQueryableDB(t *testing.T) *sql.DB {
 	return db
 }
 
+func TestNewMux_CORSPreflightOnReadonlyStack(t *testing.T) {
+	db := setupQueryableDB(t)
+	assets := fstest.MapFS{
+		"index.html": &fstest.MapFile{Data: []byte("ok")},
+	}
+	const allowedOrigin = "http://localhost:3000"
+	handler := newMux(db, assets, []string{allowedOrigin})
+
+	ts := httptest.NewServer(handler)
+	t.Cleanup(ts.Close)
+
+	req, err := http.NewRequest(http.MethodOptions, ts.URL+"/api/v2/feeds", nil)
+	assert.NilError(t, err)
+	req.Header.Set("Origin", allowedOrigin)
+	req.Header.Set("Access-Control-Request-Method", "GET")
+
+	resp, err := http.DefaultClient.Do(req)
+	assert.NilError(t, err)
+	defer func() { _ = resp.Body.Close() }()
+
+	assert.Equal(t, resp.StatusCode, http.StatusNoContent)
+	assert.Equal(t, resp.Header.Get("Access-Control-Allow-Origin"), allowedOrigin)
+	assert.Equal(t, resp.Header.Get("Access-Control-Allow-Methods"), "GET, HEAD, OPTIONS")
+}
+
 func TestMain_OrderlyCleanupOnServerError(t *testing.T) {
 	// 1. すでに使用中のポートを確保する
 	l, err := net.Listen("tcp", "127.0.0.1:0")

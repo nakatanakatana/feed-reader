@@ -151,6 +151,7 @@ PORT="$READONLY_PORT" \
   LITESTREAM_REPLICA_URL="$REPLICA_URL" \
   LITESTREAM_DATABASE_NAME="$DATABASE_NAME" \
   LITESTREAM_POLL_INTERVAL="$POLL_INTERVAL" \
+  CORS_ALLOWED_ORIGINS="http://localhost:3000" \
   "$READONLY_BIN" >"$WORKDIR/readonly.log" 2>&1 &
 READONLY_PID=$!
 
@@ -221,8 +222,28 @@ head_status="$(curl -sS -o /dev/null -w '%{http_code}' \
 log "HEAD 200 ok"
 
 options_status="$(curl -sS -o /dev/null -w '%{http_code}' \
-  -X OPTIONS "http://127.0.0.1:${READONLY_PORT}/api/v2/feeds")"
-[[ "$options_status" == "200" || "$options_status" == "204" ]] || die "expected OPTIONS /api/v2/feeds => 200 or 204, got $options_status"
-log "OPTIONS accepted ok"
+  -X OPTIONS "http://127.0.0.1:${READONLY_PORT}/api/v2/feeds" \
+  -H 'Origin: http://localhost:3000' \
+  -H 'Access-Control-Request-Method: GET')"
+[[ "$options_status" == "204" ]] || die "expected OPTIONS /api/v2/feeds => 204, got $options_status"
+log "OPTIONS preflight 204 ok"
+
+options_origin="$(curl -sS -D - -o /dev/null \
+  -X OPTIONS "http://127.0.0.1:${READONLY_PORT}/api/v2/feeds" \
+  -H 'Origin: http://localhost:3000' \
+  -H 'Access-Control-Request-Method: GET' \
+  | grep -i 'access-control-allow-origin' | tr -d '\r')"
+printf '%s' "$options_origin" | grep -Fq 'http://localhost:3000' \
+  || die "expected Access-Control-Allow-Origin: http://localhost:3000, got: $options_origin"
+log "CORS Allow-Origin header ok"
+
+options_methods="$(curl -sS -D - -o /dev/null \
+  -X OPTIONS "http://127.0.0.1:${READONLY_PORT}/api/v2/feeds" \
+  -H 'Origin: http://localhost:3000' \
+  -H 'Access-Control-Request-Method: GET' \
+  | grep -i 'access-control-allow-methods' | tr -d '\r')"
+printf '%s' "$options_methods" | grep -Fq 'GET, HEAD, OPTIONS' \
+  || die "expected Access-Control-Allow-Methods to include GET, HEAD, OPTIONS, got: $options_methods"
+log "CORS Allow-Methods readonly ok"
 
 log "PASS"

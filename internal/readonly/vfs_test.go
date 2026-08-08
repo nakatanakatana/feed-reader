@@ -6,6 +6,8 @@ import (
 	"database/sql"
 	"io"
 	"log/slog"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"testing"
@@ -252,6 +254,31 @@ func TestVFSFollowsLatest(t *testing.T) {
 	require.NoError(t, db.Close())
 	unregister()
 	require.Nil(t, ncrucesvfs.Find(vfsName))
+}
+
+func TestOpenReadOnlyDBBeforeSnapshot(t *testing.T) {
+	ctx := context.Background()
+	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
+	replicaPath := t.TempDir()
+
+	dsn, unregister, err := readonly.RegisterVFS(ctx, readonly.VFSConfig{
+		ReplicaURL:     "file://" + replicaPath,
+		DatabaseName:   databaseName,
+		PollInterval:   50 * time.Millisecond,
+		CacheSizeBytes: 1024 * 1024,
+	}, logger)
+	require.NoError(t, err)
+	defer unregister()
+
+	db, err := readonlydb.OpenReadOnlyDB(dsn, 1)
+	require.NoError(t, err, "OpenReadOnlyDB must succeed before the first readable snapshot")
+	defer func() { _ = db.Close() }()
+
+	handler := readonly.NewReadinessHandler(db)
+	req := httptest.NewRequest(http.MethodGet, "http://example.com/readyz", nil)
+	w := httptest.NewRecorder()
+	handler.ServeHTTP(w, req)
+	require.Equal(t, http.StatusServiceUnavailable, w.Code, "readyz must return 503 before the first readable snapshot")
 }
 
 func writeFeedsReplica(t *testing.T, replicaPath, title string) {

@@ -40,10 +40,6 @@ func OpenReadOnlyDB(dsn string, maxOpenConnections int) (*sql.DB, error) {
 	}
 	db.SetMaxOpenConns(maxOpenConnections)
 	db.SetMaxIdleConns(maxOpenConnections)
-	if err := VerifyReadOnlyDB(db); err != nil {
-		_ = db.Close()
-		return nil, err
-	}
 	return db, nil
 }
 
