@@ -6,9 +6,10 @@ import {
 } from "@tanstack/solid-router";
 import { HttpResponse, http } from "msw";
 import { render } from "solid-js/web";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { page, userEvent } from "vitest/browser";
 import { queryClient } from "../lib/query";
+import { isReadOnly } from "../lib/readonly";
 import { ToastProvider } from "../lib/toast";
 import { worker } from "../mocks/browser";
 import { parseRequestMessage } from "../mocks/http";
@@ -24,6 +25,12 @@ import {
   UpdateItemStatusResponseSchema,
 } from "../test-utils/json-identity";
 
+vi.mock("../lib/readonly", () => ({
+  isReadOnly: vi.fn(() => false),
+}));
+
+const isReadOnlyMock = vi.mocked(isReadOnly);
+
 describe("ItemDetailRouteView Auto-Read", () => {
   let dispose: () => void;
 
@@ -31,6 +38,7 @@ describe("ItemDetailRouteView Auto-Read", () => {
     if (dispose) dispose();
     document.body.innerHTML = "";
     vi.clearAllMocks();
+    isReadOnlyMock.mockReturnValue(false);
   });
 
   const setupMockData = () => {
@@ -161,5 +169,95 @@ describe("ItemDetailRouteView Auto-Read", () => {
     await userEvent.keyboard("k");
 
     await expect.poll(() => updateCalledForId).toBe("2");
+  });
+
+  describe("when VITE_READONLY=true", () => {
+    beforeEach(() => {
+      isReadOnlyMock.mockReturnValue(true);
+    });
+
+    it("navigates next without marking current item as read", async () => {
+      setupMockData();
+      const updateStatusSpy = vi.fn();
+      worker.use(
+        http.post("*/api/v2/items/status", async ({ request }) => {
+          updateStatusSpy(await request.json());
+          return HttpResponse.json(
+            toJson(
+              UpdateItemStatusResponseSchema,
+              create(UpdateItemStatusResponseSchema, {}),
+            ),
+          );
+        }),
+      );
+
+      const history = createMemoryHistory({ initialEntries: ["/items/1"] });
+      const router = createRouter({ routeTree, history });
+
+      dispose = render(
+        () => (
+          <QueryClientProvider client={queryClient}>
+            <ToastProvider>
+              <RouterProvider router={router} />
+            </ToastProvider>
+          </QueryClientProvider>
+        ),
+        document.body,
+      );
+
+      await expect
+        .element(page.getByRole("heading", { name: "Item 1" }))
+        .toBeInTheDocument();
+
+      await userEvent.keyboard("j");
+
+      await expect.poll(() => history.location.pathname).toBe("/items/2");
+      await expect
+        .element(page.getByRole("heading", { name: "Item 2" }))
+        .toBeInTheDocument();
+      await expect.poll(() => updateStatusSpy.mock.calls.length).toBe(0);
+    });
+
+    it("navigates prev without marking current item as read", async () => {
+      setupMockData();
+      const updateStatusSpy = vi.fn();
+      worker.use(
+        http.post("*/api/v2/items/status", async ({ request }) => {
+          updateStatusSpy(await request.json());
+          return HttpResponse.json(
+            toJson(
+              UpdateItemStatusResponseSchema,
+              create(UpdateItemStatusResponseSchema, {}),
+            ),
+          );
+        }),
+      );
+
+      const history = createMemoryHistory({ initialEntries: ["/items/2"] });
+      const router = createRouter({ routeTree, history });
+
+      dispose = render(
+        () => (
+          <QueryClientProvider client={queryClient}>
+            <ToastProvider>
+              <RouterProvider router={router} />
+            </ToastProvider>
+          </QueryClientProvider>
+        ),
+        document.body,
+      );
+
+      await expect
+        .element(page.getByRole("heading", { name: "Item 2" }))
+        .toBeInTheDocument();
+
+      await userEvent.keyboard("k");
+
+      await expect.poll(() => history.location.pathname).toBe("/items/1");
+      await expect
+        .element(page.getByRole("heading", { name: "Item 1" }))
+        .toBeInTheDocument();
+      await expect.poll(() => updateStatusSpy.mock.calls.length).toBe(0);
+    });
   });
 });

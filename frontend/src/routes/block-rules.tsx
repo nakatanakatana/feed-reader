@@ -13,6 +13,7 @@ import {
   itemBlockRuleInsert,
   itemBlockRulesQueryOptions,
 } from "../lib/block-db";
+import { isReadOnly } from "../lib/readonly";
 
 export type BlockRulesSortField = "ruleType" | "value" | "domain";
 
@@ -173,118 +174,122 @@ function BlockRulesComponent() {
   return (
     <PageLayout>
       <div class={stack({ gap: "4", flex: "1", minHeight: 0 })}>
-        <div class={flex({ flexDirection: "column", gap: "2", width: "full" })}>
-          <form
-            onSubmit={handleSubmit}
-            class={flex({
-              gap: "4",
-              alignItems: "flex-end",
-              flexWrap: "wrap",
-              width: "full",
-              bg: "white",
-              p: "4",
-              rounded: "md",
-              shadow: "sm",
-              border: "1px solid",
-              borderColor: "gray.200",
-            })}
+        <Show when={!isReadOnly()}>
+          <div
+            class={flex({ flexDirection: "column", gap: "2", width: "full" })}
           >
-            <div class={stack({ gap: "1" })}>
-              <label
-                for="rule-type"
-                class={css({ fontSize: "sm", fontWeight: "medium" })}
-              >
-                Type
-              </label>
-              <select
-                id="rule-type"
-                value={ruleType()}
-                onInput={(e) => setRuleType(e.currentTarget.value)}
-                class={css({
-                  border: "1px solid",
-                  borderColor: "gray.300",
-                  padding: "2",
-                  borderRadius: "md",
-                  bg: "white",
-                })}
-              >
-                <option value="user">User</option>
-                <option value="domain">Domain</option>
-                <option value="user_domain">User @ Domain</option>
-                <option value="keyword">Keyword</option>
-              </select>
-            </div>
-            <div class={stack({ gap: "1", flex: "1", minWidth: "200px" })}>
-              <label
-                for="value"
-                class={css({ fontSize: "sm", fontWeight: "medium" })}
-              >
-                Value
-              </label>
-              <input
-                id="value"
-                type="text"
-                placeholder="Value to block"
-                value={value()}
-                onInput={(e) => setValue(e.currentTarget.value)}
-                class={css({
-                  border: "1px solid",
-                  borderColor: "gray.300",
-                  padding: "2",
-                  borderRadius: "md",
-                })}
-              />
-            </div>
-            <div class={stack({ gap: "1", flex: "1", minWidth: "200px" })}>
-              <label
-                for="domain"
-                class={css({ fontSize: "sm", fontWeight: "medium" })}
-              >
-                Domain (Optional)
-              </label>
-              <input
-                id="domain"
-                type="text"
-                placeholder="example.com"
-                value={domain()}
-                onInput={(e) => setDomain(e.currentTarget.value)}
-                class={css({
-                  border: "1px solid",
-                  borderColor: "gray.300",
-                  padding: "2",
-                  borderRadius: "md",
-                })}
-              />
-            </div>
-            <div class={flex({ gap: "2" })}>
-              <ActionButton
-                type="submit"
-                variant="primary"
-                disabled={addMutation.isPending}
-                icon={<PlusIcon />}
-              >
-                {addMutation.isPending ? "Adding..." : "Add"}
-              </ActionButton>
-              <ActionButton
-                type="button"
-                variant="secondary"
-                icon={<UploadIcon />}
-                onClick={() => setIsBulkModalOpen(true)}
-              >
-                Bulk Add
-              </ActionButton>
-            </div>
-          </form>
-        </div>
+            <form
+              onSubmit={handleSubmit}
+              class={flex({
+                gap: "4",
+                alignItems: "flex-end",
+                flexWrap: "wrap",
+                width: "full",
+                bg: "white",
+                p: "4",
+                rounded: "md",
+                shadow: "sm",
+                border: "1px solid",
+                borderColor: "gray.200",
+              })}
+            >
+              <div class={stack({ gap: "1" })}>
+                <label
+                  for="rule-type"
+                  class={css({ fontSize: "sm", fontWeight: "medium" })}
+                >
+                  Type
+                </label>
+                <select
+                  id="rule-type"
+                  value={ruleType()}
+                  onInput={(e) => setRuleType(e.currentTarget.value)}
+                  class={css({
+                    border: "1px solid",
+                    borderColor: "gray.300",
+                    padding: "2",
+                    borderRadius: "md",
+                    bg: "white",
+                  })}
+                >
+                  <option value="user">User</option>
+                  <option value="domain">Domain</option>
+                  <option value="user_domain">User @ Domain</option>
+                  <option value="keyword">Keyword</option>
+                </select>
+              </div>
+              <div class={stack({ gap: "1", flex: "1", minWidth: "200px" })}>
+                <label
+                  for="value"
+                  class={css({ fontSize: "sm", fontWeight: "medium" })}
+                >
+                  Value
+                </label>
+                <input
+                  id="value"
+                  type="text"
+                  placeholder="Value to block"
+                  value={value()}
+                  onInput={(e) => setValue(e.currentTarget.value)}
+                  class={css({
+                    border: "1px solid",
+                    borderColor: "gray.300",
+                    padding: "2",
+                    borderRadius: "md",
+                  })}
+                />
+              </div>
+              <div class={stack({ gap: "1", flex: "1", minWidth: "200px" })}>
+                <label
+                  for="domain"
+                  class={css({ fontSize: "sm", fontWeight: "medium" })}
+                >
+                  Domain (Optional)
+                </label>
+                <input
+                  id="domain"
+                  type="text"
+                  placeholder="example.com"
+                  value={domain()}
+                  onInput={(e) => setDomain(e.currentTarget.value)}
+                  class={css({
+                    border: "1px solid",
+                    borderColor: "gray.300",
+                    padding: "2",
+                    borderRadius: "md",
+                  })}
+                />
+              </div>
+              <div class={flex({ gap: "2" })}>
+                <ActionButton
+                  type="submit"
+                  variant="primary"
+                  disabled={addMutation.isPending}
+                  icon={<PlusIcon />}
+                >
+                  {addMutation.isPending ? "Adding..." : "Add"}
+                </ActionButton>
+                <ActionButton
+                  type="button"
+                  variant="secondary"
+                  icon={<UploadIcon />}
+                  onClick={() => setIsBulkModalOpen(true)}
+                >
+                  Bulk Add
+                </ActionButton>
+              </div>
+            </form>
+          </div>
 
-        <BulkAddBlockRulesModal
-          isOpen={isBulkModalOpen()}
-          onClose={() => setIsBulkModalOpen(false)}
-          onRegister={async (rules) => {
-            await bulkAddMutation.mutateAsync(rules);
-          }}
-          isPending={bulkAddMutation.isPending}
-        />
+          <BulkAddBlockRulesModal
+            isOpen={isBulkModalOpen()}
+            onClose={() => setIsBulkModalOpen(false)}
+            onRegister={async (rules) => {
+              await bulkAddMutation.mutateAsync(rules);
+            }}
+            isPending={bulkAddMutation.isPending}
+          />
+        </Show>
 
         <div
           class={css({
@@ -311,7 +316,9 @@ function BlockRulesComponent() {
 
           <BlockRulesTable
             rules={rulesQuery() || []}
-            onDelete={(id) => deleteMutation.mutate(id)}
+            onDelete={
+              isReadOnly() ? undefined : (id) => deleteMutation.mutate(id)
+            }
             isPending={deleteMutation.isPending}
             sortField={sortField()}
             sortDirection={sortDirection()}

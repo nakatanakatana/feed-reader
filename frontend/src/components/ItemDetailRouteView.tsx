@@ -12,6 +12,7 @@ import {
 import { getPrefetchIds, prefetchItems } from "../lib/item-prefetch";
 import { itemStore } from "../lib/item-store";
 import type { DateFilterValue } from "../lib/item-utils";
+import { isReadOnly } from "../lib/readonly";
 import { ItemDetailModal } from "./ItemDetailModal";
 
 interface ItemDetailRouteViewProps {
@@ -146,7 +147,7 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
   };
 
   const markCurrentAsRead = () => {
-    if (!props.itemId || isEndOfList()) return;
+    if (isReadOnly() || !props.itemId || isEndOfList()) return;
     void updateItemReadStatus([props.itemId], true).catch((error) => {
       console.error("Failed to update item read status", error);
     });

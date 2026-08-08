@@ -10,6 +10,7 @@ import {
   tagInsert,
   tagsQueryOptions,
 } from "../lib/db";
+import { isReadOnly } from "../lib/readonly";
 import { ActionButton } from "./ui/ActionButton";
 import { Badge } from "./ui/Badge";
 import { EmptyState } from "./ui/EmptyState";
@@ -64,42 +65,44 @@ export const TagManagement = () => {
 
   return (
     <div class={stack({ gap: "4", height: "full", minHeight: 0 })}>
-      <div
-        class={stack({
-          gap: "3",
-          bg: "white",
-          p: "4",
-          rounded: "md",
-          shadow: "sm",
-          border: "1px solid",
-          borderColor: "gray.200",
-        })}
-      >
-        <form
-          onSubmit={handleCreateTag}
-          class={flex({ gap: "3", alignItems: "center", flexWrap: "wrap" })}
+      <Show when={!isReadOnly()}>
+        <div
+          class={stack({
+            gap: "3",
+            bg: "white",
+            p: "4",
+            rounded: "md",
+            shadow: "sm",
+            border: "1px solid",
+            borderColor: "gray.200",
+          })}
         >
-          <input
-            type="text"
-            value={newTagName()}
-            onInput={(e) => setNewTagName(e.currentTarget.value)}
-            placeholder="New tag name"
-            class={css({
-              flex: "1",
-              minW: "220px",
-              px: "3",
-              py: "2",
-              border: "1px solid",
-              borderColor: "gray.300",
-              rounded: "md",
-              _focusVisible: { outlineColor: "blue.500" },
-            })}
-          />
-          <ActionButton type="submit" variant="primary">
-            Add Tag
-          </ActionButton>
-        </form>
-      </div>
+          <form
+            onSubmit={handleCreateTag}
+            class={flex({ gap: "3", alignItems: "center", flexWrap: "wrap" })}
+          >
+            <input
+              type="text"
+              value={newTagName()}
+              onInput={(e) => setNewTagName(e.currentTarget.value)}
+              placeholder="New tag name"
+              class={css({
+                flex: "1",
+                minW: "220px",
+                px: "3",
+                py: "2",
+                border: "1px solid",
+                borderColor: "gray.300",
+                rounded: "md",
+                _focusVisible: { outlineColor: "blue.500" },
+              })}
+            />
+            <ActionButton type="submit" variant="primary">
+              Add Tag
+            </ActionButton>
+          </form>
+        </div>
+      </Show>
 
       <div
         class={css({
@@ -167,20 +170,22 @@ export const TagManagement = () => {
                       {tag.name}
                     </span>
                     <Badge>feed: {tag.feedCount.toString()}</Badge>
-                    <ActionButton
-                      variant="danger"
-                      size="sm"
-                      onClick={() =>
-                        handleDeleteTag(
-                          tag.id,
-                          tag.name,
-                          tag.feedCount ? BigInt(tag.feedCount) : 0n,
-                        )
-                      }
-                      ariaLabel={`Delete ${tag.name}`}
-                    >
-                      Delete
-                    </ActionButton>
+                    <Show when={!isReadOnly()}>
+                      <ActionButton
+                        variant="danger"
+                        size="sm"
+                        onClick={() =>
+                          handleDeleteTag(
+                            tag.id,
+                            tag.name,
+                            tag.feedCount ? BigInt(tag.feedCount) : 0n,
+                          )
+                        }
+                        ariaLabel={`Delete ${tag.name}`}
+                      >
+                        Delete
+                      </ActionButton>
+                    </Show>
                   </div>
                 )}
               </For>

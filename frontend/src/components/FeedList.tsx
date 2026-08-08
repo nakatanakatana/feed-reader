@@ -17,6 +17,7 @@ import {
 import { type FeedSortBy, feedStore } from "../lib/feed-store";
 import { fetchingState } from "../lib/fetching-state";
 import { formatDate, formatRelativeDate } from "../lib/item-utils";
+import { isReadOnly } from "../lib/readonly";
 import { BulkActionBar } from "./BulkActionBar";
 import { ManageTagsModal } from "./ManageTagsModal";
 import { ActionButton } from "./ui/ActionButton";
@@ -190,19 +191,21 @@ export function FeedList() {
           })}
         >
           <div class={flex({ gap: "2", alignItems: "center", mr: "auto" })}>
-            <input
-              type="checkbox"
-              id="select-all-visible"
-              aria-label="Select all visible feeds"
-              checked={allVisibleSelected()}
-              ref={(el) => {
-                createEffect(() => {
-                  el.indeterminate = isIndeterminate();
-                });
-              }}
-              onChange={() => toggleSelectAll()}
-              class={css({ cursor: "pointer" })}
-            />
+            <Show when={!isReadOnly()}>
+              <input
+                type="checkbox"
+                id="select-all-visible"
+                aria-label="Select all visible feeds"
+                checked={allVisibleSelected()}
+                ref={(el) => {
+                  createEffect(() => {
+                    el.indeterminate = isIndeterminate();
+                  });
+                }}
+                onChange={() => toggleSelectAll()}
+                class={css({ cursor: "pointer" })}
+              />
+            </Show>
           </div>
           <label
             for="sort-by"
@@ -332,8 +335,11 @@ export function FeedList() {
             <For each={feedList()}>
               {(feed) => (
                 <li
-                  onClick={() => toggleFeedSelection(feed.id)}
+                  onClick={() => {
+                    if (!isReadOnly()) toggleFeedSelection(feed.id);
+                  }}
                   onKeyDown={(e) => {
+                    if (isReadOnly()) return;
                     if (e.key === "Enter" || e.key === " ") {
                       e.preventDefault();
                       toggleFeedSelection(feed.id);
@@ -347,7 +353,7 @@ export function FeedList() {
                     borderColor: "gray.100",
                     borderRadius: "md",
                     gap: "3",
-                    cursor: "pointer",
+                    cursor: isReadOnly() ? "default" : "pointer",
                     _hover: { backgroundColor: "gray.50" },
                   })}
                 >
@@ -359,16 +365,18 @@ export function FeedList() {
                       minWidth: 0,
                     })}
                   >
-                    <input
-                      type="checkbox"
-                      checked={selectedFeedIds().includes(feed.id)}
-                      onChange={(e) => {
-                        e.stopPropagation();
-                        toggleFeedSelection(feed.id);
-                      }}
-                      onClick={(e) => e.stopPropagation()}
-                      class={css({ cursor: "pointer" })}
-                    />
+                    <Show when={!isReadOnly()}>
+                      <input
+                        type="checkbox"
+                        checked={selectedFeedIds().includes(feed.id)}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          toggleFeedSelection(feed.id);
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        class={css({ cursor: "pointer" })}
+                      />
+                    </Show>
                     <div class={stack({ gap: "1", flex: 1, minWidth: 0 })}>
                       <div
                         class={flex({
@@ -565,114 +573,116 @@ export function FeedList() {
                       </div>
                     </div>
                   </div>
-                  <div
-                    class={flex({
-                      gap: "2",
-                      alignItems: "center",
-                      flexShrink: 0,
-                    })}
-                  >
+                  <Show when={!isReadOnly()}>
                     <div
                       class={flex({
                         gap: "2",
                         alignItems: "center",
-                        display: { base: "none", md: "flex" },
+                        flexShrink: 0,
                       })}
                     >
-                      <div class={css({ position: "relative" })}>
-                        <select
-                          aria-label="Suspend fetching"
-                          onChange={(e) => {
+                      <div
+                        class={flex({
+                          gap: "2",
+                          alignItems: "center",
+                          display: { base: "none", md: "flex" },
+                        })}
+                      >
+                        <div class={css({ position: "relative" })}>
+                          <select
+                            aria-label="Suspend fetching"
+                            onChange={(e) => {
+                              e.stopPropagation();
+                              const seconds = Number(e.currentTarget.value);
+                              if (seconds > 0) {
+                                handleSuspend([feed.id], seconds);
+                              }
+                              e.currentTarget.value = "0"; // reset
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                            class={css({
+                              fontSize: "xs",
+                              px: "2",
+                              py: "1.5",
+                              rounded: "md",
+                              border: "1px solid",
+                              borderColor: "gray.300",
+                              bg: "white",
+                              cursor: "pointer",
+                              _hover: { borderColor: "gray.400" },
+                            })}
+                          >
+                            <option value="0">Suspend...</option>
+                            <option value="86400">1 Day</option>
+                            <option value="259200">3 Days</option>
+                            <option value="604800">1 Week</option>
+                            <option value="2592000">1 Month</option>
+                          </select>
+                        </div>
+                        <ActionButton
+                          size="sm"
+                          variant="ghost"
+                          onClickEvent={(e) => {
                             e.stopPropagation();
-                            const seconds = Number(e.currentTarget.value);
-                            if (seconds > 0) {
-                              handleSuspend([feed.id], seconds);
-                            }
-                            e.currentTarget.value = "0"; // reset
+                            refreshMutation.mutate([feed.id]);
                           }}
-                          onClick={(e) => e.stopPropagation()}
-                          class={css({
-                            fontSize: "xs",
-                            px: "2",
-                            py: "1.5",
-                            rounded: "md",
-                            border: "1px solid",
-                            borderColor: "gray.300",
-                            bg: "white",
-                            cursor: "pointer",
-                            _hover: { borderColor: "gray.400" },
-                          })}
+                          disabled={fetchingState.isFetching(feed.id)}
                         >
-                          <option value="0">Suspend...</option>
-                          <option value="86400">1 Day</option>
-                          <option value="259200">3 Days</option>
-                          <option value="604800">1 Week</option>
-                          <option value="2592000">1 Month</option>
-                        </select>
+                          {fetchingState.isFetching(feed.id)
+                            ? "Fetching..."
+                            : "Fetch"}
+                        </ActionButton>
+                        <ActionButton
+                          size="sm"
+                          variant="danger"
+                          onClickEvent={(e) => {
+                            e.stopPropagation();
+                            handleDelete(feed.id);
+                          }}
+                        >
+                          Delete
+                        </ActionButton>
                       </div>
-                      <ActionButton
-                        size="sm"
-                        variant="ghost"
-                        onClickEvent={(e) => {
-                          e.stopPropagation();
-                          refreshMutation.mutate([feed.id]);
-                        }}
-                        disabled={fetchingState.isFetching(feed.id)}
+                      <div
+                        class={css({
+                          display: { base: "block", md: "none" },
+                        })}
                       >
-                        {fetchingState.isFetching(feed.id)
-                          ? "Fetching..."
-                          : "Fetch"}
-                      </ActionButton>
-                      <ActionButton
-                        size="sm"
-                        variant="danger"
-                        onClickEvent={(e) => {
-                          e.stopPropagation();
-                          handleDelete(feed.id);
-                        }}
-                      >
-                        Delete
-                      </ActionButton>
+                        <KebabMenu
+                          ariaLabel={`Actions for ${feed.title}`}
+                          actions={[
+                            {
+                              label: fetchingState.isFetching(feed.id)
+                                ? "Fetching..."
+                                : "Fetch",
+                              onClick: () => refreshMutation.mutate([feed.id]),
+                            },
+                            {
+                              label: "Suspend 1 Day",
+                              onClick: () => handleSuspend([feed.id], 86400),
+                            },
+                            {
+                              label: "Suspend 3 Days",
+                              onClick: () => handleSuspend([feed.id], 259200),
+                            },
+                            {
+                              label: "Suspend 1 Week",
+                              onClick: () => handleSuspend([feed.id], 604800),
+                            },
+                            {
+                              label: "Suspend 1 Month",
+                              onClick: () => handleSuspend([feed.id], 2592000),
+                            },
+                            {
+                              label: "Delete",
+                              variant: "danger",
+                              onClick: () => handleDelete(feed.id),
+                            },
+                          ]}
+                        />
+                      </div>
                     </div>
-                    <div
-                      class={css({
-                        display: { base: "block", md: "none" },
-                      })}
-                    >
-                      <KebabMenu
-                        ariaLabel={`Actions for ${feed.title}`}
-                        actions={[
-                          {
-                            label: fetchingState.isFetching(feed.id)
-                              ? "Fetching..."
-                              : "Fetch",
-                            onClick: () => refreshMutation.mutate([feed.id]),
-                          },
-                          {
-                            label: "Suspend 1 Day",
-                            onClick: () => handleSuspend([feed.id], 86400),
-                          },
-                          {
-                            label: "Suspend 3 Days",
-                            onClick: () => handleSuspend([feed.id], 259200),
-                          },
-                          {
-                            label: "Suspend 1 Week",
-                            onClick: () => handleSuspend([feed.id], 604800),
-                          },
-                          {
-                            label: "Suspend 1 Month",
-                            onClick: () => handleSuspend([feed.id], 2592000),
-                          },
-                          {
-                            label: "Delete",
-                            variant: "danger",
-                            onClick: () => handleDelete(feed.id),
-                          },
-                        ]}
-                      />
-                    </div>
-                  </div>
+                  </Show>
                 </li>
               )}
             </For>
@@ -680,72 +690,74 @@ export function FeedList() {
         </div>
       </div>
 
-      <ManageTagsModal
-        isOpen={isManageModalOpen()}
-        onClose={() => {
-          setIsManageModalOpen(false);
-          setSelectedFeedIds([]);
-        }}
-        feedIds={selectedFeedIds()}
-      />
+      <Show when={!isReadOnly()}>
+        <ManageTagsModal
+          isOpen={isManageModalOpen()}
+          onClose={() => {
+            setIsManageModalOpen(false);
+            setSelectedFeedIds([]);
+          }}
+          feedIds={selectedFeedIds()}
+        />
 
-      <BulkActionBar
-        selectedCount={selectedFeedIds().length}
-        unit="feeds"
-        onClear={() => setSelectedFeedIds([])}
-        onExport={async () => {
-          try {
-            await exportFeeds(selectedFeedIds());
-          } catch (e) {
-            alert(`Failed to export feeds: ${e}`);
-          }
-        }}
-      >
-        <div class={flex({ gap: "2", alignItems: "center" })}>
-          <select
-            aria-label="Suspend selected feeds"
-            onChange={(e) => {
-              const seconds = Number(e.currentTarget.value);
-              if (seconds > 0) {
-                handleSuspend(selectedFeedIds(), seconds);
-                setSelectedFeedIds([]);
-              }
-              e.currentTarget.value = "0";
-            }}
-            class={css({
-              fontSize: "xs",
-              px: "2",
-              py: "1.5",
-              rounded: "md",
-              border: "1px solid",
-              borderColor: "gray.300",
-              bg: "white",
-              cursor: "pointer",
-            })}
+        <BulkActionBar
+          selectedCount={selectedFeedIds().length}
+          unit="feeds"
+          onClear={() => setSelectedFeedIds([])}
+          onExport={async () => {
+            try {
+              await exportFeeds(selectedFeedIds());
+            } catch (e) {
+              alert(`Failed to export feeds: ${e}`);
+            }
+          }}
+        >
+          <div class={flex({ gap: "2", alignItems: "center" })}>
+            <select
+              aria-label="Suspend selected feeds"
+              onChange={(e) => {
+                const seconds = Number(e.currentTarget.value);
+                if (seconds > 0) {
+                  handleSuspend(selectedFeedIds(), seconds);
+                  setSelectedFeedIds([]);
+                }
+                e.currentTarget.value = "0";
+              }}
+              class={css({
+                fontSize: "xs",
+                px: "2",
+                py: "1.5",
+                rounded: "md",
+                border: "1px solid",
+                borderColor: "gray.300",
+                bg: "white",
+                cursor: "pointer",
+              })}
+            >
+              <option value="0">Suspend Selected...</option>
+              <option value="86400">1 Day</option>
+              <option value="259200">3 Days</option>
+              <option value="604800">1 Week</option>
+              <option value="2592000">1 Month</option>
+            </select>
+          </div>
+          <ActionButton
+            size="sm"
+            variant="secondary"
+            onClick={() => refreshMutation.mutate(selectedFeedIds())}
+            disabled={refreshMutation.isPending}
           >
-            <option value="0">Suspend Selected...</option>
-            <option value="86400">1 Day</option>
-            <option value="259200">3 Days</option>
-            <option value="604800">1 Week</option>
-            <option value="2592000">1 Month</option>
-          </select>
-        </div>
-        <ActionButton
-          size="sm"
-          variant="secondary"
-          onClick={() => refreshMutation.mutate(selectedFeedIds())}
-          disabled={refreshMutation.isPending}
-        >
-          {refreshMutation.isPending ? "Fetching..." : "Fetch Selected"}
-        </ActionButton>
-        <ActionButton
-          size="sm"
-          variant="primary"
-          onClick={() => setIsManageModalOpen(true)}
-        >
-          Manage Tags
-        </ActionButton>
-      </BulkActionBar>
+            {refreshMutation.isPending ? "Fetching..." : "Fetch Selected"}
+          </ActionButton>
+          <ActionButton
+            size="sm"
+            variant="primary"
+            onClick={() => setIsManageModalOpen(true)}
+          >
+            Manage Tags
+          </ActionButton>
+        </BulkActionBar>
+      </Show>
     </div>
   );
 }

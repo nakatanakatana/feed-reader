@@ -14,7 +14,7 @@ interface Rule {
 
 interface BlockRulesTableProps {
   rules: Rule[];
-  onDelete: (id: string) => void;
+  onDelete?: (id: string) => void;
   isPending: boolean;
   sortField: BlockRulesSortField | null;
   sortDirection: "asc" | "desc";
@@ -175,14 +175,18 @@ export function BlockRulesTable(props: BlockRulesTableProps) {
                       </Show>
                     </td>
                     <td class={css({ textAlign: "right!" })}>
-                      <ActionButton
-                        variant="danger"
-                        size="sm"
-                        onClick={() => props.onDelete(rule.id)}
-                        disabled={props.isPending}
-                      >
-                        Delete
-                      </ActionButton>
+                      <Show when={props.onDelete}>
+                        {(onDelete) => (
+                          <ActionButton
+                            variant="danger"
+                            size="sm"
+                            onClick={() => onDelete()(rule.id)}
+                            disabled={props.isPending}
+                          >
+                            Delete
+                          </ActionButton>
+                        )}
+                      </Show>
                     </td>
                   </tr>
                 )}
@@ -312,14 +316,18 @@ export function BlockRulesTable(props: BlockRulesTableProps) {
                     </code>
                   </Show>
                 </div>
-                <ActionButton
-                  variant="danger"
-                  size="sm"
-                  onClick={() => props.onDelete(rule.id)}
-                  disabled={props.isPending}
-                >
-                  Delete
-                </ActionButton>
+                <Show when={props.onDelete}>
+                  {(onDelete) => (
+                    <ActionButton
+                      variant="danger"
+                      size="sm"
+                      onClick={() => onDelete()(rule.id)}
+                      disabled={props.isPending}
+                    >
+                      Delete
+                    </ActionButton>
+                  )}
+                </Show>
               </li>
             )}
           </For>
