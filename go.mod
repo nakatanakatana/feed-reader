@@ -10,9 +10,8 @@ require (
 	github.com/goccy/go-yaml v1.19.2
 	github.com/google/uuid v1.6.0
 	github.com/hashicorp/go-retryablehttp v0.7.8
-	github.com/mmcdole/gofeed v1.4.0
-	github.com/nakatanakatana/mytools v0.8.1-0.20260808055640-dde1aa9540da
 	github.com/mmcdole/gofeed v1.4.1
+	github.com/nakatanakatana/mytools v0.8.1-0.20260808055640-dde1aa9540da
 	github.com/ncruces/go-sqlite3 v0.35.3
 	github.com/oapi-codegen/runtime v1.6.0
 	github.com/sqldef/sqldef/v3 v3.11.19
