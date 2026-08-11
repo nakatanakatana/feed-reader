@@ -8,6 +8,7 @@ import (
 
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/mmcdole/gofeed"
+	"github.com/nakatanakatana/feed-reader/internal/httpapi"
 	"github.com/nakatanakatana/feed-reader/store"
 )
 
@@ -15,9 +16,7 @@ import (
 const UserAgent = "FeedFetcher/1.0"
 
 // FeedFetcher defines the interface for fetching RSS/Atom feeds.
-type FeedFetcher interface {
-	Fetch(ctx context.Context, feedID string, url string) (*gofeed.Feed, error)
-}
+type FeedFetcher = httpapi.FeedFetcher
 
 // GofeedFetcher is the implementation of FeedFetcher using the gofeed library.
 type GofeedFetcher struct {

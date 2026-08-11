@@ -25,6 +25,7 @@ import {
   formatDate,
   normalizeCategories,
 } from "../lib/item-utils";
+import { isReadOnly } from "../lib/readonly";
 import { ToastViewport, useToast, toast } from "../lib/toast";
 import { URLParser } from "../lib/url-parser";
 import { useSwipe } from "../lib/use-swipe";
@@ -376,56 +377,58 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     const info = extractedInfo();
     const actions = [];
 
-    if (data?.url) {
-      const hostname = extractHostname(data.url);
-      if (hostname) {
+    if (!isReadOnly()) {
+      if (data?.url) {
+        const hostname = extractHostname(data.url);
+        if (hostname) {
+          actions.push({
+            label: `Block Domain (${hostname})`,
+            onClick: () => {
+              blockMutation.mutate({
+                rules: [
+                  {
+                    ruleType: "domain",
+                    value: hostname,
+                    domain: hostname,
+                  },
+                ],
+              });
+            },
+          });
+        }
+      }
+
+      if (info) {
         actions.push({
-          label: `Block Domain (${hostname})`,
+          label: `Block User (@${info.domain})`,
           onClick: () => {
             blockMutation.mutate({
               rules: [
                 {
-                  ruleType: "domain",
-                  value: hostname,
-                  domain: hostname,
+                  ruleType: "user_domain",
+                  value: info.user,
+                  domain: info.domain,
+                },
+              ],
+            });
+          },
+        });
+
+        actions.push({
+          label: `Block User (${info.user})`,
+          onClick: () => {
+            blockMutation.mutate({
+              rules: [
+                {
+                  ruleType: "user",
+                  value: info.user,
+                  domain: info.domain,
                 },
               ],
             });
           },
         });
       }
-    }
-
-    if (info) {
-      actions.push({
-        label: `Block User (@${info.domain})`,
-        onClick: () => {
-          blockMutation.mutate({
-            rules: [
-              {
-                ruleType: "user_domain",
-                value: info.user,
-                domain: info.domain,
-              },
-            ],
-          });
-        },
-      });
-
-      actions.push({
-        label: `Block User (${info.user})`,
-        onClick: () => {
-          blockMutation.mutate({
-            rules: [
-              {
-                ruleType: "user",
-                value: info.user,
-                domain: info.domain,
-              },
-            ],
-          });
-        },
-      });
     }
 
     actions.push({
@@ -510,7 +513,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
         e.preventDefault();
         props.onNext();
       }
-    } else if (e.key === "m" || e.key === "M") {
+    } else if ((e.key === "m" || e.key === "M") && !isReadOnly()) {
       e.preventDefault();
       handleToggleRead();
     } else if (e.key === "n" || e.key === "N") {
@@ -618,7 +621,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
           </div>
         </div>
 
-        <Show when={!isEndOfList() && item()}>
+        <Show when={!isEndOfList() && item() && !isReadOnly()}>
           <div
             class={css({
               position: "absolute",

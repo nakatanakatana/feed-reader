@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/nakatanakatana/feed-reader/internal/primarydb"
 	schema "github.com/nakatanakatana/feed-reader/sql"
 	"github.com/nakatanakatana/feed-reader/store"
-	_ "modernc.org/sqlite"
 )
 
 type MockJob struct {
@@ -22,7 +22,7 @@ func (j *MockJob) Execute(ctx context.Context, q *store.Queries) error {
 }
 
 func setupTestStore(t *testing.T) *store.Store {
-	db, err := store.OpenDB(":memory:")
+	db, err := primarydb.OpenDB(":memory:")
 	if err != nil {
 		t.Fatalf("failed to open database: %v", err)
 	}

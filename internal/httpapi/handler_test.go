@@ -1,32 +1,30 @@
-package main
+package httpapi_test
 
 import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
-	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 
-	"github.com/mmcdole/gofeed"
 	"github.com/nakatanakatana/feed-reader/gen/openapi"
+	"github.com/nakatanakatana/feed-reader/internal/httpapi"
 	"github.com/nakatanakatana/feed-reader/store"
 	"gotest.tools/v3/assert"
 )
 
 func TestOpenAPIListTags(t *testing.T) {
 	ctx := context.Background()
-	_, db := setupTestDB(t)
-	s := store.NewStore(db)
+	s := setupTestDB(t)
 
 	tag, err := s.CreateTag(ctx, store.CreateTagParams{ID: "tag-1", Name: "Tech"})
 	assert.NilError(t, err)
 	assert.Assert(t, tag.ID != "")
 
 	handler := openapi.HandlerFromMuxWithBaseURL(
-		openapi.NewStrictHandler(NewOpenAPIHandler(s), nil),
+		openapi.NewStrictHandler(httpapi.NewStrictHandler(httpapi.Dependencies{Store: s}), nil),
 		http.NewServeMux(),
 		"/api/v2",
 	)
@@ -46,10 +44,9 @@ func TestOpenAPIListTags(t *testing.T) {
 }
 
 func TestOpenAPICreateAndDeleteTag(t *testing.T) {
-	_, db := setupTestDB(t)
-	s := store.NewStore(db)
+	s := setupTestDB(t)
 	handler := openapi.HandlerFromMuxWithBaseURL(
-		openapi.NewStrictHandler(NewOpenAPIHandler(s), nil),
+		openapi.NewStrictHandler(httpapi.NewStrictHandler(httpapi.Dependencies{Store: s}), nil),
 		http.NewServeMux(),
 		"/api/v2",
 	)
@@ -73,14 +70,13 @@ func TestOpenAPICreateAndDeleteTag(t *testing.T) {
 
 func TestOpenAPIListAndManageFeedTags(t *testing.T) {
 	ctx := context.Background()
-	_, db := setupTestDB(t)
-	s := store.NewStore(db)
+	s := setupTestDB(t)
 	_, err := s.CreateFeed(ctx, store.CreateFeedParams{ID: "feed-1", Url: "https://example.com/feed.xml"})
 	assert.NilError(t, err)
 	_, err = s.CreateTag(ctx, store.CreateTagParams{ID: "tag-1", Name: "Tech"})
 	assert.NilError(t, err)
 	handler := openapi.HandlerFromMuxWithBaseURL(
-		openapi.NewStrictHandler(NewOpenAPIHandler(s), nil),
+		openapi.NewStrictHandler(httpapi.NewStrictHandler(httpapi.Dependencies{Store: s}), nil),
 		http.NewServeMux(),
 		"/api/v2",
 	)
@@ -106,13 +102,12 @@ func TestOpenAPIListAndManageFeedTags(t *testing.T) {
 
 func TestOpenAPIExportOpmlReturnsBytes(t *testing.T) {
 	ctx := context.Background()
-	_, db := setupTestDB(t)
-	s := store.NewStore(db)
+	s := setupTestDB(t)
 	title := "Example Feed"
 	_, err := s.CreateFeed(ctx, store.CreateFeedParams{ID: "feed-1", Url: "https://example.com/feed.xml", Title: &title})
 	assert.NilError(t, err)
 	handler := openapi.HandlerFromMuxWithBaseURL(
-		openapi.NewStrictHandler(NewOpenAPIHandler(s), nil),
+		openapi.NewStrictHandler(httpapi.NewStrictHandler(httpapi.Dependencies{Store: s}), nil),
 		http.NewServeMux(),
 		"/api/v2",
 	)
@@ -131,14 +126,13 @@ func TestOpenAPIExportOpmlReturnsBytes(t *testing.T) {
 
 func TestOpenAPIListItemRead(t *testing.T) {
 	ctx := context.Background()
-	_, db := setupTestDB(t)
-	s := store.NewStore(db)
+	s := setupTestDB(t)
 	_, err := s.CreateItem(ctx, store.CreateItemParams{ID: "item-1", Url: "https://example.com/item"})
 	assert.NilError(t, err)
 	_, err = s.SetItemRead(ctx, store.SetItemReadParams{ItemID: "item-1", IsRead: 1})
 	assert.NilError(t, err)
 	handler := openapi.HandlerFromMuxWithBaseURL(
-		openapi.NewStrictHandler(NewOpenAPIHandler(s), nil),
+		openapi.NewStrictHandler(httpapi.NewStrictHandler(httpapi.Dependencies{Store: s}), nil),
 		http.NewServeMux(),
 		"/api/v2",
 	)
@@ -157,11 +151,10 @@ func TestOpenAPIListItemRead(t *testing.T) {
 }
 
 func TestOpenAPICreateFeedRejectsEmptyURL(t *testing.T) {
-	_, db := setupTestDB(t)
-	s := store.NewStore(db)
+	s := setupTestDB(t)
 
 	handler := openapi.HandlerFromMuxWithBaseURL(
-		openapi.NewStrictHandler(NewOpenAPIHandler(s), nil),
+		openapi.NewStrictHandler(httpapi.NewStrictHandler(httpapi.Dependencies{Store: s}), nil),
 		http.NewServeMux(),
 		"/api/v2",
 	)
@@ -182,8 +175,7 @@ func TestOpenAPICreateFeedRejectsEmptyURL(t *testing.T) {
 
 func TestOpenAPIUpdateItemStatusReturnsOK(t *testing.T) {
 	ctx := context.Background()
-	_, db := setupTestDB(t)
-	s := store.NewStore(db)
+	s := setupTestDB(t)
 
 	_, err := s.CreateFeed(ctx, store.CreateFeedParams{ID: "feed-1", Url: "https://example.com/feed.xml"})
 	assert.NilError(t, err)
@@ -195,7 +187,7 @@ func TestOpenAPIUpdateItemStatusReturnsOK(t *testing.T) {
 	assert.NilError(t, err)
 
 	handler := openapi.HandlerFromMuxWithBaseURL(
-		openapi.NewStrictHandler(NewOpenAPIHandler(s), nil),
+		openapi.NewStrictHandler(httpapi.NewStrictHandler(httpapi.Dependencies{Store: s}), nil),
 		http.NewServeMux(),
 		"/api/v2",
 	)
@@ -214,8 +206,7 @@ func TestOpenAPIUpdateItemStatusReturnsOK(t *testing.T) {
 
 func TestOpenAPIGetItemReturnsLinkedFeeds(t *testing.T) {
 	ctx := context.Background()
-	_, db := setupTestDB(t)
-	s := store.NewStore(db)
+	s := setupTestDB(t)
 
 	firstTitle := "Primary Feed"
 	secondTitle := "Backup Feed"
@@ -232,7 +223,7 @@ func TestOpenAPIGetItemReturnsLinkedFeeds(t *testing.T) {
 	assert.NilError(t, err)
 
 	handler := openapi.HandlerFromMuxWithBaseURL(
-		openapi.NewStrictHandler(NewOpenAPIHandler(s), nil),
+		openapi.NewStrictHandler(httpapi.NewStrictHandler(httpapi.Dependencies{Store: s}), nil),
 		http.NewServeMux(),
 		"/api/v2",
 	)
@@ -259,17 +250,13 @@ func TestOpenAPIGetItemReturnsLinkedFeeds(t *testing.T) {
 
 func TestOpenAPIImportOpmlReturnsSummary(t *testing.T) {
 	ctx := context.Background()
-	_, db := setupTestDB(t)
-	s := store.NewStore(db)
-	fetcher := &mockFetcher{feed: &gofeed.Feed{Title: "Imported Feed"}}
-	opmlImporter := NewOPMLImporter(s, fetcher, slog.Default(), nil)
-
+	s := setupTestDB(t)
+	opmlImporter := &stubOPMLImporter{store: s}
 	handler := openapi.HandlerFromMuxWithBaseURL(
-		openapi.NewStrictHandler(NewOpenAPIHandler(
-			s,
-			WithOpenAPIFetcher(fetcher),
-			WithOpenAPIOPMLImporter(opmlImporter),
-		), nil),
+		openapi.NewStrictHandler(httpapi.NewStrictHandler(httpapi.Dependencies{
+			Store:        s,
+			OPMLImporter: opmlImporter,
+		}), nil),
 		http.NewServeMux(),
 		"/api/v2",
 	)
@@ -298,8 +285,7 @@ func TestOpenAPIImportOpmlReturnsSummary(t *testing.T) {
 
 func TestOpenAPIURLParsingRules(t *testing.T) {
 	ctx := context.Background()
-	_, db := setupTestDB(t)
-	s := store.NewStore(db)
+	s := setupTestDB(t)
 
 	_, err := s.CreateURLParsingRule(ctx, store.CreateURLParsingRuleParams{
 		ID:       "url-rule-1",
@@ -310,7 +296,7 @@ func TestOpenAPIURLParsingRules(t *testing.T) {
 	assert.NilError(t, err)
 
 	handler := openapi.HandlerFromMuxWithBaseURL(
-		openapi.NewStrictHandler(NewOpenAPIHandler(s), nil),
+		openapi.NewStrictHandler(httpapi.NewStrictHandler(httpapi.Dependencies{Store: s}), nil),
 		http.NewServeMux(),
 		"/api/v2",
 	)
@@ -332,11 +318,10 @@ func TestOpenAPIURLParsingRules(t *testing.T) {
 }
 
 func TestOpenAPIAddAndDeleteItemBlockRules(t *testing.T) {
-	_, db := setupTestDB(t)
-	s := store.NewStore(db)
+	s := setupTestDB(t)
 
 	handler := openapi.HandlerFromMuxWithBaseURL(
-		openapi.NewStrictHandler(NewOpenAPIHandler(s), nil),
+		openapi.NewStrictHandler(httpapi.NewStrictHandler(httpapi.Dependencies{Store: s}), nil),
 		http.NewServeMux(),
 		"/api/v2",
 	)
@@ -375,8 +360,7 @@ func TestOpenAPIAddAndDeleteItemBlockRules(t *testing.T) {
 
 func TestOpenAPIGetItem_NullPublishedAt(t *testing.T) {
 	ctx := context.Background()
-	_, db := setupTestDB(t)
-	s := store.NewStore(db)
+	s := setupTestDB(t)
 
 	_, err := s.CreateFeed(ctx, store.CreateFeedParams{
 		ID:  "feed-1",
@@ -407,7 +391,7 @@ func TestOpenAPIGetItem_NullPublishedAt(t *testing.T) {
 	assert.NilError(t, err)
 
 	handler := openapi.HandlerFromMuxWithBaseURL(
-		openapi.NewStrictHandler(NewOpenAPIHandler(s), nil),
+		openapi.NewStrictHandler(httpapi.NewStrictHandler(httpapi.Dependencies{Store: s}), nil),
 		http.NewServeMux(),
 		"/api/v2",
 	)
@@ -421,4 +405,19 @@ func TestOpenAPIGetItem_NullPublishedAt(t *testing.T) {
 
 	bodyStr := rec.Body.String()
 	assert.Assert(t, !strings.Contains(bodyStr, "0001-01-01"), "response body should not contain zero date 0001-01-01 but got: %s", bodyStr)
+}
+
+type stubOPMLImporter struct {
+	store *store.Store
+}
+
+func (s *stubOPMLImporter) ImportSync(ctx context.Context, opmlContent []byte) (*httpapi.ImportResults, error) {
+	_, err := s.store.CreateFeed(ctx, store.CreateFeedParams{
+		ID:  "imported-feed-1",
+		Url: "https://example.com/feed.xml",
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &httpapi.ImportResults{Total: 1, Success: 1, Skipped: 0, FailedFeeds: nil}, nil
 }

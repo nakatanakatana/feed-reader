@@ -1,4 +1,4 @@
-package store
+package primarydb
 
 import (
 	"database/sql"
@@ -20,9 +20,6 @@ var (
 	otelRegisterErr error
 )
 
-// OpenDB opens a connection to the SQLite database with recommended pragmas enabled.
-// It ensures foreign keys are enabled. These settings are appended to the DSN,
-// so they will override any conflicting pragmas already present in the input DSN.
 func OpenDB(dsn string) (*sql.DB, error) {
 	otelOnce.Do(func() {
 		otelDriverName, otelRegisterErr = otelsql.Register("sqlite", otelsql.WithAttributes(semconv.DBSystemSqlite))
@@ -31,7 +28,6 @@ func OpenDB(dsn string) (*sql.DB, error) {
 		return nil, fmt.Errorf("failed to register otelsql driver: %w", otelRegisterErr)
 	}
 
-	// Check if DSN is ":memory:"
 	inMemory := strings.HasPrefix(dsn, ":memory:") || strings.Contains(dsn, "mode=memory")
 
 	var separator string
@@ -41,10 +37,6 @@ func OpenDB(dsn string) (*sql.DB, error) {
 		separator = "&"
 	}
 
-	// Add pragmas
-	// foreign_keys=on
-	// journal_mode=WAL (good for concurrency, but avoid for in-memory DBs)
-	// busy_timeout=5000 (good for concurrency)
 	pragmas := []string{
 		"_pragma=foreign_keys(1)",
 		"_pragma=busy_timeout(5000)",
@@ -53,8 +45,6 @@ func OpenDB(dsn string) (*sql.DB, error) {
 		pragmas = append(pragmas, "_pragma=journal_mode(WAL)")
 	}
 
-	// Append pragmas. We always append them to ensure OpenDB's recommended
-	// settings take precedence over any initial DSN parameters.
 	finalDSN := dsn + separator + strings.Join(pragmas, "&")
 
 	db, err := sql.Open(otelDriverName, finalDSN)
@@ -62,8 +52,6 @@ func OpenDB(dsn string) (*sql.DB, error) {
 		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
 
-	// Verify foreign keys are actually on.
-	// We rely on DSN settings for connection-pool consistency.
 	var enabled int
 	err = db.QueryRow("PRAGMA foreign_keys").Scan(&enabled)
 	if err != nil {
@@ -75,8 +63,6 @@ func OpenDB(dsn string) (*sql.DB, error) {
 		return nil, fmt.Errorf("foreign_keys pragma is not enabled via DSN")
 	}
 
-	// Perform foreign key integrity check.
-	// PRAGMA foreign_key_check returns rows if there are FK violations.
 	rows, err := db.Query("PRAGMA foreign_key_check")
 	if err != nil {
 		_ = db.Close()

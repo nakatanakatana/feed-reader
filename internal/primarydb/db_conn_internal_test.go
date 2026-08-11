@@ -1,4 +1,4 @@
-package store
+package primarydb
 
 import (
 	"errors"

@@ -25,6 +25,7 @@ import {
 } from "../lib/db";
 import { itemStore } from "../lib/item-store";
 import { type DateFilterValue, formatUnreadCount } from "../lib/item-utils";
+import { isReadOnly } from "../lib/readonly";
 import { BulkActionBar } from "./BulkActionBar";
 import { DateFilterSelector } from "./DateFilterSelector";
 import { ItemRow } from "./ItemRow";
@@ -341,26 +342,28 @@ export function ItemList(props: ItemListProps) {
                 Show Read
               </label>
             </div>
-            <div class={flex({ gap: "2", alignItems: "center" })}>
-              <input
-                id="select-all-checkbox"
-                type="checkbox"
-                checked={isAllSelected()}
-                onChange={(e) => handleToggleAll(e.currentTarget.checked)}
-                class={css({ cursor: "pointer" })}
-              />
-              <label
-                for="select-all-checkbox"
-                class={css({
-                  fontSize: "sm",
-                  color: "gray.600",
-                  cursor: "pointer",
-                  whiteSpace: "nowrap",
-                })}
-              >
-                Select All
-              </label>
-            </div>
+            <Show when={!isReadOnly()}>
+              <div class={flex({ gap: "2", alignItems: "center" })}>
+                <input
+                  id="select-all-checkbox"
+                  type="checkbox"
+                  checked={isAllSelected()}
+                  onChange={(e) => handleToggleAll(e.currentTarget.checked)}
+                  class={css({ cursor: "pointer" })}
+                />
+                <label
+                  for="select-all-checkbox"
+                  class={css({
+                    fontSize: "sm",
+                    color: "gray.600",
+                    cursor: "pointer",
+                    whiteSpace: "nowrap",
+                  })}
+                >
+                  Select All
+                </label>
+              </div>
+            </Show>
           </div>
 
           {/* Mobile Actions */}
@@ -478,30 +481,32 @@ export function ItemList(props: ItemListProps) {
                     />
                     <span>Show Read</span>
                   </label>
-                  <label
-                    class={css({
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "2",
-                      px: "3",
-                      py: "2",
-                      fontSize: "sm",
-                      color: "gray.700",
-                      borderRadius: "sm",
-                      cursor: "pointer",
-                      _hover: { bg: "gray.50" },
-                    })}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={isAllSelected()}
-                      onChange={(e) => {
-                        handleToggleAll(e.currentTarget.checked);
-                      }}
-                      class={css({ cursor: "pointer" })}
-                    />
-                    <span>Select All</span>
-                  </label>
+                  <Show when={!isReadOnly()}>
+                    <label
+                      class={css({
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "2",
+                        px: "3",
+                        py: "2",
+                        fontSize: "sm",
+                        color: "gray.700",
+                        borderRadius: "sm",
+                        cursor: "pointer",
+                        _hover: { bg: "gray.50" },
+                      })}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isAllSelected()}
+                        onChange={(e) => {
+                          handleToggleAll(e.currentTarget.checked);
+                        }}
+                        class={css({ cursor: "pointer" })}
+                      />
+                      <span>Select All</span>
+                    </label>
+                  </Show>
                 </div>
               </Show>
             </div>
@@ -509,19 +514,21 @@ export function ItemList(props: ItemListProps) {
         </div>
       </div>
 
-      <BulkActionBar
-        selectedCount={selectedItemIds().size}
-        onClear={() => setSelectedItemIds(new Set())}
-      >
-        <ActionButton
-          size="sm"
-          variant="primary"
-          onClick={handleBulkMarkAsRead}
-          disabled={isBulkMarking()}
+      <Show when={!isReadOnly()}>
+        <BulkActionBar
+          selectedCount={selectedItemIds().size}
+          onClear={() => setSelectedItemIds(new Set())}
         >
-          {isBulkMarking() ? "Processing..." : "Mark as Read"}
-        </ActionButton>
-      </BulkActionBar>
+          <ActionButton
+            size="sm"
+            variant="primary"
+            onClick={handleBulkMarkAsRead}
+            disabled={isBulkMarking()}
+          >
+            {isBulkMarking() ? "Processing..." : "Mark as Read"}
+          </ActionButton>
+        </BulkActionBar>
+      </Show>
     </div>
   );
 
@@ -539,9 +546,13 @@ export function ItemList(props: ItemListProps) {
             <ItemRow
               item={item}
               onClick={() => handleItemClick(item.id)}
-              selected={selectedItemIds().has(item.id)}
-              onToggleSelection={(selected) =>
-                handleToggleItem(item.id, selected)
+              selected={
+                isReadOnly() ? undefined : selectedItemIds().has(item.id)
+              }
+              onToggleSelection={
+                isReadOnly()
+                  ? undefined
+                  : (selected) => handleToggleItem(item.id, selected)
               }
             />
           )}

@@ -10,6 +10,7 @@ import {
   urlParsingRuleInsert,
   urlParsingRulesQueryOptions,
 } from "../lib/block-db";
+import { isReadOnly } from "../lib/readonly";
 
 export const Route = createFileRoute("/url-rules")({
   component: URLRulesComponent,
@@ -77,97 +78,101 @@ function URLRulesComponent() {
   return (
     <PageLayout>
       <div class={stack({ gap: "4", flex: "1", minHeight: 0 })}>
-        <div class={flex({ flexDirection: "column", gap: "2", width: "full" })}>
-          <form
-            onSubmit={handleSubmit}
-            class={flex({
-              gap: "4",
-              alignItems: "flex-end",
-              flexWrap: "wrap",
-              width: "full",
-              bg: "white",
-              p: "4",
-              rounded: "md",
-              shadow: "sm",
-              border: "1px solid",
-              borderColor: "gray.200",
-            })}
+        <Show when={!isReadOnly()}>
+          <div
+            class={flex({ flexDirection: "column", gap: "2", width: "full" })}
           >
-            <div class={stack({ gap: "1", flex: "1", minWidth: "200px" })}>
-              <label
-                for="domain"
-                class={css({ fontSize: "sm", fontWeight: "medium" })}
-              >
-                Domain
-              </label>
-              <input
-                id="domain"
-                type="text"
-                placeholder="example.com"
-                value={domain()}
-                onInput={(e) => setDomain(e.currentTarget.value)}
-                class={css({
-                  border: "1px solid",
-                  borderColor: "gray.300",
-                  padding: "2",
-                  borderRadius: "md",
-                })}
-              />
-            </div>
-            <div class={stack({ gap: "1" })}>
-              <label
-                for="rule-type"
-                class={css({ fontSize: "sm", fontWeight: "medium" })}
-              >
-                Type
-              </label>
-              <select
-                id="rule-type"
-                value={ruleType()}
-                onInput={(e) => setRuleType(e.currentTarget.value)}
-                class={css({
-                  border: "1px solid",
-                  borderColor: "gray.300",
-                  padding: "2",
-                  borderRadius: "md",
-                  bg: "white",
-                })}
-              >
-                <option value="subdomain">Subdomain</option>
-                <option value="path">Path</option>
-              </select>
-            </div>
-            <div class={stack({ gap: "1", flex: "1", minWidth: "200px" })}>
-              <label
-                for="pattern"
-                class={css({ fontSize: "sm", fontWeight: "medium" })}
-              >
-                Pattern
-              </label>
-              <input
-                id="pattern"
-                type="text"
-                placeholder="Pattern"
-                value={pattern()}
-                onInput={(e) => setPattern(e.currentTarget.value)}
-                class={css({
-                  border: "1px solid",
-                  borderColor: "gray.300",
-                  padding: "2",
-                  borderRadius: "md",
-                })}
-              />
-            </div>
-            <ActionButton
-              type="submit"
-              variant="primary"
-              disabled={addMutation.isPending}
-              icon={<PlusIcon />}
+            <form
+              onSubmit={handleSubmit}
+              class={flex({
+                gap: "4",
+                alignItems: "flex-end",
+                flexWrap: "wrap",
+                width: "full",
+                bg: "white",
+                p: "4",
+                rounded: "md",
+                shadow: "sm",
+                border: "1px solid",
+                borderColor: "gray.200",
+              })}
             >
-              {addMutation.isPending ? "Adding..." : "Add"}
-            </ActionButton>
-          </form>
-        </div>
+              <div class={stack({ gap: "1", flex: "1", minWidth: "200px" })}>
+                <label
+                  for="domain"
+                  class={css({ fontSize: "sm", fontWeight: "medium" })}
+                >
+                  Domain
+                </label>
+                <input
+                  id="domain"
+                  type="text"
+                  placeholder="example.com"
+                  value={domain()}
+                  onInput={(e) => setDomain(e.currentTarget.value)}
+                  class={css({
+                    border: "1px solid",
+                    borderColor: "gray.300",
+                    padding: "2",
+                    borderRadius: "md",
+                  })}
+                />
+              </div>
+              <div class={stack({ gap: "1" })}>
+                <label
+                  for="rule-type"
+                  class={css({ fontSize: "sm", fontWeight: "medium" })}
+                >
+                  Type
+                </label>
+                <select
+                  id="rule-type"
+                  value={ruleType()}
+                  onInput={(e) => setRuleType(e.currentTarget.value)}
+                  class={css({
+                    border: "1px solid",
+                    borderColor: "gray.300",
+                    padding: "2",
+                    borderRadius: "md",
+                    bg: "white",
+                  })}
+                >
+                  <option value="subdomain">Subdomain</option>
+                  <option value="path">Path</option>
+                </select>
+              </div>
+              <div class={stack({ gap: "1", flex: "1", minWidth: "200px" })}>
+                <label
+                  for="pattern"
+                  class={css({ fontSize: "sm", fontWeight: "medium" })}
+                >
+                  Pattern
+                </label>
+                <input
+                  id="pattern"
+                  type="text"
+                  placeholder="Pattern"
+                  value={pattern()}
+                  onInput={(e) => setPattern(e.currentTarget.value)}
+                  class={css({
+                    border: "1px solid",
+                    borderColor: "gray.300",
+                    padding: "2",
+                    borderRadius: "md",
+                  })}
+                />
+              </div>
+              <ActionButton
+                type="submit"
+                variant="primary"
+                disabled={addMutation.isPending}
+                icon={<PlusIcon />}
+              >
+                {addMutation.isPending ? "Adding..." : "Add"}
+              </ActionButton>
+            </form>
+          </div>
+        </Show>
 
         <div
           class={css({
@@ -227,14 +232,16 @@ function URLRulesComponent() {
                       {rule.pattern}
                     </code>
                   </div>
-                  <ActionButton
-                    variant="danger"
-                    size="sm"
-                    onClick={() => deleteMutation.mutate(rule.id)}
-                    disabled={deleteMutation.isPending}
-                  >
-                    Delete
-                  </ActionButton>
+                  <Show when={!isReadOnly()}>
+                    <ActionButton
+                      variant="danger"
+                      size="sm"
+                      onClick={() => deleteMutation.mutate(rule.id)}
+                      disabled={deleteMutation.isPending}
+                    >
+                      Delete
+                    </ActionButton>
+                  </Show>
                 </li>
               )}
             </For>

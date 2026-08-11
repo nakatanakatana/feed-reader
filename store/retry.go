@@ -2,10 +2,13 @@ package store
 
 import (
 	"context"
-	"errors"
+	"reflect"
 	"time"
+)
 
-	sqlite3 "modernc.org/sqlite/lib"
+const (
+	sqliteBusy   = 5
+	sqliteLocked = 6
 )
 
 const (
@@ -16,14 +19,64 @@ const (
 
 // IsBusyError returns true if the error is a SQLite busy or locked error.
 func IsBusyError(err error) bool {
-	type coder interface {
-		Code() int
+	visited := make(map[error]bool)
+	return isBusyWalk(err, visited)
+}
+
+func isBusyWalk(err error, visited map[error]bool) bool {
+	if err == nil || visited[err] {
+		return false
 	}
-	var sqliteErr coder
-	if errors.As(err, &sqliteErr) {
-		return sqliteErr.Code() == sqlite3.SQLITE_BUSY || sqliteErr.Code() == sqlite3.SQLITE_LOCKED
+	visited[err] = true
+
+	if hasBusyCode(err) {
+		return true
 	}
+
+	if u, ok := err.(interface{ Unwrap() error }); ok {
+		if isBusyWalk(u.Unwrap(), visited) {
+			return true
+		}
+	}
+
+	if u, ok := err.(interface{ Unwrap() []error }); ok {
+		for _, inner := range u.Unwrap() {
+			if isBusyWalk(inner, visited) {
+				return true
+			}
+		}
+	}
+
 	return false
+}
+
+func hasBusyCode(err error) (found bool) {
+	defer func() {
+		if recover() != nil {
+			found = false
+		}
+	}()
+
+	v := reflect.ValueOf(err)
+	if !v.IsValid() {
+		return false
+	}
+	m := v.MethodByName("Code")
+	if !m.IsValid() || m.Type().NumIn() != 0 || m.Type().NumOut() != 1 {
+		return false
+	}
+
+	out := m.Type().Out(0)
+	switch out.Kind() {
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		code := m.Call(nil)[0].Int()
+		return code == sqliteBusy || code == sqliteLocked
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		code := m.Call(nil)[0].Uint()
+		return code == sqliteBusy || code == sqliteLocked
+	default:
+		return false
+	}
 }
 
 // WithRetry executes the given operation and retries if it encounters a SQLite busy error.

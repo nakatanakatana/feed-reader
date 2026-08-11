@@ -1,4 +1,4 @@
-package main
+package httpapi
 
 import (
 	"context"
@@ -16,38 +16,10 @@ import (
 
 type OpenAPIHandler struct {
 	store         *store.Store
-	uuidGenerator UUIDGenerator
+	uuidGenerator store.UUIDGenerator
 	fetcher       FeedFetcher
 	itemFetcher   ItemFetcher
-	opmlImporter  *OPMLImporter
-}
-
-type OpenAPIHandlerOption func(*OpenAPIHandler)
-
-func WithOpenAPIFetcher(fetcher FeedFetcher) OpenAPIHandlerOption {
-	return func(h *OpenAPIHandler) {
-		h.fetcher = fetcher
-	}
-}
-
-func WithOpenAPIItemFetcher(itemFetcher ItemFetcher) OpenAPIHandlerOption {
-	return func(h *OpenAPIHandler) {
-		h.itemFetcher = itemFetcher
-	}
-}
-
-func WithOpenAPIOPMLImporter(opmlImporter *OPMLImporter) OpenAPIHandlerOption {
-	return func(h *OpenAPIHandler) {
-		h.opmlImporter = opmlImporter
-	}
-}
-
-func NewOpenAPIHandler(s *store.Store, options ...OpenAPIHandlerOption) *OpenAPIHandler {
-	handler := &OpenAPIHandler{store: s, uuidGenerator: realUUIDGenerator{}}
-	for _, option := range options {
-		option(handler)
-	}
-	return handler
+	opmlImporter  OPMLImporter
 }
 
 func (h *OpenAPIHandler) FeedsList(ctx context.Context, request openapi.FeedsListRequestObject) (openapi.FeedsListResponseObject, error) {

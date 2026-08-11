@@ -7,16 +7,16 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/nakatanakatana/feed-reader/internal/primarydb"
 	schema "github.com/nakatanakatana/feed-reader/sql"
 	"github.com/nakatanakatana/feed-reader/store"
 	"gotest.tools/v3/assert"
 	"gotest.tools/v3/assert/cmp"
-	_ "modernc.org/sqlite"
 )
 
 // setupStore is a helper for other tests in the package
 func setupStore(t *testing.T) *store.Store {
-	db, err := sql.Open("sqlite", ":memory:")
+	db, err := primarydb.OpenDB(":memory:")
 	assert.NilError(t, err)
 
 	_, err = db.ExecContext(context.Background(), schema.Schema)

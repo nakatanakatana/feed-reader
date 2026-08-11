@@ -4,6 +4,7 @@ import { flex, stack } from "../../styled-system/patterns";
 import type { Item } from "../lib/db";
 import { updateItemReadStatus } from "../lib/db";
 import { extractHostname, formatDate } from "../lib/item-utils";
+import { isReadOnly } from "../lib/readonly";
 import { GlobeIcon, PublishedIcon, ReceivedIcon } from "./ui/Icons";
 
 interface ItemRowProps {
@@ -48,7 +49,7 @@ export function ItemRow(props: ItemRowProps) {
       if (props.item.url && isValidUrl(props.item.url)) {
         window.open(props.item.url, "_blank", "noopener,noreferrer");
 
-        if (!props.item.isRead) {
+        if (!props.item.isRead && !isReadOnly()) {
           setReadStatus(true);
         }
       }
@@ -84,14 +85,16 @@ export function ItemRow(props: ItemRowProps) {
       data-testid={`item-row-${props.item.id}`}
     >
       <div class={flex({ alignItems: "center", flex: 1 })}>
-        <div class={css({ paddingInline: "3" })}>
-          <input
-            type="checkbox"
-            checked={props.selected}
-            onClick={handleCheckboxClick}
-            class={css({ cursor: "pointer" })}
-          />
-        </div>
+        <Show when={props.onToggleSelection}>
+          <div class={css({ paddingInline: "3" })}>
+            <input
+              type="checkbox"
+              checked={props.selected}
+              onClick={handleCheckboxClick}
+              class={css({ cursor: "pointer" })}
+            />
+          </div>
+        </Show>
         <button
           type="button"
           onClick={handleClick}

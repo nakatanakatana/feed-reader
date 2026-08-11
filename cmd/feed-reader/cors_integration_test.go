@@ -5,7 +5,9 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"testing/fstest"
 
+	"github.com/nakatanakatana/feed-reader/internal/httpapi"
 	"github.com/nakatanakatana/feed-reader/store"
 	"gotest.tools/v3/assert"
 )
@@ -18,7 +20,14 @@ func TestCORS_Integration(t *testing.T) {
 	importer := NewOPMLImporter(s, fetcher, slog.Default(), nil)
 
 	allowedOrigins := []string{"http://localhost:3000"}
-	handler := NewMux(s, fetcher, itemFetcher, importer, allowedOrigins)
+	handler := httpapi.NewMux(httpapi.Dependencies{
+		Store:          s,
+		Fetcher:        fetcher,
+		ItemFetcher:    itemFetcher,
+		OPMLImporter:   importer,
+		Assets:         fstest.MapFS{"index.html": &fstest.MapFile{Data: []byte("ok")}},
+		AllowedOrigins: allowedOrigins,
+	})
 
 	ts := httptest.NewServer(handler)
 	defer ts.Close()

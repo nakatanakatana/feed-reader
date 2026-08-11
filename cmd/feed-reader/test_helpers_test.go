@@ -7,6 +7,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/mmcdole/gofeed"
+	"github.com/nakatanakatana/feed-reader/internal/primarydb"
 	"github.com/nakatanakatana/feed-reader/sql"
 	"github.com/nakatanakatana/feed-reader/store"
 	"gotest.tools/v3/assert"
@@ -14,7 +15,7 @@ import (
 
 func setupTestDB(t *testing.T) (*store.Queries, *sql.DB) {
 	t.Helper()
-	db, err := store.OpenDB(":memory:")
+	db, err := primarydb.OpenDB(":memory:")
 	assert.NilError(t, err, "failed to open db")
 
 	// For in-memory SQLite, limit to one connection so all goroutines share the same database.

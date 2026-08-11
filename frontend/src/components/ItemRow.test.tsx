@@ -7,6 +7,7 @@ import { page, userEvent } from "vitest/browser";
 import { getItemsQueryOptions } from "../lib/db";
 import { dateToTimestamp } from "../lib/item-utils";
 import { queryClient } from "../lib/query";
+import { isReadOnly } from "../lib/readonly";
 import { worker } from "../mocks/browser";
 import {
   create,
@@ -17,6 +18,12 @@ import {
 } from "../test-utils/json-identity";
 import { ItemRow } from "./ItemRow";
 
+vi.mock("../lib/readonly", () => ({
+  isReadOnly: vi.fn(() => false),
+}));
+
+const isReadOnlyMock = vi.mocked(isReadOnly);
+
 describe("ItemRow", () => {
   let dispose: () => void;
 
@@ -24,6 +31,7 @@ describe("ItemRow", () => {
     if (dispose) dispose();
     document.body.innerHTML = "";
     vi.clearAllMocks();
+    isReadOnlyMock.mockReturnValue(false);
   });
 
   const mockItem = {
@@ -208,5 +216,57 @@ describe("ItemRow", () => {
     await expect.poll(() => updateCalled).toBe(true);
   });
 
-  // This test is now covered by the updated one above
+  it("opens URL on middle-click without marking as read when readonly", async () => {
+    isReadOnlyMock.mockReturnValue(true);
+    const windowOpenSpy = vi
+      .spyOn(window, "open")
+      .mockImplementation(() => null);
+    const onClick = vi.fn();
+    const mockItemWithUrl = {
+      ...mockItem,
+      url: "https://example.com/test-article",
+    };
+
+    const updateStatusSpy = vi.fn();
+    worker.use(
+      http.post("*/api/v2/items/status", async ({ request }) => {
+        updateStatusSpy(await request.json());
+        return HttpResponse.json(
+          toJson(
+            UpdateItemStatusResponseSchema,
+            create(UpdateItemStatusResponseSchema, {}),
+          ),
+        );
+      }),
+    );
+
+    dispose = render(
+      () => (
+        <QueryClientProvider client={queryClient}>
+          <ItemRow item={mockItemWithUrl} onClick={onClick} />
+        </QueryClientProvider>
+      ),
+      document.body,
+    );
+
+    const titleButton = page.getByRole("button", {
+      name: "Test Article Title",
+    });
+    await expect.element(titleButton).toBeInTheDocument();
+
+    const mouseDownEvent = new MouseEvent("mousedown", {
+      button: 1,
+      bubbles: true,
+      cancelable: true,
+    });
+    titleButton.element().dispatchEvent(mouseDownEvent);
+
+    expect(windowOpenSpy).toHaveBeenCalledWith(
+      "https://example.com/test-article",
+      "_blank",
+      "noopener,noreferrer",
+    );
+    expect(onClick).not.toHaveBeenCalled();
+    await expect.poll(() => updateStatusSpy.mock.calls.length).toBe(0);
+  });
 });

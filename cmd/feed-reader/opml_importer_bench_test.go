@@ -8,15 +8,15 @@ import (
 	"testing"
 
 	"github.com/mmcdole/gofeed"
+	"github.com/nakatanakatana/feed-reader/internal/primarydb"
 	"github.com/nakatanakatana/feed-reader/sql"
 	"github.com/nakatanakatana/feed-reader/store"
 	"gotest.tools/v3/assert"
-	_ "modernc.org/sqlite"
 )
 
 func setupBenchmarkDB(b *testing.B) *sql.DB {
 	b.Helper()
-	db, err := store.OpenDB(":memory:")
+	db, err := primarydb.OpenDB(":memory:")
 	assert.NilError(b, err, "failed to open db")
 
 	db.SetMaxOpenConns(1)

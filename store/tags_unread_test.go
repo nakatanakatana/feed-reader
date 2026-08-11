@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/nakatanakatana/feed-reader/internal/primarydb"
 	"github.com/nakatanakatana/feed-reader/sql"
 	"github.com/nakatanakatana/feed-reader/store"
 	"gotest.tools/v3/assert"
 	"gotest.tools/v3/assert/cmp"
-	_ "modernc.org/sqlite"
 	"pgregory.net/rapid"
 )
 
@@ -195,7 +195,7 @@ func TestTags_UnreadCounts_PBT(t *testing.T) {
 }
 
 func setupQueriesForRapid(t *rapid.T) (*store.Queries, *sql.DB) {
-	db, err := store.OpenDB(":memory:")
+	db, err := primarydb.OpenDB(":memory:")
 	assert.NilError(t, err, "failed to open sqlite db")
 
 	_, err = db.ExecContext(context.Background(), schema.Schema)
