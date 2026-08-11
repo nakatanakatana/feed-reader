@@ -200,17 +200,17 @@ func TestMain_OrderlyCleanupOnServerError(t *testing.T) {
 	// 1. すでに使用中のポートを確保する
 	l, err := net.Listen("tcp", "127.0.0.1:0")
 	assert.NilError(t, err)
-	defer l.Close()
+	defer func() { _ = l.Close() }()
 	_, port, err := net.SplitHostPort(l.Addr().String())
 	assert.NilError(t, err)
 
-	os.Setenv("PORT", port)
-	os.Setenv("LITESTREAM_REPLICA_URL", "file:///tmp/dummy")
-	os.Setenv("LITESTREAM_DATABASE_NAME", "dummy.db")
+	assert.NilError(t, os.Setenv("PORT", port))
+	assert.NilError(t, os.Setenv("LITESTREAM_REPLICA_URL", "file:///tmp/dummy"))
+	assert.NilError(t, os.Setenv("LITESTREAM_DATABASE_NAME", "dummy.db"))
 	defer func() {
-		os.Unsetenv("PORT")
-		os.Unsetenv("LITESTREAM_REPLICA_URL")
-		os.Unsetenv("LITESTREAM_DATABASE_NAME")
+		_ = os.Unsetenv("PORT")
+		_ = os.Unsetenv("LITESTREAM_REPLICA_URL")
+		_ = os.Unsetenv("LITESTREAM_DATABASE_NAME")
 	}()
 
 	// Context Injection モック
@@ -240,7 +240,7 @@ func TestMain_OrderlyCleanupOnServerError(t *testing.T) {
 		}
 		_, err = db.Exec(schema.Schema)
 		if err != nil {
-			db.Close()
+			_ = db.Close()
 			return nil, err
 		}
 		targetDB = db
