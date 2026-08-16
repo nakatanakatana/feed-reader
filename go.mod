@@ -13,7 +13,7 @@ require (
 	github.com/mmcdole/gofeed v1.4.1
 	github.com/nakatanakatana/mytools v0.8.1-0.20260808055640-dde1aa9540da
 	github.com/ncruces/go-sqlite3 v0.35.3
-	github.com/oapi-codegen/runtime v1.6.0
+	github.com/oapi-codegen/runtime v1.7.0
 	github.com/sqldef/sqldef/v3 v3.11.19
 	github.com/stretchr/testify v1.11.1
 	github.com/superfly/ltx v0.5.2
