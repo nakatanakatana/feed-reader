@@ -11,7 +11,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/hashicorp/go-retryablehttp v0.7.8
 	github.com/mmcdole/gofeed v1.4.1
-	github.com/nakatanakatana/mytools v0.8.1-0.20260808055640-dde1aa9540da
+	github.com/nakatanakatana/mytools v0.8.1-0.20260819040834-33c5cc4f19f0
 	github.com/ncruces/go-sqlite3 v0.35.3
 	github.com/oapi-codegen/runtime v1.7.0
 	github.com/sqldef/sqldef/v3 v3.11.19
@@ -86,9 +86,9 @@ require (
 	go.opentelemetry.io/otel/metric v1.45.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.11.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.3 // indirect
-	golang.org/x/net v0.57.0 // indirect
+	golang.org/x/net v0.58.0 // indirect
 	golang.org/x/sys v0.47.0 // indirect
-	golang.org/x/text v0.40.0 // indirect
+	golang.org/x/text v0.41.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20260803160001-6ac0973c030d // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260803160001-6ac0973c030d // indirect
 	google.golang.org/grpc v1.83.0 // indirect
