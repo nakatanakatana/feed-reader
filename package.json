@@ -36,7 +36,7 @@
     "@tanstack/solid-router": "1.170.27",
     "markdown-it": "14.3.0",
     "postcss": "8.5.26",
-    "solid-js": "1.9.14",
+    "solid-js": "1.9.15",
     "web-vitals": "6.1.1"
   },
   "devDependencies": {
