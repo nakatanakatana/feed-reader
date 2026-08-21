@@ -1,6 +1,32 @@
 import { afterEach, expect, vi } from "vitest";
 import "./styles.css";
 
+if (typeof HTMLDialogElement !== "undefined") {
+  if (!HTMLDialogElement.prototype.showModal) {
+    HTMLDialogElement.prototype.showModal = function () {
+      this.setAttribute("open", "");
+    };
+  }
+  if (!HTMLDialogElement.prototype.close) {
+    HTMLDialogElement.prototype.close = function () {
+      this.removeAttribute("open");
+    };
+  }
+}
+
+if (typeof window !== "undefined" && !window.matchMedia) {
+  window.matchMedia = (query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: () => {},
+    removeListener: () => {},
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    dispatchEvent: () => false,
+  });
+}
+
 // Custom snapshot serializer to format HTML strings.
 expect.addSnapshotSerializer({
   test: (val) => {

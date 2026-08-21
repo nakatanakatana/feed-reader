@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"sync"
 	"testing"
 	"time"
 
@@ -399,3 +400,255 @@ func TestFetcherService_PeakAwareInterval(t *testing.T) {
 	})
 }
 
+type trackingFetcher struct {
+	mu      sync.Mutex
+	fetched []string
+	feed    *gofeed.Feed
+}
+
+func (f *trackingFetcher) Fetch(ctx context.Context, feedID string, url string) (*gofeed.Feed, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	f.fetched = append(f.fetched, feedID)
+	if f.feed == nil {
+		return &gofeed.Feed{}, nil
+	}
+	return f.feed, nil
+}
+
+func (f *trackingFetcher) WasFetched(feedID string) bool {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	for _, id := range f.fetched {
+		if id == feedID {
+			return true
+		}
+	}
+	return false
+}
+
+func TestFetcherService_MarkFetched_IgnoreWindows(t *testing.T) {
+	ctx := context.Background()
+
+	t.Run("directly attached ignore window", func(t *testing.T) {
+		queries, db := setupTestDB(t)
+		s := store.NewStore(db)
+		logger := slog.New(slog.NewJSONHandler(&bytes.Buffer{}, nil))
+		wq := NewWriteQueueService(s, WriteQueueConfig{MaxBatchSize: 1, FlushInterval: 10 * time.Millisecond}, logger)
+		go wq.Start(ctx)
+		service := NewFetcherService(s, &mockFetcher{}, nil, wq, logger, 30*time.Minute)
+
+		feed, err := queries.CreateFeed(ctx, store.CreateFeedParams{ID: "feed-direct-iw", Url: "http://direct-iw"})
+		assert.NilError(t, err)
+
+		now := time.Now().UTC()
+		todayWeekday := int(now.Weekday())
+		iw, err := queries.CreateIgnoreWindow(ctx, store.CreateIgnoreWindowParams{
+			ID:         "iw-direct",
+			Name:       "Today Direct Blackout",
+			StartTime:  "00:00",
+			EndTime:    "24:00",
+			DaysOfWeek: fmt.Sprintf("[%d]", todayWeekday),
+			Timezone:   "UTC",
+		})
+		assert.NilError(t, err)
+
+		err = queries.CreateFeedIgnoreWindow(ctx, store.CreateFeedIgnoreWindowParams{
+			FeedID:         feed.ID,
+			IgnoreWindowID: iw.ID,
+		})
+		assert.NilError(t, err)
+
+		service.markFetched(ctx, feed.ID, nil)
+		time.Sleep(100 * time.Millisecond)
+
+		updated, err := queries.GetFeed(ctx, feed.ID)
+		assert.NilError(t, err)
+		assert.Assert(t, updated.NextFetch != nil)
+
+		nextFetch, err := time.Parse(time.RFC3339, *updated.NextFetch)
+		assert.NilError(t, err)
+
+		expectedEnd := time.Date(now.Year(), now.Month(), now.Day()+1, 0, 0, 0, 0, time.UTC)
+		assert.Equal(t, nextFetch.Unix(), expectedEnd.Unix(), "next_fetch should be adjusted to end of ignore window")
+	})
+
+	t.Run("tag attached ignore window", func(t *testing.T) {
+		queries, db := setupTestDB(t)
+		s := store.NewStore(db)
+		logger := slog.New(slog.NewJSONHandler(&bytes.Buffer{}, nil))
+		wq := NewWriteQueueService(s, WriteQueueConfig{MaxBatchSize: 1, FlushInterval: 10 * time.Millisecond}, logger)
+		go wq.Start(ctx)
+		service := NewFetcherService(s, &mockFetcher{}, nil, wq, logger, 30*time.Minute)
+
+		feed, err := queries.CreateFeed(ctx, store.CreateFeedParams{ID: "feed-tag-iw", Url: "http://tag-iw"})
+		assert.NilError(t, err)
+
+		tag, err := queries.CreateTag(ctx, store.CreateTagParams{
+			ID:   "tag-1",
+			Name: "blackout-tag",
+		})
+		assert.NilError(t, err)
+
+		err = queries.CreateFeedTag(ctx, store.CreateFeedTagParams{
+			FeedID: feed.ID,
+			TagID:  tag.ID,
+		})
+		assert.NilError(t, err)
+
+		now := time.Now().UTC()
+		todayWeekday := int(now.Weekday())
+		iw, err := queries.CreateIgnoreWindow(ctx, store.CreateIgnoreWindowParams{
+			ID:         "iw-tag",
+			Name:       "Today Tag Blackout",
+			StartTime:  "00:00",
+			EndTime:    "24:00",
+			DaysOfWeek: fmt.Sprintf("[%d]", todayWeekday),
+			Timezone:   "UTC",
+		})
+		assert.NilError(t, err)
+
+		err = queries.CreateTagIgnoreWindow(ctx, store.CreateTagIgnoreWindowParams{
+			TagID:          tag.ID,
+			IgnoreWindowID: iw.ID,
+		})
+		assert.NilError(t, err)
+
+		service.markFetched(ctx, feed.ID, nil)
+		time.Sleep(100 * time.Millisecond)
+
+		updated, err := queries.GetFeed(ctx, feed.ID)
+		assert.NilError(t, err)
+		assert.Assert(t, updated.NextFetch != nil)
+
+		nextFetch, err := time.Parse(time.RFC3339, *updated.NextFetch)
+		assert.NilError(t, err)
+
+		expectedEnd := time.Date(now.Year(), now.Month(), now.Day()+1, 0, 0, 0, 0, time.UTC)
+		assert.Equal(t, nextFetch.Unix(), expectedEnd.Unix(), "next_fetch should be adjusted to end of tag ignore window")
+	})
+}
+
+func TestFetcherService_FetchAllFeeds_IgnoreWindow(t *testing.T) {
+	ctx := context.Background()
+	queries, db := setupTestDB(t)
+	s := store.NewStore(db)
+
+	fetcher := &trackingFetcher{feed: &gofeed.Feed{Title: "Tracking"}}
+	pool := NewWorkerPool(2)
+	pool.Start(ctx)
+
+	logger := slog.New(slog.NewJSONHandler(&bytes.Buffer{}, nil))
+	wq := NewWriteQueueService(s, WriteQueueConfig{MaxBatchSize: 1, FlushInterval: 10 * time.Millisecond}, logger)
+	go wq.Start(ctx)
+	service := NewFetcherService(s, fetcher, pool, wq, logger, 30*time.Minute)
+
+	now := time.Now().UTC()
+	pastTime := now.Add(-1 * time.Hour).Format(time.RFC3339)
+
+	// Feed 1: in active ignore window
+	feedBlocked, err := queries.CreateFeed(ctx, store.CreateFeedParams{ID: "feed-blocked", Url: "http://blocked"})
+	assert.NilError(t, err)
+	_ = queries.MarkFeedFetched(ctx, store.MarkFeedFetchedParams{FeedID: feedBlocked.ID, NextFetch: &pastTime})
+
+	todayWeekday := int(now.Weekday())
+	iw, err := queries.CreateIgnoreWindow(ctx, store.CreateIgnoreWindowParams{
+		ID:         "iw-active-now",
+		Name:       "Active Now Blackout",
+		StartTime:  "00:00",
+		EndTime:    "24:00",
+		DaysOfWeek: fmt.Sprintf("[%d]", todayWeekday),
+		Timezone:   "UTC",
+	})
+	assert.NilError(t, err)
+
+	err = queries.CreateFeedIgnoreWindow(ctx, store.CreateFeedIgnoreWindowParams{
+		FeedID:         feedBlocked.ID,
+		IgnoreWindowID: iw.ID,
+	})
+	assert.NilError(t, err)
+
+	// Feed 2: normal feed (no ignore window)
+	feedNormal, err := queries.CreateFeed(ctx, store.CreateFeedParams{ID: "feed-normal", Url: "http://normal"})
+	assert.NilError(t, err)
+	_ = queries.MarkFeedFetched(ctx, store.MarkFeedFetchedParams{FeedID: feedNormal.ID, NextFetch: &pastTime})
+
+	err = service.FetchAllFeeds(ctx)
+	assert.NilError(t, err)
+
+	pool.Wait()
+	time.Sleep(150 * time.Millisecond)
+
+	// Verify normal feed was fetched
+	assert.Assert(t, fetcher.WasFetched(feedNormal.ID), "Normal feed should have been fetched")
+	fNorm, _ := queries.GetFeed(ctx, feedNormal.ID)
+	assert.Assert(t, fNorm.LastFetchedAt != nil)
+
+	// Verify blocked feed was NOT fetched
+	assert.Assert(t, !fetcher.WasFetched(feedBlocked.ID), "Feed in active ignore window should NOT be fetched")
+	fBlock, _ := queries.GetFeed(ctx, feedBlocked.ID)
+	assert.Assert(t, fBlock.LastFetchedAt == nil, "Feed in active ignore window should not update LastFetchedAt")
+	assert.Assert(t, fBlock.NextFetch != nil)
+
+	expectedEnd := time.Date(now.Year(), now.Month(), now.Day()+1, 0, 0, 0, 0, time.UTC)
+	nextFetch, err := time.Parse(time.RFC3339, *fBlock.NextFetch)
+	assert.NilError(t, err)
+	assert.Equal(t, nextFetch.Unix(), expectedEnd.Unix(), "Blocked feed next_fetch should be updated to end of ignore window")
+}
+
+func TestFetcherService_FetchFeedsByIDsSync_IgnoreWindow(t *testing.T) {
+	ctx := context.Background()
+	queries, db := setupTestDB(t)
+	s := store.NewStore(db)
+
+	mockFeed := &gofeed.Feed{
+		Items: []*gofeed.Item{
+			{Title: "Manual Item", Link: "http://manual-item"},
+		},
+	}
+	fetcher := &trackingFetcher{feed: mockFeed}
+	logger := slog.New(slog.NewJSONHandler(&bytes.Buffer{}, nil))
+	wq := NewWriteQueueService(s, WriteQueueConfig{MaxBatchSize: 1, FlushInterval: 10 * time.Millisecond}, logger)
+	go wq.Start(ctx)
+	service := NewFetcherService(s, fetcher, nil, wq, logger, 30*time.Minute)
+
+	feed, err := queries.CreateFeed(ctx, store.CreateFeedParams{ID: "feed-manual-sync", Url: "http://manual-sync"})
+	assert.NilError(t, err)
+
+	now := time.Now().UTC()
+	todayWeekday := int(now.Weekday())
+	iw, err := queries.CreateIgnoreWindow(ctx, store.CreateIgnoreWindowParams{
+		ID:         "iw-manual",
+		Name:       "Manual Ignore Window",
+		StartTime:  "00:00",
+		EndTime:    "24:00",
+		DaysOfWeek: fmt.Sprintf("[%d]", todayWeekday),
+		Timezone:   "UTC",
+	})
+	assert.NilError(t, err)
+
+	err = queries.CreateFeedIgnoreWindow(ctx, store.CreateFeedIgnoreWindowParams{
+		FeedID:         feed.ID,
+		IgnoreWindowID: iw.ID,
+	})
+	assert.NilError(t, err)
+
+	// Manual sync refresh should bypass active ignore window
+	results, err := service.FetchFeedsByIDsSync(ctx, []string{feed.ID})
+	assert.NilError(t, err)
+	assert.Equal(t, len(results), 1)
+	assert.Assert(t, results[0].Success)
+	assert.Assert(t, fetcher.WasFetched(feed.ID), "Manual sync fetch should execute immediately even in ignore window")
+
+	time.Sleep(100 * time.Millisecond)
+
+	updated, err := queries.GetFeed(ctx, feed.ID)
+	assert.NilError(t, err)
+	assert.Assert(t, updated.LastFetchedAt != nil, "LastFetchedAt should be set on manual refresh")
+	assert.Assert(t, updated.NextFetch != nil)
+
+	expectedEnd := time.Date(now.Year(), now.Month(), now.Day()+1, 0, 0, 0, 0, time.UTC)
+	nextFetch, err := time.Parse(time.RFC3339, *updated.NextFetch)
+	assert.NilError(t, err)
+	assert.Equal(t, nextFetch.Unix(), expectedEnd.Unix(), "NextFetch should be adjusted to end of ignore window")
+}

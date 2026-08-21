@@ -38,10 +38,16 @@ if (process.env.VITEST) {
 }
 
 const jsdomUnitTests = [
+  "src/components/AddIgnoreWindowModal.test.tsx",
   "src/components/DynamicFavicon.test.tsx",
+  "src/components/FeedList.IgnoreWindows.test.tsx",
+  "src/components/IgnoreWindowsTable.test.tsx",
+  "src/components/ManageIgnoreWindowsModal.test.tsx",
   "src/components/MarkdownRenderer.test.tsx",
   "src/components/PwaBadge.test.tsx",
+  "src/components/TagManagement.IgnoreWindows.test.tsx",
   "src/lib/feed-store-persistence.test.ts",
+  "src/lib/ignore-window-db.test.ts",
   "src/lib/item-db.test.ts",
   "src/lib/storage-utils.test.ts",
   "src/lib/toast.test.tsx",

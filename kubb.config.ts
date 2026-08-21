@@ -40,7 +40,7 @@ export default defineConfig({
       client: { importPath: "../../kubb-client.ts" },
       query: { methods: ["get"], importPath: "@tanstack/solid-query" },
       mutation: {
-        methods: ["post", "delete"],
+        methods: ["post", "put", "delete"],
         importPath: "@tanstack/solid-query",
       },
     }),

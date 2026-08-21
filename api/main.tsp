@@ -217,6 +217,75 @@ model AddItemBlockRulesRequest {
   rules: AddItemBlockRuleInput[];
 }
 
+model IgnoreWindow {
+  id: string;
+  name: string;
+  startTime: string;
+  endTime: string;
+  daysOfWeek: int32[];
+  timezone: string;
+  createdAt: DateTime;
+  updatedAt: DateTime;
+}
+
+model ListIgnoreWindowsResponse {
+  ignoreWindows: IgnoreWindow[];
+}
+
+model CreateIgnoreWindowRequest {
+  name: string;
+  startTime: string;
+  endTime: string;
+  daysOfWeek: int32[];
+  timezone: string;
+}
+
+model CreateIgnoreWindowResponse {
+  ignoreWindow: IgnoreWindow;
+}
+
+model UpdateIgnoreWindowRequest {
+  name?: string;
+  startTime?: string;
+  endTime?: string;
+  daysOfWeek?: int32[];
+  timezone?: string;
+}
+
+model UpdateIgnoreWindowResponse {
+  ignoreWindow: IgnoreWindow;
+}
+
+model FeedIgnoreWindow {
+  feedId: string;
+  ignoreWindowId: string;
+}
+
+model ListFeedIgnoreWindowsResponse {
+  feedIgnoreWindows: FeedIgnoreWindow[];
+}
+
+model ManageFeedIgnoreWindowsRequest {
+  feedIds: string[];
+  addIgnoreWindowIds: string[];
+  removeIgnoreWindowIds: string[];
+}
+
+model TagIgnoreWindow {
+  tagId: string;
+  ignoreWindowId: string;
+}
+
+model ListTagIgnoreWindowsResponse {
+  tagIgnoreWindows: TagIgnoreWindow[];
+}
+
+model ManageTagIgnoreWindowsRequest {
+  tagIds: string[];
+  addIgnoreWindowIds: string[];
+  removeIgnoreWindowIds: string[];
+}
+
 @route("/feeds")
 namespace Feeds {
   @get
@@ -328,3 +397,47 @@ namespace BlockRules {
   @route("/{id}")
   op delete(@path id: string): EmptyResponse | ErrorResponse;
 }
+
+@route("/ignore-windows")
+namespace IgnoreWindows {
+  @get
+  op list(): ListIgnoreWindowsResponse | ErrorResponse;
+
+  @post
+  op create(@body body: CreateIgnoreWindowRequest): CreateIgnoreWindowResponse | ErrorResponse;
+
+  @put
+  @route("/{id}")
+  op update(@path id: string, @body body: UpdateIgnoreWindowRequest): UpdateIgnoreWindowResponse | ErrorResponse;
+
+  @delete
+  @route("/{id}")
+  op delete(@path id: string): EmptyResponse | ErrorResponse;
+}
+
+@route("/feed-ignore-windows")
+namespace FeedIgnoreWindows {
+  @get
+  op list(
+    @query feedId?: string,
+    @query ignoreWindowId?: string,
+  ): ListFeedIgnoreWindowsResponse | ErrorResponse;
+
+  @post
+  @route("/manage")
+  op manage(@body body: ManageFeedIgnoreWindowsRequest): EmptyResponse | ErrorResponse;
+}
+
+@route("/tag-ignore-windows")
+namespace TagIgnoreWindows {
+  @get
+  op list(
+    @query tagId?: string,
+    @query ignoreWindowId?: string,
+  ): ListTagIgnoreWindowsResponse | ErrorResponse;
+
+  @post
+  @route("/manage")
+  op manage(@body body: ManageTagIgnoreWindowsRequest): EmptyResponse | ErrorResponse;
+}
+

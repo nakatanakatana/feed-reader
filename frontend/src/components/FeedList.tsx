@@ -5,13 +5,17 @@ import { flex, stack } from "../../styled-system/patterns";
 import {
   exportFeeds,
   feedDelete,
+  feedIgnoreWindowsQueryOptions,
   feedsQueryOptions,
   feedTagsQueryOptions,
   getFeedList,
   getTagPicker,
   getTagsWithFeedCount,
+  ignoreWindowsQueryOptions,
+  isIgnoreWindowActive,
   refreshFeeds,
   suspendFeeds,
+  tagIgnoreWindowsQueryOptions,
   tagsQueryOptions,
 } from "../lib/db";
 import { type FeedSortBy, feedStore } from "../lib/feed-store";
@@ -19,6 +23,7 @@ import { fetchingState } from "../lib/fetching-state";
 import { formatDate, formatRelativeDate } from "../lib/item-utils";
 import { isReadOnly } from "../lib/readonly";
 import { BulkActionBar } from "./BulkActionBar";
+import { ManageIgnoreWindowsModal } from "./ManageIgnoreWindowsModal";
 import { ManageTagsModal } from "./ManageTagsModal";
 import { ActionButton } from "./ui/ActionButton";
 import { Badge } from "./ui/Badge";
@@ -35,11 +40,43 @@ export function FeedList() {
   }));
   const [selectedFeedIds, setSelectedFeedIds] = createSignal<string[]>([]);
   const [isManageModalOpen, setIsManageModalOpen] = createSignal(false);
+  const [isManageIgnoreWindowsModalOpen, setIsManageIgnoreWindowsModalOpen] =
+    createSignal(false);
   let tagSelectRef: HTMLSelectElement | undefined;
 
   const feedsQuery = createQuery(() => feedsQueryOptions);
   const tagsQuery = createQuery(() => tagsQueryOptions);
   const feedTagsQuery = createQuery(() => feedTagsQueryOptions);
+  const ignoreWindowsQuery = createQuery(() => ignoreWindowsQueryOptions);
+  const feedIgnoreWindowsQuery = createQuery(() =>
+    feedIgnoreWindowsQueryOptions(),
+  );
+  const tagIgnoreWindowsQuery = createQuery(() =>
+    tagIgnoreWindowsQueryOptions(),
+  );
+
+  const getIgnoreWindowsForFeed = (
+    feedId: string,
+    feedTagsList?: { id: string }[],
+  ) => {
+    const allWindows = ignoreWindowsQuery.data ?? [];
+    if (allWindows.length === 0) return [];
+
+    const feedLinks = (feedIgnoreWindowsQuery.data ?? []).filter(
+      (fiw) => fiw.feedId === feedId,
+    );
+    const directWindowIds = new Set(feedLinks.map((fiw) => fiw.ignoreWindowId));
+
+    const tagIds = new Set((feedTagsList ?? []).map((t) => t.id));
+    const tagLinks = (tagIgnoreWindowsQuery.data ?? []).filter((tiw) =>
+      tagIds.has(tiw.tagId),
+    );
+    const tagWindowIds = new Set(tagLinks.map((tiw) => tiw.ignoreWindowId));
+
+    return allWindows.filter(
+      (w) => directWindowIds.has(w.id) || tagWindowIds.has(w.id),
+    );
+  };
 
   const tagsWithFeedCount = createMemo(() => {
     return getTagsWithFeedCount(tagsQuery.data ?? [], feedTagsQuery.data ?? []);
@@ -419,6 +456,27 @@ export function FeedList() {
                             </Badge>
                           )}
                         </For>
+                        <For each={getIgnoreWindowsForFeed(feed.id, feed.tags)}>
+                          {(window) => (
+                            <Badge
+                              variant={
+                                isIgnoreWindowActive(window)
+                                  ? "warning"
+                                  : "neutral"
+                              }
+                              class={css({ flexShrink: 0 })}
+                              title={
+                                isIgnoreWindowActive(window)
+                                  ? `Quiet hours active: ${window.name}`
+                                  : `Ignore window: ${window.name}`
+                              }
+                            >
+                              {isIgnoreWindowActive(window)
+                                ? `💤 ${window.name}`
+                                : `🕒 ${window.name}`}
+                            </Badge>
+                          )}
+                        </For>
                         <div class={flex({ gap: "2", alignItems: "center" })}>
                           <Show when={fetchingState.isFetching(feed.id)}>
                             <div
@@ -700,6 +758,16 @@ export function FeedList() {
           feedIds={selectedFeedIds()}
         />
 
+        <ManageIgnoreWindowsModal
+          isOpen={isManageIgnoreWindowsModalOpen()}
+          onClose={() => {
+            setIsManageIgnoreWindowsModalOpen(false);
+            setSelectedFeedIds([]);
+          }}
+          targetType="feed"
+          feedIds={selectedFeedIds()}
+        />
+
         <BulkActionBar
           selectedCount={selectedFeedIds().length}
           unit="feeds"
@@ -755,6 +823,13 @@ export function FeedList() {
             onClick={() => setIsManageModalOpen(true)}
           >
             Manage Tags
+          </ActionButton>
+          <ActionButton
+            size="sm"
+            variant="primary"
+            onClick={() => setIsManageIgnoreWindowsModalOpen(true)}
+          >
+            Ignore Windows
           </ActionButton>
         </BulkActionBar>
       </Show>

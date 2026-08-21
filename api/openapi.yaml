@@ -57,6 +57,54 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiError'
+  /feed-ignore-windows:
+    get:
+      operationId: FeedIgnoreWindows_list
+      parameters:
+        - name: feedId
+          in: query
+          required: false
+          schema:
+            type: string
+          explode: false
+        - name: ignoreWindowId
+          in: query
+          required: false
+          schema:
+            type: string
+          explode: false
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListFeedIgnoreWindowsResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /feed-ignore-windows/manage:
+    post:
+      operationId: FeedIgnoreWindows_manage
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ManageFeedIgnoreWindowsRequest'
   /feed-tags:
     get:
       operationId: FeedTags_list
@@ -256,6 +304,90 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiError'
+  /ignore-windows:
+    get:
+      operationId: IgnoreWindows_list
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListIgnoreWindowsResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+    post:
+      operationId: IgnoreWindows_create
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateIgnoreWindowResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateIgnoreWindowRequest'
+  /ignore-windows/{id}:
+    put:
+      operationId: IgnoreWindows_update
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateIgnoreWindowResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateIgnoreWindowRequest'
+    delete:
+      operationId: IgnoreWindows_delete
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
   /item-reads:
     get:
       operationId: ItemReads_list
@@ -389,6 +521,54 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiError'
+  /tag-ignore-windows:
+    get:
+      operationId: TagIgnoreWindows_list
+      parameters:
+        - name: tagId
+          in: query
+          required: false
+          schema:
+            type: string
+          explode: false
+        - name: ignoreWindowId
+          in: query
+          required: false
+          schema:
+            type: string
+          explode: false
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListTagIgnoreWindowsResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /tag-ignore-windows/manage:
+    post:
+      operationId: TagIgnoreWindows_manage
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ManageTagIgnoreWindowsRequest'
   /tags:
     get:
       operationId: Tags_list
@@ -575,6 +755,35 @@ components:
       properties:
         feed:
           $ref: '#/components/schemas/Feed'
+    CreateIgnoreWindowRequest:
+      type: object
+      required:
+        - name
+        - startTime
+        - endTime
+        - daysOfWeek
+        - timezone
+      properties:
+        name:
+          type: string
+        startTime:
+          type: string
+        endTime:
+          type: string
+        daysOfWeek:
+          type: array
+          items:
+            type: integer
+            format: int32
+        timezone:
+          type: string
+    CreateIgnoreWindowResponse:
+      type: object
+      required:
+        - ignoreWindow
+      properties:
+        ignoreWindow:
+          $ref: '#/components/schemas/IgnoreWindow'
     CreateTagRequest:
       type: object
       required:
@@ -659,6 +868,16 @@ components:
           format: int32
         errorMessage:
           type: string
+    FeedIgnoreWindow:
+      type: object
+      required:
+        - feedId
+        - ignoreWindowId
+      properties:
+        feedId:
+          type: string
+        ignoreWindowId:
+          type: string
     FeedTag:
       type: object
       required:
@@ -674,6 +893,39 @@ components:
       properties:
         item:
           $ref: '#/components/schemas/Item'
+    IgnoreWindow:
+      type: object
+      required:
+        - id
+        - name
+        - startTime
+        - endTime
+        - daysOfWeek
+        - timezone
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        startTime:
+          type: string
+        endTime:
+          type: string
+        daysOfWeek:
+          type: array
+          items:
+            type: integer
+            format: int32
+        timezone:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
     ImportFailedFeed:
       type: object
       required:
@@ -797,6 +1049,15 @@ components:
         updatedAt:
           type: string
           format: date-time
+    ListFeedIgnoreWindowsResponse:
+      type: object
+      required:
+        - feedIgnoreWindows
+      properties:
+        feedIgnoreWindows:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeedIgnoreWindow'
     ListFeedTagsResponse:
       type: object
       required:
@@ -815,6 +1076,15 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Feed'
+    ListIgnoreWindowsResponse:
+      type: object
+      required:
+        - ignoreWindows
+      properties:
+        ignoreWindows:
+          type: array
+          items:
+            $ref: '#/components/schemas/IgnoreWindow'
     ListItemBlockRulesResponse:
       type: object
       required:
@@ -848,6 +1118,15 @@ components:
             $ref: '#/components/schemas/Item'
         nextPageToken:
           type: string
+    ListTagIgnoreWindowsResponse:
+      type: object
+      required:
+        - tagIgnoreWindows
+      properties:
+        tagIgnoreWindows:
+          type: array
+          items:
+            $ref: '#/components/schemas/TagIgnoreWindow'
     ListTagsResponse:
       type: object
       required:
@@ -869,6 +1148,25 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/URLParsingRule'
+    ManageFeedIgnoreWindowsRequest:
+      type: object
+      required:
+        - feedIds
+        - addIgnoreWindowIds
+        - removeIgnoreWindowIds
+      properties:
+        feedIds:
+          type: array
+          items:
+            type: string
+        addIgnoreWindowIds:
+          type: array
+          items:
+            type: string
+        removeIgnoreWindowIds:
+          type: array
+          items:
+            type: string
     ManageFeedTagsRequest:
       type: object
       required:
@@ -885,6 +1183,25 @@ components:
           items:
             type: string
         removeTagIds:
+          type: array
+          items:
+            type: string
+    ManageTagIgnoreWindowsRequest:
+      type: object
+      required:
+        - tagIds
+        - addIgnoreWindowIds
+        - removeIgnoreWindowIds
+      properties:
+        tagIds:
+          type: array
+          items:
+            type: string
+        addIgnoreWindowIds:
+          type: array
+          items:
+            type: string
+        removeIgnoreWindowIds:
           type: array
           items:
             type: string
@@ -942,6 +1259,16 @@ components:
           type: string
         feedCount:
           type: string
+    TagIgnoreWindow:
+      type: object
+      required:
+        - tagId
+        - ignoreWindowId
+      properties:
+        tagId:
+          type: string
+        ignoreWindowId:
+          type: string
     URLParsingRule:
       type: object
       required:
@@ -958,6 +1285,29 @@ components:
           type: string
         pattern:
           type: string
+    UpdateIgnoreWindowRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        startTime:
+          type: string
+        endTime:
+          type: string
+        daysOfWeek:
+          type: array
+          items:
+            type: integer
+            format: int32
+        timezone:
+          type: string
+    UpdateIgnoreWindowResponse:
+      type: object
+      required:
+        - ignoreWindow
+      properties:
+        ignoreWindow:
+          $ref: '#/components/schemas/IgnoreWindow'
     UpdateItemStatusRequest:
       type: object
       required:

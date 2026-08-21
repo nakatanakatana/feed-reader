@@ -279,6 +279,22 @@ func (q *Queries) CreateFeed(ctx context.Context, arg CreateFeedParams) (Feed, e
 	return i, err
 }
 
+const createFeedIgnoreWindow = `-- name: CreateFeedIgnoreWindow :exec
+INSERT INTO feed_ignore_windows (feed_id, ignore_window_id)
+VALUES (?, ?)
+ON CONFLICT(feed_id, ignore_window_id) DO NOTHING
+`
+
+type CreateFeedIgnoreWindowParams struct {
+	FeedID         string `json:"feed_id"`
+	IgnoreWindowID string `json:"ignore_window_id"`
+}
+
+func (q *Queries) CreateFeedIgnoreWindow(ctx context.Context, arg CreateFeedIgnoreWindowParams) error {
+	_, err := q.db.ExecContext(ctx, createFeedIgnoreWindow, arg.FeedID, arg.IgnoreWindowID)
+	return err
+}
+
 const createFeedItem = `-- name: CreateFeedItem :exec
 INSERT INTO feed_items (
   feed_id,
@@ -321,6 +337,52 @@ type CreateFeedTagParams struct {
 func (q *Queries) CreateFeedTag(ctx context.Context, arg CreateFeedTagParams) error {
 	_, err := q.db.ExecContext(ctx, createFeedTag, arg.FeedID, arg.TagID)
 	return err
+}
+
+const createIgnoreWindow = `-- name: CreateIgnoreWindow :one
+INSERT INTO ignore_windows (
+  id,
+  name,
+  start_time,
+  end_time,
+  days_of_week,
+  timezone
+) VALUES (
+  ?, ?, ?, ?, ?, ?
+)
+RETURNING id, name, start_time, end_time, days_of_week, timezone, created_at, updated_at
+`
+
+type CreateIgnoreWindowParams struct {
+	ID         string `json:"id"`
+	Name       string `json:"name"`
+	StartTime  string `json:"start_time"`
+	EndTime    string `json:"end_time"`
+	DaysOfWeek string `json:"days_of_week"`
+	Timezone   string `json:"timezone"`
+}
+
+func (q *Queries) CreateIgnoreWindow(ctx context.Context, arg CreateIgnoreWindowParams) (IgnoreWindow, error) {
+	row := q.db.QueryRowContext(ctx, createIgnoreWindow,
+		arg.ID,
+		arg.Name,
+		arg.StartTime,
+		arg.EndTime,
+		arg.DaysOfWeek,
+		arg.Timezone,
+	)
+	var i IgnoreWindow
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.StartTime,
+		&i.EndTime,
+		&i.DaysOfWeek,
+		&i.Timezone,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const createItem = `-- name: CreateItem :one
@@ -495,6 +557,22 @@ func (q *Queries) CreateTag(ctx context.Context, arg CreateTagParams) (Tag, erro
 	return i, err
 }
 
+const createTagIgnoreWindow = `-- name: CreateTagIgnoreWindow :exec
+INSERT INTO tag_ignore_windows (tag_id, ignore_window_id)
+VALUES (?, ?)
+ON CONFLICT(tag_id, ignore_window_id) DO NOTHING
+`
+
+type CreateTagIgnoreWindowParams struct {
+	TagID          string `json:"tag_id"`
+	IgnoreWindowID string `json:"ignore_window_id"`
+}
+
+func (q *Queries) CreateTagIgnoreWindow(ctx context.Context, arg CreateTagIgnoreWindowParams) error {
+	_, err := q.db.ExecContext(ctx, createTagIgnoreWindow, arg.TagID, arg.IgnoreWindowID)
+	return err
+}
+
 const createURLParsingRule = `-- name: CreateURLParsingRule :one
 INSERT INTO url_parsing_rules (
   id,
@@ -557,6 +635,30 @@ func (q *Queries) DeleteFeedFetcher(ctx context.Context, feedID string) error {
 	return err
 }
 
+const deleteFeedIgnoreWindow = `-- name: DeleteFeedIgnoreWindow :exec
+DELETE FROM feed_ignore_windows
+WHERE feed_id = ? AND ignore_window_id = ?
+`
+
+type DeleteFeedIgnoreWindowParams struct {
+	FeedID         string `json:"feed_id"`
+	IgnoreWindowID string `json:"ignore_window_id"`
+}
+
+func (q *Queries) DeleteFeedIgnoreWindow(ctx context.Context, arg DeleteFeedIgnoreWindowParams) error {
+	_, err := q.db.ExecContext(ctx, deleteFeedIgnoreWindow, arg.FeedID, arg.IgnoreWindowID)
+	return err
+}
+
+const deleteFeedIgnoreWindowsByFeedID = `-- name: DeleteFeedIgnoreWindowsByFeedID :exec
+DELETE FROM feed_ignore_windows WHERE feed_id = ?
+`
+
+func (q *Queries) DeleteFeedIgnoreWindowsByFeedID(ctx context.Context, feedID string) error {
+	_, err := q.db.ExecContext(ctx, deleteFeedIgnoreWindowsByFeedID, feedID)
+	return err
+}
+
 const deleteFeedTag = `-- name: DeleteFeedTag :exec
 DELETE FROM
   feed_tags
@@ -583,6 +685,15 @@ WHERE
 
 func (q *Queries) DeleteFeedTags(ctx context.Context, feedID string) error {
 	_, err := q.db.ExecContext(ctx, deleteFeedTags, feedID)
+	return err
+}
+
+const deleteIgnoreWindow = `-- name: DeleteIgnoreWindow :exec
+DELETE FROM ignore_windows WHERE id = ?
+`
+
+func (q *Queries) DeleteIgnoreWindow(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, deleteIgnoreWindow, id)
 	return err
 }
 
@@ -619,6 +730,30 @@ WHERE
 
 func (q *Queries) DeleteTag(ctx context.Context, id string) error {
 	_, err := q.db.ExecContext(ctx, deleteTag, id)
+	return err
+}
+
+const deleteTagIgnoreWindow = `-- name: DeleteTagIgnoreWindow :exec
+DELETE FROM tag_ignore_windows
+WHERE tag_id = ? AND ignore_window_id = ?
+`
+
+type DeleteTagIgnoreWindowParams struct {
+	TagID          string `json:"tag_id"`
+	IgnoreWindowID string `json:"ignore_window_id"`
+}
+
+func (q *Queries) DeleteTagIgnoreWindow(ctx context.Context, arg DeleteTagIgnoreWindowParams) error {
+	_, err := q.db.ExecContext(ctx, deleteTagIgnoreWindow, arg.TagID, arg.IgnoreWindowID)
+	return err
+}
+
+const deleteTagIgnoreWindowsByTagID = `-- name: DeleteTagIgnoreWindowsByTagID :exec
+DELETE FROM tag_ignore_windows WHERE tag_id = ?
+`
+
+func (q *Queries) DeleteTagIgnoreWindowsByTagID(ctx context.Context, tagID string) error {
+	_, err := q.db.ExecContext(ctx, deleteTagIgnoreWindowsByTagID, tagID)
 	return err
 }
 
@@ -805,6 +940,26 @@ func (q *Queries) GetFeedUpdateDistribution(ctx context.Context, feedID string) 
 	return items, nil
 }
 
+const getIgnoreWindow = `-- name: GetIgnoreWindow :one
+SELECT id, name, start_time, end_time, days_of_week, timezone, created_at, updated_at FROM ignore_windows WHERE id = ?
+`
+
+func (q *Queries) GetIgnoreWindow(ctx context.Context, id string) (IgnoreWindow, error) {
+	row := q.db.QueryRowContext(ctx, getIgnoreWindow, id)
+	var i IgnoreWindow
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.StartTime,
+		&i.EndTime,
+		&i.DaysOfWeek,
+		&i.Timezone,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const getItem = `-- name: GetItem :one
 SELECT
   i.id,
@@ -968,6 +1123,88 @@ func (q *Queries) GetURLParsingRuleByDomain(ctx context.Context, arg GetURLParsi
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const listActiveIgnoreWindowsForFeed = `-- name: ListActiveIgnoreWindowsForFeed :many
+SELECT DISTINCT iw.id, iw.name, iw.start_time, iw.end_time, iw.days_of_week, iw.timezone, iw.created_at, iw.updated_at
+FROM ignore_windows iw
+LEFT JOIN feed_ignore_windows fiw ON iw.id = fiw.ignore_window_id AND fiw.feed_id = ?1
+LEFT JOIN tag_ignore_windows tiw ON iw.id = tiw.ignore_window_id
+LEFT JOIN feed_tags ft ON tiw.tag_id = ft.tag_id AND ft.feed_id = ?1
+WHERE fiw.feed_id IS NOT NULL OR ft.feed_id IS NOT NULL
+ORDER BY iw.name ASC
+`
+
+func (q *Queries) ListActiveIgnoreWindowsForFeed(ctx context.Context, feedID string) ([]IgnoreWindow, error) {
+	rows, err := q.db.QueryContext(ctx, listActiveIgnoreWindowsForFeed, feedID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []IgnoreWindow
+	for rows.Next() {
+		var i IgnoreWindow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.StartTime,
+			&i.EndTime,
+			&i.DaysOfWeek,
+			&i.Timezone,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listFeedIgnoreWindows = `-- name: ListFeedIgnoreWindows :many
+SELECT feed_id, ignore_window_id FROM feed_ignore_windows
+WHERE
+  (?1 IS NULL OR feed_id = ?1)
+  AND (?2 IS NULL OR ignore_window_id = ?2)
+`
+
+type ListFeedIgnoreWindowsParams struct {
+	FeedID         interface{} `json:"feed_id"`
+	IgnoreWindowID interface{} `json:"ignore_window_id"`
+}
+
+type ListFeedIgnoreWindowsRow struct {
+	FeedID         string `json:"feed_id"`
+	IgnoreWindowID string `json:"ignore_window_id"`
+}
+
+func (q *Queries) ListFeedIgnoreWindows(ctx context.Context, arg ListFeedIgnoreWindowsParams) ([]ListFeedIgnoreWindowsRow, error) {
+	rows, err := q.db.QueryContext(ctx, listFeedIgnoreWindows, arg.FeedID, arg.IgnoreWindowID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListFeedIgnoreWindowsRow
+	for rows.Next() {
+		var i ListFeedIgnoreWindowsRow
+		if err := rows.Scan(&i.FeedID, &i.IgnoreWindowID); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const listFeedTags = `-- name: ListFeedTags :many
@@ -1226,6 +1463,120 @@ func (q *Queries) ListFeedsToFetch(ctx context.Context) ([]ListFeedsToFetchRow, 
 			&i.NextFetch,
 			&i.Etag,
 			&i.LastModified,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listIgnoreWindows = `-- name: ListIgnoreWindows :many
+SELECT id, name, start_time, end_time, days_of_week, timezone, created_at, updated_at FROM ignore_windows ORDER BY name ASC
+`
+
+func (q *Queries) ListIgnoreWindows(ctx context.Context) ([]IgnoreWindow, error) {
+	rows, err := q.db.QueryContext(ctx, listIgnoreWindows)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []IgnoreWindow
+	for rows.Next() {
+		var i IgnoreWindow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.StartTime,
+			&i.EndTime,
+			&i.DaysOfWeek,
+			&i.Timezone,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listIgnoreWindowsByFeedID = `-- name: ListIgnoreWindowsByFeedID :many
+SELECT iw.id, iw.name, iw.start_time, iw.end_time, iw.days_of_week, iw.timezone, iw.created_at, iw.updated_at FROM ignore_windows iw
+JOIN feed_ignore_windows fiw ON iw.id = fiw.ignore_window_id
+WHERE fiw.feed_id = ?
+ORDER BY iw.name ASC
+`
+
+func (q *Queries) ListIgnoreWindowsByFeedID(ctx context.Context, feedID string) ([]IgnoreWindow, error) {
+	rows, err := q.db.QueryContext(ctx, listIgnoreWindowsByFeedID, feedID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []IgnoreWindow
+	for rows.Next() {
+		var i IgnoreWindow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.StartTime,
+			&i.EndTime,
+			&i.DaysOfWeek,
+			&i.Timezone,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listIgnoreWindowsByTagID = `-- name: ListIgnoreWindowsByTagID :many
+SELECT iw.id, iw.name, iw.start_time, iw.end_time, iw.days_of_week, iw.timezone, iw.created_at, iw.updated_at FROM ignore_windows iw
+JOIN tag_ignore_windows tiw ON iw.id = tiw.ignore_window_id
+WHERE tiw.tag_id = ?
+ORDER BY iw.name ASC
+`
+
+func (q *Queries) ListIgnoreWindowsByTagID(ctx context.Context, tagID string) ([]IgnoreWindow, error) {
+	rows, err := q.db.QueryContext(ctx, listIgnoreWindowsByTagID, tagID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []IgnoreWindow
+	for rows.Next() {
+		var i IgnoreWindow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.StartTime,
+			&i.EndTime,
+			&i.DaysOfWeek,
+			&i.Timezone,
+			&i.CreatedAt,
+			&i.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -1689,6 +2040,46 @@ func (q *Queries) ListRecentItemPublishedDates(ctx context.Context, arg ListRece
 	return items, nil
 }
 
+const listTagIgnoreWindows = `-- name: ListTagIgnoreWindows :many
+SELECT tag_id, ignore_window_id FROM tag_ignore_windows
+WHERE
+  (?1 IS NULL OR tag_id = ?1)
+  AND (?2 IS NULL OR ignore_window_id = ?2)
+`
+
+type ListTagIgnoreWindowsParams struct {
+	TagID          interface{} `json:"tag_id"`
+	IgnoreWindowID interface{} `json:"ignore_window_id"`
+}
+
+type ListTagIgnoreWindowsRow struct {
+	TagID          string `json:"tag_id"`
+	IgnoreWindowID string `json:"ignore_window_id"`
+}
+
+func (q *Queries) ListTagIgnoreWindows(ctx context.Context, arg ListTagIgnoreWindowsParams) ([]ListTagIgnoreWindowsRow, error) {
+	rows, err := q.db.QueryContext(ctx, listTagIgnoreWindows, arg.TagID, arg.IgnoreWindowID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListTagIgnoreWindowsRow
+	for rows.Next() {
+		var i ListTagIgnoreWindowsRow
+		if err := rows.Scan(&i.TagID, &i.IgnoreWindowID); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listTags = `-- name: ListTags :many
 SELECT
   id, name, created_at, updated_at
@@ -1980,6 +2371,51 @@ func (q *Queries) UpdateFeed(ctx context.Context, arg UpdateFeedParams) (Feed, e
 		&i.Copyright,
 		&i.FeedType,
 		&i.FeedVersion,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateIgnoreWindow = `-- name: UpdateIgnoreWindow :one
+UPDATE ignore_windows
+SET
+  name = COALESCE(?, name),
+  start_time = COALESCE(?, start_time),
+  end_time = COALESCE(?, end_time),
+  days_of_week = COALESCE(?, days_of_week),
+  timezone = COALESCE(?, timezone),
+  updated_at = (strftime('%FT%TZ', 'now'))
+WHERE id = ?
+RETURNING id, name, start_time, end_time, days_of_week, timezone, created_at, updated_at
+`
+
+type UpdateIgnoreWindowParams struct {
+	Name       string `json:"name"`
+	StartTime  string `json:"start_time"`
+	EndTime    string `json:"end_time"`
+	DaysOfWeek string `json:"days_of_week"`
+	Timezone   string `json:"timezone"`
+	ID         string `json:"id"`
+}
+
+func (q *Queries) UpdateIgnoreWindow(ctx context.Context, arg UpdateIgnoreWindowParams) (IgnoreWindow, error) {
+	row := q.db.QueryRowContext(ctx, updateIgnoreWindow,
+		arg.Name,
+		arg.StartTime,
+		arg.EndTime,
+		arg.DaysOfWeek,
+		arg.Timezone,
+		arg.ID,
+	)
+	var i IgnoreWindow
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.StartTime,
+		&i.EndTime,
+		&i.DaysOfWeek,
+		&i.Timezone,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

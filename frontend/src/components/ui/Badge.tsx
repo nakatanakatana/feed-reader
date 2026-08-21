@@ -1,12 +1,13 @@
 import type { JSX } from "solid-js";
 import { css, cx } from "../../../styled-system/css";
 
-type BadgeVariant = "neutral" | "primary";
+type BadgeVariant = "neutral" | "primary" | "warning";
 
 interface BadgeProps {
   children: JSX.Element;
   variant?: BadgeVariant;
   class?: string;
+  title?: string;
 }
 
 export function Badge(props: BadgeProps) {
@@ -14,6 +15,7 @@ export function Badge(props: BadgeProps) {
 
   return (
     <span
+      title={props.title}
       class={cx(
         css({
           fontSize: "xs",
@@ -23,8 +25,18 @@ export function Badge(props: BadgeProps) {
           borderRadius: "full",
           minWidth: "2rem",
           textAlign: "center",
-          backgroundColor: variant() === "primary" ? "blue.100" : "gray.100",
-          color: variant() === "primary" ? "blue.700" : "gray.700",
+          backgroundColor:
+            variant() === "primary"
+              ? "blue.100"
+              : variant() === "warning"
+                ? "yellow.100"
+                : "gray.100",
+          color:
+            variant() === "primary"
+              ? "blue.700"
+              : variant() === "warning"
+                ? "yellow.800"
+                : "gray.700",
         }),
         props.class,
       )}

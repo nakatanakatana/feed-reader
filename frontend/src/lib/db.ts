@@ -7,6 +7,7 @@ import { queryClient } from "./query";
 
 export * from "./block-db";
 export * from "./feed-db";
+export * from "./ignore-window-db";
 export * from "./item-db";
 export * from "./item-read-db";
 export * from "./item-sync-state";

@@ -7,7 +7,9 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"slices"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/nakatanakatana/feed-reader/gen/openapi"
@@ -547,6 +549,372 @@ func (h *OpenAPIHandler) TagsDelete(ctx context.Context, request openapi.TagsDel
 	}
 
 	return openapi.TagsDelete200Response{}, nil
+}
+
+func (h *OpenAPIHandler) IgnoreWindowsList(ctx context.Context, request openapi.IgnoreWindowsListRequestObject) (openapi.IgnoreWindowsListResponseObject, error) {
+	rows, err := h.store.ListIgnoreWindows(ctx)
+	if err != nil {
+		return openapi.IgnoreWindowsList500JSONResponse{Code: "internal", Message: err.Error()}, nil
+	}
+
+	windows := make([]openapi.IgnoreWindow, 0, len(rows))
+	for _, row := range rows {
+		converted, err := ignoreWindowToOpenAPI(row)
+		if err != nil {
+			return openapi.IgnoreWindowsList500JSONResponse{Code: "internal", Message: err.Error()}, nil
+		}
+		windows = append(windows, converted)
+	}
+
+	return openapi.IgnoreWindowsList200JSONResponse(openapi.ListIgnoreWindowsResponse{
+		IgnoreWindows: windows,
+	}), nil
+}
+
+func (h *OpenAPIHandler) IgnoreWindowsCreate(ctx context.Context, request openapi.IgnoreWindowsCreateRequestObject) (openapi.IgnoreWindowsCreateResponseObject, error) {
+	if request.Body == nil {
+		return openapi.IgnoreWindowsCreate500JSONResponse{Code: "invalid_argument", Message: "request body is required"}, nil
+	}
+	if strings.TrimSpace(request.Body.Name) == "" {
+		return openapi.IgnoreWindowsCreate500JSONResponse{Code: "invalid_argument", Message: "name is required"}, nil
+	}
+	startMin, err := parseAndValidateTimeOfDay(request.Body.StartTime)
+	if err != nil {
+		return openapi.IgnoreWindowsCreate500JSONResponse{Code: "invalid_argument", Message: fmt.Sprintf("invalid startTime: %v", err)}, nil
+	}
+	if startMin == 1440 {
+		return openapi.IgnoreWindowsCreate500JSONResponse{Code: "invalid_argument", Message: "start time cannot be 24:00"}, nil
+	}
+	endMin, err := parseAndValidateTimeOfDay(request.Body.EndTime)
+	if err != nil {
+		return openapi.IgnoreWindowsCreate500JSONResponse{Code: "invalid_argument", Message: fmt.Sprintf("invalid endTime: %v", err)}, nil
+	}
+	if startMin == endMin && startMin != 0 {
+		return openapi.IgnoreWindowsCreate500JSONResponse{Code: "invalid_argument", Message: "start_time and end_time cannot be identical unless both are 00:00"}, nil
+	}
+	daysOfWeek, err := normalizeAndValidateDaysOfWeek(request.Body.DaysOfWeek)
+	if err != nil {
+		return openapi.IgnoreWindowsCreate500JSONResponse{Code: "invalid_argument", Message: fmt.Sprintf("invalid daysOfWeek: %v", err)}, nil
+	}
+	tz := request.Body.Timezone
+	if tz == "" {
+		tz = "UTC"
+	}
+	if _, err := time.LoadLocation(tz); err != nil {
+		return openapi.IgnoreWindowsCreate500JSONResponse{Code: "invalid_argument", Message: fmt.Sprintf("invalid timezone: %v", err)}, nil
+	}
+
+	daysJSON, err := json.Marshal(daysOfWeek)
+	if err != nil {
+		return openapi.IgnoreWindowsCreate500JSONResponse{Code: "internal", Message: fmt.Sprintf("failed to marshal daysOfWeek: %v", err)}, nil
+	}
+
+	newUUID, err := h.uuidGenerator.NewRandom()
+	if err != nil {
+		return openapi.IgnoreWindowsCreate500JSONResponse{Code: "internal", Message: fmt.Sprintf("failed to generate UUID: %v", err)}, nil
+	}
+
+	created, err := h.store.CreateIgnoreWindow(ctx, store.CreateIgnoreWindowParams{
+		ID:         newUUID.String(),
+		Name:       strings.TrimSpace(request.Body.Name),
+		StartTime:  request.Body.StartTime,
+		EndTime:    request.Body.EndTime,
+		DaysOfWeek: string(daysJSON),
+		Timezone:   tz,
+	})
+	if err != nil {
+		return openapi.IgnoreWindowsCreate500JSONResponse{Code: "internal", Message: err.Error()}, nil
+	}
+
+	converted, err := ignoreWindowToOpenAPI(created)
+	if err != nil {
+		return openapi.IgnoreWindowsCreate500JSONResponse{Code: "internal", Message: err.Error()}, nil
+	}
+
+	return openapi.IgnoreWindowsCreate200JSONResponse(openapi.CreateIgnoreWindowResponse{
+		IgnoreWindow: converted,
+	}), nil
+}
+
+func (h *OpenAPIHandler) IgnoreWindowsUpdate(ctx context.Context, request openapi.IgnoreWindowsUpdateRequestObject) (openapi.IgnoreWindowsUpdateResponseObject, error) {
+	if request.Body == nil {
+		return openapi.IgnoreWindowsUpdate500JSONResponse{Code: "invalid_argument", Message: "request body is required"}, nil
+	}
+	existing, err := h.store.GetIgnoreWindow(ctx, request.Id)
+	if err != nil {
+		return openapi.IgnoreWindowsUpdate500JSONResponse{Code: "internal", Message: err.Error()}, nil
+	}
+
+	name := existing.Name
+	if request.Body.Name != nil {
+		if strings.TrimSpace(*request.Body.Name) == "" {
+			return openapi.IgnoreWindowsUpdate500JSONResponse{Code: "invalid_argument", Message: "name cannot be empty"}, nil
+		}
+		name = strings.TrimSpace(*request.Body.Name)
+	}
+
+	startTime := existing.StartTime
+	if request.Body.StartTime != nil {
+		startTime = *request.Body.StartTime
+	}
+	startMin, err := parseAndValidateTimeOfDay(startTime)
+	if err != nil {
+		return openapi.IgnoreWindowsUpdate500JSONResponse{Code: "invalid_argument", Message: fmt.Sprintf("invalid startTime: %v", err)}, nil
+	}
+	if startMin == 1440 {
+		return openapi.IgnoreWindowsUpdate500JSONResponse{Code: "invalid_argument", Message: "start time cannot be 24:00"}, nil
+	}
+
+	endTime := existing.EndTime
+	if request.Body.EndTime != nil {
+		endTime = *request.Body.EndTime
+	}
+	endMin, err := parseAndValidateTimeOfDay(endTime)
+	if err != nil {
+		return openapi.IgnoreWindowsUpdate500JSONResponse{Code: "invalid_argument", Message: fmt.Sprintf("invalid endTime: %v", err)}, nil
+	}
+
+	if startMin == endMin && startMin != 0 {
+		return openapi.IgnoreWindowsUpdate500JSONResponse{Code: "invalid_argument", Message: "start_time and end_time cannot be identical unless both are 00:00"}, nil
+	}
+
+	daysJSON := existing.DaysOfWeek
+	if request.Body.DaysOfWeek != nil {
+		days, err := normalizeAndValidateDaysOfWeek(*request.Body.DaysOfWeek)
+		if err != nil {
+			return openapi.IgnoreWindowsUpdate500JSONResponse{Code: "invalid_argument", Message: fmt.Sprintf("invalid daysOfWeek: %v", err)}, nil
+		}
+		daysBytes, err := json.Marshal(days)
+		if err != nil {
+			return openapi.IgnoreWindowsUpdate500JSONResponse{Code: "internal", Message: fmt.Sprintf("failed to marshal daysOfWeek: %v", err)}, nil
+		}
+		daysJSON = string(daysBytes)
+	}
+
+	timezone := existing.Timezone
+	if request.Body.Timezone != nil {
+		tz := *request.Body.Timezone
+		if tz == "" {
+			tz = "UTC"
+		}
+		if _, err := time.LoadLocation(tz); err != nil {
+			return openapi.IgnoreWindowsUpdate500JSONResponse{Code: "invalid_argument", Message: fmt.Sprintf("invalid timezone: %v", err)}, nil
+		}
+		timezone = tz
+	}
+
+	updated, err := h.store.UpdateIgnoreWindow(ctx, store.UpdateIgnoreWindowParams{
+		ID:         request.Id,
+		Name:       name,
+		StartTime:  startTime,
+		EndTime:    endTime,
+		DaysOfWeek: daysJSON,
+		Timezone:   timezone,
+	})
+	if err != nil {
+		return openapi.IgnoreWindowsUpdate500JSONResponse{Code: "internal", Message: err.Error()}, nil
+	}
+
+	converted, err := ignoreWindowToOpenAPI(updated)
+	if err != nil {
+		return openapi.IgnoreWindowsUpdate500JSONResponse{Code: "internal", Message: err.Error()}, nil
+	}
+
+	return openapi.IgnoreWindowsUpdate200JSONResponse(openapi.UpdateIgnoreWindowResponse{
+		IgnoreWindow: converted,
+	}), nil
+}
+
+func (h *OpenAPIHandler) IgnoreWindowsDelete(ctx context.Context, request openapi.IgnoreWindowsDeleteRequestObject) (openapi.IgnoreWindowsDeleteResponseObject, error) {
+	if err := h.store.DeleteIgnoreWindow(ctx, request.Id); err != nil {
+		return openapi.IgnoreWindowsDelete500JSONResponse{Code: "internal", Message: err.Error()}, nil
+	}
+	return openapi.IgnoreWindowsDelete200Response{}, nil
+}
+
+func (h *OpenAPIHandler) FeedIgnoreWindowsList(ctx context.Context, request openapi.FeedIgnoreWindowsListRequestObject) (openapi.FeedIgnoreWindowsListResponseObject, error) {
+	params := store.ListFeedIgnoreWindowsParams{}
+	if request.Params.FeedId != nil {
+		params.FeedID = *request.Params.FeedId
+	}
+	if request.Params.IgnoreWindowId != nil {
+		params.IgnoreWindowID = *request.Params.IgnoreWindowId
+	}
+	rows, err := h.store.ListFeedIgnoreWindows(ctx, params)
+	if err != nil {
+		return openapi.FeedIgnoreWindowsList500JSONResponse{Code: "internal", Message: err.Error()}, nil
+	}
+	feedIgnoreWindows := make([]openapi.FeedIgnoreWindow, 0, len(rows))
+	for _, row := range rows {
+		feedIgnoreWindows = append(feedIgnoreWindows, openapi.FeedIgnoreWindow{
+			FeedId:         row.FeedID,
+			IgnoreWindowId: row.IgnoreWindowID,
+		})
+	}
+	return openapi.FeedIgnoreWindowsList200JSONResponse(openapi.ListFeedIgnoreWindowsResponse{
+		FeedIgnoreWindows: feedIgnoreWindows,
+	}), nil
+}
+
+func (h *OpenAPIHandler) FeedIgnoreWindowsManage(ctx context.Context, request openapi.FeedIgnoreWindowsManageRequestObject) (openapi.FeedIgnoreWindowsManageResponseObject, error) {
+	if request.Body == nil {
+		return openapi.FeedIgnoreWindowsManage500JSONResponse{Code: "invalid_argument", Message: "request body is required"}, nil
+	}
+	err := h.store.WithTransaction(ctx, func(qtx *store.Queries) error {
+		for _, feedID := range request.Body.FeedIds {
+			for _, windowID := range request.Body.RemoveIgnoreWindowIds {
+				if err := qtx.DeleteFeedIgnoreWindow(ctx, store.DeleteFeedIgnoreWindowParams{
+					FeedID:         feedID,
+					IgnoreWindowID: windowID,
+				}); err != nil {
+					return err
+				}
+			}
+			for _, windowID := range request.Body.AddIgnoreWindowIds {
+				if err := qtx.CreateFeedIgnoreWindow(ctx, store.CreateFeedIgnoreWindowParams{
+					FeedID:         feedID,
+					IgnoreWindowID: windowID,
+				}); err != nil {
+					return err
+				}
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		return openapi.FeedIgnoreWindowsManage500JSONResponse{Code: "internal", Message: err.Error()}, nil
+	}
+	return openapi.FeedIgnoreWindowsManage200Response{}, nil
+}
+
+func (h *OpenAPIHandler) TagIgnoreWindowsList(ctx context.Context, request openapi.TagIgnoreWindowsListRequestObject) (openapi.TagIgnoreWindowsListResponseObject, error) {
+	params := store.ListTagIgnoreWindowsParams{}
+	if request.Params.TagId != nil {
+		params.TagID = *request.Params.TagId
+	}
+	if request.Params.IgnoreWindowId != nil {
+		params.IgnoreWindowID = *request.Params.IgnoreWindowId
+	}
+	rows, err := h.store.ListTagIgnoreWindows(ctx, params)
+	if err != nil {
+		return openapi.TagIgnoreWindowsList500JSONResponse{Code: "internal", Message: err.Error()}, nil
+	}
+	tagIgnoreWindows := make([]openapi.TagIgnoreWindow, 0, len(rows))
+	for _, row := range rows {
+		tagIgnoreWindows = append(tagIgnoreWindows, openapi.TagIgnoreWindow{
+			TagId:          row.TagID,
+			IgnoreWindowId: row.IgnoreWindowID,
+		})
+	}
+	return openapi.TagIgnoreWindowsList200JSONResponse(openapi.ListTagIgnoreWindowsResponse{
+		TagIgnoreWindows: tagIgnoreWindows,
+	}), nil
+}
+
+func (h *OpenAPIHandler) TagIgnoreWindowsManage(ctx context.Context, request openapi.TagIgnoreWindowsManageRequestObject) (openapi.TagIgnoreWindowsManageResponseObject, error) {
+	if request.Body == nil {
+		return openapi.TagIgnoreWindowsManage500JSONResponse{Code: "invalid_argument", Message: "request body is required"}, nil
+	}
+	err := h.store.WithTransaction(ctx, func(qtx *store.Queries) error {
+		for _, tagID := range request.Body.TagIds {
+			for _, windowID := range request.Body.RemoveIgnoreWindowIds {
+				if err := qtx.DeleteTagIgnoreWindow(ctx, store.DeleteTagIgnoreWindowParams{
+					TagID:          tagID,
+					IgnoreWindowID: windowID,
+				}); err != nil {
+					return err
+				}
+			}
+			for _, windowID := range request.Body.AddIgnoreWindowIds {
+				if err := qtx.CreateTagIgnoreWindow(ctx, store.CreateTagIgnoreWindowParams{
+					TagID:          tagID,
+					IgnoreWindowID: windowID,
+				}); err != nil {
+					return err
+				}
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		return openapi.TagIgnoreWindowsManage500JSONResponse{Code: "internal", Message: err.Error()}, nil
+	}
+	return openapi.TagIgnoreWindowsManage200Response{}, nil
+}
+
+func parseAndValidateTimeOfDay(s string) (int, error) {
+	trimmed := strings.TrimSpace(s)
+	if trimmed == "24:00" {
+		return 1440, nil
+	}
+	parts := strings.Split(trimmed, ":")
+	if len(parts) != 2 {
+		return 0, fmt.Errorf("invalid time format %q, expected HH:MM", s)
+	}
+	h, err := strconv.Atoi(parts[0])
+	if err != nil {
+		return 0, fmt.Errorf("invalid hour %q: %w", parts[0], err)
+	}
+	m, err := strconv.Atoi(parts[1])
+	if err != nil {
+		return 0, fmt.Errorf("invalid minute %q: %w", parts[1], err)
+	}
+	if h == 24 && m == 0 {
+		return 1440, nil
+	}
+	if h < 0 || h > 23 || m < 0 || m > 59 {
+		return 0, fmt.Errorf("time out of range: %s", s)
+	}
+	return h*60 + m, nil
+}
+
+func normalizeAndValidateDaysOfWeek(days []int32) ([]int32, error) {
+	if len(days) == 0 {
+		return nil, fmt.Errorf("days of week cannot be empty")
+	}
+	sorted := make([]int32, len(days))
+	copy(sorted, days)
+	slices.Sort(sorted)
+	compacted := slices.Compact(sorted)
+	for _, d := range compacted {
+		if d < 0 || d > 6 {
+			return nil, fmt.Errorf("day %d is out of range [0, 6]", d)
+		}
+	}
+	return compacted, nil
+}
+
+func ignoreWindowToOpenAPI(window store.IgnoreWindow) (openapi.IgnoreWindow, error) {
+	createdAt, err := parseOpenAPITime(window.CreatedAt)
+	if err != nil {
+		return openapi.IgnoreWindow{}, err
+	}
+	updatedAt, err := parseOpenAPITime(window.UpdatedAt)
+	if err != nil {
+		return openapi.IgnoreWindow{}, err
+	}
+
+	var daysOfWeek []int32
+	trimmedDays := strings.TrimSpace(window.DaysOfWeek)
+	if trimmedDays != "" && trimmedDays != "[]" {
+		if err := json.Unmarshal([]byte(trimmedDays), &daysOfWeek); err != nil {
+			return openapi.IgnoreWindow{}, fmt.Errorf("failed to parse days_of_week %q: %w", window.DaysOfWeek, err)
+		}
+	}
+	if daysOfWeek == nil {
+		daysOfWeek = []int32{}
+	}
+
+	return openapi.IgnoreWindow{
+		Id:         window.ID,
+		Name:       window.Name,
+		StartTime:  window.StartTime,
+		EndTime:    window.EndTime,
+		DaysOfWeek: daysOfWeek,
+		Timezone:   window.Timezone,
+		CreatedAt:  createdAt,
+		UpdatedAt:  updatedAt,
+	}, nil
 }
 
 func parseOpenAPITime(value string) (time.Time, error) {

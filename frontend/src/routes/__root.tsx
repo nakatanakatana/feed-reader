@@ -136,6 +136,15 @@ function RootComponent() {
         >
           Block Rules
         </Link>
+        <Link
+          to="/ignore-windows"
+          class={linkStyle}
+          activeProps={{
+            class: activeLinkStyle,
+          }}
+        >
+          Ignore Windows
+        </Link>
       </header>
       <Outlet />
       {/* Start rendering router matches */}
