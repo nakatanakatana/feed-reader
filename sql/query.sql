@@ -634,3 +634,95 @@ WHERE
   fi.feed_id = ? AND
   COALESCE(ir.is_read, 0) = 0 AND
   NOT EXISTS (SELECT 1 FROM item_blocks ib WHERE ib.item_id = fi.item_id);
+
+-- name: CreateIgnoreWindow :one
+INSERT INTO ignore_windows (
+  id,
+  name,
+  start_time,
+  end_time,
+  days_of_week,
+  timezone
+) VALUES (
+  ?, ?, ?, ?, ?, ?
+)
+RETURNING *;
+
+-- name: GetIgnoreWindow :one
+SELECT * FROM ignore_windows WHERE id = ?;
+
+-- name: ListIgnoreWindows :many
+SELECT * FROM ignore_windows ORDER BY name ASC;
+
+-- name: UpdateIgnoreWindow :one
+UPDATE ignore_windows
+SET
+  name = COALESCE(?, name),
+  start_time = COALESCE(?, start_time),
+  end_time = COALESCE(?, end_time),
+  days_of_week = COALESCE(?, days_of_week),
+  timezone = COALESCE(?, timezone),
+  updated_at = (strftime('%FT%TZ', 'now'))
+WHERE id = ?
+RETURNING *;
+
+-- name: DeleteIgnoreWindow :exec
+DELETE FROM ignore_windows WHERE id = ?;
+
+-- name: ListFeedIgnoreWindows :many
+SELECT feed_id, ignore_window_id FROM feed_ignore_windows
+WHERE
+  (sqlc.narg('feed_id') IS NULL OR feed_id = sqlc.narg('feed_id'))
+  AND (sqlc.narg('ignore_window_id') IS NULL OR ignore_window_id = sqlc.narg('ignore_window_id'));
+
+-- name: ListIgnoreWindowsByFeedID :many
+SELECT iw.* FROM ignore_windows iw
+JOIN feed_ignore_windows fiw ON iw.id = fiw.ignore_window_id
+WHERE fiw.feed_id = ?
+ORDER BY iw.name ASC;
+
+-- name: CreateFeedIgnoreWindow :exec
+INSERT INTO feed_ignore_windows (feed_id, ignore_window_id)
+VALUES (?, ?)
+ON CONFLICT(feed_id, ignore_window_id) DO NOTHING;
+
+-- name: DeleteFeedIgnoreWindow :exec
+DELETE FROM feed_ignore_windows
+WHERE feed_id = ? AND ignore_window_id = ?;
+
+-- name: DeleteFeedIgnoreWindowsByFeedID :exec
+DELETE FROM feed_ignore_windows WHERE feed_id = ?;
+
+-- name: ListTagIgnoreWindows :many
+SELECT tag_id, ignore_window_id FROM tag_ignore_windows
+WHERE
+  (sqlc.narg('tag_id') IS NULL OR tag_id = sqlc.narg('tag_id'))
+  AND (sqlc.narg('ignore_window_id') IS NULL OR ignore_window_id = sqlc.narg('ignore_window_id'));
+
+-- name: ListIgnoreWindowsByTagID :many
+SELECT iw.* FROM ignore_windows iw
+JOIN tag_ignore_windows tiw ON iw.id = tiw.ignore_window_id
+WHERE tiw.tag_id = ?
+ORDER BY iw.name ASC;
+
+-- name: CreateTagIgnoreWindow :exec
+INSERT INTO tag_ignore_windows (tag_id, ignore_window_id)
+VALUES (?, ?)
+ON CONFLICT(tag_id, ignore_window_id) DO NOTHING;
+
+-- name: DeleteTagIgnoreWindow :exec
+DELETE FROM tag_ignore_windows
+WHERE tag_id = ? AND ignore_window_id = ?;
+
+-- name: DeleteTagIgnoreWindowsByTagID :exec
+DELETE FROM tag_ignore_windows WHERE tag_id = ?;
+
+-- name: ListActiveIgnoreWindowsForFeed :many
+SELECT DISTINCT iw.*
+FROM ignore_windows iw
+LEFT JOIN feed_ignore_windows fiw ON iw.id = fiw.ignore_window_id AND fiw.feed_id = sqlc.arg('feed_id')
+LEFT JOIN tag_ignore_windows tiw ON iw.id = tiw.ignore_window_id
+LEFT JOIN feed_tags ft ON tiw.tag_id = ft.tag_id AND ft.feed_id = sqlc.arg('feed_id')
+WHERE fiw.feed_id IS NOT NULL OR ft.feed_id IS NOT NULL
+ORDER BY iw.name ASC;
+

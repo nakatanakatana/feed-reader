@@ -20,6 +20,16 @@ export interface components {
     ListItemBlockRulesResponse: Generated.ListItemBlockRulesResponse;
     URLParsingRule: Generated.URLParsingRule;
     ItemBlockRule: Generated.ItemBlockRule;
+    IgnoreWindow: Generated.IgnoreWindow;
+    FeedIgnoreWindow: Generated.FeedIgnoreWindow;
+    TagIgnoreWindow: Generated.TagIgnoreWindow;
+    ListIgnoreWindowsResponse: Generated.ListIgnoreWindowsResponse;
+    CreateIgnoreWindowResponse: Generated.CreateIgnoreWindowResponse;
+    UpdateIgnoreWindowResponse: Generated.UpdateIgnoreWindowResponse;
+    ListFeedIgnoreWindowsResponse: Generated.ListFeedIgnoreWindowsResponse;
+    ListTagIgnoreWindowsResponse: Generated.ListTagIgnoreWindowsResponse;
+    ManageFeedIgnoreWindowsRequest: Generated.ManageFeedIgnoreWindowsRequest;
+    ManageTagIgnoreWindowsRequest: Generated.ManageTagIgnoreWindowsRequest;
     RefreshFeedsRequest: Generated.RefreshFeedsRequest;
     UpdateItemStatusRequest: Generated.UpdateItemStatusRequest;
     ImportOpmlRequest: Generated.ImportOpmlRequest;

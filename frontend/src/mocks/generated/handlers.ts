@@ -9,6 +9,8 @@ import { URLRulesListHandler } from "./URLRulesListHandler.ts";
 import { blockRulesAddHandler } from "./blockRulesAddHandler.ts";
 import { blockRulesDeleteHandler } from "./blockRulesDeleteHandler.ts";
 import { blockRulesListHandler } from "./blockRulesListHandler.ts";
+import { feedIgnoreWindowsListHandler } from "./feedIgnoreWindowsListHandler.ts";
+import { feedIgnoreWindowsManageHandler } from "./feedIgnoreWindowsManageHandler.ts";
 import { feedTagsListHandler } from "./feedTagsListHandler.ts";
 import { feedTagsManageHandler } from "./feedTagsManageHandler.ts";
 import { feedsCreateHandler } from "./feedsCreateHandler.ts";
@@ -18,10 +20,16 @@ import { feedsImportOpmlHandler } from "./feedsImportOpmlHandler.ts";
 import { feedsListHandler } from "./feedsListHandler.ts";
 import { feedsRefreshHandler } from "./feedsRefreshHandler.ts";
 import { feedsSuspendHandler } from "./feedsSuspendHandler.ts";
+import { ignoreWindowsCreateHandler } from "./ignoreWindowsCreateHandler.ts";
+import { ignoreWindowsDeleteHandler } from "./ignoreWindowsDeleteHandler.ts";
+import { ignoreWindowsListHandler } from "./ignoreWindowsListHandler.ts";
+import { ignoreWindowsUpdateHandler } from "./ignoreWindowsUpdateHandler.ts";
 import { itemReadsListHandler } from "./itemReadsListHandler.ts";
 import { itemsGetHandler } from "./itemsGetHandler.ts";
 import { itemsListHandler } from "./itemsListHandler.ts";
 import { itemsUpdateStatusHandler } from "./itemsUpdateStatusHandler.ts";
+import { tagIgnoreWindowsListHandler } from "./tagIgnoreWindowsListHandler.ts";
+import { tagIgnoreWindowsManageHandler } from "./tagIgnoreWindowsManageHandler.ts";
 import { tagsCreateHandler } from "./tagsCreateHandler.ts";
 import { tagsDeleteHandler } from "./tagsDeleteHandler.ts";
 import { tagsListHandler } from "./tagsListHandler.ts";
@@ -30,6 +38,8 @@ export const handlers = [
   blockRulesListHandler(),
   blockRulesAddHandler(),
   blockRulesDeleteHandler(),
+  feedIgnoreWindowsListHandler(),
+  feedIgnoreWindowsManageHandler(),
   feedTagsListHandler(),
   feedTagsManageHandler(),
   feedsListHandler(),
@@ -39,10 +49,16 @@ export const handlers = [
   feedsRefreshHandler(),
   feedsSuspendHandler(),
   feedsDeleteHandler(),
+  ignoreWindowsListHandler(),
+  ignoreWindowsCreateHandler(),
+  ignoreWindowsUpdateHandler(),
+  ignoreWindowsDeleteHandler(),
   itemReadsListHandler(),
   itemsListHandler(),
   itemsUpdateStatusHandler(),
   itemsGetHandler(),
+  tagIgnoreWindowsListHandler(),
+  tagIgnoreWindowsManageHandler(),
   tagsListHandler(),
   tagsCreateHandler(),
   tagsDeleteHandler(),

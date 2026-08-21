@@ -24,7 +24,7 @@ func TestCleanMigration(t *testing.T) {
 	assert.NilError(t, err)
 	defer func() { _ = db.Close() }()
 
-	tables := []string{"feeds", "items", "feed_items", "item_reads", "tags", "feed_tags", "feed_fetcher", "url_parsing_rules", "item_block_rules", "item_blocks"}
+	tables := []string{"feeds", "items", "feed_items", "item_reads", "tags", "feed_tags", "feed_fetcher", "url_parsing_rules", "item_block_rules", "item_blocks", "ignore_windows", "feed_ignore_windows", "tag_ignore_windows"}
 	for _, table := range tables {
 		var name string
 		err = db.QueryRow("SELECT name FROM sqlite_master WHERE type='table' AND name=?", table).Scan(&name)
@@ -36,4 +36,9 @@ func TestCleanMigration(t *testing.T) {
 	err = db.QueryRow("SELECT count(*) FROM pragma_table_info('feed_fetcher') WHERE name='next_fetch'").Scan(&count)
 	assert.NilError(t, err)
 	assert.Equal(t, count, 1, "next_fetch column should exist")
+
+	// 4. Verify columns in ignore_windows
+	err = db.QueryRow("SELECT count(*) FROM pragma_table_info('ignore_windows') WHERE name='days_of_week'").Scan(&count)
+	assert.NilError(t, err)
+	assert.Equal(t, count, 1, "days_of_week column should exist in ignore_windows")
 }

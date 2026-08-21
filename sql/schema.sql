@@ -123,3 +123,38 @@ AFTER INSERT ON items
 BEGIN
   INSERT INTO item_reads (item_id, is_read) VALUES (NEW.id, 0);
 END;
+
+CREATE TABLE ignore_windows (
+  id           TEXT PRIMARY KEY,
+  name         TEXT NOT NULL,
+  start_time   TEXT NOT NULL,
+  end_time     TEXT NOT NULL,
+  days_of_week TEXT NOT NULL,
+  timezone     TEXT NOT NULL DEFAULT 'UTC',
+  created_at   TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now')),
+  updated_at   TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now'))
+);
+
+CREATE TABLE feed_ignore_windows (
+  feed_id          TEXT NOT NULL,
+  ignore_window_id TEXT NOT NULL,
+  created_at       TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now')),
+  updated_at       TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now')),
+  PRIMARY KEY (feed_id, ignore_window_id),
+  FOREIGN KEY (feed_id) REFERENCES feeds(id) ON DELETE CASCADE,
+  FOREIGN KEY (ignore_window_id) REFERENCES ignore_windows(id) ON DELETE CASCADE
+);
+
+CREATE TABLE tag_ignore_windows (
+  tag_id           TEXT NOT NULL,
+  ignore_window_id TEXT NOT NULL,
+  created_at       TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now')),
+  updated_at       TEXT NOT NULL DEFAULT (strftime('%FT%TZ', 'now')),
+  PRIMARY KEY (tag_id, ignore_window_id),
+  FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE,
+  FOREIGN KEY (ignore_window_id) REFERENCES ignore_windows(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_feed_ignore_windows_ignore_window_id ON feed_ignore_windows(ignore_window_id);
+CREATE INDEX idx_tag_ignore_windows_ignore_window_id ON tag_ignore_windows(ignore_window_id);
+

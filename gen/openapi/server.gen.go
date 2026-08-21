@@ -58,6 +58,20 @@ type CreateFeedResponse struct {
 	Feed Feed `json:"feed"`
 }
 
+// CreateIgnoreWindowRequest defines model for CreateIgnoreWindowRequest.
+type CreateIgnoreWindowRequest struct {
+	DaysOfWeek []int32 `json:"daysOfWeek"`
+	EndTime    string  `json:"endTime"`
+	Name       string  `json:"name"`
+	StartTime  string  `json:"startTime"`
+	Timezone   string  `json:"timezone"`
+}
+
+// CreateIgnoreWindowResponse defines model for CreateIgnoreWindowResponse.
+type CreateIgnoreWindowResponse struct {
+	IgnoreWindow IgnoreWindow `json:"ignoreWindow"`
+}
+
 // CreateTagRequest defines model for CreateTagRequest.
 type CreateTagRequest struct {
 	Name string `json:"name"`
@@ -100,6 +114,12 @@ type FeedFetchStatus struct {
 	Success       bool    `json:"success"`
 }
 
+// FeedIgnoreWindow defines model for FeedIgnoreWindow.
+type FeedIgnoreWindow struct {
+	FeedId         string `json:"feedId"`
+	IgnoreWindowId string `json:"ignoreWindowId"`
+}
+
 // FeedTag defines model for FeedTag.
 type FeedTag struct {
 	FeedId string `json:"feedId"`
@@ -109,6 +129,18 @@ type FeedTag struct {
 // GetItemResponse defines model for GetItemResponse.
 type GetItemResponse struct {
 	Item *Item `json:"item,omitempty"`
+}
+
+// IgnoreWindow defines model for IgnoreWindow.
+type IgnoreWindow struct {
+	CreatedAt  time.Time `json:"createdAt"`
+	DaysOfWeek []int32   `json:"daysOfWeek"`
+	EndTime    string    `json:"endTime"`
+	Id         string    `json:"id"`
+	Name       string    `json:"name"`
+	StartTime  string    `json:"startTime"`
+	Timezone   string    `json:"timezone"`
+	UpdatedAt  time.Time `json:"updatedAt"`
 }
 
 // ImportFailedFeed defines model for ImportFailedFeed.
@@ -168,6 +200,11 @@ type ItemRead struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
+// ListFeedIgnoreWindowsResponse defines model for ListFeedIgnoreWindowsResponse.
+type ListFeedIgnoreWindowsResponse struct {
+	FeedIgnoreWindows []FeedIgnoreWindow `json:"feedIgnoreWindows"`
+}
+
 // ListFeedTagsResponse defines model for ListFeedTagsResponse.
 type ListFeedTagsResponse struct {
 	FeedTags []FeedTag `json:"feedTags"`
@@ -176,6 +213,11 @@ type ListFeedTagsResponse struct {
 // ListFeedsResponse defines model for ListFeedsResponse.
 type ListFeedsResponse struct {
 	Feeds []Feed `json:"feeds"`
+}
+
+// ListIgnoreWindowsResponse defines model for ListIgnoreWindowsResponse.
+type ListIgnoreWindowsResponse struct {
+	IgnoreWindows []IgnoreWindow `json:"ignoreWindows"`
 }
 
 // ListItemBlockRulesResponse defines model for ListItemBlockRulesResponse.
@@ -195,6 +237,11 @@ type ListItemsResponse struct {
 	NextPageToken string `json:"nextPageToken"`
 }
 
+// ListTagIgnoreWindowsResponse defines model for ListTagIgnoreWindowsResponse.
+type ListTagIgnoreWindowsResponse struct {
+	TagIgnoreWindows []TagIgnoreWindow `json:"tagIgnoreWindows"`
+}
+
 // ListTagsResponse defines model for ListTagsResponse.
 type ListTagsResponse struct {
 	Tags             []Tag  `json:"tags"`
@@ -206,11 +253,25 @@ type ListURLParsingRulesResponse struct {
 	Rules []URLParsingRule `json:"rules"`
 }
 
+// ManageFeedIgnoreWindowsRequest defines model for ManageFeedIgnoreWindowsRequest.
+type ManageFeedIgnoreWindowsRequest struct {
+	AddIgnoreWindowIds    []string `json:"addIgnoreWindowIds"`
+	FeedIds               []string `json:"feedIds"`
+	RemoveIgnoreWindowIds []string `json:"removeIgnoreWindowIds"`
+}
+
 // ManageFeedTagsRequest defines model for ManageFeedTagsRequest.
 type ManageFeedTagsRequest struct {
 	AddTagIds    []string `json:"addTagIds"`
 	FeedIds      []string `json:"feedIds"`
 	RemoveTagIds []string `json:"removeTagIds"`
+}
+
+// ManageTagIgnoreWindowsRequest defines model for ManageTagIgnoreWindowsRequest.
+type ManageTagIgnoreWindowsRequest struct {
+	AddIgnoreWindowIds    []string `json:"addIgnoreWindowIds"`
+	RemoveIgnoreWindowIds []string `json:"removeIgnoreWindowIds"`
+	TagIds                []string `json:"tagIds"`
 }
 
 // RefreshFeedsRequest defines model for RefreshFeedsRequest.
@@ -239,6 +300,12 @@ type Tag struct {
 	UpdatedAt   time.Time `json:"updatedAt"`
 }
 
+// TagIgnoreWindow defines model for TagIgnoreWindow.
+type TagIgnoreWindow struct {
+	IgnoreWindowId string `json:"ignoreWindowId"`
+	TagId          string `json:"tagId"`
+}
+
 // URLParsingRule defines model for URLParsingRule.
 type URLParsingRule struct {
 	Domain   string `json:"domain"`
@@ -247,10 +314,30 @@ type URLParsingRule struct {
 	RuleType string `json:"ruleType"`
 }
 
+// UpdateIgnoreWindowRequest defines model for UpdateIgnoreWindowRequest.
+type UpdateIgnoreWindowRequest struct {
+	DaysOfWeek *[]int32 `json:"daysOfWeek,omitempty"`
+	EndTime    *string  `json:"endTime,omitempty"`
+	Name       *string  `json:"name,omitempty"`
+	StartTime  *string  `json:"startTime,omitempty"`
+	Timezone   *string  `json:"timezone,omitempty"`
+}
+
+// UpdateIgnoreWindowResponse defines model for UpdateIgnoreWindowResponse.
+type UpdateIgnoreWindowResponse struct {
+	IgnoreWindow IgnoreWindow `json:"ignoreWindow"`
+}
+
 // UpdateItemStatusRequest defines model for UpdateItemStatusRequest.
 type UpdateItemStatusRequest struct {
 	Ids    []string `json:"ids"`
 	IsRead *bool    `json:"isRead,omitempty"`
+}
+
+// FeedIgnoreWindowsListParams defines parameters for FeedIgnoreWindowsList.
+type FeedIgnoreWindowsListParams struct {
+	FeedId         *string `form:"feedId,omitempty" json:"feedId,omitempty"`
+	IgnoreWindowId *string `form:"ignoreWindowId,omitempty" json:"ignoreWindowId,omitempty"`
 }
 
 // FeedTagsListParams defines parameters for FeedTagsList.
@@ -281,8 +368,17 @@ type ItemsListParams struct {
 	PageToken *string    `form:"pageToken,omitempty" json:"pageToken,omitempty"`
 }
 
+// TagIgnoreWindowsListParams defines parameters for TagIgnoreWindowsList.
+type TagIgnoreWindowsListParams struct {
+	TagId          *string `form:"tagId,omitempty" json:"tagId,omitempty"`
+	IgnoreWindowId *string `form:"ignoreWindowId,omitempty" json:"ignoreWindowId,omitempty"`
+}
+
 // BlockRulesAddJSONRequestBody defines body for BlockRulesAdd for application/json ContentType.
 type BlockRulesAddJSONRequestBody = AddItemBlockRulesRequest
+
+// FeedIgnoreWindowsManageJSONRequestBody defines body for FeedIgnoreWindowsManage for application/json ContentType.
+type FeedIgnoreWindowsManageJSONRequestBody = ManageFeedIgnoreWindowsRequest
 
 // FeedTagsManageJSONRequestBody defines body for FeedTagsManage for application/json ContentType.
 type FeedTagsManageJSONRequestBody = ManageFeedTagsRequest
@@ -302,8 +398,17 @@ type FeedsRefreshJSONRequestBody = RefreshFeedsRequest
 // FeedsSuspendJSONRequestBody defines body for FeedsSuspend for application/json ContentType.
 type FeedsSuspendJSONRequestBody = SuspendFeedsRequest
 
+// IgnoreWindowsCreateJSONRequestBody defines body for IgnoreWindowsCreate for application/json ContentType.
+type IgnoreWindowsCreateJSONRequestBody = CreateIgnoreWindowRequest
+
+// IgnoreWindowsUpdateJSONRequestBody defines body for IgnoreWindowsUpdate for application/json ContentType.
+type IgnoreWindowsUpdateJSONRequestBody = UpdateIgnoreWindowRequest
+
 // ItemsUpdateStatusJSONRequestBody defines body for ItemsUpdateStatus for application/json ContentType.
 type ItemsUpdateStatusJSONRequestBody = UpdateItemStatusRequest
+
+// TagIgnoreWindowsManageJSONRequestBody defines body for TagIgnoreWindowsManage for application/json ContentType.
+type TagIgnoreWindowsManageJSONRequestBody = ManageTagIgnoreWindowsRequest
 
 // TagsCreateJSONRequestBody defines body for TagsCreate for application/json ContentType.
 type TagsCreateJSONRequestBody = CreateTagRequest
@@ -322,6 +427,12 @@ type ServerInterface interface {
 
 	// (DELETE /block-rules/{id})
 	BlockRulesDelete(w http.ResponseWriter, r *http.Request, id string)
+
+	// (GET /feed-ignore-windows)
+	FeedIgnoreWindowsList(w http.ResponseWriter, r *http.Request, params FeedIgnoreWindowsListParams)
+
+	// (POST /feed-ignore-windows/manage)
+	FeedIgnoreWindowsManage(w http.ResponseWriter, r *http.Request)
 
 	// (GET /feed-tags)
 	FeedTagsList(w http.ResponseWriter, r *http.Request, params FeedTagsListParams)
@@ -350,6 +461,18 @@ type ServerInterface interface {
 	// (DELETE /feeds/{id})
 	FeedsDelete(w http.ResponseWriter, r *http.Request, id string)
 
+	// (GET /ignore-windows)
+	IgnoreWindowsList(w http.ResponseWriter, r *http.Request)
+
+	// (POST /ignore-windows)
+	IgnoreWindowsCreate(w http.ResponseWriter, r *http.Request)
+
+	// (DELETE /ignore-windows/{id})
+	IgnoreWindowsDelete(w http.ResponseWriter, r *http.Request, id string)
+
+	// (PUT /ignore-windows/{id})
+	IgnoreWindowsUpdate(w http.ResponseWriter, r *http.Request, id string)
+
 	// (GET /item-reads)
 	ItemReadsList(w http.ResponseWriter, r *http.Request, params ItemReadsListParams)
 
@@ -361,6 +484,12 @@ type ServerInterface interface {
 
 	// (GET /items/{id})
 	ItemsGet(w http.ResponseWriter, r *http.Request, id string)
+
+	// (GET /tag-ignore-windows)
+	TagIgnoreWindowsList(w http.ResponseWriter, r *http.Request, params TagIgnoreWindowsListParams)
+
+	// (POST /tag-ignore-windows/manage)
+	TagIgnoreWindowsManage(w http.ResponseWriter, r *http.Request)
 
 	// (GET /tags)
 	TagsList(w http.ResponseWriter, r *http.Request)
@@ -435,6 +564,66 @@ func (siw *ServerInterfaceWrapper) BlockRulesDelete(w http.ResponseWriter, r *ht
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.BlockRulesDelete(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// FeedIgnoreWindowsList operation middleware
+func (siw *ServerInterfaceWrapper) FeedIgnoreWindowsList(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params FeedIgnoreWindowsListParams
+
+	// ------------- Optional query parameter "feedId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", false, false, "feedId", r.URL.Query(), &params.FeedId, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "feedId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "feedId", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "ignoreWindowId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", false, false, "ignoreWindowId", r.URL.Query(), &params.IgnoreWindowId, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "ignoreWindowId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "ignoreWindowId", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.FeedIgnoreWindowsList(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// FeedIgnoreWindowsManage operation middleware
+func (siw *ServerInterfaceWrapper) FeedIgnoreWindowsManage(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.FeedIgnoreWindowsManage(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -633,6 +822,86 @@ func (siw *ServerInterfaceWrapper) FeedsDelete(w http.ResponseWriter, r *http.Re
 	handler.ServeHTTP(w, r)
 }
 
+// IgnoreWindowsList operation middleware
+func (siw *ServerInterfaceWrapper) IgnoreWindowsList(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.IgnoreWindowsList(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// IgnoreWindowsCreate operation middleware
+func (siw *ServerInterfaceWrapper) IgnoreWindowsCreate(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.IgnoreWindowsCreate(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// IgnoreWindowsDelete operation middleware
+func (siw *ServerInterfaceWrapper) IgnoreWindowsDelete(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.IgnoreWindowsDelete(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// IgnoreWindowsUpdate operation middleware
+func (siw *ServerInterfaceWrapper) IgnoreWindowsUpdate(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true, Type: "string", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.IgnoreWindowsUpdate(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
 // ItemReadsList operation middleware
 func (siw *ServerInterfaceWrapper) ItemReadsList(w http.ResponseWriter, r *http.Request) {
 
@@ -821,6 +1090,66 @@ func (siw *ServerInterfaceWrapper) ItemsGet(w http.ResponseWriter, r *http.Reque
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.ItemsGet(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// TagIgnoreWindowsList operation middleware
+func (siw *ServerInterfaceWrapper) TagIgnoreWindowsList(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+	_ = err
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params TagIgnoreWindowsListParams
+
+	// ------------- Optional query parameter "tagId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", false, false, "tagId", r.URL.Query(), &params.TagId, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "tagId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "tagId", Err: err})
+		}
+		return
+	}
+
+	// ------------- Optional query parameter "ignoreWindowId" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", false, false, "ignoreWindowId", r.URL.Query(), &params.IgnoreWindowId, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		var requiredError *runtime.RequiredParameterError
+		if errors.As(err, &requiredError) {
+			siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "ignoreWindowId"})
+		} else {
+			siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "ignoreWindowId", Err: err})
+		}
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.TagIgnoreWindowsList(w, r, params)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// TagIgnoreWindowsManage operation middleware
+func (siw *ServerInterfaceWrapper) TagIgnoreWindowsManage(w http.ResponseWriter, r *http.Request) {
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.TagIgnoreWindowsManage(w, r)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -1061,6 +1390,8 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/block-rules", wrapper.BlockRulesList)
 	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/block-rules", wrapper.BlockRulesAdd)
 	m.HandleFunc(http.MethodDelete+" "+options.BaseURL+"/block-rules/{id}", wrapper.BlockRulesDelete)
+	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/feed-ignore-windows", wrapper.FeedIgnoreWindowsList)
+	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/feed-ignore-windows/manage", wrapper.FeedIgnoreWindowsManage)
 	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/feed-tags", wrapper.FeedTagsList)
 	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/feed-tags/manage", wrapper.FeedTagsManage)
 	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/feeds", wrapper.FeedsList)
@@ -1070,10 +1401,16 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/feeds/refresh", wrapper.FeedsRefresh)
 	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/feeds/suspend", wrapper.FeedsSuspend)
 	m.HandleFunc(http.MethodDelete+" "+options.BaseURL+"/feeds/{id}", wrapper.FeedsDelete)
+	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/ignore-windows", wrapper.IgnoreWindowsList)
+	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/ignore-windows", wrapper.IgnoreWindowsCreate)
+	m.HandleFunc(http.MethodDelete+" "+options.BaseURL+"/ignore-windows/{id}", wrapper.IgnoreWindowsDelete)
+	m.HandleFunc(http.MethodPut+" "+options.BaseURL+"/ignore-windows/{id}", wrapper.IgnoreWindowsUpdate)
 	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/item-reads", wrapper.ItemReadsList)
 	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/items", wrapper.ItemsList)
 	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/items/status", wrapper.ItemsUpdateStatus)
 	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/items/{id}", wrapper.ItemsGet)
+	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/tag-ignore-windows", wrapper.TagIgnoreWindowsList)
+	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/tag-ignore-windows/manage", wrapper.TagIgnoreWindowsManage)
 	m.HandleFunc(http.MethodGet+" "+options.BaseURL+"/tags", wrapper.TagsList)
 	m.HandleFunc(http.MethodPost+" "+options.BaseURL+"/tags", wrapper.TagsCreate)
 	m.HandleFunc(http.MethodDelete+" "+options.BaseURL+"/tags/{id}", wrapper.TagsDelete)
@@ -1168,6 +1505,72 @@ func (response BlockRulesDelete200Response) VisitBlockRulesDeleteResponse(w http
 type BlockRulesDelete500JSONResponse ApiError
 
 func (response BlockRulesDelete500JSONResponse) VisitBlockRulesDeleteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(500)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type FeedIgnoreWindowsListRequestObject struct {
+	Params FeedIgnoreWindowsListParams
+}
+
+type FeedIgnoreWindowsListResponseObject interface {
+	VisitFeedIgnoreWindowsListResponse(w http.ResponseWriter) error
+}
+
+type FeedIgnoreWindowsList200JSONResponse ListFeedIgnoreWindowsResponse
+
+func (response FeedIgnoreWindowsList200JSONResponse) VisitFeedIgnoreWindowsListResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type FeedIgnoreWindowsList500JSONResponse ApiError
+
+func (response FeedIgnoreWindowsList500JSONResponse) VisitFeedIgnoreWindowsListResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(500)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type FeedIgnoreWindowsManageRequestObject struct {
+	Body *FeedIgnoreWindowsManageJSONRequestBody
+}
+
+type FeedIgnoreWindowsManageResponseObject interface {
+	VisitFeedIgnoreWindowsManageResponse(w http.ResponseWriter) error
+}
+
+type FeedIgnoreWindowsManage200Response struct {
+}
+
+func (response FeedIgnoreWindowsManage200Response) VisitFeedIgnoreWindowsManageResponse(w http.ResponseWriter) error {
+	w.WriteHeader(200)
+	return nil
+}
+
+type FeedIgnoreWindowsManage500JSONResponse ApiError
+
+func (response FeedIgnoreWindowsManage500JSONResponse) VisitFeedIgnoreWindowsManageResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response); err != nil {
@@ -1485,6 +1888,144 @@ func (response FeedsDelete500JSONResponse) VisitFeedsDeleteResponse(w http.Respo
 	return err
 }
 
+type IgnoreWindowsListRequestObject struct {
+}
+
+type IgnoreWindowsListResponseObject interface {
+	VisitIgnoreWindowsListResponse(w http.ResponseWriter) error
+}
+
+type IgnoreWindowsList200JSONResponse ListIgnoreWindowsResponse
+
+func (response IgnoreWindowsList200JSONResponse) VisitIgnoreWindowsListResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type IgnoreWindowsList500JSONResponse ApiError
+
+func (response IgnoreWindowsList500JSONResponse) VisitIgnoreWindowsListResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(500)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type IgnoreWindowsCreateRequestObject struct {
+	Body *IgnoreWindowsCreateJSONRequestBody
+}
+
+type IgnoreWindowsCreateResponseObject interface {
+	VisitIgnoreWindowsCreateResponse(w http.ResponseWriter) error
+}
+
+type IgnoreWindowsCreate200JSONResponse CreateIgnoreWindowResponse
+
+func (response IgnoreWindowsCreate200JSONResponse) VisitIgnoreWindowsCreateResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type IgnoreWindowsCreate500JSONResponse ApiError
+
+func (response IgnoreWindowsCreate500JSONResponse) VisitIgnoreWindowsCreateResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(500)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type IgnoreWindowsDeleteRequestObject struct {
+	Id string `json:"id"`
+}
+
+type IgnoreWindowsDeleteResponseObject interface {
+	VisitIgnoreWindowsDeleteResponse(w http.ResponseWriter) error
+}
+
+type IgnoreWindowsDelete200Response struct {
+}
+
+func (response IgnoreWindowsDelete200Response) VisitIgnoreWindowsDeleteResponse(w http.ResponseWriter) error {
+	w.WriteHeader(200)
+	return nil
+}
+
+type IgnoreWindowsDelete500JSONResponse ApiError
+
+func (response IgnoreWindowsDelete500JSONResponse) VisitIgnoreWindowsDeleteResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(500)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type IgnoreWindowsUpdateRequestObject struct {
+	Id   string `json:"id"`
+	Body *IgnoreWindowsUpdateJSONRequestBody
+}
+
+type IgnoreWindowsUpdateResponseObject interface {
+	VisitIgnoreWindowsUpdateResponse(w http.ResponseWriter) error
+}
+
+type IgnoreWindowsUpdate200JSONResponse UpdateIgnoreWindowResponse
+
+func (response IgnoreWindowsUpdate200JSONResponse) VisitIgnoreWindowsUpdateResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type IgnoreWindowsUpdate500JSONResponse ApiError
+
+func (response IgnoreWindowsUpdate500JSONResponse) VisitIgnoreWindowsUpdateResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(500)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
 type ItemReadsListRequestObject struct {
 	Params ItemReadsListParams
 }
@@ -1612,6 +2153,72 @@ func (response ItemsGet200JSONResponse) VisitItemsGetResponse(w http.ResponseWri
 type ItemsGet500JSONResponse ApiError
 
 func (response ItemsGet500JSONResponse) VisitItemsGetResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(500)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TagIgnoreWindowsListRequestObject struct {
+	Params TagIgnoreWindowsListParams
+}
+
+type TagIgnoreWindowsListResponseObject interface {
+	VisitTagIgnoreWindowsListResponse(w http.ResponseWriter) error
+}
+
+type TagIgnoreWindowsList200JSONResponse ListTagIgnoreWindowsResponse
+
+func (response TagIgnoreWindowsList200JSONResponse) VisitTagIgnoreWindowsListResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TagIgnoreWindowsList500JSONResponse ApiError
+
+func (response TagIgnoreWindowsList500JSONResponse) VisitTagIgnoreWindowsListResponse(w http.ResponseWriter) error {
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(response); err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(500)
+	_, err := buf.WriteTo(w)
+	return err
+}
+
+type TagIgnoreWindowsManageRequestObject struct {
+	Body *TagIgnoreWindowsManageJSONRequestBody
+}
+
+type TagIgnoreWindowsManageResponseObject interface {
+	VisitTagIgnoreWindowsManageResponse(w http.ResponseWriter) error
+}
+
+type TagIgnoreWindowsManage200Response struct {
+}
+
+func (response TagIgnoreWindowsManage200Response) VisitTagIgnoreWindowsManageResponse(w http.ResponseWriter) error {
+	w.WriteHeader(200)
+	return nil
+}
+
+type TagIgnoreWindowsManage500JSONResponse ApiError
+
+func (response TagIgnoreWindowsManage500JSONResponse) VisitTagIgnoreWindowsManageResponse(w http.ResponseWriter) error {
 
 	var buf bytes.Buffer
 	if err := json.NewEncoder(&buf).Encode(response); err != nil {
@@ -1837,6 +2444,12 @@ type StrictServerInterface interface {
 	// (DELETE /block-rules/{id})
 	BlockRulesDelete(ctx context.Context, request BlockRulesDeleteRequestObject) (BlockRulesDeleteResponseObject, error)
 
+	// (GET /feed-ignore-windows)
+	FeedIgnoreWindowsList(ctx context.Context, request FeedIgnoreWindowsListRequestObject) (FeedIgnoreWindowsListResponseObject, error)
+
+	// (POST /feed-ignore-windows/manage)
+	FeedIgnoreWindowsManage(ctx context.Context, request FeedIgnoreWindowsManageRequestObject) (FeedIgnoreWindowsManageResponseObject, error)
+
 	// (GET /feed-tags)
 	FeedTagsList(ctx context.Context, request FeedTagsListRequestObject) (FeedTagsListResponseObject, error)
 
@@ -1864,6 +2477,18 @@ type StrictServerInterface interface {
 	// (DELETE /feeds/{id})
 	FeedsDelete(ctx context.Context, request FeedsDeleteRequestObject) (FeedsDeleteResponseObject, error)
 
+	// (GET /ignore-windows)
+	IgnoreWindowsList(ctx context.Context, request IgnoreWindowsListRequestObject) (IgnoreWindowsListResponseObject, error)
+
+	// (POST /ignore-windows)
+	IgnoreWindowsCreate(ctx context.Context, request IgnoreWindowsCreateRequestObject) (IgnoreWindowsCreateResponseObject, error)
+
+	// (DELETE /ignore-windows/{id})
+	IgnoreWindowsDelete(ctx context.Context, request IgnoreWindowsDeleteRequestObject) (IgnoreWindowsDeleteResponseObject, error)
+
+	// (PUT /ignore-windows/{id})
+	IgnoreWindowsUpdate(ctx context.Context, request IgnoreWindowsUpdateRequestObject) (IgnoreWindowsUpdateResponseObject, error)
+
 	// (GET /item-reads)
 	ItemReadsList(ctx context.Context, request ItemReadsListRequestObject) (ItemReadsListResponseObject, error)
 
@@ -1875,6 +2500,12 @@ type StrictServerInterface interface {
 
 	// (GET /items/{id})
 	ItemsGet(ctx context.Context, request ItemsGetRequestObject) (ItemsGetResponseObject, error)
+
+	// (GET /tag-ignore-windows)
+	TagIgnoreWindowsList(ctx context.Context, request TagIgnoreWindowsListRequestObject) (TagIgnoreWindowsListResponseObject, error)
+
+	// (POST /tag-ignore-windows/manage)
+	TagIgnoreWindowsManage(ctx context.Context, request TagIgnoreWindowsManageRequestObject) (TagIgnoreWindowsManageResponseObject, error)
 
 	// (GET /tags)
 	TagsList(ctx context.Context, request TagsListRequestObject) (TagsListResponseObject, error)
@@ -1998,6 +2629,63 @@ func (sh *strictHandler) BlockRulesDelete(w http.ResponseWriter, r *http.Request
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(BlockRulesDeleteResponseObject); ok {
 		if err := validResponse.VisitBlockRulesDeleteResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// FeedIgnoreWindowsList operation middleware
+func (sh *strictHandler) FeedIgnoreWindowsList(w http.ResponseWriter, r *http.Request, params FeedIgnoreWindowsListParams) {
+	var request FeedIgnoreWindowsListRequestObject
+
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.FeedIgnoreWindowsList(ctx, request.(FeedIgnoreWindowsListRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "FeedIgnoreWindowsList")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(FeedIgnoreWindowsListResponseObject); ok {
+		if err := validResponse.VisitFeedIgnoreWindowsListResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// FeedIgnoreWindowsManage operation middleware
+func (sh *strictHandler) FeedIgnoreWindowsManage(w http.ResponseWriter, r *http.Request) {
+	var request FeedIgnoreWindowsManageRequestObject
+
+	var body FeedIgnoreWindowsManageJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.FeedIgnoreWindowsManage(ctx, request.(FeedIgnoreWindowsManageRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "FeedIgnoreWindowsManage")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(FeedIgnoreWindowsManageResponseObject); ok {
+		if err := validResponse.VisitFeedIgnoreWindowsManageResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {
@@ -2269,6 +2957,120 @@ func (sh *strictHandler) FeedsDelete(w http.ResponseWriter, r *http.Request, id 
 	}
 }
 
+// IgnoreWindowsList operation middleware
+func (sh *strictHandler) IgnoreWindowsList(w http.ResponseWriter, r *http.Request) {
+	var request IgnoreWindowsListRequestObject
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.IgnoreWindowsList(ctx, request.(IgnoreWindowsListRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "IgnoreWindowsList")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(IgnoreWindowsListResponseObject); ok {
+		if err := validResponse.VisitIgnoreWindowsListResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// IgnoreWindowsCreate operation middleware
+func (sh *strictHandler) IgnoreWindowsCreate(w http.ResponseWriter, r *http.Request) {
+	var request IgnoreWindowsCreateRequestObject
+
+	var body IgnoreWindowsCreateJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.IgnoreWindowsCreate(ctx, request.(IgnoreWindowsCreateRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "IgnoreWindowsCreate")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(IgnoreWindowsCreateResponseObject); ok {
+		if err := validResponse.VisitIgnoreWindowsCreateResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// IgnoreWindowsDelete operation middleware
+func (sh *strictHandler) IgnoreWindowsDelete(w http.ResponseWriter, r *http.Request, id string) {
+	var request IgnoreWindowsDeleteRequestObject
+
+	request.Id = id
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.IgnoreWindowsDelete(ctx, request.(IgnoreWindowsDeleteRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "IgnoreWindowsDelete")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(IgnoreWindowsDeleteResponseObject); ok {
+		if err := validResponse.VisitIgnoreWindowsDeleteResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// IgnoreWindowsUpdate operation middleware
+func (sh *strictHandler) IgnoreWindowsUpdate(w http.ResponseWriter, r *http.Request, id string) {
+	var request IgnoreWindowsUpdateRequestObject
+
+	request.Id = id
+
+	var body IgnoreWindowsUpdateJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.IgnoreWindowsUpdate(ctx, request.(IgnoreWindowsUpdateRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "IgnoreWindowsUpdate")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(IgnoreWindowsUpdateResponseObject); ok {
+		if err := validResponse.VisitIgnoreWindowsUpdateResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
 // ItemReadsList operation middleware
 func (sh *strictHandler) ItemReadsList(w http.ResponseWriter, r *http.Request, params ItemReadsListParams) {
 	var request ItemReadsListRequestObject
@@ -2371,6 +3173,63 @@ func (sh *strictHandler) ItemsGet(w http.ResponseWriter, r *http.Request, id str
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(ItemsGetResponseObject); ok {
 		if err := validResponse.VisitItemsGetResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// TagIgnoreWindowsList operation middleware
+func (sh *strictHandler) TagIgnoreWindowsList(w http.ResponseWriter, r *http.Request, params TagIgnoreWindowsListParams) {
+	var request TagIgnoreWindowsListRequestObject
+
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.TagIgnoreWindowsList(ctx, request.(TagIgnoreWindowsListRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "TagIgnoreWindowsList")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(TagIgnoreWindowsListResponseObject); ok {
+		if err := validResponse.VisitTagIgnoreWindowsListResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// TagIgnoreWindowsManage operation middleware
+func (sh *strictHandler) TagIgnoreWindowsManage(w http.ResponseWriter, r *http.Request) {
+	var request TagIgnoreWindowsManageRequestObject
+
+	var body TagIgnoreWindowsManageJSONRequestBody
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		sh.options.RequestErrorHandlerFunc(w, r, fmt.Errorf("can't decode JSON body: %w", err))
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.TagIgnoreWindowsManage(ctx, request.(TagIgnoreWindowsManageRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "TagIgnoreWindowsManage")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(TagIgnoreWindowsManageResponseObject); ok {
+		if err := validResponse.VisitTagIgnoreWindowsManageResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

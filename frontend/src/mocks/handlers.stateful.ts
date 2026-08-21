@@ -58,6 +58,27 @@ type BlockRuleJSON = {
   domain?: string;
 };
 
+type IgnoreWindowJSON = {
+  id: string;
+  name: string;
+  startTime: string;
+  endTime: string;
+  daysOfWeek: number[];
+  timezone: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+type FeedIgnoreWindowJSON = {
+  feedId: string;
+  ignoreWindowId: string;
+};
+
+type TagIgnoreWindowJSON = {
+  tagId: string;
+  ignoreWindowId: string;
+};
+
 const itemReads = new Map<string, { isRead: boolean; updatedAt: Date }>();
 
 const recalculateFeedCounts = () => {
@@ -135,6 +156,7 @@ export const statefulHandlers = [
 
     if (tag) {
       db.tag.delete({ where: { id: { equals: id } } });
+      db.tagIgnoreWindow.deleteMany({ where: { tagId: { equals: id } } });
       for (const feed of feeds) {
         db.feed.update({
           where: { id: { equals: feed.id } },
@@ -187,6 +209,7 @@ export const statefulHandlers = [
     const feed = db.feed.getAll().find((candidate) => candidate.id === id);
     if (feed) {
       db.feed.delete({ where: { id: { equals: id } } });
+      db.feedIgnoreWindow.deleteMany({ where: { feedId: { equals: id } } });
       recalculateFeedCounts();
     }
 
@@ -482,6 +505,152 @@ export const statefulHandlers = [
     const rule = db.blockRule.getAll().find((candidate) => candidate.id === id);
     if (rule) {
       db.blockRule.delete({ where: { id: { equals: id } } });
+    }
+    return HttpResponse.json({});
+  }),
+
+  http.get("*/api/v2/ignore-windows", () => {
+    return HttpResponse.json({ ignoreWindows: db.ignoreWindow.getAll() });
+  }),
+
+  http.post("*/api/v2/ignore-windows", async ({ request }) => {
+    const body = (await request.json()) as {
+      name: string;
+      startTime: string;
+      endTime: string;
+      daysOfWeek: number[];
+      timezone: string;
+    };
+    const now = "2026-03-01T00:00:00.000Z";
+    const window: IgnoreWindowJSON = {
+      id: crypto.randomUUID(),
+      name: body.name,
+      startTime: body.startTime,
+      endTime: body.endTime,
+      daysOfWeek: body.daysOfWeek,
+      timezone: body.timezone,
+      createdAt: now,
+      updatedAt: now,
+    };
+    db.ignoreWindow.create(window);
+    return HttpResponse.json({ ignoreWindow: window });
+  }),
+
+  http.put("*/api/v2/ignore-windows/:id", async ({ params, request }) => {
+    const id = String(params.id);
+    const body = (await request.json()) as Partial<IgnoreWindowJSON>;
+    const now = new Date().toISOString();
+    const existing = db.ignoreWindow.getAll().find((w) => w.id === id);
+    if (!existing) {
+      return HttpResponse.json({ error: "not found" }, { status: 404 });
+    }
+    db.ignoreWindow.update({
+      where: { id: { equals: id } },
+      data: { ...body, updatedAt: now },
+    });
+    const updated = db.ignoreWindow.getAll().find((w) => w.id === id);
+    return HttpResponse.json({ ignoreWindow: updated });
+  }),
+
+  http.delete("*/api/v2/ignore-windows/:id", ({ params }) => {
+    const id = String(params.id);
+    const existing = db.ignoreWindow.getAll().find((w) => w.id === id);
+    if (existing) {
+      db.ignoreWindow.delete({ where: { id: { equals: id } } });
+      db.feedIgnoreWindow.deleteMany({
+        where: { ignoreWindowId: { equals: id } },
+      });
+      db.tagIgnoreWindow.deleteMany({
+        where: { ignoreWindowId: { equals: id } },
+      });
+    }
+    return HttpResponse.json({});
+  }),
+
+  http.get("*/api/v2/feed-ignore-windows", ({ request }) => {
+    const url = new URL(request.url);
+    const feedId = url.searchParams.get("feedId");
+    const ignoreWindowId = url.searchParams.get("ignoreWindowId");
+    const all = db.feedIgnoreWindow.getAll();
+    const filtered = all.filter(
+      (item) =>
+        (feedId === null || item.feedId === feedId) &&
+        (ignoreWindowId === null || item.ignoreWindowId === ignoreWindowId),
+    );
+    return HttpResponse.json({ feedIgnoreWindows: filtered });
+  }),
+
+  http.post("*/api/v2/feed-ignore-windows/manage", async ({ request }) => {
+    const body = (await request.json()) as {
+      feedIds?: string[];
+      addIgnoreWindowIds?: string[];
+      removeIgnoreWindowIds?: string[];
+    };
+    const addIds = body.addIgnoreWindowIds || [];
+    const removeIds = body.removeIgnoreWindowIds || [];
+    for (const feedId of body.feedIds || []) {
+      for (const removeId of removeIds) {
+        db.feedIgnoreWindow.deleteMany({
+          where: {
+            feedId: { equals: feedId },
+            ignoreWindowId: { equals: removeId },
+          },
+        });
+      }
+      for (const addId of addIds) {
+        const exists = db.feedIgnoreWindow
+          .getAll()
+          .some(
+            (item) => item.feedId === feedId && item.ignoreWindowId === addId,
+          );
+        if (!exists) {
+          db.feedIgnoreWindow.create({ feedId, ignoreWindowId: addId });
+        }
+      }
+    }
+    return HttpResponse.json({});
+  }),
+
+  http.get("*/api/v2/tag-ignore-windows", ({ request }) => {
+    const url = new URL(request.url);
+    const tagId = url.searchParams.get("tagId");
+    const ignoreWindowId = url.searchParams.get("ignoreWindowId");
+    const all = db.tagIgnoreWindow.getAll();
+    const filtered = all.filter(
+      (item) =>
+        (tagId === null || item.tagId === tagId) &&
+        (ignoreWindowId === null || item.ignoreWindowId === ignoreWindowId),
+    );
+    return HttpResponse.json({ tagIgnoreWindows: filtered });
+  }),
+
+  http.post("*/api/v2/tag-ignore-windows/manage", async ({ request }) => {
+    const body = (await request.json()) as {
+      tagIds?: string[];
+      addIgnoreWindowIds?: string[];
+      removeIgnoreWindowIds?: string[];
+    };
+    const addIds = body.addIgnoreWindowIds || [];
+    const removeIds = body.removeIgnoreWindowIds || [];
+    for (const tagId of body.tagIds || []) {
+      for (const removeId of removeIds) {
+        db.tagIgnoreWindow.deleteMany({
+          where: {
+            tagId: { equals: tagId },
+            ignoreWindowId: { equals: removeId },
+          },
+        });
+      }
+      for (const addId of addIds) {
+        const exists = db.tagIgnoreWindow
+          .getAll()
+          .some(
+            (item) => item.tagId === tagId && item.ignoreWindowId === addId,
+          );
+        if (!exists) {
+          db.tagIgnoreWindow.create({ tagId, ignoreWindowId: addId });
+        }
+      }
     }
     return HttpResponse.json({});
   }),

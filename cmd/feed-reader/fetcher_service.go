@@ -157,6 +157,27 @@ func (s *FetcherService) FetchAllFeeds(ctx context.Context) error {
 	}
 
 	for _, row := range feeds {
+		windows, err := s.store.ListActiveIgnoreWindowsForFeed(ctx, row.ID)
+		if err != nil {
+			s.logger.WarnContext(ctx, "failed to list active ignore windows for feed; skipping fetch for safety", "feed_id", row.ID, "error", err)
+			continue
+		}
+		if len(windows) > 0 {
+			now := time.Now().UTC()
+			adjusted := AdjustNextFetchForIgnoreWindows(now, windows)
+			if adjusted.After(now) {
+				s.logger.InfoContext(ctx, "feed is in ignore window, skipping fetch", "feed_id", row.ID, "next_fetch", adjusted)
+				nextFetchStr := adjusted.Format(time.RFC3339)
+				s.writeQueue.Submit(&MarkFetchedJob{
+					Params: store.MarkFeedFetchedParams{
+						FeedID:    row.ID,
+						NextFetch: &nextFetchStr,
+					},
+				})
+				continue
+			}
+		}
+
 		feed := store.FullFeed{
 			ID:            row.ID,
 			Url:           row.Url,
@@ -327,7 +348,16 @@ func (s *FetcherService) markFetched(ctx context.Context, feedID string, items [
 	now := time.Now().UTC()
 	lastFetched := now.Format(time.RFC3339)
 	interval := s.getNextFetchInterval(ctx, feedID, items)
-	nextFetch := now.Add(interval).Format(time.RFC3339)
+	nextFetchTime := now.Add(interval)
+
+	windows, err := s.store.ListActiveIgnoreWindowsForFeed(ctx, feedID)
+	if err != nil {
+		s.logger.WarnContext(ctx, "failed to list active ignore windows for feed", "feed_id", feedID, "error", err)
+	} else if len(windows) > 0 {
+		nextFetchTime = AdjustNextFetchForIgnoreWindows(nextFetchTime, windows)
+	}
+
+	nextFetch := nextFetchTime.Format(time.RFC3339)
 	s.writeQueue.Submit(&MarkFetchedJob{
 		Params: store.MarkFeedFetchedParams{
 			LastFetchedAt: &lastFetched,

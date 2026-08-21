@@ -37,6 +37,12 @@ exports[`Block Rules Page > should fetch and display item block rules 1`] = `
     >
       Block Rules
     </a>
+    <a
+      class="pos_relative px_3 py_1.5 bdr_md c_gray.500 trs_all_0.2s fw_medium fs_sm hover:bg-c_gray.50 hover:c_gray.900"
+      href="/ignore-windows"
+    >
+      Ignore Windows
+    </a>
   </header>
   <div
     class="d_flex flex-d_column gap_2 md:gap_6 p_2 md:p_4 h_calc(100vh_-_56px) min-h_0 ov_hidden bg-c_gray.50"

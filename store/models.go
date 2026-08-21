@@ -29,6 +29,13 @@ type FeedFetcher struct {
 	UpdatedAt     string  `json:"updated_at"`
 }
 
+type FeedIgnoreWindow struct {
+	FeedID         string `json:"feed_id"`
+	IgnoreWindowID string `json:"ignore_window_id"`
+	CreatedAt      string `json:"created_at"`
+	UpdatedAt      string `json:"updated_at"`
+}
+
 type FeedItem struct {
 	FeedID      string  `json:"feed_id"`
 	ItemID      string  `json:"item_id"`
@@ -42,6 +49,17 @@ type FeedTag struct {
 	TagID     string `json:"tag_id"`
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
+}
+
+type IgnoreWindow struct {
+	ID         string `json:"id"`
+	Name       string `json:"name"`
+	StartTime  string `json:"start_time"`
+	EndTime    string `json:"end_time"`
+	DaysOfWeek string `json:"days_of_week"`
+	Timezone   string `json:"timezone"`
+	CreatedAt  string `json:"created_at"`
+	UpdatedAt  string `json:"updated_at"`
 }
 
 type Item struct {
@@ -87,6 +105,13 @@ type Tag struct {
 	Name      string `json:"name"`
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
+}
+
+type TagIgnoreWindow struct {
+	TagID          string `json:"tag_id"`
+	IgnoreWindowID string `json:"ignore_window_id"`
+	CreatedAt      string `json:"created_at"`
+	UpdatedAt      string `json:"updated_at"`
 }
 
 type UrlParsingRule struct {

@@ -60,11 +60,39 @@ const blockRuleSchema = z.object({
   domain: z.string().optional(),
 });
 
+const ignoreWindowSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  startTime: z.string(),
+  endTime: z.string(),
+  daysOfWeek: z.array(z.number()),
+  timezone: z.string(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+const feedIgnoreWindowSchema = z.object({
+  feedId: z.string(),
+  ignoreWindowId: z.string(),
+});
+
+const tagIgnoreWindowSchema = z.object({
+  tagId: z.string(),
+  ignoreWindowId: z.string(),
+});
+
 const tagCollection = new Collection({ schema: tagSchema });
 const feedCollection = new Collection({ schema: feedSchema });
 const itemCollection = new Collection({ schema: itemSchema });
 const urlRuleCollection = new Collection({ schema: urlRuleSchema });
 const blockRuleCollection = new Collection({ schema: blockRuleSchema });
+const ignoreWindowCollection = new Collection({ schema: ignoreWindowSchema });
+const feedIgnoreWindowCollection = new Collection({
+  schema: feedIgnoreWindowSchema,
+});
+const tagIgnoreWindowCollection = new Collection({
+  schema: tagIgnoreWindowSchema,
+});
 
 feedCollection.defineRelations(({ many }) => ({
   tags: many(tagCollection),
@@ -157,6 +185,15 @@ export const db = {
   item: createModelApi(itemCollection, itemSchema),
   urlRule: createModelApi(urlRuleCollection, urlRuleSchema),
   blockRule: createModelApi(blockRuleCollection, blockRuleSchema),
+  ignoreWindow: createModelApi(ignoreWindowCollection, ignoreWindowSchema),
+  feedIgnoreWindow: createModelApi(
+    feedIgnoreWindowCollection,
+    feedIgnoreWindowSchema,
+  ),
+  tagIgnoreWindow: createModelApi(
+    tagIgnoreWindowCollection,
+    tagIgnoreWindowSchema,
+  ),
 };
 
 export const resetDatabase = () => {
@@ -165,6 +202,9 @@ export const resetDatabase = () => {
   db.item.deleteMany({ where: {} });
   db.urlRule.deleteMany({ where: {} });
   db.blockRule.deleteMany({ where: {} });
+  db.ignoreWindow.deleteMany({ where: {} });
+  db.feedIgnoreWindow.deleteMany({ where: {} });
+  db.tagIgnoreWindow.deleteMany({ where: {} });
 
   const seedTime = new Date();
   const now = seedTime.toISOString();

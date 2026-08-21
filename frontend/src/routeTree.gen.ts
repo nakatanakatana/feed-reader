@@ -9,27 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as UrlRulesRouteImport } from './routes/url-rules'
-import { Route as TagsRouteImport } from './routes/tags'
-import { Route as FeedsRouteImport } from './routes/feeds'
-import { Route as BlockRulesRouteImport } from './routes/block-rules'
 import { Route as ItemsRouteImport } from './routes/_items'
+import { Route as BlockRulesRouteImport } from './routes/block-rules'
+import { Route as FeedsRouteImport } from './routes/feeds'
+import { Route as IgnoreWindowsRouteImport } from './routes/ignore-windows'
+import { Route as TagsRouteImport } from './routes/tags'
+import { Route as UrlRulesRouteImport } from './routes/url-rules'
 import { Route as ItemsIndexRouteImport } from './routes/_items.index'
 import { Route as ItemsItemsItemIdRouteImport } from './routes/_items.items.$itemId'
 
-const UrlRulesRoute = UrlRulesRouteImport.update({
-  id: '/url-rules',
-  path: '/url-rules',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TagsRoute = TagsRouteImport.update({
-  id: '/tags',
-  path: '/tags',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FeedsRoute = FeedsRouteImport.update({
-  id: '/feeds',
-  path: '/feeds',
+const ItemsRoute = ItemsRouteImport.update({
+  id: '/_items',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BlockRulesRoute = BlockRulesRouteImport.update({
@@ -37,8 +27,24 @@ const BlockRulesRoute = BlockRulesRouteImport.update({
   path: '/block-rules',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ItemsRoute = ItemsRouteImport.update({
-  id: '/_items',
+const FeedsRoute = FeedsRouteImport.update({
+  id: '/feeds',
+  path: '/feeds',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IgnoreWindowsRoute = IgnoreWindowsRouteImport.update({
+  id: '/ignore-windows',
+  path: '/ignore-windows',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TagsRoute = TagsRouteImport.update({
+  id: '/tags',
+  path: '/tags',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UrlRulesRoute = UrlRulesRouteImport.update({
+  id: '/url-rules',
+  path: '/url-rules',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ItemsIndexRoute = ItemsIndexRouteImport.update({
@@ -56,6 +62,7 @@ export interface FileRoutesByFullPath {
   '/': typeof ItemsIndexRoute
   '/block-rules': typeof BlockRulesRoute
   '/feeds': typeof FeedsRoute
+  '/ignore-windows': typeof IgnoreWindowsRoute
   '/tags': typeof TagsRoute
   '/url-rules': typeof UrlRulesRoute
   '/items/$itemId': typeof ItemsItemsItemIdRoute
@@ -63,6 +70,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/block-rules': typeof BlockRulesRoute
   '/feeds': typeof FeedsRoute
+  '/ignore-windows': typeof IgnoreWindowsRoute
   '/tags': typeof TagsRoute
   '/url-rules': typeof UrlRulesRoute
   '/': typeof ItemsIndexRoute
@@ -73,6 +81,7 @@ export interface FileRoutesById {
   '/_items': typeof ItemsRouteWithChildren
   '/block-rules': typeof BlockRulesRoute
   '/feeds': typeof FeedsRoute
+  '/ignore-windows': typeof IgnoreWindowsRoute
   '/tags': typeof TagsRoute
   '/url-rules': typeof UrlRulesRoute
   '/_items/': typeof ItemsIndexRoute
@@ -84,6 +93,7 @@ export interface FileRouteTypes {
     | '/'
     | '/block-rules'
     | '/feeds'
+    | '/ignore-windows'
     | '/tags'
     | '/url-rules'
     | '/items/$itemId'
@@ -91,6 +101,7 @@ export interface FileRouteTypes {
   to:
     | '/block-rules'
     | '/feeds'
+    | '/ignore-windows'
     | '/tags'
     | '/url-rules'
     | '/'
@@ -100,6 +111,7 @@ export interface FileRouteTypes {
     | '/_items'
     | '/block-rules'
     | '/feeds'
+    | '/ignore-windows'
     | '/tags'
     | '/url-rules'
     | '/_items/'
@@ -110,31 +122,18 @@ export interface RootRouteChildren {
   ItemsRoute: typeof ItemsRouteWithChildren
   BlockRulesRoute: typeof BlockRulesRoute
   FeedsRoute: typeof FeedsRoute
+  IgnoreWindowsRoute: typeof IgnoreWindowsRoute
   TagsRoute: typeof TagsRoute
   UrlRulesRoute: typeof UrlRulesRoute
 }
 
 declare module '@tanstack/solid-router' {
   interface FileRoutesByPath {
-    '/url-rules': {
-      id: '/url-rules'
-      path: '/url-rules'
-      fullPath: '/url-rules'
-      preLoaderRoute: typeof UrlRulesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/tags': {
-      id: '/tags'
-      path: '/tags'
-      fullPath: '/tags'
-      preLoaderRoute: typeof TagsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/feeds': {
-      id: '/feeds'
-      path: '/feeds'
-      fullPath: '/feeds'
-      preLoaderRoute: typeof FeedsRouteImport
+    '/_items': {
+      id: '/_items'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof ItemsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/block-rules': {
@@ -144,11 +143,32 @@ declare module '@tanstack/solid-router' {
       preLoaderRoute: typeof BlockRulesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_items': {
-      id: '/_items'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof ItemsRouteImport
+    '/feeds': {
+      id: '/feeds'
+      path: '/feeds'
+      fullPath: '/feeds'
+      preLoaderRoute: typeof FeedsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ignore-windows': {
+      id: '/ignore-windows'
+      path: '/ignore-windows'
+      fullPath: '/ignore-windows'
+      preLoaderRoute: typeof IgnoreWindowsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tags': {
+      id: '/tags'
+      path: '/tags'
+      fullPath: '/tags'
+      preLoaderRoute: typeof TagsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/url-rules': {
+      id: '/url-rules'
+      path: '/url-rules'
+      fullPath: '/url-rules'
+      preLoaderRoute: typeof UrlRulesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_items/': {
@@ -184,6 +204,7 @@ const rootRouteChildren: RootRouteChildren = {
   ItemsRoute: ItemsRouteWithChildren,
   BlockRulesRoute: BlockRulesRoute,
   FeedsRoute: FeedsRoute,
+  IgnoreWindowsRoute: IgnoreWindowsRoute,
   TagsRoute: TagsRoute,
   UrlRulesRoute: UrlRulesRoute,
 }

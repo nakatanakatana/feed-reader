@@ -165,6 +165,71 @@ export type CreateFeedResponse = {
   feed: Feed;
 };
 
+export type CreateIgnoreWindowRequest = {
+  /**
+   * @type string
+   */
+  name: string;
+  /**
+   * @type string
+   */
+  startTime: string;
+  /**
+   * @type string
+   */
+  endTime: string;
+  /**
+   * @type array
+   */
+  daysOfWeek: number[];
+  /**
+   * @type string
+   */
+  timezone: string;
+};
+
+export type IgnoreWindow = {
+  /**
+   * @type string
+   */
+  id: string;
+  /**
+   * @type string
+   */
+  name: string;
+  /**
+   * @type string
+   */
+  startTime: string;
+  /**
+   * @type string
+   */
+  endTime: string;
+  /**
+   * @type array
+   */
+  daysOfWeek: number[];
+  /**
+   * @type string
+   */
+  timezone: string;
+  /**
+   * @type string, date-time
+   */
+  createdAt: string;
+  /**
+   * @type string, date-time
+   */
+  updatedAt: string;
+};
+
+export type CreateIgnoreWindowResponse = {
+  /**
+   * @type object
+   */
+  ignoreWindow: IgnoreWindow;
+};
+
 export type CreateTagRequest = {
   /**
    * @type string
@@ -210,6 +275,17 @@ export type FeedFetchStatus = {
    * @type string | undefined
    */
   errorMessage?: string;
+};
+
+export type FeedIgnoreWindow = {
+  /**
+   * @type string
+   */
+  feedId: string;
+  /**
+   * @type string
+   */
+  ignoreWindowId: string;
 };
 
 export type FeedTag = {
@@ -367,6 +443,13 @@ export type ItemRead = {
   updatedAt: string;
 };
 
+export type ListFeedIgnoreWindowsResponse = {
+  /**
+   * @type array
+   */
+  feedIgnoreWindows: FeedIgnoreWindow[];
+};
+
 export type ListFeedTagsResponse = {
   /**
    * @type array
@@ -379,6 +462,13 @@ export type ListFeedsResponse = {
    * @type array
    */
   feeds: Feed[];
+};
+
+export type ListIgnoreWindowsResponse = {
+  /**
+   * @type array
+   */
+  ignoreWindows: IgnoreWindow[];
 };
 
 export type ListItemBlockRulesResponse = {
@@ -410,6 +500,24 @@ export type ListItemsResponse = {
   nextPageToken: string;
 };
 
+export type TagIgnoreWindow = {
+  /**
+   * @type string
+   */
+  tagId: string;
+  /**
+   * @type string
+   */
+  ignoreWindowId: string;
+};
+
+export type ListTagIgnoreWindowsResponse = {
+  /**
+   * @type array
+   */
+  tagIgnoreWindows: TagIgnoreWindow[];
+};
+
 export type ListTagsResponse = {
   /**
    * @type array
@@ -428,6 +536,21 @@ export type ListURLParsingRulesResponse = {
   rules: URLParsingRule[];
 };
 
+export type ManageFeedIgnoreWindowsRequest = {
+  /**
+   * @type array
+   */
+  feedIds: string[];
+  /**
+   * @type array
+   */
+  addIgnoreWindowIds: string[];
+  /**
+   * @type array
+   */
+  removeIgnoreWindowIds: string[];
+};
+
 export type ManageFeedTagsRequest = {
   /**
    * @type array
@@ -441,6 +564,21 @@ export type ManageFeedTagsRequest = {
    * @type array
    */
   removeTagIds: string[];
+};
+
+export type ManageTagIgnoreWindowsRequest = {
+  /**
+   * @type array
+   */
+  tagIds: string[];
+  /**
+   * @type array
+   */
+  addIgnoreWindowIds: string[];
+  /**
+   * @type array
+   */
+  removeIgnoreWindowIds: string[];
 };
 
 export type RefreshFeedsRequest = {
@@ -466,6 +604,36 @@ export type SuspendFeedsRequest = {
    * @type string
    */
   suspendSeconds: string;
+};
+
+export type UpdateIgnoreWindowRequest = {
+  /**
+   * @type string | undefined
+   */
+  name?: string;
+  /**
+   * @type string | undefined
+   */
+  startTime?: string;
+  /**
+   * @type string | undefined
+   */
+  endTime?: string;
+  /**
+   * @type array | undefined
+   */
+  daysOfWeek?: number[];
+  /**
+   * @type string | undefined
+   */
+  timezone?: string;
+};
+
+export type UpdateIgnoreWindowResponse = {
+  /**
+   * @type object
+   */
+  ignoreWindow: IgnoreWindow;
 };
 
 export type UpdateItemStatusRequest = {
@@ -539,6 +707,57 @@ export type BlockRulesDeleteMutation = {
   Response: BlockRulesDelete200;
   PathParams: BlockRulesDeletePathParams;
   Errors: BlockRulesDelete500;
+};
+
+export type FeedIgnoreWindowsListQueryParams = {
+  /**
+   * @type string | undefined
+   */
+  feedId?: string;
+  /**
+   * @type string | undefined
+   */
+  ignoreWindowId?: string;
+};
+
+/**
+ * @description The request has succeeded.
+ */
+export type FeedIgnoreWindowsList200 = ListFeedIgnoreWindowsResponse;
+
+/**
+ * @description Server error
+ */
+export type FeedIgnoreWindowsList500 = ApiError;
+
+export type FeedIgnoreWindowsListQueryResponse = FeedIgnoreWindowsList200;
+
+export type FeedIgnoreWindowsListQuery = {
+  Response: FeedIgnoreWindowsList200;
+  QueryParams: FeedIgnoreWindowsListQueryParams;
+  Errors: FeedIgnoreWindowsList500;
+};
+
+/**
+ * @description The request has succeeded.
+ */
+export type FeedIgnoreWindowsManage200 = any;
+
+/**
+ * @description Server error
+ */
+export type FeedIgnoreWindowsManage500 = ApiError;
+
+export type FeedIgnoreWindowsManageMutationRequest =
+  ManageFeedIgnoreWindowsRequest;
+
+export type FeedIgnoreWindowsManageMutationResponse =
+  FeedIgnoreWindowsManage200;
+
+export type FeedIgnoreWindowsManageMutation = {
+  Response: FeedIgnoreWindowsManage200;
+  Request: FeedIgnoreWindowsManageMutationRequest;
+  Errors: FeedIgnoreWindowsManage500;
 };
 
 export type FeedTagsListQueryParams = {
@@ -740,6 +959,96 @@ export type FeedsDeleteMutation = {
   Errors: FeedsDelete500;
 };
 
+/**
+ * @description The request has succeeded.
+ */
+export type IgnoreWindowsList200 = ListIgnoreWindowsResponse;
+
+/**
+ * @description Server error
+ */
+export type IgnoreWindowsList500 = ApiError;
+
+export type IgnoreWindowsListQueryResponse = IgnoreWindowsList200;
+
+export type IgnoreWindowsListQuery = {
+  Response: IgnoreWindowsList200;
+  Errors: IgnoreWindowsList500;
+};
+
+/**
+ * @description The request has succeeded.
+ */
+export type IgnoreWindowsCreate200 = CreateIgnoreWindowResponse;
+
+/**
+ * @description Server error
+ */
+export type IgnoreWindowsCreate500 = ApiError;
+
+export type IgnoreWindowsCreateMutationRequest = CreateIgnoreWindowRequest;
+
+export type IgnoreWindowsCreateMutationResponse = IgnoreWindowsCreate200;
+
+export type IgnoreWindowsCreateMutation = {
+  Response: IgnoreWindowsCreate200;
+  Request: IgnoreWindowsCreateMutationRequest;
+  Errors: IgnoreWindowsCreate500;
+};
+
+export type IgnoreWindowsUpdatePathParams = {
+  /**
+   * @type string
+   */
+  id: string;
+};
+
+/**
+ * @description The request has succeeded.
+ */
+export type IgnoreWindowsUpdate200 = UpdateIgnoreWindowResponse;
+
+/**
+ * @description Server error
+ */
+export type IgnoreWindowsUpdate500 = ApiError;
+
+export type IgnoreWindowsUpdateMutationRequest = UpdateIgnoreWindowRequest;
+
+export type IgnoreWindowsUpdateMutationResponse = IgnoreWindowsUpdate200;
+
+export type IgnoreWindowsUpdateMutation = {
+  Response: IgnoreWindowsUpdate200;
+  Request: IgnoreWindowsUpdateMutationRequest;
+  PathParams: IgnoreWindowsUpdatePathParams;
+  Errors: IgnoreWindowsUpdate500;
+};
+
+export type IgnoreWindowsDeletePathParams = {
+  /**
+   * @type string
+   */
+  id: string;
+};
+
+/**
+ * @description The request has succeeded.
+ */
+export type IgnoreWindowsDelete200 = any;
+
+/**
+ * @description Server error
+ */
+export type IgnoreWindowsDelete500 = ApiError;
+
+export type IgnoreWindowsDeleteMutationResponse = IgnoreWindowsDelete200;
+
+export type IgnoreWindowsDeleteMutation = {
+  Response: IgnoreWindowsDelete200;
+  PathParams: IgnoreWindowsDeletePathParams;
+  Errors: IgnoreWindowsDelete500;
+};
+
 export type ItemReadsListQueryParams = {
   /**
    * @type string | undefined, date-time
@@ -861,6 +1170,56 @@ export type ItemsGetQuery = {
   Response: ItemsGet200;
   PathParams: ItemsGetPathParams;
   Errors: ItemsGet500;
+};
+
+export type TagIgnoreWindowsListQueryParams = {
+  /**
+   * @type string | undefined
+   */
+  tagId?: string;
+  /**
+   * @type string | undefined
+   */
+  ignoreWindowId?: string;
+};
+
+/**
+ * @description The request has succeeded.
+ */
+export type TagIgnoreWindowsList200 = ListTagIgnoreWindowsResponse;
+
+/**
+ * @description Server error
+ */
+export type TagIgnoreWindowsList500 = ApiError;
+
+export type TagIgnoreWindowsListQueryResponse = TagIgnoreWindowsList200;
+
+export type TagIgnoreWindowsListQuery = {
+  Response: TagIgnoreWindowsList200;
+  QueryParams: TagIgnoreWindowsListQueryParams;
+  Errors: TagIgnoreWindowsList500;
+};
+
+/**
+ * @description The request has succeeded.
+ */
+export type TagIgnoreWindowsManage200 = any;
+
+/**
+ * @description Server error
+ */
+export type TagIgnoreWindowsManage500 = ApiError;
+
+export type TagIgnoreWindowsManageMutationRequest =
+  ManageTagIgnoreWindowsRequest;
+
+export type TagIgnoreWindowsManageMutationResponse = TagIgnoreWindowsManage200;
+
+export type TagIgnoreWindowsManageMutation = {
+  Response: TagIgnoreWindowsManage200;
+  Request: TagIgnoreWindowsManageMutationRequest;
+  Errors: TagIgnoreWindowsManage500;
 };
 
 /**
