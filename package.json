@@ -34,7 +34,7 @@
     "@tanstack/router-plugin": "1.168.34",
     "@tanstack/solid-query": "5.101.4",
     "@tanstack/solid-router": "1.170.29",
-    "markdown-it": "14.3.0",
+    "markdown-it": "15.0.0",
     "postcss": "8.5.26",
     "solid-js": "1.9.15",
     "web-vitals": "6.1.1"
