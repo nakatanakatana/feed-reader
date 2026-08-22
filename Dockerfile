@@ -35,7 +35,7 @@ COPY --from=frontend-builder-readonly /app/frontend/dist ./frontend/dist
 RUN CGO_ENABLED=0 GOOS=linux go build -trimpath -ldflags "-w -s" -v -o feed-reader-readonly ./cmd/feed-reader-readonly
 
 # Readonly runtime (distroless static)
-FROM gcr.io/distroless/static-debian12@sha256:6447365a6337c3732f412d1b74357b30a633831955b2bc45552b0086be907687 AS readonly
+FROM gcr.io/distroless/static-debian12@sha256:d75cdd72874d4790092fcb1b058493ecf6bb5bf2b2b897045b00ff01d91843f2 AS readonly
 WORKDIR /
 COPY --from=backend-builder-readonly /app/feed-reader-readonly /feed-reader-readonly
 USER nonroot
@@ -44,7 +44,7 @@ ENV PORT=8080
 ENTRYPOINT ["/feed-reader-readonly"]
 
 # Primary runtime (distroless static). Kept last so bare `docker build` stays primary-compatible.
-FROM gcr.io/distroless/static-debian12@sha256:6447365a6337c3732f412d1b74357b30a633831955b2bc45552b0086be907687 AS primary
+FROM gcr.io/distroless/static-debian12@sha256:d75cdd72874d4790092fcb1b058493ecf6bb5bf2b2b897045b00ff01d91843f2 AS primary
 WORKDIR /
 COPY --from=backend-builder-primary /app/feed-reader /feed-reader
 COPY --from=backend-builder-primary --chown=nonroot:nonroot /data /data
