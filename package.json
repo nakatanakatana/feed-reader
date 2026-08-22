@@ -46,7 +46,7 @@
     "@kubb/plugin-msw": "^4.0.0",
     "@kubb/plugin-oas": "^4.0.0",
     "@kubb/plugin-solid-query": "^4.0.0",
-    "@kubb/plugin-ts": "^4.0.0",
+    "@kubb/plugin-ts": "^5.0.0",
     "@msw/data": "^1.1.6",
     "@pandacss/dev": "1.12.0",
     "@types/markdown-it": "14.2.0",
