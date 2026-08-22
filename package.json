@@ -43,7 +43,7 @@
     "@kubb/cli": "^4.0.0",
     "@kubb/core": "^4.0.0",
     "@kubb/plugin-client": "^4.0.0",
-    "@kubb/plugin-msw": "^4.0.0",
+    "@kubb/plugin-msw": "^5.0.0",
     "@kubb/plugin-oas": "^4.0.0",
     "@kubb/plugin-solid-query": "^4.0.0",
     "@kubb/plugin-ts": "^4.0.0",
