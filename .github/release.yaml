@@ -1,0 +1,20 @@
+changelog:
+  categories:
+    - title: Breaking Changes 💥
+      labels:
+        - "breaking-change"
+        - "major"
+        - "tagpr:major"
+    - title: Features 🚀
+      labels:
+        - "enhancement"
+        - "feature"
+        - "minor"
+        - "tagpr:minor"
+    - title: Bug Fixes 🐛
+      labels:
+        - "bug"
+        - "fix"
+    - title: Maintenance & Others
+      labels:
+        - "*"

@@ -1,0 +1,6 @@
+[tagpr]
+	releaseBranch = main
+	vPrefix = true
+	changelog = true
+	changelogFile = CHANGELOG.md
+	versionFile = -
