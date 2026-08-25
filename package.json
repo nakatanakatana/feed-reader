@@ -40,8 +40,8 @@
     "web-vitals": "6.1.1"
   },
   "devDependencies": {
-    "@kubb/cli": "^4.0.0",
-    "@kubb/core": "^4.0.0",
+    "@kubb/cli": "^5.0.0",
+    "@kubb/core": "^5.0.0",
     "@kubb/plugin-client": "^4.0.0",
     "@kubb/plugin-msw": "^4.0.0",
     "@kubb/plugin-oas": "^4.0.0",
