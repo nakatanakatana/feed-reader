@@ -14,6 +14,12 @@
         "@tanstack/solid-db",
         "@tanstack/query-db-collection"
       ]
+    },
+    {
+      "groupName": "kubb",
+      "matchPackageNames": [
+        "@kubb/**"
+      ]
     }
   ]
 }
