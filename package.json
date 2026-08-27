@@ -32,7 +32,7 @@
     "@opentelemetry/sdk-trace-web": "2.10.0",
     "@opentelemetry/semantic-conventions": "1.43.0",
     "@tanstack/router-plugin": "1.168.35",
-    "@tanstack/solid-query": "5.102.2",
+    "@tanstack/solid-query": "5.102.3",
     "@tanstack/solid-router": "1.170.30",
     "markdown-it": "14.3.0",
     "postcss": "8.5.26",
