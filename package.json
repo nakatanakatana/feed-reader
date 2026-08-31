@@ -49,7 +49,6 @@
     "@kubb/plugin-ts": "^4.0.0",
     "@msw/data": "^1.1.6",
     "@pandacss/dev": "1.12.0",
-    "@types/markdown-it": "14.2.0",
     "@types/node": "25.9.5",
     "@typespec/compiler": "^1.12.0",
     "@typespec/http": "^1.12.0",
