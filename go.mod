@@ -23,7 +23,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.46.0
 	golang.org/x/sync v0.22.0
 	gotest.tools/v3 v3.5.2
-	modernc.org/sqlite v1.57.0
+	modernc.org/sqlite v1.58.0
 	pgregory.net/rapid v1.3.0
 )
 
@@ -95,7 +95,7 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260819154853-08b0e4226688 // indirect
 	google.golang.org/grpc v1.83.1 // indirect
 	google.golang.org/protobuf v1.36.12 // indirect
-	modernc.org/libc v1.74.4 // indirect
+	modernc.org/libc v1.75.6 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
-	modernc.org/memory v1.11.0 // indirect
+	modernc.org/memory v1.12.1 // indirect
 )
