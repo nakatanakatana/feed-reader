@@ -40,13 +40,13 @@
     "web-vitals": "6.2.1"
   },
   "devDependencies": {
-    "@kubb/cli": "^4.0.0",
-    "@kubb/core": "^4.0.0",
+    "@kubb/cli": "^5.0.0",
+    "@kubb/core": "^5.0.0",
     "@kubb/plugin-client": "^4.0.0",
-    "@kubb/plugin-msw": "^4.0.0",
+    "@kubb/plugin-msw": "^5.0.0",
     "@kubb/plugin-oas": "^4.0.0",
     "@kubb/plugin-solid-query": "^4.0.0",
-    "@kubb/plugin-ts": "^4.0.0",
+    "@kubb/plugin-ts": "^5.0.0",
     "@msw/data": "^1.1.6",
     "@pandacss/dev": "1.12.0",
     "@types/node": "25.9.5",
