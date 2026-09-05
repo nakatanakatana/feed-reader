@@ -11,7 +11,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/hashicorp/go-retryablehttp v0.7.8
 	github.com/mmcdole/gofeed v1.4.2
-	github.com/nakatanakatana/mytools v0.10.0
+	github.com/nakatanakatana/mytools v0.10.1
 	github.com/ncruces/go-sqlite3 v0.35.4
 	github.com/oapi-codegen/runtime v1.7.0
 	github.com/sqldef/sqldef/v3 v3.11.20

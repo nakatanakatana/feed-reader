@@ -155,8 +155,8 @@ github.com/mmcdole/goxpp/v2 v2.0.0 h1:HrSCflxerUEqZQNq3u7ldtmE/XkwnTx4Zpq2DW4i5r
 github.com/mmcdole/goxpp/v2 v2.0.0/go.mod h1:CUduYMnO9JB6Z/uqDn9Ormk/r8E9BsLQxHPWDZ961Os=
 github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 h1:C3w9PqII01/Oq1c1nUAm88MOHcQC9l5mIlSMApZMrHA=
 github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822/go.mod h1:+n7T8mK8HuQTcFwEeznm/DIxMOiR9yIdICNftLE1DvQ=
-github.com/nakatanakatana/mytools v0.10.0 h1:98AYxIuYK8hvIfQ/NBQ8fi5yRSBZ062YnJDjzayLQSo=
-github.com/nakatanakatana/mytools v0.10.0/go.mod h1:+kJ11Vm8DbzoKUdzh05q+rYEi13go+KlNo70/mLTEQE=
+github.com/nakatanakatana/mytools v0.10.1 h1:9eeDwP893MFajyKddeT2CUArQcotlBa87hmhxY65JOA=
+github.com/nakatanakatana/mytools v0.10.1/go.mod h1:+kJ11Vm8DbzoKUdzh05q+rYEi13go+KlNo70/mLTEQE=
 github.com/nats-io/nats.go v1.44.0 h1:ECKVrDLdh/kDPV1g0gAQ+2+m2KprqZK5O/eJAyAnH2M=
 github.com/nats-io/nats.go v1.44.0/go.mod h1:iRWIPokVIFbVijxuMQq4y9ttaBTMe0SFdlZfMDd+33g=
 github.com/nats-io/nkeys v0.4.11 h1:q44qGV008kYd9W1b1nEBkNzvnWxtRSQ7A8BoqRrcfa0=
