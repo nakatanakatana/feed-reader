@@ -4,7 +4,7 @@ go 1.26.3
 
 require (
 	github.com/JohannesKaufmann/html-to-markdown/v2 v2.5.2
-	github.com/XSAM/otelsql v0.43.0
+	github.com/XSAM/otelsql v0.44.0
 	github.com/benbjohnson/litestream v0.5.17
 	github.com/caarlos0/env/v11 v11.4.1
 	github.com/goccy/go-yaml v1.19.2
