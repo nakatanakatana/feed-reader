@@ -16,7 +16,7 @@ require (
 	github.com/oapi-codegen/runtime v1.7.0
 	github.com/sqldef/sqldef/v3 v3.11.20
 	github.com/stretchr/testify v1.12.1
-	github.com/superfly/ltx v0.5.2
+	github.com/superfly/ltx v0.5.3
 	go.opentelemetry.io/otel v1.46.0
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.46.0
 	go.opentelemetry.io/otel/sdk v1.46.0
