@@ -1,14 +1,14 @@
 import { HttpResponse, http } from "msw";
 import { afterEach, describe, expect, it } from "vitest";
-import { worker } from "../mocks/browser";
+import { server } from "../test-utils/api-server";
 
 describe("block-db kubb query options", () => {
   afterEach(() => {
-    worker.resetHandlers();
+    server.resetHandlers();
   });
 
   it("urlParsingRulesQueryOptions.queryFn returns mapped url rules", async () => {
-    worker.use(
+    server.use(
       http.get("*/api/v2/url-rules", () =>
         HttpResponse.json({
           rules: [
@@ -37,7 +37,7 @@ describe("block-db kubb query options", () => {
   });
 
   it("itemBlockRulesQueryOptions.queryFn returns mapped block rules", async () => {
-    worker.use(
+    server.use(
       http.get("*/api/v2/block-rules", () =>
         HttpResponse.json({
           rules: [
