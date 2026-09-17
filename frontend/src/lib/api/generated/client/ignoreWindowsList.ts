@@ -3,38 +3,23 @@
  * Do not edit manually.
  */
 
-import fetch from "../../kubb-client.ts";
+import type { Options, UnwrappedResult } from "../../.kubb/client";
 import type {
-  Client,
-  RequestConfig,
-  ResponseErrorConfig,
-} from "../../kubb-client.ts";
-import type {
-  IgnoreWindowsListQueryResponse,
-  IgnoreWindowsList500,
-} from "../../types-generated.ts";
-
-function getIgnoreWindowsListUrl() {
-  const res = { method: "GET", url: `/api/v2/ignore-windows` as const };
-  return res;
-}
+  IgnoreWindowsListOptions,
+  IgnoreWindowsListResponses,
+} from "../../types-generated";
+import { client, unwrapResult } from "../../.kubb/client";
 
 /**
  * {@link /ignore-windows}
  */
-export async function ignoreWindowsList(
-  config: Partial<RequestConfig> & { client?: Client } = {},
-) {
-  const { client: request = fetch, ...requestConfig } = config;
+export function ignoreWindowsList<ThrowOnError extends boolean = true>(
+  options: Options<IgnoreWindowsListOptions, ThrowOnError> = {},
+): Promise<UnwrappedResult<IgnoreWindowsListResponses, ThrowOnError>> {
+  const { client: request = client, ...config } = options;
 
-  const res = await request<
-    IgnoreWindowsListQueryResponse,
-    ResponseErrorConfig<IgnoreWindowsList500>,
-    unknown
-  >({
-    method: "GET",
-    url: getIgnoreWindowsListUrl().url.toString(),
-    ...requestConfig,
-  });
-  return res.data;
+  return unwrapResult(
+    request({ method: "GET", url: "/ignore-windows", ...config }),
+    config.throwOnError,
+  ) as Promise<UnwrappedResult<IgnoreWindowsListResponses, ThrowOnError>>;
 }

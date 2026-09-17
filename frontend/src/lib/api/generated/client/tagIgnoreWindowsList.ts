@@ -3,41 +3,33 @@
  * Do not edit manually.
  */
 
-import fetch from "../../kubb-client.ts";
+import type { Options, UnwrappedResult } from "../../.kubb/client";
 import type {
-  Client,
-  RequestConfig,
-  ResponseErrorConfig,
-} from "../../kubb-client.ts";
-import type {
-  TagIgnoreWindowsListQueryResponse,
-  TagIgnoreWindowsListQueryParams,
-  TagIgnoreWindowsList500,
-} from "../../types-generated.ts";
-
-function getTagIgnoreWindowsListUrl() {
-  const res = { method: "GET", url: `/api/v2/tag-ignore-windows` as const };
-  return res;
-}
+  TagIgnoreWindowsListOptions,
+  TagIgnoreWindowsListResponses,
+} from "../../types-generated";
+import { client, unwrapResult } from "../../.kubb/client";
 
 /**
  * {@link /tag-ignore-windows}
  */
-export async function tagIgnoreWindowsList(
-  params?: TagIgnoreWindowsListQueryParams,
-  config: Partial<RequestConfig> & { client?: Client } = {},
-) {
-  const { client: request = fetch, ...requestConfig } = config;
+export function tagIgnoreWindowsList<ThrowOnError extends boolean = true>(
+  options: Options<TagIgnoreWindowsListOptions, ThrowOnError> = {},
+): Promise<UnwrappedResult<TagIgnoreWindowsListResponses, ThrowOnError>> {
+  const { client: request = client, ...config } = options;
 
-  const res = await request<
-    TagIgnoreWindowsListQueryResponse,
-    ResponseErrorConfig<TagIgnoreWindowsList500>,
-    unknown
-  >({
-    method: "GET",
-    url: getTagIgnoreWindowsListUrl().url.toString(),
-    params,
-    ...requestConfig,
-  });
-  return res.data;
+  return unwrapResult(
+    request({
+      method: "GET",
+      url: "/tag-ignore-windows",
+      styles: {
+        query: {
+          tagId: { explode: false },
+          ignoreWindowId: { explode: false },
+        },
+      },
+      ...config,
+    }),
+    config.throwOnError,
+  ) as Promise<UnwrappedResult<TagIgnoreWindowsListResponses, ThrowOnError>>;
 }

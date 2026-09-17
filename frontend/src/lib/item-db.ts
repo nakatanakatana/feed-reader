@@ -126,12 +126,14 @@ export const getItemsQueryOptions = (
       do {
         const sinceValue = timestampToISOString(searchSince);
         const response = await itemsList({
-          ...(sinceValue ? { since: sinceValue } : {}),
-          pageSize: 1000,
-          ...(pageToken ? { pageToken } : {}),
-          ...(isReadParam.isRead !== undefined
-            ? { isRead: isReadParam.isRead }
-            : {}),
+          query: {
+            ...(sinceValue ? { since: sinceValue } : {}),
+            pageSize: 1000,
+            ...(pageToken ? { pageToken } : {}),
+            ...(isReadParam.isRead !== undefined
+              ? { isRead: isReadParam.isRead }
+              : {}),
+          },
         });
 
         if (response.items && response.items.length > 0) {
@@ -219,7 +221,9 @@ export const updateItemStatus = async (
   });
 
   try {
-    await itemsUpdateStatus(mapUpdateItemStatusRequest(ids, isRead));
+    await itemsUpdateStatus({
+      body: mapUpdateItemStatusRequest(ids, isRead),
+    });
   } catch (e) {
     if (previousData) {
       queryClient.setQueryData(queryKey, previousData);
@@ -229,7 +233,7 @@ export const updateItemStatus = async (
 };
 
 export const getItem = async (id: string): Promise<Item | null> => {
-  const response = await itemsGet(id);
+  const response = await itemsGet({ path: { id } });
   if (!response.item) return null;
   return mapOpenAPIItem(response.item);
 };

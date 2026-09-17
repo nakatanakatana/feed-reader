@@ -4,14 +4,14 @@
  */
 
 import type {
-  FeedsRefreshMutationResponse,
-  FeedsRefresh500,
-} from "../../lib/api/types-generated.ts";
+  FeedsRefreshResponse,
+  FeedsRefreshStatus500,
+  FeedsRefreshBody,
+} from "../../lib/api/types-generated";
+import type { HttpResponseResolver } from "msw";
 import { http } from "msw";
 
-export function feedsRefreshHandlerResponse200(
-  data: FeedsRefreshMutationResponse,
-) {
+export function feedsRefreshHandlerResponse200(data: FeedsRefreshResponse) {
   return new Response(JSON.stringify(data), {
     status: 200,
     headers: {
@@ -20,7 +20,7 @@ export function feedsRefreshHandlerResponse200(
   });
 }
 
-export function feedsRefreshHandlerResponse500(data: FeedsRefresh500) {
+export function feedsRefreshHandlerResponse500(data: FeedsRefreshStatus500) {
   return new Response(JSON.stringify(data), {
     status: 500,
     headers: {
@@ -31,19 +31,20 @@ export function feedsRefreshHandlerResponse500(data: FeedsRefresh500) {
 
 export function feedsRefreshHandler(
   data?:
-    | FeedsRefreshMutationResponse
-    | ((
-        info: Parameters<Parameters<typeof http.post>[1]>[0],
-      ) => Response | Promise<Response>),
+    | FeedsRefreshResponse
+    | HttpResponseResolver<Record<string, string>, FeedsRefreshBody>,
 ) {
-  return http.post(`*/api/v2/feeds/refresh`, function handler(info) {
-    if (typeof data === "function") return data(info);
+  return http.post<Record<string, string>, FeedsRefreshBody>(
+    `*/api/v2/feeds/refresh`,
+    function handler(info) {
+      if (typeof data === "function") return data(info);
 
-    return new Response(JSON.stringify(data), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  });
+      return new Response(JSON.stringify(data), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    },
+  );
 }

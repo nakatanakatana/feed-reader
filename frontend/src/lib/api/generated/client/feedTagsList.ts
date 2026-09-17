@@ -3,41 +3,30 @@
  * Do not edit manually.
  */
 
-import fetch from "../../kubb-client.ts";
+import type { Options, UnwrappedResult } from "../../.kubb/client";
 import type {
-  Client,
-  RequestConfig,
-  ResponseErrorConfig,
-} from "../../kubb-client.ts";
-import type {
-  FeedTagsListQueryResponse,
-  FeedTagsListQueryParams,
-  FeedTagsList500,
-} from "../../types-generated.ts";
-
-function getFeedTagsListUrl() {
-  const res = { method: "GET", url: `/api/v2/feed-tags` as const };
-  return res;
-}
+  FeedTagsListOptions,
+  FeedTagsListResponses,
+} from "../../types-generated";
+import { client, unwrapResult } from "../../.kubb/client";
 
 /**
  * {@link /feed-tags}
  */
-export async function feedTagsList(
-  params?: FeedTagsListQueryParams,
-  config: Partial<RequestConfig> & { client?: Client } = {},
-) {
-  const { client: request = fetch, ...requestConfig } = config;
+export function feedTagsList<ThrowOnError extends boolean = true>(
+  options: Options<FeedTagsListOptions, ThrowOnError> = {},
+): Promise<UnwrappedResult<FeedTagsListResponses, ThrowOnError>> {
+  const { client: request = client, ...config } = options;
 
-  const res = await request<
-    FeedTagsListQueryResponse,
-    ResponseErrorConfig<FeedTagsList500>,
-    unknown
-  >({
-    method: "GET",
-    url: getFeedTagsListUrl().url.toString(),
-    params,
-    ...requestConfig,
-  });
-  return res.data;
+  return unwrapResult(
+    request({
+      method: "GET",
+      url: "/feed-tags",
+      styles: {
+        query: { feedId: { explode: false }, tagId: { explode: false } },
+      },
+      ...config,
+    }),
+    config.throwOnError,
+  ) as Promise<UnwrappedResult<FeedTagsListResponses, ThrowOnError>>;
 }

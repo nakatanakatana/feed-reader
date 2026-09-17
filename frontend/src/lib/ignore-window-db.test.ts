@@ -132,7 +132,7 @@ describe("ignore-window-db", () => {
 
       expect(
         ignoreWindowsCreateClient.ignoreWindowsCreate,
-      ).toHaveBeenCalledWith(payload);
+      ).toHaveBeenCalledWith({ body: payload });
       expect(queryClient.invalidateQueries).toHaveBeenCalledWith({
         queryKey: ["ignore-windows"],
       });
@@ -167,7 +167,7 @@ describe("ignore-window-db", () => {
 
       expect(
         ignoreWindowsUpdateClient.ignoreWindowsUpdate,
-      ).toHaveBeenCalledWith("w2", updateData);
+      ).toHaveBeenCalledWith({ path: { id: "w2" }, body: updateData });
       expect(queryClient.invalidateQueries).toHaveBeenCalledWith({
         queryKey: ["ignore-windows"],
       });
@@ -186,7 +186,7 @@ describe("ignore-window-db", () => {
 
       expect(
         ignoreWindowsDeleteClient.ignoreWindowsDelete,
-      ).toHaveBeenCalledWith("w2");
+      ).toHaveBeenCalledWith({ path: { id: "w2" } });
       expect(queryClient.invalidateQueries).toHaveBeenCalledWith({
         queryKey: ["ignore-windows"],
       });
@@ -215,7 +215,7 @@ describe("ignore-window-db", () => {
 
       expect(
         feedIgnoreWindowsManageClient.feedIgnoreWindowsManage,
-      ).toHaveBeenCalledWith(params);
+      ).toHaveBeenCalledWith({ body: params });
       expect(queryClient.invalidateQueries).toHaveBeenCalledWith({
         queryKey: ["feed-ignore-windows"],
       });
@@ -241,7 +241,7 @@ describe("ignore-window-db", () => {
 
       expect(
         tagIgnoreWindowsManageClient.tagIgnoreWindowsManage,
-      ).toHaveBeenCalledWith(params);
+      ).toHaveBeenCalledWith({ body: params });
       expect(queryClient.invalidateQueries).toHaveBeenCalledWith({
         queryKey: ["tag-ignore-windows"],
       });
@@ -271,7 +271,7 @@ describe("ignore-window-db", () => {
 
       expect(
         feedIgnoreWindowsListClient.feedIgnoreWindowsList,
-      ).toHaveBeenCalledWith(undefined);
+      ).toHaveBeenCalledWith({ query: undefined });
       expect(result).toEqual([
         {
           id: "feed-1-w1",
@@ -304,7 +304,7 @@ describe("ignore-window-db", () => {
       expect(
         feedIgnoreWindowsListClient.feedIgnoreWindowsList,
       ).toHaveBeenCalledWith({
-        feedId: "feed-1",
+        query: { feedId: "feed-1" },
       });
       expect(result).toEqual([
         {
@@ -336,7 +336,7 @@ describe("ignore-window-db", () => {
 
       expect(
         tagIgnoreWindowsListClient.tagIgnoreWindowsList,
-      ).toHaveBeenCalledWith(undefined);
+      ).toHaveBeenCalledWith({ query: undefined });
       expect(result).toEqual([
         {
           id: "tag-1-w1",
@@ -366,7 +366,7 @@ describe("ignore-window-db", () => {
       expect(
         tagIgnoreWindowsListClient.tagIgnoreWindowsList,
       ).toHaveBeenCalledWith({
-        tagId: "tag-1",
+        query: { tagId: "tag-1" },
       });
       expect(result).toEqual([
         {

@@ -3,45 +3,23 @@
  * Do not edit manually.
  */
 
-import fetch from "../../kubb-client.ts";
+import type { Options, UnwrappedResult } from "../../.kubb/client";
 import type {
-  Client,
-  RequestConfig,
-  ResponseErrorConfig,
-} from "../../kubb-client.ts";
-import type {
-  URLRulesAddMutationRequest,
-  URLRulesAddMutationResponse,
-  URLRulesAdd500,
-} from "../../types-generated.ts";
-
-function getURLRulesAddUrl() {
-  const res = { method: "POST", url: `/api/v2/url-rules` as const };
-  return res;
-}
+  URLRulesAddOptions,
+  URLRulesAddResponses,
+} from "../../types-generated";
+import { client, unwrapResult } from "../../.kubb/client";
 
 /**
  * {@link /url-rules}
  */
-export async function URLRulesAdd(
-  data: URLRulesAddMutationRequest,
-  config: Partial<RequestConfig<URLRulesAddMutationRequest>> & {
-    client?: Client;
-  } = {},
-) {
-  const { client: request = fetch, ...requestConfig } = config;
+export function URLRulesAdd<ThrowOnError extends boolean = true>(
+  options: Options<URLRulesAddOptions, ThrowOnError>,
+): Promise<UnwrappedResult<URLRulesAddResponses, ThrowOnError>> {
+  const { client: request = client, ...config } = options;
 
-  const requestData = data;
-
-  const res = await request<
-    URLRulesAddMutationResponse,
-    ResponseErrorConfig<URLRulesAdd500>,
-    URLRulesAddMutationRequest
-  >({
-    method: "POST",
-    url: getURLRulesAddUrl().url.toString(),
-    data: requestData,
-    ...requestConfig,
-  });
-  return res.data;
+  return unwrapResult(
+    request({ method: "POST", url: "/url-rules", ...config }),
+    config.throwOnError,
+  ) as Promise<UnwrappedResult<URLRulesAddResponses, ThrowOnError>>;
 }

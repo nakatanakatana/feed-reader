@@ -3,45 +3,23 @@
  * Do not edit manually.
  */
 
-import fetch from "../../kubb-client.ts";
+import type { Options, UnwrappedResult } from "../../.kubb/client";
 import type {
-  Client,
-  RequestConfig,
-  ResponseErrorConfig,
-} from "../../kubb-client.ts";
-import type {
-  FeedsExportOpmlMutationRequest,
-  FeedsExportOpmlMutationResponse,
-  FeedsExportOpml500,
-} from "../../types-generated.ts";
-
-function getFeedsExportOpmlUrl() {
-  const res = { method: "POST", url: `/api/v2/feeds/export-opml` as const };
-  return res;
-}
+  FeedsExportOpmlOptions,
+  FeedsExportOpmlResponses,
+} from "../../types-generated";
+import { client, unwrapResult } from "../../.kubb/client";
 
 /**
  * {@link /feeds/export-opml}
  */
-export async function feedsExportOpml(
-  data: FeedsExportOpmlMutationRequest,
-  config: Partial<RequestConfig<FeedsExportOpmlMutationRequest>> & {
-    client?: Client;
-  } = {},
-) {
-  const { client: request = fetch, ...requestConfig } = config;
+export function feedsExportOpml<ThrowOnError extends boolean = true>(
+  options: Options<FeedsExportOpmlOptions, ThrowOnError>,
+): Promise<UnwrappedResult<FeedsExportOpmlResponses, ThrowOnError>> {
+  const { client: request = client, ...config } = options;
 
-  const requestData = data;
-
-  const res = await request<
-    FeedsExportOpmlMutationResponse,
-    ResponseErrorConfig<FeedsExportOpml500>,
-    FeedsExportOpmlMutationRequest
-  >({
-    method: "POST",
-    url: getFeedsExportOpmlUrl().url.toString(),
-    data: requestData,
-    ...requestConfig,
-  });
-  return res.data;
+  return unwrapResult(
+    request({ method: "POST", url: "/feeds/export-opml", ...config }),
+    config.throwOnError,
+  ) as Promise<UnwrappedResult<FeedsExportOpmlResponses, ThrowOnError>>;
 }

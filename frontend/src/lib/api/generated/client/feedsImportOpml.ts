@@ -3,45 +3,23 @@
  * Do not edit manually.
  */
 
-import fetch from "../../kubb-client.ts";
+import type { Options, UnwrappedResult } from "../../.kubb/client";
 import type {
-  Client,
-  RequestConfig,
-  ResponseErrorConfig,
-} from "../../kubb-client.ts";
-import type {
-  FeedsImportOpmlMutationRequest,
-  FeedsImportOpmlMutationResponse,
-  FeedsImportOpml500,
-} from "../../types-generated.ts";
-
-function getFeedsImportOpmlUrl() {
-  const res = { method: "POST", url: `/api/v2/feeds/import-opml` as const };
-  return res;
-}
+  FeedsImportOpmlOptions,
+  FeedsImportOpmlResponses,
+} from "../../types-generated";
+import { client, unwrapResult } from "../../.kubb/client";
 
 /**
  * {@link /feeds/import-opml}
  */
-export async function feedsImportOpml(
-  data: FeedsImportOpmlMutationRequest,
-  config: Partial<RequestConfig<FeedsImportOpmlMutationRequest>> & {
-    client?: Client;
-  } = {},
-) {
-  const { client: request = fetch, ...requestConfig } = config;
+export function feedsImportOpml<ThrowOnError extends boolean = true>(
+  options: Options<FeedsImportOpmlOptions, ThrowOnError>,
+): Promise<UnwrappedResult<FeedsImportOpmlResponses, ThrowOnError>> {
+  const { client: request = client, ...config } = options;
 
-  const requestData = data;
-
-  const res = await request<
-    FeedsImportOpmlMutationResponse,
-    ResponseErrorConfig<FeedsImportOpml500>,
-    FeedsImportOpmlMutationRequest
-  >({
-    method: "POST",
-    url: getFeedsImportOpmlUrl().url.toString(),
-    data: requestData,
-    ...requestConfig,
-  });
-  return res.data;
+  return unwrapResult(
+    request({ method: "POST", url: "/feeds/import-opml", ...config }),
+    config.throwOnError,
+  ) as Promise<UnwrappedResult<FeedsImportOpmlResponses, ThrowOnError>>;
 }

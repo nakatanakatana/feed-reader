@@ -4,13 +4,13 @@
  */
 
 import type {
-  IgnoreWindowsListQueryResponse,
-  IgnoreWindowsList500,
-} from "../../lib/api/types-generated.ts";
+  IgnoreWindowsListResponse,
+  IgnoreWindowsListStatus500,
+} from "../../lib/api/types-generated";
 import { http } from "msw";
 
 export function ignoreWindowsListHandlerResponse200(
-  data: IgnoreWindowsListQueryResponse,
+  data: IgnoreWindowsListResponse,
 ) {
   return new Response(JSON.stringify(data), {
     status: 200,
@@ -21,7 +21,7 @@ export function ignoreWindowsListHandlerResponse200(
 }
 
 export function ignoreWindowsListHandlerResponse500(
-  data: IgnoreWindowsList500,
+  data: IgnoreWindowsListStatus500,
 ) {
   return new Response(JSON.stringify(data), {
     status: 500,
@@ -33,7 +33,7 @@ export function ignoreWindowsListHandlerResponse500(
 
 export function ignoreWindowsListHandler(
   data?:
-    | IgnoreWindowsListQueryResponse
+    | IgnoreWindowsListResponse
     | ((
         info: Parameters<Parameters<typeof http.get>[1]>[0],
       ) => Response | Promise<Response>),

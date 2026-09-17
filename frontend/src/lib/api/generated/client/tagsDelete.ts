@@ -3,40 +3,23 @@
  * Do not edit manually.
  */
 
-import fetch from "../../kubb-client.ts";
+import type { Options, UnwrappedResult } from "../../.kubb/client";
 import type {
-  Client,
-  RequestConfig,
-  ResponseErrorConfig,
-} from "../../kubb-client.ts";
-import type {
-  TagsDeleteMutationResponse,
-  TagsDeletePathParams,
-  TagsDelete500,
-} from "../../types-generated.ts";
-
-function getTagsDeleteUrl(id: TagsDeletePathParams["id"]) {
-  const res = { method: "DELETE", url: `/api/v2/tags/${id}` as const };
-  return res;
-}
+  TagsDeleteOptions,
+  TagsDeleteResponses,
+} from "../../types-generated";
+import { client, unwrapResult } from "../../.kubb/client";
 
 /**
  * {@link /tags/:id}
  */
-export async function tagsDelete(
-  id: TagsDeletePathParams["id"],
-  config: Partial<RequestConfig> & { client?: Client } = {},
-) {
-  const { client: request = fetch, ...requestConfig } = config;
+export function tagsDelete<ThrowOnError extends boolean = true>(
+  options: Options<TagsDeleteOptions, ThrowOnError>,
+): Promise<UnwrappedResult<TagsDeleteResponses, ThrowOnError>> {
+  const { client: request = client, ...config } = options;
 
-  const res = await request<
-    TagsDeleteMutationResponse,
-    ResponseErrorConfig<TagsDelete500>,
-    unknown
-  >({
-    method: "DELETE",
-    url: getTagsDeleteUrl(id).url.toString(),
-    ...requestConfig,
-  });
-  return res.data;
+  return unwrapResult(
+    request({ method: "DELETE", url: "/tags/{id}", ...config }),
+    config.throwOnError,
+  ) as Promise<UnwrappedResult<TagsDeleteResponses, ThrowOnError>>;
 }

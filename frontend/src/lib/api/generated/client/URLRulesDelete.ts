@@ -3,40 +3,23 @@
  * Do not edit manually.
  */
 
-import fetch from "../../kubb-client.ts";
+import type { Options, UnwrappedResult } from "../../.kubb/client";
 import type {
-  Client,
-  RequestConfig,
-  ResponseErrorConfig,
-} from "../../kubb-client.ts";
-import type {
-  URLRulesDeleteMutationResponse,
-  URLRulesDeletePathParams,
-  URLRulesDelete500,
-} from "../../types-generated.ts";
-
-function getURLRulesDeleteUrl(id: URLRulesDeletePathParams["id"]) {
-  const res = { method: "DELETE", url: `/api/v2/url-rules/${id}` as const };
-  return res;
-}
+  URLRulesDeleteOptions,
+  URLRulesDeleteResponses,
+} from "../../types-generated";
+import { client, unwrapResult } from "../../.kubb/client";
 
 /**
  * {@link /url-rules/:id}
  */
-export async function URLRulesDelete(
-  id: URLRulesDeletePathParams["id"],
-  config: Partial<RequestConfig> & { client?: Client } = {},
-) {
-  const { client: request = fetch, ...requestConfig } = config;
+export function URLRulesDelete<ThrowOnError extends boolean = true>(
+  options: Options<URLRulesDeleteOptions, ThrowOnError>,
+): Promise<UnwrappedResult<URLRulesDeleteResponses, ThrowOnError>> {
+  const { client: request = client, ...config } = options;
 
-  const res = await request<
-    URLRulesDeleteMutationResponse,
-    ResponseErrorConfig<URLRulesDelete500>,
-    unknown
-  >({
-    method: "DELETE",
-    url: getURLRulesDeleteUrl(id).url.toString(),
-    ...requestConfig,
-  });
-  return res.data;
+  return unwrapResult(
+    request({ method: "DELETE", url: "/url-rules/{id}", ...config }),
+    config.throwOnError,
+  ) as Promise<UnwrappedResult<URLRulesDeleteResponses, ThrowOnError>>;
 }

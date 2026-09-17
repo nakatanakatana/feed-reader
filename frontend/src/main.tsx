@@ -5,6 +5,7 @@ import { initOTEL } from "./otel";
 import { initPWA } from "./pwa";
 import { routeTree } from "./routeTree.gen";
 import "./styles.css";
+import "./lib/api/kubb-client";
 import { config } from "./config";
 import { queryClient } from "./lib/query";
 import { ToastProvider } from "./lib/toast";

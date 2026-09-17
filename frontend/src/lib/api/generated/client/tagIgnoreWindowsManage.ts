@@ -3,48 +3,23 @@
  * Do not edit manually.
  */
 
-import fetch from "../../kubb-client.ts";
+import type { Options, UnwrappedResult } from "../../.kubb/client";
 import type {
-  Client,
-  RequestConfig,
-  ResponseErrorConfig,
-} from "../../kubb-client.ts";
-import type {
-  TagIgnoreWindowsManageMutationRequest,
-  TagIgnoreWindowsManageMutationResponse,
-  TagIgnoreWindowsManage500,
-} from "../../types-generated.ts";
-
-function getTagIgnoreWindowsManageUrl() {
-  const res = {
-    method: "POST",
-    url: `/api/v2/tag-ignore-windows/manage` as const,
-  };
-  return res;
-}
+  TagIgnoreWindowsManageOptions,
+  TagIgnoreWindowsManageResponses,
+} from "../../types-generated";
+import { client, unwrapResult } from "../../.kubb/client";
 
 /**
  * {@link /tag-ignore-windows/manage}
  */
-export async function tagIgnoreWindowsManage(
-  data: TagIgnoreWindowsManageMutationRequest,
-  config: Partial<RequestConfig<TagIgnoreWindowsManageMutationRequest>> & {
-    client?: Client;
-  } = {},
-) {
-  const { client: request = fetch, ...requestConfig } = config;
+export function tagIgnoreWindowsManage<ThrowOnError extends boolean = true>(
+  options: Options<TagIgnoreWindowsManageOptions, ThrowOnError>,
+): Promise<UnwrappedResult<TagIgnoreWindowsManageResponses, ThrowOnError>> {
+  const { client: request = client, ...config } = options;
 
-  const requestData = data;
-
-  const res = await request<
-    TagIgnoreWindowsManageMutationResponse,
-    ResponseErrorConfig<TagIgnoreWindowsManage500>,
-    TagIgnoreWindowsManageMutationRequest
-  >({
-    method: "POST",
-    url: getTagIgnoreWindowsManageUrl().url.toString(),
-    data: requestData,
-    ...requestConfig,
-  });
-  return res.data;
+  return unwrapResult(
+    request({ method: "POST", url: "/tag-ignore-windows/manage", ...config }),
+    config.throwOnError,
+  ) as Promise<UnwrappedResult<TagIgnoreWindowsManageResponses, ThrowOnError>>;
 }

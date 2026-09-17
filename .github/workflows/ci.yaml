@@ -129,6 +129,7 @@ jobs:
       - run: npm ci  --prefer-offline
       - run: npm run lint
       - run: npm run format:check
+      - run: npm run check:codegen
 
   frontend-test:
     needs: frontend-setup

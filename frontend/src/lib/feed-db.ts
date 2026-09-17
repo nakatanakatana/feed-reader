@@ -84,7 +84,7 @@ export const manageFeedTags = async (params: {
   addTagIds: string[];
   removeTagIds: string[];
 }) => {
-  await feedTagsManage(params);
+  await feedTagsManage({ body: params });
   queryClient.invalidateQueries({ queryKey: ["feeds"] });
   queryClient.invalidateQueries({ queryKey: ["tags"] });
   queryClient.invalidateQueries({ queryKey: ["feed-tags"] });
@@ -93,7 +93,7 @@ export const manageFeedTags = async (params: {
 export const refreshFeeds = async (feedIds: string[]) => {
   fetchingState.startFetching(feedIds);
   try {
-    const res = await feedsRefresh(mapRefreshFeedsRequest(feedIds));
+    const res = await feedsRefresh({ body: mapRefreshFeedsRequest(feedIds) });
     fetchingState.finishFetching(
       feedIds,
       res.results.map((r) => ({
@@ -123,15 +123,19 @@ export const suspendFeeds = async (
   suspendSeconds: number,
 ) => {
   await feedsSuspend({
-    ids: feedIds,
-    suspendSeconds: String(suspendSeconds),
+    body: {
+      ids: feedIds,
+      suspendSeconds: String(suspendSeconds),
+    },
   });
   queryClient.invalidateQueries({ queryKey: ["feeds"] });
 };
 
 export const exportFeeds = async (feedIds: string[]) => {
   const res = await feedsExportOpml({
-    ids: feedIds,
+    body: {
+      ids: feedIds,
+    },
   });
   const opmlContent = base64ToBytes(res.opmlContent);
   const opmlBuffer = new ArrayBuffer(opmlContent.byteLength);
@@ -159,14 +163,14 @@ export const feedsQueryOptions = {
 
 export const feedInsert = async (url: string, tags: Tag[]) => {
   const tagIds = tags.map((t) => t.id);
-  await feedsCreate({ url, tagIds });
+  await feedsCreate({ body: { url, tagIds } });
   await queryClient.invalidateQueries({ queryKey: ["feeds"] });
   await queryClient.invalidateQueries({ queryKey: ["tags"] });
   await queryClient.invalidateQueries({ queryKey: ["feed-tags"] });
 };
 
 export const feedDelete = async (id: string) => {
-  await feedsDelete(id);
+  await feedsDelete({ path: { id } });
   await queryClient.invalidateQueries({ queryKey: ["feeds"] });
   await queryClient.invalidateQueries({ queryKey: ["tags"] });
   await queryClient.invalidateQueries({ queryKey: ["feed-tags"] });

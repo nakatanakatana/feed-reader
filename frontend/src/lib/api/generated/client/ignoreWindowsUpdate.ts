@@ -3,47 +3,23 @@
  * Do not edit manually.
  */
 
-import fetch from "../../kubb-client.ts";
+import type { Options, UnwrappedResult } from "../../.kubb/client";
 import type {
-  Client,
-  RequestConfig,
-  ResponseErrorConfig,
-} from "../../kubb-client.ts";
-import type {
-  IgnoreWindowsUpdateMutationRequest,
-  IgnoreWindowsUpdateMutationResponse,
-  IgnoreWindowsUpdatePathParams,
-  IgnoreWindowsUpdate500,
-} from "../../types-generated.ts";
-
-function getIgnoreWindowsUpdateUrl(id: IgnoreWindowsUpdatePathParams["id"]) {
-  const res = { method: "PUT", url: `/api/v2/ignore-windows/${id}` as const };
-  return res;
-}
+  IgnoreWindowsUpdateOptions,
+  IgnoreWindowsUpdateResponses,
+} from "../../types-generated";
+import { client, unwrapResult } from "../../.kubb/client";
 
 /**
  * {@link /ignore-windows/:id}
  */
-export async function ignoreWindowsUpdate(
-  id: IgnoreWindowsUpdatePathParams["id"],
-  data: IgnoreWindowsUpdateMutationRequest,
-  config: Partial<RequestConfig<IgnoreWindowsUpdateMutationRequest>> & {
-    client?: Client;
-  } = {},
-) {
-  const { client: request = fetch, ...requestConfig } = config;
+export function ignoreWindowsUpdate<ThrowOnError extends boolean = true>(
+  options: Options<IgnoreWindowsUpdateOptions, ThrowOnError>,
+): Promise<UnwrappedResult<IgnoreWindowsUpdateResponses, ThrowOnError>> {
+  const { client: request = client, ...config } = options;
 
-  const requestData = data;
-
-  const res = await request<
-    IgnoreWindowsUpdateMutationResponse,
-    ResponseErrorConfig<IgnoreWindowsUpdate500>,
-    IgnoreWindowsUpdateMutationRequest
-  >({
-    method: "PUT",
-    url: getIgnoreWindowsUpdateUrl(id).url.toString(),
-    data: requestData,
-    ...requestConfig,
-  });
-  return res.data;
+  return unwrapResult(
+    request({ method: "PUT", url: "/ignore-windows/{id}", ...config }),
+    config.throwOnError,
+  ) as Promise<UnwrappedResult<IgnoreWindowsUpdateResponses, ThrowOnError>>;
 }

@@ -3,40 +3,20 @@
  * Do not edit manually.
  */
 
-import fetch from "../../kubb-client.ts";
-import type {
-  Client,
-  RequestConfig,
-  ResponseErrorConfig,
-} from "../../kubb-client.ts";
-import type {
-  ItemsGetQueryResponse,
-  ItemsGetPathParams,
-  ItemsGet500,
-} from "../../types-generated.ts";
-
-function getItemsGetUrl(id: ItemsGetPathParams["id"]) {
-  const res = { method: "GET", url: `/api/v2/items/${id}` as const };
-  return res;
-}
+import type { Options, UnwrappedResult } from "../../.kubb/client";
+import type { ItemsGetOptions, ItemsGetResponses } from "../../types-generated";
+import { client, unwrapResult } from "../../.kubb/client";
 
 /**
  * {@link /items/:id}
  */
-export async function itemsGet(
-  id: ItemsGetPathParams["id"],
-  config: Partial<RequestConfig> & { client?: Client } = {},
-) {
-  const { client: request = fetch, ...requestConfig } = config;
+export function itemsGet<ThrowOnError extends boolean = true>(
+  options: Options<ItemsGetOptions, ThrowOnError>,
+): Promise<UnwrappedResult<ItemsGetResponses, ThrowOnError>> {
+  const { client: request = client, ...config } = options;
 
-  const res = await request<
-    ItemsGetQueryResponse,
-    ResponseErrorConfig<ItemsGet500>,
-    unknown
-  >({
-    method: "GET",
-    url: getItemsGetUrl(id).url.toString(),
-    ...requestConfig,
-  });
-  return res.data;
+  return unwrapResult(
+    request({ method: "GET", url: "/items/{id}", ...config }),
+    config.throwOnError,
+  ) as Promise<UnwrappedResult<ItemsGetResponses, ThrowOnError>>;
 }

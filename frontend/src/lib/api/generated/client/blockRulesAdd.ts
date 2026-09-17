@@ -3,45 +3,23 @@
  * Do not edit manually.
  */
 
-import fetch from "../../kubb-client.ts";
+import type { Options, UnwrappedResult } from "../../.kubb/client";
 import type {
-  Client,
-  RequestConfig,
-  ResponseErrorConfig,
-} from "../../kubb-client.ts";
-import type {
-  BlockRulesAddMutationRequest,
-  BlockRulesAddMutationResponse,
-  BlockRulesAdd500,
-} from "../../types-generated.ts";
-
-function getBlockRulesAddUrl() {
-  const res = { method: "POST", url: `/api/v2/block-rules` as const };
-  return res;
-}
+  BlockRulesAddOptions,
+  BlockRulesAddResponses,
+} from "../../types-generated";
+import { client, unwrapResult } from "../../.kubb/client";
 
 /**
  * {@link /block-rules}
  */
-export async function blockRulesAdd(
-  data: BlockRulesAddMutationRequest,
-  config: Partial<RequestConfig<BlockRulesAddMutationRequest>> & {
-    client?: Client;
-  } = {},
-) {
-  const { client: request = fetch, ...requestConfig } = config;
+export function blockRulesAdd<ThrowOnError extends boolean = true>(
+  options: Options<BlockRulesAddOptions, ThrowOnError>,
+): Promise<UnwrappedResult<BlockRulesAddResponses, ThrowOnError>> {
+  const { client: request = client, ...config } = options;
 
-  const requestData = data;
-
-  const res = await request<
-    BlockRulesAddMutationResponse,
-    ResponseErrorConfig<BlockRulesAdd500>,
-    BlockRulesAddMutationRequest
-  >({
-    method: "POST",
-    url: getBlockRulesAddUrl().url.toString(),
-    data: requestData,
-    ...requestConfig,
-  });
-  return res.data;
+  return unwrapResult(
+    request({ method: "POST", url: "/block-rules", ...config }),
+    config.throwOnError,
+  ) as Promise<UnwrappedResult<BlockRulesAddResponses, ThrowOnError>>;
 }

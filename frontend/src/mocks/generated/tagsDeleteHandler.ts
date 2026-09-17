@@ -4,20 +4,18 @@
  */
 
 import type {
-  TagsDeleteMutationResponse,
-  TagsDelete500,
-} from "../../lib/api/types-generated.ts";
+  TagsDeleteResponse,
+  TagsDeleteStatus500,
+} from "../../lib/api/types-generated";
 import { http } from "msw";
 
-export function tagsDeleteHandlerResponse200(
-  data?: TagsDeleteMutationResponse,
-) {
+export function tagsDeleteHandlerResponse200(data?: TagsDeleteResponse) {
   return new Response(JSON.stringify(data), {
     status: 200,
   });
 }
 
-export function tagsDeleteHandlerResponse500(data: TagsDelete500) {
+export function tagsDeleteHandlerResponse500(data: TagsDeleteStatus500) {
   return new Response(JSON.stringify(data), {
     status: 500,
     headers: {

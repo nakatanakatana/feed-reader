@@ -4,12 +4,12 @@
  */
 
 import type {
-  ItemsGetQueryResponse,
-  ItemsGet500,
-} from "../../lib/api/types-generated.ts";
+  ItemsGetResponse,
+  ItemsGetStatus500,
+} from "../../lib/api/types-generated";
 import { http } from "msw";
 
-export function itemsGetHandlerResponse200(data: ItemsGetQueryResponse) {
+export function itemsGetHandlerResponse200(data: ItemsGetResponse) {
   return new Response(JSON.stringify(data), {
     status: 200,
     headers: {
@@ -18,7 +18,7 @@ export function itemsGetHandlerResponse200(data: ItemsGetQueryResponse) {
   });
 }
 
-export function itemsGetHandlerResponse500(data: ItemsGet500) {
+export function itemsGetHandlerResponse500(data: ItemsGetStatus500) {
   return new Response(JSON.stringify(data), {
     status: 500,
     headers: {
@@ -29,7 +29,7 @@ export function itemsGetHandlerResponse500(data: ItemsGet500) {
 
 export function itemsGetHandler(
   data?:
-    | ItemsGetQueryResponse
+    | ItemsGetResponse
     | ((
         info: Parameters<Parameters<typeof http.get>[1]>[0],
       ) => Response | Promise<Response>),

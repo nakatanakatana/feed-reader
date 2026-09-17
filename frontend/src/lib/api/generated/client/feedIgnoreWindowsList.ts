@@ -3,41 +3,33 @@
  * Do not edit manually.
  */
 
-import fetch from "../../kubb-client.ts";
+import type { Options, UnwrappedResult } from "../../.kubb/client";
 import type {
-  Client,
-  RequestConfig,
-  ResponseErrorConfig,
-} from "../../kubb-client.ts";
-import type {
-  FeedIgnoreWindowsListQueryResponse,
-  FeedIgnoreWindowsListQueryParams,
-  FeedIgnoreWindowsList500,
-} from "../../types-generated.ts";
-
-function getFeedIgnoreWindowsListUrl() {
-  const res = { method: "GET", url: `/api/v2/feed-ignore-windows` as const };
-  return res;
-}
+  FeedIgnoreWindowsListOptions,
+  FeedIgnoreWindowsListResponses,
+} from "../../types-generated";
+import { client, unwrapResult } from "../../.kubb/client";
 
 /**
  * {@link /feed-ignore-windows}
  */
-export async function feedIgnoreWindowsList(
-  params?: FeedIgnoreWindowsListQueryParams,
-  config: Partial<RequestConfig> & { client?: Client } = {},
-) {
-  const { client: request = fetch, ...requestConfig } = config;
+export function feedIgnoreWindowsList<ThrowOnError extends boolean = true>(
+  options: Options<FeedIgnoreWindowsListOptions, ThrowOnError> = {},
+): Promise<UnwrappedResult<FeedIgnoreWindowsListResponses, ThrowOnError>> {
+  const { client: request = client, ...config } = options;
 
-  const res = await request<
-    FeedIgnoreWindowsListQueryResponse,
-    ResponseErrorConfig<FeedIgnoreWindowsList500>,
-    unknown
-  >({
-    method: "GET",
-    url: getFeedIgnoreWindowsListUrl().url.toString(),
-    params,
-    ...requestConfig,
-  });
-  return res.data;
+  return unwrapResult(
+    request({
+      method: "GET",
+      url: "/feed-ignore-windows",
+      styles: {
+        query: {
+          feedId: { explode: false },
+          ignoreWindowId: { explode: false },
+        },
+      },
+      ...config,
+    }),
+    config.throwOnError,
+  ) as Promise<UnwrappedResult<FeedIgnoreWindowsListResponses, ThrowOnError>>;
 }

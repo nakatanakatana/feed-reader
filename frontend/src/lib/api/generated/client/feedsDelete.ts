@@ -3,40 +3,23 @@
  * Do not edit manually.
  */
 
-import fetch from "../../kubb-client.ts";
+import type { Options, UnwrappedResult } from "../../.kubb/client";
 import type {
-  Client,
-  RequestConfig,
-  ResponseErrorConfig,
-} from "../../kubb-client.ts";
-import type {
-  FeedsDeleteMutationResponse,
-  FeedsDeletePathParams,
-  FeedsDelete500,
-} from "../../types-generated.ts";
-
-function getFeedsDeleteUrl(id: FeedsDeletePathParams["id"]) {
-  const res = { method: "DELETE", url: `/api/v2/feeds/${id}` as const };
-  return res;
-}
+  FeedsDeleteOptions,
+  FeedsDeleteResponses,
+} from "../../types-generated";
+import { client, unwrapResult } from "../../.kubb/client";
 
 /**
  * {@link /feeds/:id}
  */
-export async function feedsDelete(
-  id: FeedsDeletePathParams["id"],
-  config: Partial<RequestConfig> & { client?: Client } = {},
-) {
-  const { client: request = fetch, ...requestConfig } = config;
+export function feedsDelete<ThrowOnError extends boolean = true>(
+  options: Options<FeedsDeleteOptions, ThrowOnError>,
+): Promise<UnwrappedResult<FeedsDeleteResponses, ThrowOnError>> {
+  const { client: request = client, ...config } = options;
 
-  const res = await request<
-    FeedsDeleteMutationResponse,
-    ResponseErrorConfig<FeedsDelete500>,
-    unknown
-  >({
-    method: "DELETE",
-    url: getFeedsDeleteUrl(id).url.toString(),
-    ...requestConfig,
-  });
-  return res.data;
+  return unwrapResult(
+    request({ method: "DELETE", url: "/feeds/{id}", ...config }),
+    config.throwOnError,
+  ) as Promise<UnwrappedResult<FeedsDeleteResponses, ThrowOnError>>;
 }

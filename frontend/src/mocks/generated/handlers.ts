@@ -3,36 +3,36 @@
  * Do not edit manually.
  */
 
-import { URLRulesAddHandler } from "./URLRulesAddHandler.ts";
-import { URLRulesDeleteHandler } from "./URLRulesDeleteHandler.ts";
-import { URLRulesListHandler } from "./URLRulesListHandler.ts";
-import { blockRulesAddHandler } from "./blockRulesAddHandler.ts";
-import { blockRulesDeleteHandler } from "./blockRulesDeleteHandler.ts";
-import { blockRulesListHandler } from "./blockRulesListHandler.ts";
-import { feedIgnoreWindowsListHandler } from "./feedIgnoreWindowsListHandler.ts";
-import { feedIgnoreWindowsManageHandler } from "./feedIgnoreWindowsManageHandler.ts";
-import { feedTagsListHandler } from "./feedTagsListHandler.ts";
-import { feedTagsManageHandler } from "./feedTagsManageHandler.ts";
-import { feedsCreateHandler } from "./feedsCreateHandler.ts";
-import { feedsDeleteHandler } from "./feedsDeleteHandler.ts";
-import { feedsExportOpmlHandler } from "./feedsExportOpmlHandler.ts";
-import { feedsImportOpmlHandler } from "./feedsImportOpmlHandler.ts";
-import { feedsListHandler } from "./feedsListHandler.ts";
-import { feedsRefreshHandler } from "./feedsRefreshHandler.ts";
-import { feedsSuspendHandler } from "./feedsSuspendHandler.ts";
-import { ignoreWindowsCreateHandler } from "./ignoreWindowsCreateHandler.ts";
-import { ignoreWindowsDeleteHandler } from "./ignoreWindowsDeleteHandler.ts";
-import { ignoreWindowsListHandler } from "./ignoreWindowsListHandler.ts";
-import { ignoreWindowsUpdateHandler } from "./ignoreWindowsUpdateHandler.ts";
-import { itemReadsListHandler } from "./itemReadsListHandler.ts";
-import { itemsGetHandler } from "./itemsGetHandler.ts";
-import { itemsListHandler } from "./itemsListHandler.ts";
-import { itemsUpdateStatusHandler } from "./itemsUpdateStatusHandler.ts";
-import { tagIgnoreWindowsListHandler } from "./tagIgnoreWindowsListHandler.ts";
-import { tagIgnoreWindowsManageHandler } from "./tagIgnoreWindowsManageHandler.ts";
-import { tagsCreateHandler } from "./tagsCreateHandler.ts";
-import { tagsDeleteHandler } from "./tagsDeleteHandler.ts";
-import { tagsListHandler } from "./tagsListHandler.ts";
+import { URLRulesAddHandler } from "./URLRulesAddHandler";
+import { URLRulesDeleteHandler } from "./URLRulesDeleteHandler";
+import { URLRulesListHandler } from "./URLRulesListHandler";
+import { blockRulesAddHandler } from "./blockRulesAddHandler";
+import { blockRulesDeleteHandler } from "./blockRulesDeleteHandler";
+import { blockRulesListHandler } from "./blockRulesListHandler";
+import { feedIgnoreWindowsListHandler } from "./feedIgnoreWindowsListHandler";
+import { feedIgnoreWindowsManageHandler } from "./feedIgnoreWindowsManageHandler";
+import { feedTagsListHandler } from "./feedTagsListHandler";
+import { feedTagsManageHandler } from "./feedTagsManageHandler";
+import { feedsCreateHandler } from "./feedsCreateHandler";
+import { feedsDeleteHandler } from "./feedsDeleteHandler";
+import { feedsExportOpmlHandler } from "./feedsExportOpmlHandler";
+import { feedsImportOpmlHandler } from "./feedsImportOpmlHandler";
+import { feedsListHandler } from "./feedsListHandler";
+import { feedsRefreshHandler } from "./feedsRefreshHandler";
+import { feedsSuspendHandler } from "./feedsSuspendHandler";
+import { ignoreWindowsCreateHandler } from "./ignoreWindowsCreateHandler";
+import { ignoreWindowsDeleteHandler } from "./ignoreWindowsDeleteHandler";
+import { ignoreWindowsListHandler } from "./ignoreWindowsListHandler";
+import { ignoreWindowsUpdateHandler } from "./ignoreWindowsUpdateHandler";
+import { itemReadsListHandler } from "./itemReadsListHandler";
+import { itemsGetHandler } from "./itemsGetHandler";
+import { itemsListHandler } from "./itemsListHandler";
+import { itemsUpdateStatusHandler } from "./itemsUpdateStatusHandler";
+import { tagIgnoreWindowsListHandler } from "./tagIgnoreWindowsListHandler";
+import { tagIgnoreWindowsManageHandler } from "./tagIgnoreWindowsManageHandler";
+import { tagsCreateHandler } from "./tagsCreateHandler";
+import { tagsDeleteHandler } from "./tagsDeleteHandler";
+import { tagsListHandler } from "./tagsListHandler";
 
 export const handlers = [
   blockRulesListHandler(),

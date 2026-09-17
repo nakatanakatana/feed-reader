@@ -4,14 +4,12 @@
  */
 
 import type {
-  BlockRulesListQueryResponse,
-  BlockRulesList500,
-} from "../../lib/api/types-generated.ts";
+  BlockRulesListResponse,
+  BlockRulesListStatus500,
+} from "../../lib/api/types-generated";
 import { http } from "msw";
 
-export function blockRulesListHandlerResponse200(
-  data: BlockRulesListQueryResponse,
-) {
+export function blockRulesListHandlerResponse200(data: BlockRulesListResponse) {
   return new Response(JSON.stringify(data), {
     status: 200,
     headers: {
@@ -20,7 +18,9 @@ export function blockRulesListHandlerResponse200(
   });
 }
 
-export function blockRulesListHandlerResponse500(data: BlockRulesList500) {
+export function blockRulesListHandlerResponse500(
+  data: BlockRulesListStatus500,
+) {
   return new Response(JSON.stringify(data), {
     status: 500,
     headers: {
@@ -31,7 +31,7 @@ export function blockRulesListHandlerResponse500(data: BlockRulesList500) {
 
 export function blockRulesListHandler(
   data?:
-    | BlockRulesListQueryResponse
+    | BlockRulesListResponse
     | ((
         info: Parameters<Parameters<typeof http.get>[1]>[0],
       ) => Response | Promise<Response>),

@@ -3,43 +3,23 @@
  * Do not edit manually.
  */
 
-import fetch from "../../kubb-client.ts";
+import type { Options, UnwrappedResult } from "../../.kubb/client";
 import type {
-  Client,
-  RequestConfig,
-  ResponseErrorConfig,
-} from "../../kubb-client.ts";
-import type {
-  IgnoreWindowsDeleteMutationResponse,
-  IgnoreWindowsDeletePathParams,
-  IgnoreWindowsDelete500,
-} from "../../types-generated.ts";
-
-function getIgnoreWindowsDeleteUrl(id: IgnoreWindowsDeletePathParams["id"]) {
-  const res = {
-    method: "DELETE",
-    url: `/api/v2/ignore-windows/${id}` as const,
-  };
-  return res;
-}
+  IgnoreWindowsDeleteOptions,
+  IgnoreWindowsDeleteResponses,
+} from "../../types-generated";
+import { client, unwrapResult } from "../../.kubb/client";
 
 /**
  * {@link /ignore-windows/:id}
  */
-export async function ignoreWindowsDelete(
-  id: IgnoreWindowsDeletePathParams["id"],
-  config: Partial<RequestConfig> & { client?: Client } = {},
-) {
-  const { client: request = fetch, ...requestConfig } = config;
+export function ignoreWindowsDelete<ThrowOnError extends boolean = true>(
+  options: Options<IgnoreWindowsDeleteOptions, ThrowOnError>,
+): Promise<UnwrappedResult<IgnoreWindowsDeleteResponses, ThrowOnError>> {
+  const { client: request = client, ...config } = options;
 
-  const res = await request<
-    IgnoreWindowsDeleteMutationResponse,
-    ResponseErrorConfig<IgnoreWindowsDelete500>,
-    unknown
-  >({
-    method: "DELETE",
-    url: getIgnoreWindowsDeleteUrl(id).url.toString(),
-    ...requestConfig,
-  });
-  return res.data;
+  return unwrapResult(
+    request({ method: "DELETE", url: "/ignore-windows/{id}", ...config }),
+    config.throwOnError,
+  ) as Promise<UnwrappedResult<IgnoreWindowsDeleteResponses, ThrowOnError>>;
 }

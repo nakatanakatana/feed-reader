@@ -4,14 +4,12 @@
  */
 
 import type {
-  URLRulesListQueryResponse,
-  URLRulesList500,
-} from "../../lib/api/types-generated.ts";
+  URLRulesListResponse,
+  URLRulesListStatus500,
+} from "../../lib/api/types-generated";
 import { http } from "msw";
 
-export function URLRulesListHandlerResponse200(
-  data: URLRulesListQueryResponse,
-) {
+export function URLRulesListHandlerResponse200(data: URLRulesListResponse) {
   return new Response(JSON.stringify(data), {
     status: 200,
     headers: {
@@ -20,7 +18,7 @@ export function URLRulesListHandlerResponse200(
   });
 }
 
-export function URLRulesListHandlerResponse500(data: URLRulesList500) {
+export function URLRulesListHandlerResponse500(data: URLRulesListStatus500) {
   return new Response(JSON.stringify(data), {
     status: 500,
     headers: {
@@ -31,7 +29,7 @@ export function URLRulesListHandlerResponse500(data: URLRulesList500) {
 
 export function URLRulesListHandler(
   data?:
-    | URLRulesListQueryResponse
+    | URLRulesListResponse
     | ((
         info: Parameters<Parameters<typeof http.get>[1]>[0],
       ) => Response | Promise<Response>),

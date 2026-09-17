@@ -1,5 +1,6 @@
 import { afterEach, expect, vi } from "vitest";
 import "./styles.css";
+import "./lib/api/kubb-client";
 
 if (typeof HTMLDialogElement !== "undefined") {
   if (!HTMLDialogElement.prototype.showModal) {

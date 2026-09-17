@@ -18,7 +18,8 @@
     {
       "groupName": "kubb",
       "matchPackageNames": [
-        "@kubb/**"
+        "@kubb/**",
+        "kubb"
       ]
     }
   ]

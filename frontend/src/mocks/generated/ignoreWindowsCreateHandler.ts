@@ -4,13 +4,15 @@
  */
 
 import type {
-  IgnoreWindowsCreateMutationResponse,
-  IgnoreWindowsCreate500,
-} from "../../lib/api/types-generated.ts";
+  IgnoreWindowsCreateResponse,
+  IgnoreWindowsCreateStatus500,
+  IgnoreWindowsCreateBody,
+} from "../../lib/api/types-generated";
+import type { HttpResponseResolver } from "msw";
 import { http } from "msw";
 
 export function ignoreWindowsCreateHandlerResponse200(
-  data: IgnoreWindowsCreateMutationResponse,
+  data: IgnoreWindowsCreateResponse,
 ) {
   return new Response(JSON.stringify(data), {
     status: 200,
@@ -21,7 +23,7 @@ export function ignoreWindowsCreateHandlerResponse200(
 }
 
 export function ignoreWindowsCreateHandlerResponse500(
-  data: IgnoreWindowsCreate500,
+  data: IgnoreWindowsCreateStatus500,
 ) {
   return new Response(JSON.stringify(data), {
     status: 500,
@@ -33,19 +35,20 @@ export function ignoreWindowsCreateHandlerResponse500(
 
 export function ignoreWindowsCreateHandler(
   data?:
-    | IgnoreWindowsCreateMutationResponse
-    | ((
-        info: Parameters<Parameters<typeof http.post>[1]>[0],
-      ) => Response | Promise<Response>),
+    | IgnoreWindowsCreateResponse
+    | HttpResponseResolver<Record<string, string>, IgnoreWindowsCreateBody>,
 ) {
-  return http.post(`*/api/v2/ignore-windows`, function handler(info) {
-    if (typeof data === "function") return data(info);
+  return http.post<Record<string, string>, IgnoreWindowsCreateBody>(
+    `*/api/v2/ignore-windows`,
+    function handler(info) {
+      if (typeof data === "function") return data(info);
 
-    return new Response(JSON.stringify(data), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  });
+      return new Response(JSON.stringify(data), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    },
+  );
 }

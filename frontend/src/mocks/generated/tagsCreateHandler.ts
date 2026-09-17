@@ -4,12 +4,14 @@
  */
 
 import type {
-  TagsCreateMutationResponse,
-  TagsCreate500,
-} from "../../lib/api/types-generated.ts";
+  TagsCreateResponse,
+  TagsCreateStatus500,
+  TagsCreateBody,
+} from "../../lib/api/types-generated";
+import type { HttpResponseResolver } from "msw";
 import { http } from "msw";
 
-export function tagsCreateHandlerResponse200(data: TagsCreateMutationResponse) {
+export function tagsCreateHandlerResponse200(data: TagsCreateResponse) {
   return new Response(JSON.stringify(data), {
     status: 200,
     headers: {
@@ -18,7 +20,7 @@ export function tagsCreateHandlerResponse200(data: TagsCreateMutationResponse) {
   });
 }
 
-export function tagsCreateHandlerResponse500(data: TagsCreate500) {
+export function tagsCreateHandlerResponse500(data: TagsCreateStatus500) {
   return new Response(JSON.stringify(data), {
     status: 500,
     headers: {
@@ -29,19 +31,20 @@ export function tagsCreateHandlerResponse500(data: TagsCreate500) {
 
 export function tagsCreateHandler(
   data?:
-    | TagsCreateMutationResponse
-    | ((
-        info: Parameters<Parameters<typeof http.post>[1]>[0],
-      ) => Response | Promise<Response>),
+    | TagsCreateResponse
+    | HttpResponseResolver<Record<string, string>, TagsCreateBody>,
 ) {
-  return http.post(`*/api/v2/tags`, function handler(info) {
-    if (typeof data === "function") return data(info);
+  return http.post<Record<string, string>, TagsCreateBody>(
+    `*/api/v2/tags`,
+    function handler(info) {
+      if (typeof data === "function") return data(info);
 
-    return new Response(JSON.stringify(data), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  });
+      return new Response(JSON.stringify(data), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    },
+  );
 }

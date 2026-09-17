@@ -3,45 +3,23 @@
  * Do not edit manually.
  */
 
-import fetch from "../../kubb-client.ts";
+import type { Options, UnwrappedResult } from "../../.kubb/client";
 import type {
-  Client,
-  RequestConfig,
-  ResponseErrorConfig,
-} from "../../kubb-client.ts";
-import type {
-  ItemsUpdateStatusMutationRequest,
-  ItemsUpdateStatusMutationResponse,
-  ItemsUpdateStatus500,
-} from "../../types-generated.ts";
-
-function getItemsUpdateStatusUrl() {
-  const res = { method: "POST", url: `/api/v2/items/status` as const };
-  return res;
-}
+  ItemsUpdateStatusOptions,
+  ItemsUpdateStatusResponses,
+} from "../../types-generated";
+import { client, unwrapResult } from "../../.kubb/client";
 
 /**
  * {@link /items/status}
  */
-export async function itemsUpdateStatus(
-  data: ItemsUpdateStatusMutationRequest,
-  config: Partial<RequestConfig<ItemsUpdateStatusMutationRequest>> & {
-    client?: Client;
-  } = {},
-) {
-  const { client: request = fetch, ...requestConfig } = config;
+export function itemsUpdateStatus<ThrowOnError extends boolean = true>(
+  options: Options<ItemsUpdateStatusOptions, ThrowOnError>,
+): Promise<UnwrappedResult<ItemsUpdateStatusResponses, ThrowOnError>> {
+  const { client: request = client, ...config } = options;
 
-  const requestData = data;
-
-  const res = await request<
-    ItemsUpdateStatusMutationResponse,
-    ResponseErrorConfig<ItemsUpdateStatus500>,
-    ItemsUpdateStatusMutationRequest
-  >({
-    method: "POST",
-    url: getItemsUpdateStatusUrl().url.toString(),
-    data: requestData,
-    ...requestConfig,
-  });
-  return res.data;
+  return unwrapResult(
+    request({ method: "POST", url: "/items/status", ...config }),
+    config.throwOnError,
+  ) as Promise<UnwrappedResult<ItemsUpdateStatusResponses, ThrowOnError>>;
 }

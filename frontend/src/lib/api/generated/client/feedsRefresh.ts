@@ -3,45 +3,23 @@
  * Do not edit manually.
  */
 
-import fetch from "../../kubb-client.ts";
+import type { Options, UnwrappedResult } from "../../.kubb/client";
 import type {
-  Client,
-  RequestConfig,
-  ResponseErrorConfig,
-} from "../../kubb-client.ts";
-import type {
-  FeedsRefreshMutationRequest,
-  FeedsRefreshMutationResponse,
-  FeedsRefresh500,
-} from "../../types-generated.ts";
-
-function getFeedsRefreshUrl() {
-  const res = { method: "POST", url: `/api/v2/feeds/refresh` as const };
-  return res;
-}
+  FeedsRefreshOptions,
+  FeedsRefreshResponses,
+} from "../../types-generated";
+import { client, unwrapResult } from "../../.kubb/client";
 
 /**
  * {@link /feeds/refresh}
  */
-export async function feedsRefresh(
-  data: FeedsRefreshMutationRequest,
-  config: Partial<RequestConfig<FeedsRefreshMutationRequest>> & {
-    client?: Client;
-  } = {},
-) {
-  const { client: request = fetch, ...requestConfig } = config;
+export function feedsRefresh<ThrowOnError extends boolean = true>(
+  options: Options<FeedsRefreshOptions, ThrowOnError>,
+): Promise<UnwrappedResult<FeedsRefreshResponses, ThrowOnError>> {
+  const { client: request = client, ...config } = options;
 
-  const requestData = data;
-
-  const res = await request<
-    FeedsRefreshMutationResponse,
-    ResponseErrorConfig<FeedsRefresh500>,
-    FeedsRefreshMutationRequest
-  >({
-    method: "POST",
-    url: getFeedsRefreshUrl().url.toString(),
-    data: requestData,
-    ...requestConfig,
-  });
-  return res.data;
+  return unwrapResult(
+    request({ method: "POST", url: "/feeds/refresh", ...config }),
+    config.throwOnError,
+  ) as Promise<UnwrappedResult<FeedsRefreshResponses, ThrowOnError>>;
 }

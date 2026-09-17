@@ -8,10 +8,10 @@ import { tagIgnoreWindowsList } from "./api/generated/client/tagIgnoreWindowsLis
 import { tagIgnoreWindowsManage } from "./api/generated/client/tagIgnoreWindowsManage";
 import type {
   CreateIgnoreWindowRequest,
-  FeedIgnoreWindowsListQueryParams,
+  FeedIgnoreWindowsListQuery,
   ManageFeedIgnoreWindowsRequest,
   ManageTagIgnoreWindowsRequest,
-  TagIgnoreWindowsListQueryParams,
+  TagIgnoreWindowsListQuery,
   UpdateIgnoreWindowRequest,
 } from "./api/types";
 import type { components } from "./api/types";
@@ -83,31 +83,31 @@ export const ignoreWindowsQueryOptions = {
 };
 
 export const feedIgnoreWindowsQueryOptions = (
-  params?: FeedIgnoreWindowsListQueryParams,
+  params?: FeedIgnoreWindowsListQuery,
 ) => ({
   queryKey: params
     ? (["feed-ignore-windows", params] as const)
     : (["feed-ignore-windows"] as const),
   queryFn: async () => {
-    const response = await feedIgnoreWindowsList(params);
+    const response = await feedIgnoreWindowsList({ query: params });
     return response.feedIgnoreWindows.map(mapOpenAPIFeedIgnoreWindow);
   },
 });
 
 export const tagIgnoreWindowsQueryOptions = (
-  params?: TagIgnoreWindowsListQueryParams,
+  params?: TagIgnoreWindowsListQuery,
 ) => ({
   queryKey: params
     ? (["tag-ignore-windows", params] as const)
     : (["tag-ignore-windows"] as const),
   queryFn: async () => {
-    const response = await tagIgnoreWindowsList(params);
+    const response = await tagIgnoreWindowsList({ query: params });
     return response.tagIgnoreWindows.map(mapOpenAPITagIgnoreWindow);
   },
 });
 
 export const ignoreWindowInsert = async (data: CreateIgnoreWindowRequest) => {
-  const response = await ignoreWindowsCreate(data);
+  const response = await ignoreWindowsCreate({ body: data });
   await queryClient.invalidateQueries({ queryKey: ["ignore-windows"] });
   return mapOpenAPIIgnoreWindow(response.ignoreWindow);
 };
@@ -118,7 +118,7 @@ export const ignoreWindowUpdate = async (
   id: string,
   data: UpdateIgnoreWindowRequest,
 ) => {
-  const response = await ignoreWindowsUpdate(id, data);
+  const response = await ignoreWindowsUpdate({ path: { id }, body: data });
   await queryClient.invalidateQueries({ queryKey: ["ignore-windows"] });
   return mapOpenAPIIgnoreWindow(response.ignoreWindow);
 };
@@ -126,7 +126,7 @@ export const ignoreWindowUpdate = async (
 export const updateIgnoreWindow = ignoreWindowUpdate;
 
 export const ignoreWindowDelete = async (id: string) => {
-  await ignoreWindowsDelete(id);
+  await ignoreWindowsDelete({ path: { id } });
   await queryClient.invalidateQueries({ queryKey: ["ignore-windows"] });
   await queryClient.invalidateQueries({ queryKey: ["feed-ignore-windows"] });
   await queryClient.invalidateQueries({ queryKey: ["tag-ignore-windows"] });
@@ -137,7 +137,7 @@ export const deleteIgnoreWindow = ignoreWindowDelete;
 export const manageFeedIgnoreWindows = async (
   params: ManageFeedIgnoreWindowsRequest,
 ) => {
-  await feedIgnoreWindowsManage(params);
+  await feedIgnoreWindowsManage({ body: params });
   await queryClient.invalidateQueries({ queryKey: ["feed-ignore-windows"] });
   await queryClient.invalidateQueries({ queryKey: ["feeds"] });
 };
@@ -145,7 +145,7 @@ export const manageFeedIgnoreWindows = async (
 export const manageTagIgnoreWindows = async (
   params: ManageTagIgnoreWindowsRequest,
 ) => {
-  await tagIgnoreWindowsManage(params);
+  await tagIgnoreWindowsManage({ body: params });
   await queryClient.invalidateQueries({ queryKey: ["tag-ignore-windows"] });
   await queryClient.invalidateQueries({ queryKey: ["tags"] });
 };

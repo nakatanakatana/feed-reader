@@ -74,12 +74,12 @@ export const urlParsingRuleInsert = async (
   ruleType: string,
   pattern: string,
 ) => {
-  await URLRulesAdd({ domain, ruleType, pattern });
+  await URLRulesAdd({ body: { domain, ruleType, pattern } });
   await queryClient.invalidateQueries({ queryKey: ["url-rules"] });
 };
 
 export const urlParsingRuleDelete = async (id: string) => {
-  await URLRulesDelete(id);
+  await URLRulesDelete({ path: { id } });
   await queryClient.invalidateQueries({ queryKey: ["url-rules"] });
 };
 
@@ -94,11 +94,11 @@ export const itemBlockRulesQueryOptions = {
 export const itemBlockRuleInsert = async (
   rules: { ruleType: string; value: string; domain?: string }[],
 ) => {
-  await blockRulesAdd({ rules });
+  await blockRulesAdd({ body: { rules } });
   await queryClient.invalidateQueries({ queryKey: ["block-rules"] });
 };
 
 export const itemBlockRuleDelete = async (id: string) => {
-  await blockRulesDelete(id);
+  await blockRulesDelete({ path: { id } });
   await queryClient.invalidateQueries({ queryKey: ["block-rules"] });
 };

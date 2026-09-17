@@ -3,45 +3,23 @@
  * Do not edit manually.
  */
 
-import fetch from "../../kubb-client.ts";
+import type { Options, UnwrappedResult } from "../../.kubb/client";
 import type {
-  Client,
-  RequestConfig,
-  ResponseErrorConfig,
-} from "../../kubb-client.ts";
-import type {
-  FeedsCreateMutationRequest,
-  FeedsCreateMutationResponse,
-  FeedsCreate500,
-} from "../../types-generated.ts";
-
-function getFeedsCreateUrl() {
-  const res = { method: "POST", url: `/api/v2/feeds` as const };
-  return res;
-}
+  FeedsCreateOptions,
+  FeedsCreateResponses,
+} from "../../types-generated";
+import { client, unwrapResult } from "../../.kubb/client";
 
 /**
  * {@link /feeds}
  */
-export async function feedsCreate(
-  data: FeedsCreateMutationRequest,
-  config: Partial<RequestConfig<FeedsCreateMutationRequest>> & {
-    client?: Client;
-  } = {},
-) {
-  const { client: request = fetch, ...requestConfig } = config;
+export function feedsCreate<ThrowOnError extends boolean = true>(
+  options: Options<FeedsCreateOptions, ThrowOnError>,
+): Promise<UnwrappedResult<FeedsCreateResponses, ThrowOnError>> {
+  const { client: request = client, ...config } = options;
 
-  const requestData = data;
-
-  const res = await request<
-    FeedsCreateMutationResponse,
-    ResponseErrorConfig<FeedsCreate500>,
-    FeedsCreateMutationRequest
-  >({
-    method: "POST",
-    url: getFeedsCreateUrl().url.toString(),
-    data: requestData,
-    ...requestConfig,
-  });
-  return res.data;
+  return unwrapResult(
+    request({ method: "POST", url: "/feeds", ...config }),
+    config.throwOnError,
+  ) as Promise<UnwrappedResult<FeedsCreateResponses, ThrowOnError>>;
 }

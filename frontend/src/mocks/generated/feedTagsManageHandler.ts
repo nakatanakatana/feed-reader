@@ -4,20 +4,24 @@
  */
 
 import type {
-  FeedTagsManageMutationResponse,
-  FeedTagsManage500,
-} from "../../lib/api/types-generated.ts";
+  FeedTagsManageResponse,
+  FeedTagsManageStatus500,
+  FeedTagsManageBody,
+} from "../../lib/api/types-generated";
+import type { HttpResponseResolver } from "msw";
 import { http } from "msw";
 
 export function feedTagsManageHandlerResponse200(
-  data?: FeedTagsManageMutationResponse,
+  data?: FeedTagsManageResponse,
 ) {
   return new Response(JSON.stringify(data), {
     status: 200,
   });
 }
 
-export function feedTagsManageHandlerResponse500(data: FeedTagsManage500) {
+export function feedTagsManageHandlerResponse500(
+  data: FeedTagsManageStatus500,
+) {
   return new Response(JSON.stringify(data), {
     status: 500,
     headers: {
@@ -33,15 +37,16 @@ export function feedTagsManageHandler(
     | boolean
     | null
     | object
-    | ((
-        info: Parameters<Parameters<typeof http.post>[1]>[0],
-      ) => Response | Promise<Response>),
+    | HttpResponseResolver<Record<string, string>, FeedTagsManageBody>,
 ) {
-  return http.post(`*/api/v2/feed-tags/manage`, function handler(info) {
-    if (typeof data === "function") return data(info);
+  return http.post<Record<string, string>, FeedTagsManageBody>(
+    `*/api/v2/feed-tags/manage`,
+    function handler(info) {
+      if (typeof data === "function") return data(info);
 
-    return new Response(JSON.stringify(data), {
-      status: 200,
-    });
-  });
+      return new Response(JSON.stringify(data), {
+        status: 200,
+      });
+    },
+  );
 }

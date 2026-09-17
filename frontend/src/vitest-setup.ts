@@ -1,5 +1,6 @@
 import { afterAll, afterEach, beforeAll, beforeEach, expect, vi } from "vitest";
 import "./styles.css";
+import "./lib/api/kubb-client";
 import { resetDatabase } from "./lib/db";
 import { worker } from "./mocks/browser";
 import { resetState } from "./mocks/handlers";
