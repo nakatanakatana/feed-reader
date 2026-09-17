@@ -19,7 +19,8 @@
     "gen:api-types": "npm run gen:api",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "test:related": "vitest related"
+    "test:related": "vitest related",
+    "test:browser:shard": "node scripts/run-browser-shard.mjs"
   },
   "dependencies": {
     "@opentelemetry/api": "1.9.1",
