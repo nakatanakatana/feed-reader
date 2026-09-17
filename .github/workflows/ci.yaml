@@ -55,6 +55,22 @@ jobs:
         with:
           aqua_version: v2.63.0
           policy_allow: "true"
+      - name: Cache Go modules and build outputs
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: v2-go-${{ runner.os }}-${{ runner.arch }}-${{ github.job }}-${{ hashFiles('aqua.yaml', 'go.mod', 'go.sum') }}
+          restore-keys: |
+            v2-go-${{ runner.os }}-${{ runner.arch }}-${{ github.job }}-
+      - name: Cache golangci-lint analysis
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/golangci-lint
+          key: v2-golangci-lint-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('aqua.yaml', 'go.mod', 'go.sum') }}
+          restore-keys: |
+            v2-golangci-lint-${{ runner.os }}-${{ runner.arch }}-
       - run: golangci-lint run
 
   backend-build:
@@ -89,6 +105,15 @@ jobs:
         with:
           aqua_version: v2.63.0
           policy_allow: "true"
+      - name: Cache Go modules and build outputs
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: v2-go-${{ runner.os }}-${{ runner.arch }}-${{ github.job }}-${{ hashFiles('aqua.yaml', 'go.mod', 'go.sum') }}
+          restore-keys: |
+            v2-go-${{ runner.os }}-${{ runner.arch }}-${{ github.job }}-
       # NOTE: workground https://github.com/golang/go/issues/75031
       - id: parse-go-version
         run: echo "GO_VERSION=$(cat aqua.yaml | grep "golang/go" | cut -f2 -d'@')" >> $GITHUB_OUTPUT
