@@ -48,7 +48,9 @@ coverage.out
 bundle-size.json
 cccc-metrics.json
 frontend/coverage/
+frontend/.vitest/
 frontend/.vitest-attachments/
+.vitest/
 frontend/src/components/__screenshots__/
 
 # Kubb generated artifacts (not used by the app)

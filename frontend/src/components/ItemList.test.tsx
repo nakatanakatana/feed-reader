@@ -99,7 +99,7 @@ describe("ItemList", () => {
     );
 
     // Should show "No items found" when empty
-    await expect.element(page.getByText("No items found")).toBeVisible();
+    await expect.element(page.getByText("No items found.")).toBeVisible();
 
     expect(document.body.innerHTML).toMatchSnapshot();
   });

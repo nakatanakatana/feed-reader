@@ -51,6 +51,6 @@ describe("Item Search Params", () => {
 
     // Check if since is in the search params
     // It should be present in the JSON output
-    await expect.element(searchParamsEl).toHaveTextContent(/"since":"30d"/);
+    await expect.element(searchParamsEl).toMatchTextContent(/"since":"30d"/);
   });
 });

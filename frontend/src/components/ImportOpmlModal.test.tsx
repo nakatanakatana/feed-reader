@@ -35,7 +35,7 @@ describe("ImportOpmlModal", () => {
 
     // Initial state
     await expect
-      .element(page.getByText("Select an .opml or .xml file"))
+      .element(page.getByText(/Select an \.opml or \.xml file/))
       .toBeInTheDocument();
 
     // Mock file upload

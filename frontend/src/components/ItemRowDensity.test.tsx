@@ -34,7 +34,7 @@ describe("ItemRow Density", () => {
       document.body,
     );
 
-    const button = page.getByRole("button", { name: "Test Article Title" });
+    const button = page.getByRole("button", { name: /Test Article Title/ });
     await expect.element(button).toBeInTheDocument();
 
     const style = window.getComputedStyle(button.element());

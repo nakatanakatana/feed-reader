@@ -53,7 +53,7 @@ describe("Item Default Filter", () => {
 
     // Expectation: since should be "30d" by default
     // Currently it will be missing or undefined
-    await expect.element(searchParamsEl).toHaveTextContent(/"since":"30d"/);
+    await expect.element(searchParamsEl).toMatchTextContent(/"since":"30d"/);
   });
 
   it("should default since to 'all' (undefined) when tagId is present", async () => {
@@ -76,7 +76,9 @@ describe("Item Default Filter", () => {
 
     // Expectation: since should be undefined (missing from JSON or explicitly undefined)
     // validation logic currently forces "30d" so this should FAIL
-    await expect.element(searchParamsEl).not.toHaveTextContent(/"since":"30d"/);
+    await expect
+      .element(searchParamsEl)
+      .not.toMatchTextContent(/"since":"30d"/);
   });
 
   it("should sync UI filter state with browser back/forward navigation", async () => {
@@ -98,21 +100,21 @@ describe("Item Default Filter", () => {
     await expect.element(searchParamsEl).toBeInTheDocument();
 
     // 1. Initial state: 30d
-    await expect.element(searchParamsEl).toHaveTextContent(/"since":"30d"/);
+    await expect.element(searchParamsEl).toMatchTextContent(/"since":"30d"/);
 
     // 2. Navigate to 7d
     await router.navigate({
       // @ts-expect-error
       search: (prev) => ({ ...prev, since: "7d" }),
     });
-    await expect.element(searchParamsEl).toHaveTextContent(/"since":"7d"/);
+    await expect.element(searchParamsEl).toMatchTextContent(/"since":"7d"/);
 
     // 3. Go back
     history.back();
-    await expect.element(searchParamsEl).toHaveTextContent(/"since":"30d"/);
+    await expect.element(searchParamsEl).toMatchTextContent(/"since":"30d"/);
 
     // 4. Go forward
     history.forward();
-    await expect.element(searchParamsEl).toHaveTextContent(/"since":"7d"/);
+    await expect.element(searchParamsEl).toMatchTextContent(/"since":"7d"/);
   });
 });
