@@ -92,7 +92,7 @@ describe("ItemRow", () => {
     );
 
     const titleButton = page.getByRole("button", {
-      name: "Test Article Title",
+      name: /Test Article Title/,
     });
     await titleButton.click();
     expect(onClick).toHaveBeenCalledWith(mockItem);
@@ -110,7 +110,7 @@ describe("ItemRow", () => {
     );
 
     const titleButton = page.getByRole("button", {
-      name: "Test Article Title",
+      name: /Test Article Title/,
     });
 
     // Test Enter key
@@ -191,7 +191,7 @@ describe("ItemRow", () => {
     );
 
     const titleButton = page.getByRole("button", {
-      name: "Test Article Title",
+      name: /Test Article Title/,
     });
     await expect.element(titleButton).toBeInTheDocument();
 
@@ -250,7 +250,7 @@ describe("ItemRow", () => {
     );
 
     const titleButton = page.getByRole("button", {
-      name: "Test Article Title",
+      name: /Test Article Title/,
     });
     await expect.element(titleButton).toBeInTheDocument();
 

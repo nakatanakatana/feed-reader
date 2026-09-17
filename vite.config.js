@@ -145,11 +145,12 @@ export default defineConfig({
     },
   },
   test: {
+    api: {
+      port: 43315,
+    },
     environment: "node",
     silent: "passed-only",
-    experimental: {
-      fsModuleCache: true,
-    },
+    fsModuleCache: true,
     coverage: {
       provider: "v8",
       reporter: ["lcov"],
@@ -219,7 +220,6 @@ export default defineConfig({
         extends: true,
         test: {
           name: "jsdom",
-          root: "frontend",
           environment: "jsdom",
           restoreMocks: true,
           mockReset: true,
@@ -232,7 +232,6 @@ export default defineConfig({
         extends: true,
         test: {
           name: "node",
-          root: "frontend",
           environment: "node",
           isolate: false,
           restoreMocks: true,

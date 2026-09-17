@@ -105,7 +105,7 @@ invalid,type`);
       .element(page.getByText("Successfully registered rule!"))
       .toBeInTheDocument();
     await expect
-      .element(page.getByText("1 rule was registered."))
+      .element(page.getByText(/1 rule was registered\./))
       .toBeInTheDocument();
 
     // Check Done button
