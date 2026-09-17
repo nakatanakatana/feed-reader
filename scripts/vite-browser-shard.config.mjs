@@ -8,7 +8,7 @@ if (!browserProject) {
   throw new Error("Browser Vitest project is not configured");
 }
 
-browserProject.test.browser.api = {
+browserProject.test.api = {
   port: Number(process.env.VITEST_BROWSER_API_PORT ?? 63315),
   strictPort: true,
 };
