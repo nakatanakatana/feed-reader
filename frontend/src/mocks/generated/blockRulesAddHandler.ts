@@ -4,20 +4,20 @@
  */
 
 import type {
-  BlockRulesAddMutationResponse,
-  BlockRulesAdd500,
-} from "../../lib/api/types-generated.ts";
+  BlockRulesAddResponse,
+  BlockRulesAddStatus500,
+  BlockRulesAddBody,
+} from "../../lib/api/types-generated";
+import type { HttpResponseResolver } from "msw";
 import { http } from "msw";
 
-export function blockRulesAddHandlerResponse200(
-  data?: BlockRulesAddMutationResponse,
-) {
+export function blockRulesAddHandlerResponse200(data?: BlockRulesAddResponse) {
   return new Response(JSON.stringify(data), {
     status: 200,
   });
 }
 
-export function blockRulesAddHandlerResponse500(data: BlockRulesAdd500) {
+export function blockRulesAddHandlerResponse500(data: BlockRulesAddStatus500) {
   return new Response(JSON.stringify(data), {
     status: 500,
     headers: {
@@ -33,15 +33,16 @@ export function blockRulesAddHandler(
     | boolean
     | null
     | object
-    | ((
-        info: Parameters<Parameters<typeof http.post>[1]>[0],
-      ) => Response | Promise<Response>),
+    | HttpResponseResolver<Record<string, string>, BlockRulesAddBody>,
 ) {
-  return http.post(`*/api/v2/block-rules`, function handler(info) {
-    if (typeof data === "function") return data(info);
+  return http.post<Record<string, string>, BlockRulesAddBody>(
+    `*/api/v2/block-rules`,
+    function handler(info) {
+      if (typeof data === "function") return data(info);
 
-    return new Response(JSON.stringify(data), {
-      status: 200,
-    });
-  });
+      return new Response(JSON.stringify(data), {
+        status: 200,
+      });
+    },
+  );
 }

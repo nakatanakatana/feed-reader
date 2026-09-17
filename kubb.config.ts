@@ -1,51 +1,30 @@
-import { defineConfig } from "@kubb/core";
-import { pluginClient } from "@kubb/plugin-client";
+import { defineConfig } from "kubb/config";
+import { pluginFetch } from "@kubb/plugin-fetch";
 import { pluginMsw } from "@kubb/plugin-msw";
-import { pluginOas } from "@kubb/plugin-oas";
-import { pluginSolidQuery } from "@kubb/plugin-solid-query";
 import { pluginTs } from "@kubb/plugin-ts";
 
 export default defineConfig({
   root: ".",
-  input: {
-    path: "./api/openapi.yaml",
-  },
+  input: "./api/openapi.yaml",
   output: {
     path: "./frontend/src/lib/api",
     clean: false,
-    barrelType: false,
+    barrel: false,
   },
   plugins: [
-    // plugin-ts depends on plugin-oas for OAS parsing; skip JSON schema file output.
-    pluginOas({
-      generators: [],
-      output: {
-        path: "./schemas",
-        barrelType: false,
-      },
-    }),
     pluginTs({
       output: {
         path: "./types-generated.ts",
-        barrelType: false,
+        barrel: false,
       },
     }),
-    pluginClient({
-      output: { path: "./generated/client", barrelType: false },
-      importPath: "../../kubb-client.ts",
+    pluginFetch({
+      output: { path: "./generated/client", barrel: false },
       baseURL: "/api/v2",
-    }),
-    pluginSolidQuery({
-      output: { path: "./generated/queries", barrelType: false },
-      client: { importPath: "../../kubb-client.ts" },
-      query: { methods: ["get"], importPath: "@tanstack/solid-query" },
-      mutation: {
-        methods: ["post", "put", "delete"],
-        importPath: "@tanstack/solid-query",
-      },
+      returnType: "data",
     }),
     pluginMsw({
-      output: { path: "../../mocks/generated", barrelType: false },
+      output: { path: "../../mocks/generated", barrel: false },
       handlers: true,
       baseURL: "*/api/v2",
       parser: "data",

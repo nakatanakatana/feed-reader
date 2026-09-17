@@ -4,14 +4,14 @@
  */
 
 import type {
-  URLRulesAddMutationResponse,
-  URLRulesAdd500,
-} from "../../lib/api/types-generated.ts";
+  URLRulesAddResponse,
+  URLRulesAddStatus500,
+  URLRulesAddBody,
+} from "../../lib/api/types-generated";
+import type { HttpResponseResolver } from "msw";
 import { http } from "msw";
 
-export function URLRulesAddHandlerResponse200(
-  data: URLRulesAddMutationResponse,
-) {
+export function URLRulesAddHandlerResponse200(data: URLRulesAddResponse) {
   return new Response(JSON.stringify(data), {
     status: 200,
     headers: {
@@ -20,7 +20,7 @@ export function URLRulesAddHandlerResponse200(
   });
 }
 
-export function URLRulesAddHandlerResponse500(data: URLRulesAdd500) {
+export function URLRulesAddHandlerResponse500(data: URLRulesAddStatus500) {
   return new Response(JSON.stringify(data), {
     status: 500,
     headers: {
@@ -31,19 +31,20 @@ export function URLRulesAddHandlerResponse500(data: URLRulesAdd500) {
 
 export function URLRulesAddHandler(
   data?:
-    | URLRulesAddMutationResponse
-    | ((
-        info: Parameters<Parameters<typeof http.post>[1]>[0],
-      ) => Response | Promise<Response>),
+    | URLRulesAddResponse
+    | HttpResponseResolver<Record<string, string>, URLRulesAddBody>,
 ) {
-  return http.post(`*/api/v2/url-rules`, function handler(info) {
-    if (typeof data === "function") return data(info);
+  return http.post<Record<string, string>, URLRulesAddBody>(
+    `*/api/v2/url-rules`,
+    function handler(info) {
+      if (typeof data === "function") return data(info);
 
-    return new Response(JSON.stringify(data), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  });
+      return new Response(JSON.stringify(data), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    },
+  );
 }

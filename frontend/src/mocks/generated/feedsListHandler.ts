@@ -4,12 +4,12 @@
  */
 
 import type {
-  FeedsListQueryResponse,
-  FeedsList500,
-} from "../../lib/api/types-generated.ts";
+  FeedsListResponse,
+  FeedsListStatus500,
+} from "../../lib/api/types-generated";
 import { http } from "msw";
 
-export function feedsListHandlerResponse200(data: FeedsListQueryResponse) {
+export function feedsListHandlerResponse200(data: FeedsListResponse) {
   return new Response(JSON.stringify(data), {
     status: 200,
     headers: {
@@ -18,7 +18,7 @@ export function feedsListHandlerResponse200(data: FeedsListQueryResponse) {
   });
 }
 
-export function feedsListHandlerResponse500(data: FeedsList500) {
+export function feedsListHandlerResponse500(data: FeedsListStatus500) {
   return new Response(JSON.stringify(data), {
     status: 500,
     headers: {
@@ -29,7 +29,7 @@ export function feedsListHandlerResponse500(data: FeedsList500) {
 
 export function feedsListHandler(
   data?:
-    | FeedsListQueryResponse
+    | FeedsListResponse
     | ((
         info: Parameters<Parameters<typeof http.get>[1]>[0],
       ) => Response | Promise<Response>),

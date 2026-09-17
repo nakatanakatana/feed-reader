@@ -3,38 +3,23 @@
  * Do not edit manually.
  */
 
-import fetch from "../../kubb-client.ts";
+import type { Options, UnwrappedResult } from "../../.kubb/client";
 import type {
-  Client,
-  RequestConfig,
-  ResponseErrorConfig,
-} from "../../kubb-client.ts";
-import type {
-  BlockRulesListQueryResponse,
-  BlockRulesList500,
-} from "../../types-generated.ts";
-
-function getBlockRulesListUrl() {
-  const res = { method: "GET", url: `/api/v2/block-rules` as const };
-  return res;
-}
+  BlockRulesListOptions,
+  BlockRulesListResponses,
+} from "../../types-generated";
+import { client, unwrapResult } from "../../.kubb/client";
 
 /**
  * {@link /block-rules}
  */
-export async function blockRulesList(
-  config: Partial<RequestConfig> & { client?: Client } = {},
-) {
-  const { client: request = fetch, ...requestConfig } = config;
+export function blockRulesList<ThrowOnError extends boolean = true>(
+  options: Options<BlockRulesListOptions, ThrowOnError> = {},
+): Promise<UnwrappedResult<BlockRulesListResponses, ThrowOnError>> {
+  const { client: request = client, ...config } = options;
 
-  const res = await request<
-    BlockRulesListQueryResponse,
-    ResponseErrorConfig<BlockRulesList500>,
-    unknown
-  >({
-    method: "GET",
-    url: getBlockRulesListUrl().url.toString(),
-    ...requestConfig,
-  });
-  return res.data;
+  return unwrapResult(
+    request({ method: "GET", url: "/block-rules", ...config }),
+    config.throwOnError,
+  ) as Promise<UnwrappedResult<BlockRulesListResponses, ThrowOnError>>;
 }

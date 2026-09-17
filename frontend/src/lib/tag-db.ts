@@ -52,11 +52,11 @@ export const tagsQueryOptions = {
 };
 
 export const tagInsert = async (name: string) => {
-  await tagsCreate({ name });
+  await tagsCreate({ body: { name } });
   await queryClient.invalidateQueries({ queryKey: ["tags"] });
 };
 
 export const tagDelete = async (id: string) => {
-  await tagsDelete(id);
+  await tagsDelete({ path: { id } });
   await queryClient.invalidateQueries({ queryKey: ["tags"] });
 };

@@ -4,13 +4,15 @@
  */
 
 import type {
-  FeedsExportOpmlMutationResponse,
-  FeedsExportOpml500,
-} from "../../lib/api/types-generated.ts";
+  FeedsExportOpmlResponse,
+  FeedsExportOpmlStatus500,
+  FeedsExportOpmlBody,
+} from "../../lib/api/types-generated";
+import type { HttpResponseResolver } from "msw";
 import { http } from "msw";
 
 export function feedsExportOpmlHandlerResponse200(
-  data: FeedsExportOpmlMutationResponse,
+  data: FeedsExportOpmlResponse,
 ) {
   return new Response(JSON.stringify(data), {
     status: 200,
@@ -20,7 +22,9 @@ export function feedsExportOpmlHandlerResponse200(
   });
 }
 
-export function feedsExportOpmlHandlerResponse500(data: FeedsExportOpml500) {
+export function feedsExportOpmlHandlerResponse500(
+  data: FeedsExportOpmlStatus500,
+) {
   return new Response(JSON.stringify(data), {
     status: 500,
     headers: {
@@ -31,19 +35,20 @@ export function feedsExportOpmlHandlerResponse500(data: FeedsExportOpml500) {
 
 export function feedsExportOpmlHandler(
   data?:
-    | FeedsExportOpmlMutationResponse
-    | ((
-        info: Parameters<Parameters<typeof http.post>[1]>[0],
-      ) => Response | Promise<Response>),
+    | FeedsExportOpmlResponse
+    | HttpResponseResolver<Record<string, string>, FeedsExportOpmlBody>,
 ) {
-  return http.post(`*/api/v2/feeds/export-opml`, function handler(info) {
-    if (typeof data === "function") return data(info);
+  return http.post<Record<string, string>, FeedsExportOpmlBody>(
+    `*/api/v2/feeds/export-opml`,
+    function handler(info) {
+      if (typeof data === "function") return data(info);
 
-    return new Response(JSON.stringify(data), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  });
+      return new Response(JSON.stringify(data), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    },
+  );
 }

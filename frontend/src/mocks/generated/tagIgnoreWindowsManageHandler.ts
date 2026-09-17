@@ -4,13 +4,15 @@
  */
 
 import type {
-  TagIgnoreWindowsManageMutationResponse,
-  TagIgnoreWindowsManage500,
-} from "../../lib/api/types-generated.ts";
+  TagIgnoreWindowsManageResponse,
+  TagIgnoreWindowsManageStatus500,
+  TagIgnoreWindowsManageBody,
+} from "../../lib/api/types-generated";
+import type { HttpResponseResolver } from "msw";
 import { http } from "msw";
 
 export function tagIgnoreWindowsManageHandlerResponse200(
-  data?: TagIgnoreWindowsManageMutationResponse,
+  data?: TagIgnoreWindowsManageResponse,
 ) {
   return new Response(JSON.stringify(data), {
     status: 200,
@@ -18,7 +20,7 @@ export function tagIgnoreWindowsManageHandlerResponse200(
 }
 
 export function tagIgnoreWindowsManageHandlerResponse500(
-  data: TagIgnoreWindowsManage500,
+  data: TagIgnoreWindowsManageStatus500,
 ) {
   return new Response(JSON.stringify(data), {
     status: 500,
@@ -35,11 +37,9 @@ export function tagIgnoreWindowsManageHandler(
     | boolean
     | null
     | object
-    | ((
-        info: Parameters<Parameters<typeof http.post>[1]>[0],
-      ) => Response | Promise<Response>),
+    | HttpResponseResolver<Record<string, string>, TagIgnoreWindowsManageBody>,
 ) {
-  return http.post(
+  return http.post<Record<string, string>, TagIgnoreWindowsManageBody>(
     `*/api/v2/tag-ignore-windows/manage`,
     function handler(info) {
       if (typeof data === "function") return data(info);

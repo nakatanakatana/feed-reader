@@ -3,38 +3,23 @@
  * Do not edit manually.
  */
 
-import fetch from "../../kubb-client.ts";
+import type { Options, UnwrappedResult } from "../../.kubb/client";
 import type {
-  Client,
-  RequestConfig,
-  ResponseErrorConfig,
-} from "../../kubb-client.ts";
-import type {
-  URLRulesListQueryResponse,
-  URLRulesList500,
-} from "../../types-generated.ts";
-
-function getURLRulesListUrl() {
-  const res = { method: "GET", url: `/api/v2/url-rules` as const };
-  return res;
-}
+  URLRulesListOptions,
+  URLRulesListResponses,
+} from "../../types-generated";
+import { client, unwrapResult } from "../../.kubb/client";
 
 /**
  * {@link /url-rules}
  */
-export async function URLRulesList(
-  config: Partial<RequestConfig> & { client?: Client } = {},
-) {
-  const { client: request = fetch, ...requestConfig } = config;
+export function URLRulesList<ThrowOnError extends boolean = true>(
+  options: Options<URLRulesListOptions, ThrowOnError> = {},
+): Promise<UnwrappedResult<URLRulesListResponses, ThrowOnError>> {
+  const { client: request = client, ...config } = options;
 
-  const res = await request<
-    URLRulesListQueryResponse,
-    ResponseErrorConfig<URLRulesList500>,
-    unknown
-  >({
-    method: "GET",
-    url: getURLRulesListUrl().url.toString(),
-    ...requestConfig,
-  });
-  return res.data;
+  return unwrapResult(
+    request({ method: "GET", url: "/url-rules", ...config }),
+    config.throwOnError,
+  ) as Promise<UnwrappedResult<URLRulesListResponses, ThrowOnError>>;
 }

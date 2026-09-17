@@ -4,20 +4,20 @@
  */
 
 import type {
-  FeedsSuspendMutationResponse,
-  FeedsSuspend500,
-} from "../../lib/api/types-generated.ts";
+  FeedsSuspendResponse,
+  FeedsSuspendStatus500,
+  FeedsSuspendBody,
+} from "../../lib/api/types-generated";
+import type { HttpResponseResolver } from "msw";
 import { http } from "msw";
 
-export function feedsSuspendHandlerResponse200(
-  data?: FeedsSuspendMutationResponse,
-) {
+export function feedsSuspendHandlerResponse200(data?: FeedsSuspendResponse) {
   return new Response(JSON.stringify(data), {
     status: 200,
   });
 }
 
-export function feedsSuspendHandlerResponse500(data: FeedsSuspend500) {
+export function feedsSuspendHandlerResponse500(data: FeedsSuspendStatus500) {
   return new Response(JSON.stringify(data), {
     status: 500,
     headers: {
@@ -33,15 +33,16 @@ export function feedsSuspendHandler(
     | boolean
     | null
     | object
-    | ((
-        info: Parameters<Parameters<typeof http.post>[1]>[0],
-      ) => Response | Promise<Response>),
+    | HttpResponseResolver<Record<string, string>, FeedsSuspendBody>,
 ) {
-  return http.post(`*/api/v2/feeds/suspend`, function handler(info) {
-    if (typeof data === "function") return data(info);
+  return http.post<Record<string, string>, FeedsSuspendBody>(
+    `*/api/v2/feeds/suspend`,
+    function handler(info) {
+      if (typeof data === "function") return data(info);
 
-    return new Response(JSON.stringify(data), {
-      status: 200,
-    });
-  });
+      return new Response(JSON.stringify(data), {
+        status: 200,
+      });
+    },
+  );
 }

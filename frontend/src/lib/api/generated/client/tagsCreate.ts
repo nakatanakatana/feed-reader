@@ -3,45 +3,23 @@
  * Do not edit manually.
  */
 
-import fetch from "../../kubb-client.ts";
+import type { Options, UnwrappedResult } from "../../.kubb/client";
 import type {
-  Client,
-  RequestConfig,
-  ResponseErrorConfig,
-} from "../../kubb-client.ts";
-import type {
-  TagsCreateMutationRequest,
-  TagsCreateMutationResponse,
-  TagsCreate500,
-} from "../../types-generated.ts";
-
-function getTagsCreateUrl() {
-  const res = { method: "POST", url: `/api/v2/tags` as const };
-  return res;
-}
+  TagsCreateOptions,
+  TagsCreateResponses,
+} from "../../types-generated";
+import { client, unwrapResult } from "../../.kubb/client";
 
 /**
  * {@link /tags}
  */
-export async function tagsCreate(
-  data: TagsCreateMutationRequest,
-  config: Partial<RequestConfig<TagsCreateMutationRequest>> & {
-    client?: Client;
-  } = {},
-) {
-  const { client: request = fetch, ...requestConfig } = config;
+export function tagsCreate<ThrowOnError extends boolean = true>(
+  options: Options<TagsCreateOptions, ThrowOnError>,
+): Promise<UnwrappedResult<TagsCreateResponses, ThrowOnError>> {
+  const { client: request = client, ...config } = options;
 
-  const requestData = data;
-
-  const res = await request<
-    TagsCreateMutationResponse,
-    ResponseErrorConfig<TagsCreate500>,
-    TagsCreateMutationRequest
-  >({
-    method: "POST",
-    url: getTagsCreateUrl().url.toString(),
-    data: requestData,
-    ...requestConfig,
-  });
-  return res.data;
+  return unwrapResult(
+    request({ method: "POST", url: "/tags", ...config }),
+    config.throwOnError,
+  ) as Promise<UnwrappedResult<TagsCreateResponses, ThrowOnError>>;
 }

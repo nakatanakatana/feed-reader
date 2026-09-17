@@ -3,6 +3,7 @@
   "ignorePatterns": [
     "frontend/src/routeTree.gen.ts",
     "frontend/src/lib/api/generated/**",
+    "frontend/src/lib/api/.kubb/**",
     "frontend/src/lib/api/types-generated.ts",
     "**/*.test.ts",
     "**/*.test.tsx",

@@ -4,13 +4,15 @@
  */
 
 import type {
-  ItemsUpdateStatusMutationResponse,
-  ItemsUpdateStatus500,
-} from "../../lib/api/types-generated.ts";
+  ItemsUpdateStatusResponse,
+  ItemsUpdateStatusStatus500,
+  ItemsUpdateStatusBody,
+} from "../../lib/api/types-generated";
+import type { HttpResponseResolver } from "msw";
 import { http } from "msw";
 
 export function itemsUpdateStatusHandlerResponse200(
-  data?: ItemsUpdateStatusMutationResponse,
+  data?: ItemsUpdateStatusResponse,
 ) {
   return new Response(JSON.stringify(data), {
     status: 200,
@@ -18,7 +20,7 @@ export function itemsUpdateStatusHandlerResponse200(
 }
 
 export function itemsUpdateStatusHandlerResponse500(
-  data: ItemsUpdateStatus500,
+  data: ItemsUpdateStatusStatus500,
 ) {
   return new Response(JSON.stringify(data), {
     status: 500,
@@ -35,15 +37,16 @@ export function itemsUpdateStatusHandler(
     | boolean
     | null
     | object
-    | ((
-        info: Parameters<Parameters<typeof http.post>[1]>[0],
-      ) => Response | Promise<Response>),
+    | HttpResponseResolver<Record<string, string>, ItemsUpdateStatusBody>,
 ) {
-  return http.post(`*/api/v2/items/status`, function handler(info) {
-    if (typeof data === "function") return data(info);
+  return http.post<Record<string, string>, ItemsUpdateStatusBody>(
+    `*/api/v2/items/status`,
+    function handler(info) {
+      if (typeof data === "function") return data(info);
 
-    return new Response(JSON.stringify(data), {
-      status: 200,
-    });
-  });
+      return new Response(JSON.stringify(data), {
+        status: 200,
+      });
+    },
+  );
 }

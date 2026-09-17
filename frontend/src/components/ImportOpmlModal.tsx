@@ -54,7 +54,9 @@ export function ImportOpmlModal(props: ImportOpmlModalProps) {
         reader.readAsArrayBuffer(file);
       });
 
-      const res = await feedsImportOpml(mapImportOpmlRequest(content));
+      const res = await feedsImportOpml({
+        body: mapImportOpmlRequest(content),
+      });
       setResult({
         total: res.total,
         success: res.success,

@@ -4,13 +4,13 @@
  */
 
 import type {
-  IgnoreWindowsDeleteMutationResponse,
-  IgnoreWindowsDelete500,
-} from "../../lib/api/types-generated.ts";
+  IgnoreWindowsDeleteResponse,
+  IgnoreWindowsDeleteStatus500,
+} from "../../lib/api/types-generated";
 import { http } from "msw";
 
 export function ignoreWindowsDeleteHandlerResponse200(
-  data?: IgnoreWindowsDeleteMutationResponse,
+  data?: IgnoreWindowsDeleteResponse,
 ) {
   return new Response(JSON.stringify(data), {
     status: 200,
@@ -18,7 +18,7 @@ export function ignoreWindowsDeleteHandlerResponse200(
 }
 
 export function ignoreWindowsDeleteHandlerResponse500(
-  data: IgnoreWindowsDelete500,
+  data: IgnoreWindowsDeleteStatus500,
 ) {
   return new Response(JSON.stringify(data), {
     status: 500,

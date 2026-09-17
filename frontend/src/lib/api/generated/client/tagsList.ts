@@ -3,34 +3,20 @@
  * Do not edit manually.
  */
 
-import fetch from "../../kubb-client.ts";
-import type {
-  Client,
-  RequestConfig,
-  ResponseErrorConfig,
-} from "../../kubb-client.ts";
-import type {
-  TagsListQueryResponse,
-  TagsList500,
-} from "../../types-generated.ts";
-
-function getTagsListUrl() {
-  const res = { method: "GET", url: `/api/v2/tags` as const };
-  return res;
-}
+import type { Options, UnwrappedResult } from "../../.kubb/client";
+import type { TagsListOptions, TagsListResponses } from "../../types-generated";
+import { client, unwrapResult } from "../../.kubb/client";
 
 /**
  * {@link /tags}
  */
-export async function tagsList(
-  config: Partial<RequestConfig> & { client?: Client } = {},
-) {
-  const { client: request = fetch, ...requestConfig } = config;
+export function tagsList<ThrowOnError extends boolean = true>(
+  options: Options<TagsListOptions, ThrowOnError> = {},
+): Promise<UnwrappedResult<TagsListResponses, ThrowOnError>> {
+  const { client: request = client, ...config } = options;
 
-  const res = await request<
-    TagsListQueryResponse,
-    ResponseErrorConfig<TagsList500>,
-    unknown
-  >({ method: "GET", url: getTagsListUrl().url.toString(), ...requestConfig });
-  return res.data;
+  return unwrapResult(
+    request({ method: "GET", url: "/tags", ...config }),
+    config.throwOnError,
+  ) as Promise<UnwrappedResult<TagsListResponses, ThrowOnError>>;
 }

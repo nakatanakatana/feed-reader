@@ -3,45 +3,23 @@
  * Do not edit manually.
  */
 
-import fetch from "../../kubb-client.ts";
+import type { Options, UnwrappedResult } from "../../.kubb/client";
 import type {
-  Client,
-  RequestConfig,
-  ResponseErrorConfig,
-} from "../../kubb-client.ts";
-import type {
-  IgnoreWindowsCreateMutationRequest,
-  IgnoreWindowsCreateMutationResponse,
-  IgnoreWindowsCreate500,
-} from "../../types-generated.ts";
-
-function getIgnoreWindowsCreateUrl() {
-  const res = { method: "POST", url: `/api/v2/ignore-windows` as const };
-  return res;
-}
+  IgnoreWindowsCreateOptions,
+  IgnoreWindowsCreateResponses,
+} from "../../types-generated";
+import { client, unwrapResult } from "../../.kubb/client";
 
 /**
  * {@link /ignore-windows}
  */
-export async function ignoreWindowsCreate(
-  data: IgnoreWindowsCreateMutationRequest,
-  config: Partial<RequestConfig<IgnoreWindowsCreateMutationRequest>> & {
-    client?: Client;
-  } = {},
-) {
-  const { client: request = fetch, ...requestConfig } = config;
+export function ignoreWindowsCreate<ThrowOnError extends boolean = true>(
+  options: Options<IgnoreWindowsCreateOptions, ThrowOnError>,
+): Promise<UnwrappedResult<IgnoreWindowsCreateResponses, ThrowOnError>> {
+  const { client: request = client, ...config } = options;
 
-  const requestData = data;
-
-  const res = await request<
-    IgnoreWindowsCreateMutationResponse,
-    ResponseErrorConfig<IgnoreWindowsCreate500>,
-    IgnoreWindowsCreateMutationRequest
-  >({
-    method: "POST",
-    url: getIgnoreWindowsCreateUrl().url.toString(),
-    data: requestData,
-    ...requestConfig,
-  });
-  return res.data;
+  return unwrapResult(
+    request({ method: "POST", url: "/ignore-windows", ...config }),
+    config.throwOnError,
+  ) as Promise<UnwrappedResult<IgnoreWindowsCreateResponses, ThrowOnError>>;
 }

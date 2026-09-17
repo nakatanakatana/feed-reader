@@ -3,45 +3,23 @@
  * Do not edit manually.
  */
 
-import fetch from "../../kubb-client.ts";
+import type { Options, UnwrappedResult } from "../../.kubb/client";
 import type {
-  Client,
-  RequestConfig,
-  ResponseErrorConfig,
-} from "../../kubb-client.ts";
-import type {
-  FeedTagsManageMutationRequest,
-  FeedTagsManageMutationResponse,
-  FeedTagsManage500,
-} from "../../types-generated.ts";
-
-function getFeedTagsManageUrl() {
-  const res = { method: "POST", url: `/api/v2/feed-tags/manage` as const };
-  return res;
-}
+  FeedTagsManageOptions,
+  FeedTagsManageResponses,
+} from "../../types-generated";
+import { client, unwrapResult } from "../../.kubb/client";
 
 /**
  * {@link /feed-tags/manage}
  */
-export async function feedTagsManage(
-  data: FeedTagsManageMutationRequest,
-  config: Partial<RequestConfig<FeedTagsManageMutationRequest>> & {
-    client?: Client;
-  } = {},
-) {
-  const { client: request = fetch, ...requestConfig } = config;
+export function feedTagsManage<ThrowOnError extends boolean = true>(
+  options: Options<FeedTagsManageOptions, ThrowOnError>,
+): Promise<UnwrappedResult<FeedTagsManageResponses, ThrowOnError>> {
+  const { client: request = client, ...config } = options;
 
-  const requestData = data;
-
-  const res = await request<
-    FeedTagsManageMutationResponse,
-    ResponseErrorConfig<FeedTagsManage500>,
-    FeedTagsManageMutationRequest
-  >({
-    method: "POST",
-    url: getFeedTagsManageUrl().url.toString(),
-    data: requestData,
-    ...requestConfig,
-  });
-  return res.data;
+  return unwrapResult(
+    request({ method: "POST", url: "/feed-tags/manage", ...config }),
+    config.throwOnError,
+  ) as Promise<UnwrappedResult<FeedTagsManageResponses, ThrowOnError>>;
 }

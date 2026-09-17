@@ -4,20 +4,22 @@
  */
 
 import type {
-  URLRulesDeleteMutationResponse,
-  URLRulesDelete500,
-} from "../../lib/api/types-generated.ts";
+  URLRulesDeleteResponse,
+  URLRulesDeleteStatus500,
+} from "../../lib/api/types-generated";
 import { http } from "msw";
 
 export function URLRulesDeleteHandlerResponse200(
-  data?: URLRulesDeleteMutationResponse,
+  data?: URLRulesDeleteResponse,
 ) {
   return new Response(JSON.stringify(data), {
     status: 200,
   });
 }
 
-export function URLRulesDeleteHandlerResponse500(data: URLRulesDelete500) {
+export function URLRulesDeleteHandlerResponse500(
+  data: URLRulesDeleteStatus500,
+) {
   return new Response(JSON.stringify(data), {
     status: 500,
     headers: {

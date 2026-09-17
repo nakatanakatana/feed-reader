@@ -1,55 +1,11 @@
-import { ApiError } from "./json-client";
+import {
+  client,
+  type ClientInstance,
+  type RequestConfig,
+  ResponseError,
+} from "./.kubb/client";
 import { redirectOnUnauthorized } from "./auth-redirect";
-
-export { ApiError };
-
-export type RequestConfig<TData = unknown> = {
-  baseURL?: string;
-  url?: string;
-  method?: "GET" | "PUT" | "PATCH" | "POST" | "DELETE" | "OPTIONS" | "HEAD";
-  params?: unknown;
-  data?: TData;
-  signal?: AbortSignal;
-  headers?: Record<string, string> | [string, string][];
-};
-
-export type ResponseConfig<TData = unknown> = {
-  data: TData;
-  status: number;
-  statusText: string;
-};
-
-export type ResponseErrorConfig<TError = unknown> = TError;
-
-export type ClientOptions = {
-  fetch?: typeof fetch;
-  onUnauthorized?: () => void;
-};
-
-export type Client = <TData, _TError = unknown, TVariables = unknown>(
-  config: RequestConfig<TVariables>,
-  options?: ClientOptions,
-) => Promise<ResponseConfig<TData>>;
-
-export const defaultApiBaseUrl = "/api/v2";
-export const defaultOnUnauthorized = redirectOnUnauthorized;
-
-const joinUrl = (baseUrl: string, path: string) => {
-  const normalizedBase = baseUrl.replace(/\/$/, "");
-  if (path.startsWith(normalizedBase)) {
-    return path;
-  }
-  return `${normalizedBase}${path.startsWith("/") ? path : `/${path}`}`;
-};
-
-const parseJson = async <T>(response: Response): Promise<T> => {
-  const text = await response.text();
-  if (!text) {
-    // oxlint-disable-next-line typescript/consistent-type-assertions
-    return undefined as T;
-  }
-  return JSON.parse(text);
-};
+import { ApiError } from "./json-client";
 
 const getApiErrorPayload = (
   value: unknown,
@@ -63,84 +19,51 @@ const getApiErrorPayload = (
   };
 };
 
-const normalizeHeaders = (
-  headers?: Record<string, string> | [string, string][],
-): Record<string, string> => {
-  if (!headers) return {};
-  if (Array.isArray(headers)) {
-    return Object.fromEntries(headers);
-  }
-  return headers;
-};
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === "object" && value !== null;
-
-const appendQueryParams = (path: string, params: unknown): string => {
-  if (!isRecord(params)) return path;
-
-  const searchParams = new URLSearchParams();
-  for (const [key, value] of Object.entries(params)) {
-    if (value !== undefined) {
-      searchParams.append(key, value === null ? "null" : String(value));
+const setupClientInterceptors = (
+  clientInstance: ClientInstance = client,
+  onUnauthorized: () => void = redirectOnUnauthorized,
+) => {
+  clientInstance.interceptors.request.use(async (request) => {
+    if (typeof window === "undefined" && request.url.startsWith("/")) {
+      return {
+        ...request,
+        url: `http://localhost${request.url}`,
+      };
     }
-  }
-
-  const query = searchParams.toString();
-  return query ? `${path}?${query}` : path;
-};
-
-const client = async <TData, _TError = unknown, TVariables = unknown>(
-  config: RequestConfig<TVariables>,
-  options?: ClientOptions,
-): Promise<ResponseConfig<TData>> => {
-  const fetchImpl = options?.fetch ?? fetch;
-  const onUnauthorized = options?.onUnauthorized ?? defaultOnUnauthorized;
-  const baseUrl = config.baseURL ?? defaultApiBaseUrl;
-  const path = appendQueryParams(config.url ?? "", config.params);
-  const url = joinUrl(baseUrl, path);
-  const method = config.method ?? "GET";
-
-  const headers: Record<string, string> = {
-    Accept: "application/json",
-    ...normalizeHeaders(config.headers),
-  };
-
-  let requestBody: string | undefined;
-  if (config.data !== undefined) {
-    headers["Content-Type"] = "application/json";
-    requestBody = JSON.stringify(config.data);
-  }
-
-  const response = await fetchImpl(url, {
-    method,
-    headers,
-    signal: config.signal,
-    ...(requestBody !== undefined ? { body: requestBody } : {}),
+    return request;
   });
 
-  if (response.status === 401) {
-    onUnauthorized();
-    throw new ApiError("unauthorized", "Unauthorized", 401);
-  }
+  clientInstance.interceptors.response.use(async (response) => {
+    if (response.status === 401) {
+      onUnauthorized();
+      throw new ApiError("unauthorized", "Unauthorized", 401);
+    }
+    return response;
+  });
 
-  const data = await parseJson<unknown>(response);
-
-  if (!response.ok) {
-    const error = getApiErrorPayload(data);
-    throw new ApiError(
-      error?.code ?? "unknown",
-      error?.message ?? "Request failed",
-      response.status,
-    );
-  }
-
-  return {
-    // oxlint-disable-next-line typescript/consistent-type-assertions
-    data: data as TData,
-    status: response.status,
-    statusText: response.statusText,
-  };
+  clientInstance.interceptors.error.use(async (error) => {
+    if (error instanceof ResponseError && error.status === 401) {
+      onUnauthorized();
+      throw new ApiError("unauthorized", "Unauthorized", 401);
+    }
+    if (error instanceof ResponseError) {
+      const payload = getApiErrorPayload(error.data);
+      throw new ApiError(
+        payload?.code ?? "unknown",
+        payload?.message ?? "Request failed",
+        error.status,
+      );
+    }
+    throw error;
+  });
 };
 
-export default client satisfies Client;
+setupClientInterceptors(client);
+
+export { ApiError, client, ResponseError, setupClientInterceptors };
+export type { ClientInstance, RequestConfig };
+
+export const defaultApiBaseUrl = "/api/v2";
+export const defaultOnUnauthorized = redirectOnUnauthorized;
+
+export default client;

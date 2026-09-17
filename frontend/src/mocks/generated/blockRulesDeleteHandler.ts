@@ -4,20 +4,22 @@
  */
 
 import type {
-  BlockRulesDeleteMutationResponse,
-  BlockRulesDelete500,
-} from "../../lib/api/types-generated.ts";
+  BlockRulesDeleteResponse,
+  BlockRulesDeleteStatus500,
+} from "../../lib/api/types-generated";
 import { http } from "msw";
 
 export function blockRulesDeleteHandlerResponse200(
-  data?: BlockRulesDeleteMutationResponse,
+  data?: BlockRulesDeleteResponse,
 ) {
   return new Response(JSON.stringify(data), {
     status: 200,
   });
 }
 
-export function blockRulesDeleteHandlerResponse500(data: BlockRulesDelete500) {
+export function blockRulesDeleteHandlerResponse500(
+  data: BlockRulesDeleteStatus500,
+) {
   return new Response(JSON.stringify(data), {
     status: 500,
     headers: {

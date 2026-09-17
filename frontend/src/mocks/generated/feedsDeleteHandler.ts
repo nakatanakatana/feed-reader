@@ -4,20 +4,18 @@
  */
 
 import type {
-  FeedsDeleteMutationResponse,
-  FeedsDelete500,
-} from "../../lib/api/types-generated.ts";
+  FeedsDeleteResponse,
+  FeedsDeleteStatus500,
+} from "../../lib/api/types-generated";
 import { http } from "msw";
 
-export function feedsDeleteHandlerResponse200(
-  data?: FeedsDeleteMutationResponse,
-) {
+export function feedsDeleteHandlerResponse200(data?: FeedsDeleteResponse) {
   return new Response(JSON.stringify(data), {
     status: 200,
   });
 }
 
-export function feedsDeleteHandlerResponse500(data: FeedsDelete500) {
+export function feedsDeleteHandlerResponse500(data: FeedsDeleteStatus500) {
   return new Response(JSON.stringify(data), {
     status: 500,
     headers: {

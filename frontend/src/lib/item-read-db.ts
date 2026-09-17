@@ -30,9 +30,11 @@ export const itemReadQueryOptions = {
 
     do {
       const response: ListItemReadResponse = await itemReadsList({
-        pageSize: 1000,
-        ...(pageToken ? { pageToken } : {}),
-        ...(!pageToken && anchor ? { since: anchor.toISOString() } : {}),
+        query: {
+          pageSize: 1000,
+          ...(pageToken ? { pageToken } : {}),
+          ...(!pageToken && anchor ? { since: anchor.toISOString() } : {}),
+        },
       });
 
       for (const ir of response.itemReads || []) {
@@ -93,7 +95,7 @@ export const updateItemReadStatus = async (ids: string[], isRead: boolean) => {
   });
 
   try {
-    await itemsUpdateStatus({ ids, isRead });
+    await itemsUpdateStatus({ body: { ids, isRead } });
   } catch (e) {
     console.warn("Failed to update item status on server, rolling back", e);
 

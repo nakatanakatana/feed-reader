@@ -123,12 +123,16 @@ describe("ItemRead query options", () => {
 
       expect(itemReadsListClient.itemReadsList).toHaveBeenCalledTimes(2);
       expect(itemReadsListClient.itemReadsList).toHaveBeenNthCalledWith(1, {
-        pageSize: 1000,
-        since: anchorDate.toISOString(),
+        query: {
+          pageSize: 1000,
+          since: anchorDate.toISOString(),
+        },
       });
       expect(itemReadsListClient.itemReadsList).toHaveBeenNthCalledWith(2, {
-        pageSize: 1000,
-        pageToken: "token-1",
+        query: {
+          pageSize: 1000,
+          pageToken: "token-1",
+        },
       });
     });
 
@@ -181,8 +185,10 @@ describe("ItemRead query options", () => {
       await updateItemReadStatus(["1", "2"], true);
 
       expect(itemsUpdateStatusClient.itemsUpdateStatus).toHaveBeenCalledWith({
-        ids: ["1", "2"],
-        isRead: true,
+        body: {
+          ids: ["1", "2"],
+          isRead: true,
+        },
       });
     });
 

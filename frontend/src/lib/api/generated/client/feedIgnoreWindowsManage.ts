@@ -3,48 +3,23 @@
  * Do not edit manually.
  */
 
-import fetch from "../../kubb-client.ts";
+import type { Options, UnwrappedResult } from "../../.kubb/client";
 import type {
-  Client,
-  RequestConfig,
-  ResponseErrorConfig,
-} from "../../kubb-client.ts";
-import type {
-  FeedIgnoreWindowsManageMutationRequest,
-  FeedIgnoreWindowsManageMutationResponse,
-  FeedIgnoreWindowsManage500,
-} from "../../types-generated.ts";
-
-function getFeedIgnoreWindowsManageUrl() {
-  const res = {
-    method: "POST",
-    url: `/api/v2/feed-ignore-windows/manage` as const,
-  };
-  return res;
-}
+  FeedIgnoreWindowsManageOptions,
+  FeedIgnoreWindowsManageResponses,
+} from "../../types-generated";
+import { client, unwrapResult } from "../../.kubb/client";
 
 /**
  * {@link /feed-ignore-windows/manage}
  */
-export async function feedIgnoreWindowsManage(
-  data: FeedIgnoreWindowsManageMutationRequest,
-  config: Partial<RequestConfig<FeedIgnoreWindowsManageMutationRequest>> & {
-    client?: Client;
-  } = {},
-) {
-  const { client: request = fetch, ...requestConfig } = config;
+export function feedIgnoreWindowsManage<ThrowOnError extends boolean = true>(
+  options: Options<FeedIgnoreWindowsManageOptions, ThrowOnError>,
+): Promise<UnwrappedResult<FeedIgnoreWindowsManageResponses, ThrowOnError>> {
+  const { client: request = client, ...config } = options;
 
-  const requestData = data;
-
-  const res = await request<
-    FeedIgnoreWindowsManageMutationResponse,
-    ResponseErrorConfig<FeedIgnoreWindowsManage500>,
-    FeedIgnoreWindowsManageMutationRequest
-  >({
-    method: "POST",
-    url: getFeedIgnoreWindowsManageUrl().url.toString(),
-    data: requestData,
-    ...requestConfig,
-  });
-  return res.data;
+  return unwrapResult(
+    request({ method: "POST", url: "/feed-ignore-windows/manage", ...config }),
+    config.throwOnError,
+  ) as Promise<UnwrappedResult<FeedIgnoreWindowsManageResponses, ThrowOnError>>;
 }

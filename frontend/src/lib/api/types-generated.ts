@@ -4,1344 +4,1127 @@
  */
 
 export type AddItemBlockRuleInput = {
-  /**
-   * @type string
-   */
   ruleType: string;
-  /**
-   * @type string
-   */
   value: string;
-  /**
-   * @type string | undefined
-   */
   domain?: string;
 };
 
 export type AddItemBlockRulesRequest = {
-  /**
-   * @type array
-   */
   rules: AddItemBlockRuleInput[];
 };
 
 export type AddURLParsingRuleRequest = {
-  /**
-   * @type string
-   */
   domain: string;
-  /**
-   * @type string
-   */
   ruleType: string;
-  /**
-   * @type string
-   */
   pattern: string;
 };
 
 export type URLParsingRule = {
-  /**
-   * @type string
-   */
   id: string;
-  /**
-   * @type string
-   */
   domain: string;
-  /**
-   * @type string
-   */
   ruleType: string;
-  /**
-   * @type string
-   */
   pattern: string;
 };
 
 export type AddURLParsingRuleResponse = {
-  /**
-   * @type object
-   */
   rule: URLParsingRule;
 };
 
 export type ApiError = {
-  /**
-   * @type string
-   */
   code: string;
-  /**
-   * @type string
-   */
   message: string;
 };
 
 export type CreateFeedRequest = {
-  /**
-   * @type string
-   */
   url: string;
-  /**
-   * @type array
-   */
   tagIds: string[];
 };
 
 export type Tag = {
-  /**
-   * @type string
-   */
   id: string;
-  /**
-   * @type string
-   */
   name: string;
   /**
-   * @type string, date-time
+   * @description
+   * Format: `date-time`
+   * @type string
    */
   createdAt: string;
   /**
-   * @type string, date-time
+   * @description
+   * Format: `date-time`
+   * @type string
    */
   updatedAt: string;
-  /**
-   * @type string
-   */
   unreadCount: string;
-  /**
-   * @type string
-   */
   feedCount: string;
 };
 
 export type Feed = {
-  /**
-   * @type string
-   */
   id: string;
-  /**
-   * @type string
-   */
   url: string;
-  /**
-   * @type string | undefined
-   */
   link?: string;
-  /**
-   * @type string
-   */
   title: string;
   /**
-   * @type string | undefined, date-time
+   * @description
+   * Format: `date-time`
+   * @type string | undefined
    */
   lastFetchedAt?: string;
   /**
-   * @type string | undefined, date-time
+   * @description
+   * Format: `date-time`
+   * @type string | undefined
    */
   nextFetchAt?: string;
   /**
-   * @type string, date-time
+   * @description
+   * Format: `date-time`
+   * @type string
    */
   createdAt: string;
   /**
-   * @type string, date-time
-   */
-  updatedAt: string;
-  /**
-   * @type array
-   */
-  tags: Tag[];
-  /**
+   * @description
+   * Format: `date-time`
    * @type string
    */
+  updatedAt: string;
+  tags: Tag[];
   unreadCount: string;
 };
 
 export type CreateFeedResponse = {
-  /**
-   * @type object
-   */
   feed: Feed;
 };
 
 export type CreateIgnoreWindowRequest = {
-  /**
-   * @type string
-   */
   name: string;
-  /**
-   * @type string
-   */
   startTime: string;
-  /**
-   * @type string
-   */
   endTime: string;
-  /**
-   * @type array
-   */
   daysOfWeek: number[];
-  /**
-   * @type string
-   */
   timezone: string;
 };
 
 export type IgnoreWindow = {
-  /**
-   * @type string
-   */
   id: string;
-  /**
-   * @type string
-   */
   name: string;
-  /**
-   * @type string
-   */
   startTime: string;
-  /**
-   * @type string
-   */
   endTime: string;
-  /**
-   * @type array
-   */
   daysOfWeek: number[];
-  /**
-   * @type string
-   */
   timezone: string;
   /**
-   * @type string, date-time
+   * @description
+   * Format: `date-time`
+   * @type string
    */
   createdAt: string;
   /**
-   * @type string, date-time
+   * @description
+   * Format: `date-time`
+   * @type string
    */
   updatedAt: string;
 };
 
 export type CreateIgnoreWindowResponse = {
-  /**
-   * @type object
-   */
   ignoreWindow: IgnoreWindow;
 };
 
 export type CreateTagRequest = {
-  /**
-   * @type string
-   */
   name: string;
 };
 
 export type CreateTagResponse = {
-  /**
-   * @type object
-   */
   tag: Tag;
 };
 
 export type ExportOpmlRequest = {
-  /**
-   * @type array
-   */
   ids: string[];
 };
 
 export type ExportOpmlResponse = {
-  /**
-   * @type string, byte
-   */
   opmlContent: string;
 };
 
 export type FeedFetchStatus = {
-  /**
-   * @type string
-   */
   feedId: string;
-  /**
-   * @type boolean
-   */
   success: boolean;
   /**
-   * @type integer, int32
+   * @description
+   * Format: `int32`
+   * @type integer
    */
   newItemsCount: number;
-  /**
-   * @type string | undefined
-   */
   errorMessage?: string;
 };
 
 export type FeedIgnoreWindow = {
-  /**
-   * @type string
-   */
   feedId: string;
-  /**
-   * @type string
-   */
   ignoreWindowId: string;
 };
 
 export type FeedTag = {
-  /**
-   * @type string
-   */
   feedId: string;
-  /**
-   * @type string
-   */
   tagId: string;
 };
 
 export type ItemFeed = {
-  /**
-   * @type string
-   */
   id: string;
-  /**
-   * @type string
-   */
   title: string;
 };
 
 export type Item = {
-  /**
-   * @type string
-   */
   id: string;
-  /**
-   * @type string
-   */
   url: string;
-  /**
-   * @type string
-   */
   title: string;
-  /**
-   * @type string
-   */
   description: string;
   /**
-   * @type string | undefined, date-time
+   * @description
+   * Format: `date-time`
+   * @type string | undefined
    */
   publishedAt?: string;
-  /**
-   * @type string
-   */
   feedId: string;
-  /**
-   * @type boolean
-   */
   isRead: boolean;
-  /**
-   * @type string
-   */
   author: string;
-  /**
-   * @type string
-   */
   content: string;
-  /**
-   * @type string
-   */
   imageUrl: string;
-  /**
-   * @type string
-   */
   categories: string;
-  /**
-   * @type array | undefined
-   */
   feeds?: ItemFeed[];
   /**
-   * @type string, date-time
+   * @description
+   * Format: `date-time`
+   * @type string
    */
   createdAt: string;
 };
 
 export type GetItemResponse = {
-  /**
-   * @type object | undefined
-   */
   item?: Item;
 };
 
 export type ImportFailedFeed = {
-  /**
-   * @type string
-   */
   url: string;
-  /**
-   * @type string
-   */
   errorMessage: string;
 };
 
 export type ImportOpmlRequest = {
-  /**
-   * @type string, byte
-   */
   opmlContent: string;
 };
 
 export type ImportOpmlResponse = {
   /**
-   * @type integer, int32
+   * @description
+   * Format: `int32`
+   * @type integer
    */
   total: number;
   /**
-   * @type integer, int32
+   * @description
+   * Format: `int32`
+   * @type integer
    */
   success: number;
   /**
-   * @type integer, int32
+   * @description
+   * Format: `int32`
+   * @type integer
    */
   skipped: number;
-  /**
-   * @type array
-   */
   failedFeeds: ImportFailedFeed[];
 };
 
 export type ItemBlockRule = {
-  /**
-   * @type string
-   */
   id: string;
-  /**
-   * @type string
-   */
   ruleType: string;
-  /**
-   * @type string
-   */
   value: string;
-  /**
-   * @type string | undefined
-   */
   domain?: string;
 };
 
 export type ItemRead = {
-  /**
-   * @type string
-   */
   itemId: string;
-  /**
-   * @type boolean
-   */
   isRead: boolean;
   /**
-   * @type string, date-time
+   * @description
+   * Format: `date-time`
+   * @type string
    */
   updatedAt: string;
 };
 
 export type ListFeedIgnoreWindowsResponse = {
-  /**
-   * @type array
-   */
   feedIgnoreWindows: FeedIgnoreWindow[];
 };
 
 export type ListFeedTagsResponse = {
-  /**
-   * @type array
-   */
   feedTags: FeedTag[];
 };
 
 export type ListFeedsResponse = {
-  /**
-   * @type array
-   */
   feeds: Feed[];
 };
 
 export type ListIgnoreWindowsResponse = {
-  /**
-   * @type array
-   */
   ignoreWindows: IgnoreWindow[];
 };
 
 export type ListItemBlockRulesResponse = {
-  /**
-   * @type array
-   */
   rules: ItemBlockRule[];
 };
 
 export type ListItemReadResponse = {
-  /**
-   * @type array
-   */
   itemReads: ItemRead[];
-  /**
-   * @type string
-   */
   nextPageToken: string;
 };
 
 export type ListItemsResponse = {
-  /**
-   * @type array
-   */
   items: Item[];
-  /**
-   * @type string
-   */
   nextPageToken: string;
 };
 
 export type TagIgnoreWindow = {
-  /**
-   * @type string
-   */
   tagId: string;
-  /**
-   * @type string
-   */
   ignoreWindowId: string;
 };
 
 export type ListTagIgnoreWindowsResponse = {
-  /**
-   * @type array
-   */
   tagIgnoreWindows: TagIgnoreWindow[];
 };
 
 export type ListTagsResponse = {
-  /**
-   * @type array
-   */
   tags: Tag[];
-  /**
-   * @type string
-   */
   totalUnreadCount: string;
 };
 
 export type ListURLParsingRulesResponse = {
-  /**
-   * @type array
-   */
   rules: URLParsingRule[];
 };
 
 export type ManageFeedIgnoreWindowsRequest = {
-  /**
-   * @type array
-   */
   feedIds: string[];
-  /**
-   * @type array
-   */
   addIgnoreWindowIds: string[];
-  /**
-   * @type array
-   */
   removeIgnoreWindowIds: string[];
 };
 
 export type ManageFeedTagsRequest = {
-  /**
-   * @type array
-   */
   feedIds: string[];
-  /**
-   * @type array
-   */
   addTagIds: string[];
-  /**
-   * @type array
-   */
   removeTagIds: string[];
 };
 
 export type ManageTagIgnoreWindowsRequest = {
-  /**
-   * @type array
-   */
   tagIds: string[];
-  /**
-   * @type array
-   */
   addIgnoreWindowIds: string[];
-  /**
-   * @type array
-   */
   removeIgnoreWindowIds: string[];
 };
 
 export type RefreshFeedsRequest = {
-  /**
-   * @type array
-   */
   ids: string[];
 };
 
 export type RefreshFeedsResponse = {
-  /**
-   * @type array
-   */
   results: FeedFetchStatus[];
 };
 
 export type SuspendFeedsRequest = {
-  /**
-   * @type array
-   */
   ids: string[];
-  /**
-   * @type string
-   */
   suspendSeconds: string;
 };
 
 export type UpdateIgnoreWindowRequest = {
-  /**
-   * @type string | undefined
-   */
   name?: string;
-  /**
-   * @type string | undefined
-   */
   startTime?: string;
-  /**
-   * @type string | undefined
-   */
   endTime?: string;
-  /**
-   * @type array | undefined
-   */
   daysOfWeek?: number[];
-  /**
-   * @type string | undefined
-   */
   timezone?: string;
 };
 
 export type UpdateIgnoreWindowResponse = {
-  /**
-   * @type object
-   */
   ignoreWindow: IgnoreWindow;
 };
 
 export type UpdateItemStatusRequest = {
-  /**
-   * @type array
-   */
   ids: string[];
-  /**
-   * @type boolean | undefined
-   */
   isRead?: boolean;
 };
 
-/**
- * @description The request has succeeded.
- */
-export type BlockRulesList200 = ListItemBlockRulesResponse;
+export type BlockRulesListStatus200 = ListItemBlockRulesResponse;
 
-/**
- * @description Server error
- */
-export type BlockRulesList500 = ApiError;
+export type BlockRulesListStatus500 = ApiError;
 
-export type BlockRulesListQueryResponse = BlockRulesList200;
+export type BlockRulesListOptions = {
+  body?: never;
+  path?: never;
+  query?: never;
+  headers?: never;
+};
 
-export type BlockRulesListQuery = {
-  Response: BlockRulesList200;
-  Errors: BlockRulesList500;
+export type BlockRulesListResponses = {
+  "200": BlockRulesListStatus200;
+  "500": BlockRulesListStatus500;
 };
 
 /**
- * @description The request has succeeded.
+ * @description Union of all possible responses
  */
-export type BlockRulesAdd200 = any;
+export type BlockRulesListResponse =
+  | BlockRulesListStatus200
+  | BlockRulesListStatus500;
 
-/**
- * @description Server error
- */
-export type BlockRulesAdd500 = ApiError;
+export type BlockRulesAddStatus200 = unknown;
 
-export type BlockRulesAddMutationRequest = AddItemBlockRulesRequest;
+export type BlockRulesAddStatus500 = ApiError;
 
-export type BlockRulesAddMutationResponse = BlockRulesAdd200;
+export type BlockRulesAddBody = AddItemBlockRulesRequest;
 
-export type BlockRulesAddMutation = {
-  Response: BlockRulesAdd200;
-  Request: BlockRulesAddMutationRequest;
-  Errors: BlockRulesAdd500;
+export type BlockRulesAddOptions = {
+  body: BlockRulesAddBody;
+  path?: never;
+  query?: never;
+  headers?: never;
 };
 
-export type BlockRulesDeletePathParams = {
-  /**
-   * @type string
-   */
+export type BlockRulesAddResponses = {
+  "200": BlockRulesAddStatus200;
+  "500": BlockRulesAddStatus500;
+};
+
+/**
+ * @description Union of all possible responses
+ */
+export type BlockRulesAddResponse =
+  | BlockRulesAddStatus200
+  | BlockRulesAddStatus500;
+
+export type BlockRulesDeletePath = {
   id: string;
 };
 
-/**
- * @description The request has succeeded.
- */
-export type BlockRulesDelete200 = any;
+export type BlockRulesDeleteStatus200 = unknown;
 
-/**
- * @description Server error
- */
-export type BlockRulesDelete500 = ApiError;
+export type BlockRulesDeleteStatus500 = ApiError;
 
-export type BlockRulesDeleteMutationResponse = BlockRulesDelete200;
-
-export type BlockRulesDeleteMutation = {
-  Response: BlockRulesDelete200;
-  PathParams: BlockRulesDeletePathParams;
-  Errors: BlockRulesDelete500;
+export type BlockRulesDeleteOptions = {
+  body?: never;
+  path: BlockRulesDeletePath;
+  query?: never;
+  headers?: never;
 };
 
-export type FeedIgnoreWindowsListQueryParams = {
-  /**
-   * @type string | undefined
-   */
-  feedId?: string;
-  /**
-   * @type string | undefined
-   */
-  ignoreWindowId?: string;
+export type BlockRulesDeleteResponses = {
+  "200": BlockRulesDeleteStatus200;
+  "500": BlockRulesDeleteStatus500;
 };
 
 /**
- * @description The request has succeeded.
+ * @description Union of all possible responses
  */
-export type FeedIgnoreWindowsList200 = ListFeedIgnoreWindowsResponse;
-
-/**
- * @description Server error
- */
-export type FeedIgnoreWindowsList500 = ApiError;
-
-export type FeedIgnoreWindowsListQueryResponse = FeedIgnoreWindowsList200;
+export type BlockRulesDeleteResponse =
+  | BlockRulesDeleteStatus200
+  | BlockRulesDeleteStatus500;
 
 export type FeedIgnoreWindowsListQuery = {
-  Response: FeedIgnoreWindowsList200;
-  QueryParams: FeedIgnoreWindowsListQueryParams;
-  Errors: FeedIgnoreWindowsList500;
-};
-
-/**
- * @description The request has succeeded.
- */
-export type FeedIgnoreWindowsManage200 = any;
-
-/**
- * @description Server error
- */
-export type FeedIgnoreWindowsManage500 = ApiError;
-
-export type FeedIgnoreWindowsManageMutationRequest =
-  ManageFeedIgnoreWindowsRequest;
-
-export type FeedIgnoreWindowsManageMutationResponse =
-  FeedIgnoreWindowsManage200;
-
-export type FeedIgnoreWindowsManageMutation = {
-  Response: FeedIgnoreWindowsManage200;
-  Request: FeedIgnoreWindowsManageMutationRequest;
-  Errors: FeedIgnoreWindowsManage500;
-};
-
-export type FeedTagsListQueryParams = {
-  /**
-   * @type string | undefined
-   */
   feedId?: string;
-  /**
-   * @type string | undefined
-   */
-  tagId?: string;
-};
-
-/**
- * @description The request has succeeded.
- */
-export type FeedTagsList200 = ListFeedTagsResponse;
-
-/**
- * @description Server error
- */
-export type FeedTagsList500 = ApiError;
-
-export type FeedTagsListQueryResponse = FeedTagsList200;
-
-export type FeedTagsListQuery = {
-  Response: FeedTagsList200;
-  QueryParams: FeedTagsListQueryParams;
-  Errors: FeedTagsList500;
-};
-
-/**
- * @description The request has succeeded.
- */
-export type FeedTagsManage200 = any;
-
-/**
- * @description Server error
- */
-export type FeedTagsManage500 = ApiError;
-
-export type FeedTagsManageMutationRequest = ManageFeedTagsRequest;
-
-export type FeedTagsManageMutationResponse = FeedTagsManage200;
-
-export type FeedTagsManageMutation = {
-  Response: FeedTagsManage200;
-  Request: FeedTagsManageMutationRequest;
-  Errors: FeedTagsManage500;
-};
-
-export type FeedsListQueryParams = {
-  /**
-   * @type string | undefined
-   */
-  tagId?: string;
-};
-
-/**
- * @description The request has succeeded.
- */
-export type FeedsList200 = ListFeedsResponse;
-
-/**
- * @description Server error
- */
-export type FeedsList500 = ApiError;
-
-export type FeedsListQueryResponse = FeedsList200;
-
-export type FeedsListQuery = {
-  Response: FeedsList200;
-  QueryParams: FeedsListQueryParams;
-  Errors: FeedsList500;
-};
-
-/**
- * @description The request has succeeded.
- */
-export type FeedsCreate200 = CreateFeedResponse;
-
-/**
- * @description Server error
- */
-export type FeedsCreate500 = ApiError;
-
-export type FeedsCreateMutationRequest = CreateFeedRequest;
-
-export type FeedsCreateMutationResponse = FeedsCreate200;
-
-export type FeedsCreateMutation = {
-  Response: FeedsCreate200;
-  Request: FeedsCreateMutationRequest;
-  Errors: FeedsCreate500;
-};
-
-/**
- * @description The request has succeeded.
- */
-export type FeedsExportOpml200 = ExportOpmlResponse;
-
-/**
- * @description Server error
- */
-export type FeedsExportOpml500 = ApiError;
-
-export type FeedsExportOpmlMutationRequest = ExportOpmlRequest;
-
-export type FeedsExportOpmlMutationResponse = FeedsExportOpml200;
-
-export type FeedsExportOpmlMutation = {
-  Response: FeedsExportOpml200;
-  Request: FeedsExportOpmlMutationRequest;
-  Errors: FeedsExportOpml500;
-};
-
-/**
- * @description The request has succeeded.
- */
-export type FeedsImportOpml200 = ImportOpmlResponse;
-
-/**
- * @description Server error
- */
-export type FeedsImportOpml500 = ApiError;
-
-export type FeedsImportOpmlMutationRequest = ImportOpmlRequest;
-
-export type FeedsImportOpmlMutationResponse = FeedsImportOpml200;
-
-export type FeedsImportOpmlMutation = {
-  Response: FeedsImportOpml200;
-  Request: FeedsImportOpmlMutationRequest;
-  Errors: FeedsImportOpml500;
-};
-
-/**
- * @description The request has succeeded.
- */
-export type FeedsRefresh200 = RefreshFeedsResponse;
-
-/**
- * @description Server error
- */
-export type FeedsRefresh500 = ApiError;
-
-export type FeedsRefreshMutationRequest = RefreshFeedsRequest;
-
-export type FeedsRefreshMutationResponse = FeedsRefresh200;
-
-export type FeedsRefreshMutation = {
-  Response: FeedsRefresh200;
-  Request: FeedsRefreshMutationRequest;
-  Errors: FeedsRefresh500;
-};
-
-/**
- * @description The request has succeeded.
- */
-export type FeedsSuspend200 = any;
-
-/**
- * @description Server error
- */
-export type FeedsSuspend500 = ApiError;
-
-export type FeedsSuspendMutationRequest = SuspendFeedsRequest;
-
-export type FeedsSuspendMutationResponse = FeedsSuspend200;
-
-export type FeedsSuspendMutation = {
-  Response: FeedsSuspend200;
-  Request: FeedsSuspendMutationRequest;
-  Errors: FeedsSuspend500;
-};
-
-export type FeedsDeletePathParams = {
-  /**
-   * @type string
-   */
-  id: string;
-};
-
-/**
- * @description The request has succeeded.
- */
-export type FeedsDelete200 = any;
-
-/**
- * @description Server error
- */
-export type FeedsDelete500 = ApiError;
-
-export type FeedsDeleteMutationResponse = FeedsDelete200;
-
-export type FeedsDeleteMutation = {
-  Response: FeedsDelete200;
-  PathParams: FeedsDeletePathParams;
-  Errors: FeedsDelete500;
-};
-
-/**
- * @description The request has succeeded.
- */
-export type IgnoreWindowsList200 = ListIgnoreWindowsResponse;
-
-/**
- * @description Server error
- */
-export type IgnoreWindowsList500 = ApiError;
-
-export type IgnoreWindowsListQueryResponse = IgnoreWindowsList200;
-
-export type IgnoreWindowsListQuery = {
-  Response: IgnoreWindowsList200;
-  Errors: IgnoreWindowsList500;
-};
-
-/**
- * @description The request has succeeded.
- */
-export type IgnoreWindowsCreate200 = CreateIgnoreWindowResponse;
-
-/**
- * @description Server error
- */
-export type IgnoreWindowsCreate500 = ApiError;
-
-export type IgnoreWindowsCreateMutationRequest = CreateIgnoreWindowRequest;
-
-export type IgnoreWindowsCreateMutationResponse = IgnoreWindowsCreate200;
-
-export type IgnoreWindowsCreateMutation = {
-  Response: IgnoreWindowsCreate200;
-  Request: IgnoreWindowsCreateMutationRequest;
-  Errors: IgnoreWindowsCreate500;
-};
-
-export type IgnoreWindowsUpdatePathParams = {
-  /**
-   * @type string
-   */
-  id: string;
-};
-
-/**
- * @description The request has succeeded.
- */
-export type IgnoreWindowsUpdate200 = UpdateIgnoreWindowResponse;
-
-/**
- * @description Server error
- */
-export type IgnoreWindowsUpdate500 = ApiError;
-
-export type IgnoreWindowsUpdateMutationRequest = UpdateIgnoreWindowRequest;
-
-export type IgnoreWindowsUpdateMutationResponse = IgnoreWindowsUpdate200;
-
-export type IgnoreWindowsUpdateMutation = {
-  Response: IgnoreWindowsUpdate200;
-  Request: IgnoreWindowsUpdateMutationRequest;
-  PathParams: IgnoreWindowsUpdatePathParams;
-  Errors: IgnoreWindowsUpdate500;
-};
-
-export type IgnoreWindowsDeletePathParams = {
-  /**
-   * @type string
-   */
-  id: string;
-};
-
-/**
- * @description The request has succeeded.
- */
-export type IgnoreWindowsDelete200 = any;
-
-/**
- * @description Server error
- */
-export type IgnoreWindowsDelete500 = ApiError;
-
-export type IgnoreWindowsDeleteMutationResponse = IgnoreWindowsDelete200;
-
-export type IgnoreWindowsDeleteMutation = {
-  Response: IgnoreWindowsDelete200;
-  PathParams: IgnoreWindowsDeletePathParams;
-  Errors: IgnoreWindowsDelete500;
-};
-
-export type ItemReadsListQueryParams = {
-  /**
-   * @type string | undefined, date-time
-   */
-  since?: string;
-  /**
-   * @type integer | undefined, int32
-   */
-  pageSize?: number;
-  /**
-   * @type string | undefined
-   */
-  pageToken?: string;
-};
-
-/**
- * @description The request has succeeded.
- */
-export type ItemReadsList200 = ListItemReadResponse;
-
-/**
- * @description Server error
- */
-export type ItemReadsList500 = ApiError;
-
-export type ItemReadsListQueryResponse = ItemReadsList200;
-
-export type ItemReadsListQuery = {
-  Response: ItemReadsList200;
-  QueryParams: ItemReadsListQueryParams;
-  Errors: ItemReadsList500;
-};
-
-export type ItemsListQueryParams = {
-  /**
-   * @type string | undefined
-   */
-  feedId?: string;
-  /**
-   * @type boolean | undefined
-   */
-  isRead?: boolean;
-  /**
-   * @type string | undefined
-   */
-  tagId?: string;
-  /**
-   * @type string | undefined, date-time
-   */
-  since?: string;
-  /**
-   * @type integer | undefined, int32
-   */
-  pageSize?: number;
-  /**
-   * @type string | undefined
-   */
-  pageToken?: string;
-};
-
-/**
- * @description The request has succeeded.
- */
-export type ItemsList200 = ListItemsResponse;
-
-/**
- * @description Server error
- */
-export type ItemsList500 = ApiError;
-
-export type ItemsListQueryResponse = ItemsList200;
-
-export type ItemsListQuery = {
-  Response: ItemsList200;
-  QueryParams: ItemsListQueryParams;
-  Errors: ItemsList500;
-};
-
-/**
- * @description The request has succeeded.
- */
-export type ItemsUpdateStatus200 = any;
-
-/**
- * @description Server error
- */
-export type ItemsUpdateStatus500 = ApiError;
-
-export type ItemsUpdateStatusMutationRequest = UpdateItemStatusRequest;
-
-export type ItemsUpdateStatusMutationResponse = ItemsUpdateStatus200;
-
-export type ItemsUpdateStatusMutation = {
-  Response: ItemsUpdateStatus200;
-  Request: ItemsUpdateStatusMutationRequest;
-  Errors: ItemsUpdateStatus500;
-};
-
-export type ItemsGetPathParams = {
-  /**
-   * @type string
-   */
-  id: string;
-};
-
-/**
- * @description The request has succeeded.
- */
-export type ItemsGet200 = GetItemResponse;
-
-/**
- * @description Server error
- */
-export type ItemsGet500 = ApiError;
-
-export type ItemsGetQueryResponse = ItemsGet200;
-
-export type ItemsGetQuery = {
-  Response: ItemsGet200;
-  PathParams: ItemsGetPathParams;
-  Errors: ItemsGet500;
-};
-
-export type TagIgnoreWindowsListQueryParams = {
-  /**
-   * @type string | undefined
-   */
-  tagId?: string;
-  /**
-   * @type string | undefined
-   */
   ignoreWindowId?: string;
 };
 
-/**
- * @description The request has succeeded.
- */
-export type TagIgnoreWindowsList200 = ListTagIgnoreWindowsResponse;
+export type FeedIgnoreWindowsListStatus200 = ListFeedIgnoreWindowsResponse;
+
+export type FeedIgnoreWindowsListStatus500 = ApiError;
+
+export type FeedIgnoreWindowsListOptions = {
+  body?: never;
+  path?: never;
+  query?: FeedIgnoreWindowsListQuery;
+  headers?: never;
+};
+
+export type FeedIgnoreWindowsListResponses = {
+  "200": FeedIgnoreWindowsListStatus200;
+  "500": FeedIgnoreWindowsListStatus500;
+};
 
 /**
- * @description Server error
+ * @description Union of all possible responses
  */
-export type TagIgnoreWindowsList500 = ApiError;
+export type FeedIgnoreWindowsListResponse =
+  | FeedIgnoreWindowsListStatus200
+  | FeedIgnoreWindowsListStatus500;
 
-export type TagIgnoreWindowsListQueryResponse = TagIgnoreWindowsList200;
+export type FeedIgnoreWindowsManageStatus200 = unknown;
+
+export type FeedIgnoreWindowsManageStatus500 = ApiError;
+
+export type FeedIgnoreWindowsManageBody = ManageFeedIgnoreWindowsRequest;
+
+export type FeedIgnoreWindowsManageOptions = {
+  body: FeedIgnoreWindowsManageBody;
+  path?: never;
+  query?: never;
+  headers?: never;
+};
+
+export type FeedIgnoreWindowsManageResponses = {
+  "200": FeedIgnoreWindowsManageStatus200;
+  "500": FeedIgnoreWindowsManageStatus500;
+};
+
+/**
+ * @description Union of all possible responses
+ */
+export type FeedIgnoreWindowsManageResponse =
+  | FeedIgnoreWindowsManageStatus200
+  | FeedIgnoreWindowsManageStatus500;
+
+export type FeedTagsListQuery = {
+  feedId?: string;
+  tagId?: string;
+};
+
+export type FeedTagsListStatus200 = ListFeedTagsResponse;
+
+export type FeedTagsListStatus500 = ApiError;
+
+export type FeedTagsListOptions = {
+  body?: never;
+  path?: never;
+  query?: FeedTagsListQuery;
+  headers?: never;
+};
+
+export type FeedTagsListResponses = {
+  "200": FeedTagsListStatus200;
+  "500": FeedTagsListStatus500;
+};
+
+/**
+ * @description Union of all possible responses
+ */
+export type FeedTagsListResponse =
+  | FeedTagsListStatus200
+  | FeedTagsListStatus500;
+
+export type FeedTagsManageStatus200 = unknown;
+
+export type FeedTagsManageStatus500 = ApiError;
+
+export type FeedTagsManageBody = ManageFeedTagsRequest;
+
+export type FeedTagsManageOptions = {
+  body: FeedTagsManageBody;
+  path?: never;
+  query?: never;
+  headers?: never;
+};
+
+export type FeedTagsManageResponses = {
+  "200": FeedTagsManageStatus200;
+  "500": FeedTagsManageStatus500;
+};
+
+/**
+ * @description Union of all possible responses
+ */
+export type FeedTagsManageResponse =
+  | FeedTagsManageStatus200
+  | FeedTagsManageStatus500;
+
+export type FeedsListQuery = {
+  tagId?: string;
+};
+
+export type FeedsListStatus200 = ListFeedsResponse;
+
+export type FeedsListStatus500 = ApiError;
+
+export type FeedsListOptions = {
+  body?: never;
+  path?: never;
+  query?: FeedsListQuery;
+  headers?: never;
+};
+
+export type FeedsListResponses = {
+  "200": FeedsListStatus200;
+  "500": FeedsListStatus500;
+};
+
+/**
+ * @description Union of all possible responses
+ */
+export type FeedsListResponse = FeedsListStatus200 | FeedsListStatus500;
+
+export type FeedsCreateStatus200 = CreateFeedResponse;
+
+export type FeedsCreateStatus500 = ApiError;
+
+export type FeedsCreateBody = CreateFeedRequest;
+
+export type FeedsCreateOptions = {
+  body: FeedsCreateBody;
+  path?: never;
+  query?: never;
+  headers?: never;
+};
+
+export type FeedsCreateResponses = {
+  "200": FeedsCreateStatus200;
+  "500": FeedsCreateStatus500;
+};
+
+/**
+ * @description Union of all possible responses
+ */
+export type FeedsCreateResponse = FeedsCreateStatus200 | FeedsCreateStatus500;
+
+export type FeedsExportOpmlStatus200 = ExportOpmlResponse;
+
+export type FeedsExportOpmlStatus500 = ApiError;
+
+export type FeedsExportOpmlBody = ExportOpmlRequest;
+
+export type FeedsExportOpmlOptions = {
+  body: FeedsExportOpmlBody;
+  path?: never;
+  query?: never;
+  headers?: never;
+};
+
+export type FeedsExportOpmlResponses = {
+  "200": FeedsExportOpmlStatus200;
+  "500": FeedsExportOpmlStatus500;
+};
+
+/**
+ * @description Union of all possible responses
+ */
+export type FeedsExportOpmlResponse =
+  | FeedsExportOpmlStatus200
+  | FeedsExportOpmlStatus500;
+
+export type FeedsImportOpmlStatus200 = ImportOpmlResponse;
+
+export type FeedsImportOpmlStatus500 = ApiError;
+
+export type FeedsImportOpmlBody = ImportOpmlRequest;
+
+export type FeedsImportOpmlOptions = {
+  body: FeedsImportOpmlBody;
+  path?: never;
+  query?: never;
+  headers?: never;
+};
+
+export type FeedsImportOpmlResponses = {
+  "200": FeedsImportOpmlStatus200;
+  "500": FeedsImportOpmlStatus500;
+};
+
+/**
+ * @description Union of all possible responses
+ */
+export type FeedsImportOpmlResponse =
+  | FeedsImportOpmlStatus200
+  | FeedsImportOpmlStatus500;
+
+export type FeedsRefreshStatus200 = RefreshFeedsResponse;
+
+export type FeedsRefreshStatus500 = ApiError;
+
+export type FeedsRefreshBody = RefreshFeedsRequest;
+
+export type FeedsRefreshOptions = {
+  body: FeedsRefreshBody;
+  path?: never;
+  query?: never;
+  headers?: never;
+};
+
+export type FeedsRefreshResponses = {
+  "200": FeedsRefreshStatus200;
+  "500": FeedsRefreshStatus500;
+};
+
+/**
+ * @description Union of all possible responses
+ */
+export type FeedsRefreshResponse =
+  | FeedsRefreshStatus200
+  | FeedsRefreshStatus500;
+
+export type FeedsSuspendStatus200 = unknown;
+
+export type FeedsSuspendStatus500 = ApiError;
+
+export type FeedsSuspendBody = SuspendFeedsRequest;
+
+export type FeedsSuspendOptions = {
+  body: FeedsSuspendBody;
+  path?: never;
+  query?: never;
+  headers?: never;
+};
+
+export type FeedsSuspendResponses = {
+  "200": FeedsSuspendStatus200;
+  "500": FeedsSuspendStatus500;
+};
+
+/**
+ * @description Union of all possible responses
+ */
+export type FeedsSuspendResponse =
+  | FeedsSuspendStatus200
+  | FeedsSuspendStatus500;
+
+export type FeedsDeletePath = {
+  id: string;
+};
+
+export type FeedsDeleteStatus200 = unknown;
+
+export type FeedsDeleteStatus500 = ApiError;
+
+export type FeedsDeleteOptions = {
+  body?: never;
+  path: FeedsDeletePath;
+  query?: never;
+  headers?: never;
+};
+
+export type FeedsDeleteResponses = {
+  "200": FeedsDeleteStatus200;
+  "500": FeedsDeleteStatus500;
+};
+
+/**
+ * @description Union of all possible responses
+ */
+export type FeedsDeleteResponse = FeedsDeleteStatus200 | FeedsDeleteStatus500;
+
+export type IgnoreWindowsListStatus200 = ListIgnoreWindowsResponse;
+
+export type IgnoreWindowsListStatus500 = ApiError;
+
+export type IgnoreWindowsListOptions = {
+  body?: never;
+  path?: never;
+  query?: never;
+  headers?: never;
+};
+
+export type IgnoreWindowsListResponses = {
+  "200": IgnoreWindowsListStatus200;
+  "500": IgnoreWindowsListStatus500;
+};
+
+/**
+ * @description Union of all possible responses
+ */
+export type IgnoreWindowsListResponse =
+  | IgnoreWindowsListStatus200
+  | IgnoreWindowsListStatus500;
+
+export type IgnoreWindowsCreateStatus200 = CreateIgnoreWindowResponse;
+
+export type IgnoreWindowsCreateStatus500 = ApiError;
+
+export type IgnoreWindowsCreateBody = CreateIgnoreWindowRequest;
+
+export type IgnoreWindowsCreateOptions = {
+  body: IgnoreWindowsCreateBody;
+  path?: never;
+  query?: never;
+  headers?: never;
+};
+
+export type IgnoreWindowsCreateResponses = {
+  "200": IgnoreWindowsCreateStatus200;
+  "500": IgnoreWindowsCreateStatus500;
+};
+
+/**
+ * @description Union of all possible responses
+ */
+export type IgnoreWindowsCreateResponse =
+  | IgnoreWindowsCreateStatus200
+  | IgnoreWindowsCreateStatus500;
+
+export type IgnoreWindowsUpdatePath = {
+  id: string;
+};
+
+export type IgnoreWindowsUpdateStatus200 = UpdateIgnoreWindowResponse;
+
+export type IgnoreWindowsUpdateStatus500 = ApiError;
+
+export type IgnoreWindowsUpdateBody = UpdateIgnoreWindowRequest;
+
+export type IgnoreWindowsUpdateOptions = {
+  body: IgnoreWindowsUpdateBody;
+  path: IgnoreWindowsUpdatePath;
+  query?: never;
+  headers?: never;
+};
+
+export type IgnoreWindowsUpdateResponses = {
+  "200": IgnoreWindowsUpdateStatus200;
+  "500": IgnoreWindowsUpdateStatus500;
+};
+
+/**
+ * @description Union of all possible responses
+ */
+export type IgnoreWindowsUpdateResponse =
+  | IgnoreWindowsUpdateStatus200
+  | IgnoreWindowsUpdateStatus500;
+
+export type IgnoreWindowsDeletePath = {
+  id: string;
+};
+
+export type IgnoreWindowsDeleteStatus200 = unknown;
+
+export type IgnoreWindowsDeleteStatus500 = ApiError;
+
+export type IgnoreWindowsDeleteOptions = {
+  body?: never;
+  path: IgnoreWindowsDeletePath;
+  query?: never;
+  headers?: never;
+};
+
+export type IgnoreWindowsDeleteResponses = {
+  "200": IgnoreWindowsDeleteStatus200;
+  "500": IgnoreWindowsDeleteStatus500;
+};
+
+/**
+ * @description Union of all possible responses
+ */
+export type IgnoreWindowsDeleteResponse =
+  | IgnoreWindowsDeleteStatus200
+  | IgnoreWindowsDeleteStatus500;
+
+export type ItemReadsListQuery = {
+  /**
+   * @description
+   * Format: `date-time`
+   * @type string | undefined
+   */
+  since?: string;
+  /**
+   * @description
+   * Format: `int32`
+   * @type integer | undefined
+   */
+  pageSize?: number;
+  pageToken?: string;
+};
+
+export type ItemReadsListStatus200 = ListItemReadResponse;
+
+export type ItemReadsListStatus500 = ApiError;
+
+export type ItemReadsListOptions = {
+  body?: never;
+  path?: never;
+  query?: ItemReadsListQuery;
+  headers?: never;
+};
+
+export type ItemReadsListResponses = {
+  "200": ItemReadsListStatus200;
+  "500": ItemReadsListStatus500;
+};
+
+/**
+ * @description Union of all possible responses
+ */
+export type ItemReadsListResponse =
+  | ItemReadsListStatus200
+  | ItemReadsListStatus500;
+
+export type ItemsListQuery = {
+  feedId?: string;
+  isRead?: boolean;
+  tagId?: string;
+  /**
+   * @description
+   * Format: `date-time`
+   * @type string | undefined
+   */
+  since?: string;
+  /**
+   * @description
+   * Format: `int32`
+   * @type integer | undefined
+   */
+  pageSize?: number;
+  pageToken?: string;
+};
+
+export type ItemsListStatus200 = ListItemsResponse;
+
+export type ItemsListStatus500 = ApiError;
+
+export type ItemsListOptions = {
+  body?: never;
+  path?: never;
+  query?: ItemsListQuery;
+  headers?: never;
+};
+
+export type ItemsListResponses = {
+  "200": ItemsListStatus200;
+  "500": ItemsListStatus500;
+};
+
+/**
+ * @description Union of all possible responses
+ */
+export type ItemsListResponse = ItemsListStatus200 | ItemsListStatus500;
+
+export type ItemsUpdateStatusStatus200 = unknown;
+
+export type ItemsUpdateStatusStatus500 = ApiError;
+
+export type ItemsUpdateStatusBody = UpdateItemStatusRequest;
+
+export type ItemsUpdateStatusOptions = {
+  body: ItemsUpdateStatusBody;
+  path?: never;
+  query?: never;
+  headers?: never;
+};
+
+export type ItemsUpdateStatusResponses = {
+  "200": ItemsUpdateStatusStatus200;
+  "500": ItemsUpdateStatusStatus500;
+};
+
+/**
+ * @description Union of all possible responses
+ */
+export type ItemsUpdateStatusResponse =
+  | ItemsUpdateStatusStatus200
+  | ItemsUpdateStatusStatus500;
+
+export type ItemsGetPath = {
+  id: string;
+};
+
+export type ItemsGetStatus200 = GetItemResponse;
+
+export type ItemsGetStatus500 = ApiError;
+
+export type ItemsGetOptions = {
+  body?: never;
+  path: ItemsGetPath;
+  query?: never;
+  headers?: never;
+};
+
+export type ItemsGetResponses = {
+  "200": ItemsGetStatus200;
+  "500": ItemsGetStatus500;
+};
+
+/**
+ * @description Union of all possible responses
+ */
+export type ItemsGetResponse = ItemsGetStatus200 | ItemsGetStatus500;
 
 export type TagIgnoreWindowsListQuery = {
-  Response: TagIgnoreWindowsList200;
-  QueryParams: TagIgnoreWindowsListQueryParams;
-  Errors: TagIgnoreWindowsList500;
+  tagId?: string;
+  ignoreWindowId?: string;
+};
+
+export type TagIgnoreWindowsListStatus200 = ListTagIgnoreWindowsResponse;
+
+export type TagIgnoreWindowsListStatus500 = ApiError;
+
+export type TagIgnoreWindowsListOptions = {
+  body?: never;
+  path?: never;
+  query?: TagIgnoreWindowsListQuery;
+  headers?: never;
+};
+
+export type TagIgnoreWindowsListResponses = {
+  "200": TagIgnoreWindowsListStatus200;
+  "500": TagIgnoreWindowsListStatus500;
 };
 
 /**
- * @description The request has succeeded.
+ * @description Union of all possible responses
  */
-export type TagIgnoreWindowsManage200 = any;
+export type TagIgnoreWindowsListResponse =
+  | TagIgnoreWindowsListStatus200
+  | TagIgnoreWindowsListStatus500;
 
-/**
- * @description Server error
- */
-export type TagIgnoreWindowsManage500 = ApiError;
+export type TagIgnoreWindowsManageStatus200 = unknown;
 
-export type TagIgnoreWindowsManageMutationRequest =
-  ManageTagIgnoreWindowsRequest;
+export type TagIgnoreWindowsManageStatus500 = ApiError;
 
-export type TagIgnoreWindowsManageMutationResponse = TagIgnoreWindowsManage200;
+export type TagIgnoreWindowsManageBody = ManageTagIgnoreWindowsRequest;
 
-export type TagIgnoreWindowsManageMutation = {
-  Response: TagIgnoreWindowsManage200;
-  Request: TagIgnoreWindowsManageMutationRequest;
-  Errors: TagIgnoreWindowsManage500;
+export type TagIgnoreWindowsManageOptions = {
+  body: TagIgnoreWindowsManageBody;
+  path?: never;
+  query?: never;
+  headers?: never;
+};
+
+export type TagIgnoreWindowsManageResponses = {
+  "200": TagIgnoreWindowsManageStatus200;
+  "500": TagIgnoreWindowsManageStatus500;
 };
 
 /**
- * @description The request has succeeded.
+ * @description Union of all possible responses
  */
-export type TagsList200 = ListTagsResponse;
+export type TagIgnoreWindowsManageResponse =
+  | TagIgnoreWindowsManageStatus200
+  | TagIgnoreWindowsManageStatus500;
 
-/**
- * @description Server error
- */
-export type TagsList500 = ApiError;
+export type TagsListStatus200 = ListTagsResponse;
 
-export type TagsListQueryResponse = TagsList200;
+export type TagsListStatus500 = ApiError;
 
-export type TagsListQuery = {
-  Response: TagsList200;
-  Errors: TagsList500;
+export type TagsListOptions = {
+  body?: never;
+  path?: never;
+  query?: never;
+  headers?: never;
+};
+
+export type TagsListResponses = {
+  "200": TagsListStatus200;
+  "500": TagsListStatus500;
 };
 
 /**
- * @description The request has succeeded.
+ * @description Union of all possible responses
  */
-export type TagsCreate200 = CreateTagResponse;
+export type TagsListResponse = TagsListStatus200 | TagsListStatus500;
 
-/**
- * @description Server error
- */
-export type TagsCreate500 = ApiError;
+export type TagsCreateStatus200 = CreateTagResponse;
 
-export type TagsCreateMutationRequest = CreateTagRequest;
+export type TagsCreateStatus500 = ApiError;
 
-export type TagsCreateMutationResponse = TagsCreate200;
+export type TagsCreateBody = CreateTagRequest;
 
-export type TagsCreateMutation = {
-  Response: TagsCreate200;
-  Request: TagsCreateMutationRequest;
-  Errors: TagsCreate500;
+export type TagsCreateOptions = {
+  body: TagsCreateBody;
+  path?: never;
+  query?: never;
+  headers?: never;
 };
 
-export type TagsDeletePathParams = {
-  /**
-   * @type string
-   */
+export type TagsCreateResponses = {
+  "200": TagsCreateStatus200;
+  "500": TagsCreateStatus500;
+};
+
+/**
+ * @description Union of all possible responses
+ */
+export type TagsCreateResponse = TagsCreateStatus200 | TagsCreateStatus500;
+
+export type TagsDeletePath = {
   id: string;
 };
 
-/**
- * @description The request has succeeded.
- */
-export type TagsDelete200 = any;
+export type TagsDeleteStatus200 = unknown;
 
-/**
- * @description Server error
- */
-export type TagsDelete500 = ApiError;
+export type TagsDeleteStatus500 = ApiError;
 
-export type TagsDeleteMutationResponse = TagsDelete200;
+export type TagsDeleteOptions = {
+  body?: never;
+  path: TagsDeletePath;
+  query?: never;
+  headers?: never;
+};
 
-export type TagsDeleteMutation = {
-  Response: TagsDelete200;
-  PathParams: TagsDeletePathParams;
-  Errors: TagsDelete500;
+export type TagsDeleteResponses = {
+  "200": TagsDeleteStatus200;
+  "500": TagsDeleteStatus500;
 };
 
 /**
- * @description The request has succeeded.
+ * @description Union of all possible responses
  */
-export type URLRulesList200 = ListURLParsingRulesResponse;
+export type TagsDeleteResponse = TagsDeleteStatus200 | TagsDeleteStatus500;
 
-/**
- * @description Server error
- */
-export type URLRulesList500 = ApiError;
+export type URLRulesListStatus200 = ListURLParsingRulesResponse;
 
-export type URLRulesListQueryResponse = URLRulesList200;
+export type URLRulesListStatus500 = ApiError;
 
-export type URLRulesListQuery = {
-  Response: URLRulesList200;
-  Errors: URLRulesList500;
+export type URLRulesListOptions = {
+  body?: never;
+  path?: never;
+  query?: never;
+  headers?: never;
+};
+
+export type URLRulesListResponses = {
+  "200": URLRulesListStatus200;
+  "500": URLRulesListStatus500;
 };
 
 /**
- * @description The request has succeeded.
+ * @description Union of all possible responses
  */
-export type URLRulesAdd200 = AddURLParsingRuleResponse;
+export type URLRulesListResponse =
+  | URLRulesListStatus200
+  | URLRulesListStatus500;
 
-/**
- * @description Server error
- */
-export type URLRulesAdd500 = ApiError;
+export type URLRulesAddStatus200 = AddURLParsingRuleResponse;
 
-export type URLRulesAddMutationRequest = AddURLParsingRuleRequest;
+export type URLRulesAddStatus500 = ApiError;
 
-export type URLRulesAddMutationResponse = URLRulesAdd200;
+export type URLRulesAddBody = AddURLParsingRuleRequest;
 
-export type URLRulesAddMutation = {
-  Response: URLRulesAdd200;
-  Request: URLRulesAddMutationRequest;
-  Errors: URLRulesAdd500;
+export type URLRulesAddOptions = {
+  body: URLRulesAddBody;
+  path?: never;
+  query?: never;
+  headers?: never;
 };
 
-export type URLRulesDeletePathParams = {
-  /**
-   * @type string
-   */
+export type URLRulesAddResponses = {
+  "200": URLRulesAddStatus200;
+  "500": URLRulesAddStatus500;
+};
+
+/**
+ * @description Union of all possible responses
+ */
+export type URLRulesAddResponse = URLRulesAddStatus200 | URLRulesAddStatus500;
+
+export type URLRulesDeletePath = {
   id: string;
 };
 
-/**
- * @description The request has succeeded.
- */
-export type URLRulesDelete200 = any;
+export type URLRulesDeleteStatus200 = unknown;
 
-/**
- * @description Server error
- */
-export type URLRulesDelete500 = ApiError;
+export type URLRulesDeleteStatus500 = ApiError;
 
-export type URLRulesDeleteMutationResponse = URLRulesDelete200;
-
-export type URLRulesDeleteMutation = {
-  Response: URLRulesDelete200;
-  PathParams: URLRulesDeletePathParams;
-  Errors: URLRulesDelete500;
+export type URLRulesDeleteOptions = {
+  body?: never;
+  path: URLRulesDeletePath;
+  query?: never;
+  headers?: never;
 };
+
+export type URLRulesDeleteResponses = {
+  "200": URLRulesDeleteStatus200;
+  "500": URLRulesDeleteStatus500;
+};
+
+/**
+ * @description Union of all possible responses
+ */
+export type URLRulesDeleteResponse =
+  | URLRulesDeleteStatus200
+  | URLRulesDeleteStatus500;

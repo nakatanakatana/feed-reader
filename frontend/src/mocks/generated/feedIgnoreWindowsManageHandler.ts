@@ -4,13 +4,15 @@
  */
 
 import type {
-  FeedIgnoreWindowsManageMutationResponse,
-  FeedIgnoreWindowsManage500,
-} from "../../lib/api/types-generated.ts";
+  FeedIgnoreWindowsManageResponse,
+  FeedIgnoreWindowsManageStatus500,
+  FeedIgnoreWindowsManageBody,
+} from "../../lib/api/types-generated";
+import type { HttpResponseResolver } from "msw";
 import { http } from "msw";
 
 export function feedIgnoreWindowsManageHandlerResponse200(
-  data?: FeedIgnoreWindowsManageMutationResponse,
+  data?: FeedIgnoreWindowsManageResponse,
 ) {
   return new Response(JSON.stringify(data), {
     status: 200,
@@ -18,7 +20,7 @@ export function feedIgnoreWindowsManageHandlerResponse200(
 }
 
 export function feedIgnoreWindowsManageHandlerResponse500(
-  data: FeedIgnoreWindowsManage500,
+  data: FeedIgnoreWindowsManageStatus500,
 ) {
   return new Response(JSON.stringify(data), {
     status: 500,
@@ -35,11 +37,9 @@ export function feedIgnoreWindowsManageHandler(
     | boolean
     | null
     | object
-    | ((
-        info: Parameters<Parameters<typeof http.post>[1]>[0],
-      ) => Response | Promise<Response>),
+    | HttpResponseResolver<Record<string, string>, FeedIgnoreWindowsManageBody>,
 ) {
-  return http.post(
+  return http.post<Record<string, string>, FeedIgnoreWindowsManageBody>(
     `*/api/v2/feed-ignore-windows/manage`,
     function handler(info) {
       if (typeof data === "function") return data(info);

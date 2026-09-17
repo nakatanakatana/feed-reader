@@ -3,41 +3,37 @@
  * Do not edit manually.
  */
 
-import fetch from "../../kubb-client.ts";
+import type { Options, UnwrappedResult } from "../../.kubb/client";
 import type {
-  Client,
-  RequestConfig,
-  ResponseErrorConfig,
-} from "../../kubb-client.ts";
-import type {
-  ItemsListQueryResponse,
-  ItemsListQueryParams,
-  ItemsList500,
-} from "../../types-generated.ts";
-
-function getItemsListUrl() {
-  const res = { method: "GET", url: `/api/v2/items` as const };
-  return res;
-}
+  ItemsListOptions,
+  ItemsListResponses,
+} from "../../types-generated";
+import { client, unwrapResult } from "../../.kubb/client";
 
 /**
  * {@link /items}
  */
-export async function itemsList(
-  params?: ItemsListQueryParams,
-  config: Partial<RequestConfig> & { client?: Client } = {},
-) {
-  const { client: request = fetch, ...requestConfig } = config;
+export function itemsList<ThrowOnError extends boolean = true>(
+  options: Options<ItemsListOptions, ThrowOnError> = {},
+): Promise<UnwrappedResult<ItemsListResponses, ThrowOnError>> {
+  const { client: request = client, ...config } = options;
 
-  const res = await request<
-    ItemsListQueryResponse,
-    ResponseErrorConfig<ItemsList500>,
-    unknown
-  >({
-    method: "GET",
-    url: getItemsListUrl().url.toString(),
-    params,
-    ...requestConfig,
-  });
-  return res.data;
+  return unwrapResult(
+    request({
+      method: "GET",
+      url: "/items",
+      styles: {
+        query: {
+          feedId: { explode: false },
+          isRead: { explode: false },
+          tagId: { explode: false },
+          since: { explode: false },
+          pageSize: { explode: false },
+          pageToken: { explode: false },
+        },
+      },
+      ...config,
+    }),
+    config.throwOnError,
+  ) as Promise<UnwrappedResult<ItemsListResponses, ThrowOnError>>;
 }

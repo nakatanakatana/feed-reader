@@ -3,45 +3,23 @@
  * Do not edit manually.
  */
 
-import fetch from "../../kubb-client.ts";
+import type { Options, UnwrappedResult } from "../../.kubb/client";
 import type {
-  Client,
-  RequestConfig,
-  ResponseErrorConfig,
-} from "../../kubb-client.ts";
-import type {
-  FeedsSuspendMutationRequest,
-  FeedsSuspendMutationResponse,
-  FeedsSuspend500,
-} from "../../types-generated.ts";
-
-function getFeedsSuspendUrl() {
-  const res = { method: "POST", url: `/api/v2/feeds/suspend` as const };
-  return res;
-}
+  FeedsSuspendOptions,
+  FeedsSuspendResponses,
+} from "../../types-generated";
+import { client, unwrapResult } from "../../.kubb/client";
 
 /**
  * {@link /feeds/suspend}
  */
-export async function feedsSuspend(
-  data: FeedsSuspendMutationRequest,
-  config: Partial<RequestConfig<FeedsSuspendMutationRequest>> & {
-    client?: Client;
-  } = {},
-) {
-  const { client: request = fetch, ...requestConfig } = config;
+export function feedsSuspend<ThrowOnError extends boolean = true>(
+  options: Options<FeedsSuspendOptions, ThrowOnError>,
+): Promise<UnwrappedResult<FeedsSuspendResponses, ThrowOnError>> {
+  const { client: request = client, ...config } = options;
 
-  const requestData = data;
-
-  const res = await request<
-    FeedsSuspendMutationResponse,
-    ResponseErrorConfig<FeedsSuspend500>,
-    FeedsSuspendMutationRequest
-  >({
-    method: "POST",
-    url: getFeedsSuspendUrl().url.toString(),
-    data: requestData,
-    ...requestConfig,
-  });
-  return res.data;
+  return unwrapResult(
+    request({ method: "POST", url: "/feeds/suspend", ...config }),
+    config.throwOnError,
+  ) as Promise<UnwrappedResult<FeedsSuspendResponses, ThrowOnError>>;
 }
