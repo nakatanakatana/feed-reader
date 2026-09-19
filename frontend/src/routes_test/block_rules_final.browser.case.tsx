@@ -53,9 +53,11 @@ describe("Block Rules Final Integration", () => {
         return HttpResponse.json(toJson(ListItemBlockRulesResponseSchema, msg));
       }),
       // Mock other required requests to avoid noise
-      http.all("*/api/v2/items", () => HttpResponse.json({})),
-      http.all("*/api/v2/tags", () => HttpResponse.json({})),
-      http.all("*/api/v2/feed-tags", () => HttpResponse.json({})),
+      http.all("*/api/v2/items", () =>
+        HttpResponse.json({ items: [], nextPageToken: "" }),
+      ),
+      http.all("*/api/v2/tags", () => HttpResponse.json({ tags: [] })),
+      http.all("*/api/v2/feed-tags", () => HttpResponse.json({ feedTags: [] })),
     );
 
     const history = createMemoryHistory({ initialEntries: ["/block-rules"] });

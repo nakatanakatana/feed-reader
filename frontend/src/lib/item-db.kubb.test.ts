@@ -2,11 +2,11 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { HttpResponse, http } from "msw";
 import { setLastFetched, setLastReadFetched } from "./item-sync-state";
 import { queryClient } from "./query";
-import { worker } from "../mocks/browser";
+import { server } from "../test-utils/api-server";
 
 describe("item-db kubb integration", () => {
   afterEach(() => {
-    worker.resetHandlers();
+    server.resetHandlers();
   });
 
   beforeEach(() => {
@@ -17,7 +17,7 @@ describe("item-db kubb integration", () => {
   });
 
   it("getItemsQueryOptions.queryFn fetches via itemsList", async () => {
-    worker.use(
+    server.use(
       http.get("*/api/v2/items", () =>
         HttpResponse.json({
           items: [
@@ -48,7 +48,7 @@ describe("item-db kubb integration", () => {
   });
 
   it("getItem delegates fetch to itemsGet", async () => {
-    worker.use(
+    server.use(
       http.get("*/api/v2/items/item-1", () =>
         HttpResponse.json({
           item: {
@@ -84,7 +84,7 @@ describe("item-db kubb integration", () => {
   });
 
   it("updateItemStatus sends mutation through itemsUpdateStatus", async () => {
-    worker.use(http.post("*/api/v2/items/status", () => HttpResponse.json({})));
+    server.use(http.post("*/api/v2/items/status", () => HttpResponse.json({})));
 
     const queryKey = ["items", { since: "30d", showRead: false }] as const;
     queryClient.setQueryData(queryKey, [
