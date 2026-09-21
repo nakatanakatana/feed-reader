@@ -111,33 +111,33 @@
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/k1LoW/octocov/v0.80.0/octocov_v0.80.0_darwin_amd64.zip",
-      "checksum": "69436D1C94FD65503C31FC1E08D96DF09B2D0D8BCB6CDF4B311C71FD907D8C24",
+      "id": "github_release/github.com/k1LoW/octocov/v0.80.1/octocov_v0.80.1_darwin_amd64.zip",
+      "checksum": "17B8B199709C9D043D039F54CA70C22F1D824224112AEC6B891F75F76F6BD43A",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/k1LoW/octocov/v0.80.0/octocov_v0.80.0_darwin_arm64.zip",
-      "checksum": "13B2D6F06E828A1C04AE94B64F9BB4AC9A7A33053B672E454B5562FF4729F6E7",
+      "id": "github_release/github.com/k1LoW/octocov/v0.80.1/octocov_v0.80.1_darwin_arm64.zip",
+      "checksum": "E5E57A9AA5F92DE6F820E3AD53ABFFF36CD585CDFBA51253974D4B1EAABFEE8F",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/k1LoW/octocov/v0.80.0/octocov_v0.80.0_linux_amd64.tar.gz",
-      "checksum": "AAA7C95AF41A303407EC248A73A6CF9D0C0E8843C14E30F215AAC06C7E402B95",
+      "id": "github_release/github.com/k1LoW/octocov/v0.80.1/octocov_v0.80.1_linux_amd64.tar.gz",
+      "checksum": "012C652747DAEF1631A3D2F5613CCB40347411B007049518F191D24C1D7BC850",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/k1LoW/octocov/v0.80.0/octocov_v0.80.0_linux_arm64.tar.gz",
-      "checksum": "54E6FF13C4724D8294E9D07DD707CDF548270A483824871D1B0820F0DD902733",
+      "id": "github_release/github.com/k1LoW/octocov/v0.80.1/octocov_v0.80.1_linux_arm64.tar.gz",
+      "checksum": "6EB4499234C511484331058AA424299DD58282A7BB740356ACCB55C20477D7A1",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/k1LoW/octocov/v0.80.0/octocov_v0.80.0_windows_amd64.zip",
-      "checksum": "D613090F0FA2541B4DA4AB7A7056039D885CFE3ADA2A441278DAF2EC4DD0532F",
+      "id": "github_release/github.com/k1LoW/octocov/v0.80.1/octocov_v0.80.1_windows_amd64.zip",
+      "checksum": "E31F94A8F482C4749AA263DF8B4CBFF4E6E1DD48DDE690CAD3E7C1900EC8BF42",
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/k1LoW/octocov/v0.80.0/octocov_v0.80.0_windows_arm64.zip",
-      "checksum": "2BFEABDD30328EB980FEDCA502C6C88C54F56F333E535D59FED7AF33D7C93D93",
+      "id": "github_release/github.com/k1LoW/octocov/v0.80.1/octocov_v0.80.1_windows_arm64.zip",
+      "checksum": "53440F2526F584C00C2DFFE89504C0FDBA0069C7CC5E9C5493D5D7C7EA742DDA",
       "algorithm": "sha256"
     },
     {
