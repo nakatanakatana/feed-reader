@@ -1,0 +1,1 @@
+import "../otel.browser.case";

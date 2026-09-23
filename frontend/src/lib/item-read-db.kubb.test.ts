@@ -2,11 +2,11 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { HttpResponse, http } from "msw";
 import { setLastReadFetched } from "./item-sync-state";
 import { queryClient } from "./query";
-import { worker } from "../mocks/browser";
+import { server } from "../test-utils/api-server";
 
 describe("item-read-db kubb integration", () => {
   afterEach(() => {
-    worker.resetHandlers();
+    server.resetHandlers();
   });
 
   beforeEach(() => {
@@ -17,7 +17,7 @@ describe("item-read-db kubb integration", () => {
 
   it("itemReadQueryOptions.queryFn fetches via itemReadsList with paging", async () => {
     let callCount = 0;
-    worker.use(
+    server.use(
       http.get("*/api/v2/item-reads", ({ request }) => {
         callCount += 1;
         const url = new URL(request.url);
@@ -61,7 +61,7 @@ describe("item-read-db kubb integration", () => {
   });
 
   it("updateItemReadStatus sends mutation through itemsUpdateStatus", async () => {
-    worker.use(http.post("*/api/v2/items/status", () => HttpResponse.json({})));
+    server.use(http.post("*/api/v2/items/status", () => HttpResponse.json({})));
 
     const { updateItemReadStatus } = await import("./item-read-db");
     await updateItemReadStatus(["item-1", "item-2"], true);

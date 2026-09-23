@@ -7,6 +7,8 @@
     "frontend/src/lib/api/types-generated.ts",
     "**/*.test.ts",
     "**/*.test.tsx",
+    "**/*.browser.case.ts",
+    "**/*.browser.case.tsx",
     "frontend/src/test-utils/**",
     "frontend/src/mocks/**",
     "frontend/src/vitest-setup.ts"

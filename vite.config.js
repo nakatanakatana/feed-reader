@@ -55,6 +55,25 @@ const jsdomUnitTests = [
   "src/pwa-registration.test.ts",
 ];
 
+// Exercise real API clients and handlers without starting Chromium or a worker.
+const apiUnitTests = [
+  "src/lib/block-db.kubb.test.ts",
+  "src/lib/block-db.test.ts",
+  "src/lib/feed-db.kubb.test.ts",
+  "src/lib/item-db.kubb.test.ts",
+  "src/lib/item-read-db.kubb.test.ts",
+  "src/lib/tag-db.kubb.test.ts",
+  "src/mocks/handlers.test.ts",
+];
+
+const nodeUnitTests = [
+  "src/**/*.node.test.{ts,tsx}",
+  "src/lib/api/generated.smoke.test.ts",
+  "src/mocks/db.test.ts",
+  "src/mocks/handlers.compose.test.ts",
+  "src/test-utils/openapi-fixtures.test.ts",
+];
+
 // https://vitejs.dev/config/
 export default defineConfig({
   root: "frontend",
@@ -154,6 +173,7 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       reporter: ["lcov"],
+      exclude: ["src/**/*.browser.case.{ts,tsx}"],
     },
     projects: [
       // Only include browser project if playwright is available
@@ -201,7 +221,8 @@ export default defineConfig({
                   },
                 },
                 exclude: [
-                  "src/**/*.node.test.{ts,tsx}",
+                  ...nodeUnitTests,
+                  ...apiUnitTests,
                   ...jsdomUnitTests,
                   "**/node_modules/**",
                   "**/dist/**",
@@ -209,7 +230,7 @@ export default defineConfig({
                   "**/.{idea,git,cache,output,temp}/**",
                   "**/{karma,rollup,webpack,vite,vitest}.config.*",
                 ],
-                include: ["src/**/*.test.{ts,tsx}"],
+                include: ["src/browser-tests/**/*.test.ts"],
                 setupFiles: ["./src/vitest-setup.ts"],
                 globals: true,
               },
@@ -231,13 +252,26 @@ export default defineConfig({
       {
         extends: true,
         test: {
+          name: "api",
+          // MSW resolves the clients' relative URLs against the jsdom location.
+          environment: "jsdom",
+          setupFiles: ["./src/vitest-api-setup.ts"],
+          restoreMocks: true,
+          mockReset: true,
+          globals: true,
+          include: apiUnitTests,
+        },
+      },
+      {
+        extends: true,
+        test: {
           name: "node",
           environment: "node",
           isolate: false,
           restoreMocks: true,
           mockReset: true,
           globals: true,
-          include: ["src/**/*.node.test.{ts,tsx}"],
+          include: nodeUnitTests,
         },
       },
     ],
