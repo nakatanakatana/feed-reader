@@ -464,7 +464,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                   {
                     ruleType: "user",
                     value: formattedAuthor,
-                    domain: targetDomain ?? "",
+                    domain: "",
                   },
                 ],
               });

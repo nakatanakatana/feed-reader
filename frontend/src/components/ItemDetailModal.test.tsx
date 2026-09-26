@@ -374,7 +374,7 @@ describe("ItemDetailModal", () => {
           {
             ruleType: "user",
             value: "Test Author",
-            domain: "example.com",
+            domain: "",
           },
         ],
       });

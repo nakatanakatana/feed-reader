@@ -8,12 +8,17 @@ import (
 
 // CleanAuthor extracts readable text from an author string, stripping XML/HTML tags if present.
 func CleanAuthor(author string) string {
-	trimmed := strings.TrimSpace(author)
-	if !strings.Contains(trimmed, "<") || !strings.Contains(trimmed, ">") {
-		return trimmed
+	fields := strings.Fields(author)
+	if len(fields) == 0 {
+		return ""
+	}
+	normalized := strings.Join(fields, " ")
+	if !strings.Contains(normalized, "<") || !strings.Contains(normalized, ">") {
+		return normalized
 	}
 
-	decoder := xml.NewDecoder(strings.NewReader("<root>" + trimmed + "</root>"))
+	decoder := xml.NewDecoder(strings.NewReader("<root>" + normalized + "</root>"))
+	decoder.Entity = xml.HTMLEntity
 	var parts []string
 	for {
 		token, err := decoder.Token()
@@ -21,19 +26,18 @@ func CleanAuthor(author string) string {
 			if err == io.EOF {
 				break
 			}
-			// Fallback to trimmed original string if XML is malformed
-			return trimmed
+			// Fallback to normalized original string if XML is malformed
+			return normalized
 		}
 		if charData, ok := token.(xml.CharData); ok {
-			text := strings.TrimSpace(string(charData))
-			if text != "" {
-				parts = append(parts, text)
+			for _, f := range strings.Fields(string(charData)) {
+				parts = append(parts, f)
 			}
 		}
 	}
 
 	if len(parts) == 0 {
-		return trimmed
+		return ""
 	}
 	return strings.Join(parts, " ")
 }

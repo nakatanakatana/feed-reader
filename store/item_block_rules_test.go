@@ -139,6 +139,10 @@ func TestStore_PopulateItemBlocksForRule(t *testing.T) {
 	item1URL := "https://user1.example.com/post1"
 	item2URL := "https://user2.example.com/post2"
 	item3URL := "https://other-domain.com/post3"
+	item4URL := "https://author-domain.com/post4"
+	item5URL := "https://author-domain.com/post5"
+	authorPlain := "AuthorAlice"
+	authorXML := "<name>\n  AuthorBob\n  Jones\n</name>"
 
 	_, _ = s.CreateFeed(ctx, store.CreateFeedParams{ID: "f1", Url: "u1"})
 	_ = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
@@ -155,6 +159,16 @@ func TestStore_PopulateItemBlocksForRule(t *testing.T) {
 		FeedID: "f1",
 		Url:    item3URL,
 		Title:  func() *string { s := "Other post"; return &s }(),
+	})
+	_ = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
+		FeedID: "f1",
+		Url:    item4URL,
+		Author: &authorPlain,
+	})
+	_ = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
+		FeedID: "f1",
+		Url:    item5URL,
+		Author: &authorXML,
 	})
 
 	// 2. Extracted Info Map
@@ -259,6 +273,42 @@ func TestStore_PopulateItemBlocksForRule(t *testing.T) {
 		_ = s.DB.QueryRow("SELECT count(*) FROM item_blocks WHERE rule_id = ?", rule.ID).Scan(&count)
 		assert.Equal(t, count, 1)
 	})
+
+	t.Run("Author User Rule", func(t *testing.T) {
+		rules, err := s.CreateItemBlockRules(ctx, []store.CreateItemBlockRuleParams{{
+			ID:        uuid.NewString(),
+			RuleType:  "user",
+			RuleValue: "AuthorAlice",
+			Domain:    "",
+		}})
+		assert.NilError(t, err)
+		rule := rules[0]
+
+		err = s.PopulateItemBlocksForRule(ctx, rule, items, extractedInfo)
+		assert.NilError(t, err)
+
+		var count int
+		_ = s.DB.QueryRow("SELECT count(*) FROM item_blocks WHERE rule_id = ?", rule.ID).Scan(&count)
+		assert.Equal(t, count, 1)
+	})
+
+	t.Run("Author XML Normalized User Rule", func(t *testing.T) {
+		rules, err := s.CreateItemBlockRules(ctx, []store.CreateItemBlockRuleParams{{
+			ID:        uuid.NewString(),
+			RuleType:  "user",
+			RuleValue: "AuthorBob Jones",
+			Domain:    "",
+		}})
+		assert.NilError(t, err)
+		rule := rules[0]
+
+		err = s.PopulateItemBlocksForRule(ctx, rule, items, extractedInfo)
+		assert.NilError(t, err)
+
+		var count int
+		_ = s.DB.QueryRow("SELECT count(*) FROM item_blocks WHERE rule_id = ?", rule.ID).Scan(&count)
+		assert.Equal(t, count, 1)
+	})
 }
 
 func TestShouldBlockItem_Author(t *testing.T) {
@@ -287,6 +337,19 @@ func TestShouldBlockItem_Author(t *testing.T) {
 			RuleValue: "Bob",
 		}
 		assert.Assert(t, store.ShouldBlockItem(itemXML, rule, nil, nil))
+	})
+
+	t.Run("rule user matches XML author with newlines and indentation", func(t *testing.T) {
+		authorIndentXML := "<name>\n  Dave\n  Miller\n</name>"
+		itemIndentXML := store.FullItem{
+			Url:    "https://example.com/post/4",
+			Author: &authorIndentXML,
+		}
+		rule := store.ItemBlockRule{
+			RuleType:  "user",
+			RuleValue: "Dave Miller",
+		}
+		assert.Assert(t, store.ShouldBlockItem(itemIndentXML, rule, nil, nil))
 	})
 
 	t.Run("rule user does not match different author", func(t *testing.T) {
@@ -366,4 +429,3 @@ func TestShouldBlockItem_EmptyGuards(t *testing.T) {
 		assert.Assert(t, !store.ShouldBlockItem(item, rule, &extractedUser, &extractedDomain))
 	})
 }
-

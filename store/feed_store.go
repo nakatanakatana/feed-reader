@@ -220,7 +220,6 @@ func ValidateSaveFetchedItemParams(params SaveFetchedItemParams) error {
 	return nil
 }
 
-
 // SaveFetchedItem saves an item, links it to the feed, and initializes read status.
 // It handles deduplication and ensures atomicity.
 func (s *Store) SaveFetchedItem(ctx context.Context, params SaveFetchedItemParams) error {
