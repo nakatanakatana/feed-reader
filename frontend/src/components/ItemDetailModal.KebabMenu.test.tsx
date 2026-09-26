@@ -160,7 +160,7 @@ describe("ItemDetailModal KebabMenu", () => {
         {
           ruleType: "user",
           value: "user1",
-          domain: "example.com",
+          domain: "",
         },
       ],
     });

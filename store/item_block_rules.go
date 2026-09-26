@@ -90,7 +90,12 @@ func matchesUser(item FullItem, extractedUser *string, ruleValue string) bool {
 		return true
 	}
 	if item.Author != nil {
-		if *item.Author == ruleValue || CleanAuthor(*item.Author) == ruleValue {
+		if *item.Author == ruleValue {
+			return true
+		}
+		cleanedAuthor := CleanAuthor(*item.Author)
+		cleanedRule := CleanAuthor(ruleValue)
+		if cleanedAuthor != "" && (cleanedAuthor == ruleValue || (cleanedRule != "" && cleanedAuthor == cleanedRule)) {
 			return true
 		}
 	}

@@ -79,10 +79,25 @@ function formatBlockRuleSuccessMessage(req: BlockRuleMutationRequest) {
   }
 }
 
+function extractTextContent(node: Node): string[] {
+  const parts: string[] = [];
+  for (const child of Array.from(node.childNodes)) {
+    if (child.nodeType === Node.TEXT_NODE) {
+      const val = child.textContent?.trim();
+      if (val) {
+        parts.push(val);
+      }
+    } else if (child.nodeType === Node.ELEMENT_NODE) {
+      parts.push(...extractTextContent(child));
+    }
+  }
+  return parts;
+}
+
 function formatAuthorText(author: string): string {
   const trimmedAuthor = author.trim();
   if (!trimmedAuthor.includes("<") || !trimmedAuthor.includes(">")) {
-    return author;
+    return trimmedAuthor.replace(/\s+/g, " ");
   }
 
   const parser = new DOMParser();
@@ -92,18 +107,12 @@ function formatAuthorText(author: string): string {
   );
 
   if (document.querySelector("parsererror")) {
-    return author;
+    return trimmedAuthor.replace(/\s+/g, " ");
   }
 
   const root = document.documentElement;
-  const text = Array.from(root.childNodes)
-    .map((node) => node.textContent?.trim() ?? "")
-    .filter(Boolean)
-    .join(" ")
-    .replace(/\s+/g, " ")
-    .trim();
-
-  return text || author;
+  const parts = extractTextContent(root);
+  return parts.join(" ").replace(/\s+/g, " ").trim();
 }
 
 export function ItemDetailModal(props: ItemDetailModalProps) {
@@ -422,7 +431,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                 {
                   ruleType: "user",
                   value: info.user,
-                  domain: info.domain,
+                  domain: "",
                 },
               ],
             });

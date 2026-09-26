@@ -352,6 +352,27 @@ func TestShouldBlockItem_Author(t *testing.T) {
 		assert.Assert(t, store.ShouldBlockItem(itemIndentXML, rule, nil, nil))
 	})
 
+	t.Run("rule user matches when rule value has whitespace or XML tags and author has plain or normalized format", func(t *testing.T) {
+		authorPlain := "Dave Miller"
+		itemPlain := store.FullItem{
+			Url:    "https://example.com/post/5",
+			Author: &authorPlain,
+		}
+		// rule with internal newlines and extra spaces
+		ruleUnnormalized := store.ItemBlockRule{
+			RuleType:  "user",
+			RuleValue: "Dave \n  Miller",
+		}
+		assert.Assert(t, store.ShouldBlockItem(itemPlain, ruleUnnormalized, nil, nil))
+
+		// rule with XML tags
+		ruleXML := store.ItemBlockRule{
+			RuleType:  "user",
+			RuleValue: "<name>Dave Miller</name>",
+		}
+		assert.Assert(t, store.ShouldBlockItem(itemPlain, ruleXML, nil, nil))
+	})
+
 	t.Run("rule user does not match different author", func(t *testing.T) {
 		rule := store.ItemBlockRule{
 			RuleType:  "user",

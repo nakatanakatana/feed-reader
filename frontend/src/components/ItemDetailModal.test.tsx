@@ -442,4 +442,103 @@ describe("ItemDetailModal", () => {
       .element(page.getByText("Block Author (user1)"))
       .not.toBeInTheDocument();
   });
+
+  it("does not show Block Author actions if author metadata contains only empty XML tags", async () => {
+    worker.use(
+      http.all("*/api/v2/items/:id", () => {
+        const msg = create(GetItemResponseSchema, {
+          item: create(ItemSchema, {
+            id: "empty-xml-author-id",
+            title: "Empty XML Author Item",
+            description: "Content",
+            author: "<author><name></name></author>",
+            url: "https://example.com/posts/empty",
+            isRead: false,
+          }),
+        });
+        return HttpResponse.json(toJson(GetItemResponseSchema, msg));
+      }),
+    );
+
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal itemId="empty-xml-author-id" onClose={() => {}} />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    await expect
+      .element(page.getByText("Empty XML Author Item"))
+      .toBeInTheDocument();
+
+    const kebabMenu = page.getByRole("button", { name: "More actions" });
+    await kebabMenu.click();
+
+    await expect.element(page.getByText("Close")).toBeInTheDocument();
+    await expect
+      .element(page.getByText(/Block Author/))
+      .not.toBeInTheDocument();
+  });
+
+  it("normalizes nested XML author metadata with whitespace in Block Author actions", async () => {
+    const addItemBlockRulesMock = vi.fn();
+    worker.use(
+      http.all("*/api/v2/items/:id", () => {
+        const msg = create(GetItemResponseSchema, {
+          item: create(ItemSchema, {
+            id: "nested-xml-author-id",
+            title: "Nested XML Author Item",
+            description: "Content",
+            author:
+              "<author><name>\n Jane \n </name><email>jane@example.com</email></author>",
+            url: "https://example.com/posts/nested",
+            isRead: false,
+          }),
+        });
+        return HttpResponse.json(toJson(GetItemResponseSchema, msg));
+      }),
+      http.all("*/api/v2/block-rules", async ({ request }) => {
+        const body = await request.json();
+        addItemBlockRulesMock(body);
+        const msg = create(AddItemBlockRulesResponseSchema, {});
+        return HttpResponse.json(toJson(AddItemBlockRulesResponseSchema, msg));
+      }),
+    );
+
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal itemId="nested-xml-author-id" onClose={() => {}} />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    await expect
+      .element(page.getByText("Nested XML Author Item"))
+      .toBeInTheDocument();
+
+    const kebabMenu = page.getByRole("button", { name: "More actions" });
+    await kebabMenu.click();
+
+    const blockAuthorAction = page.getByText(
+      "Block Author (Jane jane@example.com)",
+    );
+    await expect.element(blockAuthorAction).toBeInTheDocument();
+
+    await blockAuthorAction.click();
+    await expect
+      .poll(() => addItemBlockRulesMock)
+      .toHaveBeenCalledWith({
+        rules: [
+          {
+            ruleType: "user",
+            value: "Jane jane@example.com",
+            domain: "",
+          },
+        ],
+      });
+  });
 });
