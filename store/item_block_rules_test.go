@@ -260,3 +260,70 @@ func TestStore_PopulateItemBlocksForRule(t *testing.T) {
 		assert.Equal(t, count, 1)
 	})
 }
+
+func TestShouldBlockItem_Author(t *testing.T) {
+	authorPlain := "Alice"
+	authorXML := "<name>Bob</name>"
+	itemPlain := store.FullItem{
+		Url:    "https://example.com/post/1",
+		Author: &authorPlain,
+	}
+	itemXML := store.FullItem{
+		Url:    "https://example.com/post/2",
+		Author: &authorXML,
+	}
+
+	t.Run("rule user matches plain author", func(t *testing.T) {
+		rule := store.ItemBlockRule{
+			RuleType:  "user",
+			RuleValue: "Alice",
+		}
+		assert.Assert(t, store.ShouldBlockItem(itemPlain, rule, nil, nil))
+	})
+
+	t.Run("rule user matches cleaned XML author", func(t *testing.T) {
+		rule := store.ItemBlockRule{
+			RuleType:  "user",
+			RuleValue: "Bob",
+		}
+		assert.Assert(t, store.ShouldBlockItem(itemXML, rule, nil, nil))
+	})
+
+	t.Run("rule user does not match different author", func(t *testing.T) {
+		rule := store.ItemBlockRule{
+			RuleType:  "user",
+			RuleValue: "Charlie",
+		}
+		assert.Assert(t, !store.ShouldBlockItem(itemPlain, rule, nil, nil))
+	})
+
+	t.Run("rule user_domain matches author and URL domain", func(t *testing.T) {
+		rule := store.ItemBlockRule{
+			RuleType:  "user_domain",
+			RuleValue: "Alice",
+			Domain:    "example.com",
+		}
+		assert.Assert(t, store.ShouldBlockItem(itemPlain, rule, nil, nil))
+	})
+
+	t.Run("rule user_domain does not match when domain differs", func(t *testing.T) {
+		rule := store.ItemBlockRule{
+			RuleType:  "user_domain",
+			RuleValue: "Alice",
+			Domain:    "other.com",
+		}
+		assert.Assert(t, !store.ShouldBlockItem(itemPlain, rule, nil, nil))
+	})
+
+	t.Run("rule user still matches extractedUser when author is nil", func(t *testing.T) {
+		extractedUser := "user123"
+		itemWithoutAuthor := store.FullItem{
+			Url: "https://example.com/post/3",
+		}
+		rule := store.ItemBlockRule{
+			RuleType:  "user",
+			RuleValue: "user123",
+		}
+		assert.Assert(t, store.ShouldBlockItem(itemWithoutAuthor, rule, &extractedUser, nil))
+	})
+}

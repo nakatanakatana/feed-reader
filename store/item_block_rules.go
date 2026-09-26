@@ -82,25 +82,39 @@ func (s *Store) ListItemsForBlocking(ctx context.Context) ([]FullItem, error) {
 	return items, nil
 }
 
+func matchesUser(item FullItem, extractedUser *string, ruleValue string) bool {
+	if extractedUser != nil && *extractedUser == ruleValue {
+		return true
+	}
+	if item.Author != nil {
+		if *item.Author == ruleValue || CleanAuthor(*item.Author) == ruleValue {
+			return true
+		}
+	}
+	return false
+}
+
+func matchesDomain(item FullItem, extractedDomain *string, ruleDomain string) bool {
+	if extractedDomain != nil && *extractedDomain == ruleDomain {
+		return true
+	}
+	urlDomain := getDomainFromURLLocally(item.Url)
+	return urlDomain == ruleDomain || strings.HasSuffix(urlDomain, "."+ruleDomain)
+}
+
 // ShouldBlockItem determines if an item should be blocked based on a rule.
 // extractedInfo is optional and should be provided if available (e.g. from URLParser).
 func ShouldBlockItem(item FullItem, rule ItemBlockRule, extractedUser *string, extractedDomain *string) bool {
 	switch rule.RuleType {
 	case "user":
-		return extractedUser != nil && *extractedUser == rule.RuleValue
+		return matchesUser(item, extractedUser, rule.RuleValue)
 	case "domain":
-		// Match against extracted domain if available
-		if extractedDomain != nil && *extractedDomain == rule.RuleValue {
-			return true
-		}
-		// Fallback: extract domain directly from URL
-		urlDomain := getDomainFromURLLocally(item.Url)
-		return urlDomain == rule.RuleValue || strings.HasSuffix(urlDomain, "."+rule.RuleValue)
+		return matchesDomain(item, extractedDomain, rule.RuleValue)
 	case "user_domain":
 		if rule.Domain == "" {
 			return false
 		}
-		return extractedUser != nil && *extractedUser == rule.RuleValue && extractedDomain != nil && *extractedDomain == rule.Domain
+		return matchesUser(item, extractedUser, rule.RuleValue) && matchesDomain(item, extractedDomain, rule.Domain)
 	case "keyword":
 		// Check title and content for keyword
 		if item.Title != nil && containsKeyword(*item.Title, rule.RuleValue) {
