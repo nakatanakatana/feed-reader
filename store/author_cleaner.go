@@ -30,9 +30,7 @@ func CleanAuthor(author string) string {
 			return normalized
 		}
 		if charData, ok := token.(xml.CharData); ok {
-			for _, f := range strings.Fields(string(charData)) {
-				parts = append(parts, f)
-			}
+			parts = append(parts, strings.Fields(string(charData))...)
 		}
 	}
 
