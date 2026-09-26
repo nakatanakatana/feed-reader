@@ -82,7 +82,10 @@ function formatBlockRuleSuccessMessage(req: BlockRuleMutationRequest) {
 function extractTextContent(node: Node): string[] {
   const parts: string[] = [];
   for (const child of Array.from(node.childNodes)) {
-    if (child.nodeType === Node.TEXT_NODE) {
+    if (
+      child.nodeType === Node.TEXT_NODE ||
+      child.nodeType === Node.CDATA_SECTION_NODE
+    ) {
       const val = child.textContent?.trim();
       if (val) {
         parts.push(val);
@@ -101,16 +104,16 @@ function formatAuthorText(author: string): string {
   }
 
   const parser = new DOMParser();
-  const document = parser.parseFromString(
+  const parsedDoc = parser.parseFromString(
     `<author>${trimmedAuthor}</author>`,
     "application/xml",
   );
 
-  if (document.querySelector("parsererror")) {
+  if (parsedDoc.querySelector("parsererror")) {
     return trimmedAuthor.replace(/\s+/g, " ");
   }
 
-  const root = document.documentElement;
+  const root = parsedDoc.documentElement;
   const parts = extractTextContent(root);
   return parts.join(" ").replace(/\s+/g, " ").trim();
 }
@@ -925,14 +928,19 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                         <span>{extractHostname(itemData().url || "")}</span>
                       </span>
                     </Show>
-                    <Show when={itemData().author}>
-                      {(author) => (
+                    <Show
+                      when={(() => {
+                        const raw = itemData().author;
+                        return raw ? formatAuthorText(raw).trim() : undefined;
+                      })()}
+                    >
+                      {(formattedAuthor) => (
                         <span
                           class={flex({ gap: "1", alignItems: "center" })}
                           title="Author"
                         >
                           <UserIcon />
-                          <span>{formatAuthorText(author())}</span>
+                          <span>{formattedAuthor()}</span>
                         </span>
                       )}
                     </Show>

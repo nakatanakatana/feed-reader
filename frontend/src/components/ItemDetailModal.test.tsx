@@ -541,4 +541,98 @@ describe("ItemDetailModal", () => {
         ],
       });
   });
+
+  it("handles XML author metadata containing CDATA sections in header and Block Author actions", async () => {
+    const addItemBlockRulesMock = vi.fn();
+    worker.use(
+      http.all("*/api/v2/items/:id", () => {
+        const msg = create(GetItemResponseSchema, {
+          item: create(ItemSchema, {
+            id: "cdata-author-id",
+            title: "CDATA Author Item",
+            description: "Content",
+            author: "<author><name><![CDATA[Jane Doe]]></name></author>",
+            url: "https://example.com/posts/cdata",
+            isRead: false,
+          }),
+        });
+        return HttpResponse.json(toJson(GetItemResponseSchema, msg));
+      }),
+      http.all("*/api/v2/block-rules", async ({ request }) => {
+        const body = await request.json();
+        addItemBlockRulesMock(body);
+        const msg = create(AddItemBlockRulesResponseSchema, {});
+        return HttpResponse.json(toJson(AddItemBlockRulesResponseSchema, msg));
+      }),
+    );
+
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal itemId="cdata-author-id" onClose={() => {}} />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    await expect
+      .element(page.getByText("CDATA Author Item"))
+      .toBeInTheDocument();
+
+    const authorHeader = page.getByText("Jane Doe");
+    await expect.element(authorHeader).toBeInTheDocument();
+
+    const kebabMenu = page.getByRole("button", { name: "More actions" });
+    await kebabMenu.click();
+
+    const blockAuthorAction = page.getByText("Block Author (Jane Doe)");
+    await expect.element(blockAuthorAction).toBeInTheDocument();
+
+    await blockAuthorAction.click();
+    await expect
+      .poll(() => addItemBlockRulesMock)
+      .toHaveBeenCalledWith({
+        rules: [
+          {
+            ruleType: "user",
+            value: "Jane Doe",
+            domain: "",
+          },
+        ],
+      });
+  });
+
+  it("does not render empty author metadata badge in header if author contains only empty XML tags", async () => {
+    worker.use(
+      http.all("*/api/v2/items/:id", () => {
+        const msg = create(GetItemResponseSchema, {
+          item: create(ItemSchema, {
+            id: "empty-author-header-id",
+            title: "Empty Author Header Item",
+            description: "Content",
+            author: "<author><name></name></author>",
+            url: "https://example.com/posts/empty-header",
+            isRead: false,
+          }),
+        });
+        return HttpResponse.json(toJson(GetItemResponseSchema, msg));
+      }),
+    );
+
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal itemId="empty-author-header-id" onClose={() => {}} />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    await expect
+      .element(page.getByText("Empty Author Header Item"))
+      .toBeInTheDocument();
+
+    const authorBadge = page.getByTitle("Author");
+    await expect.element(authorBadge).not.toBeInTheDocument();
+  });
 });
