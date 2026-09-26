@@ -9,10 +9,13 @@ import { queryClient } from "../lib/query";
 import { ToastProvider, toast } from "../lib/toast";
 import { worker } from "../mocks/browser";
 import {
+  AddItemBlockRulesResponseSchema,
   create,
   GetItemResponseSchema,
   ItemSchema,
+  ListURLParsingRulesResponseSchema,
   toJson,
+  URLParsingRuleSchema,
 } from "../test-utils/json-identity";
 import { ItemDetailModal } from "./ItemDetailModal";
 
@@ -299,5 +302,337 @@ describe("ItemDetailModal", () => {
 
     // Toast should be cleared automatically
     expect(toast.toasts()).toHaveLength(0);
+  });
+
+  it("renders Block Author menu actions when item has author metadata and dispatches mutations", async () => {
+    const addItemBlockRulesMock = vi.fn();
+    worker.use(
+      http.all("*/api/v2/items/:id", () => {
+        const msg = create(GetItemResponseSchema, {
+          item: create(ItemSchema, {
+            id: "author-action-id",
+            title: "Author Action Item",
+            description: "Content",
+            author: "Test Author",
+            url: "https://example.com/posts/1",
+            isRead: false,
+          }),
+        });
+        return HttpResponse.json(toJson(GetItemResponseSchema, msg));
+      }),
+      http.all("*/api/v2/block-rules", async ({ request }) => {
+        const body = await request.json();
+        addItemBlockRulesMock(body);
+        const msg = create(AddItemBlockRulesResponseSchema, {});
+        return HttpResponse.json(toJson(AddItemBlockRulesResponseSchema, msg));
+      }),
+    );
+
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal itemId="author-action-id" onClose={() => {}} />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    await expect
+      .element(page.getByText("Author Action Item"))
+      .toBeInTheDocument();
+
+    const kebabMenu = page.getByRole("button", { name: "More actions" });
+    await kebabMenu.click();
+
+    const blockAuthorDomainAction = page.getByText(
+      "Block Author (@example.com)",
+    );
+    const blockAuthorAction = page.getByText("Block Author (Test Author)");
+
+    await expect.element(blockAuthorDomainAction).toBeInTheDocument();
+    await expect.element(blockAuthorAction).toBeInTheDocument();
+
+    await blockAuthorDomainAction.click();
+    await expect
+      .poll(() => addItemBlockRulesMock)
+      .toHaveBeenCalledWith({
+        rules: [
+          {
+            ruleType: "user_domain",
+            value: "Test Author",
+            domain: "example.com",
+          },
+        ],
+      });
+
+    await kebabMenu.click();
+    await blockAuthorAction.click();
+    await expect
+      .poll(() => addItemBlockRulesMock)
+      .toHaveBeenCalledWith({
+        rules: [
+          {
+            ruleType: "user",
+            value: "Test Author",
+            domain: "",
+          },
+        ],
+      });
+  });
+
+  it("does not show duplicate Block Author actions if URL user matches author", async () => {
+    worker.use(
+      http.all("*/api/v2/items/:id", () => {
+        const msg = create(GetItemResponseSchema, {
+          item: create(ItemSchema, {
+            id: "author-duplicate-id",
+            title: "Duplicate User Item",
+            description: "Content",
+            author: "user1",
+            url: "https://user1.example.com/post",
+            isRead: false,
+          }),
+        });
+        return HttpResponse.json(toJson(GetItemResponseSchema, msg));
+      }),
+      http.all("*/api/v2/url-rules", () => {
+        const msg = create(ListURLParsingRulesResponseSchema, {
+          rules: [
+            create(URLParsingRuleSchema, {
+              id: "rule1",
+              domain: "example.com",
+              ruleType: "subdomain",
+              pattern: "example.com",
+            }),
+          ],
+        });
+        return HttpResponse.json(
+          toJson(ListURLParsingRulesResponseSchema, msg),
+        );
+      }),
+    );
+
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal itemId="author-duplicate-id" onClose={() => {}} />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    await expect
+      .element(page.getByText("Duplicate User Item"))
+      .toBeInTheDocument();
+
+    const kebabMenu = page.getByRole("button", { name: "More actions" });
+    await kebabMenu.click();
+
+    await expect
+      .element(page.getByText("Block User (@example.com)"))
+      .toBeInTheDocument();
+    await expect
+      .element(page.getByText("Block User (user1)"))
+      .toBeInTheDocument();
+
+    await expect
+      .element(page.getByText("Block Author (@example.com)"))
+      .not.toBeInTheDocument();
+    await expect
+      .element(page.getByText("Block Author (user1)"))
+      .not.toBeInTheDocument();
+  });
+
+  it("does not show Block Author actions if author metadata contains only empty XML tags", async () => {
+    worker.use(
+      http.all("*/api/v2/items/:id", () => {
+        const msg = create(GetItemResponseSchema, {
+          item: create(ItemSchema, {
+            id: "empty-xml-author-id",
+            title: "Empty XML Author Item",
+            description: "Content",
+            author: "<author><name></name></author>",
+            url: "https://example.com/posts/empty",
+            isRead: false,
+          }),
+        });
+        return HttpResponse.json(toJson(GetItemResponseSchema, msg));
+      }),
+    );
+
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal itemId="empty-xml-author-id" onClose={() => {}} />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    await expect
+      .element(page.getByText("Empty XML Author Item"))
+      .toBeInTheDocument();
+
+    const kebabMenu = page.getByRole("button", { name: "More actions" });
+    await kebabMenu.click();
+
+    await expect.element(page.getByText("Close")).toBeInTheDocument();
+    await expect
+      .element(page.getByText(/Block Author/))
+      .not.toBeInTheDocument();
+  });
+
+  it("normalizes nested XML author metadata with whitespace in Block Author actions", async () => {
+    const addItemBlockRulesMock = vi.fn();
+    worker.use(
+      http.all("*/api/v2/items/:id", () => {
+        const msg = create(GetItemResponseSchema, {
+          item: create(ItemSchema, {
+            id: "nested-xml-author-id",
+            title: "Nested XML Author Item",
+            description: "Content",
+            author:
+              "<author><name>\n Jane \n </name><email>jane@example.com</email></author>",
+            url: "https://example.com/posts/nested",
+            isRead: false,
+          }),
+        });
+        return HttpResponse.json(toJson(GetItemResponseSchema, msg));
+      }),
+      http.all("*/api/v2/block-rules", async ({ request }) => {
+        const body = await request.json();
+        addItemBlockRulesMock(body);
+        const msg = create(AddItemBlockRulesResponseSchema, {});
+        return HttpResponse.json(toJson(AddItemBlockRulesResponseSchema, msg));
+      }),
+    );
+
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal itemId="nested-xml-author-id" onClose={() => {}} />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    await expect
+      .element(page.getByText("Nested XML Author Item"))
+      .toBeInTheDocument();
+
+    const kebabMenu = page.getByRole("button", { name: "More actions" });
+    await kebabMenu.click();
+
+    const blockAuthorAction = page.getByText(
+      "Block Author (Jane jane@example.com)",
+    );
+    await expect.element(blockAuthorAction).toBeInTheDocument();
+
+    await blockAuthorAction.click();
+    await expect
+      .poll(() => addItemBlockRulesMock)
+      .toHaveBeenCalledWith({
+        rules: [
+          {
+            ruleType: "user",
+            value: "Jane jane@example.com",
+            domain: "",
+          },
+        ],
+      });
+  });
+
+  it("handles XML author metadata containing CDATA sections in header and Block Author actions", async () => {
+    const addItemBlockRulesMock = vi.fn();
+    worker.use(
+      http.all("*/api/v2/items/:id", () => {
+        const msg = create(GetItemResponseSchema, {
+          item: create(ItemSchema, {
+            id: "cdata-author-id",
+            title: "CDATA Author Item",
+            description: "Content",
+            author: "<author><name><![CDATA[Jane Doe]]></name></author>",
+            url: "https://example.com/posts/cdata",
+            isRead: false,
+          }),
+        });
+        return HttpResponse.json(toJson(GetItemResponseSchema, msg));
+      }),
+      http.all("*/api/v2/block-rules", async ({ request }) => {
+        const body = await request.json();
+        addItemBlockRulesMock(body);
+        const msg = create(AddItemBlockRulesResponseSchema, {});
+        return HttpResponse.json(toJson(AddItemBlockRulesResponseSchema, msg));
+      }),
+    );
+
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal itemId="cdata-author-id" onClose={() => {}} />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    await expect
+      .element(page.getByText("CDATA Author Item"))
+      .toBeInTheDocument();
+
+    const authorHeader = page.getByText("Jane Doe");
+    await expect.element(authorHeader).toBeInTheDocument();
+
+    const kebabMenu = page.getByRole("button", { name: "More actions" });
+    await kebabMenu.click();
+
+    const blockAuthorAction = page.getByText("Block Author (Jane Doe)");
+    await expect.element(blockAuthorAction).toBeInTheDocument();
+
+    await blockAuthorAction.click();
+    await expect
+      .poll(() => addItemBlockRulesMock)
+      .toHaveBeenCalledWith({
+        rules: [
+          {
+            ruleType: "user",
+            value: "Jane Doe",
+            domain: "",
+          },
+        ],
+      });
+  });
+
+  it("does not render empty author metadata badge in header if author contains only empty XML tags", async () => {
+    worker.use(
+      http.all("*/api/v2/items/:id", () => {
+        const msg = create(GetItemResponseSchema, {
+          item: create(ItemSchema, {
+            id: "empty-author-header-id",
+            title: "Empty Author Header Item",
+            description: "Content",
+            author: "<author><name></name></author>",
+            url: "https://example.com/posts/empty-header",
+            isRead: false,
+          }),
+        });
+        return HttpResponse.json(toJson(GetItemResponseSchema, msg));
+      }),
+    );
+
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal itemId="empty-author-header-id" onClose={() => {}} />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    await expect
+      .element(page.getByText("Empty Author Header Item"))
+      .toBeInTheDocument();
+
+    const authorBadge = page.getByTitle("Author");
+    await expect.element(authorBadge).not.toBeInTheDocument();
   });
 });

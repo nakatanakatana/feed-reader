@@ -139,6 +139,10 @@ func TestStore_PopulateItemBlocksForRule(t *testing.T) {
 	item1URL := "https://user1.example.com/post1"
 	item2URL := "https://user2.example.com/post2"
 	item3URL := "https://other-domain.com/post3"
+	item4URL := "https://author-domain.com/post4"
+	item5URL := "https://author-domain.com/post5"
+	authorPlain := "AuthorAlice"
+	authorXML := "<name>\n  AuthorBob\n  Jones\n</name>"
 
 	_, _ = s.CreateFeed(ctx, store.CreateFeedParams{ID: "f1", Url: "u1"})
 	_ = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
@@ -155,6 +159,16 @@ func TestStore_PopulateItemBlocksForRule(t *testing.T) {
 		FeedID: "f1",
 		Url:    item3URL,
 		Title:  func() *string { s := "Other post"; return &s }(),
+	})
+	_ = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
+		FeedID: "f1",
+		Url:    item4URL,
+		Author: &authorPlain,
+	})
+	_ = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
+		FeedID: "f1",
+		Url:    item5URL,
+		Author: &authorXML,
 	})
 
 	// 2. Extracted Info Map
@@ -258,5 +272,181 @@ func TestStore_PopulateItemBlocksForRule(t *testing.T) {
 		var count int
 		_ = s.DB.QueryRow("SELECT count(*) FROM item_blocks WHERE rule_id = ?", rule.ID).Scan(&count)
 		assert.Equal(t, count, 1)
+	})
+
+	t.Run("Author User Rule", func(t *testing.T) {
+		rules, err := s.CreateItemBlockRules(ctx, []store.CreateItemBlockRuleParams{{
+			ID:        uuid.NewString(),
+			RuleType:  "user",
+			RuleValue: "AuthorAlice",
+			Domain:    "",
+		}})
+		assert.NilError(t, err)
+		rule := rules[0]
+
+		err = s.PopulateItemBlocksForRule(ctx, rule, items, extractedInfo)
+		assert.NilError(t, err)
+
+		var count int
+		_ = s.DB.QueryRow("SELECT count(*) FROM item_blocks WHERE rule_id = ?", rule.ID).Scan(&count)
+		assert.Equal(t, count, 1)
+	})
+
+	t.Run("Author XML Normalized User Rule", func(t *testing.T) {
+		rules, err := s.CreateItemBlockRules(ctx, []store.CreateItemBlockRuleParams{{
+			ID:        uuid.NewString(),
+			RuleType:  "user",
+			RuleValue: "AuthorBob Jones",
+			Domain:    "",
+		}})
+		assert.NilError(t, err)
+		rule := rules[0]
+
+		err = s.PopulateItemBlocksForRule(ctx, rule, items, extractedInfo)
+		assert.NilError(t, err)
+
+		var count int
+		_ = s.DB.QueryRow("SELECT count(*) FROM item_blocks WHERE rule_id = ?", rule.ID).Scan(&count)
+		assert.Equal(t, count, 1)
+	})
+}
+
+func TestShouldBlockItem_Author(t *testing.T) {
+	authorPlain := "Alice"
+	authorXML := "<name>Bob</name>"
+	itemPlain := store.FullItem{
+		Url:    "https://example.com/post/1",
+		Author: &authorPlain,
+	}
+	itemXML := store.FullItem{
+		Url:    "https://example.com/post/2",
+		Author: &authorXML,
+	}
+
+	t.Run("rule user matches plain author", func(t *testing.T) {
+		rule := store.ItemBlockRule{
+			RuleType:  "user",
+			RuleValue: "Alice",
+		}
+		assert.Assert(t, store.ShouldBlockItem(itemPlain, rule, nil, nil))
+	})
+
+	t.Run("rule user matches cleaned XML author", func(t *testing.T) {
+		rule := store.ItemBlockRule{
+			RuleType:  "user",
+			RuleValue: "Bob",
+		}
+		assert.Assert(t, store.ShouldBlockItem(itemXML, rule, nil, nil))
+	})
+
+	t.Run("rule user matches XML author with newlines and indentation", func(t *testing.T) {
+		authorIndentXML := "<name>\n  Dave\n  Miller\n</name>"
+		itemIndentXML := store.FullItem{
+			Url:    "https://example.com/post/4",
+			Author: &authorIndentXML,
+		}
+		rule := store.ItemBlockRule{
+			RuleType:  "user",
+			RuleValue: "Dave Miller",
+		}
+		assert.Assert(t, store.ShouldBlockItem(itemIndentXML, rule, nil, nil))
+	})
+
+	t.Run("rule user matches when rule value has whitespace or XML tags and author has plain or normalized format", func(t *testing.T) {
+		authorPlain := "Dave Miller"
+		itemPlain := store.FullItem{
+			Url:    "https://example.com/post/5",
+			Author: &authorPlain,
+		}
+		// rule with internal newlines and extra spaces
+		ruleUnnormalized := store.ItemBlockRule{
+			RuleType:  "user",
+			RuleValue: "Dave \n  Miller",
+		}
+		assert.Assert(t, store.ShouldBlockItem(itemPlain, ruleUnnormalized, nil, nil))
+
+		// rule with XML tags
+		ruleXML := store.ItemBlockRule{
+			RuleType:  "user",
+			RuleValue: "<name>Dave Miller</name>",
+		}
+		assert.Assert(t, store.ShouldBlockItem(itemPlain, ruleXML, nil, nil))
+	})
+
+	t.Run("rule user does not match different author", func(t *testing.T) {
+		rule := store.ItemBlockRule{
+			RuleType:  "user",
+			RuleValue: "Charlie",
+		}
+		assert.Assert(t, !store.ShouldBlockItem(itemPlain, rule, nil, nil))
+	})
+
+	t.Run("rule user_domain matches author and URL domain", func(t *testing.T) {
+		rule := store.ItemBlockRule{
+			RuleType:  "user_domain",
+			RuleValue: "Alice",
+			Domain:    "example.com",
+		}
+		assert.Assert(t, store.ShouldBlockItem(itemPlain, rule, nil, nil))
+	})
+
+	t.Run("rule user_domain does not match when domain differs", func(t *testing.T) {
+		rule := store.ItemBlockRule{
+			RuleType:  "user_domain",
+			RuleValue: "Alice",
+			Domain:    "other.com",
+		}
+		assert.Assert(t, !store.ShouldBlockItem(itemPlain, rule, nil, nil))
+	})
+
+	t.Run("rule user still matches extractedUser when author is nil", func(t *testing.T) {
+		extractedUser := "user123"
+		itemWithoutAuthor := store.FullItem{
+			Url: "https://example.com/post/3",
+		}
+		rule := store.ItemBlockRule{
+			RuleType:  "user",
+			RuleValue: "user123",
+		}
+		assert.Assert(t, store.ShouldBlockItem(itemWithoutAuthor, rule, &extractedUser, nil))
+	})
+}
+
+func TestShouldBlockItem_EmptyGuards(t *testing.T) {
+	title := "Test Title"
+	content := "Test Content"
+	author := "Alice"
+	item := store.FullItem{
+		Url:     "https://example.com/post",
+		Title:   &title,
+		Content: &content,
+		Author:  &author,
+	}
+	extractedUser := "Alice"
+	extractedDomain := "example.com"
+
+	t.Run("empty RuleValue for user", func(t *testing.T) {
+		rule := store.ItemBlockRule{RuleType: "user", RuleValue: ""}
+		assert.Assert(t, !store.ShouldBlockItem(item, rule, &extractedUser, &extractedDomain))
+	})
+
+	t.Run("empty RuleValue for domain", func(t *testing.T) {
+		rule := store.ItemBlockRule{RuleType: "domain", RuleValue: ""}
+		assert.Assert(t, !store.ShouldBlockItem(item, rule, &extractedUser, &extractedDomain))
+	})
+
+	t.Run("empty RuleValue for keyword", func(t *testing.T) {
+		rule := store.ItemBlockRule{RuleType: "keyword", RuleValue: ""}
+		assert.Assert(t, !store.ShouldBlockItem(item, rule, &extractedUser, &extractedDomain))
+	})
+
+	t.Run("empty Domain for user_domain", func(t *testing.T) {
+		rule := store.ItemBlockRule{RuleType: "user_domain", RuleValue: "Alice", Domain: ""}
+		assert.Assert(t, !store.ShouldBlockItem(item, rule, &extractedUser, &extractedDomain))
+	})
+
+	t.Run("empty RuleValue for user_domain", func(t *testing.T) {
+		rule := store.ItemBlockRule{RuleType: "user_domain", RuleValue: "", Domain: "example.com"}
+		assert.Assert(t, !store.ShouldBlockItem(item, rule, &extractedUser, &extractedDomain))
 	})
 }

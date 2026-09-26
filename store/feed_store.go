@@ -288,6 +288,7 @@ func (s *Store) SaveFetchedItem(ctx context.Context, params SaveFetchedItemParam
 				Url:     item.Url,
 				Title:   item.Title,
 				Content: item.Content,
+				Author:  item.Author,
 			}
 
 			for _, rule := range blockRules {

@@ -79,31 +79,43 @@ function formatBlockRuleSuccessMessage(req: BlockRuleMutationRequest) {
   }
 }
 
+function extractTextContent(node: Node): string[] {
+  const parts: string[] = [];
+  for (const child of Array.from(node.childNodes)) {
+    if (
+      child.nodeType === Node.TEXT_NODE ||
+      child.nodeType === Node.CDATA_SECTION_NODE
+    ) {
+      const val = child.textContent?.trim();
+      if (val) {
+        parts.push(val);
+      }
+    } else if (child.nodeType === Node.ELEMENT_NODE) {
+      parts.push(...extractTextContent(child));
+    }
+  }
+  return parts;
+}
+
 function formatAuthorText(author: string): string {
   const trimmedAuthor = author.trim();
   if (!trimmedAuthor.includes("<") || !trimmedAuthor.includes(">")) {
-    return author;
+    return trimmedAuthor.replace(/\s+/g, " ");
   }
 
   const parser = new DOMParser();
-  const document = parser.parseFromString(
+  const parsedDoc = parser.parseFromString(
     `<author>${trimmedAuthor}</author>`,
     "application/xml",
   );
 
-  if (document.querySelector("parsererror")) {
-    return author;
+  if (parsedDoc.querySelector("parsererror")) {
+    return trimmedAuthor.replace(/\s+/g, " ");
   }
 
-  const root = document.documentElement;
-  const text = Array.from(root.childNodes)
-    .map((node) => node.textContent?.trim() ?? "")
-    .filter(Boolean)
-    .join(" ")
-    .replace(/\s+/g, " ")
-    .trim();
-
-  return text || author;
+  const root = parsedDoc.documentElement;
+  const parts = extractTextContent(root);
+  return parts.join(" ").replace(/\s+/g, " ").trim();
 }
 
 export function ItemDetailModal(props: ItemDetailModalProps) {
@@ -422,12 +434,55 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                 {
                   ruleType: "user",
                   value: info.user,
-                  domain: info.domain,
+                  domain: "",
                 },
               ],
             });
           },
         });
+      }
+
+      const rawAuthor = data?.author;
+      const formattedAuthor = rawAuthor
+        ? formatAuthorText(rawAuthor).trim()
+        : null;
+      if (formattedAuthor) {
+        const isSameAsUrlUser = info && info.user === formattedAuthor;
+        if (!isSameAsUrlUser) {
+          const targetDomain =
+            info?.domain ?? (data?.url ? extractHostname(data.url) : null);
+          if (targetDomain) {
+            actions.push({
+              label: `Block Author (@${targetDomain})`,
+              onClick: () => {
+                blockMutation.mutate({
+                  rules: [
+                    {
+                      ruleType: "user_domain",
+                      value: formattedAuthor,
+                      domain: targetDomain,
+                    },
+                  ],
+                });
+              },
+            });
+          }
+
+          actions.push({
+            label: `Block Author (${formattedAuthor})`,
+            onClick: () => {
+              blockMutation.mutate({
+                rules: [
+                  {
+                    ruleType: "user",
+                    value: formattedAuthor,
+                    domain: "",
+                  },
+                ],
+              });
+            },
+          });
+        }
       }
     }
 
@@ -873,14 +928,19 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
                         <span>{extractHostname(itemData().url || "")}</span>
                       </span>
                     </Show>
-                    <Show when={itemData().author}>
-                      {(author) => (
+                    <Show
+                      when={(() => {
+                        const raw = itemData().author;
+                        return raw ? formatAuthorText(raw).trim() : undefined;
+                      })()}
+                    >
+                      {(formattedAuthor) => (
                         <span
                           class={flex({ gap: "1", alignItems: "center" })}
                           title="Author"
                         >
                           <UserIcon />
-                          <span>{formatAuthorText(author())}</span>
+                          <span>{formattedAuthor()}</span>
                         </span>
                       )}
                     </Show>
