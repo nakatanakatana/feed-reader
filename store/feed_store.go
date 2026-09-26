@@ -220,6 +220,12 @@ func ValidateSaveFetchedItemParams(params SaveFetchedItemParams) error {
 	return nil
 }
 
+// CreateItemAndFeedItemTx saves a fetched item and links it to the feed within a transaction.
+// It is an alias for SaveFetchedItem.
+func (s *Store) CreateItemAndFeedItemTx(ctx context.Context, params SaveFetchedItemParams) error {
+	return s.SaveFetchedItem(ctx, params)
+}
+
 // SaveFetchedItem saves an item, links it to the feed, and initializes read status.
 // It handles deduplication and ensures atomicity.
 func (s *Store) SaveFetchedItem(ctx context.Context, params SaveFetchedItemParams) error {
@@ -288,6 +294,7 @@ func (s *Store) SaveFetchedItem(ctx context.Context, params SaveFetchedItemParam
 				Url:     item.Url,
 				Title:   item.Title,
 				Content: item.Content,
+				Author:  item.Author,
 			}
 
 			for _, rule := range blockRules {

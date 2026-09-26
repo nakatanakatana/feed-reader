@@ -83,6 +83,9 @@ func (s *Store) ListItemsForBlocking(ctx context.Context) ([]FullItem, error) {
 }
 
 func matchesUser(item FullItem, extractedUser *string, ruleValue string) bool {
+	if ruleValue == "" {
+		return false
+	}
 	if extractedUser != nil && *extractedUser == ruleValue {
 		return true
 	}
@@ -95,6 +98,9 @@ func matchesUser(item FullItem, extractedUser *string, ruleValue string) bool {
 }
 
 func matchesDomain(item FullItem, extractedDomain *string, ruleDomain string) bool {
+	if ruleDomain == "" {
+		return false
+	}
 	if extractedDomain != nil && *extractedDomain == ruleDomain {
 		return true
 	}

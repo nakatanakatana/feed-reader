@@ -330,3 +330,53 @@ func TestStore_GetFeedUpdateDistribution(t *testing.T) {
 	assert.Assert(t, found1, "t1 bucket should exist")
 	assert.Assert(t, found2, "t2 bucket should exist")
 }
+
+func TestStore_CreateItemAndFeedItemTx_BlockByAuthor(t *testing.T) {
+	s := setupStore(t)
+	ctx := context.Background()
+
+	// 1. Create a block rule for an author
+	ruleAuthor := "BlockedAuthor"
+	_, err := s.CreateItemBlockRule(ctx, store.CreateItemBlockRuleParams{
+		ID:        uuid.NewString(),
+		RuleType:  "user",
+		RuleValue: ruleAuthor,
+		Domain:    "",
+	})
+	assert.NilError(t, err)
+
+	// 2. Create a feed
+	feedID := uuid.NewString()
+	feedTitle := "Test Feed"
+	feedLink := "https://example.com"
+	feedType := "rss"
+	_, err = s.CreateFeed(ctx, store.CreateFeedParams{
+		ID:       feedID,
+		Url:      "https://example.com/feed.xml",
+		Title:    &feedTitle,
+		Link:     &feedLink,
+		FeedType: &feedType,
+	})
+	assert.NilError(t, err)
+
+	// 3. Ingest an item with author matching the rule
+	author := "BlockedAuthor"
+	title := "Post by Blocked Author"
+	err = s.CreateItemAndFeedItemTx(ctx, store.SaveFetchedItemParams{
+		FeedID: feedID,
+		Url:    "https://example.com/post-by-author",
+		Title:  &title,
+		Author: &author,
+	})
+	assert.NilError(t, err)
+
+	// 4. Verify item was created and is blocked
+	items, err := s.ListItems(ctx, store.StoreListItemsParams{
+		FeedID:    &feedID,
+		IsBlocked: 1,
+		Limit:     10,
+	})
+	assert.NilError(t, err)
+	assert.Equal(t, len(items), 1)
+	assert.Equal(t, items[0].Url, "https://example.com/post-by-author")
+}
