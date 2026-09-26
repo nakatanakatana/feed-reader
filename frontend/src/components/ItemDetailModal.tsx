@@ -429,6 +429,49 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
           },
         });
       }
+
+      const rawAuthor = data?.author;
+      const formattedAuthor = rawAuthor
+        ? formatAuthorText(rawAuthor).trim()
+        : null;
+      if (formattedAuthor) {
+        const isSameAsUrlUser = info && info.user === formattedAuthor;
+        if (!isSameAsUrlUser) {
+          const targetDomain =
+            info?.domain ?? (data?.url ? extractHostname(data.url) : null);
+          if (targetDomain) {
+            actions.push({
+              label: `Block Author (@${targetDomain})`,
+              onClick: () => {
+                blockMutation.mutate({
+                  rules: [
+                    {
+                      ruleType: "user_domain",
+                      value: formattedAuthor,
+                      domain: targetDomain,
+                    },
+                  ],
+                });
+              },
+            });
+          }
+
+          actions.push({
+            label: `Block Author (${formattedAuthor})`,
+            onClick: () => {
+              blockMutation.mutate({
+                rules: [
+                  {
+                    ruleType: "user",
+                    value: formattedAuthor,
+                    domain: targetDomain ?? "",
+                  },
+                ],
+              });
+            },
+          });
+        }
+      }
     }
 
     actions.push({

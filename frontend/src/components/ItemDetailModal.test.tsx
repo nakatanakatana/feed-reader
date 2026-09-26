@@ -9,10 +9,13 @@ import { queryClient } from "../lib/query";
 import { ToastProvider, toast } from "../lib/toast";
 import { worker } from "../mocks/browser";
 import {
+  AddItemBlockRulesResponseSchema,
   create,
   GetItemResponseSchema,
   ItemSchema,
+  ListURLParsingRulesResponseSchema,
   toJson,
+  URLParsingRuleSchema,
 } from "../test-utils/json-identity";
 import { ItemDetailModal } from "./ItemDetailModal";
 
@@ -299,5 +302,144 @@ describe("ItemDetailModal", () => {
 
     // Toast should be cleared automatically
     expect(toast.toasts()).toHaveLength(0);
+  });
+
+  it("renders Block Author menu actions when item has author metadata and dispatches mutations", async () => {
+    const addItemBlockRulesMock = vi.fn();
+    worker.use(
+      http.all("*/api/v2/items/:id", () => {
+        const msg = create(GetItemResponseSchema, {
+          item: create(ItemSchema, {
+            id: "author-action-id",
+            title: "Author Action Item",
+            description: "Content",
+            author: "Test Author",
+            url: "https://example.com/posts/1",
+            isRead: false,
+          }),
+        });
+        return HttpResponse.json(toJson(GetItemResponseSchema, msg));
+      }),
+      http.all("*/api/v2/block-rules", async ({ request }) => {
+        const body = await request.json();
+        addItemBlockRulesMock(body);
+        const msg = create(AddItemBlockRulesResponseSchema, {});
+        return HttpResponse.json(toJson(AddItemBlockRulesResponseSchema, msg));
+      }),
+    );
+
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal itemId="author-action-id" onClose={() => {}} />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    await expect
+      .element(page.getByText("Author Action Item"))
+      .toBeInTheDocument();
+
+    const kebabMenu = page.getByRole("button", { name: "More actions" });
+    await kebabMenu.click();
+
+    const blockAuthorDomainAction = page.getByText(
+      "Block Author (@example.com)",
+    );
+    const blockAuthorAction = page.getByText("Block Author (Test Author)");
+
+    await expect.element(blockAuthorDomainAction).toBeInTheDocument();
+    await expect.element(blockAuthorAction).toBeInTheDocument();
+
+    await blockAuthorDomainAction.click();
+    await expect
+      .poll(() => addItemBlockRulesMock)
+      .toHaveBeenCalledWith({
+        rules: [
+          {
+            ruleType: "user_domain",
+            value: "Test Author",
+            domain: "example.com",
+          },
+        ],
+      });
+
+    await kebabMenu.click();
+    await blockAuthorAction.click();
+    await expect
+      .poll(() => addItemBlockRulesMock)
+      .toHaveBeenCalledWith({
+        rules: [
+          {
+            ruleType: "user",
+            value: "Test Author",
+            domain: "example.com",
+          },
+        ],
+      });
+  });
+
+  it("does not show duplicate Block Author actions if URL user matches author", async () => {
+    worker.use(
+      http.all("*/api/v2/items/:id", () => {
+        const msg = create(GetItemResponseSchema, {
+          item: create(ItemSchema, {
+            id: "author-duplicate-id",
+            title: "Duplicate User Item",
+            description: "Content",
+            author: "user1",
+            url: "https://user1.example.com/post",
+            isRead: false,
+          }),
+        });
+        return HttpResponse.json(toJson(GetItemResponseSchema, msg));
+      }),
+      http.all("*/api/v2/url-rules", () => {
+        const msg = create(ListURLParsingRulesResponseSchema, {
+          rules: [
+            create(URLParsingRuleSchema, {
+              id: "rule1",
+              domain: "example.com",
+              ruleType: "subdomain",
+              pattern: "example.com",
+            }),
+          ],
+        });
+        return HttpResponse.json(
+          toJson(ListURLParsingRulesResponseSchema, msg),
+        );
+      }),
+    );
+
+    dispose = render(
+      () => (
+        <Wrapper>
+          <ItemDetailModal itemId="author-duplicate-id" onClose={() => {}} />
+        </Wrapper>
+      ),
+      document.body,
+    );
+
+    await expect
+      .element(page.getByText("Duplicate User Item"))
+      .toBeInTheDocument();
+
+    const kebabMenu = page.getByRole("button", { name: "More actions" });
+    await kebabMenu.click();
+
+    await expect
+      .element(page.getByText("Block User (@example.com)"))
+      .toBeInTheDocument();
+    await expect
+      .element(page.getByText("Block User (user1)"))
+      .toBeInTheDocument();
+
+    await expect
+      .element(page.getByText("Block Author (@example.com)"))
+      .not.toBeInTheDocument();
+    await expect
+      .element(page.getByText("Block Author (user1)"))
+      .not.toBeInTheDocument();
   });
 });
