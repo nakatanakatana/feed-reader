@@ -331,7 +331,7 @@ func TestStore_GetFeedUpdateDistribution(t *testing.T) {
 	assert.Assert(t, found2, "t2 bucket should exist")
 }
 
-func TestStore_CreateItemAndFeedItemTx_BlockByAuthor(t *testing.T) {
+func TestStore_SaveFetchedItem_BlockByAuthor(t *testing.T) {
 	s := setupStore(t)
 	ctx := context.Background()
 
@@ -362,7 +362,7 @@ func TestStore_CreateItemAndFeedItemTx_BlockByAuthor(t *testing.T) {
 	// 3. Ingest an item with author matching the rule
 	author := "BlockedAuthor"
 	title := "Post by Blocked Author"
-	err = s.CreateItemAndFeedItemTx(ctx, store.SaveFetchedItemParams{
+	err = s.SaveFetchedItem(ctx, store.SaveFetchedItemParams{
 		FeedID: feedID,
 		Url:    "https://example.com/post-by-author",
 		Title:  &title,

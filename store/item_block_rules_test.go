@@ -327,3 +327,43 @@ func TestShouldBlockItem_Author(t *testing.T) {
 		assert.Assert(t, store.ShouldBlockItem(itemWithoutAuthor, rule, &extractedUser, nil))
 	})
 }
+
+func TestShouldBlockItem_EmptyGuards(t *testing.T) {
+	title := "Test Title"
+	content := "Test Content"
+	author := "Alice"
+	item := store.FullItem{
+		Url:     "https://example.com/post",
+		Title:   &title,
+		Content: &content,
+		Author:  &author,
+	}
+	extractedUser := "Alice"
+	extractedDomain := "example.com"
+
+	t.Run("empty RuleValue for user", func(t *testing.T) {
+		rule := store.ItemBlockRule{RuleType: "user", RuleValue: ""}
+		assert.Assert(t, !store.ShouldBlockItem(item, rule, &extractedUser, &extractedDomain))
+	})
+
+	t.Run("empty RuleValue for domain", func(t *testing.T) {
+		rule := store.ItemBlockRule{RuleType: "domain", RuleValue: ""}
+		assert.Assert(t, !store.ShouldBlockItem(item, rule, &extractedUser, &extractedDomain))
+	})
+
+	t.Run("empty RuleValue for keyword", func(t *testing.T) {
+		rule := store.ItemBlockRule{RuleType: "keyword", RuleValue: ""}
+		assert.Assert(t, !store.ShouldBlockItem(item, rule, &extractedUser, &extractedDomain))
+	})
+
+	t.Run("empty Domain for user_domain", func(t *testing.T) {
+		rule := store.ItemBlockRule{RuleType: "user_domain", RuleValue: "Alice", Domain: ""}
+		assert.Assert(t, !store.ShouldBlockItem(item, rule, &extractedUser, &extractedDomain))
+	})
+
+	t.Run("empty RuleValue for user_domain", func(t *testing.T) {
+		rule := store.ItemBlockRule{RuleType: "user_domain", RuleValue: "", Domain: "example.com"}
+		assert.Assert(t, !store.ShouldBlockItem(item, rule, &extractedUser, &extractedDomain))
+	})
+}
+

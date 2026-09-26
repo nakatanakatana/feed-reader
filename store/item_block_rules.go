@@ -122,6 +122,9 @@ func ShouldBlockItem(item FullItem, rule ItemBlockRule, extractedUser *string, e
 		}
 		return matchesUser(item, extractedUser, rule.RuleValue) && matchesDomain(item, extractedDomain, rule.Domain)
 	case "keyword":
+		if rule.RuleValue == "" {
+			return false
+		}
 		// Check title and content for keyword
 		if item.Title != nil && containsKeyword(*item.Title, rule.RuleValue) {
 			return true
