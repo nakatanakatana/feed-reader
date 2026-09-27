@@ -191,7 +191,7 @@ describe("ItemDetailModal Image Layout", () => {
       maxHeight: "10vh",
     });
 
-    // Ensure the initial createEffect's requestAnimationFrame has fired
+    // Wait for frame to ensure styles and effects have settled
     await nextFrame();
 
     // Trigger load event if it was not already complete

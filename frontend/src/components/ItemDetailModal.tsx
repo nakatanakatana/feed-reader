@@ -275,7 +275,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   });
 
   createEffect(() => {
-    // Track itemId and item data to trigger re-focus when content changes
+    // Track itemId and item data to detect images when content changes
     const id = props.itemId;
     const itemData = item();
     const loading = id === "end-of-list" ? false : isLoading();
@@ -284,40 +284,37 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
       const currentModalRef = modalRef;
       const cleanupTasks: (() => void)[] = [];
 
-      const timerId = setTimeout(() => {
-        // Detect image layout and set data-layout attribute
-        const imgs = currentModalRef.querySelectorAll("img");
-        for (const img of imgs) {
-          const updateLayout = () => {
-            const naturalHeight = img.naturalHeight;
-            let layout = "other";
-            // Avoid division by zero or invalid ratios for malformed/edge-case images
-            if (!naturalHeight) {
-              img.setAttribute("data-layout", layout);
-              return;
-            }
-            const ratio = img.naturalWidth / naturalHeight;
-            if (ratio > 1.1) {
-              layout = "hero";
-            } else if (ratio >= 0.9 && ratio <= 1.1) {
-              layout = "icon";
-            }
+      // Detect image layout and set data-layout attribute immediately
+      const imgs = currentModalRef.querySelectorAll("img");
+      for (const img of imgs) {
+        const updateLayout = () => {
+          const naturalHeight = img.naturalHeight;
+          let layout = "other";
+          // Avoid division by zero or invalid ratios for malformed/edge-case images
+          if (!naturalHeight) {
             img.setAttribute("data-layout", layout);
-          };
-
-          if (img.complete) {
-            updateLayout();
-          } else {
-            img.addEventListener("load", updateLayout, { once: true });
-            cleanupTasks.push(() =>
-              img.removeEventListener("load", updateLayout),
-            );
+            return;
           }
+          const ratio = img.naturalWidth / naturalHeight;
+          if (ratio > 1.1) {
+            layout = "hero";
+          } else if (ratio >= 0.9 && ratio <= 1.1) {
+            layout = "icon";
+          }
+          img.setAttribute("data-layout", layout);
+        };
+
+        if (img.complete) {
+          updateLayout();
+        } else {
+          img.addEventListener("load", updateLayout, { once: true });
+          cleanupTasks.push(() =>
+            img.removeEventListener("load", updateLayout),
+          );
         }
-      }, 0);
+      }
 
       onCleanup(() => {
-        clearTimeout(timerId);
         for (const task of cleanupTasks) task();
       });
     }
