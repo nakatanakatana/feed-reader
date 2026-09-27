@@ -1,5 +1,11 @@
 # Changelog
 
+## [v0.25.1](https://github.com/nakatanakatana/feed-reader/compare/v0.25.0...v0.25.1) - 2026-09-27
+
+### Maintenance & Others
+- fix(ui): eliminate race condition in image layout detection by @nakatanakatana in https://github.com/nakatanakatana/feed-reader/pull/1053
+- chore(deps): update kubb to v5.3.13 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1052
+
 ## [v0.25.0](https://github.com/nakatanakatana/feed-reader/compare/v0.24.0...v0.25.0) - 2026-09-26
 
 ### Maintenance & Others
