@@ -19,7 +19,12 @@ export function feedsDelete<ThrowOnError extends boolean = true>(
   const { client: request = client, ...config } = options;
 
   return unwrapResult(
-    request({ method: "DELETE", url: "/feeds/{id}", ...config }),
-    config.throwOnError,
+    request({
+      method: "DELETE",
+      url: "/feeds/{id}",
+      ...config,
+      throwOnError: config.throwOnError ?? true,
+    }),
+    config.throwOnError ?? true,
   ) as Promise<UnwrappedResult<FeedsDeleteResponses, ThrowOnError>>;
 }

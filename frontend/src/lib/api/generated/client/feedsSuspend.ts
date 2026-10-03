@@ -19,7 +19,12 @@ export function feedsSuspend<ThrowOnError extends boolean = true>(
   const { client: request = client, ...config } = options;
 
   return unwrapResult(
-    request({ method: "POST", url: "/feeds/suspend", ...config }),
-    config.throwOnError,
+    request({
+      method: "POST",
+      url: "/feeds/suspend",
+      ...config,
+      throwOnError: config.throwOnError ?? true,
+    }),
+    config.throwOnError ?? true,
   ) as Promise<UnwrappedResult<FeedsSuspendResponses, ThrowOnError>>;
 }

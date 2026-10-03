@@ -29,7 +29,8 @@ export function tagIgnoreWindowsList<ThrowOnError extends boolean = true>(
         },
       },
       ...config,
+      throwOnError: config.throwOnError ?? true,
     }),
-    config.throwOnError,
+    config.throwOnError ?? true,
   ) as Promise<UnwrappedResult<TagIgnoreWindowsListResponses, ThrowOnError>>;
 }

@@ -33,7 +33,8 @@ export function itemsList<ThrowOnError extends boolean = true>(
         },
       },
       ...config,
+      throwOnError: config.throwOnError ?? true,
     }),
-    config.throwOnError,
+    config.throwOnError ?? true,
   ) as Promise<UnwrappedResult<ItemsListResponses, ThrowOnError>>;
 }
