@@ -24,7 +24,8 @@ export function feedsList<ThrowOnError extends boolean = true>(
       url: "/feeds",
       styles: { query: { tagId: { explode: false } } },
       ...config,
+      throwOnError: config.throwOnError ?? true,
     }),
-    config.throwOnError,
+    config.throwOnError ?? true,
   ) as Promise<UnwrappedResult<FeedsListResponses, ThrowOnError>>;
 }

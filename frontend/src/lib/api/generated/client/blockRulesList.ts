@@ -19,7 +19,12 @@ export function blockRulesList<ThrowOnError extends boolean = true>(
   const { client: request = client, ...config } = options;
 
   return unwrapResult(
-    request({ method: "GET", url: "/block-rules", ...config }),
-    config.throwOnError,
+    request({
+      method: "GET",
+      url: "/block-rules",
+      ...config,
+      throwOnError: config.throwOnError ?? true,
+    }),
+    config.throwOnError ?? true,
   ) as Promise<UnwrappedResult<BlockRulesListResponses, ThrowOnError>>;
 }

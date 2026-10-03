@@ -19,7 +19,12 @@ export function tagIgnoreWindowsManage<ThrowOnError extends boolean = true>(
   const { client: request = client, ...config } = options;
 
   return unwrapResult(
-    request({ method: "POST", url: "/tag-ignore-windows/manage", ...config }),
-    config.throwOnError,
+    request({
+      method: "POST",
+      url: "/tag-ignore-windows/manage",
+      ...config,
+      throwOnError: config.throwOnError ?? true,
+    }),
+    config.throwOnError ?? true,
   ) as Promise<UnwrappedResult<TagIgnoreWindowsManageResponses, ThrowOnError>>;
 }

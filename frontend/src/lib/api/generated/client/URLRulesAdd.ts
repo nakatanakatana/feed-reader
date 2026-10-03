@@ -19,7 +19,12 @@ export function URLRulesAdd<ThrowOnError extends boolean = true>(
   const { client: request = client, ...config } = options;
 
   return unwrapResult(
-    request({ method: "POST", url: "/url-rules", ...config }),
-    config.throwOnError,
+    request({
+      method: "POST",
+      url: "/url-rules",
+      ...config,
+      throwOnError: config.throwOnError ?? true,
+    }),
+    config.throwOnError ?? true,
   ) as Promise<UnwrappedResult<URLRulesAddResponses, ThrowOnError>>;
 }

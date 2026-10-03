@@ -19,7 +19,12 @@ export function feedIgnoreWindowsManage<ThrowOnError extends boolean = true>(
   const { client: request = client, ...config } = options;
 
   return unwrapResult(
-    request({ method: "POST", url: "/feed-ignore-windows/manage", ...config }),
-    config.throwOnError,
+    request({
+      method: "POST",
+      url: "/feed-ignore-windows/manage",
+      ...config,
+      throwOnError: config.throwOnError ?? true,
+    }),
+    config.throwOnError ?? true,
   ) as Promise<UnwrappedResult<FeedIgnoreWindowsManageResponses, ThrowOnError>>;
 }

@@ -19,7 +19,12 @@ export function ignoreWindowsUpdate<ThrowOnError extends boolean = true>(
   const { client: request = client, ...config } = options;
 
   return unwrapResult(
-    request({ method: "PUT", url: "/ignore-windows/{id}", ...config }),
-    config.throwOnError,
+    request({
+      method: "PUT",
+      url: "/ignore-windows/{id}",
+      ...config,
+      throwOnError: config.throwOnError ?? true,
+    }),
+    config.throwOnError ?? true,
   ) as Promise<UnwrappedResult<IgnoreWindowsUpdateResponses, ThrowOnError>>;
 }

@@ -19,7 +19,12 @@ export function feedsImportOpml<ThrowOnError extends boolean = true>(
   const { client: request = client, ...config } = options;
 
   return unwrapResult(
-    request({ method: "POST", url: "/feeds/import-opml", ...config }),
-    config.throwOnError,
+    request({
+      method: "POST",
+      url: "/feeds/import-opml",
+      ...config,
+      throwOnError: config.throwOnError ?? true,
+    }),
+    config.throwOnError ?? true,
   ) as Promise<UnwrappedResult<FeedsImportOpmlResponses, ThrowOnError>>;
 }

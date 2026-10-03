@@ -19,7 +19,12 @@ export function ignoreWindowsCreate<ThrowOnError extends boolean = true>(
   const { client: request = client, ...config } = options;
 
   return unwrapResult(
-    request({ method: "POST", url: "/ignore-windows", ...config }),
-    config.throwOnError,
+    request({
+      method: "POST",
+      url: "/ignore-windows",
+      ...config,
+      throwOnError: config.throwOnError ?? true,
+    }),
+    config.throwOnError ?? true,
   ) as Promise<UnwrappedResult<IgnoreWindowsCreateResponses, ThrowOnError>>;
 }
