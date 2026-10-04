@@ -1,5 +1,35 @@
 # Changelog
 
+## [v0.26.0](https://github.com/nakatanakatana/feed-reader/compare/v0.25.1...v0.26.0) - 2026-10-04
+
+### Maintenance & Others
+- chore(deps): update dependency vite to v8.3.1 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1055
+- chore(deps): update dependency k1low/octocov to v0.83.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1058
+- chore(deps): update dependency aquaproj/aqua-registry to v4.568.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1057
+- chore(deps): update dependency k1low/mo to v1.6.9 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1060
+- fix(deps): update module modernc.org/sqlite to v1.60.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1063
+- chore(deps): update vitest monorepo to v5.0.2 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1062
+- fix(deps): update dependency @tanstack/solid-query to v5.103.3 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1064
+- fix(deps): update module github.com/sqldef/sqldef/v3 to v3.11.25 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1065
+- fix(deps): update dependency @tanstack/solid-query to v5.104.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1066
+- fix(deps): update module modernc.org/sqlite to v1.60.1 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1067
+- chore(deps): update dependency aquaproj/aqua-registry to v4.569.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1068
+- chore(deps): update dependency k1low/octocov to v0.83.1 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1061
+- fix(deps): update tanstack-router monorepo by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1069
+- chore(deps): update dependency oxlint to v1.86.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1073
+- fix(deps): update module github.com/sqldef/sqldef/v3 to v3.11.26 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1070
+- chore(deps): update dependency oxfmt to ^0.71.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1072
+- chore(deps): update dependency aquaproj/aqua-registry to v4.570.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1071
+- fix(deps): update opentelemetry-go monorepo to v1.47.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1075
+- chore(deps): update vitest monorepo to v5.0.3 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1077
+- chore(deps): update kubb to v5.4.1 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1056
+- chore(deps): update dependency aquaproj/aqua-registry to v4.571.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1078
+- fix(deps): update tanstack-router monorepo by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1080
+- chore(deps): update dependency @kubb/plugin-msw to v5.0.5 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1079
+- chore(deps): update dependency @pandacss/dev to v2 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1076
+- chore(deps): update dependency msw to v3 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1074
+- chore(deps): update panda-css monorepo to v2.0.1 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1081
+
 ## [v0.25.1](https://github.com/nakatanakatana/feed-reader/compare/v0.25.0...v0.25.1) - 2026-09-27
 
 ### Maintenance & Others
