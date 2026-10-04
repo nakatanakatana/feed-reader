@@ -66,7 +66,7 @@ describe("RootComponent Navigation", () => {
     const headerContainer = page.getByRole("banner");
     await expect.element(headerContainer).toHaveStyle({
       paddingTop: "8px",
-      borderBottomColor: "rgb(243, 244, 246)",
+      borderBottomColor: "oklch(0.967 0.003 264.542)",
     });
 
     // 6. Verify Active State
@@ -74,9 +74,9 @@ describe("RootComponent Navigation", () => {
     await expect.element(homeLink).toHaveStyle({
       borderBottomWidth: "2px",
       borderBottomStyle: "solid",
-      borderBottomColor: "rgb(37, 99, 235)", // blue.600
-      color: "rgb(29, 78, 216)", // blue.700
-      backgroundColor: "rgb(239, 246, 255)", // blue.50
+      borderBottomColor: "oklch(0.546 0.245 262.881)", // blue.600
+      color: "oklch(0.488 0.243 264.376)", // blue.700
+      backgroundColor: "oklch(0.97 0.014 254.604)", // blue.50
     });
 
     // Verify inactive link does NOT have it
@@ -84,7 +84,7 @@ describe("RootComponent Navigation", () => {
       borderBottomWidth: "2px",
     });
     await expect.element(feedsLink).toHaveStyle({
-      color: "rgb(107, 114, 128)", // gray.500
+      color: "oklch(0.551 0.027 264.364)", // gray.500
     });
   });
 });
