@@ -69,13 +69,20 @@
     "vitest": "5.0.3"
   },
   "overrides": {
+    "@kubb/plugin-msw": {
+      "msw": "$msw"
+    },
+    "@vitest/mocker": {
+      "msw": "$msw"
+    },
     "vite-plugin-pwa": {
       "vite": "$vite"
     }
   },
   "msw": {
     "workerDirectory": [
-      "public"
+      "public",
+      "frontend/public"
     ]
   }
 }
