@@ -15,7 +15,7 @@ describe("initMocks", () => {
     await initMocks({ useMocks: true });
 
     expect(startSpy).toHaveBeenCalledWith({
-      onUnhandledRequest: "bypass",
+      onUnhandledFrame: "bypass",
     });
 
     startSpy.mockRestore();

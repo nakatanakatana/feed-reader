@@ -48,7 +48,7 @@ expect.addSnapshotSerializer({
 });
 
 beforeAll(async () => {
-  await worker.start({ onUnhandledRequest: "bypass", quiet: true });
+  await worker.start({ onUnhandledFrame: "bypass", quiet: true });
 });
 
 beforeEach(() => {
@@ -63,6 +63,6 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-afterAll(() => {
-  worker.stop();
+afterAll(async () => {
+  await worker.stop();
 });
