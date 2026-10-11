@@ -1,5 +1,51 @@
 # Changelog
 
+## [v0.26.1](https://github.com/nakatanakatana/feed-reader/compare/v0.26.0...v0.26.1) - 2026-10-11
+
+### Maintenance & Others
+- fix(deps): update module github.com/nakatanakatana/mytools to v0.12.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1082
+- chore(deps): update dependency vite to v8.3.2 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1084
+- chore(deps): update kubb to v5.4.2 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1085
+- chore(deps): update dependency @types/node to v25.9.9 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1086
+- chore(deps): update panda-css monorepo to v2.1.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1087
+- chore(deps): update kubb to v5.4.3 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1088
+- fix(deps): update dependency @tanstack/solid-query to v5.104.1 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1089
+- chore(deps): update dependency aquaproj/aqua-registry to v4.572.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1090
+- chore(deps): update dependency msw to v3.0.2 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1092
+- chore(deps): update panda-css monorepo to v2.1.1 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1091
+- chore(deps): update aquaproj/aqua-installer action to v4.1.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1093
+- chore(deps): update dependency aquaproj/aqua to v2.64.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1095
+- chore(deps): update dependency aqua to v2.64.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1094
+- chore(deps): update kubb to v5.4.5 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1096
+- chore(deps): update dependency aquaproj/aqua-registry to v4.573.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1098
+- chore(deps): update dependency jsdom to v30.1.2 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1099
+- chore(deps): update dependency k1low/octocov to v0.83.2 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1100
+- chore(deps): update dependency moznion/cccc to v1.7.1 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1101
+- fix(deps): update dependency postcss to v8.5.29 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1102
+- chore(deps): update dependency moznion/cccc to v1.8.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1104
+- chore(deps): update dependency oxfmt to ^0.72.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1105
+- chore(deps): update kubb to v5.5.1 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1107
+- chore(deps): update dependency oxlint to v1.87.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1106
+- fix(deps): update dependency web-vitals to v6.2.3 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1103
+- chore(deps): update dependency golang/go to v1.27.2 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1108
+- chore(deps): update dependency aquaproj/aqua-registry to v4.573.1 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1110
+- chore(deps): update dependency goreleaser/goreleaser to v2.18.3 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1111
+- chore(deps): update dependency vite to v8.3.3 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1112
+- chore(deps): update kubb to v5.5.2 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1113
+- chore(deps): update dependency k1low/octocov to v0.83.3 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1114
+- fix(deps): update module golang.org/x/sync to v0.24.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1115
+- chore(deps): update kubb to v5.5.3 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1116
+- fix(deps): update opentelemetry-js monorepo by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1118
+- chore(deps): update panda-css monorepo to v2.1.2 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1120
+- fix(deps): update dependency @opentelemetry/auto-instrumentations-web to v0.68.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1117
+- fix(deps): update dependency solid-js to v1.9.16 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1121
+- fix(deps): update module github.com/nakatanakatana/mytools to v0.12.1 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1122
+- fix(deps): update dependency solid-js to v1.9.17 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1123
+- chore(deps): update golang:1.27-alpine docker digest to f92b6ef by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1109
+- chore(deps): update dependency playwright to v1.64.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1124
+- chore(deps): update dependency aquaproj/aqua-registry to v4.574.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1125
+- chore(deps): update dependency @typespec/compiler to v1.17.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1126
+
 ## [v0.26.0](https://github.com/nakatanakatana/feed-reader/compare/v0.25.1...v0.26.0) - 2026-10-04
 
 ### Maintenance & Others
