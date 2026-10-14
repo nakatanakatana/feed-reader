@@ -186,7 +186,7 @@ export type Item = {
   feedId: string;
   isRead: boolean;
   author: string;
-  content: string;
+  content?: string;
   imageUrl: string;
   categories: string;
   feeds?: ItemFeed[];

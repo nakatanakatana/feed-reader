@@ -166,7 +166,7 @@ type ImportOpmlResponse struct {
 type Item struct {
 	Author      string      `json:"author"`
 	Categories  string      `json:"categories"`
-	Content     string      `json:"content"`
+	Content     *string     `json:"content,omitempty"`
 	CreatedAt   time.Time   `json:"createdAt"`
 	Description string      `json:"description"`
 	FeedId      string      `json:"feedId"`

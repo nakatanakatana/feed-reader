@@ -1141,7 +1141,7 @@ func getItemRowToOpenAPI(item store.GetItemRow) (openapi.Item, error) {
 		FeedId:      item.FeedID,
 		IsRead:      item.IsRead == 1,
 		Author:      stringValue(item.Author),
-		Content:     stringValue(item.Content),
+		Content:     item.Content,
 		ImageUrl:    stringValue(item.ImageUrl),
 		Categories:  stringValue(item.Categories),
 		CreatedAt:   createdAt,
@@ -1160,7 +1160,7 @@ func itemFeedsToOpenAPI(feeds []store.ListItemFeedsRow) []openapi.ItemFeed {
 }
 
 func listItemsRowToOpenAPI(row store.ListItemsRow) (openapi.Item, error) {
-	return getItemRowToOpenAPI(store.GetItemRow{
+	item, err := getItemRowToOpenAPI(store.GetItemRow{
 		ID:          row.ID,
 		Url:         row.Url,
 		Title:       row.Title,
@@ -1168,13 +1168,18 @@ func listItemsRowToOpenAPI(row store.ListItemsRow) (openapi.Item, error) {
 		PublishedAt: row.PublishedAt,
 		Author:      row.Author,
 		Guid:        row.Guid,
-		Content:     row.Content,
+		Content:     nil, // Omit content from list responses to reduce payload size
 		ImageUrl:    row.ImageUrl,
 		Categories:  row.Categories,
 		CreatedAt:   row.CreatedAt,
 		FeedID:      row.FeedID,
 		IsRead:      row.IsRead,
 	})
+	if err != nil {
+		return openapi.Item{}, err
+	}
+	item.Content = nil
+	return item, nil
 }
 
 func (h *OpenAPIHandler) updateItemStatus(ctx context.Context, ids []string, isRead *bool) error {

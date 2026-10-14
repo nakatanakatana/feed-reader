@@ -975,7 +975,6 @@ components:
         - feedId
         - isRead
         - author
-        - content
         - imageUrl
         - categories
         - createdAt
