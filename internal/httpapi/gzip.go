@@ -123,7 +123,11 @@ func (w *gzipResponseWriter) Flush() {
 
 func (w *gzipResponseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
 	if hijacker, ok := w.ResponseWriter.(http.Hijacker); ok {
-		return hijacker.Hijack()
+		conn, rw, err := hijacker.Hijack()
+		if err == nil {
+			w.compress = false
+		}
+		return conn, rw, err
 	}
 	return nil, nil, http.ErrNotSupported
 }
@@ -135,6 +139,7 @@ func (w *gzipResponseWriter) Unwrap() http.ResponseWriter {
 func (w *gzipResponseWriter) Close() error {
 	if w.compress && w.gw != nil {
 		err := w.gw.Close()
+		w.gw.Reset(io.Discard)
 		gzipWriterPool.Put(w.gw)
 		w.gw = nil
 		return err
@@ -146,12 +151,12 @@ func (w *gzipResponseWriter) Close() error {
 func NewGzipMiddleware() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Add("Vary", "Accept-Encoding")
+
 			if !strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
 				next.ServeHTTP(w, r)
 				return
 			}
-
-			w.Header().Add("Vary", "Accept-Encoding")
 
 			gzrw := &gzipResponseWriter{
 				ResponseWriter: w,

@@ -1,9 +1,11 @@
 package httpapi_test
 
 import (
+	"bufio"
 	"bytes"
 	"compress/gzip"
 	"io"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -65,7 +67,86 @@ func TestGzip_DoesNotCompressWhenAcceptEncodingLacksGzip(t *testing.T) {
 
 	assert.Equal(t, rec.Code, http.StatusOK)
 	assert.Equal(t, rec.Header().Get("Content-Encoding"), "")
+	assert.Assert(t, strings.Contains(rec.Header().Get("Vary"), "Accept-Encoding"))
 	assert.Equal(t, rec.Body.String(), originalBody)
+}
+
+func TestGzip_SkipsCompressionForNoContent(t *testing.T) {
+	handler := httpapi.NewGzipMiddleware()(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	}))
+
+	req := httptest.NewRequest(http.MethodGet, "/no-content", nil)
+	req.Header.Set("Accept-Encoding", "gzip")
+	rec := httptest.NewRecorder()
+
+	handler.ServeHTTP(rec, req)
+
+	assert.Equal(t, rec.Code, http.StatusNoContent)
+	assert.Equal(t, rec.Header().Get("Content-Encoding"), "")
+	assert.Assert(t, strings.Contains(rec.Header().Get("Vary"), "Accept-Encoding"))
+	assert.Equal(t, rec.Body.Len(), 0)
+}
+
+func TestGzip_SkipsCompressionForNotModified(t *testing.T) {
+	handler := httpapi.NewGzipMiddleware()(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNotModified)
+	}))
+
+	req := httptest.NewRequest(http.MethodGet, "/not-modified", nil)
+	req.Header.Set("Accept-Encoding", "gzip")
+	rec := httptest.NewRecorder()
+
+	handler.ServeHTTP(rec, req)
+
+	assert.Equal(t, rec.Code, http.StatusNotModified)
+	assert.Equal(t, rec.Header().Get("Content-Encoding"), "")
+	assert.Assert(t, strings.Contains(rec.Header().Get("Vary"), "Accept-Encoding"))
+	assert.Equal(t, rec.Body.Len(), 0)
+}
+
+type hijackRecorder struct {
+	*httptest.ResponseRecorder
+	hijacked           bool
+	writtenAfterHijack bool
+}
+
+func (h *hijackRecorder) Write(b []byte) (int, error) {
+	if h.hijacked {
+		h.writtenAfterHijack = true
+	}
+	return h.ResponseRecorder.Write(b)
+}
+
+func (h *hijackRecorder) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+	h.hijacked = true
+	serverConn, clientConn := net.Pipe()
+	_ = clientConn.Close()
+	return serverConn, bufio.NewReadWriter(bufio.NewReader(serverConn), bufio.NewWriter(serverConn)), nil
+}
+
+func TestGzip_HijackDisablesCompression(t *testing.T) {
+	var capturedConn net.Conn
+	handler := httpapi.NewGzipMiddleware()(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		hijacker, ok := w.(http.Hijacker)
+		assert.Assert(t, ok, "ResponseWriter should implement http.Hijacker")
+		conn, _, err := hijacker.Hijack()
+		assert.NilError(t, err)
+		capturedConn = conn
+	}))
+
+	req := httptest.NewRequest(http.MethodGet, "/ws", nil)
+	req.Header.Set("Accept-Encoding", "gzip")
+	rawRec := &hijackRecorder{ResponseRecorder: httptest.NewRecorder()}
+
+	handler.ServeHTTP(rawRec, req)
+	if capturedConn != nil {
+		_ = capturedConn.Close()
+	}
+
+	assert.Assert(t, rawRec.hijacked)
+	assert.Assert(t, !rawRec.writtenAfterHijack, "Close() must not write gzip footers after connection is hijacked")
 }
 
 func TestGzip_SkipsAlreadyCompressedContentTypes(t *testing.T) {
