@@ -956,3 +956,73 @@ func TestOpenAPIListAndManageTagIgnoreWindows(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Equal(t, len(listTag2Body.TagIgnoreWindows), 1)
 }
+
+func TestItemsList_OmitsContent(t *testing.T) {
+	ctx := context.Background()
+	s := setupTestDB(t)
+
+	_, err := s.CreateFeed(ctx, store.CreateFeedParams{
+		ID:  "feed-1",
+		Url: "https://example.com/feed.xml",
+	})
+	assert.NilError(t, err)
+
+	content := "<p>Full content of item 1</p>"
+	itemTitle := "Item 1"
+	_, err = s.CreateItem(ctx, store.CreateItemParams{
+		ID:      "item-1",
+		Url:     "https://example.com/item1.html",
+		Title:   &itemTitle,
+		Content: &content,
+	})
+	assert.NilError(t, err)
+
+	err = s.CreateFeedItem(ctx, store.CreateFeedItemParams{
+		FeedID: "feed-1",
+		ItemID: "item-1",
+	})
+	assert.NilError(t, err)
+
+	handler := openapi.HandlerFromMuxWithBaseURL(
+		openapi.NewStrictHandler(httpapi.NewStrictHandler(httpapi.Dependencies{Store: s}), nil),
+		http.NewServeMux(),
+		"/api/v2",
+	)
+
+	// 1. GET /api/v2/items should omit content
+	listReq := httptest.NewRequest(http.MethodGet, "/api/v2/items", nil)
+	listRec := httptest.NewRecorder()
+	handler.ServeHTTP(listRec, listReq)
+	assert.Equal(t, listRec.Code, http.StatusOK, listRec.Body.String())
+
+	var listBody openapi.ListItemsResponse
+	err = json.Unmarshal(listRec.Body.Bytes(), &listBody)
+	assert.NilError(t, err)
+	assert.Equal(t, len(listBody.Items), 1)
+	assert.Assert(t, listBody.Items[0].Content == nil, "expected Content to be nil in items list response, got %v", listBody.Items[0].Content)
+
+	// Also verify that "content" key is omitted from raw JSON
+	var rawListBody map[string]any
+	err = json.Unmarshal(listRec.Body.Bytes(), &rawListBody)
+	assert.NilError(t, err)
+	rawItems, ok := rawListBody["items"].([]any)
+	assert.Assert(t, ok)
+	rawFirstItem, ok := rawItems[0].(map[string]any)
+	assert.Assert(t, ok)
+	_, hasContent := rawFirstItem["content"]
+	assert.Assert(t, !hasContent, "expected raw JSON to omit 'content' field in list items")
+
+	// 2. GET /api/v2/items/{id} should include content
+	getReq := httptest.NewRequest(http.MethodGet, "/api/v2/items/item-1", nil)
+	getRec := httptest.NewRecorder()
+	handler.ServeHTTP(getRec, getReq)
+	assert.Equal(t, getRec.Code, http.StatusOK, getRec.Body.String())
+
+	var getBody openapi.GetItemResponse
+	err = json.Unmarshal(getRec.Body.Bytes(), &getBody)
+	assert.NilError(t, err)
+	assert.Assert(t, getBody.Item != nil)
+	assert.Assert(t, getBody.Item.Content != nil, "expected Content to be non-nil in item get response")
+	assert.Equal(t, *getBody.Item.Content, content)
+}
+
