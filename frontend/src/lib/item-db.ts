@@ -88,7 +88,7 @@ export const mapOpenAPIItem = (item: OpenAPIItem): Item => ({
   author: item.author,
   categories: item.categories,
   imageUrl: item.imageUrl,
-  content: item.content,
+  content: item.content ?? "",
   feeds: item.feeds,
 });
 
