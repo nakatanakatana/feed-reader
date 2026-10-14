@@ -33,5 +33,5 @@ func NewMux(deps Dependencies) http.Handler {
 	if methods == "" {
 		methods = primaryCORSMethods
 	}
-	return NewCORSMiddleware(deps.AllowedOrigins, methods)(mux)
+	return NewCORSMiddleware(deps.AllowedOrigins, methods)(NewGzipMiddleware()(mux))
 }
