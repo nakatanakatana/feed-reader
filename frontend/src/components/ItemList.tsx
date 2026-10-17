@@ -1,13 +1,12 @@
-import { createQuery } from "@tanstack/solid-query";
+import type { JSX } from "@solidjs/web";
+import { useQuery } from "@tanstack/solid-query";
 import { useLocation, useNavigate } from "@tanstack/solid-router";
 import {
   createEffect,
   createMemo,
   createSignal,
   For,
-  type JSX,
-  onCleanup,
-  onMount,
+  onSettled,
   Show,
 } from "solid-js";
 import { css } from "../../styled-system/css";
@@ -52,7 +51,7 @@ export function ItemList(props: ItemListProps) {
   const [showMoreActions, setShowMoreActions] = createSignal(false);
   let moreActionsRef: HTMLDivElement | undefined;
 
-  onMount(() => {
+  onSettled(() => {
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target;
       if (
@@ -64,21 +63,24 @@ export function ItemList(props: ItemListProps) {
       }
     };
     document.addEventListener("click", handleClickOutside);
-    onCleanup(() => document.removeEventListener("click", handleClickOutside));
+    return () => document.removeEventListener("click", handleClickOutside);
   });
 
-  createEffect(() => {
-    if (props.dateFilter) {
-      itemStore.setDateFilter(props.dateFilter);
-    }
-  });
+  createEffect(
+    () => props.dateFilter,
+    (dateFilter) => {
+      if (dateFilter) {
+        itemStore.setDateFilter(dateFilter);
+      }
+    },
+  );
 
-  const itemsQuery = createQuery(() =>
+  const itemsQuery = useQuery(() =>
     getItemsQueryOptions(itemStore.state.showRead, itemStore.state.since),
   );
-  const readsQuery = createQuery(() => itemReadQueryOptions);
-  const feedTagsQuery = createQuery(() => feedTagsQueryOptions);
-  const tagsQuery = createQuery(() => tagsQueryOptions);
+  const readsQuery = useQuery(() => itemReadQueryOptions);
+  const feedTagsQuery = useQuery(() => feedTagsQueryOptions);
+  const tagsQuery = useQuery(() => tagsQueryOptions);
 
   const itemsWithReadState = createMemo(() => {
     return getItemsWithReadState(

@@ -1,4 +1,4 @@
-import { createStore } from "solid-js/store";
+import { createStore } from "solid-js";
 
 interface FetchingState {
   fetchingFeedIds: Set<string>;
@@ -18,46 +18,35 @@ export const fetchingState = {
     return (id: string) => state.errors[id];
   },
   startFetching(ids: string[]) {
-    setState("fetchingFeedIds", (prev) => {
-      const next = new Set(prev);
+    setState((draft) => {
+      const next = new Set(draft.fetchingFeedIds);
       for (const id of ids) {
         next.add(id);
+        delete draft.errors[id];
       }
-      return next;
-    });
-    // Clear errors when starting new fetch
-    setState("errors", (prev) => {
-      const next = { ...prev };
-      for (const id of ids) {
-        delete next[id];
-      }
-      return next;
+      draft.fetchingFeedIds = next;
     });
   },
   finishFetching(
     ids: string[],
     results?: { feedId: string; errorMessage?: string }[],
   ) {
-    setState("fetchingFeedIds", (prev) => {
-      const next = new Set(prev);
+    setState((draft) => {
+      const next = new Set(draft.fetchingFeedIds);
       for (const id of ids) {
         next.delete(id);
       }
-      return next;
-    });
+      draft.fetchingFeedIds = next;
 
-    if (results) {
-      setState("errors", (prev) => {
-        const next = { ...prev };
+      if (results) {
         for (const res of results) {
           if (res.errorMessage) {
-            next[res.feedId] = res.errorMessage;
+            draft.errors[res.feedId] = res.errorMessage;
           } else {
-            delete next[res.feedId];
+            delete draft.errors[res.feedId];
           }
         }
-        return next;
-      });
-    }
+      }
+    });
   },
 };

@@ -1,5 +1,5 @@
 import { QueryClientProvider } from "@tanstack/solid-query";
-import { render } from "solid-js/web";
+import { render } from "@solidjs/web";
 import { afterEach, describe, expect, it } from "vitest";
 import { page } from "vitest/browser";
 import { queryClient } from "../lib/query";

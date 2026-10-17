@@ -1,6 +1,6 @@
 import { useIsFetching } from "@tanstack/solid-query";
 import { createFileRoute, Outlet } from "@tanstack/solid-router";
-import { onCleanup, onMount } from "solid-js";
+import { onSettled } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
 import { ItemList } from "../components/ItemList";
@@ -38,7 +38,7 @@ function ItemsLayout() {
   const isFetchingReads = useIsFetching(() => ({ queryKey: ["item-reads"] }));
   const isFetching = () => isFetchingItems() > 0 || isFetchingReads() > 0;
 
-  onMount(() => {
+  onSettled(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Ignore if user is typing in an input field
       if (
@@ -58,7 +58,7 @@ function ItemsLayout() {
     };
 
     window.addEventListener("keydown", handleKeyDown);
-    onCleanup(() => window.removeEventListener("keydown", handleKeyDown));
+    return () => window.removeEventListener("keydown", handleKeyDown);
   });
 
   return (

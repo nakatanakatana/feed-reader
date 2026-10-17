@@ -1,4 +1,5 @@
-import { render } from "solid-js/web";
+import { render } from "@solidjs/web";
+import { flush } from "solid-js";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { IgnoreWindow } from "../lib/ignore-window-db";
 import { AddIgnoreWindowModal } from "./AddIgnoreWindowModal";
@@ -152,6 +153,7 @@ describe("AddIgnoreWindowModal", () => {
     for (const input of dayInputs) {
       if (input.checked) {
         input.click();
+        flush();
       }
     }
     const sunInput = document.querySelector<HTMLInputElement>(
@@ -161,8 +163,11 @@ describe("AddIgnoreWindowModal", () => {
       'input[name="daysOfWeek"][value="6"]',
     );
     sunInput?.click();
+    flush();
     satInput?.click();
+    flush();
 
+    flush();
     const form = document.querySelector("form") as HTMLFormElement;
     form.dispatchEvent(
       new Event("submit", { bubbles: true, cancelable: true }),
@@ -199,6 +204,7 @@ describe("AddIgnoreWindowModal", () => {
     nameInput.value = "Updated Nightly";
     nameInput.dispatchEvent(new Event("input", { bubbles: true }));
 
+    flush();
     const form = document.querySelector("form") as HTMLFormElement;
     form.dispatchEvent(
       new Event("submit", { bubbles: true, cancelable: true }),
@@ -279,6 +285,7 @@ describe("AddIgnoreWindowModal", () => {
     expect(allDayCheckbox.checked).toBe(false);
     allDayCheckbox.checked = true;
     allDayCheckbox.dispatchEvent(new Event("change", { bubbles: true }));
+    flush();
 
     expect(startTimeInput.value).toBe("00:00");
     expect(endTimeInput.value).toBe("24:00");
@@ -312,16 +319,19 @@ describe("AddIgnoreWindowModal", () => {
     startTimeInput.dispatchEvent(new Event("input", { bubbles: true }));
     endTimeInput.value = "18:45";
     endTimeInput.dispatchEvent(new Event("input", { bubbles: true }));
+    flush();
 
     // Toggle All-Day ON
     allDayCheckbox.checked = true;
     allDayCheckbox.dispatchEvent(new Event("change", { bubbles: true }));
+    flush();
     expect(startTimeInput.value).toBe("00:00");
     expect(endTimeInput.value).toBe("24:00");
 
     // Toggle All-Day OFF -> should restore 09:30 and 18:45
     allDayCheckbox.checked = false;
     allDayCheckbox.dispatchEvent(new Event("change", { bubbles: true }));
+    flush();
     expect(startTimeInput.value).toBe("09:30");
     expect(endTimeInput.value).toBe("18:45");
     expect(startTimeInput.disabled).toBe(false);

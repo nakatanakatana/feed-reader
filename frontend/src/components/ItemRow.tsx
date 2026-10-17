@@ -81,7 +81,7 @@ export function ItemRow(props: ItemRowProps) {
         overflow: "hidden",
         _hover: { backgroundColor: "gray.50" },
       })}
-      data-is-read={props.item.isRead}
+      data-is-read={String(props.item.isRead)}
       data-testid={`item-row-${props.item.id}`}
     >
       <div class={flex({ alignItems: "center", flex: 1 })}>

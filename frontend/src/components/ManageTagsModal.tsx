@@ -1,4 +1,4 @@
-import { createQuery, useMutation } from "@tanstack/solid-query";
+import { useMutation, useQuery } from "@tanstack/solid-query";
 import { createMemo, createSignal, For } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
@@ -19,8 +19,8 @@ interface ManageTagsModalProps {
 }
 
 export function ManageTagsModal(props: ManageTagsModalProps) {
-  const rawTagsQuery = createQuery(() => tagsQueryOptions);
-  const feedTagsQuery = createQuery(() => feedTagsQueryOptions);
+  const rawTagsQuery = useQuery(() => tagsQueryOptions);
+  const feedTagsQuery = useQuery(() => feedTagsQueryOptions);
 
   const tagsWithFeedCount = createMemo(() => {
     return getTagsWithFeedCount(
@@ -62,7 +62,7 @@ export function ManageTagsModal(props: ManageTagsModalProps) {
 
   const handleSave = async () => {
     try {
-      await manageTagsMutation.mutateAsync({
+      await manageTagsMutation.mutate({
         feedIds: props.feedIds,
         addTagIds: addTagIds(),
         removeTagIds: removeTagIds(),

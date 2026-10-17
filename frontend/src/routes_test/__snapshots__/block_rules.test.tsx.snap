@@ -11,24 +11,28 @@ exports[`Block Rules Page > should fetch and display item block rules 1`] = `
     >
       Home
     </a>
+    <!---->
     <a
       class="pos_relative px_3 py_1.5 bdr_md c_gray.500 trs_all_0.2s fw_medium fs_sm hover:bg-c_gray.50 hover:c_gray.900"
       href="/feeds"
     >
       Feeds
     </a>
+    <!---->
     <a
       class="pos_relative px_3 py_1.5 bdr_md c_gray.500 trs_all_0.2s fw_medium fs_sm hover:bg-c_gray.50 hover:c_gray.900"
       href="/tags"
     >
       Tags
     </a>
+    <!---->
     <a
       class="pos_relative px_3 py_1.5 bdr_md c_gray.500 trs_all_0.2s fw_medium fs_sm hover:bg-c_gray.50 hover:c_gray.900"
       href="/url-rules"
     >
       URL Rules
     </a>
+    <!---->
     <a
       aria-current="page"
       class="pos_relative px_3 py_1.5 bdr_md c_gray.500 trs_all_0.2s fw_medium fs_sm hover:bg-c_gray.50 hover:c_gray.900 fw_semibold c_blue.700! bg-c_blue.50! bd-b-w_2px border-bottom-style_solid bd-b-c_blue.600 bdr-b_0"
@@ -37,12 +41,14 @@ exports[`Block Rules Page > should fetch and display item block rules 1`] = `
     >
       Block Rules
     </a>
+    <!---->
     <a
       class="pos_relative px_3 py_1.5 bdr_md c_gray.500 trs_all_0.2s fw_medium fs_sm hover:bg-c_gray.50 hover:c_gray.900"
       href="/ignore-windows"
     >
       Ignore Windows
     </a>
+    <!---->
   </header>
   <div
     class="d_flex flex-d_column gap_2 md:gap_6 p_2 md:p_4 h_calc(100vh_-_56px) min-h_0 ov_hidden bg-c_gray.50"
@@ -142,7 +148,6 @@ exports[`Block Rules Page > should fetch and display item block rules 1`] = `
                 stroke-width="2"
                 viewBox="0 0 24 24"
                 width="16"
-                xmlns="http://www.w3.org/2000/svg"
               >
                 <line
                   x1="12"
@@ -157,8 +162,11 @@ exports[`Block Rules Page > should fetch and display item block rules 1`] = `
                   y2="12"
                 />
               </svg>
+              <!---->
               Add
+              <!---->
             </button>
+            <!---->
             <button
               class="bdr_md fw_medium cursor_pointer bd_1px_solid bd-c_gray.300 trs_all_0.2s d_inline-flex ai_center jc_center gap_2 disabled:op_0.5 disabled:cursor_not-allowed fs_sm py_2 px_4 bg_transparent c_gray.600 hover:bg_gray.50 hover:c_gray.700"
               icon="[object SVGSVGElement]"
@@ -175,7 +183,6 @@ exports[`Block Rules Page > should fetch and display item block rules 1`] = `
                 stroke-width="2"
                 viewBox="0 0 24 24"
                 width="16"
-                xmlns="http://www.w3.org/2000/svg"
               >
                 <path
                   d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
@@ -190,14 +197,18 @@ exports[`Block Rules Page > should fetch and display item block rules 1`] = `
                   y2="15"
                 />
               </svg>
+              <!---->
               Bulk Add
+              <!---->
             </button>
+            <!---->
           </div>
         </form>
       </div>
       <div
         class="flex_1 min-h_0 ov-y_auto bg-c_white bdr_md bx-sh_sm bd_1px_solid bd-c_gray.200"
       >
+        <!---->
         <div
           class="d_flex jc_flex-start ai_center flex-wrap_wrap cg_4 rg_2 bg-c_gray.50 p_2 bdr_md bd_1px_solid bd-c_gray.200"
         >
@@ -262,6 +273,7 @@ exports[`Block Rules Page > should fetch and display item block rules 1`] = `
             </select>
           </div>
         </div>
+        <!---->
         <div
           class="w_full ov-x_auto"
         >
@@ -338,7 +350,9 @@ exports[`Block Rules Page > should fetch and display item block rules 1`] = `
                     type="button"
                     variant="danger"
                   >
+                    <!---->
                     Delete
+                    <!---->
                   </button>
                 </td>
               </tr>
@@ -367,13 +381,16 @@ exports[`Block Rules Page > should fetch and display item block rules 1`] = `
                     type="button"
                     variant="danger"
                   >
+                    <!---->
                     Delete
+                    <!---->
                   </button>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
+        <!---->
       </div>
     </div>
   </div>

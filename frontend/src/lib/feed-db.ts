@@ -71,7 +71,7 @@ export const mapOpenAPIFeed = (feed: OpenAPIFeed): Feed => ({
   url: feed.url,
   link: feed.link,
   title: feed.title,
-  unreadCount: BigInt(feed.unreadCount),
+  unreadCount: feed.unreadCount !== undefined ? BigInt(feed.unreadCount) : 0n,
   lastFetchedAt: toDate(feed.lastFetchedAt),
   nextFetchAt: toDate(feed.nextFetchAt),
   createdAt: toDate(feed.createdAt),

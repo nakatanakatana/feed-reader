@@ -1,4 +1,4 @@
-import { createRoot } from "solid-js";
+import { createRoot, flush } from "solid-js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   createTouch,
@@ -32,6 +32,7 @@ describe("useSwipe", () => {
           createTouch(target, { x: 150, y: 100 }),
         ]),
       );
+      flush();
 
       expect(x()).toBe(50);
 
@@ -41,6 +42,7 @@ describe("useSwipe", () => {
           createTouch(target, { x: 30, y: 100 }),
         ]),
       );
+      flush();
 
       expect(x()).toBe(-70);
 
@@ -151,10 +153,12 @@ describe("useSwipe", () => {
           createTouch(target, { x: 150, y: 100 }),
         ]),
       );
+      flush();
 
       expect(x()).toBe(50);
 
       handlers.ontouchend(createTouchEvent("touchend", target, []));
+      flush();
 
       expect(x()).toBe(0);
       dispose();
@@ -181,6 +185,7 @@ describe("useSwipe", () => {
           createTouch(target, { x: 100, y: 150 }),
         ]),
       );
+      flush();
 
       expect(y()).toBe(50);
 
@@ -190,6 +195,7 @@ describe("useSwipe", () => {
           createTouch(target, { x: 100, y: 30 }),
         ]),
       );
+      flush();
 
       expect(y()).toBe(-70);
 
@@ -369,6 +375,7 @@ describe("useSwipe", () => {
           createTouch(target, { x: 100, y: 390 }),
         ]),
       );
+      flush();
 
       expect(y()).toBe(-10);
       dispose();
@@ -438,10 +445,12 @@ describe("useSwipe", () => {
           createTouch(target, { x: 150, y: 100 }),
         ]),
       );
+      flush();
 
       expect(x()).toBe(50);
 
       handlers.ontouchcancel(createTouchEvent("touchcancel", target, []));
+      flush();
 
       expect(x()).toBe(0);
 

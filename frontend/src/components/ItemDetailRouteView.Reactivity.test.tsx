@@ -5,10 +5,11 @@ import {
   RouterProvider,
 } from "@tanstack/solid-router";
 import { HttpResponse, http } from "msw";
-import { render } from "solid-js/web";
+import { render } from "@solidjs/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page, userEvent } from "vitest/browser";
 import { itemStore } from "../lib/item-store";
+import { flush } from "solid-js";
 import { queryClient } from "../lib/query";
 import { ToastProvider } from "../lib/toast";
 import { worker } from "../mocks/browser";
@@ -137,11 +138,19 @@ describe("ItemDetailRouteView Reactivity", () => {
 
     // Change filter state to trigger a fresh query key
     itemStore.setDateFilter("24h");
+    flush();
 
     // Wait for the re-fetch to complete and the component to update.
     // We expect Item 2 to be removed from the list of neighboring items.
     // In ItemDetailRouteView, this means nextItemId should become end-of-list eventually.
-    await expect.poll(() => history.location.pathname).toBe("/items/1");
+    await vi.waitFor(() => {
+      flush();
+      const data = queryClient.getQueryData<any[]>([
+        "items",
+        { since: "24h", showRead: true },
+      ]);
+      expect(data).toHaveLength(1);
+    });
 
     await expect
       .element(page.getByRole("heading", { name: "Item 1" }))

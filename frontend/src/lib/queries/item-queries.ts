@@ -18,8 +18,6 @@ const mergedItemCache = new WeakMap<
   { isRead: boolean; merged: MergedItem }
 >();
 
-const sortedItemsCache = new WeakMap<ListItem[], ListItem[]>();
-
 export const getItemsWithReadState = (
   itemsList: ListItem[],
   readsList: ItemRead[],
@@ -28,19 +26,15 @@ export const getItemsWithReadState = (
 ): MergedItem[] => {
   if (itemsList.length === 0) return [];
 
-  let sortedItems = sortedItemsCache.get(itemsList);
-  if (!sortedItems) {
-    sortedItems = [...itemsList].sort((a, b) => {
-      const timeA = a.publishedAt?.getTime() ?? Number.MAX_SAFE_INTEGER;
-      const timeB = b.publishedAt?.getTime() ?? Number.MAX_SAFE_INTEGER;
-      if (timeA !== timeB) return timeA - timeB;
+  const sortedItems = [...itemsList].sort((a, b) => {
+    const timeA = a.publishedAt?.getTime() ?? Number.MAX_SAFE_INTEGER;
+    const timeB = b.publishedAt?.getTime() ?? Number.MAX_SAFE_INTEGER;
+    if (timeA !== timeB) return timeA - timeB;
 
-      const createA = a.createdAt?.getTime() ?? 0;
-      const createB = b.createdAt?.getTime() ?? 0;
-      return createA - createB;
-    });
-    sortedItemsCache.set(itemsList, sortedItems);
-  }
+    const createA = a.createdAt?.getTime() ?? 0;
+    const createB = b.createdAt?.getTime() ?? 0;
+    return createA - createB;
+  });
 
   const readMap = new Map<string, boolean>();
   for (const r of readsList) {

@@ -1,3 +1,5 @@
+import { flush } from "solid-js";
+
 let touchIdentifier = 0;
 
 /**
@@ -92,5 +94,6 @@ export const dispatchTouch = (
   const touch = createTouch(target, { x, y, id });
   const event = createTouchEvent(type, target, [touch]);
   target.dispatchEvent(event);
+  flush();
   return event;
 };

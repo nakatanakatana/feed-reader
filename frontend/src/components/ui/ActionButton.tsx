@@ -1,4 +1,5 @@
-import { type JSX, Show } from "solid-js";
+import type { JSX } from "@solidjs/web";
+import { Show } from "solid-js";
 import { css, cx } from "../../../styled-system/css";
 
 type ActionButtonVariant = "primary" | "secondary" | "ghost" | "danger";
