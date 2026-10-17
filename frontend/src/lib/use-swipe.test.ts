@@ -556,4 +556,20 @@ describe("useSwipe", () => {
       dispose();
     });
   });
+
+  it("calls onTouchStart callback when touchstart occurs", () => {
+    const onTouchStart = vi.fn();
+    createRoot((dispose) => {
+      const { handlers } = useSwipe({ onTouchStart });
+      const target = document.createElement("div");
+      const event = createTouchEvent("touchstart", target, [
+        createTouch(target, { x: 100, y: 100 }),
+      ]);
+
+      handlers.onTouchStart(event);
+
+      expect(onTouchStart).toHaveBeenCalledWith(event);
+      dispose();
+    });
+  });
 });

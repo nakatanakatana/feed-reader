@@ -187,22 +187,17 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     },
     threshold: 100, // Use a higher threshold than the hook default (50px) to reduce accidental swipes
     disabled: () => props.itemId === "end-of-list",
-  });
-
-  // Intercept touchstart to record start position for the 10% check
-  const originalOnTouchStart = handlers.onTouchStart;
-  const interceptedTouchStart = (e: TouchEvent) => {
-    const isSwipeDisabled = props.itemId === "end-of-list";
-    if (!isSwipeDisabled && e.touches && e.touches.length === 1) {
-      touchStartY = e.touches[0].clientY;
-      if (swipeContainerRef) {
-        const rect = swipeContainerRef.getBoundingClientRect();
-        touchThresholdY = rect.top + rect.height * 0.9; // 10% from bottom
+    onTouchStart: (e) => {
+      const isSwipeDisabled = props.itemId === "end-of-list";
+      if (!isSwipeDisabled && e.touches && e.touches.length === 1) {
+        touchStartY = e.touches[0].clientY;
+        if (swipeContainerRef) {
+          const rect = swipeContainerRef.getBoundingClientRect();
+          touchThresholdY = rect.top + rect.height * 0.9; // 10% from bottom
+        }
       }
-    }
-    originalOnTouchStart(e);
-  };
-  handlers.onTouchStart = interceptedTouchStart;
+    },
+  });
 
   // Determine if we can navigate
   const canSwipeLeft = () =>
