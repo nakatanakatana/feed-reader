@@ -1,5 +1,20 @@
 # Changelog
 
+## [v0.26.2](https://github.com/nakatanakatana/feed-reader/compare/v0.26.1...v0.26.2) - 2026-10-17
+
+### Maintenance & Others
+- chore(deps): update dependency aquaproj/aqua-registry to v4.575.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1137
+- chore(deps): update dependency bufbuild/buf to v1.74.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1139
+- fix(deps): update dependency @tanstack/solid-query to v5.104.2 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1141
+- chore(deps): update vitest monorepo to v5.0.4 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1142
+- fix(deps): update dependency postcss to v8.5.30 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1143
+- chore(deps): update dependency moznion/cccc to v1.8.3 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1144
+- fix(deps): update tanstack-router monorepo by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1145
+- chore(deps): update dependency golangci/golangci-lint to v2.15.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1146
+- chore(deps): update dependency oxfmt to ^0.73.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1147
+- chore(deps): update dependency oxlint to v1.88.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1148
+- chore(deps): update dependency playwright to v1.64.1 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1150
+
 ## [v0.26.1](https://github.com/nakatanakatana/feed-reader/compare/v0.26.0...v0.26.1) - 2026-10-14
 
 ### Maintenance & Others
