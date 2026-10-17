@@ -11,6 +11,7 @@ exports[`FeedList > displays a list of feeds 1`] = `
     >
       Home
     </a>
+    <!---->
     <a
       aria-current="page"
       class="pos_relative px_3 py_1.5 bdr_md c_gray.500 trs_all_0.2s fw_medium fs_sm hover:bg-c_gray.50 hover:c_gray.900 fw_semibold c_blue.700! bg-c_blue.50! bd-b-w_2px border-bottom-style_solid bd-b-c_blue.600 bdr-b_0"
@@ -19,30 +20,35 @@ exports[`FeedList > displays a list of feeds 1`] = `
     >
       Feeds
     </a>
+    <!---->
     <a
       class="pos_relative px_3 py_1.5 bdr_md c_gray.500 trs_all_0.2s fw_medium fs_sm hover:bg-c_gray.50 hover:c_gray.900"
       href="/tags"
     >
       Tags
     </a>
+    <!---->
     <a
       class="pos_relative px_3 py_1.5 bdr_md c_gray.500 trs_all_0.2s fw_medium fs_sm hover:bg-c_gray.50 hover:c_gray.900"
       href="/url-rules"
     >
       URL Rules
     </a>
+    <!---->
     <a
       class="pos_relative px_3 py_1.5 bdr_md c_gray.500 trs_all_0.2s fw_medium fs_sm hover:bg-c_gray.50 hover:c_gray.900"
       href="/block-rules"
     >
       Block Rules
     </a>
+    <!---->
     <a
       class="pos_relative px_3 py_1.5 bdr_md c_gray.500 trs_all_0.2s fw_medium fs_sm hover:bg-c_gray.50 hover:c_gray.900"
       href="/ignore-windows"
     >
       Ignore Windows
     </a>
+    <!---->
   </header>
   <div
     class="d_flex flex-d_column gap_2 md:gap_6 p_2 md:p_4 h_calc(100vh_-_56px) min-h_0 ov_hidden bg-c_gray.50"
@@ -66,12 +72,8 @@ exports[`FeedList > displays a list of feeds 1`] = `
             />
             <button
               aria-label="Add Feed"
-              arialabel="Add Feed"
               class="bdr_md fw_medium cursor_pointer bd_1px_solid bd-c_blue.600 trs_all_0.2s d_inline-flex ai_center jc_center gap_2 disabled:op_0.5 disabled:cursor_not-allowed fs_sm py_2 px_4 bg_blue.600 c_white hover:bg_blue.700"
-              hidetextonmobile="true"
-              icon="[object SVGSVGElement]"
               type="submit"
-              variant="primary"
             >
               <svg
                 fill="none"
@@ -82,7 +84,6 @@ exports[`FeedList > displays a list of feeds 1`] = `
                 stroke-width="2"
                 viewBox="0 0 24 24"
                 width="16"
-                xmlns="http://www.w3.org/2000/svg"
               >
                 <title>
                   Add
@@ -100,20 +101,19 @@ exports[`FeedList > displays a list of feeds 1`] = `
                   y2="12"
                 />
               </svg>
+              <!---->
               <span
                 class="d_none md:d_inline"
               >
                 Add Feed
               </span>
+              <!---->
             </button>
+            <!---->
             <button
               aria-label="Import OPML"
-              arialabel="Import OPML"
               class="bdr_md fw_medium cursor_pointer bd_1px_solid bd-c_transparent trs_all_0.2s d_inline-flex ai_center jc_center gap_2 disabled:op_0.5 disabled:cursor_not-allowed fs_sm py_2 px_4 bg_transparent c_blue.600 hover:bg_blue.50 hover:c_blue.700"
-              hidetextonmobile="true"
-              icon="[object SVGSVGElement]"
               type="button"
-              variant="ghost"
             >
               <svg
                 fill="none"
@@ -124,7 +124,6 @@ exports[`FeedList > displays a list of feeds 1`] = `
                 stroke-width="2"
                 viewBox="0 0 24 24"
                 width="16"
-                xmlns="http://www.w3.org/2000/svg"
               >
                 <title>
                   Import
@@ -142,12 +141,15 @@ exports[`FeedList > displays a list of feeds 1`] = `
                   y2="15"
                 />
               </svg>
+              <!---->
               <span
                 class="d_none md:d_inline"
               >
                 Import OPML
               </span>
+              <!---->
             </button>
+            <!---->
           </div>
           <div
             class="d_flex ai_center gap_2 w_full min-w_0"
@@ -178,6 +180,7 @@ exports[`FeedList > displays a list of feeds 1`] = `
                   Tech
                 </button>
               </section>
+              <!---->
             </div>
           </div>
         </form>
@@ -258,19 +261,28 @@ exports[`FeedList > displays a list of feeds 1`] = `
                 <option
                   value="tag-2"
                 >
-                  News (2)
+                  News
+                  <!---->
+                   (2)
+                  <!---->
                 </option>
                 <option
                   value="tag-1"
                 >
-                  Tech (1)
+                  Tech
+                  <!---->
+                   (1)
+                  <!---->
                 </option>
+                <!---->
               </select>
             </div>
           </div>
           <div
             class="d_flex flex-d_column gap_2 flex_1 min-h_0 bg-c_white"
           >
+            <!---->
+            <!---->
             <div
               class="flex_1 min-h_0 ov-y_auto ov-x_hidden pr_1 w_100%"
             >
@@ -301,14 +313,19 @@ exports[`FeedList > displays a list of feeds 1`] = `
                         >
                           Example Feed 1
                         </a>
+                        <!---->
                         <span
                           class="fs_xs fw_bold px_2 py_0.5 bdr_full min-w_2rem ta_center bg-c_gray.100 c_gray.700 flex-sh_0"
                         >
                           Tech
                         </span>
+                        <!---->
                         <div
                           class="d_flex ai_center gap_2"
-                        />
+                        >
+                          <!---->
+                          <!---->
+                        </div>
                       </div>
                       <div
                         class="d_flex ai_center gap_2 min-w_0"
@@ -405,20 +422,22 @@ exports[`FeedList > displays a list of feeds 1`] = `
                       </div>
                       <button
                         class="bdr_md fw_medium cursor_pointer bd_1px_solid bd-c_transparent trs_all_0.2s d_inline-flex ai_center jc_center gap_2 disabled:op_0.5 disabled:cursor_not-allowed fs_xs py_1.5 px_3 bg_transparent c_blue.600 hover:bg_blue.50 hover:c_blue.700"
-                        size="sm"
                         type="button"
-                        variant="ghost"
                       >
+                        <!---->
                         Fetch
+                        <!---->
                       </button>
+                      <!---->
                       <button
                         class="bdr_md fw_medium cursor_pointer bd_1px_solid bd-c_red.200 trs_all_0.2s d_inline-flex ai_center jc_center gap_2 disabled:op_0.5 disabled:cursor_not-allowed fs_xs py_1.5 px_3 bg_red.50 c_red.600 hover:bg_red.100"
-                        size="sm"
                         type="button"
-                        variant="danger"
                       >
+                        <!---->
                         Delete
+                        <!---->
                       </button>
+                      <!---->
                     </div>
                     <div
                       class="d_block md:d_none"
@@ -492,14 +511,19 @@ exports[`FeedList > displays a list of feeds 1`] = `
                         >
                           Example Feed 2
                         </a>
+                        <!---->
                         <span
                           class="fs_xs fw_bold px_2 py_0.5 bdr_full min-w_2rem ta_center bg-c_gray.100 c_gray.700 flex-sh_0"
                         >
                           News
                         </span>
+                        <!---->
                         <div
                           class="d_flex ai_center gap_2"
-                        />
+                        >
+                          <!---->
+                          <!---->
+                        </div>
                       </div>
                       <div
                         class="d_flex ai_center gap_2 min-w_0"
@@ -596,20 +620,22 @@ exports[`FeedList > displays a list of feeds 1`] = `
                       </div>
                       <button
                         class="bdr_md fw_medium cursor_pointer bd_1px_solid bd-c_transparent trs_all_0.2s d_inline-flex ai_center jc_center gap_2 disabled:op_0.5 disabled:cursor_not-allowed fs_xs py_1.5 px_3 bg_transparent c_blue.600 hover:bg_blue.50 hover:c_blue.700"
-                        size="sm"
                         type="button"
-                        variant="ghost"
                       >
+                        <!---->
                         Fetch
+                        <!---->
                       </button>
+                      <!---->
                       <button
                         class="bdr_md fw_medium cursor_pointer bd_1px_solid bd-c_red.200 trs_all_0.2s d_inline-flex ai_center jc_center gap_2 disabled:op_0.5 disabled:cursor_not-allowed fs_xs py_1.5 px_3 bg_red.50 c_red.600 hover:bg_red.100"
-                        size="sm"
                         type="button"
-                        variant="danger"
                       >
+                        <!---->
                         Delete
+                        <!---->
                       </button>
+                      <!---->
                     </div>
                     <div
                       class="d_block md:d_none"

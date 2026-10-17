@@ -1,4 +1,4 @@
-import { createQuery } from "@tanstack/solid-query";
+import { useQuery } from "@tanstack/solid-query";
 import { useNavigate } from "@tanstack/solid-router";
 import { createEffect, createMemo } from "solid-js";
 import {
@@ -24,36 +24,13 @@ interface ItemDetailRouteViewProps {
 export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
   const navigate = useNavigate();
 
-  createEffect(() => {
-    if (props.since) {
-      itemStore.setDateFilter(props.since);
-    }
-  });
-
-  createEffect(() => {
-    const idx = currentIndexMemo();
-    const all = filteredItems();
-    if (idx >= 0 && all && all.length > 0) {
-      const ids = getPrefetchIds(idx, all);
-      prefetchItems(ids);
-    }
-  });
-
-  const getLinkProps = (targetItemId: string | undefined) => {
-    if (!targetItemId) return undefined;
-    const to = "/items/$itemId";
-    const params = { itemId: targetItemId };
-    const search = { tagId: props.tagId, since: props.since };
-    return { to, params, search };
-  };
-
   const isEndOfList = () => props.itemId === "end-of-list";
 
-  const itemsQuery = createQuery(() =>
+  const itemsQuery = useQuery(() =>
     getItemsQueryOptions(itemStore.state.showRead, itemStore.state.since),
   );
-  const readsQuery = createQuery(() => itemReadQueryOptions);
-  const feedTagsQuery = createQuery(() => feedTagsQueryOptions);
+  const readsQuery = useQuery(() => itemReadQueryOptions);
+  const feedTagsQuery = useQuery(() => feedTagsQueryOptions);
 
   const itemsWithReadState = createMemo(() => {
     return getItemsWithReadState(
@@ -78,6 +55,33 @@ export function ItemDetailRouteView(props: ItemDetailRouteViewProps) {
     if (!items || items.length === 0 || !props.itemId) return -1;
     return items.findIndex((i) => i.id === props.itemId);
   });
+
+  createEffect(
+    () => props.since,
+    (since) => {
+      if (since) {
+        itemStore.setDateFilter(since);
+      }
+    },
+  );
+
+  createEffect(
+    () => ({ idx: currentIndexMemo(), all: filteredItems() }),
+    ({ idx, all }) => {
+      if (idx >= 0 && all && all.length > 0) {
+        const ids = getPrefetchIds(idx, all);
+        prefetchItems(ids);
+      }
+    },
+  );
+
+  const getLinkProps = (targetItemId: string | undefined) => {
+    if (!targetItemId) return undefined;
+    const to = "/items/$itemId";
+    const params = { itemId: targetItemId };
+    const search = { tagId: props.tagId, since: props.since };
+    return { to, params, search };
+  };
 
   const prevItem = () => {
     const items = filteredItems();

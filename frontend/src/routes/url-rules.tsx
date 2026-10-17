@@ -1,4 +1,4 @@
-import { createMutation, createQuery } from "@tanstack/solid-query";
+import { useMutation, useQuery } from "@tanstack/solid-query";
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
@@ -21,9 +21,9 @@ function URLRulesComponent() {
   const [ruleType, setRuleType] = createSignal("subdomain");
   const [pattern, setPattern] = createSignal("");
 
-  const rulesQuery = createQuery(() => urlParsingRulesQueryOptions);
+  const rulesQuery = useQuery(() => urlParsingRulesQueryOptions);
 
-  const addMutation = createMutation(() => ({
+  const addMutation = useMutation(() => ({
     mutationFn: async (newRule: {
       domain: string;
       ruleType: string;
@@ -41,7 +41,7 @@ function URLRulesComponent() {
     },
   }));
 
-  const deleteMutation = createMutation(() => ({
+  const deleteMutation = useMutation(() => ({
     mutationFn: async (id: string) => {
       await urlParsingRuleDelete(id);
     },

@@ -18,12 +18,8 @@ exports[`AddFeedForm > creates a new feed 1`] = `
         />
         <button
           aria-label="Add Feed"
-          arialabel="Add Feed"
           class="bdr_md fw_medium cursor_pointer bd_1px_solid bd-c_blue.600 trs_all_0.2s d_inline-flex ai_center jc_center gap_2 disabled:op_0.5 disabled:cursor_not-allowed fs_sm py_2 px_4 bg_blue.600 c_white hover:bg_blue.700"
-          hidetextonmobile="true"
-          icon="[object SVGSVGElement]"
           type="submit"
-          variant="primary"
         >
           <svg
             fill="none"
@@ -34,7 +30,6 @@ exports[`AddFeedForm > creates a new feed 1`] = `
             stroke-width="2"
             viewBox="0 0 24 24"
             width="16"
-            xmlns="http://www.w3.org/2000/svg"
           >
             <title>
               Add
@@ -52,12 +47,16 @@ exports[`AddFeedForm > creates a new feed 1`] = `
               y2="12"
             />
           </svg>
+          <!---->
           <span
             class="d_none md:d_inline"
           >
             Add Feed
           </span>
+          <!---->
         </button>
+        <!---->
+        <!---->
       </div>
       <div
         class="d_flex ai_center gap_2 w_full min-w_0"
@@ -74,7 +73,21 @@ exports[`AddFeedForm > creates a new feed 1`] = `
             aria-label="Scrollable content"
             class="d_flex ai_center flex-wrap_nowrap gap_2 ov-x_auto w_full scr-bar-w_none [&::-webkit-scrollbar]:d_none px_1 min-w_0"
             data-testid="horizontal-scroll-container"
-          />
+          >
+            <button
+              class="px_3 py_1 min-h_8 bdr_full fs_xs cursor_pointer bd_1px_solid d_inline-flex ai_center gap_1.5 trs_all_0.2s bg_transparent bd-c_gray.300 c_gray.600"
+              type="button"
+            >
+              News
+            </button>
+            <button
+              class="px_3 py_1 min-h_8 bdr_full fs_xs cursor_pointer bd_1px_solid d_inline-flex ai_center gap_1.5 trs_all_0.2s bg_transparent bd-c_gray.300 c_gray.600"
+              type="button"
+            >
+              Tech
+            </button>
+          </section>
+          <!---->
         </div>
       </div>
     </form>

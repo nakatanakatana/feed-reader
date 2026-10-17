@@ -1,4 +1,4 @@
-import { createQuery, useMutation } from "@tanstack/solid-query";
+import { useMutation, useQuery } from "@tanstack/solid-query";
 import { createEffect, createMemo, createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
@@ -21,7 +21,7 @@ export interface ManageIgnoreWindowsModalProps {
 }
 
 export function ManageIgnoreWindowsModal(props: ManageIgnoreWindowsModalProps) {
-  const ignoreWindowsQuery = createQuery(() => ignoreWindowsQueryOptions);
+  const ignoreWindowsQuery = useQuery(() => ignoreWindowsQueryOptions);
 
   const manageFeedMutation = useMutation(() => ({
     mutationFn: (params: Parameters<typeof manageFeedIgnoreWindows>[0]) =>
@@ -40,12 +40,15 @@ export function ManageIgnoreWindowsModal(props: ManageIgnoreWindowsModalProps) {
     string[]
   >([]);
 
-  createEffect(() => {
-    if (props.isOpen) {
-      setAddIgnoreWindowIds([]);
-      setRemoveIgnoreWindowIds([]);
-    }
-  });
+  createEffect(
+    () => props.isOpen,
+    (isOpen) => {
+      if (isOpen) {
+        setAddIgnoreWindowIds([]);
+        setRemoveIgnoreWindowIds([]);
+      }
+    },
+  );
 
   const title = createMemo(() => {
     if (props.targetType === "feed") {
@@ -58,33 +61,29 @@ export function ManageIgnoreWindowsModal(props: ManageIgnoreWindowsModalProps) {
     manageFeedMutation.isPending || manageTagMutation.isPending;
 
   const toggleAddWindow = (id: string) => {
-    if (addIgnoreWindowIds().includes(id)) {
-      setAddIgnoreWindowIds(addIgnoreWindowIds().filter((w) => w !== id));
-    } else {
-      setAddIgnoreWindowIds([...addIgnoreWindowIds(), id]);
-      setRemoveIgnoreWindowIds(removeIgnoreWindowIds().filter((w) => w !== id));
-    }
+    setAddIgnoreWindowIds((prev) =>
+      prev.includes(id) ? prev.filter((w) => w !== id) : [...prev, id],
+    );
+    setRemoveIgnoreWindowIds((prev) => prev.filter((w) => w !== id));
   };
 
   const toggleRemoveWindow = (id: string) => {
-    if (removeIgnoreWindowIds().includes(id)) {
-      setRemoveIgnoreWindowIds(removeIgnoreWindowIds().filter((w) => w !== id));
-    } else {
-      setRemoveIgnoreWindowIds([...removeIgnoreWindowIds(), id]);
-      setAddIgnoreWindowIds(addIgnoreWindowIds().filter((w) => w !== id));
-    }
+    setRemoveIgnoreWindowIds((prev) =>
+      prev.includes(id) ? prev.filter((w) => w !== id) : [...prev, id],
+    );
+    setAddIgnoreWindowIds((prev) => prev.filter((w) => w !== id));
   };
 
   const handleSave = async () => {
     try {
       if (props.targetType === "feed") {
-        await manageFeedMutation.mutateAsync({
+        await manageFeedMutation.mutate({
           feedIds: props.feedIds ?? [],
           addIgnoreWindowIds: addIgnoreWindowIds(),
           removeIgnoreWindowIds: removeIgnoreWindowIds(),
         });
       } else {
-        await manageTagMutation.mutateAsync({
+        await manageTagMutation.mutate({
           tagIds: props.tagIds ?? [],
           addIgnoreWindowIds: addIgnoreWindowIds(),
           removeIgnoreWindowIds: removeIgnoreWindowIds(),

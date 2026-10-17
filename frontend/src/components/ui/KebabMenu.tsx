@@ -1,5 +1,5 @@
-import { createSignal, For, onCleanup, onMount, Show } from "solid-js";
-import { Portal } from "solid-js/web";
+import { Portal } from "@solidjs/web";
+import { createSignal, For, onSettled, Show } from "solid-js";
 import { css, cx } from "../../../styled-system/css";
 
 interface KebabMenuAction {
@@ -82,14 +82,13 @@ export function KebabMenu(props: KebabMenuProps) {
     }
   };
 
-  onMount(() => {
+  onSettled(() => {
     document.addEventListener("click", handleClickOutside);
     document.addEventListener("keydown", handleKeyDown);
-  });
-
-  onCleanup(() => {
-    document.removeEventListener("click", handleClickOutside);
-    document.removeEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
   });
 
   const usesFixedPosition = () => !!props.portalMount;
@@ -141,7 +140,7 @@ export function KebabMenu(props: KebabMenuProps) {
         type="button"
         aria-label={props.ariaLabel || "More actions"}
         aria-haspopup="menu"
-        aria-expanded={isOpen()}
+        aria-expanded={isOpen() ? "true" : "false"}
         onClick={toggle}
         class={css({
           p: "1",

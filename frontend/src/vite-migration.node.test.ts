@@ -49,4 +49,32 @@ describe("Vite 8 migration", () => {
       expect(configSource).toContain(`"${testPath}"`);
     }
   });
+
+  test("configures Solid 2.0 packages and JSX import source", () => {
+    const pkgPath = path.join(rootDir, "package.json");
+    const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
+
+    expect(pkg.dependencies["solid-js"]).toMatch(/^\^?2\.0\.0-rc\./);
+    expect(pkg.dependencies["@solidjs/web"]).toMatch(/^\^?2\.0\.0-rc\./);
+    expect(pkg.dependencies["@tanstack/solid-router"]).toMatch(
+      /^\^?2\.0\.0-rc\./,
+    );
+    expect(pkg.dependencies["@tanstack/solid-query"]).toMatch(
+      /^\^?6\.0\.0-rc\./,
+    );
+    expect(pkg.devDependencies["@solidjs/vite-plugin"]).toMatch(
+      /^\^?3\.0\.0-next\./,
+    );
+    expect(pkg.devDependencies["vite-plugin-solid"]).toBeUndefined();
+
+    const tsconfigPath = path.join(rootDir, "tsconfig.json");
+    const tsconfigSource = fs.readFileSync(tsconfigPath, "utf-8");
+    expect(tsconfigSource).toContain('"jsxImportSource": "@solidjs/web"');
+
+    const viteConfigPath = path.join(rootDir, "vite.config.js");
+    const viteConfigSource = fs.readFileSync(viteConfigPath, "utf-8");
+    expect(viteConfigSource).toContain('from "@solidjs/vite-plugin"');
+    expect(viteConfigSource).not.toContain('"solid-js/web"');
+    expect(viteConfigSource).toContain('"@solidjs/web"');
+  });
 });

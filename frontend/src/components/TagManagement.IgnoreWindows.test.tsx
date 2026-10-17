@@ -1,6 +1,8 @@
 import { QueryClientProvider } from "@tanstack/solid-query";
-import { render } from "solid-js/web";
+import { render } from "@solidjs/web";
+import { flush } from "solid-js";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import * as feedTagsListClient from "../lib/api/generated/client/feedTagsList";
 import * as ignoreWindowsListClient from "../lib/api/generated/client/ignoreWindowsList";
 import * as tagIgnoreWindowsListClient from "../lib/api/generated/client/tagIgnoreWindowsList";
 import * as tagsListClient from "../lib/api/generated/client/tagsList";
@@ -11,6 +13,8 @@ describe("TagManagement Ignore Windows Integration", () => {
   let dispose: (() => void) | undefined;
 
   beforeEach(() => {
+    queryClient.clear();
+
     vi.spyOn(tagsListClient, "tagsList").mockResolvedValue({
       tags: [
         {
@@ -23,6 +27,10 @@ describe("TagManagement Ignore Windows Integration", () => {
         },
       ],
       totalUnreadCount: "0",
+    });
+
+    vi.spyOn(feedTagsListClient, "feedTagsList").mockResolvedValue({
+      feedTags: [],
     });
 
     vi.spyOn(ignoreWindowsListClient, "ignoreWindowsList").mockResolvedValue({
@@ -93,6 +101,7 @@ describe("TagManagement Ignore Windows Integration", () => {
     expect(ignoreWindowsBtn).toBeDefined();
 
     ignoreWindowsBtn?.click();
+    flush();
 
     await vi.waitFor(() => {
       expect(document.body.textContent).toContain(

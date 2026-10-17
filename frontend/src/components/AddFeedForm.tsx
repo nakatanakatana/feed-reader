@@ -1,5 +1,6 @@
-import { createQuery } from "@tanstack/solid-query";
-import { createMemo, createSignal, For, type JSX, Show } from "solid-js";
+import type { JSX } from "@solidjs/web";
+import { useQuery } from "@tanstack/solid-query";
+import { createMemo, createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
 import {
@@ -23,8 +24,8 @@ export function AddFeedForm(props: AddFeedFormProps) {
   const [isPending, setIsPending] = createSignal(false);
   const [error, setError] = createSignal<Error | null>(null);
 
-  const rawTagsQuery = createQuery(() => tagsQueryOptions);
-  const feedTagsQuery = createQuery(() => feedTagsQueryOptions);
+  const rawTagsQuery = useQuery(() => tagsQueryOptions);
+  const feedTagsQuery = useQuery(() => feedTagsQueryOptions);
 
   const tagsWithFeedCount = createMemo(() => {
     return getTagsWithFeedCount(

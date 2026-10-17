@@ -1,4 +1,4 @@
-import { createMutation, createQuery } from "@tanstack/solid-query";
+import { useMutation, useQuery } from "@tanstack/solid-query";
 import { createFileRoute } from "@tanstack/solid-router";
 import { createSignal, Show } from "solid-js";
 import { css } from "../../styled-system/css";
@@ -29,21 +29,21 @@ function IgnoreWindowsComponent() {
     null,
   );
 
-  const ignoreWindowsQuery = createQuery(() => ignoreWindowsQueryOptions);
+  const ignoreWindowsQuery = useQuery(() => ignoreWindowsQueryOptions);
 
-  const createMutationFn = createMutation(() => ({
+  const createMutationFn = useMutation(() => ({
     mutationFn: async (data: IgnoreWindowFormData) => {
       await createIgnoreWindow(data);
     },
   }));
 
-  const updateMutationFn = createMutation(() => ({
+  const updateMutationFn = useMutation(() => ({
     mutationFn: async (params: { id: string; data: IgnoreWindowFormData }) => {
       await updateIgnoreWindow(params.id, params.data);
     },
   }));
 
-  const deleteMutationFn = createMutation(() => ({
+  const deleteMutationFn = useMutation(() => ({
     mutationFn: async (id: string) => {
       await deleteIgnoreWindow(id);
     },
@@ -52,9 +52,9 @@ function IgnoreWindowsComponent() {
   const handleSave = async (data: IgnoreWindowFormData) => {
     const currentEditing = editingWindow();
     if (currentEditing) {
-      await updateMutationFn.mutateAsync({ id: currentEditing.id, data });
+      await updateMutationFn.mutate({ id: currentEditing.id, data });
     } else {
-      await createMutationFn.mutateAsync(data);
+      await createMutationFn.mutate(data);
     }
     setIsAddModalOpen(false);
     setEditingWindow(null);

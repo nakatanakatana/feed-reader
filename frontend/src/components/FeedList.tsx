@@ -1,4 +1,4 @@
-import { createQuery, useMutation } from "@tanstack/solid-query";
+import { useMutation, useQuery } from "@tanstack/solid-query";
 import { createEffect, createMemo, createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
@@ -44,16 +44,14 @@ export function FeedList() {
     createSignal(false);
   let tagSelectRef: HTMLSelectElement | undefined;
 
-  const feedsQuery = createQuery(() => feedsQueryOptions);
-  const tagsQuery = createQuery(() => tagsQueryOptions);
-  const feedTagsQuery = createQuery(() => feedTagsQueryOptions);
-  const ignoreWindowsQuery = createQuery(() => ignoreWindowsQueryOptions);
-  const feedIgnoreWindowsQuery = createQuery(() =>
+  const feedsQuery = useQuery(() => feedsQueryOptions);
+  const tagsQuery = useQuery(() => tagsQueryOptions);
+  const feedTagsQuery = useQuery(() => feedTagsQueryOptions);
+  const ignoreWindowsQuery = useQuery(() => ignoreWindowsQueryOptions);
+  const feedIgnoreWindowsQuery = useQuery(() =>
     feedIgnoreWindowsQueryOptions(),
   );
-  const tagIgnoreWindowsQuery = createQuery(() =>
-    tagIgnoreWindowsQueryOptions(),
-  );
+  const tagIgnoreWindowsQuery = useQuery(() => tagIgnoreWindowsQueryOptions());
 
   const getIgnoreWindowsForFeed = (
     feedId: string,
@@ -94,29 +92,35 @@ export function FeedList() {
   });
 
   // Force sync the select value to DOM because browser might reset it if options are not ready
-  createEffect(() => {
-    const targetValue =
+  createEffect(
+    () =>
       feedStore.state.selectedTagId === null
         ? "untagged"
-        : (feedStore.state.selectedTagId ?? "all");
-
-    if (tagSelectRef && tagSelectRef.value !== targetValue) {
-      tagSelectRef.value = targetValue;
-    }
-  });
+        : (feedStore.state.selectedTagId ?? "all"),
+    (targetValue) => {
+      if (tagSelectRef && tagSelectRef.value !== targetValue) {
+        tagSelectRef.value = targetValue;
+      }
+    },
+  );
 
   // Ensure selectedTagId is valid once tags load
-  createEffect(() => {
-    const tags = tagsSorted();
-    const currentTagId = feedStore.state.selectedTagId;
-    if (tags.length > 0 && typeof currentTagId === "string") {
-      const exists = tags.some((t) => t.id === currentTagId);
-      if (!exists && !tagsQuery.isLoading) {
-        // Tag no longer exists, reset to all
-        feedStore.setSelectedTagId(undefined);
+  createEffect(
+    () => ({
+      tags: tagsSorted(),
+      currentTagId: feedStore.state.selectedTagId,
+      isLoading: tagsQuery.isLoading,
+    }),
+    ({ tags, currentTagId, isLoading }) => {
+      if (tags.length > 0 && typeof currentTagId === "string") {
+        const exists = tags.some((t) => t.id === currentTagId);
+        if (!exists && !isLoading) {
+          // Tag no longer exists, reset to all
+          feedStore.setSelectedTagId(undefined);
+        }
       }
-    }
-  });
+    },
+  );
 
   const allVisibleSelected = () => {
     const visibleFeeds = feedList();
@@ -169,9 +173,17 @@ export function FeedList() {
 
   const handleSuspend = async (ids: string[], seconds: number) => {
     try {
-      await suspendMutation.mutateAsync({ ids, seconds });
+      await suspendMutation.mutate({ ids, seconds });
     } catch (e) {
       console.error("Failed to suspend feeds:", e);
+    }
+  };
+
+  const handleRefresh = async (feedIds: string[]) => {
+    try {
+      await refreshMutation.mutate(feedIds);
+    } catch (e) {
+      console.error("Failed to refresh feeds:", e);
     }
   };
 
@@ -235,9 +247,12 @@ export function FeedList() {
                 aria-label="Select all visible feeds"
                 checked={allVisibleSelected()}
                 ref={(el) => {
-                  createEffect(() => {
-                    el.indeterminate = isIndeterminate();
-                  });
+                  createEffect(
+                    () => isIndeterminate(),
+                    (indeterminate) => {
+                      el.indeterminate = indeterminate;
+                    },
+                  );
                 }}
                 onChange={() => toggleSelectAll()}
                 class={css({ cursor: "pointer" })}
@@ -682,7 +697,7 @@ export function FeedList() {
                           variant="ghost"
                           onClickEvent={(e) => {
                             e.stopPropagation();
-                            refreshMutation.mutate([feed.id]);
+                            handleRefresh([feed.id]);
                           }}
                           disabled={fetchingState.isFetching(feed.id)}
                         >
@@ -713,7 +728,7 @@ export function FeedList() {
                               label: fetchingState.isFetching(feed.id)
                                 ? "Fetching..."
                                 : "Fetch",
-                              onClick: () => refreshMutation.mutate([feed.id]),
+                              onClick: () => handleRefresh([feed.id]),
                             },
                             {
                               label: "Suspend 1 Day",
@@ -812,7 +827,7 @@ export function FeedList() {
           <ActionButton
             size="sm"
             variant="secondary"
-            onClick={() => refreshMutation.mutate(selectedFeedIds())}
+            onClick={() => handleRefresh(selectedFeedIds())}
             disabled={refreshMutation.isPending}
           >
             {refreshMutation.isPending ? "Fetching..." : "Fetch Selected"}

@@ -1,15 +1,10 @@
-import {
-  createMutation,
-  createQuery,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/solid-query";
+import type { JSX } from "@solidjs/web";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/solid-query";
 import {
   createEffect,
   createMemo,
   createSignal,
   For,
-  type JSX,
   onCleanup,
   Show,
 } from "solid-js";
@@ -191,22 +186,18 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
       return container.scrollTop < 5;
     },
     threshold: 100, // Use a higher threshold than the hook default (50px) to reduce accidental swipes
-    disabled: props.itemId === "end-of-list",
-  });
-
-  // Intercept touchstart to record start position for the 10% check
-  const originalOnTouchStart = handlers.ontouchstart;
-  handlers.ontouchstart = (e: TouchEvent) => {
-    const isSwipeDisabled = props.itemId === "end-of-list";
-    if (!isSwipeDisabled && e.touches && e.touches.length === 1) {
-      touchStartY = e.touches[0].clientY;
-      if (swipeContainerRef) {
-        const rect = swipeContainerRef.getBoundingClientRect();
-        touchThresholdY = rect.top + rect.height * 0.9; // 10% from bottom
+    disabled: () => props.itemId === "end-of-list",
+    onTouchStart: (e) => {
+      const isSwipeDisabled = props.itemId === "end-of-list";
+      if (!isSwipeDisabled && e.touches && e.touches.length === 1) {
+        touchStartY = e.touches[0].clientY;
+        if (swipeContainerRef) {
+          const rect = swipeContainerRef.getBoundingClientRect();
+          touchThresholdY = rect.top + rect.height * 0.9; // 10% from bottom
+        }
       }
-    }
-    originalOnTouchStart(e);
-  };
+    },
+  });
 
   // Determine if we can navigate
   const canSwipeLeft = () =>
@@ -263,63 +254,6 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     }
   };
 
-  createEffect(() => {
-    // Reset skipping state and clear any pending skip recovery timer when itemId changes
-    void props.itemId;
-    setIsSkipping(false);
-    if (skipRecoveryTimeoutId !== undefined) {
-      clearTimeout(skipRecoveryTimeoutId);
-      skipRecoveryTimeoutId = undefined;
-    }
-    toast.clear();
-  });
-
-  createEffect(() => {
-    // Track itemId and item data to detect images when content changes
-    const id = props.itemId;
-    const itemData = item();
-    const loading = id === "end-of-list" ? false : isLoading();
-
-    if (id && !loading && (itemData || id === "end-of-list") && modalRef) {
-      const currentModalRef = modalRef;
-      const cleanupTasks: (() => void)[] = [];
-
-      // Detect image layout and set data-layout attribute immediately
-      const imgs = currentModalRef.querySelectorAll("img");
-      for (const img of imgs) {
-        const updateLayout = () => {
-          const naturalHeight = img.naturalHeight;
-          let layout = "other";
-          // Avoid division by zero or invalid ratios for malformed/edge-case images
-          if (!naturalHeight) {
-            img.setAttribute("data-layout", layout);
-            return;
-          }
-          const ratio = img.naturalWidth / naturalHeight;
-          if (ratio > 1.1) {
-            layout = "hero";
-          } else if (ratio >= 0.9 && ratio <= 1.1) {
-            layout = "icon";
-          }
-          img.setAttribute("data-layout", layout);
-        };
-
-        if (img.complete) {
-          updateLayout();
-        } else {
-          img.addEventListener("load", updateLayout, { once: true });
-          cleanupTasks.push(() =>
-            img.removeEventListener("load", updateLayout),
-          );
-        }
-      }
-
-      onCleanup(() => {
-        for (const task of cleanupTasks) task();
-      });
-    }
-  });
-
   const itemQuery = useQuery(() => ({
     queryKey: ["item", props.itemId],
     queryFn: async () => {
@@ -342,7 +276,70 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     return id;
   };
 
-  const readsQuery = createQuery(() => itemReadQueryOptions);
+  createEffect(
+    () => props.itemId,
+    () => {
+      // Reset skipping state and clear any pending skip recovery timer when itemId changes
+      setIsSkipping(false);
+      if (skipRecoveryTimeoutId !== undefined) {
+        clearTimeout(skipRecoveryTimeoutId);
+        skipRecoveryTimeoutId = undefined;
+      }
+      toast.clear();
+    },
+  );
+
+  createEffect(
+    () => {
+      // Track itemId and item data to detect images when content changes
+      const id = props.itemId;
+      const itemData = item();
+      const loading = id === "end-of-list" ? false : isLoading();
+      return { id, itemData, loading };
+    },
+    ({ id, itemData, loading }) => {
+      if (id && !loading && (itemData || id === "end-of-list") && modalRef) {
+        const currentModalRef = modalRef;
+        const cleanupTasks: (() => void)[] = [];
+
+        // Detect image layout and set data-layout attribute immediately
+        const imgs = currentModalRef.querySelectorAll("img");
+        for (const img of imgs) {
+          const updateLayout = () => {
+            const naturalHeight = img.naturalHeight;
+            let layout = "other";
+            // Avoid division by zero or invalid ratios for malformed/edge-case images
+            if (!naturalHeight) {
+              img.setAttribute("data-layout", layout);
+              return;
+            }
+            const ratio = img.naturalWidth / naturalHeight;
+            if (ratio > 1.1) {
+              layout = "hero";
+            } else if (ratio >= 0.9 && ratio <= 1.1) {
+              layout = "icon";
+            }
+            img.setAttribute("data-layout", layout);
+          };
+
+          if (img.complete) {
+            updateLayout();
+          } else {
+            img.addEventListener("load", updateLayout, { once: true });
+            cleanupTasks.push(() =>
+              img.removeEventListener("load", updateLayout),
+            );
+          }
+        }
+
+        return () => {
+          for (const task of cleanupTasks) task();
+        };
+      }
+    },
+  );
+
+  const readsQuery = useQuery(() => itemReadQueryOptions);
 
   const prioritizedItem = createMemo<Item | null>(() => {
     const data = item();
@@ -356,7 +353,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   });
 
   // URL Parsing and Blocking Logic
-  const rulesQuery = createQuery(() => urlParsingRulesQueryOptions);
+  const rulesQuery = useQuery(() => urlParsingRulesQueryOptions);
 
   const parser = createMemo(() => new URLParser(rulesQuery.data ?? []));
 
@@ -369,7 +366,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
 
   const { show } = useToast();
 
-  const blockMutation = createMutation(() => ({
+  const blockMutation = useMutation(() => ({
     mutationFn: async (req: BlockRuleMutationRequest) => {
       await itemBlockRuleInsert(req.rules);
     },
@@ -380,6 +377,14 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
       show("Failed to add block rule", "error");
     },
   }));
+
+  const handleBlock = async (req: BlockRuleMutationRequest) => {
+    try {
+      await blockMutation.mutate(req);
+    } catch {
+      // onError callback already handles displaying the error toast
+    }
+  };
 
   const menuActions = createMemo(() => {
     const data = item();
@@ -393,7 +398,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
           actions.push({
             label: `Block Domain (${hostname})`,
             onClick: () => {
-              blockMutation.mutate({
+              handleBlock({
                 rules: [
                   {
                     ruleType: "domain",
@@ -411,7 +416,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
         actions.push({
           label: `Block User (@${info.domain})`,
           onClick: () => {
-            blockMutation.mutate({
+            handleBlock({
               rules: [
                 {
                   ruleType: "user_domain",
@@ -426,7 +431,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
         actions.push({
           label: `Block User (${info.user})`,
           onClick: () => {
-            blockMutation.mutate({
+            handleBlock({
               rules: [
                 {
                   ruleType: "user",
@@ -452,7 +457,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             actions.push({
               label: `Block Author (@${targetDomain})`,
               onClick: () => {
-                blockMutation.mutate({
+                handleBlock({
                   rules: [
                     {
                       ruleType: "user_domain",
@@ -468,7 +473,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
           actions.push({
             label: `Block Author (${formattedAuthor})`,
             onClick: () => {
-              blockMutation.mutate({
+              handleBlock({
                 rules: [
                   {
                     ruleType: "user",
@@ -576,20 +581,23 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     }
   };
 
-  createEffect(() => {
-    if (!props.itemId) return;
+  createEffect(
+    () => props.itemId,
+    (itemId) => {
+      if (!itemId) return;
 
-    const handleDocumentKeyDown = (e: KeyboardEvent) => {
-      const target = e.target;
-      if (target instanceof Node && modalRef?.contains(target)) return;
-      handleKeyDown(e);
-    };
+      const handleDocumentKeyDown = (e: KeyboardEvent) => {
+        const target = e.target;
+        if (target instanceof Node && modalRef?.contains(target)) return;
+        handleKeyDown(e);
+      };
 
-    document.addEventListener("keydown", handleDocumentKeyDown);
-    onCleanup(() => {
-      document.removeEventListener("keydown", handleDocumentKeyDown);
-    });
-  });
+      document.addEventListener("keydown", handleDocumentKeyDown);
+      return () => {
+        document.removeEventListener("keydown", handleDocumentKeyDown);
+      };
+    },
+  );
 
   const footer = () => {
     if (props.footerExtras) return props.footerExtras;
@@ -708,7 +716,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
               aria-label={
                 prioritizedItem()?.isRead ? "Mark as Unread" : "Mark as Read"
               }
-              aria-pressed={prioritizedItem()?.isRead ?? false}
+              aria-pressed={prioritizedItem()?.isRead ? "true" : "false"}
               class={css({
                 width: "14",
                 height: "14",
