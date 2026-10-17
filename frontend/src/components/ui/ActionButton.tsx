@@ -26,6 +26,9 @@ interface ActionButtonProps extends NativeButtonProps {
 }
 
 export function ActionButton(props: ActionButtonProps) {
+  // Solid 2.0 omit() returns a reactive proxy view (OmitView) over props,
+  // ensuring dynamic passthrough attributes continue to track reactively
+  // while component-only props are excluded from DOM element spread.
   const rest = omit(
     props,
     "children",

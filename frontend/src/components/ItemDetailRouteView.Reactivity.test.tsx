@@ -150,6 +150,7 @@ describe("ItemDetailRouteView Reactivity", () => {
         { since: "24h", showRead: true },
       ]);
       expect(data).toHaveLength(1);
+      expect(history.location.pathname).toBe("/items/1");
     });
 
     await expect

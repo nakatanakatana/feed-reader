@@ -23,7 +23,13 @@ const isMergedItemEqual = (
   if (cached.isRead !== isRead) return false;
   for (const key of Object.keys(item)) {
     if (key === "isRead") continue;
-    if (Reflect.get(cached, key) !== Reflect.get(item, key)) {
+    const cachedVal = Reflect.get(cached, key);
+    const itemVal = Reflect.get(item, key);
+    if (cachedVal instanceof Date && itemVal instanceof Date) {
+      if (cachedVal.getTime() !== itemVal.getTime()) return false;
+      continue;
+    }
+    if (cachedVal !== itemVal) {
       return false;
     }
   }
