@@ -6,7 +6,7 @@ interface UseSwipeOptions {
   onSwipeRight?: () => void;
   onSwipeUp?: () => void;
   onSwipeDown?: () => void;
-  disabled?: boolean;
+  disabled?: boolean | (() => boolean);
   isAtLeftBoundary?: () => boolean;
   isAtRightBoundary?: () => boolean;
   isAtTopBoundary?: () => boolean;
@@ -27,8 +27,13 @@ export function useSwipe(options: UseSwipeOptions = {}) {
   let isCancelled = false;
   let direction: "horizontal" | "vertical" | null = null;
 
+  const isDisabled = () =>
+    typeof options.disabled === "function"
+      ? options.disabled()
+      : Boolean(options.disabled);
+
   const touchstart = (e: TouchEvent) => {
-    if (options.disabled || e.touches.length !== 1) return;
+    if (isDisabled() || e.touches.length !== 1) return;
     startX = e.touches[0].clientX;
     startY = e.touches[0].clientY;
     currentDiffX = 0;

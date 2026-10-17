@@ -20,6 +20,7 @@ interface ActionButtonProps extends NativeButtonProps {
   size?: ActionButtonSize;
   disabled?: boolean;
   ariaLabel?: string;
+  "aria-label"?: string;
   class?: string;
   onClickEvent?: (event: MouseEvent) => void;
 }
@@ -71,7 +72,7 @@ export function ActionButton(props: ActionButtonProps) {
         props.onClick?.(event);
       }}
       disabled={props.disabled}
-      aria-label={props.ariaLabel}
+      aria-label={props.ariaLabel ?? props["aria-label"]}
       class={cx(
         css({
           borderRadius: "md",

@@ -31,9 +31,11 @@ describe("AddFeedForm", () => {
   it("creates a new feed", async () => {
     dispose = render(() => <TestWrapper />, document.body);
 
+    const input = page.getByPlaceholder("Feed URL");
+    await expect.element(input).toBeInTheDocument();
+
     expect(document.body.innerHTML).toMatchSnapshot();
 
-    const input = page.getByPlaceholder("Feed URL");
     await input.fill("http://example.com/new-feed.xml");
 
     const button = page.getByRole("button", { name: "Add Feed" });

@@ -78,8 +78,12 @@ export function AddIgnoreWindowModal(props: AddIgnoreWindowModalProps) {
   });
 
   createEffect(
-    () => ({ isOpen: props.isOpen, initialData: props.initialData }),
-    ({ isOpen, initialData }) => {
+    () => ({
+      isOpen: props.isOpen,
+      initialDataId: props.initialData?.id,
+    }),
+    ({ isOpen }) => {
+      const initialData = props.initialData;
       if (isOpen) {
         if (initialData) {
           setName(initialData.name);

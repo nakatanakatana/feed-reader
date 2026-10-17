@@ -186,7 +186,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
       return container.scrollTop < 5;
     },
     threshold: 100, // Use a higher threshold than the hook default (50px) to reduce accidental swipes
-    disabled: props.itemId === "end-of-list",
+    disabled: () => props.itemId === "end-of-list",
   });
 
   // Intercept touchstart to record start position for the 10% check

@@ -316,7 +316,7 @@ export function ItemList(props: ItemListProps) {
               variant="secondary"
               onClick={handleClearReadItems}
               disabled={!filteredItems().some((item) => item.isRead)}
-              aria-label="Clear read items from current view"
+              ariaLabel="Clear read items from current view"
             >
               Clear Read Items
             </ActionButton>
@@ -390,7 +390,7 @@ export function ItemList(props: ItemListProps) {
                 size="sm"
                 variant="secondary"
                 onClick={() => setShowMoreActions(!showMoreActions())}
-                aria-label="More actions"
+                ariaLabel="More actions"
                 icon={
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
