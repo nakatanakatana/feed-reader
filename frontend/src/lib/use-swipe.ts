@@ -15,6 +15,8 @@ interface UseSwipeOptions {
 }
 
 export function useSwipe(options: UseSwipeOptions = {}) {
+  // ownedWrite: true allows signals to be written from synchronous test harnesses
+  // inside createRoot without triggering the Solid 2.0 REACTIVE_WRITE_IN_OWNED_SCOPE dev guard.
   const [x, setX] = createSignal(0, { ownedWrite: true });
   const [y, setY] = createSignal(0, { ownedWrite: true });
   const [isSwipingSignal, setIsSwipingSignal] = createSignal(false, {

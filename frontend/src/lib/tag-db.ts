@@ -37,8 +37,8 @@ export const mapConnectTag = (tag: ConnectTagShape): Tag => ({
 export const mapOpenAPITag = (tag: OpenAPITag): Tag => ({
   id: tag.id,
   name: tag.name,
-  unreadCount: tag.unreadCount !== undefined ? BigInt(tag.unreadCount) : 0n,
-  feedCount: tag.feedCount !== undefined ? BigInt(tag.feedCount) : 0n,
+  unreadCount: tag.unreadCount != null ? BigInt(tag.unreadCount) : 0n,
+  feedCount: tag.feedCount != null ? BigInt(tag.feedCount) : 0n,
   createdAt: toDate(tag.createdAt),
   updatedAt: toDate(tag.updatedAt),
 });

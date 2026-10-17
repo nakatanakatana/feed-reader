@@ -124,6 +124,13 @@ describe("shared pure TypeScript query selectors", () => {
     expect(result1.find((i) => i.id === "item-1")).not.toBe(
       result2.find((i) => i.id === "item-1"),
     );
+
+    // Verify adding a property breaks cache equality
+    (mockItems[1] as any).extraField = "extra";
+    const result4 = getItemsWithReadState(mockItems, mockReads2, mockFeedTags);
+    expect(result4.find((i) => i.id === "item-2")).not.toBe(
+      result3.find((i) => i.id === "item-2"),
+    );
   });
 
   it("builds tag unread counts from shared sources", () => {

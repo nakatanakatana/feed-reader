@@ -21,7 +21,10 @@ const isMergedItemEqual = (
   isRead: boolean,
 ): boolean => {
   if (cached.isRead !== isRead) return false;
-  for (const key of Object.keys(item)) {
+  const itemKeys = Object.keys(item).filter((k) => k !== "isRead");
+  const cachedKeys = Object.keys(cached).filter((k) => k !== "isRead");
+  if (itemKeys.length !== cachedKeys.length) return false;
+  for (const key of itemKeys) {
     if (key === "isRead") continue;
     const cachedVal = Reflect.get(cached, key);
     const itemVal = Reflect.get(item, key);

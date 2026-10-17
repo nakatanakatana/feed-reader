@@ -28,7 +28,7 @@ export function Modal(props: ModalProps) {
 
   const focusPanel = () => {
     queueMicrotask(() => {
-      if (!dialogRef?.isConnected) return;
+      if (!dialogRef?.isConnected || !dialogRef.matches(":modal")) return;
       panelRef?.focus();
     });
   };
