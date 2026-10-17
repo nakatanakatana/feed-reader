@@ -190,7 +190,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
   });
 
   // Intercept touchstart to record start position for the 10% check
-  const originalOnTouchStart = handlers.ontouchstart;
+  const originalOnTouchStart = handlers.onTouchStart;
   const interceptedTouchStart = (e: TouchEvent) => {
     const isSwipeDisabled = props.itemId === "end-of-list";
     if (!isSwipeDisabled && e.touches && e.touches.length === 1) {
@@ -202,7 +202,6 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     }
     originalOnTouchStart(e);
   };
-  handlers.ontouchstart = interceptedTouchStart;
   handlers.onTouchStart = interceptedTouchStart;
 
   // Determine if we can navigate

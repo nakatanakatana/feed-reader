@@ -15,7 +15,7 @@ export interface TagUnreadCount {
 
 const mergedItemCache = new WeakMap<
   ListItem,
-  { isRead: boolean; merged: MergedItem }
+  { isRead: boolean; title: string; url?: string; merged: MergedItem }
 >();
 
 export const getItemsWithReadState = (
@@ -44,11 +44,21 @@ export const getItemsWithReadState = (
   let result: MergedItem[] = sortedItems.map((item) => {
     const isRead = readMap.get(item.id) ?? item.isRead;
     const cached = mergedItemCache.get(item);
-    if (cached && cached.isRead === isRead) {
+    if (
+      cached &&
+      cached.isRead === isRead &&
+      cached.title === item.title &&
+      cached.url === item.url
+    ) {
       return cached.merged;
     }
     const merged = { ...item, isRead };
-    mergedItemCache.set(item, { isRead, merged });
+    mergedItemCache.set(item, {
+      isRead,
+      title: item.title,
+      url: item.url,
+      merged,
+    });
     return merged;
   });
 

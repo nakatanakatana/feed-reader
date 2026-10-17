@@ -57,7 +57,9 @@ export function Modal(props: ModalProps) {
   };
 
   onCleanup(() => {
-    dialogRef?.close();
+    if (dialogRef?.open) {
+      dialogRef.close();
+    }
   });
 
   const size = () => props.size ?? "standard";
@@ -65,7 +67,12 @@ export function Modal(props: ModalProps) {
   createEffect(
     () => ({ isOpen: props.isOpen, focusKey: props.focusKey }),
     ({ isOpen }) => {
-      if (!isOpen) return;
+      if (!isOpen) {
+        if (dialogRef?.open) {
+          dialogRef.close();
+        }
+        return;
+      }
       if (dialogRef) {
         openDialog(dialogRef);
       } else {

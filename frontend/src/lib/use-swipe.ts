@@ -167,10 +167,6 @@ export function useSwipe(options: UseSwipeOptions = {}) {
     y,
     isSwiping: isSwipingSignal,
     handlers: {
-      ontouchstart: touchstart,
-      ontouchmove: touchmove,
-      ontouchend: touchend,
-      ontouchcancel: touchcancel,
       onTouchStart: touchstart,
       onTouchMove: touchmove,
       onTouchEnd: touchend,
