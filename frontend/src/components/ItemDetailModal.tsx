@@ -383,6 +383,14 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
     },
   }));
 
+  const handleBlock = async (req: BlockRuleMutationRequest) => {
+    try {
+      await blockMutation.mutate(req);
+    } catch {
+      // onError callback already handles displaying the error toast
+    }
+  };
+
   const menuActions = createMemo(() => {
     const data = item();
     const info = extractedInfo();
@@ -395,7 +403,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
           actions.push({
             label: `Block Domain (${hostname})`,
             onClick: () => {
-              blockMutation.mutate({
+              handleBlock({
                 rules: [
                   {
                     ruleType: "domain",
@@ -413,7 +421,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
         actions.push({
           label: `Block User (@${info.domain})`,
           onClick: () => {
-            blockMutation.mutate({
+            handleBlock({
               rules: [
                 {
                   ruleType: "user_domain",
@@ -428,7 +436,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
         actions.push({
           label: `Block User (${info.user})`,
           onClick: () => {
-            blockMutation.mutate({
+            handleBlock({
               rules: [
                 {
                   ruleType: "user",
@@ -454,7 +462,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
             actions.push({
               label: `Block Author (@${targetDomain})`,
               onClick: () => {
-                blockMutation.mutate({
+                handleBlock({
                   rules: [
                     {
                       ruleType: "user_domain",
@@ -470,7 +478,7 @@ export function ItemDetailModal(props: ItemDetailModalProps) {
           actions.push({
             label: `Block Author (${formattedAuthor})`,
             onClick: () => {
-              blockMutation.mutate({
+              handleBlock({
                 rules: [
                   {
                     ruleType: "user",

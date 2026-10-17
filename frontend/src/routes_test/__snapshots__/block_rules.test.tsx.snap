@@ -134,9 +134,7 @@ exports[`Block Rules Page > should fetch and display item block rules 1`] = `
           >
             <button
               class="bdr_md fw_medium cursor_pointer bd_1px_solid bd-c_blue.600 trs_all_0.2s d_inline-flex ai_center jc_center gap_2 disabled:op_0.5 disabled:cursor_not-allowed fs_sm py_2 px_4 bg_blue.600 c_white hover:bg_blue.700"
-              icon="[object SVGSVGElement]"
               type="submit"
-              variant="primary"
             >
               <svg
                 aria-hidden="true"
@@ -169,9 +167,7 @@ exports[`Block Rules Page > should fetch and display item block rules 1`] = `
             <!---->
             <button
               class="bdr_md fw_medium cursor_pointer bd_1px_solid bd-c_gray.300 trs_all_0.2s d_inline-flex ai_center jc_center gap_2 disabled:op_0.5 disabled:cursor_not-allowed fs_sm py_2 px_4 bg_transparent c_gray.600 hover:bg_gray.50 hover:c_gray.700"
-              icon="[object SVGSVGElement]"
               type="button"
-              variant="secondary"
             >
               <svg
                 aria-hidden="true"
@@ -346,9 +342,7 @@ exports[`Block Rules Page > should fetch and display item block rules 1`] = `
                 >
                   <button
                     class="bdr_md fw_medium cursor_pointer bd_1px_solid bd-c_red.200 trs_all_0.2s d_inline-flex ai_center jc_center gap_2 disabled:op_0.5 disabled:cursor_not-allowed fs_xs py_1.5 px_3 bg_red.50 c_red.600 hover:bg_red.100"
-                    size="sm"
                     type="button"
-                    variant="danger"
                   >
                     <!---->
                     Delete
@@ -377,9 +371,7 @@ exports[`Block Rules Page > should fetch and display item block rules 1`] = `
                 >
                   <button
                     class="bdr_md fw_medium cursor_pointer bd_1px_solid bd-c_red.200 trs_all_0.2s d_inline-flex ai_center jc_center gap_2 disabled:op_0.5 disabled:cursor_not-allowed fs_xs py_1.5 px_3 bg_red.50 c_red.600 hover:bg_red.100"
-                    size="sm"
                     type="button"
-                    variant="danger"
                   >
                     <!---->
                     Delete

@@ -1,5 +1,5 @@
 import type { JSX } from "@solidjs/web";
-import { Show } from "solid-js";
+import { omit, Show } from "solid-js";
 import { css, cx } from "../../../styled-system/css";
 
 type ActionButtonVariant = "primary" | "secondary" | "ghost" | "danger";
@@ -26,6 +26,22 @@ interface ActionButtonProps extends NativeButtonProps {
 }
 
 export function ActionButton(props: ActionButtonProps) {
+  const rest = omit(
+    props,
+    "children",
+    "icon",
+    "hideTextOnMobile",
+    "onClick",
+    "onClickEvent",
+    "type",
+    "variant",
+    "size",
+    "disabled",
+    "ariaLabel",
+    "aria-label",
+    "class",
+  );
+
   const variant = () => props.variant ?? "secondary";
   const size = () => props.size ?? "md";
 
@@ -65,7 +81,7 @@ export function ActionButton(props: ActionButtonProps) {
 
   return (
     <button
-      {...props}
+      {...rest}
       type={props.type ?? "button"}
       onClick={(event) => {
         props.onClickEvent?.(event);

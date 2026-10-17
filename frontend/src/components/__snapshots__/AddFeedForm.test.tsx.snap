@@ -18,12 +18,8 @@ exports[`AddFeedForm > creates a new feed 1`] = `
         />
         <button
           aria-label="Add Feed"
-          arialabel="Add Feed"
           class="bdr_md fw_medium cursor_pointer bd_1px_solid bd-c_blue.600 trs_all_0.2s d_inline-flex ai_center jc_center gap_2 disabled:op_0.5 disabled:cursor_not-allowed fs_sm py_2 px_4 bg_blue.600 c_white hover:bg_blue.700"
-          hidetextonmobile=""
-          icon="[object SVGSVGElement]"
           type="submit"
-          variant="primary"
         >
           <svg
             fill="none"

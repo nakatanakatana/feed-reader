@@ -179,6 +179,14 @@ export function FeedList() {
     }
   };
 
+  const handleRefresh = async (feedIds: string[]) => {
+    try {
+      await refreshMutation.mutate(feedIds);
+    } catch (e) {
+      console.error("Failed to refresh feeds:", e);
+    }
+  };
+
   const toggleFeedSelection = (id: string) => {
     if (selectedFeedIds().includes(id)) {
       setSelectedFeedIds(selectedFeedIds().filter((u) => u !== id));
@@ -689,7 +697,7 @@ export function FeedList() {
                           variant="ghost"
                           onClickEvent={(e) => {
                             e.stopPropagation();
-                            refreshMutation.mutate([feed.id]);
+                            handleRefresh([feed.id]);
                           }}
                           disabled={fetchingState.isFetching(feed.id)}
                         >
@@ -720,7 +728,7 @@ export function FeedList() {
                               label: fetchingState.isFetching(feed.id)
                                 ? "Fetching..."
                                 : "Fetch",
-                              onClick: () => refreshMutation.mutate([feed.id]),
+                              onClick: () => handleRefresh([feed.id]),
                             },
                             {
                               label: "Suspend 1 Day",
@@ -819,7 +827,7 @@ export function FeedList() {
           <ActionButton
             size="sm"
             variant="secondary"
-            onClick={() => refreshMutation.mutate(selectedFeedIds())}
+            onClick={() => handleRefresh(selectedFeedIds())}
             disabled={refreshMutation.isPending}
           >
             {refreshMutation.isPending ? "Fetching..." : "Fetch Selected"}

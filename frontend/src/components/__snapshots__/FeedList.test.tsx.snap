@@ -72,12 +72,8 @@ exports[`FeedList > displays a list of feeds 1`] = `
             />
             <button
               aria-label="Add Feed"
-              arialabel="Add Feed"
               class="bdr_md fw_medium cursor_pointer bd_1px_solid bd-c_blue.600 trs_all_0.2s d_inline-flex ai_center jc_center gap_2 disabled:op_0.5 disabled:cursor_not-allowed fs_sm py_2 px_4 bg_blue.600 c_white hover:bg_blue.700"
-              hidetextonmobile=""
-              icon="[object SVGSVGElement]"
               type="submit"
-              variant="primary"
             >
               <svg
                 fill="none"
@@ -116,12 +112,8 @@ exports[`FeedList > displays a list of feeds 1`] = `
             <!---->
             <button
               aria-label="Import OPML"
-              arialabel="Import OPML"
               class="bdr_md fw_medium cursor_pointer bd_1px_solid bd-c_transparent trs_all_0.2s d_inline-flex ai_center jc_center gap_2 disabled:op_0.5 disabled:cursor_not-allowed fs_sm py_2 px_4 bg_transparent c_blue.600 hover:bg_blue.50 hover:c_blue.700"
-              hidetextonmobile=""
-              icon="[object SVGSVGElement]"
               type="button"
-              variant="ghost"
             >
               <svg
                 fill="none"
@@ -430,9 +422,7 @@ exports[`FeedList > displays a list of feeds 1`] = `
                       </div>
                       <button
                         class="bdr_md fw_medium cursor_pointer bd_1px_solid bd-c_transparent trs_all_0.2s d_inline-flex ai_center jc_center gap_2 disabled:op_0.5 disabled:cursor_not-allowed fs_xs py_1.5 px_3 bg_transparent c_blue.600 hover:bg_blue.50 hover:c_blue.700"
-                        size="sm"
                         type="button"
-                        variant="ghost"
                       >
                         <!---->
                         Fetch
@@ -441,9 +431,7 @@ exports[`FeedList > displays a list of feeds 1`] = `
                       <!---->
                       <button
                         class="bdr_md fw_medium cursor_pointer bd_1px_solid bd-c_red.200 trs_all_0.2s d_inline-flex ai_center jc_center gap_2 disabled:op_0.5 disabled:cursor_not-allowed fs_xs py_1.5 px_3 bg_red.50 c_red.600 hover:bg_red.100"
-                        size="sm"
                         type="button"
-                        variant="danger"
                       >
                         <!---->
                         Delete
@@ -632,9 +620,7 @@ exports[`FeedList > displays a list of feeds 1`] = `
                       </div>
                       <button
                         class="bdr_md fw_medium cursor_pointer bd_1px_solid bd-c_transparent trs_all_0.2s d_inline-flex ai_center jc_center gap_2 disabled:op_0.5 disabled:cursor_not-allowed fs_xs py_1.5 px_3 bg_transparent c_blue.600 hover:bg_blue.50 hover:c_blue.700"
-                        size="sm"
                         type="button"
-                        variant="ghost"
                       >
                         <!---->
                         Fetch
@@ -643,9 +629,7 @@ exports[`FeedList > displays a list of feeds 1`] = `
                       <!---->
                       <button
                         class="bdr_md fw_medium cursor_pointer bd_1px_solid bd-c_red.200 trs_all_0.2s d_inline-flex ai_center jc_center gap_2 disabled:op_0.5 disabled:cursor_not-allowed fs_xs py_1.5 px_3 bg_red.50 c_red.600 hover:bg_red.100"
-                        size="sm"
                         type="button"
-                        variant="danger"
                       >
                         <!---->
                         Delete

@@ -108,9 +108,7 @@ exports[`ItemList > displays a list of items 1`] = `
                 <!---->
                 <button
                   class="bdr_md fw_medium cursor_pointer bd_1px_solid bd-c_gray.300 trs_all_0.2s d_inline-flex ai_center jc_center gap_2 disabled:op_0.5 disabled:cursor_not-allowed fs_xs py_1.5 px_3 bg_transparent c_gray.600 hover:bg_gray.50 hover:c_gray.700"
-                  size="sm"
                   type="button"
-                  variant="secondary"
                 >
                   <!---->
                   Refresh
@@ -127,11 +125,8 @@ exports[`ItemList > displays a list of items 1`] = `
               >
                 <button
                   aria-label="Clear read items from current view"
-                  arialabel="Clear read items from current view"
                   class="bdr_md fw_medium cursor_pointer bd_1px_solid bd-c_gray.300 trs_all_0.2s d_inline-flex ai_center jc_center gap_2 disabled:op_0.5 disabled:cursor_not-allowed fs_xs py_1.5 px_3 bg_transparent c_gray.600 hover:bg_gray.50 hover:c_gray.700"
-                  size="sm"
                   type="button"
-                  variant="secondary"
                 >
                   <!---->
                   Clear Read Items
@@ -268,12 +263,8 @@ exports[`ItemList > displays a list of items 1`] = `
                 >
                   <button
                     aria-label="More actions"
-                    arialabel="More actions"
                     class="bdr_md fw_medium cursor_pointer bd_1px_solid bd-c_gray.300 trs_all_0.2s d_inline-flex ai_center jc_center gap_2 disabled:op_0.5 disabled:cursor_not-allowed fs_xs py_1.5 px_3 bg_transparent c_gray.600 hover:bg_gray.50 hover:c_gray.700"
-                    icon="[object SVGSVGElement]"
-                    size="sm"
                     type="button"
-                    variant="secondary"
                   >
                     <svg
                       fill="none"
@@ -707,9 +698,7 @@ exports[`ItemList > renders empty state when no items 1`] = `
                 <!---->
                 <button
                   class="bdr_md fw_medium cursor_pointer bd_1px_solid bd-c_gray.300 trs_all_0.2s d_inline-flex ai_center jc_center gap_2 disabled:op_0.5 disabled:cursor_not-allowed fs_xs py_1.5 px_3 bg_transparent c_gray.600 hover:bg_gray.50 hover:c_gray.700"
-                  size="sm"
                   type="button"
-                  variant="secondary"
                 >
                   <!---->
                   Refresh
@@ -726,12 +715,9 @@ exports[`ItemList > renders empty state when no items 1`] = `
               >
                 <button
                   aria-label="Clear read items from current view"
-                  arialabel="Clear read items from current view"
                   class="bdr_md fw_medium cursor_pointer bd_1px_solid bd-c_gray.300 trs_all_0.2s d_inline-flex ai_center jc_center gap_2 disabled:op_0.5 disabled:cursor_not-allowed fs_xs py_1.5 px_3 bg_transparent c_gray.600 hover:bg_gray.50 hover:c_gray.700"
                   disabled=""
-                  size="sm"
                   type="button"
-                  variant="secondary"
                 >
                   <!---->
                   Clear Read Items
@@ -868,12 +854,8 @@ exports[`ItemList > renders empty state when no items 1`] = `
                 >
                   <button
                     aria-label="More actions"
-                    arialabel="More actions"
                     class="bdr_md fw_medium cursor_pointer bd_1px_solid bd-c_gray.300 trs_all_0.2s d_inline-flex ai_center jc_center gap_2 disabled:op_0.5 disabled:cursor_not-allowed fs_xs py_1.5 px_3 bg_transparent c_gray.600 hover:bg_gray.50 hover:c_gray.700"
-                    icon="[object SVGSVGElement]"
-                    size="sm"
                     type="button"
-                    variant="secondary"
                   >
                     <svg
                       fill="none"

@@ -1,6 +1,6 @@
 import { QueryClientProvider } from "@tanstack/solid-query";
 import { render } from "@solidjs/web";
-import { flush, Loading } from "solid-js";
+import { flush } from "solid-js";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import * as feedTagsListClient from "../lib/api/generated/client/feedTagsList";
 import * as ignoreWindowsListClient from "../lib/api/generated/client/ignoreWindowsList";
@@ -72,9 +72,7 @@ describe("TagManagement Ignore Windows Integration", () => {
     dispose = render(
       () => (
         <QueryClientProvider client={queryClient}>
-          <Loading fallback={<div>Loading...</div>}>
-            <TagManagement />
-          </Loading>
+          <TagManagement />
         </QueryClientProvider>
       ),
       document.body,

@@ -13,10 +13,22 @@ export interface TagUnreadCount {
   unreadCount: bigint;
 }
 
-const mergedItemCache = new WeakMap<
-  ListItem,
-  { isRead: boolean; title: string; url?: string; merged: MergedItem }
->();
+const mergedItemCache = new WeakMap<ListItem, MergedItem>();
+
+const isMergedItemEqual = (
+  cached: MergedItem,
+  item: ListItem,
+  isRead: boolean,
+): boolean => {
+  if (cached.isRead !== isRead) return false;
+  for (const key of Object.keys(item)) {
+    if (key === "isRead") continue;
+    if (Reflect.get(cached, key) !== Reflect.get(item, key)) {
+      return false;
+    }
+  }
+  return true;
+};
 
 export const getItemsWithReadState = (
   itemsList: ListItem[],
@@ -44,21 +56,11 @@ export const getItemsWithReadState = (
   let result: MergedItem[] = sortedItems.map((item) => {
     const isRead = readMap.get(item.id) ?? item.isRead;
     const cached = mergedItemCache.get(item);
-    if (
-      cached &&
-      cached.isRead === isRead &&
-      cached.title === item.title &&
-      cached.url === item.url
-    ) {
-      return cached.merged;
+    if (cached && isMergedItemEqual(cached, item, isRead)) {
+      return cached;
     }
-    const merged = { ...item, isRead };
-    mergedItemCache.set(item, {
-      isRead,
-      title: item.title,
-      url: item.url,
-      merged,
-    });
+    const merged: MergedItem = { ...item, isRead };
+    mergedItemCache.set(item, merged);
     return merged;
   });
 
