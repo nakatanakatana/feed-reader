@@ -1,7 +1,7 @@
 import { QueryClientProvider } from "@tanstack/solid-query";
 import { HttpResponse, http } from "msw";
-import type { JSX } from "solid-js";
-import { render } from "solid-js/web";
+import type { JSX } from "@solidjs/web";
+import { render } from "@solidjs/web";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { queryClient } from "../lib/query";
@@ -31,9 +31,11 @@ describe("AddFeedForm", () => {
   it("creates a new feed", async () => {
     dispose = render(() => <TestWrapper />, document.body);
 
+    const input = page.getByPlaceholder("Feed URL");
+    await expect.element(input).toBeInTheDocument();
+
     expect(document.body.innerHTML).toMatchSnapshot();
 
-    const input = page.getByPlaceholder("Feed URL");
     await input.fill("http://example.com/new-feed.xml");
 
     const button = page.getByRole("button", { name: "Add Feed" });

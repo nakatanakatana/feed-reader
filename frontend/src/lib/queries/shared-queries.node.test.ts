@@ -113,8 +113,23 @@ describe("shared pure TypeScript query selectors", () => {
     expect(result1.find((i) => i.id === "item-2")).toBe(
       result2.find((i) => i.id === "item-2"),
     );
+
+    // Verify distinct Date instance with same timestamp preserves reference
+    const originalDate = mockItems[1].publishedAt;
+    mockItems[1].publishedAt = new Date(originalDate?.getTime() ?? 0);
+    const result3 = getItemsWithReadState(mockItems, mockReads2, mockFeedTags);
+    expect(result3.find((i) => i.id === "item-2")).toBe(
+      result2.find((i) => i.id === "item-2"),
+    );
     expect(result1.find((i) => i.id === "item-1")).not.toBe(
       result2.find((i) => i.id === "item-1"),
+    );
+
+    // Verify adding a property breaks cache equality
+    (mockItems[1] as any).extraField = "extra";
+    const result4 = getItemsWithReadState(mockItems, mockReads2, mockFeedTags);
+    expect(result4.find((i) => i.id === "item-2")).not.toBe(
+      result3.find((i) => i.id === "item-2"),
     );
   });
 

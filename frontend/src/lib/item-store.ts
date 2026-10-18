@@ -1,5 +1,4 @@
-import { createRoot } from "solid-js";
-import { createStore, reconcile } from "solid-js/store";
+import { createRoot, createStore } from "solid-js";
 import { itemsDateFilter, itemsShowReadFilter } from "./default";
 import type { DateFilterValue } from "./item-utils";
 
@@ -17,23 +16,29 @@ function createItemStore() {
   });
 
   const setShowRead = (showRead: boolean) => {
-    setState("showRead", showRead);
+    setState((draft) => {
+      draft.showRead = showRead;
+    });
   };
 
   const setDateFilter = (since: DateFilterValue) => {
-    setState("since", since);
+    setState((draft) => {
+      draft.since = since;
+    });
   };
 
   const addTransientRemovedIds = (ids: string[]) => {
-    const updates: Record<string, boolean> = {};
-    for (const id of ids) {
-      updates[id] = true;
-    }
-    setState("transientRemovedIds", (prev) => ({ ...prev, ...updates }));
+    setState((draft) => {
+      for (const id of ids) {
+        draft.transientRemovedIds[id] = true;
+      }
+    });
   };
 
   const clearTransientRemovedIds = () => {
-    setState("transientRemovedIds", reconcile({}));
+    setState((draft) => {
+      draft.transientRemovedIds = {};
+    });
   };
 
   return {

@@ -1,11 +1,5 @@
-import {
-  type Accessor,
-  createContext,
-  For,
-  type JSX,
-  useContext,
-} from "solid-js";
-import { Portal } from "solid-js/web";
+import { type JSX, Portal } from "@solidjs/web";
+import { type Accessor, createContext, For, useContext } from "solid-js";
 import { css } from "../../styled-system/css";
 import { type Toast, toast } from "./toast-store";
 
@@ -18,7 +12,7 @@ interface ToastContextValue {
   clear: () => void;
 }
 
-const ToastContext = createContext<ToastContextValue>();
+const ToastContext = createContext<ToastContextValue | null>(null);
 
 function toastViewportClass() {
   return css({
@@ -97,7 +91,7 @@ export function ToastViewport() {
 
 export function ToastProvider(props: { children: JSX.Element }) {
   return (
-    <ToastContext.Provider
+    <ToastContext
       value={{
         show: toast.show,
         toasts: toast.toasts,
@@ -109,7 +103,7 @@ export function ToastProvider(props: { children: JSX.Element }) {
       <Portal>
         <ToastViewport />
       </Portal>
-    </ToastContext.Provider>
+    </ToastContext>
   );
 }
 

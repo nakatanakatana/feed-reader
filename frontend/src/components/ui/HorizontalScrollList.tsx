@@ -1,4 +1,5 @@
-import { createSignal, type JSX, onCleanup, onMount, Show } from "solid-js";
+import type { JSX } from "@solidjs/web";
+import { createSignal, onSettled, Show } from "solid-js";
 import { css, cx } from "../../../styled-system/css";
 import { flex } from "../../../styled-system/patterns";
 
@@ -19,15 +20,14 @@ export function HorizontalScrollList(props: HorizontalScrollListProps) {
     setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 1);
   };
 
-  onMount(() => {
+  onSettled(() => {
     checkScroll();
     scrollContainer?.addEventListener("scroll", checkScroll);
     window.addEventListener("resize", checkScroll);
-  });
-
-  onCleanup(() => {
-    scrollContainer?.removeEventListener("scroll", checkScroll);
-    window.removeEventListener("resize", checkScroll);
+    return () => {
+      scrollContainer?.removeEventListener("scroll", checkScroll);
+      window.removeEventListener("resize", checkScroll);
+    };
   });
 
   const scroll = (direction: "left" | "right") => {

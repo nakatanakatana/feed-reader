@@ -1,4 +1,4 @@
-import { createSignal, onCleanup, onMount } from "solid-js";
+import { createSignal, onSettled } from "solid-js";
 
 export function createMediaQuery(query: string) {
   const [matches, setMatches] = createSignal(
@@ -7,7 +7,7 @@ export function createMediaQuery(query: string) {
       : false,
   );
 
-  onMount(() => {
+  onSettled(() => {
     if (
       typeof window === "undefined" ||
       typeof window.matchMedia !== "function"
@@ -19,7 +19,7 @@ export function createMediaQuery(query: string) {
     setMatches(media.matches ?? false);
     const listener = (e: MediaQueryListEvent) => setMatches(e.matches);
     media.addEventListener?.("change", listener);
-    onCleanup(() => media.removeEventListener?.("change", listener));
+    return () => media.removeEventListener?.("change", listener);
   });
 
   return matches;

@@ -1,7 +1,8 @@
+import type { JSX } from "@solidjs/web";
+import { render } from "@solidjs/web";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import { HttpResponse, http } from "msw";
-import { createSignal, type JSX } from "solid-js";
-import { render } from "solid-js/web";
+import { createSignal, flush } from "solid-js";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { dateToTimestamp } from "../lib/item-utils";
@@ -290,18 +291,22 @@ describe("ItemDetailModal", () => {
       document.body,
     );
 
+    await expect.element(page.getByText("Test Item")).toBeInTheDocument();
+
     // Show a toast
     toast.show("Persistent message");
+    flush();
     expect(toast.toasts()).toHaveLength(1);
 
     // Change itemId to simulate navigation
     setItemId("test-id-2");
+    flush();
 
-    // Wait for the effect to run
-    await new Promise((resolve) => setTimeout(resolve, 0));
-
-    // Toast should be cleared automatically
-    expect(toast.toasts()).toHaveLength(0);
+    // Wait for the effect to run and flush signal updates
+    await vi.waitFor(() => {
+      flush();
+      expect(toast.toasts()).toHaveLength(0);
+    });
   });
 
   it("renders Block Author menu actions when item has author metadata and dispatches mutations", async () => {

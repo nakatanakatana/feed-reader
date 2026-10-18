@@ -1,5 +1,5 @@
 import { QueryClientProvider } from "@tanstack/solid-query";
-import { render } from "solid-js/web";
+import { render } from "@solidjs/web";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import * as feedIgnoreWindowsListClient from "../lib/api/generated/client/feedIgnoreWindowsList";
 import * as feedsListClient from "../lib/api/generated/client/feedsList";

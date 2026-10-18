@@ -77,39 +77,48 @@ export function AddIgnoreWindowModal(props: AddIgnoreWindowModalProps) {
     return Array.from(set).sort();
   });
 
-  createEffect(() => {
-    if (props.isOpen) {
-      if (props.initialData) {
-        setName(props.initialData.name);
-        const allDay =
-          props.initialData.startTime === "00:00" &&
-          (props.initialData.endTime === "24:00" ||
-            props.initialData.endTime === "00:00");
-        setIsAllDay(allDay);
-        setStartTime(props.initialData.startTime);
-        setEndTime(props.initialData.endTime);
-        if (!allDay) {
-          setPreviousCustomTimes({
-            startTime: props.initialData.startTime,
-            endTime: props.initialData.endTime,
-          });
+  createEffect(
+    () => ({
+      isOpen: props.isOpen,
+      initialDataId: props.initialData?.id,
+    }),
+    ({ isOpen }) => {
+      const initialData = props.initialData;
+      if (isOpen) {
+        if (initialData) {
+          setName(initialData.name);
+          const allDay =
+            initialData.startTime === "00:00" &&
+            (initialData.endTime === "24:00" ||
+              initialData.endTime === "00:00");
+          setIsAllDay(allDay);
+          setStartTime(initialData.startTime);
+          setEndTime(initialData.endTime);
+          if (!allDay) {
+            setPreviousCustomTimes({
+              startTime: initialData.startTime,
+              endTime: initialData.endTime,
+            });
+          } else {
+            setPreviousCustomTimes({ startTime: "23:00", endTime: "07:00" });
+          }
+          setDaysOfWeek([...initialData.daysOfWeek]);
+          setTimezone(initialData.timezone);
         } else {
+          setName("");
+          setIsAllDay(false);
+          setStartTime("23:00");
+          setEndTime("07:00");
           setPreviousCustomTimes({ startTime: "23:00", endTime: "07:00" });
+          setDaysOfWeek([1, 2, 3, 4, 5]);
+          setTimezone(
+            Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC",
+          );
         }
-        setDaysOfWeek([...props.initialData.daysOfWeek]);
-        setTimezone(props.initialData.timezone);
-      } else {
-        setName("");
-        setIsAllDay(false);
-        setStartTime("23:00");
-        setEndTime("07:00");
-        setPreviousCustomTimes({ startTime: "23:00", endTime: "07:00" });
-        setDaysOfWeek([1, 2, 3, 4, 5]);
-        setTimezone(Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC");
+        setErrorMessage(null);
       }
-      setErrorMessage(null);
-    }
-  });
+    },
+  );
 
   const toggleDay = (day: number) => {
     if (daysOfWeek().includes(day)) {

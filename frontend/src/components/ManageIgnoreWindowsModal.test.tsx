@@ -1,5 +1,6 @@
 import { QueryClientProvider } from "@tanstack/solid-query";
-import { render } from "solid-js/web";
+import { render } from "@solidjs/web";
+import { flush } from "solid-js";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import * as ignoreWindowsListClient from "../lib/api/generated/client/ignoreWindowsList";
 import type { IgnoreWindow } from "../lib/ignore-window-db";
@@ -151,6 +152,7 @@ describe("ManageIgnoreWindowsModal", () => {
 
     w1AddBtn.click();
     w2RemoveBtn.click();
+    flush();
 
     const saveBtn = Array.from(document.querySelectorAll("button")).find(
       (b) => b.textContent?.trim() === "Save Changes",
@@ -187,6 +189,7 @@ describe("ManageIgnoreWindowsModal", () => {
     ) as HTMLButtonElement;
 
     w1AddBtn.click();
+    flush();
 
     const saveBtn = Array.from(document.querySelectorAll("button")).find(
       (b) => b.textContent?.trim() === "Save Changes",
@@ -225,10 +228,13 @@ describe("ManageIgnoreWindowsModal", () => {
 
     // Click Add
     addBtn.click();
+    flush();
     // Clicking Remove should switch from Add to Remove
     removeBtn.click();
+    flush();
     // Clicking Remove again should unselect
     removeBtn.click();
+    flush();
 
     const saveBtn = Array.from(document.querySelectorAll("button")).find(
       (b) => b.textContent?.trim() === "Save Changes",

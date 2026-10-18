@@ -32,12 +32,13 @@
     "@opentelemetry/sdk-trace-base": "2.12.0",
     "@opentelemetry/sdk-trace-web": "2.12.0",
     "@opentelemetry/semantic-conventions": "1.43.0",
+    "@solidjs/web": "2.0.0-rc.15",
     "@tanstack/router-plugin": "1.168.46",
-    "@tanstack/solid-query": "5.104.3",
-    "@tanstack/solid-router": "1.170.41",
+    "@tanstack/solid-query": "6.0.0-rc.5",
+    "@tanstack/solid-router": "2.0.0-rc.8",
     "markdown-it": "15.0.2",
     "postcss": "8.5.30",
-    "solid-js": "1.9.17",
+    "solid-js": "2.0.0-rc.15",
     "web-vitals": "6.2.3"
   },
   "devDependencies": {
@@ -50,12 +51,14 @@
     "@pandacss/dev": "2.2.0",
     "@pandacss/preset-base": "2.2.0",
     "@pandacss/preset-panda": "2.2.0",
+    "@solidjs/vite-plugin": "3.0.0-next.50",
     "@types/node": "25.9.9",
     "@typespec/compiler": "^1.12.0",
     "@typespec/http": "^1.12.0",
     "@typespec/openapi3": "^1.12.0",
     "@vitest/browser-playwright": "5.0.4",
     "@vitest/coverage-v8": "5.0.4",
+    "eslint-plugin-solid": "0.18.1",
     "fast-check": "4.10.2",
     "jsdom": "^30.0.0",
     "kubb": "^5.0.0",
@@ -67,7 +70,6 @@
     "vite": "^8.0.0",
     "vite-bundle-analyzer": "1.3.9",
     "vite-plugin-pwa": "1.3.0",
-    "vite-plugin-solid": "2.11.14",
     "vitest": "5.0.4"
   },
   "overrides": {
@@ -77,6 +79,7 @@
     "@vitest/mocker": {
       "msw": "$msw"
     },
+    "solid-js": "$solid-js",
     "vite-plugin-pwa": {
       "vite": "$vite"
     }

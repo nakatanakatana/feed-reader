@@ -1,4 +1,4 @@
-import { createMutation, createQuery } from "@tanstack/solid-query";
+import { useMutation, useQuery } from "@tanstack/solid-query";
 import { createFileRoute } from "@tanstack/solid-router";
 import { createMemo, createSignal, Show } from "solid-js";
 import { css } from "../../styled-system/css";
@@ -35,7 +35,7 @@ function BlockRulesComponent() {
   );
   const [sortDirection, setSortDirection] = createSignal<"asc" | "desc">("asc");
 
-  const rulesDataQuery = createQuery(() => itemBlockRulesQueryOptions);
+  const rulesDataQuery = useQuery(() => itemBlockRulesQueryOptions);
 
   const rulesQuery = createMemo(() => {
     let list = [...(rulesDataQuery.data || [])];
@@ -87,7 +87,7 @@ function BlockRulesComponent() {
     }
   };
 
-  const addMutation = createMutation(() => ({
+  const addMutation = useMutation(() => ({
     mutationFn: async (newRule: {
       ruleType: string;
       value: string;
@@ -101,7 +101,7 @@ function BlockRulesComponent() {
     },
   }));
 
-  const bulkAddMutation = createMutation(() => ({
+  const bulkAddMutation = useMutation(() => ({
     mutationFn: async (
       rules: { ruleType: string; value: string; domain?: string }[],
     ) => {
@@ -109,7 +109,7 @@ function BlockRulesComponent() {
     },
   }));
 
-  const deleteMutation = createMutation(() => ({
+  const deleteMutation = useMutation(() => ({
     mutationFn: async (id: string) => {
       await itemBlockRuleDelete(id);
     },
@@ -285,7 +285,7 @@ function BlockRulesComponent() {
             isOpen={isBulkModalOpen()}
             onClose={() => setIsBulkModalOpen(false)}
             onRegister={async (rules) => {
-              await bulkAddMutation.mutateAsync(rules);
+              await bulkAddMutation.mutate(rules);
             }}
             isPending={bulkAddMutation.isPending}
           />

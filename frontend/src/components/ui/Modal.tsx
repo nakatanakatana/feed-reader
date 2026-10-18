@@ -1,6 +1,5 @@
-import type { JSX } from "solid-js";
+import { type JSX, Portal } from "@solidjs/web";
 import { createEffect, onCleanup, Show } from "solid-js";
-import { Portal } from "solid-js/web";
 import { css } from "../../../styled-system/css";
 import { flex, stack } from "../../../styled-system/patterns";
 
@@ -35,25 +34,52 @@ export function Modal(props: ModalProps) {
   };
 
   const openDialog = (el: HTMLDialogElement) => {
-    queueMicrotask(() => {
-      if (!el.isConnected) return;
+    const tryOpen = (retries = 5) => {
+      if (!el.isConnected) {
+        if (retries > 0) {
+          queueMicrotask(() => tryOpen(retries - 1));
+        }
+        return;
+      }
       if (!el.matches(":modal")) {
         if (el.open) {
           el.close();
         }
-        el.showModal();
+        try {
+          el.showModal();
+        } catch {
+          // ignore
+        }
       }
       focusPanel();
-    });
+    };
+    queueMicrotask(() => tryOpen());
   };
+
+  onCleanup(() => {
+    if (dialogRef?.open) {
+      dialogRef.close();
+    }
+  });
 
   const size = () => props.size ?? "standard";
 
-  createEffect(() => {
-    if (!props.isOpen) return;
-    void props.focusKey;
-    focusPanel();
-  });
+  createEffect(
+    () => ({ isOpen: props.isOpen, focusKey: props.focusKey }),
+    ({ isOpen }) => {
+      if (!isOpen) {
+        if (dialogRef?.open) {
+          dialogRef.close();
+        }
+        return;
+      }
+      if (dialogRef) {
+        openDialog(dialogRef);
+      } else {
+        focusPanel();
+      }
+    },
+  );
 
   const panelStyle = () =>
     css({
@@ -156,9 +182,6 @@ export function Modal(props: ModalProps) {
             dialogRef = el;
             props.ref?.(el);
             openDialog(el);
-            onCleanup(() => {
-              el.close();
-            });
           }}
           aria-label={props.ariaLabel ?? props.title}
           onCancel={handleCancel}

@@ -1,4 +1,4 @@
-import { createQuery } from "@tanstack/solid-query";
+import { useQuery } from "@tanstack/solid-query";
 import { createRootRoute, Link, Outlet } from "@tanstack/solid-router";
 import { createMemo } from "solid-js";
 import { css } from "../../styled-system/css";
@@ -24,9 +24,9 @@ export const Route = createRootRoute({
 });
 
 function RootComponent() {
-  const itemsQuery = createQuery(() => getItemsQueryOptions(false, "30d"));
-  const readsQuery = createQuery(() => itemReadQueryOptions);
-  const feedTagsQuery = createQuery(() => feedTagsQueryOptions);
+  const itemsQuery = useQuery(() => getItemsQueryOptions(false, "30d"));
+  const readsQuery = useQuery(() => itemReadQueryOptions);
+  const feedTagsQuery = useQuery(() => feedTagsQueryOptions);
 
   const unreadItemsCount = createMemo(() => {
     const unreadList = getItemsWithReadState(

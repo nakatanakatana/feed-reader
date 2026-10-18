@@ -6,7 +6,7 @@ import {
   RouterProvider,
 } from "@tanstack/solid-router";
 import { http } from "msw";
-import { render } from "solid-js/web";
+import { render } from "@solidjs/web";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { dateToTimestamp } from "../lib/item-utils";
 import { queryClient } from "../lib/query";

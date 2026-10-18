@@ -1,5 +1,4 @@
-import { createEffect, createRoot } from "solid-js";
-import { createStore } from "solid-js/store";
+import { createEffect, createRoot, createStore } from "solid-js";
 import {
   getStorageValue,
   STORAGE_KEYS,
@@ -42,20 +41,30 @@ function createFeedStore() {
   });
 
   // Persistence
-  createEffect(() => {
-    setStorageValue(STORAGE_KEYS.FEED_SORT_BY, state.sortBy);
-  });
+  createEffect(
+    () => state.sortBy,
+    (sortBy) => {
+      setStorageValue(STORAGE_KEYS.FEED_SORT_BY, sortBy);
+    },
+  );
 
-  createEffect(() => {
-    setStorageValue(STORAGE_KEYS.FEED_TAG_FILTER, state.selectedTagId);
-  });
+  createEffect(
+    () => state.selectedTagId,
+    (selectedTagId) => {
+      setStorageValue(STORAGE_KEYS.FEED_TAG_FILTER, selectedTagId);
+    },
+  );
 
   const setSortBy = (sortBy: FeedSortBy) => {
-    setState("sortBy", sortBy);
+    setState((draft) => {
+      draft.sortBy = sortBy;
+    });
   };
 
   const setSelectedTagId = (tagId: string | undefined | null) => {
-    setState("selectedTagId", tagId);
+    setState((draft) => {
+      draft.selectedTagId = tagId;
+    });
   };
 
   return {
