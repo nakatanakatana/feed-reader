@@ -5,8 +5,8 @@ import {
   RouterProvider,
 } from "@tanstack/solid-router";
 import { HttpResponse, http } from "msw";
-import type { JSX } from "solid-js";
-import { render } from "solid-js/web";
+import type { JSX } from "@solidjs/web";
+import { render } from "@solidjs/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page } from "vitest/browser";
 import { queryClient } from "../lib/query";

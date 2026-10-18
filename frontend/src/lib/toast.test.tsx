@@ -1,4 +1,5 @@
-import { render } from "solid-js/web";
+import { render } from "@solidjs/web";
+import { flush } from "solid-js";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ToastProvider, toast, useToast } from "./toast";
 
@@ -7,6 +8,7 @@ describe("Toast Context", () => {
 
   beforeEach(() => {
     toast.clear();
+    flush();
     vi.useFakeTimers();
   });
 
@@ -55,11 +57,13 @@ describe("Toast Context", () => {
     expect(toast.toasts()).toHaveLength(0);
 
     const id = toast.show("Global error", "error");
+    flush();
     expect(toast.toasts()).toHaveLength(1);
     expect(toast.toasts()[0].message).toBe("Global error");
     expect(toast.toasts()[0].type).toBe("error");
 
     toast.dismiss(id);
+    flush();
     expect(toast.toasts()).toHaveLength(0);
   });
 
@@ -74,14 +78,17 @@ describe("Toast Context", () => {
     );
 
     toast.show("Auto dismiss test");
+    flush();
     expect(toast.toasts()).toHaveLength(1);
 
     // Fast forward 4.9 seconds
     vi.advanceTimersByTime(4900);
+    flush();
     expect(toast.toasts()).toHaveLength(1);
 
     // Fast forward to 5 seconds
     vi.advanceTimersByTime(100);
+    flush();
     expect(toast.toasts()).toHaveLength(0);
   });
 
@@ -102,6 +109,7 @@ describe("Toast Context", () => {
       // biome-ignore lint/suspicious/noExplicitAny: testing internal interface
       { state: { fetchStatus: "idle" } } as any,
     );
+    flush();
 
     expect(toast.toasts()).toHaveLength(1);
     expect(toast.toasts()[0].message).toBe(
@@ -121,6 +129,7 @@ describe("Toast Context", () => {
     );
 
     toast.show("Unmount test");
+    flush();
     expect(toast.toasts()).toHaveLength(1);
 
     // Unmount ToastViewport
@@ -129,6 +138,7 @@ describe("Toast Context", () => {
 
     // Fast forward 5 seconds
     vi.advanceTimersByTime(5000);
+    flush();
 
     // Toast should be dismissed from global state
     expect(toast.toasts()).toHaveLength(0);

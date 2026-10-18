@@ -1,7 +1,7 @@
 import { QueryClientProvider } from "@tanstack/solid-query";
 import { HttpResponse, http } from "msw";
-import type { JSX } from "solid-js";
-import { render } from "solid-js/web";
+import type { JSX } from "@solidjs/web";
+import { render } from "@solidjs/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page, userEvent } from "vitest/browser";
 import { dateToTimestamp } from "../lib/item-utils";

@@ -1,7 +1,7 @@
-import { createQuery, QueryClientProvider } from "@tanstack/solid-query";
+import { useQuery, QueryClientProvider } from "@tanstack/solid-query";
 import { HttpResponse, http } from "msw";
 import { Show } from "solid-js";
-import { render } from "solid-js/web";
+import { render } from "@solidjs/web";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { page, userEvent } from "vitest/browser";
 import { getItemsQueryOptions } from "../lib/db";
@@ -173,7 +173,7 @@ describe("ItemRow", () => {
     );
 
     const TestObserved = () => {
-      const itemsQuery = createQuery(() => getItemsQueryOptions(false, "30d"));
+      const itemsQuery = useQuery(() => getItemsQueryOptions(false, "30d"));
       return (
         <Show when={(itemsQuery.data?.length ?? 0) > 0}>
           <ItemRow item={mockItemWithUrl} onClick={onClick} />

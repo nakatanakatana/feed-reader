@@ -1,4 +1,4 @@
-import { createQuery } from "@tanstack/solid-query";
+import { useQuery } from "@tanstack/solid-query";
 import { createMemo, createSignal, For, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
@@ -24,12 +24,10 @@ export const TagManagement = () => {
   const [isIgnoreWindowsModalOpen, setIsIgnoreWindowsModalOpen] =
     createSignal(false);
 
-  const rawTagsQuery = createQuery(() => tagsQueryOptions);
-  const feedTagsQuery = createQuery(() => feedTagsQueryOptions);
-  const ignoreWindowsQuery = createQuery(() => ignoreWindowsQueryOptions);
-  const tagIgnoreWindowsQuery = createQuery(() =>
-    tagIgnoreWindowsQueryOptions(),
-  );
+  const rawTagsQuery = useQuery(() => tagsQueryOptions);
+  const feedTagsQuery = useQuery(() => feedTagsQueryOptions);
+  const ignoreWindowsQuery = useQuery(() => ignoreWindowsQueryOptions);
+  const tagIgnoreWindowsQuery = useQuery(() => tagIgnoreWindowsQueryOptions());
 
   const getIgnoreWindowsForTag = (tagId: string) => {
     const allWindows = ignoreWindowsQuery.data ?? [];

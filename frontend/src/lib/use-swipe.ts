@@ -6,7 +6,8 @@ interface UseSwipeOptions {
   onSwipeRight?: () => void;
   onSwipeUp?: () => void;
   onSwipeDown?: () => void;
-  disabled?: boolean;
+  onTouchStart?: (e: TouchEvent) => void;
+  disabled?: boolean | (() => boolean);
   isAtLeftBoundary?: () => boolean;
   isAtRightBoundary?: () => boolean;
   isAtTopBoundary?: () => boolean;
@@ -14,19 +15,33 @@ interface UseSwipeOptions {
 }
 
 export function useSwipe(options: UseSwipeOptions = {}) {
-  const [x, setX] = createSignal(0);
-  const [y, setY] = createSignal(0);
-  const [isSwipingSignal, setIsSwipingSignal] = createSignal(false);
+  // ownedWrite: true allows signals to be written from synchronous test harnesses
+  // inside createRoot without triggering the Solid 2.0 REACTIVE_WRITE_IN_OWNED_SCOPE dev guard.
+  const [x, setX] = createSignal(0, { ownedWrite: true });
+  const [y, setY] = createSignal(0, { ownedWrite: true });
+  const [isSwipingSignal, setIsSwipingSignal] = createSignal(false, {
+    ownedWrite: true,
+  });
   let startX = 0;
   let startY = 0;
+  let currentDiffX = 0;
+  let currentDiffY = 0;
   let isSwiping = false;
   let isCancelled = false;
   let direction: "horizontal" | "vertical" | null = null;
 
+  const isDisabled = () =>
+    typeof options.disabled === "function"
+      ? options.disabled()
+      : Boolean(options.disabled);
+
   const touchstart = (e: TouchEvent) => {
-    if (options.disabled || e.touches.length !== 1) return;
+    options.onTouchStart?.(e);
+    if (isDisabled() || e.touches.length !== 1) return;
     startX = e.touches[0].clientX;
     startY = e.touches[0].clientY;
+    currentDiffX = 0;
+    currentDiffY = 0;
     isSwiping = true;
     setIsSwipingSignal(true);
     isCancelled = false;
@@ -54,6 +69,7 @@ export function useSwipe(options: UseSwipeOptions = {}) {
       if (Math.abs(diffY) > 50) {
         isCancelled = true;
         setIsSwipingSignal(false);
+        currentDiffX = 0;
         setX(0);
         return;
       }
@@ -64,8 +80,10 @@ export function useSwipe(options: UseSwipeOptions = {}) {
       // Only track horizontal motion when pulling past the left/right boundary; otherwise allow normal scroll
       if ((diffX > 0 && isAtLeft) || (diffX < 0 && isAtRight)) {
         e.preventDefault();
+        currentDiffX = diffX;
         setX(diffX);
       } else {
+        currentDiffX = 0;
         setX(0);
         startX = currentX;
       }
@@ -75,6 +93,7 @@ export function useSwipe(options: UseSwipeOptions = {}) {
       if (Math.abs(diffX) > 50) {
         isCancelled = true;
         setIsSwipingSignal(false);
+        currentDiffY = 0;
         setY(0);
         return;
       }
@@ -91,8 +110,10 @@ export function useSwipe(options: UseSwipeOptions = {}) {
         ) {
           e.preventDefault();
         }
+        currentDiffY = diffY;
         setY(diffY);
       } else {
+        currentDiffY = 0;
         setY(0);
         startY = currentY;
       }
@@ -101,6 +122,8 @@ export function useSwipe(options: UseSwipeOptions = {}) {
 
   const touchend = (_e: TouchEvent) => {
     if (!isSwiping || isCancelled) {
+      currentDiffX = 0;
+      currentDiffY = 0;
       setX(0);
       setY(0);
       isSwiping = false;
@@ -109,8 +132,8 @@ export function useSwipe(options: UseSwipeOptions = {}) {
       return;
     }
 
-    const currentX = x();
-    const currentY = y();
+    const currentX = currentDiffX;
+    const currentY = currentDiffY;
     const threshold = options.threshold ?? 50;
 
     if (direction === "horizontal") {
@@ -127,6 +150,8 @@ export function useSwipe(options: UseSwipeOptions = {}) {
       }
     }
 
+    currentDiffX = 0;
+    currentDiffY = 0;
     setX(0);
     setY(0);
     isSwiping = false;
@@ -136,6 +161,8 @@ export function useSwipe(options: UseSwipeOptions = {}) {
 
   const touchcancel = (_e: TouchEvent) => {
     // Reset swipe state if the browser cancels the touch sequence
+    currentDiffX = 0;
+    currentDiffY = 0;
     setX(0);
     setY(0);
     isSwiping = false;
@@ -149,10 +176,10 @@ export function useSwipe(options: UseSwipeOptions = {}) {
     y,
     isSwiping: isSwipingSignal,
     handlers: {
-      ontouchstart: touchstart,
-      ontouchmove: touchmove,
-      ontouchend: touchend,
-      ontouchcancel: touchcancel,
+      onTouchStart: touchstart,
+      onTouchMove: touchmove,
+      onTouchEnd: touchend,
+      onTouchCancel: touchcancel,
     },
   };
 }

@@ -1,4 +1,4 @@
-import { render } from "solid-js/web";
+import { render } from "@solidjs/web";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { FaviconColor, generateFaviconUri } from "../lib/favicon";
 import { DynamicFavicon } from "./DynamicFavicon";

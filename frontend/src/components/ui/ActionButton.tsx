@@ -1,4 +1,5 @@
-import { type JSX, Show } from "solid-js";
+import type { JSX } from "@solidjs/web";
+import { omit, Show } from "solid-js";
 import { css, cx } from "../../../styled-system/css";
 
 type ActionButtonVariant = "primary" | "secondary" | "ghost" | "danger";
@@ -19,11 +20,31 @@ interface ActionButtonProps extends NativeButtonProps {
   size?: ActionButtonSize;
   disabled?: boolean;
   ariaLabel?: string;
+  "aria-label"?: string;
   class?: string;
   onClickEvent?: (event: MouseEvent) => void;
 }
 
 export function ActionButton(props: ActionButtonProps) {
+  // Solid 2.0 omit() returns a reactive proxy view (OmitView) over props,
+  // ensuring dynamic passthrough attributes continue to track reactively
+  // while component-only props are excluded from DOM element spread.
+  const rest = omit(
+    props,
+    "children",
+    "icon",
+    "hideTextOnMobile",
+    "onClick",
+    "onClickEvent",
+    "type",
+    "variant",
+    "size",
+    "disabled",
+    "ariaLabel",
+    "aria-label",
+    "class",
+  );
+
   const variant = () => props.variant ?? "secondary";
   const size = () => props.size ?? "md";
 
@@ -63,14 +84,14 @@ export function ActionButton(props: ActionButtonProps) {
 
   return (
     <button
-      {...props}
+      {...rest}
       type={props.type ?? "button"}
       onClick={(event) => {
         props.onClickEvent?.(event);
         props.onClick?.(event);
       }}
       disabled={props.disabled}
-      aria-label={props.ariaLabel}
+      aria-label={props.ariaLabel ?? props["aria-label"]}
       class={cx(
         css({
           borderRadius: "md",

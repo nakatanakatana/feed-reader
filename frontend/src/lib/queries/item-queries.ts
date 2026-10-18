@@ -13,12 +13,31 @@ export interface TagUnreadCount {
   unreadCount: bigint;
 }
 
-const mergedItemCache = new WeakMap<
-  ListItem,
-  { isRead: boolean; merged: MergedItem }
->();
+const mergedItemCache = new WeakMap<ListItem, MergedItem>();
 
-const sortedItemsCache = new WeakMap<ListItem[], ListItem[]>();
+const isMergedItemEqual = (
+  cached: MergedItem,
+  item: ListItem,
+  isRead: boolean,
+): boolean => {
+  if (cached.isRead !== isRead) return false;
+  const itemKeys = Object.keys(item).filter((k) => k !== "isRead");
+  const cachedKeys = Object.keys(cached).filter((k) => k !== "isRead");
+  if (itemKeys.length !== cachedKeys.length) return false;
+  for (const key of itemKeys) {
+    if (key === "isRead") continue;
+    const cachedVal = Reflect.get(cached, key);
+    const itemVal = Reflect.get(item, key);
+    if (cachedVal instanceof Date && itemVal instanceof Date) {
+      if (cachedVal.getTime() !== itemVal.getTime()) return false;
+      continue;
+    }
+    if (cachedVal !== itemVal) {
+      return false;
+    }
+  }
+  return true;
+};
 
 export const getItemsWithReadState = (
   itemsList: ListItem[],
@@ -28,19 +47,15 @@ export const getItemsWithReadState = (
 ): MergedItem[] => {
   if (itemsList.length === 0) return [];
 
-  let sortedItems = sortedItemsCache.get(itemsList);
-  if (!sortedItems) {
-    sortedItems = [...itemsList].sort((a, b) => {
-      const timeA = a.publishedAt?.getTime() ?? Number.MAX_SAFE_INTEGER;
-      const timeB = b.publishedAt?.getTime() ?? Number.MAX_SAFE_INTEGER;
-      if (timeA !== timeB) return timeA - timeB;
+  const sortedItems = [...itemsList].sort((a, b) => {
+    const timeA = a.publishedAt?.getTime() ?? Number.MAX_SAFE_INTEGER;
+    const timeB = b.publishedAt?.getTime() ?? Number.MAX_SAFE_INTEGER;
+    if (timeA !== timeB) return timeA - timeB;
 
-      const createA = a.createdAt?.getTime() ?? 0;
-      const createB = b.createdAt?.getTime() ?? 0;
-      return createA - createB;
-    });
-    sortedItemsCache.set(itemsList, sortedItems);
-  }
+    const createA = a.createdAt?.getTime() ?? 0;
+    const createB = b.createdAt?.getTime() ?? 0;
+    return createA - createB;
+  });
 
   const readMap = new Map<string, boolean>();
   for (const r of readsList) {
@@ -50,11 +65,11 @@ export const getItemsWithReadState = (
   let result: MergedItem[] = sortedItems.map((item) => {
     const isRead = readMap.get(item.id) ?? item.isRead;
     const cached = mergedItemCache.get(item);
-    if (cached && cached.isRead === isRead) {
-      return cached.merged;
+    if (cached && isMergedItemEqual(cached, item, isRead)) {
+      return cached;
     }
-    const merged = { ...item, isRead };
-    mergedItemCache.set(item, { isRead, merged });
+    const merged: MergedItem = { ...item, isRead };
+    mergedItemCache.set(item, merged);
     return merged;
   });
 
