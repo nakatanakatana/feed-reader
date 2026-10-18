@@ -1,5 +1,31 @@
 # Changelog
 
+## [v0.27.0](https://github.com/nakatanakatana/feed-reader/compare/v0.26.1...v0.27.0) - 2026-10-18
+
+### Maintenance & Others
+- chore(deps): update dependency aquaproj/aqua-registry to v4.575.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1137
+- chore(deps): update dependency bufbuild/buf to v1.74.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1139
+- fix(deps): update dependency @tanstack/solid-query to v5.104.2 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1141
+- chore(deps): update vitest monorepo to v5.0.4 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1142
+- fix(deps): update dependency postcss to v8.5.30 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1143
+- chore(deps): update dependency moznion/cccc to v1.8.3 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1144
+- fix(deps): update tanstack-router monorepo by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1145
+- chore(deps): update dependency golangci/golangci-lint to v2.15.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1146
+- chore(deps): update dependency oxfmt to ^0.73.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1147
+- chore(deps): update dependency oxlint to v1.88.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1148
+- chore(deps): update dependency playwright to v1.64.1 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1150
+- fix(deps): update dependency @tanstack/router-plugin to v1.168.46 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1151
+- fix(deps): update dependency @tanstack/solid-query to v5.104.3 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1152
+- chore(deps): update node.js to 44fce69 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1140
+- chore(deps): update dependency jsdom to v30.1.3 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1153
+- feat(frontend): migrate to solid 2.0 rc line by @nakatanakatana in https://github.com/nakatanakatana/feed-reader/pull/1149
+- chore(deps): update dependency oxlint to v1.88.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1159
+- chore(deps): update dependency @typespec/openapi3 to v1.17.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1158
+- chore(deps): update dependency @typespec/http to v1.17.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1157
+- chore(deps): update dependency vite to v8.3.4 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1155
+- chore(deps): update dependency jsdom to v30.1.3 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1154
+- chore(deps): update vitest monorepo to v5.0.5 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1160
+
 ## [v0.26.1](https://github.com/nakatanakatana/feed-reader/compare/v0.26.0...v0.26.1) - 2026-10-14
 
 ### Maintenance & Others
