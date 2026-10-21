@@ -111,4 +111,54 @@ describe("TagManagement", () => {
 
     expect(confirmSpy).not.toHaveBeenCalled();
   });
+
+  it("displays LoadingState while fetching and does not show premature empty state", async () => {
+    let resolveTagsPromise: () => void;
+    const tagsPromise = new Promise<void>((resolve) => {
+      resolveTagsPromise = resolve;
+    });
+
+    worker.use(
+      http.get("*/api/v2/tags", async () => {
+        await tagsPromise;
+        return HttpResponse.json(
+          buildListTagsResponse([
+            buildTag({
+              id: "t1",
+              name: "Golang",
+              unreadCount: "0",
+              feedCount: "1",
+            }),
+          ]),
+        );
+      }),
+    );
+
+    dispose = render(() => <TestWrapper />, document.body);
+
+    // Form is mounted immediately
+    await expect
+      .element(page.getByPlaceholder("New tag name"))
+      .toBeInTheDocument();
+    await expect
+      .element(page.getByRole("button", { name: "Add Tag" }))
+      .toBeInTheDocument();
+
+    // LoadingState spinner is visible
+    await expect.element(page.getByText("Loading tags...")).toBeInTheDocument();
+
+    // Premature empty state is NOT visible
+    await expect
+      .element(page.getByText("No tags yet."))
+      .not.toBeInTheDocument();
+
+    // Resolve
+    resolveTagsPromise!();
+
+    // Tag is now rendered
+    await expect.element(page.getByText("Golang")).toBeInTheDocument();
+    await expect
+      .element(page.getByText("Loading tags..."))
+      .not.toBeInTheDocument();
+  });
 });

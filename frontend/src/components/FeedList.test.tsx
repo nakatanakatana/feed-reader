@@ -10,6 +10,7 @@ import { render } from "@solidjs/web";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { page, userEvent } from "vitest/browser";
 import { queryClient } from "../lib/query";
+import { feedStore } from "../lib/feed-store";
 import { worker } from "../mocks/browser";
 import { routeTree } from "../routeTree.gen";
 import {
@@ -213,5 +214,187 @@ describe("FeedList", () => {
     await expect.element(soonText).toBeInTheDocument();
     // And only the past feed should display "Soon" (future feed should show a relative time)
     await expect.poll(async () => (await soonText.all()).length).toBe(1);
+  });
+
+  it("displays LoadingState while feeds are fetching and does not show premature empty state", async () => {
+    let resolveFeedsPromise: () => void;
+    const feedsPromise = new Promise<void>((resolve) => {
+      resolveFeedsPromise = resolve;
+    });
+
+    worker.use(
+      http.get("*/api/v2/feeds", async () => {
+        await feedsPromise;
+        return HttpResponse.json(
+          buildListFeedsResponse([
+            buildFeed({
+              id: "feed-1",
+              title: "Tech Radar Feed",
+              url: "https://example.com/feed.xml",
+            }),
+          ]),
+        );
+      }),
+    );
+
+    const history = createMemoryHistory({ initialEntries: ["/feeds"] });
+    const router = createRouter({ routeTree, history });
+
+    dispose = render(
+      () => (
+        <TestWrapper>
+          <RouterProvider router={router} />
+        </TestWrapper>
+      ),
+      document.body,
+    );
+
+    // Filter controls are visible immediately
+    await expect
+      .element(page.getByLabelText("Filter by tag"))
+      .toBeInTheDocument();
+
+    // LoadingState spinner is visible
+    await expect
+      .element(page.getByText("Loading feeds..."))
+      .toBeInTheDocument();
+
+    // Premature empty state is NOT visible
+    await expect
+      .element(page.getByText("No feeds found."))
+      .not.toBeInTheDocument();
+
+    // Resolve
+    resolveFeedsPromise!();
+
+    // Feed is rendered
+    await expect.element(page.getByText("Tech Radar Feed")).toBeInTheDocument();
+    await expect
+      .element(page.getByText("Loading feeds..."))
+      .not.toBeInTheDocument();
+  });
+
+  it("keeps AddFeedForm and toolbar visible while tags are fetching", async () => {
+    let resolveTagsPromise: () => void;
+    const tagsPromise = new Promise<void>((resolve) => {
+      resolveTagsPromise = resolve;
+    });
+
+    worker.use(
+      http.get("*/api/v2/tags", async () => {
+        await tagsPromise;
+        return HttpResponse.json({ tags: [] });
+      }),
+    );
+
+    const history = createMemoryHistory({ initialEntries: ["/feeds"] });
+    const router = createRouter({ routeTree, history });
+
+    dispose = render(
+      () => (
+        <TestWrapper>
+          <RouterProvider router={router} />
+        </TestWrapper>
+      ),
+      document.body,
+    );
+
+    // AddFeedForm input is visible immediately (not replaced by full page "Loading page...")
+    await expect.element(page.getByPlaceholder("Feed URL")).toBeInTheDocument();
+
+    // Tag filter shows loading state while disabled
+    const tagSelect = page.getByLabelText("Filter by tag");
+    await expect.element(tagSelect).toBeInTheDocument();
+    await expect.element(tagSelect).toBeDisabled();
+
+    // Resolve tags
+    resolveTagsPromise!();
+
+    await expect.element(tagSelect).not.toBeDisabled();
+  });
+
+  it("keeps AddFeedForm and toolbar visible while feed-tags are fetching", async () => {
+    let resolveFeedTagsPromise: () => void;
+    const feedTagsPromise = new Promise<void>((resolve) => {
+      resolveFeedTagsPromise = resolve;
+    });
+
+    worker.use(
+      http.get("*/api/v2/feed-tags", async () => {
+        await feedTagsPromise;
+        return HttpResponse.json({ feedTags: [] });
+      }),
+    );
+
+    const history = createMemoryHistory({ initialEntries: ["/feeds"] });
+    const router = createRouter({ routeTree, history });
+
+    dispose = render(
+      () => (
+        <TestWrapper>
+          <RouterProvider router={router} />
+        </TestWrapper>
+      ),
+      document.body,
+    );
+
+    // AddFeedForm input is visible immediately (not replaced by full page "Loading page...")
+    await expect.element(page.getByPlaceholder("Feed URL")).toBeInTheDocument();
+
+    // Tag filter is present and disabled while feed-tags are fetching
+    const tagSelect = page.getByLabelText("Filter by tag");
+    await expect.element(tagSelect).toBeInTheDocument();
+    await expect.element(tagSelect).toBeDisabled();
+
+    // Resolve feed-tags
+    resolveFeedTagsPromise!();
+
+    await expect.element(tagSelect).not.toBeDisabled();
+  });
+
+  it("restores selectedTagId value even when tags or feed-tags resolve asynchronously", async () => {
+    let resolveFeedTagsPromise: () => void;
+    const feedTagsPromise = new Promise<void>((resolve) => {
+      resolveFeedTagsPromise = resolve;
+    });
+
+    worker.use(
+      http.get("*/api/v2/tags", () => {
+        return HttpResponse.json({
+          tags: [{ id: "tag-1", name: "News" }],
+        });
+      }),
+      http.get("*/api/v2/feed-tags", async () => {
+        await feedTagsPromise;
+        return HttpResponse.json({ feedTags: [] });
+      }),
+    );
+
+    feedStore.setSelectedTagId("tag-1");
+
+    const history = createMemoryHistory({ initialEntries: ["/feeds"] });
+    const router = createRouter({ routeTree, history });
+
+    dispose = render(
+      () => (
+        <TestWrapper>
+          <RouterProvider router={router} />
+        </TestWrapper>
+      ),
+      document.body,
+    );
+
+    const tagSelect = page.getByLabelText("Filter by tag");
+    await expect.element(tagSelect).toBeInTheDocument();
+
+    // While feed-tags is loading, tagSelect is disabled
+    await expect.element(tagSelect).toBeDisabled();
+
+    // Resolve feed-tags so options are populated
+    resolveFeedTagsPromise!();
+
+    await expect.element(tagSelect).not.toBeDisabled();
+    // The select element value in DOM should be "tag-1"
+    await expect.element(tagSelect).toHaveValue("tag-1");
   });
 });

@@ -1,6 +1,6 @@
 import type { JSX } from "@solidjs/web";
 import { useQuery } from "@tanstack/solid-query";
-import { createMemo, createSignal, For, Show } from "solid-js";
+import { createMemo, createSignal, For, Loading, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex } from "../../styled-system/patterns";
 import {
@@ -28,10 +28,15 @@ export function AddFeedForm(props: AddFeedFormProps) {
   const feedTagsQuery = useQuery(() => feedTagsQueryOptions);
 
   const tagsWithFeedCount = createMemo(() => {
-    return getTagsWithFeedCount(
-      rawTagsQuery.data ?? [],
-      feedTagsQuery.data ?? [],
-    );
+    if (
+      rawTagsQuery.isLoading ||
+      !rawTagsQuery.data ||
+      feedTagsQuery.isLoading ||
+      !feedTagsQuery.data
+    ) {
+      return [];
+    }
+    return getTagsWithFeedCount(rawTagsQuery.data, feedTagsQuery.data);
   });
 
   const tagsSorted = createMemo(() => {
@@ -154,16 +159,18 @@ export function AddFeedForm(props: AddFeedFormProps) {
             Tags:
           </span>
           <HorizontalScrollList>
-            <For each={tagsSorted()}>
-              {(tag) => (
-                <TagChip
-                  selected={selectedTagIds().includes(tag.id)}
-                  onClick={() => toggleTag(tag.id)}
-                >
-                  {tag.name}
-                </TagChip>
-              )}
-            </For>
+            <Loading fallback={null}>
+              <For each={tagsSorted()}>
+                {(tag) => (
+                  <TagChip
+                    selected={selectedTagIds().includes(tag.id)}
+                    onClick={() => toggleTag(tag.id)}
+                  >
+                    {tag.name}
+                  </TagChip>
+                )}
+              </For>
+            </Loading>
           </HorizontalScrollList>
         </div>
 
