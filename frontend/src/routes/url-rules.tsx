@@ -1,9 +1,10 @@
 import { useMutation, useQuery } from "@tanstack/solid-query";
 import { createFileRoute } from "@tanstack/solid-router";
-import { createSignal, For, Show } from "solid-js";
+import { createSignal, For, Loading, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { ActionButton } from "../components/ui/ActionButton";
+import { LoadingState } from "../components/ui/LoadingState";
 import { PageLayout } from "../components/ui/PageLayout";
 import {
   urlParsingRuleDelete,
@@ -187,65 +188,64 @@ function URLRulesComponent() {
             p: "4",
           })}
         >
-          <Show when={rulesQuery.isLoading}>
-            <p>Loading rules...</p>
-          </Show>
-          <ul class={stack({ gap: "3" })}>
-            <For each={rulesQuery.data}>
-              {(rule) => (
-                <li
-                  class={flex({
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    p: "3",
-                    border: "1px solid",
-                    borderColor: "gray.100",
-                    rounded: "md",
-                  })}
-                >
-                  <div class={stack({ gap: "1" })}>
-                    <div class={flex({ gap: "2", alignItems: "center" })}>
-                      <span class={css({ fontWeight: "bold" })}>
-                        {rule.domain}
-                      </span>
-                      <span
+          <Loading fallback={<LoadingState label="Loading rules..." />}>
+            <ul class={stack({ gap: "3" })}>
+              <For each={rulesQuery.data ?? []}>
+                {(rule) => (
+                  <li
+                    class={flex({
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      p: "3",
+                      border: "1px solid",
+                      borderColor: "gray.100",
+                      rounded: "md",
+                    })}
+                  >
+                    <div class={stack({ gap: "1" })}>
+                      <div class={flex({ gap: "2", alignItems: "center" })}>
+                        <span class={css({ fontWeight: "bold" })}>
+                          {rule.domain}
+                        </span>
+                        <span
+                          class={css({
+                            fontSize: "xs",
+                            bg: "gray.100",
+                            px: "2",
+                            py: "0.5",
+                            rounded: "full",
+                          })}
+                        >
+                          {rule.ruleType}
+                        </span>
+                      </div>
+                      <code
                         class={css({
-                          fontSize: "xs",
-                          bg: "gray.100",
-                          px: "2",
-                          py: "0.5",
-                          rounded: "full",
+                          fontSize: "sm",
+                          color: "gray.600",
+                          bg: "gray.50",
+                          px: "1",
+                          rounded: "sm",
                         })}
                       >
-                        {rule.ruleType}
-                      </span>
+                        {rule.pattern}
+                      </code>
                     </div>
-                    <code
-                      class={css({
-                        fontSize: "sm",
-                        color: "gray.600",
-                        bg: "gray.50",
-                        px: "1",
-                        rounded: "sm",
-                      })}
-                    >
-                      {rule.pattern}
-                    </code>
-                  </div>
-                  <Show when={!isReadOnly()}>
-                    <ActionButton
-                      variant="danger"
-                      size="sm"
-                      onClick={() => deleteMutation.mutate(rule.id)}
-                      disabled={deleteMutation.isPending}
-                    >
-                      Delete
-                    </ActionButton>
-                  </Show>
-                </li>
-              )}
-            </For>
-          </ul>
+                    <Show when={!isReadOnly()}>
+                      <ActionButton
+                        variant="danger"
+                        size="sm"
+                        onClick={() => deleteMutation.mutate(rule.id)}
+                        disabled={deleteMutation.isPending}
+                      >
+                        Delete
+                      </ActionButton>
+                    </Show>
+                  </li>
+                )}
+              </For>
+            </ul>
+          </Loading>
         </div>
       </div>
     </PageLayout>

@@ -220,4 +220,71 @@ describe("ItemList", () => {
     const scrollContainer = page.getByTestId("horizontal-scroll-container");
     await expect.element(scrollContainer).toBeInTheDocument();
   });
+
+  it("displays LoadingState while items are fetching and avoids premature empty state", async () => {
+    setLastFetched(new Date("2026-03-01T00:00:00Z"));
+    let resolveItemsPromise: () => void;
+    const itemsPromise = new Promise<void>((resolve) => {
+      resolveItemsPromise = resolve;
+    });
+
+    worker.use(
+      http.all("*/api/v2/items", async () => {
+        await itemsPromise;
+        return HttpResponse.json(
+          buildListItemsResponse([
+            buildItem({
+              id: "item-1",
+              title: "Test Item 1",
+              publishedAt: "2026-03-01T00:00:00.000Z",
+              createdAt: "2026-03-01T00:00:00.000Z",
+            }),
+          ]),
+        );
+      }),
+      http.all("*/api/v2/item-reads", () => {
+        return HttpResponse.json(buildListItemReadResponse([]));
+      }),
+      http.all("*/api/v2/tags", () => {
+        return HttpResponse.json(buildListTagsResponse([]));
+      }),
+      http.all("*/api/v2/feed-tags", () => {
+        return HttpResponse.json(buildListFeedTagsResponse());
+      }),
+    );
+
+    const history = createMemoryHistory({ initialEntries: ["/"] });
+    const router = createRouter({ routeTree, history });
+
+    dispose = render(
+      () => (
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
+      ),
+      document.body,
+    );
+
+    // Controls must mount immediately
+    await expect.element(page.getByText("Filter by Tag:")).toBeInTheDocument();
+
+    // LoadingState spinner must be visible while fetching
+    await expect
+      .element(page.getByText("Loading items..."))
+      .toBeInTheDocument();
+
+    // Empty state must NOT be visible while fetching
+    await expect
+      .element(page.getByText("No items found."))
+      .not.toBeInTheDocument();
+
+    // Resolve query
+    resolveItemsPromise!();
+
+    // After resolution, item should be rendered and loading label gone
+    await expect.element(page.getByText("Test Item 1")).toBeInTheDocument();
+    await expect
+      .element(page.getByText("Loading items..."))
+      .not.toBeInTheDocument();
+  });
 });

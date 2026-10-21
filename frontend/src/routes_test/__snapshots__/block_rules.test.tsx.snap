@@ -204,7 +204,6 @@ exports[`Block Rules Page > should fetch and display item block rules 1`] = `
       <div
         class="flex_1 min-h_0 ov-y_auto bg-c_white bdr_md bx-sh_sm bd_1px_solid bd-c_gray.200"
       >
-        <!---->
         <div
           class="d_flex jc_flex-start ai_center flex-wrap_wrap cg_4 rg_2 bg-c_gray.50 p_2 bdr_md bd_1px_solid bd-c_gray.200"
         >
