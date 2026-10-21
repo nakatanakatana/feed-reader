@@ -5,7 +5,7 @@ permissions:
 
 env:
   # renovate: datasource=github-releases depName=moznion/cccc
-  CCCC_VERSION: v1.8.3
+  CCCC_VERSION: v1.8.4
 
 on:
   pull_request:
