@@ -1,9 +1,10 @@
 import { useQuery } from "@tanstack/solid-query";
 import { createRootRoute, Link, Outlet } from "@tanstack/solid-router";
-import { createMemo } from "solid-js";
+import { createMemo, Loading } from "solid-js";
 import { css } from "../../styled-system/css";
 import { DynamicFavicon } from "../components/DynamicFavicon";
 import { PwaBadge } from "../components/PwaBadge";
+import { LoadingState } from "../components/ui/LoadingState";
 import {
   feedTagsQueryOptions,
   getItemsQueryOptions,
@@ -87,8 +88,10 @@ function RootComponent() {
 
   return (
     <>
-      <DynamicFavicon unreadCount={unreadItemsCount()} />
-      <PwaBadge unreadCount={unreadItemsCount()} />
+      <Loading fallback={null}>
+        <DynamicFavicon unreadCount={unreadItemsCount()} />
+        <PwaBadge unreadCount={unreadItemsCount()} />
+      </Loading>
       <header class={headerStyle}>
         <Link
           to="/"
@@ -146,7 +149,9 @@ function RootComponent() {
           Ignore Windows
         </Link>
       </header>
-      <Outlet />
+      <Loading fallback={<LoadingState label="Loading page..." />}>
+        <Outlet />
+      </Loading>
       {/* Start rendering router matches */}
     </>
   );

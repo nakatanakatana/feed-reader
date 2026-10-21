@@ -1,5 +1,12 @@
 import { useMutation, useQuery } from "@tanstack/solid-query";
-import { createEffect, createMemo, createSignal, For, Show } from "solid-js";
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  For,
+  Loading,
+  Show,
+} from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import {
@@ -29,6 +36,7 @@ import { ActionButton } from "./ui/ActionButton";
 import { Badge } from "./ui/Badge";
 import { EmptyState } from "./ui/EmptyState";
 import { KebabMenu } from "./ui/KebabMenu";
+import { LoadingState } from "./ui/LoadingState";
 
 export function FeedList() {
   const refreshMutation = useMutation(() => ({
@@ -77,7 +85,15 @@ export function FeedList() {
   };
 
   const tagsWithFeedCount = createMemo(() => {
-    return getTagsWithFeedCount(tagsQuery.data ?? [], feedTagsQuery.data ?? []);
+    if (
+      tagsQuery.isLoading ||
+      !tagsQuery.data ||
+      feedTagsQuery.isLoading ||
+      !feedTagsQuery.data
+    ) {
+      return [];
+    }
+    return getTagsWithFeedCount(tagsQuery.data, feedTagsQuery.data);
   });
 
   const tagsSorted = createMemo(() => {
@@ -93,10 +109,13 @@ export function FeedList() {
 
   // Force sync the select value to DOM because browser might reset it if options are not ready
   createEffect(
-    () =>
-      feedStore.state.selectedTagId === null
+    () => {
+      // Track tagsSorted so that when options are added to the DOM, we re-apply the targetValue
+      tagsSorted();
+      return feedStore.state.selectedTagId === null
         ? "untagged"
-        : (feedStore.state.selectedTagId ?? "all"),
+        : (feedStore.state.selectedTagId ?? "all");
+    },
     (targetValue) => {
       if (tagSelectRef && tagSelectRef.value !== targetValue) {
         tagSelectRef.value = targetValue;
@@ -106,15 +125,25 @@ export function FeedList() {
 
   // Ensure selectedTagId is valid once tags load
   createEffect(
-    () => ({
-      tags: tagsSorted(),
-      currentTagId: feedStore.state.selectedTagId,
-      isLoading: tagsQuery.isLoading,
-    }),
-    ({ tags, currentTagId, isLoading }) => {
-      if (tags.length > 0 && typeof currentTagId === "string") {
+    () => {
+      if (
+        tagsQuery.isLoading ||
+        !tagsQuery.data ||
+        feedTagsQuery.isLoading ||
+        !feedTagsQuery.data
+      ) {
+        return { tags: [], currentTagId: undefined, isReady: false };
+      }
+      return {
+        tags: tagsSorted(),
+        currentTagId: feedStore.state.selectedTagId,
+        isReady: true,
+      };
+    },
+    ({ tags, currentTagId, isReady }) => {
+      if (isReady && tags.length > 0 && typeof currentTagId === "string") {
         const exists = tags.some((t) => t.id === currentTagId);
-        if (!exists && !isLoading) {
+        if (!exists) {
           // Tag no longer exists, reset to all
           feedStore.setSelectedTagId(undefined);
         }
@@ -241,22 +270,34 @@ export function FeedList() {
         >
           <div class={flex({ gap: "2", alignItems: "center", mr: "auto" })}>
             <Show when={!isReadOnly()}>
-              <input
-                type="checkbox"
-                id="select-all-visible"
-                aria-label="Select all visible feeds"
-                checked={allVisibleSelected()}
-                ref={(el) => {
-                  createEffect(
-                    () => isIndeterminate(),
-                    (indeterminate) => {
-                      el.indeterminate = indeterminate;
-                    },
-                  );
-                }}
-                onChange={() => toggleSelectAll()}
-                class={css({ cursor: "pointer" })}
-              />
+              <Loading
+                fallback={
+                  <input
+                    type="checkbox"
+                    id="select-all-visible"
+                    aria-label="Select all visible feeds"
+                    disabled={true}
+                    class={css({ cursor: "not-allowed" })}
+                  />
+                }
+              >
+                <input
+                  type="checkbox"
+                  id="select-all-visible"
+                  aria-label="Select all visible feeds"
+                  checked={allVisibleSelected()}
+                  ref={(el) => {
+                    createEffect(
+                      () => isIndeterminate(),
+                      (indeterminate) => {
+                        el.indeterminate = indeterminate;
+                      },
+                    );
+                  }}
+                  onChange={() => toggleSelectAll()}
+                  class={css({ cursor: "pointer" })}
+                />
+              </Loading>
             </Show>
           </div>
           <label
@@ -311,7 +352,7 @@ export function FeedList() {
                 ? "untagged"
                 : (feedStore.state.selectedTagId ?? "all")
             }
-            disabled={tagsQuery.isLoading}
+            disabled={tagsQuery.isLoading || feedTagsQuery.isLoading}
             onInput={(e) => {
               const value = e.currentTarget.value;
               if (value === "all") {
@@ -333,7 +374,7 @@ export function FeedList() {
               minW: "10rem",
             })}
           >
-            <Show when={tagsQuery.isLoading}>
+            <Show when={tagsQuery.isLoading || feedTagsQuery.isLoading}>
               <option value={feedStore.state.selectedTagId ?? "all"}>
                 Loading...
               </option>
@@ -362,405 +403,409 @@ export function FeedList() {
           backgroundColor: "white",
         })}
       >
-        <Show when={feedsQuery.isLoading}>
-          <p class={css({ color: "gray.500", fontSize: "sm" })}>Loading...</p>
-        </Show>
         <Show when={deleteError()}>
           <p class={css({ color: "red.500" })}>
             Delete Error: {deleteError()?.message}
           </p>
         </Show>
-        <Show when={!feedsQuery.isLoading && feedList().length === 0}>
-          <EmptyState title="No feeds found." />
-        </Show>
-        <div
-          class={css({
-            flex: "1",
-            minHeight: 0,
-            overflowY: "auto",
-            overflowX: "hidden",
-            pr: "1",
-            width: "100%",
-          })}
-        >
-          <ul class={stack({ gap: "2", width: "full" })}>
-            <For each={feedList()}>
-              {(feed) => (
-                <li
-                  onClick={() => {
-                    if (!isReadOnly()) toggleFeedSelection(feed.id);
-                  }}
-                  onKeyDown={(e) => {
-                    if (isReadOnly()) return;
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      toggleFeedSelection(feed.id);
-                    }
-                  }}
-                  class={flex({
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    padding: "3",
-                    border: "1px solid",
-                    borderColor: "gray.100",
-                    borderRadius: "md",
-                    gap: "3",
-                    cursor: isReadOnly() ? "default" : "pointer",
-                    _hover: { backgroundColor: "gray.50" },
-                  })}
-                >
-                  <div
+        <Loading fallback={<LoadingState label="Loading feeds..." />}>
+          <Show when={feedList().length === 0}>
+            <EmptyState title="No feeds found." />
+          </Show>
+          <div
+            class={css({
+              flex: "1",
+              minHeight: 0,
+              overflowY: "auto",
+              overflowX: "hidden",
+              pr: "1",
+              width: "100%",
+            })}
+          >
+            <ul class={stack({ gap: "2", width: "full" })}>
+              <For each={feedList()}>
+                {(feed) => (
+                  <li
+                    onClick={() => {
+                      if (!isReadOnly()) toggleFeedSelection(feed.id);
+                    }}
+                    onKeyDown={(e) => {
+                      if (isReadOnly()) return;
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        toggleFeedSelection(feed.id);
+                      }
+                    }}
                     class={flex({
-                      gap: "3",
+                      justifyContent: "space-between",
                       alignItems: "center",
-                      flex: 1,
-                      minWidth: 0,
+                      padding: "3",
+                      border: "1px solid",
+                      borderColor: "gray.100",
+                      borderRadius: "md",
+                      gap: "3",
+                      cursor: isReadOnly() ? "default" : "pointer",
+                      _hover: { backgroundColor: "gray.50" },
                     })}
                   >
-                    <Show when={!isReadOnly()}>
-                      <input
-                        type="checkbox"
-                        checked={selectedFeedIds().includes(feed.id)}
-                        onChange={(e) => {
-                          e.stopPropagation();
-                          toggleFeedSelection(feed.id);
-                        }}
-                        onClick={(e) => e.stopPropagation()}
-                        class={css({ cursor: "pointer" })}
-                      />
-                    </Show>
-                    <div class={stack({ gap: "1", flex: 1, minWidth: 0 })}>
-                      <div
-                        class={flex({
-                          gap: "2",
-                          alignItems: "center",
-                          width: "full",
-                        })}
-                      >
-                        <a
-                          href={feed.link || feed.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={(e) => e.stopPropagation()}
-                          class={css({
-                            fontWeight: "medium",
-                            whiteSpace: "nowrap",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            minWidth: 0,
-                            _hover: {
-                              textDecoration: "underline",
-                              color: "blue.600",
-                            },
-                          })}
-                        >
-                          {feed.title || "Untitled Feed"}
-                        </a>
-                        <Show when={feed.unreadCount && feed.unreadCount > 0n}>
-                          <Badge
-                            variant="primary"
-                            class={css({ flexShrink: 0 })}
-                          >
-                            {feed.unreadCount?.toString()}
-                          </Badge>
-                        </Show>
-                        <For each={feed.tags}>
-                          {(tag) => (
-                            <Badge class={css({ flexShrink: 0 })}>
-                              {tag.name}
-                            </Badge>
-                          )}
-                        </For>
-                        <For each={getIgnoreWindowsForFeed(feed.id, feed.tags)}>
-                          {(window) => (
-                            <Badge
-                              variant={
-                                isIgnoreWindowActive(window)
-                                  ? "warning"
-                                  : "neutral"
-                              }
-                              class={css({ flexShrink: 0 })}
-                              title={
-                                isIgnoreWindowActive(window)
-                                  ? `Quiet hours active: ${window.name}`
-                                  : `Ignore window: ${window.name}`
-                              }
-                            >
-                              {isIgnoreWindowActive(window)
-                                ? `💤 ${window.name}`
-                                : `🕒 ${window.name}`}
-                            </Badge>
-                          )}
-                        </For>
-                        <div class={flex({ gap: "2", alignItems: "center" })}>
-                          <Show when={fetchingState.isFetching(feed.id)}>
-                            <div
-                              class={css({
-                                width: "4",
-                                height: "4",
-                                border: "2px solid",
-                                borderColor: "blue.200",
-                                borderTopColor: "blue.600",
-                                borderRadius: "full",
-                                animation: "spin 1s linear infinite",
-                              })}
-                              title="Fetching..."
-                            />
-                          </Show>
-                          <Show when={fetchingState.error(feed.id)}>
-                            <div
-                              class={css({
-                                color: "red.500",
-                                cursor: "help",
-                                display: "flex",
-                                alignItems: "center",
-                              })}
-                              title={fetchingState.error(feed.id)}
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                              >
-                                <title>Error fetching feed</title>
-                                <circle cx="12" cy="12" r="10" />
-                                <line x1="12" y1="8" x2="12" y2="12" />
-                                <line x1="12" y1="16" x2="12.01" y2="16" />
-                              </svg>
-                            </div>
-                          </Show>
-                        </div>
-                      </div>
-                      <div
-                        class={flex({
-                          gap: "2",
-                          alignItems: "center",
-                          minWidth: 0,
-                        })}
-                      >
-                        <span
-                          class={css({
-                            fontSize: "xs",
-                            color: "gray.500",
-                            whiteSpace: "nowrap",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            minWidth: 0,
-                          })}
-                        >
-                          {feed.url}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigator.clipboard.writeText(feed.url);
-                            const btn = e.currentTarget;
-                            const originalHTML = btn.innerHTML;
-                            btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><polyline points="20 6 9 17 4 12"/></svg>`;
-                            btn.classList.add(css({ color: "green.600!" }));
-                            setTimeout(() => {
-                              btn.innerHTML = originalHTML;
-                              btn.classList.remove(
-                                css({ color: "green.600!" }),
-                              );
-                            }, 2000);
-                          }}
-                          title="Copy URL"
-                          class={css({
-                            color: "gray.400",
-                            cursor: "pointer",
-                            flexShrink: 0,
-                            _hover: { color: "gray.600" },
-                            display: "inline-flex",
-                            alignItems: "center",
-                            transition: "all 0.2s",
-                          })}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="12"
-                            height="12"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                          >
-                            <title>Copy URL</title>
-                            <rect
-                              width="14"
-                              height="14"
-                              x="8"
-                              y="8"
-                              rx="2"
-                              ry="2"
-                            />
-                            <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
-                          </svg>
-                        </button>
-                      </div>
-                      <div
-                        class={flex({
-                          gap: "4",
-                          alignItems: "center",
-                          flexWrap: "wrap",
-                        })}
-                        data-testid="feed-timestamps"
-                      >
-                        <span
-                          class={css({ fontSize: "xs", color: "gray.500" })}
-                        >
-                          Last fetched:{" "}
-                          {feed.lastFetchedAt
-                            ? formatDate(feed.lastFetchedAt)
-                            : "Not fetched yet"}
-                        </span>
-                        <Show when={feed.nextFetchAt}>
-                          {(nextFetchAt) => {
-                            const isFuture =
-                              nextFetchAt().getTime() > Date.now();
-                            return (
-                              <span
-                                class={css({
-                                  fontSize: "xs",
-                                  color: "orange.600",
-                                  fontWeight: "medium",
-                                })}
-                              >
-                                Next fetch:{" "}
-                                {isFuture
-                                  ? formatRelativeDate(nextFetchAt())
-                                  : "Soon"}
-                              </span>
-                            );
-                          }}
-                        </Show>
-                      </div>
-                    </div>
-                  </div>
-                  <Show when={!isReadOnly()}>
                     <div
                       class={flex({
-                        gap: "2",
+                        gap: "3",
                         alignItems: "center",
-                        flexShrink: 0,
+                        flex: 1,
+                        minWidth: 0,
                       })}
                     >
+                      <Show when={!isReadOnly()}>
+                        <input
+                          type="checkbox"
+                          checked={selectedFeedIds().includes(feed.id)}
+                          onChange={(e) => {
+                            e.stopPropagation();
+                            toggleFeedSelection(feed.id);
+                          }}
+                          onClick={(e) => e.stopPropagation()}
+                          class={css({ cursor: "pointer" })}
+                        />
+                      </Show>
+                      <div class={stack({ gap: "1", flex: 1, minWidth: 0 })}>
+                        <div
+                          class={flex({
+                            gap: "2",
+                            alignItems: "center",
+                            width: "full",
+                          })}
+                        >
+                          <a
+                            href={feed.link || feed.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            class={css({
+                              fontWeight: "medium",
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              minWidth: 0,
+                              _hover: {
+                                textDecoration: "underline",
+                                color: "blue.600",
+                              },
+                            })}
+                          >
+                            {feed.title || "Untitled Feed"}
+                          </a>
+                          <Show
+                            when={feed.unreadCount && feed.unreadCount > 0n}
+                          >
+                            <Badge
+                              variant="primary"
+                              class={css({ flexShrink: 0 })}
+                            >
+                              {feed.unreadCount?.toString()}
+                            </Badge>
+                          </Show>
+                          <For each={feed.tags}>
+                            {(tag) => (
+                              <Badge class={css({ flexShrink: 0 })}>
+                                {tag.name}
+                              </Badge>
+                            )}
+                          </For>
+                          <For
+                            each={getIgnoreWindowsForFeed(feed.id, feed.tags)}
+                          >
+                            {(window) => (
+                              <Badge
+                                variant={
+                                  isIgnoreWindowActive(window)
+                                    ? "warning"
+                                    : "neutral"
+                                }
+                                class={css({ flexShrink: 0 })}
+                                title={
+                                  isIgnoreWindowActive(window)
+                                    ? `Quiet hours active: ${window.name}`
+                                    : `Ignore window: ${window.name}`
+                                }
+                              >
+                                {isIgnoreWindowActive(window)
+                                  ? `💤 ${window.name}`
+                                  : `🕒 ${window.name}`}
+                              </Badge>
+                            )}
+                          </For>
+                          <div class={flex({ gap: "2", alignItems: "center" })}>
+                            <Show when={fetchingState.isFetching(feed.id)}>
+                              <div
+                                class={css({
+                                  width: "4",
+                                  height: "4",
+                                  border: "2px solid",
+                                  borderColor: "blue.200",
+                                  borderTopColor: "blue.600",
+                                  borderRadius: "full",
+                                  animation: "spin 1s linear infinite",
+                                })}
+                                title="Fetching..."
+                              />
+                            </Show>
+                            <Show when={fetchingState.error(feed.id)}>
+                              <div
+                                class={css({
+                                  color: "red.500",
+                                  cursor: "help",
+                                  display: "flex",
+                                  alignItems: "center",
+                                })}
+                                title={fetchingState.error(feed.id)}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="16"
+                                  height="16"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-width="2"
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                >
+                                  <title>Error fetching feed</title>
+                                  <circle cx="12" cy="12" r="10" />
+                                  <line x1="12" y1="8" x2="12" y2="12" />
+                                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                                </svg>
+                              </div>
+                            </Show>
+                          </div>
+                        </div>
+                        <div
+                          class={flex({
+                            gap: "2",
+                            alignItems: "center",
+                            minWidth: 0,
+                          })}
+                        >
+                          <span
+                            class={css({
+                              fontSize: "xs",
+                              color: "gray.500",
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              minWidth: 0,
+                            })}
+                          >
+                            {feed.url}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigator.clipboard.writeText(feed.url);
+                              const btn = e.currentTarget;
+                              const originalHTML = btn.innerHTML;
+                              btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check"><polyline points="20 6 9 17 4 12"/></svg>`;
+                              btn.classList.add(css({ color: "green.600!" }));
+                              setTimeout(() => {
+                                btn.innerHTML = originalHTML;
+                                btn.classList.remove(
+                                  css({ color: "green.600!" }),
+                                );
+                              }, 2000);
+                            }}
+                            title="Copy URL"
+                            class={css({
+                              color: "gray.400",
+                              cursor: "pointer",
+                              flexShrink: 0,
+                              _hover: { color: "gray.600" },
+                              display: "inline-flex",
+                              alignItems: "center",
+                              transition: "all 0.2s",
+                            })}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="12"
+                              height="12"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-width="2"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            >
+                              <title>Copy URL</title>
+                              <rect
+                                width="14"
+                                height="14"
+                                x="8"
+                                y="8"
+                                rx="2"
+                                ry="2"
+                              />
+                              <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+                            </svg>
+                          </button>
+                        </div>
+                        <div
+                          class={flex({
+                            gap: "4",
+                            alignItems: "center",
+                            flexWrap: "wrap",
+                          })}
+                          data-testid="feed-timestamps"
+                        >
+                          <span
+                            class={css({ fontSize: "xs", color: "gray.500" })}
+                          >
+                            Last fetched:{" "}
+                            {feed.lastFetchedAt
+                              ? formatDate(feed.lastFetchedAt)
+                              : "Not fetched yet"}
+                          </span>
+                          <Show when={feed.nextFetchAt}>
+                            {(nextFetchAt) => {
+                              const isFuture =
+                                nextFetchAt().getTime() > Date.now();
+                              return (
+                                <span
+                                  class={css({
+                                    fontSize: "xs",
+                                    color: "orange.600",
+                                    fontWeight: "medium",
+                                  })}
+                                >
+                                  Next fetch:{" "}
+                                  {isFuture
+                                    ? formatRelativeDate(nextFetchAt())
+                                    : "Soon"}
+                                </span>
+                              );
+                            }}
+                          </Show>
+                        </div>
+                      </div>
+                    </div>
+                    <Show when={!isReadOnly()}>
                       <div
                         class={flex({
                           gap: "2",
                           alignItems: "center",
-                          display: { base: "none", md: "flex" },
+                          flexShrink: 0,
                         })}
                       >
-                        <div class={css({ position: "relative" })}>
-                          <select
-                            aria-label="Suspend fetching"
-                            onChange={(e) => {
+                        <div
+                          class={flex({
+                            gap: "2",
+                            alignItems: "center",
+                            display: { base: "none", md: "flex" },
+                          })}
+                        >
+                          <div class={css({ position: "relative" })}>
+                            <select
+                              aria-label="Suspend fetching"
+                              onChange={(e) => {
+                                e.stopPropagation();
+                                const seconds = Number(e.currentTarget.value);
+                                if (seconds > 0) {
+                                  handleSuspend([feed.id], seconds);
+                                }
+                                e.currentTarget.value = "0"; // reset
+                              }}
+                              onClick={(e) => e.stopPropagation()}
+                              class={css({
+                                fontSize: "xs",
+                                px: "2",
+                                py: "1.5",
+                                rounded: "md",
+                                border: "1px solid",
+                                borderColor: "gray.300",
+                                bg: "white",
+                                cursor: "pointer",
+                                _hover: { borderColor: "gray.400" },
+                              })}
+                            >
+                              <option value="0">Suspend...</option>
+                              <option value="86400">1 Day</option>
+                              <option value="259200">3 Days</option>
+                              <option value="604800">1 Week</option>
+                              <option value="2592000">1 Month</option>
+                            </select>
+                          </div>
+                          <ActionButton
+                            size="sm"
+                            variant="ghost"
+                            onClickEvent={(e) => {
                               e.stopPropagation();
-                              const seconds = Number(e.currentTarget.value);
-                              if (seconds > 0) {
-                                handleSuspend([feed.id], seconds);
-                              }
-                              e.currentTarget.value = "0"; // reset
+                              handleRefresh([feed.id]);
                             }}
-                            onClick={(e) => e.stopPropagation()}
-                            class={css({
-                              fontSize: "xs",
-                              px: "2",
-                              py: "1.5",
-                              rounded: "md",
-                              border: "1px solid",
-                              borderColor: "gray.300",
-                              bg: "white",
-                              cursor: "pointer",
-                              _hover: { borderColor: "gray.400" },
-                            })}
+                            disabled={fetchingState.isFetching(feed.id)}
                           >
-                            <option value="0">Suspend...</option>
-                            <option value="86400">1 Day</option>
-                            <option value="259200">3 Days</option>
-                            <option value="604800">1 Week</option>
-                            <option value="2592000">1 Month</option>
-                          </select>
+                            {fetchingState.isFetching(feed.id)
+                              ? "Fetching..."
+                              : "Fetch"}
+                          </ActionButton>
+                          <ActionButton
+                            size="sm"
+                            variant="danger"
+                            onClickEvent={(e) => {
+                              e.stopPropagation();
+                              handleDelete(feed.id);
+                            }}
+                          >
+                            Delete
+                          </ActionButton>
                         </div>
-                        <ActionButton
-                          size="sm"
-                          variant="ghost"
-                          onClickEvent={(e) => {
-                            e.stopPropagation();
-                            handleRefresh([feed.id]);
-                          }}
-                          disabled={fetchingState.isFetching(feed.id)}
+                        <div
+                          class={css({
+                            display: { base: "block", md: "none" },
+                          })}
                         >
-                          {fetchingState.isFetching(feed.id)
-                            ? "Fetching..."
-                            : "Fetch"}
-                        </ActionButton>
-                        <ActionButton
-                          size="sm"
-                          variant="danger"
-                          onClickEvent={(e) => {
-                            e.stopPropagation();
-                            handleDelete(feed.id);
-                          }}
-                        >
-                          Delete
-                        </ActionButton>
+                          <KebabMenu
+                            ariaLabel={`Actions for ${feed.title}`}
+                            actions={[
+                              {
+                                label: fetchingState.isFetching(feed.id)
+                                  ? "Fetching..."
+                                  : "Fetch",
+                                onClick: () => handleRefresh([feed.id]),
+                              },
+                              {
+                                label: "Suspend 1 Day",
+                                onClick: () => handleSuspend([feed.id], 86400),
+                              },
+                              {
+                                label: "Suspend 3 Days",
+                                onClick: () => handleSuspend([feed.id], 259200),
+                              },
+                              {
+                                label: "Suspend 1 Week",
+                                onClick: () => handleSuspend([feed.id], 604800),
+                              },
+                              {
+                                label: "Suspend 1 Month",
+                                onClick: () =>
+                                  handleSuspend([feed.id], 2592000),
+                              },
+                              {
+                                label: "Delete",
+                                variant: "danger",
+                                onClick: () => handleDelete(feed.id),
+                              },
+                            ]}
+                          />
+                        </div>
                       </div>
-                      <div
-                        class={css({
-                          display: { base: "block", md: "none" },
-                        })}
-                      >
-                        <KebabMenu
-                          ariaLabel={`Actions for ${feed.title}`}
-                          actions={[
-                            {
-                              label: fetchingState.isFetching(feed.id)
-                                ? "Fetching..."
-                                : "Fetch",
-                              onClick: () => handleRefresh([feed.id]),
-                            },
-                            {
-                              label: "Suspend 1 Day",
-                              onClick: () => handleSuspend([feed.id], 86400),
-                            },
-                            {
-                              label: "Suspend 3 Days",
-                              onClick: () => handleSuspend([feed.id], 259200),
-                            },
-                            {
-                              label: "Suspend 1 Week",
-                              onClick: () => handleSuspend([feed.id], 604800),
-                            },
-                            {
-                              label: "Suspend 1 Month",
-                              onClick: () => handleSuspend([feed.id], 2592000),
-                            },
-                            {
-                              label: "Delete",
-                              variant: "danger",
-                              onClick: () => handleDelete(feed.id),
-                            },
-                          ]}
-                        />
-                      </div>
-                    </div>
-                  </Show>
-                </li>
-              )}
-            </For>
-          </ul>
-        </div>
+                    </Show>
+                  </li>
+                )}
+              </For>
+            </ul>
+          </div>
+        </Loading>
       </div>
 
       <Show when={!isReadOnly()}>

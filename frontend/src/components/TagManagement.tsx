@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/solid-query";
-import { createMemo, createSignal, For, Show } from "solid-js";
+import { createMemo, createSignal, For, Loading, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import {
@@ -17,6 +17,7 @@ import { ManageIgnoreWindowsModal } from "./ManageIgnoreWindowsModal";
 import { ActionButton } from "./ui/ActionButton";
 import { Badge } from "./ui/Badge";
 import { EmptyState } from "./ui/EmptyState";
+import { LoadingState } from "./ui/LoadingState";
 
 export const TagManagement = () => {
   const [newTagName, setNewTagName] = createSignal("");
@@ -139,9 +140,17 @@ export const TagManagement = () => {
       >
         <span>Tag</span>
         <span>Feeds</span>
-        <span class={css({ textAlign: "right", fontWeight: "semibold" })}>
-          {tagsSorted().length} tags
-        </span>
+        <Loading
+          fallback={
+            <span class={css({ textAlign: "right", fontWeight: "semibold" })}>
+              - tags
+            </span>
+          }
+        >
+          <span class={css({ textAlign: "right", fontWeight: "semibold" })}>
+            {tagsSorted().length} tags
+          </span>
+        </Loading>
       </div>
 
       <div
@@ -167,81 +176,83 @@ export const TagManagement = () => {
               paddingRight: "1",
             })}
           >
-            <Show when={tagsSorted().length > 0}>
-              <For each={tagsSorted()}>
-                {(tag) => (
-                  <div
-                    class={css({
-                      display: "grid",
-                      gridTemplateColumns: "1fr auto auto",
-                      gap: "3",
-                      alignItems: "center",
-                      px: "3",
-                      py: "2",
-                      border: "1px solid",
-                      borderColor: "gray.100",
-                      rounded: "md",
-                      _hover: { bg: "gray.50" },
-                    })}
-                  >
+            <Loading fallback={<LoadingState label="Loading tags..." />}>
+              <Show when={tagsSorted().length > 0}>
+                <For each={tagsSorted()}>
+                  {(tag) => (
                     <div
-                      class={flex({
-                        gap: "2",
+                      class={css({
+                        display: "grid",
+                        gridTemplateColumns: "1fr auto auto",
+                        gap: "3",
                         alignItems: "center",
-                        flexWrap: "wrap",
+                        px: "3",
+                        py: "2",
+                        border: "1px solid",
+                        borderColor: "gray.100",
+                        rounded: "md",
+                        _hover: { bg: "gray.50" },
                       })}
                     >
-                      <span class={css({ fontWeight: "medium" })}>
-                        {tag.name}
-                      </span>
-                      <For each={getIgnoreWindowsForTag(tag.id)}>
-                        {(win) => (
-                          <Badge title={`Ignore window: ${win.name}`}>
-                            🕒 {win.name}
-                          </Badge>
-                        )}
-                      </For>
-                    </div>
-                    <Badge>feed: {tag.feedCount.toString()}</Badge>
-                    <Show when={!isReadOnly()}>
-                      <div class={flex({ gap: "2", alignItems: "center" })}>
-                        <ActionButton
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => {
-                            setSelectedTagId(tag.id);
-                            setIsIgnoreWindowsModalOpen(true);
-                          }}
-                          ariaLabel={`Manage ignore windows for ${tag.name}`}
-                        >
-                          Ignore Windows
-                        </ActionButton>
-                        <ActionButton
-                          variant="danger"
-                          size="sm"
-                          onClick={() =>
-                            handleDeleteTag(
-                              tag.id,
-                              tag.name,
-                              tag.feedCount ? BigInt(tag.feedCount) : 0n,
-                            )
-                          }
-                          ariaLabel={`Delete ${tag.name}`}
-                        >
-                          Delete
-                        </ActionButton>
+                      <div
+                        class={flex({
+                          gap: "2",
+                          alignItems: "center",
+                          flexWrap: "wrap",
+                        })}
+                      >
+                        <span class={css({ fontWeight: "medium" })}>
+                          {tag.name}
+                        </span>
+                        <For each={getIgnoreWindowsForTag(tag.id)}>
+                          {(win) => (
+                            <Badge title={`Ignore window: ${win.name}`}>
+                              🕒 {win.name}
+                            </Badge>
+                          )}
+                        </For>
                       </div>
-                    </Show>
-                  </div>
-                )}
-              </For>
-            </Show>
-            <Show when={tagsSorted().length === 0}>
-              <EmptyState
-                title="No tags yet."
-                description="Create one to get started."
-              />
-            </Show>
+                      <Badge>feed: {tag.feedCount.toString()}</Badge>
+                      <Show when={!isReadOnly()}>
+                        <div class={flex({ gap: "2", alignItems: "center" })}>
+                          <ActionButton
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => {
+                              setSelectedTagId(tag.id);
+                              setIsIgnoreWindowsModalOpen(true);
+                            }}
+                            ariaLabel={`Manage ignore windows for ${tag.name}`}
+                          >
+                            Ignore Windows
+                          </ActionButton>
+                          <ActionButton
+                            variant="danger"
+                            size="sm"
+                            onClick={() =>
+                              handleDeleteTag(
+                                tag.id,
+                                tag.name,
+                                tag.feedCount ? BigInt(tag.feedCount) : 0n,
+                              )
+                            }
+                            ariaLabel={`Delete ${tag.name}`}
+                          >
+                            Delete
+                          </ActionButton>
+                        </div>
+                      </Show>
+                    </div>
+                  )}
+                </For>
+              </Show>
+              <Show when={tagsSorted().length === 0}>
+                <EmptyState
+                  title="No tags yet."
+                  description="Create one to get started."
+                />
+              </Show>
+            </Loading>
           </div>
         </div>
       </div>
