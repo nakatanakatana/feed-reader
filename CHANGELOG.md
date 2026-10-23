@@ -1,5 +1,25 @@
 # Changelog
 
+## [v0.27.1](https://github.com/nakatanakatana/feed-reader/compare/v0.27.0...v0.27.1) - 2026-10-23
+
+### Maintenance & Others
+- fix(deps): update dependency markdown-it to v15.0.3 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1161
+- chore(deps): update dependency golang/go to v1.27.3 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1164
+- fix(deps): update dependency @tanstack/router-plugin to v1.168.47 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1165
+- chore(deps): update dependency moznion/cccc to v1.8.4 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1166
+- fix(deps): update module modernc.org/sqlite to v1.61.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1169
+- chore(deps): update dependency k1low/mo to v1.7.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1168
+- chore(deps): update golang:1.27-alpine docker digest to f2c872b by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1163
+- fix(deps): update dependency postcss to v8.5.31 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1171
+- chore(deps): update dependency bufbuild/buf to v1.75.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1175
+- chore(deps): update dependency aquaproj/aqua to v2.65.2 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1174
+- chore(deps): update dependency aqua to v2.65.2 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1173
+- chore(deps): update aquaproj/aqua-installer action to v4.1.1 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1176
+- chore(deps): update dependency oxfmt to ^0.74.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1177
+- chore(deps): update dependency oxlint to v1.89.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1178
+- fix(deps): update module github.com/oapi-codegen/runtime to v1.8.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1181
+- chore(deps): update panda-css monorepo to v2.3.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1180
+
 ## [v0.27.0](https://github.com/nakatanakatana/feed-reader/compare/v0.26.1...v0.27.0) - 2026-10-18
 
 ### Maintenance & Others
