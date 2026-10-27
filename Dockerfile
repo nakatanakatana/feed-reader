@@ -16,7 +16,7 @@ ENV VITE_READONLY=true
 RUN npm run build -- --emptyOutDir true
 
 # Shared Go module download (pure Go; no C compiler or libsqlite)
-FROM golang:1.27-alpine@sha256:f2c872bcee949b7be9c490efd02b48a8a2fbf947cdf533f1c58525ec9d8170fd AS go-deps
+FROM golang:1.27-alpine@sha256:d200d2dd76b03a99b52651fd1325aff7dcd35422c35c01bac56571b0507f3deb AS go-deps
 WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
