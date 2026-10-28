@@ -282,7 +282,6 @@ exports[`FeedList > displays a list of feeds 1`] = `
             class="d_flex flex-d_column gap_2 flex_1 min-h_0 bg-c_white"
           >
             <!---->
-            <!---->
             <div
               class="flex_1 min-h_0 ov-y_auto ov-x_hidden pr_1 w_100%"
             >
@@ -687,6 +686,7 @@ exports[`FeedList > displays a list of feeds 1`] = `
                 </li>
               </ul>
             </div>
+            <!---->
           </div>
         </div>
       </div>

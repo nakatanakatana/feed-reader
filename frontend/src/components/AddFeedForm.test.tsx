@@ -33,6 +33,7 @@ describe("AddFeedForm", () => {
 
     const input = page.getByPlaceholder("Feed URL");
     await expect.element(input).toBeInTheDocument();
+    await expect.element(page.getByText("News")).toBeInTheDocument();
 
     expect(document.body.innerHTML).toMatchSnapshot();
 
