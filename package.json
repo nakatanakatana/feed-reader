@@ -45,7 +45,7 @@
     "@kubb/cli": "^5.0.0",
     "@kubb/core": "^5.0.0",
     "@kubb/plugin-fetch": "^5.0.0",
-    "@kubb/plugin-msw": "^5.0.0",
+    "@kubb/plugin-msw": "^6.0.0",
     "@kubb/plugin-ts": "^5.0.0",
     "@msw/data": "^1.1.6",
     "@pandacss/dev": "2.4.0",

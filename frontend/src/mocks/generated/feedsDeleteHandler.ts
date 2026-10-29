@@ -7,16 +7,16 @@ import type {
   FeedsDeleteResponse,
   FeedsDeleteStatus500,
 } from "../../lib/api/types-generated";
-import { http } from "msw";
+import { http, HttpResponse } from "msw/http";
 
 export function feedsDeleteHandlerResponse200(data?: FeedsDeleteResponse) {
-  return new Response(JSON.stringify(data), {
+  return new HttpResponse(JSON.stringify(data), {
     status: 200,
   });
 }
 
 export function feedsDeleteHandlerResponse500(data: FeedsDeleteStatus500) {
-  return new Response(JSON.stringify(data), {
+  return new HttpResponse(JSON.stringify(data), {
     status: 500,
     headers: {
       "Content-Type": "application/json",
@@ -41,7 +41,7 @@ export function feedsDeleteHandler(
     function handler(info) {
       if (typeof data === "function") return data(info);
 
-      return new Response(JSON.stringify(data), {
+      return new HttpResponse(JSON.stringify(data), {
         status: 200,
       });
     },

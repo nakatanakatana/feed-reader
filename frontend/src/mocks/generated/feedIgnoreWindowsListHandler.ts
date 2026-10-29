@@ -7,12 +7,12 @@ import type {
   FeedIgnoreWindowsListResponse,
   FeedIgnoreWindowsListStatus500,
 } from "../../lib/api/types-generated";
-import { http } from "msw";
+import { http, HttpResponse } from "msw/http";
 
 export function feedIgnoreWindowsListHandlerResponse200(
   data: FeedIgnoreWindowsListResponse,
 ) {
-  return new Response(JSON.stringify(data), {
+  return new HttpResponse(JSON.stringify(data), {
     status: 200,
     headers: {
       "Content-Type": "application/json",
@@ -23,7 +23,7 @@ export function feedIgnoreWindowsListHandlerResponse200(
 export function feedIgnoreWindowsListHandlerResponse500(
   data: FeedIgnoreWindowsListStatus500,
 ) {
-  return new Response(JSON.stringify(data), {
+  return new HttpResponse(JSON.stringify(data), {
     status: 500,
     headers: {
       "Content-Type": "application/json",
@@ -44,7 +44,7 @@ export function feedIgnoreWindowsListHandler(
     function handler(info) {
       if (typeof data === "function") return data(info);
 
-      return new Response(JSON.stringify(data), {
+      return new HttpResponse(JSON.stringify(data), {
         status: 200,
         headers: {
           "Content-Type": "application/json",

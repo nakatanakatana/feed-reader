@@ -8,17 +8,17 @@ import type {
   FeedsSuspendStatus500,
   FeedsSuspendBody,
 } from "../../lib/api/types-generated";
-import type { HttpResponseResolver } from "msw";
-import { http } from "msw";
+import type { HttpResponseResolver } from "msw/http";
+import { http, HttpResponse } from "msw/http";
 
 export function feedsSuspendHandlerResponse200(data?: FeedsSuspendResponse) {
-  return new Response(JSON.stringify(data), {
+  return new HttpResponse(JSON.stringify(data), {
     status: 200,
   });
 }
 
 export function feedsSuspendHandlerResponse500(data: FeedsSuspendStatus500) {
-  return new Response(JSON.stringify(data), {
+  return new HttpResponse(JSON.stringify(data), {
     status: 500,
     headers: {
       "Content-Type": "application/json",
@@ -41,7 +41,7 @@ export function feedsSuspendHandler(
     function handler(info) {
       if (typeof data === "function") return data(info);
 
-      return new Response(JSON.stringify(data), {
+      return new HttpResponse(JSON.stringify(data), {
         status: 200,
       });
     },

@@ -8,17 +8,17 @@ import type {
   BlockRulesAddStatus500,
   BlockRulesAddBody,
 } from "../../lib/api/types-generated";
-import type { HttpResponseResolver } from "msw";
-import { http } from "msw";
+import type { HttpResponseResolver } from "msw/http";
+import { http, HttpResponse } from "msw/http";
 
 export function blockRulesAddHandlerResponse200(data?: BlockRulesAddResponse) {
-  return new Response(JSON.stringify(data), {
+  return new HttpResponse(JSON.stringify(data), {
     status: 200,
   });
 }
 
 export function blockRulesAddHandlerResponse500(data: BlockRulesAddStatus500) {
-  return new Response(JSON.stringify(data), {
+  return new HttpResponse(JSON.stringify(data), {
     status: 500,
     headers: {
       "Content-Type": "application/json",
@@ -41,7 +41,7 @@ export function blockRulesAddHandler(
     function handler(info) {
       if (typeof data === "function") return data(info);
 
-      return new Response(JSON.stringify(data), {
+      return new HttpResponse(JSON.stringify(data), {
         status: 200,
       });
     },

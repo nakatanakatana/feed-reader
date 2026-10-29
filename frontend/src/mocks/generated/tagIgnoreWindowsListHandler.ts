@@ -7,12 +7,12 @@ import type {
   TagIgnoreWindowsListResponse,
   TagIgnoreWindowsListStatus500,
 } from "../../lib/api/types-generated";
-import { http } from "msw";
+import { http, HttpResponse } from "msw/http";
 
 export function tagIgnoreWindowsListHandlerResponse200(
   data: TagIgnoreWindowsListResponse,
 ) {
-  return new Response(JSON.stringify(data), {
+  return new HttpResponse(JSON.stringify(data), {
     status: 200,
     headers: {
       "Content-Type": "application/json",
@@ -23,7 +23,7 @@ export function tagIgnoreWindowsListHandlerResponse200(
 export function tagIgnoreWindowsListHandlerResponse500(
   data: TagIgnoreWindowsListStatus500,
 ) {
-  return new Response(JSON.stringify(data), {
+  return new HttpResponse(JSON.stringify(data), {
     status: 500,
     headers: {
       "Content-Type": "application/json",
@@ -44,7 +44,7 @@ export function tagIgnoreWindowsListHandler(
     function handler(info) {
       if (typeof data === "function") return data(info);
 
-      return new Response(JSON.stringify(data), {
+      return new HttpResponse(JSON.stringify(data), {
         status: 200,
         headers: {
           "Content-Type": "application/json",
