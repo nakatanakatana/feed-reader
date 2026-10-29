@@ -155,8 +155,8 @@ github.com/mmcdole/goxpp/v2 v2.0.0 h1:HrSCflxerUEqZQNq3u7ldtmE/XkwnTx4Zpq2DW4i5r
 github.com/mmcdole/goxpp/v2 v2.0.0/go.mod h1:CUduYMnO9JB6Z/uqDn9Ormk/r8E9BsLQxHPWDZ961Os=
 github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 h1:C3w9PqII01/Oq1c1nUAm88MOHcQC9l5mIlSMApZMrHA=
 github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822/go.mod h1:+n7T8mK8HuQTcFwEeznm/DIxMOiR9yIdICNftLE1DvQ=
-github.com/nakatanakatana/mytools v0.12.2 h1:KusVa76C3B8VCksbUsV3j7CgG39SasWA1dtW3yJkPtw=
-github.com/nakatanakatana/mytools v0.12.2/go.mod h1:gDQIvb2fs1Fls/mPHmsmmi6XqI/mTttq/Oqhg08wGYU=
+github.com/nakatanakatana/mytools v0.12.3 h1:FxItgvD/iyUIGgu0QtVReXGDMZthtzg/N0o8uNrHSvc=
+github.com/nakatanakatana/mytools v0.12.3/go.mod h1:Pj/e81fFFdOnauZWkKwYHboTzTFu0tTfW5fxOvPK7vg=
 github.com/nats-io/nats.go v1.44.0 h1:ECKVrDLdh/kDPV1g0gAQ+2+m2KprqZK5O/eJAyAnH2M=
 github.com/nats-io/nats.go v1.44.0/go.mod h1:iRWIPokVIFbVijxuMQq4y9ttaBTMe0SFdlZfMDd+33g=
 github.com/nats-io/nkeys v0.4.11 h1:q44qGV008kYd9W1b1nEBkNzvnWxtRSQ7A8BoqRrcfa0=
@@ -201,8 +201,8 @@ github.com/sebdah/goldie/v2 v2.8.0/go.mod h1:oZ9fp0+se1eapSRjfYbsV/0Hqhbuu3bJVvK
 github.com/sergi/go-diff v1.4.0 h1:n/SP9D5ad1fORl+llWyN+D6qoUETXNZARKjyY2/KVCw=
 github.com/sergi/go-diff v1.4.0/go.mod h1:A0bzQcvG0E7Rwjx0REVgAGH58e96+X0MeOfepqsbeW4=
 github.com/spkg/bom v0.0.0-20160624110644-59b7046e48ad/go.mod h1:qLr4V1qq6nMqFKkMo8ZTx3f+BZEkzsRUY10Xsm2mwU0=
-github.com/sqldef/sqldef/v3 v3.11.26 h1:vVstq8mM0PmrIbR3LIUrWbAZm9NjuRpRxLvdNGoyBa4=
-github.com/sqldef/sqldef/v3 v3.11.26/go.mod h1:AfaIMSrb/BQrncDMqVQPc8GwYIIMZAE2j1EZL7aLSgg=
+github.com/sqldef/sqldef/v3 v3.11.27 h1:u3yduM8IjS8a8wagpj0+Nrc1R70PQU+vZn3VIggaNZA=
+github.com/sqldef/sqldef/v3 v3.11.27/go.mod h1:CICzFwLW+xlmkwcbmV0En4ah9AsIRBOj3F3axTCAnPI=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI=
 github.com/stretchr/testify v1.12.1 h1:EuwCh5fleGS7H32xRwO3wRGT7DxrDhLAT6FF8MpWDWE=
