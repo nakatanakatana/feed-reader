@@ -8,11 +8,11 @@ import type {
   FeedsCreateStatus500,
   FeedsCreateBody,
 } from "../../lib/api/types-generated";
-import type { HttpResponseResolver } from "msw";
-import { http } from "msw";
+import type { HttpResponseResolver } from "msw/http";
+import { http, HttpResponse } from "msw/http";
 
 export function feedsCreateHandlerResponse200(data: FeedsCreateResponse) {
-  return new Response(JSON.stringify(data), {
+  return new HttpResponse(JSON.stringify(data), {
     status: 200,
     headers: {
       "Content-Type": "application/json",
@@ -21,7 +21,7 @@ export function feedsCreateHandlerResponse200(data: FeedsCreateResponse) {
 }
 
 export function feedsCreateHandlerResponse500(data: FeedsCreateStatus500) {
-  return new Response(JSON.stringify(data), {
+  return new HttpResponse(JSON.stringify(data), {
     status: 500,
     headers: {
       "Content-Type": "application/json",
@@ -40,7 +40,7 @@ export function feedsCreateHandler(
     function handler(info) {
       if (typeof data === "function") return data(info);
 
-      return new Response(JSON.stringify(data), {
+      return new HttpResponse(JSON.stringify(data), {
         status: 200,
         headers: {
           "Content-Type": "application/json",

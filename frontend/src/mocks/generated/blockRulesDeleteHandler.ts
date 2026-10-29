@@ -7,12 +7,12 @@ import type {
   BlockRulesDeleteResponse,
   BlockRulesDeleteStatus500,
 } from "../../lib/api/types-generated";
-import { http } from "msw";
+import { http, HttpResponse } from "msw/http";
 
 export function blockRulesDeleteHandlerResponse200(
   data?: BlockRulesDeleteResponse,
 ) {
-  return new Response(JSON.stringify(data), {
+  return new HttpResponse(JSON.stringify(data), {
     status: 200,
   });
 }
@@ -20,7 +20,7 @@ export function blockRulesDeleteHandlerResponse200(
 export function blockRulesDeleteHandlerResponse500(
   data: BlockRulesDeleteStatus500,
 ) {
-  return new Response(JSON.stringify(data), {
+  return new HttpResponse(JSON.stringify(data), {
     status: 500,
     headers: {
       "Content-Type": "application/json",
@@ -45,7 +45,7 @@ export function blockRulesDeleteHandler(
     function handler(info) {
       if (typeof data === "function") return data(info);
 
-      return new Response(JSON.stringify(data), {
+      return new HttpResponse(JSON.stringify(data), {
         status: 200,
       });
     },

@@ -8,11 +8,11 @@ import type {
   URLRulesAddStatus500,
   URLRulesAddBody,
 } from "../../lib/api/types-generated";
-import type { HttpResponseResolver } from "msw";
-import { http } from "msw";
+import type { HttpResponseResolver } from "msw/http";
+import { http, HttpResponse } from "msw/http";
 
 export function URLRulesAddHandlerResponse200(data: URLRulesAddResponse) {
-  return new Response(JSON.stringify(data), {
+  return new HttpResponse(JSON.stringify(data), {
     status: 200,
     headers: {
       "Content-Type": "application/json",
@@ -21,7 +21,7 @@ export function URLRulesAddHandlerResponse200(data: URLRulesAddResponse) {
 }
 
 export function URLRulesAddHandlerResponse500(data: URLRulesAddStatus500) {
-  return new Response(JSON.stringify(data), {
+  return new HttpResponse(JSON.stringify(data), {
     status: 500,
     headers: {
       "Content-Type": "application/json",
@@ -40,7 +40,7 @@ export function URLRulesAddHandler(
     function handler(info) {
       if (typeof data === "function") return data(info);
 
-      return new Response(JSON.stringify(data), {
+      return new HttpResponse(JSON.stringify(data), {
         status: 200,
         headers: {
           "Content-Type": "application/json",

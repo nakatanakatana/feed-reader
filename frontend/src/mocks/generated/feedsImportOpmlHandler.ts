@@ -8,13 +8,13 @@ import type {
   FeedsImportOpmlStatus500,
   FeedsImportOpmlBody,
 } from "../../lib/api/types-generated";
-import type { HttpResponseResolver } from "msw";
-import { http } from "msw";
+import type { HttpResponseResolver } from "msw/http";
+import { http, HttpResponse } from "msw/http";
 
 export function feedsImportOpmlHandlerResponse200(
   data: FeedsImportOpmlResponse,
 ) {
-  return new Response(JSON.stringify(data), {
+  return new HttpResponse(JSON.stringify(data), {
     status: 200,
     headers: {
       "Content-Type": "application/json",
@@ -25,7 +25,7 @@ export function feedsImportOpmlHandlerResponse200(
 export function feedsImportOpmlHandlerResponse500(
   data: FeedsImportOpmlStatus500,
 ) {
-  return new Response(JSON.stringify(data), {
+  return new HttpResponse(JSON.stringify(data), {
     status: 500,
     headers: {
       "Content-Type": "application/json",
@@ -44,7 +44,7 @@ export function feedsImportOpmlHandler(
     function handler(info) {
       if (typeof data === "function") return data(info);
 
-      return new Response(JSON.stringify(data), {
+      return new HttpResponse(JSON.stringify(data), {
         status: 200,
         headers: {
           "Content-Type": "application/json",

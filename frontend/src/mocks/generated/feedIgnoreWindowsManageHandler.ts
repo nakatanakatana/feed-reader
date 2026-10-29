@@ -8,13 +8,13 @@ import type {
   FeedIgnoreWindowsManageStatus500,
   FeedIgnoreWindowsManageBody,
 } from "../../lib/api/types-generated";
-import type { HttpResponseResolver } from "msw";
-import { http } from "msw";
+import type { HttpResponseResolver } from "msw/http";
+import { http, HttpResponse } from "msw/http";
 
 export function feedIgnoreWindowsManageHandlerResponse200(
   data?: FeedIgnoreWindowsManageResponse,
 ) {
-  return new Response(JSON.stringify(data), {
+  return new HttpResponse(JSON.stringify(data), {
     status: 200,
   });
 }
@@ -22,7 +22,7 @@ export function feedIgnoreWindowsManageHandlerResponse200(
 export function feedIgnoreWindowsManageHandlerResponse500(
   data: FeedIgnoreWindowsManageStatus500,
 ) {
-  return new Response(JSON.stringify(data), {
+  return new HttpResponse(JSON.stringify(data), {
     status: 500,
     headers: {
       "Content-Type": "application/json",
@@ -45,7 +45,7 @@ export function feedIgnoreWindowsManageHandler(
     function handler(info) {
       if (typeof data === "function") return data(info);
 
-      return new Response(JSON.stringify(data), {
+      return new HttpResponse(JSON.stringify(data), {
         status: 200,
       });
     },

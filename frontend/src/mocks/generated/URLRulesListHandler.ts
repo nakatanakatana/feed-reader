@@ -7,10 +7,10 @@ import type {
   URLRulesListResponse,
   URLRulesListStatus500,
 } from "../../lib/api/types-generated";
-import { http } from "msw";
+import { http, HttpResponse } from "msw/http";
 
 export function URLRulesListHandlerResponse200(data: URLRulesListResponse) {
-  return new Response(JSON.stringify(data), {
+  return new HttpResponse(JSON.stringify(data), {
     status: 200,
     headers: {
       "Content-Type": "application/json",
@@ -19,7 +19,7 @@ export function URLRulesListHandlerResponse200(data: URLRulesListResponse) {
 }
 
 export function URLRulesListHandlerResponse500(data: URLRulesListStatus500) {
-  return new Response(JSON.stringify(data), {
+  return new HttpResponse(JSON.stringify(data), {
     status: 500,
     headers: {
       "Content-Type": "application/json",
@@ -40,7 +40,7 @@ export function URLRulesListHandler(
     function handler(info) {
       if (typeof data === "function") return data(info);
 
-      return new Response(JSON.stringify(data), {
+      return new HttpResponse(JSON.stringify(data), {
         status: 200,
         headers: {
           "Content-Type": "application/json",

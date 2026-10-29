@@ -8,13 +8,13 @@ import type {
   IgnoreWindowsCreateStatus500,
   IgnoreWindowsCreateBody,
 } from "../../lib/api/types-generated";
-import type { HttpResponseResolver } from "msw";
-import { http } from "msw";
+import type { HttpResponseResolver } from "msw/http";
+import { http, HttpResponse } from "msw/http";
 
 export function ignoreWindowsCreateHandlerResponse200(
   data: IgnoreWindowsCreateResponse,
 ) {
-  return new Response(JSON.stringify(data), {
+  return new HttpResponse(JSON.stringify(data), {
     status: 200,
     headers: {
       "Content-Type": "application/json",
@@ -25,7 +25,7 @@ export function ignoreWindowsCreateHandlerResponse200(
 export function ignoreWindowsCreateHandlerResponse500(
   data: IgnoreWindowsCreateStatus500,
 ) {
-  return new Response(JSON.stringify(data), {
+  return new HttpResponse(JSON.stringify(data), {
     status: 500,
     headers: {
       "Content-Type": "application/json",
@@ -44,7 +44,7 @@ export function ignoreWindowsCreateHandler(
     function handler(info) {
       if (typeof data === "function") return data(info);
 
-      return new Response(JSON.stringify(data), {
+      return new HttpResponse(JSON.stringify(data), {
         status: 200,
         headers: {
           "Content-Type": "application/json",

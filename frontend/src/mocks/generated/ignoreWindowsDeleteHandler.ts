@@ -7,12 +7,12 @@ import type {
   IgnoreWindowsDeleteResponse,
   IgnoreWindowsDeleteStatus500,
 } from "../../lib/api/types-generated";
-import { http } from "msw";
+import { http, HttpResponse } from "msw/http";
 
 export function ignoreWindowsDeleteHandlerResponse200(
   data?: IgnoreWindowsDeleteResponse,
 ) {
-  return new Response(JSON.stringify(data), {
+  return new HttpResponse(JSON.stringify(data), {
     status: 200,
   });
 }
@@ -20,7 +20,7 @@ export function ignoreWindowsDeleteHandlerResponse200(
 export function ignoreWindowsDeleteHandlerResponse500(
   data: IgnoreWindowsDeleteStatus500,
 ) {
-  return new Response(JSON.stringify(data), {
+  return new HttpResponse(JSON.stringify(data), {
     status: 500,
     headers: {
       "Content-Type": "application/json",
@@ -45,7 +45,7 @@ export function ignoreWindowsDeleteHandler(
     function handler(info) {
       if (typeof data === "function") return data(info);
 
-      return new Response(JSON.stringify(data), {
+      return new HttpResponse(JSON.stringify(data), {
         status: 200,
       });
     },
