@@ -21,6 +21,21 @@
         "@kubb/**",
         "kubb"
       ]
+    },
+    {
+      "groupName": "opentelemetry",
+      "matchPackageNames": [
+        "@opentelemetry/**"
+      ],
+      "separateMajorMinor": false
+    },
+    {
+      "groupName": "solidjs",
+      "matchPackageNames": [
+        "solid-js",
+        "@solidjs/**"
+      ],
+      "separateMajorMinor": false
     }
   ]
 }
