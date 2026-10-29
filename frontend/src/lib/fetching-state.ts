@@ -7,7 +7,7 @@ interface FetchingState {
 
 export const fetchingState = createRoot(() => {
   const [state, setState] = createStore<FetchingState>({
-    fetchingFeedIds: new Set(),
+    fetchingFeedIds: new Set<string>(),
     errors: {},
   });
 
