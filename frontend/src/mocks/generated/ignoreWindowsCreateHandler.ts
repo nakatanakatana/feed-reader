@@ -37,9 +37,10 @@ export function ignoreWindowsCreateHandler(
   data?:
     | IgnoreWindowsCreateResponse
     | HttpResponseResolver<Record<string, string>, IgnoreWindowsCreateBody>,
+  options?: { baseURL?: string },
 ) {
   return http.post<Record<string, string>, IgnoreWindowsCreateBody>(
-    `*/api/v2/ignore-windows`,
+    `${options?.baseURL ?? "*/api/v2"}/ignore-windows`,
     function handler(info) {
       if (typeof data === "function") return data(info);
 

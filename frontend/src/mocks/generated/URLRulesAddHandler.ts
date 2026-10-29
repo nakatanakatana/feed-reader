@@ -33,9 +33,10 @@ export function URLRulesAddHandler(
   data?:
     | URLRulesAddResponse
     | HttpResponseResolver<Record<string, string>, URLRulesAddBody>,
+  options?: { baseURL?: string },
 ) {
   return http.post<Record<string, string>, URLRulesAddBody>(
-    `*/api/v2/url-rules`,
+    `${options?.baseURL ?? "*/api/v2"}/url-rules`,
     function handler(info) {
       if (typeof data === "function") return data(info);
 

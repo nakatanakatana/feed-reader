@@ -34,9 +34,10 @@ export function feedsSuspendHandler(
     | null
     | object
     | HttpResponseResolver<Record<string, string>, FeedsSuspendBody>,
+  options?: { baseURL?: string },
 ) {
   return http.post<Record<string, string>, FeedsSuspendBody>(
-    `*/api/v2/feeds/suspend`,
+    `${options?.baseURL ?? "*/api/v2"}/feeds/suspend`,
     function handler(info) {
       if (typeof data === "function") return data(info);
 

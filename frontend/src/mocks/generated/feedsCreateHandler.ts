@@ -33,9 +33,10 @@ export function feedsCreateHandler(
   data?:
     | FeedsCreateResponse
     | HttpResponseResolver<Record<string, string>, FeedsCreateBody>,
+  options?: { baseURL?: string },
 ) {
   return http.post<Record<string, string>, FeedsCreateBody>(
-    `*/api/v2/feeds`,
+    `${options?.baseURL ?? "*/api/v2"}/feeds`,
     function handler(info) {
       if (typeof data === "function") return data(info);
 

@@ -37,9 +37,10 @@ export function ignoreWindowsUpdateHandler(
   data?:
     | IgnoreWindowsUpdateResponse
     | HttpResponseResolver<Record<string, string>, IgnoreWindowsUpdateBody>,
+  options?: { baseURL?: string },
 ) {
   return http.put<Record<string, string>, IgnoreWindowsUpdateBody>(
-    `*/api/v2/ignore-windows/:id`,
+    `${options?.baseURL ?? "*/api/v2"}/ignore-windows/:id`,
     function handler(info) {
       if (typeof data === "function") return data(info);
 

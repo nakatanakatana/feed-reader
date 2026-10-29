@@ -366,9 +366,7 @@ export type BlockRulesListResponses = {
 /**
  * @description Union of all possible responses
  */
-export type BlockRulesListResponse =
-  | BlockRulesListStatus200
-  | BlockRulesListStatus500;
+export type BlockRulesListResponse = BlockRulesListStatus200;
 
 export type BlockRulesAddStatus200 = unknown;
 
@@ -391,9 +389,7 @@ export type BlockRulesAddResponses = {
 /**
  * @description Union of all possible responses
  */
-export type BlockRulesAddResponse =
-  | BlockRulesAddStatus200
-  | BlockRulesAddStatus500;
+export type BlockRulesAddResponse = BlockRulesAddStatus200;
 
 export type BlockRulesDeletePath = {
   id: string;
@@ -418,9 +414,7 @@ export type BlockRulesDeleteResponses = {
 /**
  * @description Union of all possible responses
  */
-export type BlockRulesDeleteResponse =
-  | BlockRulesDeleteStatus200
-  | BlockRulesDeleteStatus500;
+export type BlockRulesDeleteResponse = BlockRulesDeleteStatus200;
 
 export type FeedIgnoreWindowsListQuery = {
   feedId?: string;
@@ -446,9 +440,7 @@ export type FeedIgnoreWindowsListResponses = {
 /**
  * @description Union of all possible responses
  */
-export type FeedIgnoreWindowsListResponse =
-  | FeedIgnoreWindowsListStatus200
-  | FeedIgnoreWindowsListStatus500;
+export type FeedIgnoreWindowsListResponse = FeedIgnoreWindowsListStatus200;
 
 export type FeedIgnoreWindowsManageStatus200 = unknown;
 
@@ -471,9 +463,7 @@ export type FeedIgnoreWindowsManageResponses = {
 /**
  * @description Union of all possible responses
  */
-export type FeedIgnoreWindowsManageResponse =
-  | FeedIgnoreWindowsManageStatus200
-  | FeedIgnoreWindowsManageStatus500;
+export type FeedIgnoreWindowsManageResponse = FeedIgnoreWindowsManageStatus200;
 
 export type FeedTagsListQuery = {
   feedId?: string;
@@ -499,9 +489,7 @@ export type FeedTagsListResponses = {
 /**
  * @description Union of all possible responses
  */
-export type FeedTagsListResponse =
-  | FeedTagsListStatus200
-  | FeedTagsListStatus500;
+export type FeedTagsListResponse = FeedTagsListStatus200;
 
 export type FeedTagsManageStatus200 = unknown;
 
@@ -524,9 +512,7 @@ export type FeedTagsManageResponses = {
 /**
  * @description Union of all possible responses
  */
-export type FeedTagsManageResponse =
-  | FeedTagsManageStatus200
-  | FeedTagsManageStatus500;
+export type FeedTagsManageResponse = FeedTagsManageStatus200;
 
 export type FeedsListQuery = {
   tagId?: string;
@@ -551,7 +537,7 @@ export type FeedsListResponses = {
 /**
  * @description Union of all possible responses
  */
-export type FeedsListResponse = FeedsListStatus200 | FeedsListStatus500;
+export type FeedsListResponse = FeedsListStatus200;
 
 export type FeedsCreateStatus200 = CreateFeedResponse;
 
@@ -574,7 +560,7 @@ export type FeedsCreateResponses = {
 /**
  * @description Union of all possible responses
  */
-export type FeedsCreateResponse = FeedsCreateStatus200 | FeedsCreateStatus500;
+export type FeedsCreateResponse = FeedsCreateStatus200;
 
 export type FeedsExportOpmlStatus200 = ExportOpmlResponse;
 
@@ -597,9 +583,7 @@ export type FeedsExportOpmlResponses = {
 /**
  * @description Union of all possible responses
  */
-export type FeedsExportOpmlResponse =
-  | FeedsExportOpmlStatus200
-  | FeedsExportOpmlStatus500;
+export type FeedsExportOpmlResponse = FeedsExportOpmlStatus200;
 
 export type FeedsImportOpmlStatus200 = ImportOpmlResponse;
 
@@ -622,9 +606,7 @@ export type FeedsImportOpmlResponses = {
 /**
  * @description Union of all possible responses
  */
-export type FeedsImportOpmlResponse =
-  | FeedsImportOpmlStatus200
-  | FeedsImportOpmlStatus500;
+export type FeedsImportOpmlResponse = FeedsImportOpmlStatus200;
 
 export type FeedsRefreshStatus200 = RefreshFeedsResponse;
 
@@ -647,9 +629,7 @@ export type FeedsRefreshResponses = {
 /**
  * @description Union of all possible responses
  */
-export type FeedsRefreshResponse =
-  | FeedsRefreshStatus200
-  | FeedsRefreshStatus500;
+export type FeedsRefreshResponse = FeedsRefreshStatus200;
 
 export type FeedsSuspendStatus200 = unknown;
 
@@ -672,9 +652,7 @@ export type FeedsSuspendResponses = {
 /**
  * @description Union of all possible responses
  */
-export type FeedsSuspendResponse =
-  | FeedsSuspendStatus200
-  | FeedsSuspendStatus500;
+export type FeedsSuspendResponse = FeedsSuspendStatus200;
 
 export type FeedsDeletePath = {
   id: string;
@@ -699,7 +677,7 @@ export type FeedsDeleteResponses = {
 /**
  * @description Union of all possible responses
  */
-export type FeedsDeleteResponse = FeedsDeleteStatus200 | FeedsDeleteStatus500;
+export type FeedsDeleteResponse = FeedsDeleteStatus200;
 
 export type IgnoreWindowsListStatus200 = ListIgnoreWindowsResponse;
 
@@ -720,9 +698,7 @@ export type IgnoreWindowsListResponses = {
 /**
  * @description Union of all possible responses
  */
-export type IgnoreWindowsListResponse =
-  | IgnoreWindowsListStatus200
-  | IgnoreWindowsListStatus500;
+export type IgnoreWindowsListResponse = IgnoreWindowsListStatus200;
 
 export type IgnoreWindowsCreateStatus200 = CreateIgnoreWindowResponse;
 
@@ -745,9 +721,7 @@ export type IgnoreWindowsCreateResponses = {
 /**
  * @description Union of all possible responses
  */
-export type IgnoreWindowsCreateResponse =
-  | IgnoreWindowsCreateStatus200
-  | IgnoreWindowsCreateStatus500;
+export type IgnoreWindowsCreateResponse = IgnoreWindowsCreateStatus200;
 
 export type IgnoreWindowsUpdatePath = {
   id: string;
@@ -774,9 +748,7 @@ export type IgnoreWindowsUpdateResponses = {
 /**
  * @description Union of all possible responses
  */
-export type IgnoreWindowsUpdateResponse =
-  | IgnoreWindowsUpdateStatus200
-  | IgnoreWindowsUpdateStatus500;
+export type IgnoreWindowsUpdateResponse = IgnoreWindowsUpdateStatus200;
 
 export type IgnoreWindowsDeletePath = {
   id: string;
@@ -801,9 +773,7 @@ export type IgnoreWindowsDeleteResponses = {
 /**
  * @description Union of all possible responses
  */
-export type IgnoreWindowsDeleteResponse =
-  | IgnoreWindowsDeleteStatus200
-  | IgnoreWindowsDeleteStatus500;
+export type IgnoreWindowsDeleteResponse = IgnoreWindowsDeleteStatus200;
 
 export type ItemReadsListQuery = {
   /**
@@ -840,9 +810,7 @@ export type ItemReadsListResponses = {
 /**
  * @description Union of all possible responses
  */
-export type ItemReadsListResponse =
-  | ItemReadsListStatus200
-  | ItemReadsListStatus500;
+export type ItemReadsListResponse = ItemReadsListStatus200;
 
 export type ItemsListQuery = {
   feedId?: string;
@@ -882,7 +850,7 @@ export type ItemsListResponses = {
 /**
  * @description Union of all possible responses
  */
-export type ItemsListResponse = ItemsListStatus200 | ItemsListStatus500;
+export type ItemsListResponse = ItemsListStatus200;
 
 export type ItemsUpdateStatusStatus200 = unknown;
 
@@ -905,9 +873,7 @@ export type ItemsUpdateStatusResponses = {
 /**
  * @description Union of all possible responses
  */
-export type ItemsUpdateStatusResponse =
-  | ItemsUpdateStatusStatus200
-  | ItemsUpdateStatusStatus500;
+export type ItemsUpdateStatusResponse = ItemsUpdateStatusStatus200;
 
 export type ItemsGetPath = {
   id: string;
@@ -932,7 +898,7 @@ export type ItemsGetResponses = {
 /**
  * @description Union of all possible responses
  */
-export type ItemsGetResponse = ItemsGetStatus200 | ItemsGetStatus500;
+export type ItemsGetResponse = ItemsGetStatus200;
 
 export type TagIgnoreWindowsListQuery = {
   tagId?: string;
@@ -958,9 +924,7 @@ export type TagIgnoreWindowsListResponses = {
 /**
  * @description Union of all possible responses
  */
-export type TagIgnoreWindowsListResponse =
-  | TagIgnoreWindowsListStatus200
-  | TagIgnoreWindowsListStatus500;
+export type TagIgnoreWindowsListResponse = TagIgnoreWindowsListStatus200;
 
 export type TagIgnoreWindowsManageStatus200 = unknown;
 
@@ -983,9 +947,7 @@ export type TagIgnoreWindowsManageResponses = {
 /**
  * @description Union of all possible responses
  */
-export type TagIgnoreWindowsManageResponse =
-  | TagIgnoreWindowsManageStatus200
-  | TagIgnoreWindowsManageStatus500;
+export type TagIgnoreWindowsManageResponse = TagIgnoreWindowsManageStatus200;
 
 export type TagsListStatus200 = ListTagsResponse;
 
@@ -1006,7 +968,7 @@ export type TagsListResponses = {
 /**
  * @description Union of all possible responses
  */
-export type TagsListResponse = TagsListStatus200 | TagsListStatus500;
+export type TagsListResponse = TagsListStatus200;
 
 export type TagsCreateStatus200 = CreateTagResponse;
 
@@ -1029,7 +991,7 @@ export type TagsCreateResponses = {
 /**
  * @description Union of all possible responses
  */
-export type TagsCreateResponse = TagsCreateStatus200 | TagsCreateStatus500;
+export type TagsCreateResponse = TagsCreateStatus200;
 
 export type TagsDeletePath = {
   id: string;
@@ -1054,7 +1016,7 @@ export type TagsDeleteResponses = {
 /**
  * @description Union of all possible responses
  */
-export type TagsDeleteResponse = TagsDeleteStatus200 | TagsDeleteStatus500;
+export type TagsDeleteResponse = TagsDeleteStatus200;
 
 export type URLRulesListStatus200 = ListURLParsingRulesResponse;
 
@@ -1075,9 +1037,7 @@ export type URLRulesListResponses = {
 /**
  * @description Union of all possible responses
  */
-export type URLRulesListResponse =
-  | URLRulesListStatus200
-  | URLRulesListStatus500;
+export type URLRulesListResponse = URLRulesListStatus200;
 
 export type URLRulesAddStatus200 = AddURLParsingRuleResponse;
 
@@ -1100,7 +1060,7 @@ export type URLRulesAddResponses = {
 /**
  * @description Union of all possible responses
  */
-export type URLRulesAddResponse = URLRulesAddStatus200 | URLRulesAddStatus500;
+export type URLRulesAddResponse = URLRulesAddStatus200;
 
 export type URLRulesDeletePath = {
   id: string;
@@ -1125,6 +1085,4 @@ export type URLRulesDeleteResponses = {
 /**
  * @description Union of all possible responses
  */
-export type URLRulesDeleteResponse =
-  | URLRulesDeleteStatus200
-  | URLRulesDeleteStatus500;
+export type URLRulesDeleteResponse = URLRulesDeleteStatus200;

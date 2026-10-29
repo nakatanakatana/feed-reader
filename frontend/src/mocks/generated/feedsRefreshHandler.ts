@@ -33,9 +33,10 @@ export function feedsRefreshHandler(
   data?:
     | FeedsRefreshResponse
     | HttpResponseResolver<Record<string, string>, FeedsRefreshBody>,
+  options?: { baseURL?: string },
 ) {
   return http.post<Record<string, string>, FeedsRefreshBody>(
-    `*/api/v2/feeds/refresh`,
+    `${options?.baseURL ?? "*/api/v2"}/feeds/refresh`,
     function handler(info) {
       if (typeof data === "function") return data(info);
 

@@ -33,15 +33,19 @@ export function itemsListHandler(
     | ((
         info: Parameters<Parameters<typeof http.get>[1]>[0],
       ) => Response | Promise<Response>),
+  options?: { baseURL?: string },
 ) {
-  return http.get(`*/api/v2/items`, function handler(info) {
-    if (typeof data === "function") return data(info);
+  return http.get(
+    `${options?.baseURL ?? "*/api/v2"}/items`,
+    function handler(info) {
+      if (typeof data === "function") return data(info);
 
-    return new Response(JSON.stringify(data), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  });
+      return new Response(JSON.stringify(data), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    },
+  );
 }

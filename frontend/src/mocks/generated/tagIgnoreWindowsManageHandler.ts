@@ -38,9 +38,10 @@ export function tagIgnoreWindowsManageHandler(
     | null
     | object
     | HttpResponseResolver<Record<string, string>, TagIgnoreWindowsManageBody>,
+  options?: { baseURL?: string },
 ) {
   return http.post<Record<string, string>, TagIgnoreWindowsManageBody>(
-    `*/api/v2/tag-ignore-windows/manage`,
+    `${options?.baseURL ?? "*/api/v2"}/tag-ignore-windows/manage`,
     function handler(info) {
       if (typeof data === "function") return data(info);
 

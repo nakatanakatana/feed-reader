@@ -37,9 +37,10 @@ export function feedsExportOpmlHandler(
   data?:
     | FeedsExportOpmlResponse
     | HttpResponseResolver<Record<string, string>, FeedsExportOpmlBody>,
+  options?: { baseURL?: string },
 ) {
   return http.post<Record<string, string>, FeedsExportOpmlBody>(
-    `*/api/v2/feeds/export-opml`,
+    `${options?.baseURL ?? "*/api/v2"}/feeds/export-opml`,
     function handler(info) {
       if (typeof data === "function") return data(info);
 

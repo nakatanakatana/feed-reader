@@ -37,9 +37,10 @@ export function feedsImportOpmlHandler(
   data?:
     | FeedsImportOpmlResponse
     | HttpResponseResolver<Record<string, string>, FeedsImportOpmlBody>,
+  options?: { baseURL?: string },
 ) {
   return http.post<Record<string, string>, FeedsImportOpmlBody>(
-    `*/api/v2/feeds/import-opml`,
+    `${options?.baseURL ?? "*/api/v2"}/feeds/import-opml`,
     function handler(info) {
       if (typeof data === "function") return data(info);
 
