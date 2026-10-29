@@ -38,9 +38,10 @@ export function itemsUpdateStatusHandler(
     | null
     | object
     | HttpResponseResolver<Record<string, string>, ItemsUpdateStatusBody>,
+  options?: { baseURL?: string },
 ) {
   return http.post<Record<string, string>, ItemsUpdateStatusBody>(
-    `*/api/v2/items/status`,
+    `${options?.baseURL ?? "*/api/v2"}/items/status`,
     function handler(info) {
       if (typeof data === "function") return data(info);
 

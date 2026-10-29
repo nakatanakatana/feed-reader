@@ -33,9 +33,10 @@ export function tagsCreateHandler(
   data?:
     | TagsCreateResponse
     | HttpResponseResolver<Record<string, string>, TagsCreateBody>,
+  options?: { baseURL?: string },
 ) {
   return http.post<Record<string, string>, TagsCreateBody>(
-    `*/api/v2/tags`,
+    `${options?.baseURL ?? "*/api/v2"}/tags`,
     function handler(info) {
       if (typeof data === "function") return data(info);
 

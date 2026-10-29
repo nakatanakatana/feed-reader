@@ -38,12 +38,16 @@ export function ignoreWindowsDeleteHandler(
     | ((
         info: Parameters<Parameters<typeof http.delete>[1]>[0],
       ) => Response | Promise<Response>),
+  options?: { baseURL?: string },
 ) {
-  return http.delete(`*/api/v2/ignore-windows/:id`, function handler(info) {
-    if (typeof data === "function") return data(info);
+  return http.delete(
+    `${options?.baseURL ?? "*/api/v2"}/ignore-windows/:id`,
+    function handler(info) {
+      if (typeof data === "function") return data(info);
 
-    return new Response(JSON.stringify(data), {
-      status: 200,
-    });
-  });
+      return new Response(JSON.stringify(data), {
+        status: 200,
+      });
+    },
+  );
 }

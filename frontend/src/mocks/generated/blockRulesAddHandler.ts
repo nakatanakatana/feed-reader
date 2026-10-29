@@ -34,9 +34,10 @@ export function blockRulesAddHandler(
     | null
     | object
     | HttpResponseResolver<Record<string, string>, BlockRulesAddBody>,
+  options?: { baseURL?: string },
 ) {
   return http.post<Record<string, string>, BlockRulesAddBody>(
-    `*/api/v2/block-rules`,
+    `${options?.baseURL ?? "*/api/v2"}/block-rules`,
     function handler(info) {
       if (typeof data === "function") return data(info);
 

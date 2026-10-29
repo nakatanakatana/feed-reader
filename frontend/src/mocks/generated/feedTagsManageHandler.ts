@@ -38,9 +38,10 @@ export function feedTagsManageHandler(
     | null
     | object
     | HttpResponseResolver<Record<string, string>, FeedTagsManageBody>,
+  options?: { baseURL?: string },
 ) {
   return http.post<Record<string, string>, FeedTagsManageBody>(
-    `*/api/v2/feed-tags/manage`,
+    `${options?.baseURL ?? "*/api/v2"}/feed-tags/manage`,
     function handler(info) {
       if (typeof data === "function") return data(info);
 

@@ -38,9 +38,10 @@ export function feedIgnoreWindowsManageHandler(
     | null
     | object
     | HttpResponseResolver<Record<string, string>, FeedIgnoreWindowsManageBody>,
+  options?: { baseURL?: string },
 ) {
   return http.post<Record<string, string>, FeedIgnoreWindowsManageBody>(
-    `*/api/v2/feed-ignore-windows/manage`,
+    `${options?.baseURL ?? "*/api/v2"}/feed-ignore-windows/manage`,
     function handler(info) {
       if (typeof data === "function") return data(info);
 
