@@ -32,13 +32,13 @@
     "@opentelemetry/sdk-trace-base": "2.12.0",
     "@opentelemetry/sdk-trace-web": "2.12.0",
     "@opentelemetry/semantic-conventions": "1.43.0",
-    "@solidjs/web": "2.0.0-rc.18",
+    "@solidjs/web": "2.0.0-rc.19",
     "@tanstack/router-plugin": "1.168.48",
     "@tanstack/solid-query": "6.0.0-rc.5",
     "@tanstack/solid-router": "2.0.0-rc.9",
     "markdown-it": "15.0.3",
     "postcss": "8.5.32",
-    "solid-js": "2.0.0-rc.18",
+    "solid-js": "2.0.0-rc.19",
     "web-vitals": "6.2.3"
   },
   "devDependencies": {
