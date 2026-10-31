@@ -1,5 +1,54 @@
 # Changelog
 
+## [v0.27.1](https://github.com/nakatanakatana/feed-reader/compare/v0.27.0...v0.27.1) - 2026-10-31
+
+### Maintenance & Others
+- fix(deps): update dependency markdown-it to v15.0.3 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1161
+- chore(deps): update dependency golang/go to v1.27.3 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1164
+- fix(deps): update dependency @tanstack/router-plugin to v1.168.47 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1165
+- chore(deps): update dependency moznion/cccc to v1.8.4 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1166
+- fix(deps): update module modernc.org/sqlite to v1.61.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1169
+- chore(deps): update dependency k1low/mo to v1.7.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1168
+- chore(deps): update golang:1.27-alpine docker digest to f2c872b by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1163
+- fix(deps): update dependency postcss to v8.5.31 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1171
+- chore(deps): update dependency bufbuild/buf to v1.75.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1175
+- chore(deps): update dependency aquaproj/aqua to v2.65.2 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1174
+- chore(deps): update dependency aqua to v2.65.2 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1173
+- chore(deps): update aquaproj/aqua-installer action to v4.1.1 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1176
+- chore(deps): update dependency oxfmt to ^0.74.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1177
+- chore(deps): update dependency oxlint to v1.89.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1178
+- fix(deps): update module github.com/oapi-codegen/runtime to v1.8.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1181
+- chore(deps): update panda-css monorepo to v2.3.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1180
+- chore(deps): update golang:1.27-alpine docker digest to d200d2d by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1172
+- chore(deps): update node.js to 06d7adf by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1170
+- chore(deps): update dependency goreleaser/goreleaser to v2.19.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1179
+- chore(deps): update dependency k1low/octocov to v0.83.4 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1188
+- chore(deps): update dependency moznion/cccc to v1.8.5 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1189
+- chore(deps): update dependency vite to v8.3.5 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1190
+- fix(deps): update module github.com/nakatanakatana/mytools to v0.12.3 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1192
+- fix(deps): update module github.com/sqldef/sqldef/v3 to v3.11.28 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1193
+- fix(deps): update tanstack-router monorepo by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1194
+- chore(deps): update node.js to 8a32c8c by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1191
+- chore(deps): update dependency aquaproj/aqua-renovate-config to v2.14.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1196
+- chore(deps): update dependency aquaproj/aqua-registry to v4.579.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1195
+- chore(deps): update panda-css monorepo to v2.4.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1198
+- chore(renovate): group OpenTelemetry and SolidJS packages by @nakatanakatana in https://github.com/nakatanakatana/feed-reader/pull/1197
+- fix(deps): update solidjs by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1200
+- chore(deps): update kubb to v5.14.3 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1119
+- chore(deps): update dependency vite-plugin-pwa to v2 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1097
+- chore(deps): update dependency node to v26 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1201
+- chore(deps): update dependency @kubb/plugin-msw to v6 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1199
+- fix(deps): update module github.com/ncruces/go-sqlite3 to v0.36.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1203
+- fix(deps): update dependency postcss to v8.5.32 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1204
+- fix(deps): update module github.com/sqldef/sqldef/v3 to v3.11.29 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1205
+- chore(deps): update dependency oxfmt to ^0.75.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1206
+- chore(deps): update dependency oxlint to v1.90.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1207
+- chore(deps): update kubb to v5.14.4 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1208
+- fix(deps): update solidjs to v2.0.0-rc.19 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1210
+- chore(deps): update dependency @solidjs/vite-plugin to v3.0.0-next.52 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1211
+- fix(deps): update module modernc.org/sqlite to v1.61.1 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1212
+- chore(deps): update dependency @types/node to v26.6.6 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1213
+
 ## [v0.27.0](https://github.com/nakatanakatana/feed-reader/compare/v0.26.1...v0.27.0) - 2026-10-18
 
 ### Maintenance & Others
