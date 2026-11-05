@@ -1,12 +1,13 @@
 import { useMutation, useQuery } from "@tanstack/solid-query";
 import { createFileRoute } from "@tanstack/solid-router";
-import { createMemo, createSignal, Show } from "solid-js";
+import { createMemo, createSignal, Loading, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import { BlockRulesFilterBar } from "../components/BlockRulesFilterBar";
 import { BlockRulesTable } from "../components/BlockRulesTable";
 import { BulkAddBlockRulesModal } from "../components/BulkAddBlockRulesModal";
 import { ActionButton } from "../components/ui/ActionButton";
+import { LoadingState } from "../components/ui/LoadingState";
 import { PageLayout } from "../components/ui/PageLayout";
 import {
   itemBlockRuleDelete,
@@ -38,7 +39,7 @@ function BlockRulesComponent() {
   const rulesDataQuery = useQuery(() => itemBlockRulesQueryOptions);
 
   const rulesQuery = createMemo(() => {
-    let list = [...(rulesDataQuery.data || [])];
+    let list = [...(rulesDataQuery.data ?? [])];
 
     const currentTypeFilter = typeFilter();
     if (currentTypeFilter) {
@@ -64,7 +65,7 @@ function BlockRulesComponent() {
   });
 
   const memoizedUniqueDomains = createMemo(() => {
-    const rules = rulesDataQuery.data || [];
+    const rules = rulesDataQuery.data ?? [];
     const domains = new Set<string>();
     for (const rule of rules) {
       if (rule.domain) domains.add(rule.domain);
@@ -303,27 +304,38 @@ function BlockRulesComponent() {
             borderColor: "gray.200",
           })}
         >
-          <Show when={rulesDataQuery.isLoading}>
-            <p>Loading rules...</p>
-          </Show>
-          <BlockRulesFilterBar
-            domains={memoizedUniqueDomains()}
-            typeFilter={typeFilter()}
-            setTypeFilter={setTypeFilter}
-            domainFilter={domainFilter()}
-            setDomainFilter={setDomainFilter}
-          />
-
-          <BlockRulesTable
-            rules={rulesQuery() || []}
-            onDelete={
-              isReadOnly() ? undefined : (id) => deleteMutation.mutate(id)
+          <Loading
+            fallback={
+              <BlockRulesFilterBar
+                domains={[]}
+                typeFilter={typeFilter()}
+                setTypeFilter={setTypeFilter}
+                domainFilter={domainFilter()}
+                setDomainFilter={setDomainFilter}
+              />
             }
-            isPending={deleteMutation.isPending}
-            sortField={sortField()}
-            sortDirection={sortDirection()}
-            onSort={toggleSort}
-          />
+          >
+            <BlockRulesFilterBar
+              domains={memoizedUniqueDomains()}
+              typeFilter={typeFilter()}
+              setTypeFilter={setTypeFilter}
+              domainFilter={domainFilter()}
+              setDomainFilter={setDomainFilter}
+            />
+          </Loading>
+
+          <Loading fallback={<LoadingState label="Loading rules..." />}>
+            <BlockRulesTable
+              rules={rulesQuery()}
+              onDelete={
+                isReadOnly() ? undefined : (id) => deleteMutation.mutate(id)
+              }
+              isPending={deleteMutation.isPending}
+              sortField={sortField()}
+              sortDirection={sortDirection()}
+              onSort={toggleSort}
+            />
+          </Loading>
         </div>
       </div>
     </PageLayout>

@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/solid-query";
 import { createFileRoute } from "@tanstack/solid-router";
-import { createSignal, Show } from "solid-js";
+import { createSignal, Loading, Show } from "solid-js";
 import { css } from "../../styled-system/css";
 import { flex, stack } from "../../styled-system/patterns";
 import {
@@ -9,6 +9,7 @@ import {
 } from "../components/AddIgnoreWindowModal";
 import { IgnoreWindowsTable } from "../components/IgnoreWindowsTable";
 import { ActionButton } from "../components/ui/ActionButton";
+import { LoadingState } from "../components/ui/LoadingState";
 import { PageLayout } from "../components/ui/PageLayout";
 import {
   createIgnoreWindow,
@@ -129,22 +130,20 @@ function IgnoreWindowsComponent() {
             p: "4",
           })}
         >
-          <Show when={ignoreWindowsQuery.isLoading}>
-            <p class={css({ color: "gray.500", p: "4" })}>
-              Loading ignore windows...
-            </p>
-          </Show>
-
-          <IgnoreWindowsTable
-            ignoreWindows={ignoreWindowsQuery.data ?? []}
-            onEdit={
-              isReadOnly() ? undefined : (window) => setEditingWindow(window)
-            }
-            onDelete={
-              isReadOnly() ? undefined : (id) => deleteMutationFn.mutate(id)
-            }
-            isPending={deleteMutationFn.isPending}
-          />
+          <Loading
+            fallback={<LoadingState label="Loading ignore windows..." />}
+          >
+            <IgnoreWindowsTable
+              ignoreWindows={ignoreWindowsQuery.data ?? []}
+              onEdit={
+                isReadOnly() ? undefined : (window) => setEditingWindow(window)
+              }
+              onDelete={
+                isReadOnly() ? undefined : (id) => deleteMutationFn.mutate(id)
+              }
+              isPending={deleteMutationFn.isPending}
+            />
+          </Loading>
         </div>
 
         <Show when={!isReadOnly()}>
