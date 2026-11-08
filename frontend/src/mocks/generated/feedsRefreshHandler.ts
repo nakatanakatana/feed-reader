@@ -9,10 +9,11 @@ import type {
   FeedsRefreshBody,
 } from "../../lib/api/types-generated";
 import type { HttpResponseResolver } from "msw/http";
+import type { DefaultBodyType } from "msw";
 import { http, HttpResponse } from "msw/http";
 
 export function feedsRefreshHandlerResponse200(data: FeedsRefreshResponse) {
-  return new HttpResponse(JSON.stringify(data), {
+  return new HttpResponse<string>(JSON.stringify(data), {
     status: 200,
     headers: {
       "Content-Type": "application/json",
@@ -21,7 +22,7 @@ export function feedsRefreshHandlerResponse200(data: FeedsRefreshResponse) {
 }
 
 export function feedsRefreshHandlerResponse500(data: FeedsRefreshStatus500) {
-  return new HttpResponse(JSON.stringify(data), {
+  return new HttpResponse<string>(JSON.stringify(data), {
     status: 500,
     headers: {
       "Content-Type": "application/json",
@@ -32,20 +33,27 @@ export function feedsRefreshHandlerResponse500(data: FeedsRefreshStatus500) {
 export function feedsRefreshHandler(
   data?:
     | FeedsRefreshResponse
-    | HttpResponseResolver<Record<string, string>, FeedsRefreshBody>,
+    | HttpResponseResolver<
+        Record<string, string>,
+        FeedsRefreshBody extends DefaultBodyType
+          ? FeedsRefreshBody
+          : DefaultBodyType
+      >,
   options?: { baseURL?: string },
 ) {
-  return http.post<Record<string, string>, FeedsRefreshBody>(
-    `${options?.baseURL ?? "*/api/v2"}/feeds/refresh`,
-    function handler(info) {
-      if (typeof data === "function") return data(info);
+  return http.post<
+    Record<string, string>,
+    FeedsRefreshBody extends DefaultBodyType
+      ? FeedsRefreshBody
+      : DefaultBodyType
+  >(`${options?.baseURL ?? "*/api/v2"}/feeds/refresh`, function handler(info) {
+    if (typeof data === "function") return data(info);
 
-      return new HttpResponse(JSON.stringify(data), {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-    },
-  );
+    return new HttpResponse<string>(JSON.stringify(data), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  });
 }

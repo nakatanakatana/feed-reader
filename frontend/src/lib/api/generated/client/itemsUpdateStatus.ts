@@ -22,6 +22,7 @@ export function itemsUpdateStatus<ThrowOnError extends boolean = true>(
     request({
       method: "POST",
       url: "/items/status",
+      contentType: { request: "application/json" },
       ...config,
       throwOnError: config.throwOnError ?? true,
     }),

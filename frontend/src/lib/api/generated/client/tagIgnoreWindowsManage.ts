@@ -22,6 +22,7 @@ export function tagIgnoreWindowsManage<ThrowOnError extends boolean = true>(
     request({
       method: "POST",
       url: "/tag-ignore-windows/manage",
+      contentType: { request: "application/json" },
       ...config,
       throwOnError: config.throwOnError ?? true,
     }),

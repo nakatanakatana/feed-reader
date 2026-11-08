@@ -9,16 +9,17 @@ import type {
   FeedsSuspendBody,
 } from "../../lib/api/types-generated";
 import type { HttpResponseResolver } from "msw/http";
+import type { DefaultBodyType } from "msw";
 import { http, HttpResponse } from "msw/http";
 
 export function feedsSuspendHandlerResponse200(data?: FeedsSuspendResponse) {
-  return new HttpResponse(JSON.stringify(data), {
+  return new HttpResponse<string>(JSON.stringify(data), {
     status: 200,
   });
 }
 
 export function feedsSuspendHandlerResponse500(data: FeedsSuspendStatus500) {
-  return new HttpResponse(JSON.stringify(data), {
+  return new HttpResponse<string>(JSON.stringify(data), {
     status: 500,
     headers: {
       "Content-Type": "application/json",
@@ -33,17 +34,24 @@ export function feedsSuspendHandler(
     | boolean
     | null
     | object
-    | HttpResponseResolver<Record<string, string>, FeedsSuspendBody>,
+    | HttpResponseResolver<
+        Record<string, string>,
+        FeedsSuspendBody extends DefaultBodyType
+          ? FeedsSuspendBody
+          : DefaultBodyType
+      >,
   options?: { baseURL?: string },
 ) {
-  return http.post<Record<string, string>, FeedsSuspendBody>(
-    `${options?.baseURL ?? "*/api/v2"}/feeds/suspend`,
-    function handler(info) {
-      if (typeof data === "function") return data(info);
+  return http.post<
+    Record<string, string>,
+    FeedsSuspendBody extends DefaultBodyType
+      ? FeedsSuspendBody
+      : DefaultBodyType
+  >(`${options?.baseURL ?? "*/api/v2"}/feeds/suspend`, function handler(info) {
+    if (typeof data === "function") return data(info);
 
-      return new HttpResponse(JSON.stringify(data), {
-        status: 200,
-      });
-    },
-  );
+    return new HttpResponse<string>(JSON.stringify(data), {
+      status: 200,
+    });
+  });
 }

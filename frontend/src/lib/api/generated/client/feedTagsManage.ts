@@ -22,6 +22,7 @@ export function feedTagsManage<ThrowOnError extends boolean = true>(
     request({
       method: "POST",
       url: "/feed-tags/manage",
+      contentType: { request: "application/json" },
       ...config,
       throwOnError: config.throwOnError ?? true,
     }),

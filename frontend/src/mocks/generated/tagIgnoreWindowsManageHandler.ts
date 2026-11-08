@@ -9,12 +9,13 @@ import type {
   TagIgnoreWindowsManageBody,
 } from "../../lib/api/types-generated";
 import type { HttpResponseResolver } from "msw/http";
+import type { DefaultBodyType } from "msw";
 import { http, HttpResponse } from "msw/http";
 
 export function tagIgnoreWindowsManageHandlerResponse200(
   data?: TagIgnoreWindowsManageResponse,
 ) {
-  return new HttpResponse(JSON.stringify(data), {
+  return new HttpResponse<string>(JSON.stringify(data), {
     status: 200,
   });
 }
@@ -22,7 +23,7 @@ export function tagIgnoreWindowsManageHandlerResponse200(
 export function tagIgnoreWindowsManageHandlerResponse500(
   data: TagIgnoreWindowsManageStatus500,
 ) {
-  return new HttpResponse(JSON.stringify(data), {
+  return new HttpResponse<string>(JSON.stringify(data), {
     status: 500,
     headers: {
       "Content-Type": "application/json",
@@ -37,15 +38,25 @@ export function tagIgnoreWindowsManageHandler(
     | boolean
     | null
     | object
-    | HttpResponseResolver<Record<string, string>, TagIgnoreWindowsManageBody>,
+    | HttpResponseResolver<
+        Record<string, string>,
+        TagIgnoreWindowsManageBody extends DefaultBodyType
+          ? TagIgnoreWindowsManageBody
+          : DefaultBodyType
+      >,
   options?: { baseURL?: string },
 ) {
-  return http.post<Record<string, string>, TagIgnoreWindowsManageBody>(
+  return http.post<
+    Record<string, string>,
+    TagIgnoreWindowsManageBody extends DefaultBodyType
+      ? TagIgnoreWindowsManageBody
+      : DefaultBodyType
+  >(
     `${options?.baseURL ?? "*/api/v2"}/tag-ignore-windows/manage`,
     function handler(info) {
       if (typeof data === "function") return data(info);
 
-      return new HttpResponse(JSON.stringify(data), {
+      return new HttpResponse<string>(JSON.stringify(data), {
         status: 200,
       });
     },

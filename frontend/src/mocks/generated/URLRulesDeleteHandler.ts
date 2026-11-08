@@ -12,7 +12,7 @@ import { http, HttpResponse } from "msw/http";
 export function URLRulesDeleteHandlerResponse200(
   data?: URLRulesDeleteResponse,
 ) {
-  return new HttpResponse(JSON.stringify(data), {
+  return new HttpResponse<string>(JSON.stringify(data), {
     status: 200,
   });
 }
@@ -20,7 +20,7 @@ export function URLRulesDeleteHandlerResponse200(
 export function URLRulesDeleteHandlerResponse500(
   data: URLRulesDeleteStatus500,
 ) {
-  return new HttpResponse(JSON.stringify(data), {
+  return new HttpResponse<string>(JSON.stringify(data), {
     status: 500,
     headers: {
       "Content-Type": "application/json",
@@ -45,7 +45,7 @@ export function URLRulesDeleteHandler(
     function handler(info) {
       if (typeof data === "function") return data(info);
 
-      return new HttpResponse(JSON.stringify(data), {
+      return new HttpResponse<string>(JSON.stringify(data), {
         status: 200,
       });
     },

@@ -22,6 +22,7 @@ export function feedsExportOpml<ThrowOnError extends boolean = true>(
     request({
       method: "POST",
       url: "/feeds/export-opml",
+      contentType: { request: "application/json" },
       ...config,
       throwOnError: config.throwOnError ?? true,
     }),

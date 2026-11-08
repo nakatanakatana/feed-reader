@@ -9,16 +9,17 @@ import type {
   BlockRulesAddBody,
 } from "../../lib/api/types-generated";
 import type { HttpResponseResolver } from "msw/http";
+import type { DefaultBodyType } from "msw";
 import { http, HttpResponse } from "msw/http";
 
 export function blockRulesAddHandlerResponse200(data?: BlockRulesAddResponse) {
-  return new HttpResponse(JSON.stringify(data), {
+  return new HttpResponse<string>(JSON.stringify(data), {
     status: 200,
   });
 }
 
 export function blockRulesAddHandlerResponse500(data: BlockRulesAddStatus500) {
-  return new HttpResponse(JSON.stringify(data), {
+  return new HttpResponse<string>(JSON.stringify(data), {
     status: 500,
     headers: {
       "Content-Type": "application/json",
@@ -33,17 +34,24 @@ export function blockRulesAddHandler(
     | boolean
     | null
     | object
-    | HttpResponseResolver<Record<string, string>, BlockRulesAddBody>,
+    | HttpResponseResolver<
+        Record<string, string>,
+        BlockRulesAddBody extends DefaultBodyType
+          ? BlockRulesAddBody
+          : DefaultBodyType
+      >,
   options?: { baseURL?: string },
 ) {
-  return http.post<Record<string, string>, BlockRulesAddBody>(
-    `${options?.baseURL ?? "*/api/v2"}/block-rules`,
-    function handler(info) {
-      if (typeof data === "function") return data(info);
+  return http.post<
+    Record<string, string>,
+    BlockRulesAddBody extends DefaultBodyType
+      ? BlockRulesAddBody
+      : DefaultBodyType
+  >(`${options?.baseURL ?? "*/api/v2"}/block-rules`, function handler(info) {
+    if (typeof data === "function") return data(info);
 
-      return new HttpResponse(JSON.stringify(data), {
-        status: 200,
-      });
-    },
-  );
+    return new HttpResponse<string>(JSON.stringify(data), {
+      status: 200,
+    });
+  });
 }

@@ -22,6 +22,7 @@ export function blockRulesAdd<ThrowOnError extends boolean = true>(
     request({
       method: "POST",
       url: "/block-rules",
+      contentType: { request: "application/json" },
       ...config,
       throwOnError: config.throwOnError ?? true,
     }),

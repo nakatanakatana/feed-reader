@@ -22,6 +22,7 @@ export function tagsCreate<ThrowOnError extends boolean = true>(
     request({
       method: "POST",
       url: "/tags",
+      contentType: { request: "application/json" },
       ...config,
       throwOnError: config.throwOnError ?? true,
     }),

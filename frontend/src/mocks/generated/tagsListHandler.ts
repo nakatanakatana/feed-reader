@@ -10,7 +10,7 @@ import type {
 import { http, HttpResponse } from "msw/http";
 
 export function tagsListHandlerResponse200(data: TagsListResponse) {
-  return new HttpResponse(JSON.stringify(data), {
+  return new HttpResponse<string>(JSON.stringify(data), {
     status: 200,
     headers: {
       "Content-Type": "application/json",
@@ -19,7 +19,7 @@ export function tagsListHandlerResponse200(data: TagsListResponse) {
 }
 
 export function tagsListHandlerResponse500(data: TagsListStatus500) {
-  return new HttpResponse(JSON.stringify(data), {
+  return new HttpResponse<string>(JSON.stringify(data), {
     status: 500,
     headers: {
       "Content-Type": "application/json",
@@ -40,7 +40,7 @@ export function tagsListHandler(
     function handler(info) {
       if (typeof data === "function") return data(info);
 
-      return new HttpResponse(JSON.stringify(data), {
+      return new HttpResponse<string>(JSON.stringify(data), {
         status: 200,
         headers: {
           "Content-Type": "application/json",

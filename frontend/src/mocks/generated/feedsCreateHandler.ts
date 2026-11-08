@@ -9,10 +9,11 @@ import type {
   FeedsCreateBody,
 } from "../../lib/api/types-generated";
 import type { HttpResponseResolver } from "msw/http";
+import type { DefaultBodyType } from "msw";
 import { http, HttpResponse } from "msw/http";
 
 export function feedsCreateHandlerResponse200(data: FeedsCreateResponse) {
-  return new HttpResponse(JSON.stringify(data), {
+  return new HttpResponse<string>(JSON.stringify(data), {
     status: 200,
     headers: {
       "Content-Type": "application/json",
@@ -21,7 +22,7 @@ export function feedsCreateHandlerResponse200(data: FeedsCreateResponse) {
 }
 
 export function feedsCreateHandlerResponse500(data: FeedsCreateStatus500) {
-  return new HttpResponse(JSON.stringify(data), {
+  return new HttpResponse<string>(JSON.stringify(data), {
     status: 500,
     headers: {
       "Content-Type": "application/json",
@@ -32,20 +33,25 @@ export function feedsCreateHandlerResponse500(data: FeedsCreateStatus500) {
 export function feedsCreateHandler(
   data?:
     | FeedsCreateResponse
-    | HttpResponseResolver<Record<string, string>, FeedsCreateBody>,
+    | HttpResponseResolver<
+        Record<string, string>,
+        FeedsCreateBody extends DefaultBodyType
+          ? FeedsCreateBody
+          : DefaultBodyType
+      >,
   options?: { baseURL?: string },
 ) {
-  return http.post<Record<string, string>, FeedsCreateBody>(
-    `${options?.baseURL ?? "*/api/v2"}/feeds`,
-    function handler(info) {
-      if (typeof data === "function") return data(info);
+  return http.post<
+    Record<string, string>,
+    FeedsCreateBody extends DefaultBodyType ? FeedsCreateBody : DefaultBodyType
+  >(`${options?.baseURL ?? "*/api/v2"}/feeds`, function handler(info) {
+    if (typeof data === "function") return data(info);
 
-      return new HttpResponse(JSON.stringify(data), {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-    },
-  );
+    return new HttpResponse<string>(JSON.stringify(data), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  });
 }
