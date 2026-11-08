@@ -9,12 +9,13 @@ import type {
   FeedIgnoreWindowsManageBody,
 } from "../../lib/api/types-generated";
 import type { HttpResponseResolver } from "msw/http";
+import type { DefaultBodyType } from "msw";
 import { http, HttpResponse } from "msw/http";
 
 export function feedIgnoreWindowsManageHandlerResponse200(
   data?: FeedIgnoreWindowsManageResponse,
 ) {
-  return new HttpResponse(JSON.stringify(data), {
+  return new HttpResponse<string>(JSON.stringify(data), {
     status: 200,
   });
 }
@@ -22,7 +23,7 @@ export function feedIgnoreWindowsManageHandlerResponse200(
 export function feedIgnoreWindowsManageHandlerResponse500(
   data: FeedIgnoreWindowsManageStatus500,
 ) {
-  return new HttpResponse(JSON.stringify(data), {
+  return new HttpResponse<string>(JSON.stringify(data), {
     status: 500,
     headers: {
       "Content-Type": "application/json",
@@ -37,15 +38,25 @@ export function feedIgnoreWindowsManageHandler(
     | boolean
     | null
     | object
-    | HttpResponseResolver<Record<string, string>, FeedIgnoreWindowsManageBody>,
+    | HttpResponseResolver<
+        Record<string, string>,
+        FeedIgnoreWindowsManageBody extends DefaultBodyType
+          ? FeedIgnoreWindowsManageBody
+          : DefaultBodyType
+      >,
   options?: { baseURL?: string },
 ) {
-  return http.post<Record<string, string>, FeedIgnoreWindowsManageBody>(
+  return http.post<
+    Record<string, string>,
+    FeedIgnoreWindowsManageBody extends DefaultBodyType
+      ? FeedIgnoreWindowsManageBody
+      : DefaultBodyType
+  >(
     `${options?.baseURL ?? "*/api/v2"}/feed-ignore-windows/manage`,
     function handler(info) {
       if (typeof data === "function") return data(info);
 
-      return new HttpResponse(JSON.stringify(data), {
+      return new HttpResponse<string>(JSON.stringify(data), {
         status: 200,
       });
     },

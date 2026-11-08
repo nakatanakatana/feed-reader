@@ -22,6 +22,7 @@ export function ignoreWindowsUpdate<ThrowOnError extends boolean = true>(
     request({
       method: "PUT",
       url: "/ignore-windows/{id}",
+      contentType: { request: "application/json" },
       ...config,
       throwOnError: config.throwOnError ?? true,
     }),

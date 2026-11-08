@@ -22,6 +22,7 @@ export function feedsCreate<ThrowOnError extends boolean = true>(
     request({
       method: "POST",
       url: "/feeds",
+      contentType: { request: "application/json" },
       ...config,
       throwOnError: config.throwOnError ?? true,
     }),

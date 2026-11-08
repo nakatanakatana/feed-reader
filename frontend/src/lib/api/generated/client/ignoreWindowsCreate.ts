@@ -22,6 +22,7 @@ export function ignoreWindowsCreate<ThrowOnError extends boolean = true>(
     request({
       method: "POST",
       url: "/ignore-windows",
+      contentType: { request: "application/json" },
       ...config,
       throwOnError: config.throwOnError ?? true,
     }),

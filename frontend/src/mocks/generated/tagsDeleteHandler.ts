@@ -10,13 +10,13 @@ import type {
 import { http, HttpResponse } from "msw/http";
 
 export function tagsDeleteHandlerResponse200(data?: TagsDeleteResponse) {
-  return new HttpResponse(JSON.stringify(data), {
+  return new HttpResponse<string>(JSON.stringify(data), {
     status: 200,
   });
 }
 
 export function tagsDeleteHandlerResponse500(data: TagsDeleteStatus500) {
-  return new HttpResponse(JSON.stringify(data), {
+  return new HttpResponse<string>(JSON.stringify(data), {
     status: 500,
     headers: {
       "Content-Type": "application/json",
@@ -41,7 +41,7 @@ export function tagsDeleteHandler(
     function handler(info) {
       if (typeof data === "function") return data(info);
 
-      return new HttpResponse(JSON.stringify(data), {
+      return new HttpResponse<string>(JSON.stringify(data), {
         status: 200,
       });
     },
