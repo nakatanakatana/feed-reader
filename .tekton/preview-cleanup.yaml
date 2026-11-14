@@ -7,7 +7,6 @@ metadata:
       event == "pull_request" &&
       (body.action == "closed" || (body.action == "unlabeled" && body.label.name == "preview")) &&
       body.pull_request.head.repo.full_name == body.repository.full_name
-    pipelinesascode.tekton.dev/task: "[preview-cleanup]"
     pipelinesascode.tekton.dev/max-keep-runs: "3"
 spec:
   pipelineSpec:

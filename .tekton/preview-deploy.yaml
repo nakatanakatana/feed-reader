@@ -8,7 +8,7 @@ metadata:
       body.action in ["labeled", "synchronize", "reopened"] &&
       body.pull_request.head.repo.full_name == body.repository.full_name &&
       body.pull_request.labels.exists(l, l.name == "preview")
-    pipelinesascode.tekton.dev/task: "[preview-build-push, preview-deploy]"
+    pipelinesascode.tekton.dev/task: "git-clone"
     pipelinesascode.tekton.dev/max-keep-runs: "3"
 spec:
   params:
