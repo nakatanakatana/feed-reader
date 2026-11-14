@@ -13,7 +13,14 @@ spec:
     tasks:
       - name: cleanup
         taskRef:
-          name: preview-cleanup
+          resolver: cluster
+          params:
+            - name: kind
+              value: task
+            - name: name
+              value: preview-cleanup
+            - name: namespace
+              value: tekton-workspace
         params:
           - name: APP_NAME
             value: feed-reader

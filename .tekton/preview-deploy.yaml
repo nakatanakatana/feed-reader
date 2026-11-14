@@ -38,7 +38,14 @@ spec:
         runAfter:
           - fetch-repository
         taskRef:
-          name: preview-build-push
+          resolver: cluster
+          params:
+            - name: kind
+              value: task
+            - name: name
+              value: preview-build-push
+            - name: namespace
+              value: tekton-workspace
         workspaces:
           - name: source
             workspace: source
@@ -54,7 +61,14 @@ spec:
         runAfter:
           - build-push
         taskRef:
-          name: preview-deploy
+          resolver: cluster
+          params:
+            - name: kind
+              value: task
+            - name: name
+              value: preview-deploy
+            - name: namespace
+              value: tekton-workspace
         workspaces:
           - name: source
             workspace: source
