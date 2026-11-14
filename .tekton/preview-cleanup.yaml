@@ -1,0 +1,22 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: feed-reader-preview-cleanup
+  annotations:
+    pipelinesascode.tekton.dev/on-cel-expression: |
+      event == "pull_request" &&
+      (body.action == "closed" || (body.action == "unlabeled" && body.label.name == "preview")) &&
+      body.pull_request.head.repo.full_name == body.repository.full_name
+    pipelinesascode.tekton.dev/task: "[preview-cleanup]"
+    pipelinesascode.tekton.dev/max-keep-runs: "3"
+spec:
+  pipelineSpec:
+    tasks:
+      - name: cleanup
+        taskRef:
+          name: preview-cleanup
+        params:
+          - name: APP_NAME
+            value: feed-reader
+          - name: PR_NUMBER
+            value: "{{pull_request_number}}"
