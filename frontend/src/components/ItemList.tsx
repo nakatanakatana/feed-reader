@@ -6,6 +6,7 @@ import {
   createMemo,
   createSignal,
   For,
+  Loading,
   onSettled,
   Show,
 } from "solid-js";
@@ -32,6 +33,7 @@ import { ActionButton } from "./ui/ActionButton";
 import { Badge } from "./ui/Badge";
 import { EmptyState } from "./ui/EmptyState";
 import { HorizontalScrollList } from "./ui/HorizontalScrollList";
+import { LoadingState } from "./ui/LoadingState";
 import { TagChip } from "./ui/TagChip";
 
 interface ItemListProps {
@@ -242,37 +244,45 @@ export function ItemList(props: ItemListProps) {
             onClick={() => handleTagClick(undefined)}
           >
             All
-            <Show when={totalUnread() > 0n}>
-              <Badge
-                variant={props.tagId === undefined ? "primary" : "neutral"}
-                class={css({ ml: "1.5", fontSize: "10px", minWidth: "1.5rem" })}
-              >
-                {formatUnreadCount(Number(totalUnread()))}
-              </Badge>
-            </Show>
+            <Loading fallback={null}>
+              <Show when={totalUnread() > 0n}>
+                <Badge
+                  variant={props.tagId === undefined ? "primary" : "neutral"}
+                  class={css({
+                    ml: "1.5",
+                    fontSize: "10px",
+                    minWidth: "1.5rem",
+                  })}
+                >
+                  {formatUnreadCount(Number(totalUnread()))}
+                </Badge>
+              </Show>
+            </Loading>
           </TagChip>
-          <For each={tagUnreadCounts()}>
-            {(tag) => (
-              <TagChip
-                selected={props.tagId === tag.id}
-                onClick={() => handleTagClick(tag.id)}
-              >
-                {tag.name}
-                <Show when={(tag.unreadCount ?? 0n) > 0n}>
-                  <Badge
-                    variant={props.tagId === tag.id ? "primary" : "neutral"}
-                    class={css({
-                      ml: "1.5",
-                      fontSize: "10px",
-                      minWidth: "1.5rem",
-                    })}
-                  >
-                    {formatUnreadCount(Number(tag.unreadCount))}
-                  </Badge>
-                </Show>
-              </TagChip>
-            )}
-          </For>
+          <Loading fallback={null}>
+            <For each={tagUnreadCounts()}>
+              {(tag) => (
+                <TagChip
+                  selected={props.tagId === tag.id}
+                  onClick={() => handleTagClick(tag.id)}
+                >
+                  {tag.name}
+                  <Show when={(tag.unreadCount ?? 0n) > 0n}>
+                    <Badge
+                      variant={props.tagId === tag.id ? "primary" : "neutral"}
+                      class={css({
+                        ml: "1.5",
+                        fontSize: "10px",
+                        minWidth: "1.5rem",
+                      })}
+                    >
+                      {formatUnreadCount(Number(tag.unreadCount))}
+                    </Badge>
+                  </Show>
+                </TagChip>
+              )}
+            </For>
+          </Loading>
         </HorizontalScrollList>
       </div>
 
@@ -311,15 +321,28 @@ export function ItemList(props: ItemListProps) {
               alignItems: "center",
             })}
           >
-            <ActionButton
-              size="sm"
-              variant="secondary"
-              onClick={handleClearReadItems}
-              disabled={!filteredItems().some((item) => item.isRead)}
-              ariaLabel="Clear read items from current view"
+            <Loading
+              fallback={
+                <ActionButton
+                  size="sm"
+                  variant="secondary"
+                  disabled={true}
+                  ariaLabel="Clear read items from current view"
+                >
+                  Clear Read Items
+                </ActionButton>
+              }
             >
-              Clear Read Items
-            </ActionButton>
+              <ActionButton
+                size="sm"
+                variant="secondary"
+                onClick={handleClearReadItems}
+                disabled={!filteredItems().some((item) => item.isRead)}
+                ariaLabel="Clear read items from current view"
+              >
+                Clear Read Items
+              </ActionButton>
+            </Loading>
             <DateFilterSelector
               value={itemStore.state.since}
               onSelect={handleDateFilterSelect}
@@ -345,26 +368,50 @@ export function ItemList(props: ItemListProps) {
               </label>
             </div>
             <Show when={!isReadOnly()}>
-              <div class={flex({ gap: "2", alignItems: "center" })}>
-                <input
-                  id="select-all-checkbox"
-                  type="checkbox"
-                  checked={isAllSelected()}
-                  onChange={(e) => handleToggleAll(e.currentTarget.checked)}
-                  class={css({ cursor: "pointer" })}
-                />
-                <label
-                  for="select-all-checkbox"
-                  class={css({
-                    fontSize: "sm",
-                    color: "gray.600",
-                    cursor: "pointer",
-                    whiteSpace: "nowrap",
-                  })}
-                >
-                  Select All
-                </label>
-              </div>
+              <Loading
+                fallback={
+                  <div class={flex({ gap: "2", alignItems: "center" })}>
+                    <input
+                      id="select-all-checkbox"
+                      type="checkbox"
+                      disabled={true}
+                      class={css({ cursor: "not-allowed" })}
+                    />
+                    <label
+                      for="select-all-checkbox"
+                      class={css({
+                        fontSize: "sm",
+                        color: "gray.600",
+                        cursor: "not-allowed",
+                        whiteSpace: "nowrap",
+                      })}
+                    >
+                      Select All
+                    </label>
+                  </div>
+                }
+              >
+                <div class={flex({ gap: "2", alignItems: "center" })}>
+                  <input
+                    id="select-all-checkbox"
+                    type="checkbox"
+                    checked={isAllSelected()}
+                    onChange={(e) => handleToggleAll(e.currentTarget.checked)}
+                    class={css({ cursor: "pointer" })}
+                  />
+                  <label
+                    for="select-all-checkbox"
+                    class={css({
+                      fontSize: "sm",
+                      color: "gray.600",
+                      cursor: "pointer",
+                      whiteSpace: "nowrap",
+                    })}
+                  >
+                    Select All
+                  </label>
+                </div>
+              </Loading>
             </Show>
           </div>
 
@@ -432,33 +479,56 @@ export function ItemList(props: ItemListProps) {
                     gap: "1",
                   })}
                 >
-                  <button
-                    type="button"
-                    onClick={() => {
-                      handleClearReadItems();
-                      setShowMoreActions(false);
-                    }}
-                    disabled={!filteredItems().some((item) => item.isRead)}
-                    class={css({
-                      display: "flex",
-                      alignItems: "center",
-                      px: "3",
-                      py: "2",
-                      fontSize: "sm",
-                      color: "gray.700",
-                      borderRadius: "sm",
-                      textAlign: "left",
-                      cursor: "pointer",
-                      _hover: { bg: "gray.50" },
-                      _disabled: {
-                        opacity: 0.5,
-                        cursor: "not-allowed",
-                        _hover: { bg: "transparent" },
-                      },
-                    })}
+                  <Loading
+                    fallback={
+                      <button
+                        type="button"
+                        disabled={true}
+                        class={css({
+                          display: "flex",
+                          alignItems: "center",
+                          px: "3",
+                          py: "2",
+                          fontSize: "sm",
+                          color: "gray.700",
+                          borderRadius: "sm",
+                          textAlign: "left",
+                          cursor: "not-allowed",
+                          opacity: 0.5,
+                        })}
+                      >
+                        Clear Read Items
+                      </button>
+                    }
                   >
-                    Clear Read Items
-                  </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleClearReadItems();
+                        setShowMoreActions(false);
+                      }}
+                      disabled={!filteredItems().some((item) => item.isRead)}
+                      class={css({
+                        display: "flex",
+                        alignItems: "center",
+                        px: "3",
+                        py: "2",
+                        fontSize: "sm",
+                        color: "gray.700",
+                        borderRadius: "sm",
+                        textAlign: "left",
+                        cursor: "pointer",
+                        _hover: { bg: "gray.50" },
+                        _disabled: {
+                          opacity: 0.5,
+                          cursor: "not-allowed",
+                          _hover: { bg: "transparent" },
+                        },
+                      })}
+                    >
+                      Clear Read Items
+                    </button>
+                  </Loading>
                   <label
                     class={css({
                       display: "flex",
@@ -484,30 +554,56 @@ export function ItemList(props: ItemListProps) {
                     <span>Show Read</span>
                   </label>
                   <Show when={!isReadOnly()}>
-                    <label
-                      class={css({
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "2",
-                        px: "3",
-                        py: "2",
-                        fontSize: "sm",
-                        color: "gray.700",
-                        borderRadius: "sm",
-                        cursor: "pointer",
-                        _hover: { bg: "gray.50" },
-                      })}
+                    <Loading
+                      fallback={
+                        <label
+                          class={css({
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "2",
+                            px: "3",
+                            py: "2",
+                            fontSize: "sm",
+                            color: "gray.700",
+                            borderRadius: "sm",
+                            cursor: "not-allowed",
+                            opacity: 0.5,
+                          })}
+                        >
+                          <input
+                            type="checkbox"
+                            disabled={true}
+                            class={css({ cursor: "pointer" })}
+                          />
+                          <span>Select All</span>
+                        </label>
+                      }
                     >
-                      <input
-                        type="checkbox"
-                        checked={isAllSelected()}
-                        onChange={(e) => {
-                          handleToggleAll(e.currentTarget.checked);
-                        }}
-                        class={css({ cursor: "pointer" })}
-                      />
-                      <span>Select All</span>
-                    </label>
+                      <label
+                        class={css({
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "2",
+                          px: "3",
+                          py: "2",
+                          fontSize: "sm",
+                          color: "gray.700",
+                          borderRadius: "sm",
+                          cursor: "pointer",
+                          _hover: { bg: "gray.50" },
+                        })}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isAllSelected()}
+                          onChange={(e) => {
+                            handleToggleAll(e.currentTarget.checked);
+                          }}
+                          class={css({ cursor: "pointer" })}
+                        />
+                        <span>Select All</span>
+                      </label>
+                    </Loading>
                   </Show>
                 </div>
               </Show>
@@ -535,44 +631,38 @@ export function ItemList(props: ItemListProps) {
   );
 
   const listBody = (
-    <div
-      class={stack({
-        gap: "4",
-        padding: "0",
-        paddingBottom: selectedItemIds().size > 0 ? "24" : "0",
-      })}
-    >
-      <div class={stack({ gap: "2", padding: "0" })}>
-        <For each={filteredItems()}>
-          {(item) => (
-            <ItemRow
-              item={item}
-              onClick={() => handleItemClick(item.id)}
-              selected={
-                isReadOnly() ? undefined : selectedItemIds().has(item.id)
-              }
-              onToggleSelection={
-                isReadOnly()
-                  ? undefined
-                  : (selected) => handleToggleItem(item.id, selected)
-              }
-            />
-          )}
-        </For>
-      </div>
-
-      <Show when={itemsQuery.isLoading}>
-        <div
-          class={css({ textAlign: "center", padding: "8", color: "gray.500" })}
-        >
-          Loading items...
+    <Loading fallback={<LoadingState label="Loading items..." />}>
+      <div
+        class={stack({
+          gap: "4",
+          padding: "0",
+          paddingBottom: selectedItemIds().size > 0 ? "24" : "0",
+        })}
+      >
+        <div class={stack({ gap: "2", padding: "0" })}>
+          <For each={filteredItems()}>
+            {(item) => (
+              <ItemRow
+                item={item}
+                onClick={() => handleItemClick(item.id)}
+                selected={
+                  isReadOnly() ? undefined : selectedItemIds().has(item.id)
+                }
+                onToggleSelection={
+                  isReadOnly()
+                    ? undefined
+                    : (selected) => handleToggleItem(item.id, selected)
+                }
+              />
+            )}
+          </For>
         </div>
-      </Show>
 
-      <Show when={!itemsQuery.isLoading && filteredItems().length === 0}>
-        <EmptyState title="No items found." />
-      </Show>
-    </div>
+        <Show when={filteredItems().length === 0}>
+          <EmptyState title="No items found." />
+        </Show>
+      </div>
+    </Loading>
   );
 
   return (

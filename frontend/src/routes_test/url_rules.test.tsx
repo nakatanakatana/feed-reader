@@ -145,4 +145,45 @@ describe("URL Rules Page", () => {
 
     await expect.element(page.getByText("example.com")).not.toBeInTheDocument();
   });
+
+  it("displays LoadingState while rules are fetching", async () => {
+    let resolveRulesPromise: () => void;
+    const rulesPromise = new Promise<void>((resolve) => {
+      resolveRulesPromise = resolve;
+    });
+
+    worker.use(
+      http.get("*/api/v2/url-rules", async () => {
+        await rulesPromise;
+        return HttpResponse.json({ rules: [] });
+      }),
+    );
+
+    const history = createMemoryHistory({ initialEntries: ["/url-rules"] });
+    const router = createRouter({ routeTree, history });
+
+    dispose = render(
+      () => (
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
+      ),
+      document.body,
+    );
+
+    // Form is mounted immediately
+    await expect
+      .element(page.getByRole("button", { name: "Add" }))
+      .toBeInTheDocument();
+
+    // LoadingState is rendered
+    await expect
+      .element(page.getByText("Loading rules..."))
+      .toBeInTheDocument();
+
+    resolveRulesPromise!();
+    await expect
+      .element(page.getByText("Loading rules..."))
+      .not.toBeInTheDocument();
+  });
 });

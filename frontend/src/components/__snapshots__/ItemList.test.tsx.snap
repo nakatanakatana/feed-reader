@@ -582,8 +582,6 @@ exports[`ItemList > displays a list of items 1`] = `
                 </div>
               </div>
             </div>
-            <!---->
-            <!---->
           </div>
         </div>
         <!---->
@@ -907,7 +905,6 @@ exports[`ItemList > renders empty state when no items 1`] = `
             <div
               class="d_flex flex-d_column gap_2 p_0"
             />
-            <!---->
             <div
               class="d_flex ai_center jc_center bd_1px_dashed bd-c_gray.200 bdr_md p_6 ta_center c_gray.600"
             >
@@ -923,7 +920,6 @@ exports[`ItemList > renders empty state when no items 1`] = `
                 <!---->
               </div>
             </div>
-            <!---->
           </div>
         </div>
         <!---->
