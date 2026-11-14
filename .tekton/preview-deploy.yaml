@@ -1,0 +1,84 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: feed-reader-preview-deploy
+  annotations:
+    pipelinesascode.tekton.dev/on-cel-expression: |
+      event == "pull_request" &&
+      body.action in ["labeled", "synchronize", "reopened"] &&
+      body.pull_request.head.repo.full_name == body.repository.full_name &&
+      body.pull_request.labels.exists(l, l.name == "preview")
+    pipelinesascode.tekton.dev/task: "[preview-build-push, preview-deploy]"
+    pipelinesascode.tekton.dev/max-keep-runs: "3"
+spec:
+  params:
+    - name: repo_url
+      value: "{{repo_url}}"
+    - name: revision
+      value: "{{revision}}"
+    - name: pull_request_number
+      value: "{{pull_request_number}}"
+  pipelineSpec:
+    workspaces:
+      - name: source
+    tasks:
+      - name: fetch-repository
+        taskRef:
+          name: git-clone
+        workspaces:
+          - name: output
+            workspace: source
+        params:
+          - name: url
+            value: $(params.repo_url)
+          - name: revision
+            value: $(params.revision)
+
+      - name: build-push
+        runAfter:
+          - fetch-repository
+        taskRef:
+          name: preview-build-push
+        workspaces:
+          - name: source
+            workspace: source
+        params:
+          - name: APP_NAME
+            value: feed-reader
+          - name: PR_NUMBER
+            value: $(params.pull_request_number)
+          - name: COMMIT_SHA
+            value: $(params.revision)
+
+      - name: deploy
+        runAfter:
+          - build-push
+        taskRef:
+          name: preview-deploy
+        workspaces:
+          - name: source
+            workspace: source
+        params:
+          - name: APP_NAME
+            value: feed-reader
+          - name: PR_NUMBER
+            value: $(params.pull_request_number)
+          - name: COMMIT_SHA
+            value: $(params.revision)
+          - name: REPO_FULL_NAME
+            value: "{{repo_owner}}/{{repo_name}}"
+          - name: EXPOSE_HTTP
+            value: "true"
+          - name: PORT
+            value: "8080"
+          - name: LITESTREAM_INJECT
+            value: feed-reader-db-preview
+  workspaces:
+    - name: source
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Gi
