@@ -1,5 +1,21 @@
 # Changelog
 
+## [v0.27.2](https://github.com/nakatanakatana/feed-reader/compare/v0.27.1...v0.27.2) - 2026-11-19
+
+### Maintenance & Others
+- fix(deps): update module github.com/nakatanakatana/mytools to v0.12.6 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1281
+- chore(deps): update dependency jsdom to v31.0.1 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1285
+- chore(deps): update dependency aquaproj/aqua-registry to v4.588.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1288
+- chore(deps): update dependency playwright to v1.65.1 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1286
+- fix(deps): update dependency postcss to v8.5.33 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1287
+- chore(deps): update dependency moznion/cccc to v1.9.2 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1290
+- chore(deps): update dependency msw to v3.0.6 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1291
+- chore(deps): update dependency k1low/mo to v1.8.2 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1289
+- chore(deps): update dependency aquaproj/aqua-registry to v4.589.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1292
+- chore(deps): update golang:1.27-alpine docker digest to 70bd7dd by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1284
+- chore(deps): update dependency oxfmt to ^0.79.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1294
+- chore(deps): update dependency oxlint to v1.94.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1295
+
 ## [v0.27.1](https://github.com/nakatanakatana/feed-reader/compare/v0.27.0...v0.27.1) - 2026-11-15
 
 ### Maintenance & Others
