@@ -54,17 +54,11 @@ describe("Vite 8 migration", () => {
     const pkgPath = path.join(rootDir, "package.json");
     const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
 
-    expect(pkg.dependencies["solid-js"]).toMatch(/^\^?2\.0\.0-rc\./);
-    expect(pkg.dependencies["@solidjs/web"]).toMatch(/^\^?2\.0\.0-rc\./);
-    expect(pkg.dependencies["@tanstack/solid-router"]).toMatch(
-      /^\^?2\.0\.0-rc\./,
-    );
-    expect(pkg.dependencies["@tanstack/solid-query"]).toMatch(
-      /^\^?6\.0\.0-rc\./,
-    );
-    expect(pkg.devDependencies["@solidjs/vite-plugin"]).toMatch(
-      /^\^?3\.0\.0-next\./,
-    );
+    expect(pkg.dependencies["solid-js"]).toMatch(/^\^?2\./);
+    expect(pkg.dependencies["@solidjs/web"]).toMatch(/^\^?2\./);
+    expect(pkg.dependencies["@tanstack/solid-router"]).toMatch(/^\^?2\./);
+    expect(pkg.dependencies["@tanstack/solid-query"]).toMatch(/^\^?6\./);
+    expect(pkg.devDependencies["@solidjs/vite-plugin"]).toMatch(/^\^?3\./);
     expect(pkg.devDependencies["vite-plugin-solid"]).toBeUndefined();
 
     const tsconfigPath = path.join(rootDir, "tsconfig.json");

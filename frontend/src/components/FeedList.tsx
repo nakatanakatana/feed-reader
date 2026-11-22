@@ -50,6 +50,9 @@ export function FeedList() {
   const [isManageModalOpen, setIsManageModalOpen] = createSignal(false);
   const [isManageIgnoreWindowsModalOpen, setIsManageIgnoreWindowsModalOpen] =
     createSignal(false);
+  const [selectAllRef, setSelectAllRef] = createSignal<
+    HTMLInputElement | undefined
+  >(undefined);
   let tagSelectRef: HTMLSelectElement | undefined;
 
   const feedsQuery = useQuery(() => feedsQueryOptions);
@@ -165,6 +168,22 @@ export function FeedList() {
     ).length;
     return selectedCount > 0 && selectedCount < visibleFeeds.length;
   };
+
+  createEffect(
+    () => {
+      const el = selectAllRef();
+      if (!el) return { el: undefined, indeterminate: false };
+      return {
+        el,
+        indeterminate: isIndeterminate(),
+      };
+    },
+    ({ el, indeterminate }) => {
+      if (el) {
+        el.indeterminate = indeterminate;
+      }
+    },
+  );
 
   const toggleSelectAll = () => {
     const visibleFeeds = feedList();
@@ -287,12 +306,7 @@ export function FeedList() {
                   aria-label="Select all visible feeds"
                   checked={allVisibleSelected()}
                   ref={(el) => {
-                    createEffect(
-                      () => isIndeterminate(),
-                      (indeterminate) => {
-                        el.indeterminate = indeterminate;
-                      },
-                    );
+                    setSelectAllRef(el);
                   }}
                   onChange={() => toggleSelectAll()}
                   class={css({ cursor: "pointer" })}
