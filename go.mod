@@ -11,7 +11,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/hashicorp/go-retryablehttp v0.7.8
 	github.com/mmcdole/gofeed v1.5.0
-	github.com/nakatanakatana/mytools v0.13.1
+	github.com/nakatanakatana/mytools v0.13.3
 	github.com/ncruces/go-sqlite3 v0.38.0
 	github.com/oapi-codegen/runtime v1.9.1
 	github.com/sqldef/sqldef/v3 v3.11.30
@@ -23,7 +23,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.47.0
 	golang.org/x/sync v0.25.0
 	gotest.tools/v3 v3.5.2
-	modernc.org/sqlite v1.62.0
+	modernc.org/sqlite v1.63.0
 	pgregory.net/rapid v1.3.0
 )
 
