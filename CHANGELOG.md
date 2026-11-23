@@ -1,5 +1,42 @@
 # Changelog
 
+## [v0.27.2](https://github.com/nakatanakatana/feed-reader/compare/v0.27.1...v0.27.2) - 2026-11-23
+
+### Maintenance & Others
+- fix(deps): update module github.com/nakatanakatana/mytools to v0.12.6 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1281
+- chore(deps): update dependency jsdom to v31.0.1 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1285
+- chore(deps): update dependency aquaproj/aqua-registry to v4.588.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1288
+- chore(deps): update dependency playwright to v1.65.1 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1286
+- fix(deps): update dependency postcss to v8.5.33 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1287
+- chore(deps): update dependency moznion/cccc to v1.9.2 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1290
+- chore(deps): update dependency msw to v3.0.6 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1291
+- chore(deps): update dependency k1low/mo to v1.8.2 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1289
+- chore(deps): update dependency aquaproj/aqua-registry to v4.589.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1292
+- chore(deps): update golang:1.27-alpine docker digest to 70bd7dd by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1284
+- chore(deps): update dependency oxfmt to ^0.79.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1294
+- chore(deps): update dependency oxlint to v1.94.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1295
+- chore(deps): update dependency fast-check to v4.10.3 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1296
+- chore(deps): update vitest monorepo to v5.1.1 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1299
+- chore(deps): update dependency goreleaser/goreleaser to v2.20.3 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1297
+- fix(deps): update module github.com/oapi-codegen/runtime to v1.9.1 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1301
+- chore(deps): update dependency msw to v3.0.7 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1298
+- chore(deps): update dependency eslint-plugin-solid to v0.20.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1303
+- chore(deps): update dependency aquaproj/aqua-registry to v4.590.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1302
+- fix(deps): update module github.com/ncruces/go-sqlite3 to v0.38.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1304
+- chore(deps): update dependency moznion/cccc to v1.10.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1305
+- chore(deps): update dependency @msw/data to v1.1.9 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1306
+- fix(deps): update dependency @tanstack/solid-router to v2.0.0-rc.11 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1307
+- chore(deps): update dependency aquaproj/aqua-registry to v4.591.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1308
+- fix(deps): update module github.com/nakatanakatana/mytools to v0.13.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1309
+- fix(deps): update module github.com/nakatanakatana/mytools to v0.13.1 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1310
+- fix(deps): update module github.com/nakatanakatana/mytools to v0.13.3 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1313
+- chore(deps): update panda-css monorepo to v2.6.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1314
+- fix(deps): update module modernc.org/sqlite to v1.63.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1315
+- chore(deps): update aquaproj/aqua-installer action to v4.1.2 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1316
+- fix preview by @nakatanakatana in https://github.com/nakatanakatana/feed-reader/pull/1312
+- fix(frontend): avoid createEffect in ref callback and accept stable Solid 2.0 versions by @nakatanakatana in https://github.com/nakatanakatana/feed-reader/pull/1311
+- fix(deps): update solidjs by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1293
+
 ## [v0.27.1](https://github.com/nakatanakatana/feed-reader/compare/v0.27.0...v0.27.1) - 2026-11-15
 
 ### Maintenance & Others
