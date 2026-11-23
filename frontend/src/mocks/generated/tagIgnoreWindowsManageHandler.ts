@@ -3,13 +3,13 @@
  * Do not edit manually.
  */
 
+import type { MswBody } from "../../lib/api/.kubb/mswBody";
 import type {
   TagIgnoreWindowsManageResponse,
   TagIgnoreWindowsManageStatus500,
   TagIgnoreWindowsManageBody,
 } from "../../lib/api/types-generated";
 import type { HttpResponseResolver } from "msw/http";
-import type { DefaultBodyType } from "msw";
 import { http, HttpResponse } from "msw/http";
 
 export function tagIgnoreWindowsManageHandlerResponse200(
@@ -21,7 +21,7 @@ export function tagIgnoreWindowsManageHandlerResponse200(
 }
 
 export function tagIgnoreWindowsManageHandlerResponse500(
-  data: TagIgnoreWindowsManageStatus500,
+  data?: TagIgnoreWindowsManageStatus500,
 ) {
   return new HttpResponse<string>(JSON.stringify(data), {
     status: 500,
@@ -40,18 +40,11 @@ export function tagIgnoreWindowsManageHandler(
     | object
     | HttpResponseResolver<
         Record<string, string>,
-        TagIgnoreWindowsManageBody extends DefaultBodyType
-          ? TagIgnoreWindowsManageBody
-          : DefaultBodyType
+        MswBody<TagIgnoreWindowsManageBody>
       >,
   options?: { baseURL?: string },
 ) {
-  return http.post<
-    Record<string, string>,
-    TagIgnoreWindowsManageBody extends DefaultBodyType
-      ? TagIgnoreWindowsManageBody
-      : DefaultBodyType
-  >(
+  return http.post<Record<string, string>, MswBody<TagIgnoreWindowsManageBody>>(
     `${options?.baseURL ?? "*/api/v2"}/tag-ignore-windows/manage`,
     function handler(info) {
       if (typeof data === "function") return data(info);

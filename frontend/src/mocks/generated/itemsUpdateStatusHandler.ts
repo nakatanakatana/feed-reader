@@ -3,13 +3,13 @@
  * Do not edit manually.
  */
 
+import type { MswBody } from "../../lib/api/.kubb/mswBody";
 import type {
   ItemsUpdateStatusResponse,
   ItemsUpdateStatusStatus500,
   ItemsUpdateStatusBody,
 } from "../../lib/api/types-generated";
 import type { HttpResponseResolver } from "msw/http";
-import type { DefaultBodyType } from "msw";
 import { http, HttpResponse } from "msw/http";
 
 export function itemsUpdateStatusHandlerResponse200(
@@ -21,7 +21,7 @@ export function itemsUpdateStatusHandlerResponse200(
 }
 
 export function itemsUpdateStatusHandlerResponse500(
-  data: ItemsUpdateStatusStatus500,
+  data?: ItemsUpdateStatusStatus500,
 ) {
   return new HttpResponse<string>(JSON.stringify(data), {
     status: 500,
@@ -40,22 +40,18 @@ export function itemsUpdateStatusHandler(
     | object
     | HttpResponseResolver<
         Record<string, string>,
-        ItemsUpdateStatusBody extends DefaultBodyType
-          ? ItemsUpdateStatusBody
-          : DefaultBodyType
+        MswBody<ItemsUpdateStatusBody>
       >,
   options?: { baseURL?: string },
 ) {
-  return http.post<
-    Record<string, string>,
-    ItemsUpdateStatusBody extends DefaultBodyType
-      ? ItemsUpdateStatusBody
-      : DefaultBodyType
-  >(`${options?.baseURL ?? "*/api/v2"}/items/status`, function handler(info) {
-    if (typeof data === "function") return data(info);
+  return http.post<Record<string, string>, MswBody<ItemsUpdateStatusBody>>(
+    `${options?.baseURL ?? "*/api/v2"}/items/status`,
+    function handler(info) {
+      if (typeof data === "function") return data(info);
 
-    return new HttpResponse<string>(JSON.stringify(data), {
-      status: 200,
-    });
-  });
+      return new HttpResponse<string>(JSON.stringify(data), {
+        status: 200,
+      });
+    },
+  );
 }

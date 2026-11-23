@@ -15,7 +15,7 @@ export function feedsDeleteHandlerResponse200(data?: FeedsDeleteResponse) {
   });
 }
 
-export function feedsDeleteHandlerResponse500(data: FeedsDeleteStatus500) {
+export function feedsDeleteHandlerResponse500(data?: FeedsDeleteStatus500) {
   return new HttpResponse<string>(JSON.stringify(data), {
     status: 500,
     headers: {

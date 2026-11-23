@@ -3,17 +3,17 @@
  * Do not edit manually.
  */
 
+import type { MswBody } from "../../lib/api/.kubb/mswBody";
 import type {
   IgnoreWindowsUpdateResponse,
   IgnoreWindowsUpdateStatus500,
   IgnoreWindowsUpdateBody,
 } from "../../lib/api/types-generated";
 import type { HttpResponseResolver } from "msw/http";
-import type { DefaultBodyType } from "msw";
 import { http, HttpResponse } from "msw/http";
 
 export function ignoreWindowsUpdateHandlerResponse200(
-  data: IgnoreWindowsUpdateResponse,
+  data?: IgnoreWindowsUpdateResponse,
 ) {
   return new HttpResponse<string>(JSON.stringify(data), {
     status: 200,
@@ -24,7 +24,7 @@ export function ignoreWindowsUpdateHandlerResponse200(
 }
 
 export function ignoreWindowsUpdateHandlerResponse500(
-  data: IgnoreWindowsUpdateStatus500,
+  data?: IgnoreWindowsUpdateStatus500,
 ) {
   return new HttpResponse<string>(JSON.stringify(data), {
     status: 500,
@@ -39,28 +39,16 @@ export function ignoreWindowsUpdateHandler(
     | IgnoreWindowsUpdateResponse
     | HttpResponseResolver<
         Record<string, string>,
-        IgnoreWindowsUpdateBody extends DefaultBodyType
-          ? IgnoreWindowsUpdateBody
-          : DefaultBodyType
+        MswBody<IgnoreWindowsUpdateBody>
       >,
   options?: { baseURL?: string },
 ) {
-  return http.put<
-    Record<string, string>,
-    IgnoreWindowsUpdateBody extends DefaultBodyType
-      ? IgnoreWindowsUpdateBody
-      : DefaultBodyType
-  >(
+  return http.put<Record<string, string>, MswBody<IgnoreWindowsUpdateBody>>(
     `${options?.baseURL ?? "*/api/v2"}/ignore-windows/:id`,
     function handler(info) {
       if (typeof data === "function") return data(info);
 
-      return new HttpResponse<string>(JSON.stringify(data), {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      return ignoreWindowsUpdateHandlerResponse200(data);
     },
   );
 }

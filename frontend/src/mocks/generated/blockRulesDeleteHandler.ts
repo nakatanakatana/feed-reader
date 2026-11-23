@@ -18,7 +18,7 @@ export function blockRulesDeleteHandlerResponse200(
 }
 
 export function blockRulesDeleteHandlerResponse500(
-  data: BlockRulesDeleteStatus500,
+  data?: BlockRulesDeleteStatus500,
 ) {
   return new HttpResponse<string>(JSON.stringify(data), {
     status: 500,

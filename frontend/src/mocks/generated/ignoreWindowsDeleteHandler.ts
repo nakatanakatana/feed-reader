@@ -18,7 +18,7 @@ export function ignoreWindowsDeleteHandlerResponse200(
 }
 
 export function ignoreWindowsDeleteHandlerResponse500(
-  data: IgnoreWindowsDeleteStatus500,
+  data?: IgnoreWindowsDeleteStatus500,
 ) {
   return new HttpResponse<string>(JSON.stringify(data), {
     status: 500,

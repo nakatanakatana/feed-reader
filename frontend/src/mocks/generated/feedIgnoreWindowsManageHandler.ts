@@ -3,13 +3,13 @@
  * Do not edit manually.
  */
 
+import type { MswBody } from "../../lib/api/.kubb/mswBody";
 import type {
   FeedIgnoreWindowsManageResponse,
   FeedIgnoreWindowsManageStatus500,
   FeedIgnoreWindowsManageBody,
 } from "../../lib/api/types-generated";
 import type { HttpResponseResolver } from "msw/http";
-import type { DefaultBodyType } from "msw";
 import { http, HttpResponse } from "msw/http";
 
 export function feedIgnoreWindowsManageHandlerResponse200(
@@ -21,7 +21,7 @@ export function feedIgnoreWindowsManageHandlerResponse200(
 }
 
 export function feedIgnoreWindowsManageHandlerResponse500(
-  data: FeedIgnoreWindowsManageStatus500,
+  data?: FeedIgnoreWindowsManageStatus500,
 ) {
   return new HttpResponse<string>(JSON.stringify(data), {
     status: 500,
@@ -40,17 +40,13 @@ export function feedIgnoreWindowsManageHandler(
     | object
     | HttpResponseResolver<
         Record<string, string>,
-        FeedIgnoreWindowsManageBody extends DefaultBodyType
-          ? FeedIgnoreWindowsManageBody
-          : DefaultBodyType
+        MswBody<FeedIgnoreWindowsManageBody>
       >,
   options?: { baseURL?: string },
 ) {
   return http.post<
     Record<string, string>,
-    FeedIgnoreWindowsManageBody extends DefaultBodyType
-      ? FeedIgnoreWindowsManageBody
-      : DefaultBodyType
+    MswBody<FeedIgnoreWindowsManageBody>
   >(
     `${options?.baseURL ?? "*/api/v2"}/feed-ignore-windows/manage`,
     function handler(info) {

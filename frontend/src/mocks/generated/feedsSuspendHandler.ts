@@ -3,13 +3,13 @@
  * Do not edit manually.
  */
 
+import type { MswBody } from "../../lib/api/.kubb/mswBody";
 import type {
   FeedsSuspendResponse,
   FeedsSuspendStatus500,
   FeedsSuspendBody,
 } from "../../lib/api/types-generated";
 import type { HttpResponseResolver } from "msw/http";
-import type { DefaultBodyType } from "msw";
 import { http, HttpResponse } from "msw/http";
 
 export function feedsSuspendHandlerResponse200(data?: FeedsSuspendResponse) {
@@ -18,7 +18,7 @@ export function feedsSuspendHandlerResponse200(data?: FeedsSuspendResponse) {
   });
 }
 
-export function feedsSuspendHandlerResponse500(data: FeedsSuspendStatus500) {
+export function feedsSuspendHandlerResponse500(data?: FeedsSuspendStatus500) {
   return new HttpResponse<string>(JSON.stringify(data), {
     status: 500,
     headers: {
@@ -34,24 +34,17 @@ export function feedsSuspendHandler(
     | boolean
     | null
     | object
-    | HttpResponseResolver<
-        Record<string, string>,
-        FeedsSuspendBody extends DefaultBodyType
-          ? FeedsSuspendBody
-          : DefaultBodyType
-      >,
+    | HttpResponseResolver<Record<string, string>, MswBody<FeedsSuspendBody>>,
   options?: { baseURL?: string },
 ) {
-  return http.post<
-    Record<string, string>,
-    FeedsSuspendBody extends DefaultBodyType
-      ? FeedsSuspendBody
-      : DefaultBodyType
-  >(`${options?.baseURL ?? "*/api/v2"}/feeds/suspend`, function handler(info) {
-    if (typeof data === "function") return data(info);
+  return http.post<Record<string, string>, MswBody<FeedsSuspendBody>>(
+    `${options?.baseURL ?? "*/api/v2"}/feeds/suspend`,
+    function handler(info) {
+      if (typeof data === "function") return data(info);
 
-    return new HttpResponse<string>(JSON.stringify(data), {
-      status: 200,
-    });
-  });
+      return new HttpResponse<string>(JSON.stringify(data), {
+        status: 200,
+      });
+    },
+  );
 }
