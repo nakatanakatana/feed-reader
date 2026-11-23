@@ -18,7 +18,7 @@ export function URLRulesDeleteHandlerResponse200(
 }
 
 export function URLRulesDeleteHandlerResponse500(
-  data: URLRulesDeleteStatus500,
+  data?: URLRulesDeleteStatus500,
 ) {
   return new HttpResponse<string>(JSON.stringify(data), {
     status: 500,

@@ -3,16 +3,16 @@
  * Do not edit manually.
  */
 
+import type { MswBody } from "../../lib/api/.kubb/mswBody";
 import type {
   FeedsCreateResponse,
   FeedsCreateStatus500,
   FeedsCreateBody,
 } from "../../lib/api/types-generated";
 import type { HttpResponseResolver } from "msw/http";
-import type { DefaultBodyType } from "msw";
 import { http, HttpResponse } from "msw/http";
 
-export function feedsCreateHandlerResponse200(data: FeedsCreateResponse) {
+export function feedsCreateHandlerResponse200(data?: FeedsCreateResponse) {
   return new HttpResponse<string>(JSON.stringify(data), {
     status: 200,
     headers: {
@@ -21,7 +21,7 @@ export function feedsCreateHandlerResponse200(data: FeedsCreateResponse) {
   });
 }
 
-export function feedsCreateHandlerResponse500(data: FeedsCreateStatus500) {
+export function feedsCreateHandlerResponse500(data?: FeedsCreateStatus500) {
   return new HttpResponse<string>(JSON.stringify(data), {
     status: 500,
     headers: {
@@ -33,25 +33,15 @@ export function feedsCreateHandlerResponse500(data: FeedsCreateStatus500) {
 export function feedsCreateHandler(
   data?:
     | FeedsCreateResponse
-    | HttpResponseResolver<
-        Record<string, string>,
-        FeedsCreateBody extends DefaultBodyType
-          ? FeedsCreateBody
-          : DefaultBodyType
-      >,
+    | HttpResponseResolver<Record<string, string>, MswBody<FeedsCreateBody>>,
   options?: { baseURL?: string },
 ) {
-  return http.post<
-    Record<string, string>,
-    FeedsCreateBody extends DefaultBodyType ? FeedsCreateBody : DefaultBodyType
-  >(`${options?.baseURL ?? "*/api/v2"}/feeds`, function handler(info) {
-    if (typeof data === "function") return data(info);
+  return http.post<Record<string, string>, MswBody<FeedsCreateBody>>(
+    `${options?.baseURL ?? "*/api/v2"}/feeds`,
+    function handler(info) {
+      if (typeof data === "function") return data(info);
 
-    return new HttpResponse<string>(JSON.stringify(data), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  });
+      return feedsCreateHandlerResponse200(data);
+    },
+  );
 }

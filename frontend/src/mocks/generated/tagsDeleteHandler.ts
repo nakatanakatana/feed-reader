@@ -15,7 +15,7 @@ export function tagsDeleteHandlerResponse200(data?: TagsDeleteResponse) {
   });
 }
 
-export function tagsDeleteHandlerResponse500(data: TagsDeleteStatus500) {
+export function tagsDeleteHandlerResponse500(data?: TagsDeleteStatus500) {
   return new HttpResponse<string>(JSON.stringify(data), {
     status: 500,
     headers: {

@@ -9,7 +9,7 @@ import type {
 } from "../../lib/api/types-generated";
 import { http, HttpResponse } from "msw/http";
 
-export function itemReadsListHandlerResponse200(data: ItemReadsListResponse) {
+export function itemReadsListHandlerResponse200(data?: ItemReadsListResponse) {
   return new HttpResponse<string>(JSON.stringify(data), {
     status: 200,
     headers: {
@@ -18,7 +18,7 @@ export function itemReadsListHandlerResponse200(data: ItemReadsListResponse) {
   });
 }
 
-export function itemReadsListHandlerResponse500(data: ItemReadsListStatus500) {
+export function itemReadsListHandlerResponse500(data?: ItemReadsListStatus500) {
   return new HttpResponse<string>(JSON.stringify(data), {
     status: 500,
     headers: {
@@ -40,12 +40,7 @@ export function itemReadsListHandler(
     function handler(info) {
       if (typeof data === "function") return data(info);
 
-      return new HttpResponse<string>(JSON.stringify(data), {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      return itemReadsListHandlerResponse200(data);
     },
   );
 }

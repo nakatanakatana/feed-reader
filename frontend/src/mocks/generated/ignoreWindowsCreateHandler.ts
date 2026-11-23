@@ -3,17 +3,17 @@
  * Do not edit manually.
  */
 
+import type { MswBody } from "../../lib/api/.kubb/mswBody";
 import type {
   IgnoreWindowsCreateResponse,
   IgnoreWindowsCreateStatus500,
   IgnoreWindowsCreateBody,
 } from "../../lib/api/types-generated";
 import type { HttpResponseResolver } from "msw/http";
-import type { DefaultBodyType } from "msw";
 import { http, HttpResponse } from "msw/http";
 
 export function ignoreWindowsCreateHandlerResponse200(
-  data: IgnoreWindowsCreateResponse,
+  data?: IgnoreWindowsCreateResponse,
 ) {
   return new HttpResponse<string>(JSON.stringify(data), {
     status: 200,
@@ -24,7 +24,7 @@ export function ignoreWindowsCreateHandlerResponse200(
 }
 
 export function ignoreWindowsCreateHandlerResponse500(
-  data: IgnoreWindowsCreateStatus500,
+  data?: IgnoreWindowsCreateStatus500,
 ) {
   return new HttpResponse<string>(JSON.stringify(data), {
     status: 500,
@@ -39,25 +39,16 @@ export function ignoreWindowsCreateHandler(
     | IgnoreWindowsCreateResponse
     | HttpResponseResolver<
         Record<string, string>,
-        IgnoreWindowsCreateBody extends DefaultBodyType
-          ? IgnoreWindowsCreateBody
-          : DefaultBodyType
+        MswBody<IgnoreWindowsCreateBody>
       >,
   options?: { baseURL?: string },
 ) {
-  return http.post<
-    Record<string, string>,
-    IgnoreWindowsCreateBody extends DefaultBodyType
-      ? IgnoreWindowsCreateBody
-      : DefaultBodyType
-  >(`${options?.baseURL ?? "*/api/v2"}/ignore-windows`, function handler(info) {
-    if (typeof data === "function") return data(info);
+  return http.post<Record<string, string>, MswBody<IgnoreWindowsCreateBody>>(
+    `${options?.baseURL ?? "*/api/v2"}/ignore-windows`,
+    function handler(info) {
+      if (typeof data === "function") return data(info);
 
-    return new HttpResponse<string>(JSON.stringify(data), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  });
+      return ignoreWindowsCreateHandlerResponse200(data);
+    },
+  );
 }

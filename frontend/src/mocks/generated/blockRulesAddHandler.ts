@@ -3,13 +3,13 @@
  * Do not edit manually.
  */
 
+import type { MswBody } from "../../lib/api/.kubb/mswBody";
 import type {
   BlockRulesAddResponse,
   BlockRulesAddStatus500,
   BlockRulesAddBody,
 } from "../../lib/api/types-generated";
 import type { HttpResponseResolver } from "msw/http";
-import type { DefaultBodyType } from "msw";
 import { http, HttpResponse } from "msw/http";
 
 export function blockRulesAddHandlerResponse200(data?: BlockRulesAddResponse) {
@@ -18,7 +18,7 @@ export function blockRulesAddHandlerResponse200(data?: BlockRulesAddResponse) {
   });
 }
 
-export function blockRulesAddHandlerResponse500(data: BlockRulesAddStatus500) {
+export function blockRulesAddHandlerResponse500(data?: BlockRulesAddStatus500) {
   return new HttpResponse<string>(JSON.stringify(data), {
     status: 500,
     headers: {
@@ -34,24 +34,17 @@ export function blockRulesAddHandler(
     | boolean
     | null
     | object
-    | HttpResponseResolver<
-        Record<string, string>,
-        BlockRulesAddBody extends DefaultBodyType
-          ? BlockRulesAddBody
-          : DefaultBodyType
-      >,
+    | HttpResponseResolver<Record<string, string>, MswBody<BlockRulesAddBody>>,
   options?: { baseURL?: string },
 ) {
-  return http.post<
-    Record<string, string>,
-    BlockRulesAddBody extends DefaultBodyType
-      ? BlockRulesAddBody
-      : DefaultBodyType
-  >(`${options?.baseURL ?? "*/api/v2"}/block-rules`, function handler(info) {
-    if (typeof data === "function") return data(info);
+  return http.post<Record<string, string>, MswBody<BlockRulesAddBody>>(
+    `${options?.baseURL ?? "*/api/v2"}/block-rules`,
+    function handler(info) {
+      if (typeof data === "function") return data(info);
 
-    return new HttpResponse<string>(JSON.stringify(data), {
-      status: 200,
-    });
-  });
+      return new HttpResponse<string>(JSON.stringify(data), {
+        status: 200,
+      });
+    },
+  );
 }

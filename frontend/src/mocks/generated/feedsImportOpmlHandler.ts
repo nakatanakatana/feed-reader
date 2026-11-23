@@ -3,17 +3,17 @@
  * Do not edit manually.
  */
 
+import type { MswBody } from "../../lib/api/.kubb/mswBody";
 import type {
   FeedsImportOpmlResponse,
   FeedsImportOpmlStatus500,
   FeedsImportOpmlBody,
 } from "../../lib/api/types-generated";
 import type { HttpResponseResolver } from "msw/http";
-import type { DefaultBodyType } from "msw";
 import { http, HttpResponse } from "msw/http";
 
 export function feedsImportOpmlHandlerResponse200(
-  data: FeedsImportOpmlResponse,
+  data?: FeedsImportOpmlResponse,
 ) {
   return new HttpResponse<string>(JSON.stringify(data), {
     status: 200,
@@ -24,7 +24,7 @@ export function feedsImportOpmlHandlerResponse200(
 }
 
 export function feedsImportOpmlHandlerResponse500(
-  data: FeedsImportOpmlStatus500,
+  data?: FeedsImportOpmlStatus500,
 ) {
   return new HttpResponse<string>(JSON.stringify(data), {
     status: 500,
@@ -39,28 +39,16 @@ export function feedsImportOpmlHandler(
     | FeedsImportOpmlResponse
     | HttpResponseResolver<
         Record<string, string>,
-        FeedsImportOpmlBody extends DefaultBodyType
-          ? FeedsImportOpmlBody
-          : DefaultBodyType
+        MswBody<FeedsImportOpmlBody>
       >,
   options?: { baseURL?: string },
 ) {
-  return http.post<
-    Record<string, string>,
-    FeedsImportOpmlBody extends DefaultBodyType
-      ? FeedsImportOpmlBody
-      : DefaultBodyType
-  >(
+  return http.post<Record<string, string>, MswBody<FeedsImportOpmlBody>>(
     `${options?.baseURL ?? "*/api/v2"}/feeds/import-opml`,
     function handler(info) {
       if (typeof data === "function") return data(info);
 
-      return new HttpResponse<string>(JSON.stringify(data), {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      return feedsImportOpmlHandlerResponse200(data);
     },
   );
 }

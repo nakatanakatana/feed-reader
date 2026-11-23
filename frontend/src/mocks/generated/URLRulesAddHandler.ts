@@ -3,16 +3,16 @@
  * Do not edit manually.
  */
 
+import type { MswBody } from "../../lib/api/.kubb/mswBody";
 import type {
   URLRulesAddResponse,
   URLRulesAddStatus500,
   URLRulesAddBody,
 } from "../../lib/api/types-generated";
 import type { HttpResponseResolver } from "msw/http";
-import type { DefaultBodyType } from "msw";
 import { http, HttpResponse } from "msw/http";
 
-export function URLRulesAddHandlerResponse200(data: URLRulesAddResponse) {
+export function URLRulesAddHandlerResponse200(data?: URLRulesAddResponse) {
   return new HttpResponse<string>(JSON.stringify(data), {
     status: 200,
     headers: {
@@ -21,7 +21,7 @@ export function URLRulesAddHandlerResponse200(data: URLRulesAddResponse) {
   });
 }
 
-export function URLRulesAddHandlerResponse500(data: URLRulesAddStatus500) {
+export function URLRulesAddHandlerResponse500(data?: URLRulesAddStatus500) {
   return new HttpResponse<string>(JSON.stringify(data), {
     status: 500,
     headers: {
@@ -33,25 +33,15 @@ export function URLRulesAddHandlerResponse500(data: URLRulesAddStatus500) {
 export function URLRulesAddHandler(
   data?:
     | URLRulesAddResponse
-    | HttpResponseResolver<
-        Record<string, string>,
-        URLRulesAddBody extends DefaultBodyType
-          ? URLRulesAddBody
-          : DefaultBodyType
-      >,
+    | HttpResponseResolver<Record<string, string>, MswBody<URLRulesAddBody>>,
   options?: { baseURL?: string },
 ) {
-  return http.post<
-    Record<string, string>,
-    URLRulesAddBody extends DefaultBodyType ? URLRulesAddBody : DefaultBodyType
-  >(`${options?.baseURL ?? "*/api/v2"}/url-rules`, function handler(info) {
-    if (typeof data === "function") return data(info);
+  return http.post<Record<string, string>, MswBody<URLRulesAddBody>>(
+    `${options?.baseURL ?? "*/api/v2"}/url-rules`,
+    function handler(info) {
+      if (typeof data === "function") return data(info);
 
-    return new HttpResponse<string>(JSON.stringify(data), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  });
+      return URLRulesAddHandlerResponse200(data);
+    },
+  );
 }

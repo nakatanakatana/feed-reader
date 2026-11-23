@@ -3,13 +3,13 @@
  * Do not edit manually.
  */
 
+import type { MswBody } from "../../lib/api/.kubb/mswBody";
 import type {
   FeedTagsManageResponse,
   FeedTagsManageStatus500,
   FeedTagsManageBody,
 } from "../../lib/api/types-generated";
 import type { HttpResponseResolver } from "msw/http";
-import type { DefaultBodyType } from "msw";
 import { http, HttpResponse } from "msw/http";
 
 export function feedTagsManageHandlerResponse200(
@@ -21,7 +21,7 @@ export function feedTagsManageHandlerResponse200(
 }
 
 export function feedTagsManageHandlerResponse500(
-  data: FeedTagsManageStatus500,
+  data?: FeedTagsManageStatus500,
 ) {
   return new HttpResponse<string>(JSON.stringify(data), {
     status: 500,
@@ -38,20 +38,10 @@ export function feedTagsManageHandler(
     | boolean
     | null
     | object
-    | HttpResponseResolver<
-        Record<string, string>,
-        FeedTagsManageBody extends DefaultBodyType
-          ? FeedTagsManageBody
-          : DefaultBodyType
-      >,
+    | HttpResponseResolver<Record<string, string>, MswBody<FeedTagsManageBody>>,
   options?: { baseURL?: string },
 ) {
-  return http.post<
-    Record<string, string>,
-    FeedTagsManageBody extends DefaultBodyType
-      ? FeedTagsManageBody
-      : DefaultBodyType
-  >(
+  return http.post<Record<string, string>, MswBody<FeedTagsManageBody>>(
     `${options?.baseURL ?? "*/api/v2"}/feed-tags/manage`,
     function handler(info) {
       if (typeof data === "function") return data(info);

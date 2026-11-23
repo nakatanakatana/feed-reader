@@ -10,7 +10,7 @@ import type {
 import { http, HttpResponse } from "msw/http";
 
 export function feedIgnoreWindowsListHandlerResponse200(
-  data: FeedIgnoreWindowsListResponse,
+  data?: FeedIgnoreWindowsListResponse,
 ) {
   return new HttpResponse<string>(JSON.stringify(data), {
     status: 200,
@@ -21,7 +21,7 @@ export function feedIgnoreWindowsListHandlerResponse200(
 }
 
 export function feedIgnoreWindowsListHandlerResponse500(
-  data: FeedIgnoreWindowsListStatus500,
+  data?: FeedIgnoreWindowsListStatus500,
 ) {
   return new HttpResponse<string>(JSON.stringify(data), {
     status: 500,
@@ -44,12 +44,7 @@ export function feedIgnoreWindowsListHandler(
     function handler(info) {
       if (typeof data === "function") return data(info);
 
-      return new HttpResponse<string>(JSON.stringify(data), {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      return feedIgnoreWindowsListHandlerResponse200(data);
     },
   );
 }
