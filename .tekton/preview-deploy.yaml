@@ -22,6 +22,7 @@ spec:
   pipelineSpec:
     workspaces:
       - name: source
+      - name: buildkit-storage
     tasks:
       - name: fetch-repository
         taskRef:
@@ -50,6 +51,8 @@ spec:
         workspaces:
           - name: source
             workspace: source
+          - name: buildkit-storage
+            workspace: buildkit-storage
         params:
           - name: APP_NAME
             value: feed-reader
@@ -57,6 +60,8 @@ spec:
             value: $(params.pull_request_number)
           - name: COMMIT_SHA
             value: $(params.revision)
+          - name: TARGET
+            value: primary
 
       - name: deploy
         runAfter:
@@ -88,12 +93,26 @@ spec:
             value: "8080"
           - name: LITESTREAM_INJECT
             value: feed-reader-db-preview
+  taskRunTemplate:
+    podTemplate:
+      securityContext:
+        fsGroup: 1000
   workspaces:
     - name: source
       volumeClaimTemplate:
         spec:
+          storageClassName: rook-ceph-block
           accessModes:
             - ReadWriteOnce
           resources:
             requests:
               storage: 1Gi
+    - name: buildkit-storage
+      volumeClaimTemplate:
+        spec:
+          storageClassName: rook-ceph-block
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 10Gi
