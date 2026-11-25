@@ -1,6 +1,7 @@
 package primarydb
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"log/slog"
@@ -21,6 +22,10 @@ var (
 )
 
 func OpenDB(dsn string) (*sql.DB, error) {
+	return OpenDBContext(context.Background(), dsn)
+}
+
+func OpenDBContext(ctx context.Context, dsn string) (*sql.DB, error) {
 	otelOnce.Do(func() {
 		otelDriverName, otelRegisterErr = otelsql.Register("sqlite", otelsql.WithAttributes(semconv.DBSystemSqlite))
 	})
@@ -53,7 +58,7 @@ func OpenDB(dsn string) (*sql.DB, error) {
 	}
 
 	var enabled int
-	err = db.QueryRow("PRAGMA foreign_keys").Scan(&enabled)
+	err = db.QueryRowContext(ctx, "PRAGMA foreign_keys").Scan(&enabled)
 	if err != nil {
 		_ = db.Close()
 		return nil, fmt.Errorf("failed to check foreign_keys pragma: %w", err)
@@ -63,7 +68,7 @@ func OpenDB(dsn string) (*sql.DB, error) {
 		return nil, fmt.Errorf("foreign_keys pragma is not enabled via DSN")
 	}
 
-	rows, err := db.Query("PRAGMA foreign_key_check")
+	rows, err := db.QueryContext(ctx, "PRAGMA foreign_key_check")
 	if err != nil {
 		_ = db.Close()
 		return nil, fmt.Errorf("failed to run foreign_key_check: %w", err)
@@ -79,13 +84,14 @@ func OpenDB(dsn string) (*sql.DB, error) {
 		return nil, fmt.Errorf("failed to close foreign_key_check rows: %w", err)
 	}
 	if len(violations) > 0 {
-		records, err := recoverForeignKeyViolations(db, violations)
+		records, err := recoverForeignKeyViolations(ctx, db, violations)
 		if err != nil {
 			_ = db.Close()
 			return nil, err
 		}
 		for _, record := range records {
-			slog.Warn(
+			slog.WarnContext(
+				ctx,
 				"deleted record with foreign key violation",
 				"table", record.table,
 				"rowid", record.rowID,
@@ -133,8 +139,8 @@ type recordIdentifiers struct {
 	foreignKeyValues map[string]any
 }
 
-func recoverForeignKeyViolations(db *sql.DB, violations []foreignKeyViolation) (_ []recordIdentifiers, err error) {
-	tx, err := db.Begin()
+func recoverForeignKeyViolations(ctx context.Context, db *sql.DB, violations []foreignKeyViolation) (_ []recordIdentifiers, err error) {
+	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to begin foreign key recovery: %w", err)
 	}
@@ -156,7 +162,7 @@ func recoverForeignKeyViolations(db *sql.DB, violations []foreignKeyViolation) (
 
 	records := make([]recordIdentifiers, 0, len(keys))
 	for _, key := range keys {
-		record, readErr := readRecordIdentifiers(tx, grouped[key])
+		record, readErr := readRecordIdentifiers(ctx, tx, grouped[key])
 		if readErr != nil {
 			return nil, fmt.Errorf("failed to read identifiers for foreign key violation: %w", readErr)
 		}
@@ -166,12 +172,12 @@ func recoverForeignKeyViolations(db *sql.DB, violations []foreignKeyViolation) (
 	for _, key := range keys {
 		violation := grouped[key][0]
 		query := "DELETE FROM " + quoteSQLiteIdentifier(violation.table) + " WHERE rowid = ?"
-		if _, execErr := tx.Exec(query, violation.rowID); execErr != nil {
+		if _, execErr := tx.ExecContext(ctx, query, violation.rowID); execErr != nil {
 			return nil, fmt.Errorf("failed to delete foreign key violation: %w", execErr)
 		}
 	}
 
-	rows, err := tx.Query("PRAGMA foreign_key_check")
+	rows, err := tx.QueryContext(ctx, "PRAGMA foreign_key_check")
 	if err != nil {
 		return nil, fmt.Errorf("failed to recheck foreign key integrity: %w", err)
 	}
@@ -192,9 +198,9 @@ func recoverForeignKeyViolations(db *sql.DB, violations []foreignKeyViolation) (
 	return records, nil
 }
 
-func readRecordIdentifiers(tx *sql.Tx, violations []foreignKeyViolation) (recordIdentifiers, error) {
+func readRecordIdentifiers(ctx context.Context, tx *sql.Tx, violations []foreignKeyViolation) (recordIdentifiers, error) {
 	first := violations[0]
-	primaryKeyColumns, foreignKeyColumns, err := identifierColumns(tx, violations)
+	primaryKeyColumns, foreignKeyColumns, err := identifierColumns(ctx, tx, violations)
 	if err != nil {
 		return recordIdentifiers{}, err
 	}
@@ -221,7 +227,7 @@ func readRecordIdentifiers(tx *sql.Tx, violations []foreignKeyViolation) (record
 	for i := range values {
 		destinations[i] = &values[i]
 	}
-	if err := tx.QueryRow(query, first.rowID).Scan(destinations...); err != nil {
+	if err := tx.QueryRowContext(ctx, query, first.rowID).Scan(destinations...); err != nil {
 		return recordIdentifiers{}, err
 	}
 
@@ -237,9 +243,9 @@ func readRecordIdentifiers(tx *sql.Tx, violations []foreignKeyViolation) (record
 	return record, nil
 }
 
-func identifierColumns(tx *sql.Tx, violations []foreignKeyViolation) ([]string, []string, error) {
+func identifierColumns(ctx context.Context, tx *sql.Tx, violations []foreignKeyViolation) ([]string, []string, error) {
 	table := violations[0].table
-	tableRows, err := tx.Query("PRAGMA table_info(" + quoteSQLiteIdentifier(table) + ")")
+	tableRows, err := tx.QueryContext(ctx, "PRAGMA table_info("+quoteSQLiteIdentifier(table)+")")
 	if err != nil {
 		return nil, nil, err
 	}
@@ -277,7 +283,7 @@ func identifierColumns(tx *sql.Tx, violations []foreignKeyViolation) ([]string, 
 	for _, violation := range violations {
 		foreignKeyIDs[violation.foreignKeyID] = struct{}{}
 	}
-	foreignKeyRows, err := tx.Query("PRAGMA foreign_key_list(" + quoteSQLiteIdentifier(table) + ")")
+	foreignKeyRows, err := tx.QueryContext(ctx, "PRAGMA foreign_key_list("+quoteSQLiteIdentifier(table)+")")
 	if err != nil {
 		return nil, nil, err
 	}

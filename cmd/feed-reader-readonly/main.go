@@ -16,6 +16,7 @@ import (
 	"github.com/nakatanakatana/feed-reader/internal/httpapi"
 	"github.com/nakatanakatana/feed-reader/internal/readonly"
 	"github.com/nakatanakatana/feed-reader/internal/readonlydb"
+	"github.com/nakatanakatana/feed-reader/internal/telemetry"
 	"github.com/nakatanakatana/feed-reader/store"
 )
 
@@ -24,7 +25,7 @@ const readonlyCORSMethods = "GET, HEAD, OPTIONS"
 var (
 	osExit       = os.Exit
 	createLogger = func() *slog.Logger {
-		return slog.New(slog.NewJSONHandler(os.Stdout, nil))
+		return telemetry.NewJSONLogger(os.Stdout, nil)
 	}
 	registerVFS    = readonly.RegisterVFS
 	openReadOnlyDB = readonlydb.OpenReadOnlyDB
@@ -46,6 +47,18 @@ func main() {
 	defer stop()
 
 	logger := createLogger()
+
+	otelShutdown, err := telemetry.Init(ctx, "feed-reader-readonly", logger)
+	if err != nil {
+		logger.ErrorContext(ctx, "failed to initialize OTEL", "error", err)
+		osExit(1)
+		return
+	}
+	defer func() {
+		if err := telemetry.ShutdownWithTimeout(otelShutdown, telemetry.DefaultShutdownTimeout); err != nil {
+			logger.ErrorContext(context.Background(), "failed to shutdown OTEL", "error", err)
+		}
+	}()
 
 	var cfg config
 	if err := env.Parse(&cfg); err != nil {
@@ -138,5 +151,5 @@ func newMux(db *sql.DB, assets fs.FS, allowedOrigins []string) http.Handler {
 	}))
 	mux.Handle("/readyz", readonly.NewReadinessHandler(db))
 	mux.Handle("/", api)
-	return readonly.ReadOnlyMiddleware(mux)
+	return telemetry.NewHTTPHandler(readonly.ReadOnlyMiddleware(mux), "feed-reader-readonly")
 }
