@@ -59,7 +59,7 @@ func TestOpenReadOnlyDB_SQLiteTracingRecordsSystemPlaceholderSQLAndPropagatesCon
 
 		attrs := make(map[string]string)
 		for _, kv := range s.Attributes {
-			val := kv.Value.Emit()
+			val := kv.Value.String()
 			attrs[string(kv.Key)] = val
 			assert.Assert(t, !strings.Contains(val, secretValue), "raw bind value must not appear in span attribute %s: %s", kv.Key, val)
 		}
