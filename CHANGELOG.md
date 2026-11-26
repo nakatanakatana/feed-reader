@@ -1,5 +1,23 @@
 # Changelog
 
+## [v0.28.0](https://github.com/nakatanakatana/feed-reader/compare/v0.27.2...v0.28.0) - 2026-11-26
+
+### Maintenance & Others
+- fix(deps): update dependency @tanstack/solid-query to v6.0.0-rc.6 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1300
+- chore(deps): update kubb by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1252
+- ci(autofix): auto-update generated API code on pull requests by @nakatanakatana in https://github.com/nakatanakatana/feed-reader/pull/1318
+- chore(deps): update dependency eslint-plugin-solid to v0.20.1 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1319
+- chore(deps): update dependency aquaproj/aqua-registry to v4.592.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1320
+- chore(deps): update dependency aquaproj/aqua-registry to v4.593.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1321
+- chore(deps): update dependency fast-check to v4.11.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1322
+- fix(deps): update module github.com/nakatanakatana/mytools to v0.14.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1323
+- chore(deps): update dependency moznion/cccc to v1.10.1 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1324
+- fix(deps): update module github.com/ncruces/go-sqlite3 to v0.38.1 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1326
+- chore(deps): update dependency aquaproj/aqua-registry to v4.594.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1327
+- chore(deps): update kubb by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1325
+- feat(telemetry): add OpenTelemetry tracing for HTTP, SQLite, and logs by @nakatanakatana in https://github.com/nakatanakatana/feed-reader/pull/1328
+- chore(deps): update kubb by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1329
+
 ## [v0.27.2](https://github.com/nakatanakatana/feed-reader/compare/v0.27.1...v0.27.2) - 2026-11-23
 
 ### Maintenance & Others
