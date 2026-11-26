@@ -5,9 +5,9 @@
 
 import type { MswBody } from "../../lib/api/.kubb/mswBody";
 import type {
+  FeedsRefreshBody,
   FeedsRefreshResponse,
   FeedsRefreshStatus500,
-  FeedsRefreshBody,
 } from "../../lib/api/types-generated";
 import type { HttpResponseResolver } from "msw/http";
 import { http, HttpResponse } from "msw/http";
