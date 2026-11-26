@@ -5,9 +5,9 @@
 
 import type { MswBody } from "../../lib/api/.kubb/mswBody";
 import type {
+  URLRulesAddBody,
   URLRulesAddResponse,
   URLRulesAddStatus500,
-  URLRulesAddBody,
 } from "../../lib/api/types-generated";
 import type { HttpResponseResolver } from "msw/http";
 import { http, HttpResponse } from "msw/http";

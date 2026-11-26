@@ -5,9 +5,9 @@
 
 import type { MswBody } from "../../lib/api/.kubb/mswBody";
 import type {
+  FeedTagsManageBody,
   FeedTagsManageResponse,
   FeedTagsManageStatus500,
-  FeedTagsManageBody,
 } from "../../lib/api/types-generated";
 import type { HttpResponseResolver } from "msw/http";
 import { http, HttpResponse } from "msw/http";
