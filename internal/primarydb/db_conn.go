@@ -11,7 +11,7 @@ import (
 	"sync"
 
 	"github.com/XSAM/otelsql"
-	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
+	"github.com/nakatanakatana/feed-reader/internal/telemetry"
 	_ "modernc.org/sqlite"
 )
 
@@ -27,7 +27,7 @@ func OpenDB(dsn string) (*sql.DB, error) {
 
 func OpenDBContext(ctx context.Context, dsn string) (*sql.DB, error) {
 	otelOnce.Do(func() {
-		otelDriverName, otelRegisterErr = otelsql.Register("sqlite", otelsql.WithAttributes(semconv.DBSystemSqlite))
+		otelDriverName, otelRegisterErr = otelsql.Register("sqlite", telemetry.SQLiteOTelOptions()...)
 	})
 	if otelRegisterErr != nil {
 		return nil, fmt.Errorf("failed to register otelsql driver: %w", otelRegisterErr)

@@ -7,8 +7,8 @@ import (
 	"sync"
 
 	"github.com/XSAM/otelsql"
+	"github.com/nakatanakatana/feed-reader/internal/telemetry"
 	_ "github.com/ncruces/go-sqlite3/driver"
-	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 )
 
 var (
@@ -21,7 +21,7 @@ func readonlyOTELDriverName() (string, error) {
 	readonlyOTELOne.Do(func() {
 		readonlyOTELDriver, readonlyOTELDriverErr = otelsql.Register(
 			"sqlite3",
-			otelsql.WithAttributes(semconv.DBSystemSqlite),
+			telemetry.SQLiteOTelOptions()...,
 		)
 	})
 	return readonlyOTELDriver, readonlyOTELDriverErr

@@ -41,7 +41,7 @@ func TestOpenDB_SQLiteTracingRecordsSystemPlaceholderSQLAndPropagatesContext(t *
 	assert.NilError(t, tx.Commit())
 
 	var got string
-	err = db.QueryRowContext(parentCtx, "SELECT token FROM secrets WHERE id = ?", "row-1").Scan(&got)
+	err = db.QueryRowContext(parentCtx, "-- name: GetSecret :one\nSELECT token FROM secrets WHERE id = ?", "row-1").Scan(&got)
 	assert.NilError(t, err)
 	assert.Equal(t, got, secretValue)
 
@@ -65,11 +65,7 @@ func TestOpenDB_SQLiteTracingRecordsSystemPlaceholderSQLAndPropagatesContext(t *
 			assert.Assert(t, !strings.Contains(val, secretValue), "raw bind value must not appear in span attribute %s: %s", kv.Key, val)
 		}
 
-		dbSystem := attrs["db.system.name"]
-		if dbSystem == "" {
-			dbSystem = attrs["db.system"]
-		}
-		assert.Equal(t, dbSystem, "sqlite")
+		assert.Equal(t, attrs["db.system.name"], "sqlite")
 
 		stmt := attrs["db.query.text"]
 		if stmt == "" {
@@ -78,10 +74,14 @@ func TestOpenDB_SQLiteTracingRecordsSystemPlaceholderSQLAndPropagatesContext(t *
 		if strings.Contains(stmt, "INSERT INTO secrets (id, token) VALUES (?, ?)") {
 			foundInsert = true
 			assert.Equal(t, s.Parent.SpanID(), parentSpan.SpanContext().SpanID())
+			_, hasSummary := attrs["db.query.summary"]
+			assert.Assert(t, !hasSummary, "expected db.query.summary to be omitted when sqlc comment is absent")
 		}
 		if strings.Contains(stmt, "SELECT token FROM secrets WHERE id = ?") {
 			foundSelect = true
 			assert.Equal(t, s.Parent.SpanID(), parentSpan.SpanContext().SpanID())
+			assert.Equal(t, attrs["db.query.summary"], "GetSecret")
+			assert.Equal(t, s.Name, "GetSecret")
 		}
 	}
 
