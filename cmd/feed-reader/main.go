@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -14,6 +13,7 @@ import (
 	"github.com/nakatanakatana/feed-reader/frontend"
 	"github.com/nakatanakatana/feed-reader/internal/httpapi"
 	"github.com/nakatanakatana/feed-reader/internal/primarydb"
+	"github.com/nakatanakatana/feed-reader/internal/telemetry"
 	"github.com/nakatanakatana/feed-reader/sql"
 	"github.com/nakatanakatana/feed-reader/store"
 )
@@ -38,7 +38,7 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	logger := telemetry.NewJSONLogger(os.Stdout, nil)
 
 	// Initialize OTEL
 	otelShutdown, err := InitOTEL(ctx, logger)
@@ -47,8 +47,8 @@ func main() {
 		os.Exit(1)
 	}
 	defer func() {
-		if err := otelShutdown(context.Background()); err != nil {
-			logger.ErrorContext(ctx, "failed to shutdown OTEL", "error", err)
+		if err := telemetry.ShutdownWithTimeout(otelShutdown, telemetry.DefaultShutdownTimeout); err != nil {
+			logger.ErrorContext(context.Background(), "failed to shutdown OTEL", "error", err)
 		}
 	}()
 
@@ -64,7 +64,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	db, err := primarydb.OpenDB(cfg.DBPath)
+	db, err := primarydb.OpenDBContext(ctx, cfg.DBPath)
 	if err != nil {
 		logger.ErrorContext(ctx, "failed to open database", "error", err)
 		os.Exit(1)
@@ -120,7 +120,7 @@ func main() {
 
 	server := &http.Server{
 		Addr:      ":" + cfg.Port,
-		Handler:   mux,
+		Handler:   telemetry.NewHTTPHandler(mux, "feed-reader"),
 		Protocols: &protocols,
 	}
 

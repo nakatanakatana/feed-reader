@@ -9,6 +9,7 @@ import (
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/mmcdole/gofeed"
 	"github.com/nakatanakatana/feed-reader/internal/httpapi"
+	"github.com/nakatanakatana/feed-reader/internal/telemetry"
 	"github.com/nakatanakatana/feed-reader/store"
 )
 
@@ -33,10 +34,10 @@ func NewGofeedFetcher(s *store.Store) *GofeedFetcher {
 	retryClient.Logger = nil // Disable verbose logging by default
 
 	client := retryClient.StandardClient()
-	client.Transport = &userAgentTransport{
+	client.Transport = telemetry.NewHTTPTransport(&userAgentTransport{
 		base: client.Transport,
 		ua:   UserAgent,
-	}
+	})
 
 	return &GofeedFetcher{
 		client: client,
