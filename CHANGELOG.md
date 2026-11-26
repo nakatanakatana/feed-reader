@@ -4,6 +4,8 @@
 
 ### Maintenance & Others
 - fix(telemetry): record http.route and span name from ServeMux pattern by @nakatanakatana in https://github.com/nakatanakatana/feed-reader/pull/1330
+- fix(deps): update module github.com/nakatanakatana/mytools to v0.15.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1332
+- Release for v0.28.1 by @nakatanakatana-release-bot[bot] in https://github.com/nakatanakatana/feed-reader/pull/1331
 
 ## [v0.28.0](https://github.com/nakatanakatana/feed-reader/compare/v0.27.2...v0.28.0) - 2026-11-26
 
