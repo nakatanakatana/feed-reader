@@ -1,5 +1,10 @@
 # Changelog
 
+## [v0.28.1](https://github.com/nakatanakatana/feed-reader/compare/v0.28.0...v0.28.1) - 2026-11-26
+
+### Maintenance & Others
+- fix(telemetry): record http.route and span name from ServeMux pattern by @nakatanakatana in https://github.com/nakatanakatana/feed-reader/pull/1330
+
 ## [v0.28.0](https://github.com/nakatanakatana/feed-reader/compare/v0.27.2...v0.28.0) - 2026-11-26
 
 ### Maintenance & Others
