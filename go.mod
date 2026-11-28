@@ -14,7 +14,7 @@ require (
 	github.com/nakatanakatana/mytools v0.15.1
 	github.com/ncruces/go-sqlite3 v0.38.1
 	github.com/oapi-codegen/runtime v1.9.1
-	github.com/sqldef/sqldef/v3 v3.11.30
+	github.com/sqldef/sqldef/v3 v3.11.31
 	github.com/stretchr/testify v1.12.1
 	github.com/superfly/ltx v0.5.3
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.72.0
