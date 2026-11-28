@@ -1,5 +1,23 @@
 # Changelog
 
+## [v0.28.2](https://github.com/nakatanakatana/feed-reader/compare/v0.28.1...v0.28.2) - 2026-11-28
+
+### Maintenance & Others
+- fix(deps): update dependency @tanstack/solid-router to v2.0.0-rc.12 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1334
+- chore(deps): update dependency oxfmt to ^0.80.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1336
+- fix(deps): update module github.com/nakatanakatana/mytools to v0.15.1 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1335
+- chore(deps): update dependency oxlint to v1.95.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1337
+- chore(deps): update kubb by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1338
+- chore(deps): update dependency aquaproj/aqua-registry to v4.595.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1340
+- chore(deps): update kubb to v5.25.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1341
+- chore(deps): update kubb by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1343
+- chore(deps): update dependency @types/node to v26.6.7 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1342
+- fix(deps): update solidjs to v2.0.4 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1344
+- chore(deps): update dependency @types/node to v26.6.10 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1345
+- fix(deps): update module github.com/sqldef/sqldef/v3 to v3.11.31 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1346
+- chore(deps): update dependency aquaproj/aqua-registry to v4.596.0 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1347
+- chore(deps): update vitest monorepo to v5.1.2 by @renovate[bot] in https://github.com/nakatanakatana/feed-reader/pull/1348
+
 ## [v0.28.1](https://github.com/nakatanakatana/feed-reader/compare/v0.28.0...v0.28.1) - 2026-11-26
 
 ### Maintenance & Others
